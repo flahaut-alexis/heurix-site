@@ -21,7 +21,7 @@
       <a href="#probleme">Le problème</a>
       <a href="#offre">L'offre</a>
       <a href="#moteur">Le moteur</a>
-      <a href="#tarifs">Tarifs</a>
+      <a href="#tarifs">Simulateur ROI</a>
       <a href="blog.html">Blog</a>
     </div>
     <a href="#contact" class="btn">Réserver un audit</a>
@@ -145,6 +145,44 @@
         <div class="line"><span class="k">ranking</span><span class="v">stock &gt; marge &gt; pertinence</span></div>
       </div>
     </div>
+
+    <div class="regex-block reveal">
+      <div class="regex-copy">
+        <h3>L'avantage des expressions régulières sur les catalogues techniques</h3>
+        <p>Sur un catalogue produit grand public, la recherche par mots-clés suffit souvent. Sur un catalogue technique, les références suivent des formats structurés — codes produits, normes, dimensions — qu'une simple correspondance textuelle ne sait pas interpréter.</p>
+        <p>Le moteur Heurix s'appuie sur des expressions régulières (regex) pour reconnaître ces formats : un client qui tape <code>M8x20</code>, <code>DIN933</code> ou une référence partielle retrouve le bon produit, même sans connaître la nomenclature exacte du catalogue. C'est ce niveau de recherche qui fait la différence sur les secteurs à forte technicité.</p>
+      </div>
+      <div class="regex-demo mono">
+        <div class="regex-line"><span class="regex-label">requête</span><span class="regex-val">"m8x20 inox"</span></div>
+        <div class="regex-arrow">↓ pattern reconnu</div>
+        <div class="regex-pattern">/^(M\d{1,2})[x×](\d{1,3})\b/i</div>
+        <div class="regex-arrow">↓ résultat</div>
+        <div class="regex-line"><span class="regex-label">match</span><span class="regex-val good">Vis M8 × 20mm — inox A2, DIN 933</span></div>
+      </div>
+    </div>
+
+    <div class="verticals reveal">
+      <h3>Les secteurs où cette approche change le plus de choses</h3>
+      <p class="section-lede" style="margin-bottom:28px;">Plus un catalogue est volumineux et technique, plus le gain d'un moteur bien réglé est important — parce que le moteur natif décroche exactement là où le besoin de filtrage est le plus fin.</p>
+      <div class="vertical-grid">
+        <div class="vertical-card">
+          <h4>Outillage &amp; quincaillerie</h4>
+          <p>Dizaines de milliers de références, codes produits normés (DIN, ISO), besoin de filtrer par dimension, matière, compatibilité.</p>
+        </div>
+        <div class="vertical-card">
+          <h4>Pièces détachées &amp; industrie</h4>
+          <p>Recherche par référence constructeur ou équivalence, tolérance aux formats de codes multiples selon le fournisseur.</p>
+        </div>
+        <div class="vertical-card">
+          <h4>Électrique &amp; électronique</h4>
+          <p>Caractéristiques techniques précises (voltage, ampérage, normes), catalogues qui évoluent en continu.</p>
+        </div>
+        <div class="vertical-card">
+          <h4>Équipement pro &amp; BTP</h4>
+          <p>Gros volumes, acheteurs professionnels qui cherchent par référence exacte plus que par mot-clé descriptif.</p>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -152,29 +190,115 @@
   <div class="wrap">
     <div class="kicker">Pour qui</div>
     <h2>Le profil de client où cette approche fonctionne le mieux.</h2>
-    <table class="icp-table reveal">
-      <tr><td>Taille</td><td>PME e-commerce, environ 5 à 50 salariés</td></tr>
-      <tr><td>Chiffre d'affaires</td><td>500 000 € à 10 M€ de CA e-commerce annuel</td></tr>
-      <tr><td>Signal</td><td>Moteur natif jamais reconfiguré, ou retours clients sur des résultats de recherche peu pertinents</td></tr>
-      <tr><td>Décideur</td><td>Dirigeant ou responsable e-commerce / marketing, en mesure de valider seul le budget</td></tr>
-    </table>
+    <p class="section-lede">Heurix cible des PME de belle taille et des acteurs mid-market pas encore équipés d'un moteur de recherche dédié — pas les grands comptes déjà sur Algolia ou Elasticsearch, pas les micro-catalogues où la recherche native suffit.</p>
+    <div class="icp-grid reveal">
+      <div class="icp-card">
+        <div class="icp-label mono">Taille</div>
+        <p>PME de belle taille à mid-market, 50 à 250 salariés</p>
+      </div>
+      <div class="icp-card">
+        <div class="icp-label mono">Chiffre d'affaires</div>
+        <p>10 M€ à 50 M€ de CA e-commerce annuel</p>
+      </div>
+      <div class="icp-card">
+        <div class="icp-label mono">Catalogue</div>
+        <p>Gros catalogue technique (dizaines de milliers de références), filtres fins nécessaires : dimensions, compatibilité, normes</p>
+      </div>
+      <div class="icp-card">
+        <div class="icp-label mono">Signal</div>
+        <p>Pas encore équipé d'un moteur dédié — solution native seule, ou outil basique jamais vraiment configuré</p>
+      </div>
+      <div class="icp-card">
+        <div class="icp-label mono">Douleur</div>
+        <p>Taux de conversion sur la recherche interne en retrait, retours support sur des recherches infructueuses, catalogue qui a dépassé les capacités du moteur natif</p>
+      </div>
+      <div class="icp-card">
+        <div class="icp-label mono">Décideur</div>
+        <p>Directeur e-commerce, Directeur digital ou CTO — budget arbitrable sans comité d'achat lourd</p>
+      </div>
+    </div>
   </div>
 </section>
 
 <section id="tarifs" class="soft">
   <div class="wrap">
-    <div class="kicker">Tarifs</div>
-    <h2>Facturation à la mission, sans abonnement imposé.</h2>
-    <div class="price-hero">
-      <span class="amount">850&nbsp;€</span>
-      <span class="unit">HT / jour — devis établi selon le périmètre</span>
+    <div class="kicker">Simulateur</div>
+    <h2>Estimez le gain d'un moteur de recherche mieux réglé.</h2>
+    <p class="section-lede">Ajustez les hypothèses à votre catalogue. Le calcul se fait en direct — ces chiffres sont des ordres de grandeur à affiner ensemble lors de l'audit, pas une promesse.</p>
+
+    <div class="roi-simulator reveal">
+      <div class="roi-inputs">
+        <h4>Votre situation actuelle</h4>
+        <div class="roi-field">
+          <label for="roi-sessions">Sessions / mois</label>
+          <input type="number" id="roi-sessions" value="50000" min="0" step="1000">
+        </div>
+        <div class="roi-field">
+          <label for="roi-conv">Taux de conversion actuel (%)</label>
+          <input type="number" id="roi-conv" value="1.5" min="0" step="0.1">
+        </div>
+        <div class="roi-field">
+          <label for="roi-aov">Panier moyen (€)</label>
+          <input type="number" id="roi-aov" value="90" min="0" step="1">
+        </div>
+        <div class="roi-field">
+          <label for="roi-margin">Marge (%)</label>
+          <input type="number" id="roi-margin" value="30" min="0" max="100" step="1">
+        </div>
+
+        <h4 style="margin-top:28px;">Hypothèses d'impact Heurix</h4>
+        <div class="roi-field roi-slider">
+          <label for="roi-convgain">Gain de conversion attendu <span id="roi-convgain-val" class="mono">5%</span></label>
+          <input type="range" id="roi-convgain" value="5" min="3" max="10" step="0.5">
+          <div class="roi-range-hint">3% hypothèse basse — 10% hypothèse haute</div>
+        </div>
+        <div class="roi-field roi-slider">
+          <label for="roi-aovgain">Gain sur panier moyen (facettes / upsell) <span id="roi-aovgain-val" class="mono">3%</span></label>
+          <input type="range" id="roi-aovgain" value="3" min="0" max="13" step="0.5">
+          <div class="roi-range-hint">0% hypothèse basse — 13% moyenne marché</div>
+        </div>
+        <div class="roi-field">
+          <label for="roi-cost">Coût de la mission (€)</label>
+          <input type="number" id="roi-cost" value="5500" min="1" step="100">
+        </div>
+      </div>
+
+      <div class="roi-matrix">
+        <div class="roi-tile">
+          <div class="roi-tile-label">CA annuel actuel</div>
+          <div class="roi-tile-value mono" id="roi-out-before">—</div>
+        </div>
+        <div class="roi-tile">
+          <div class="roi-tile-label">CA annuel estimé après optimisation</div>
+          <div class="roi-tile-value mono" id="roi-out-after">—</div>
+        </div>
+        <div class="roi-tile highlight">
+          <div class="roi-tile-label">Gain de CA annuel</div>
+          <div class="roi-tile-value mono" id="roi-out-gain">—</div>
+        </div>
+        <div class="roi-tile">
+          <div class="roi-tile-label">Gain de marge annuel</div>
+          <div class="roi-tile-value mono" id="roi-out-margin">—</div>
+        </div>
+        <div class="roi-tile">
+          <div class="roi-tile-label">Coût de la mission</div>
+          <div class="roi-tile-value mono" id="roi-out-cost">—</div>
+        </div>
+        <div class="roi-tile highlight">
+          <div class="roi-tile-label">Retour sur investissement</div>
+          <div class="roi-tile-value mono" id="roi-out-roi">—</div>
+        </div>
+        <div class="roi-tile">
+          <div class="roi-tile-label">Gain net (marge − coût)</div>
+          <div class="roi-tile-value mono" id="roi-out-net">—</div>
+        </div>
+        <div class="roi-tile">
+          <div class="roi-tile-label">Mission rentabilisée en</div>
+          <div class="roi-tile-value mono" id="roi-out-payback">—</div>
+        </div>
+      </div>
     </div>
-    <div class="price-grid reveal">
-      <div class="price-card"><div class="t">Audit</div><div class="d">2 à 3 jours<br>≈ 1 700 – 2 550 € HT</div></div>
-      <div class="price-card"><div class="t">Audit + intégration</div><div class="d">5 à 8 jours<br>≈ 4 250 – 6 800 € HT</div></div>
-      <div class="price-card"><div class="t">Formation</div><div class="d">1 à 2 jours<br>≈ 850 – 1 700 € HT</div></div>
-      <div class="price-card"><div class="t">Optimisation continue</div><div class="d">Forfait mensuel<br>ou journées ponctuelles</div></div>
-    </div>
+    <p class="form-note" style="margin-top:20px;">Coût indicatif : audit seul 1 700 – 2 550 € HT · audit + intégration 4 250 – 6 800 € HT. Chiffrage définitif sur devis.</p>
   </div>
 </section>
 
@@ -211,9 +335,9 @@
 
 <section class="cta-section" id="contact">
   <div class="wrap">
-    <div class="kicker">Contact</div>
-    <h2>Réservez un audit initial.</h2>
-    <p class="section-lede">Décrivez votre site en deux lignes — réponse sous 48h ouvrées.</p>
+    <div class="kicker">Devis sur demande</div>
+    <h2>Recevez un devis adapté à votre catalogue.</h2>
+    <p class="section-lede">Décrivez votre site en deux lignes — réponse sous 48h ouvrées. Vous pouvez reprendre les chiffres du simulateur ci-dessus si vous voulez.</p>
 
     <form class="cta-form" id="heurix-form">
       <label for="name">Nom</label>
@@ -228,7 +352,6 @@
       <div id="form-feedback"></div>
     </form>
     <p class="contact-direct">Vous préférez écrire directement ? <a href="mailto:contact@heurix.fr">contact@heurix.fr</a></p>
-    <p class="form-note">Formulaire branché via Formspree — voir les instructions de configuration dans les commentaires du code source.</p>
   </div>
 </section>
 
@@ -305,17 +428,66 @@
     revealEls.forEach(el => el.classList.add('in'));
   }
 
+  // ROI simulator
+  const fmtEUR = (n) => new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(n);
+
+  function computeROI(){
+    const sessions = parseFloat(document.getElementById('roi-sessions').value) || 0;
+    const conv = (parseFloat(document.getElementById('roi-conv').value) || 0) / 100;
+    const aov = parseFloat(document.getElementById('roi-aov').value) || 0;
+    const margin = (parseFloat(document.getElementById('roi-margin').value) || 0) / 100;
+    const convGain = (parseFloat(document.getElementById('roi-convgain').value) || 0) / 100;
+    const aovGain = (parseFloat(document.getElementById('roi-aovgain').value) || 0) / 100;
+    const cost = parseFloat(document.getElementById('roi-cost').value) || 0;
+
+    document.getElementById('roi-convgain-val').textContent = (convGain*100).toFixed(1).replace('.0','') + '%';
+    document.getElementById('roi-aovgain-val').textContent = (aovGain*100).toFixed(1).replace('.0','') + '%';
+
+    const newConv = conv * (1 + convGain);
+    const newAov = aov * (1 + aovGain);
+
+    const monthlyBefore = sessions * conv * aov;
+    const monthlyAfter = sessions * newConv * newAov;
+    const yearlyBefore = monthlyBefore * 12;
+    const yearlyAfter = monthlyAfter * 12;
+
+    const revenueGainYear = yearlyAfter - yearlyBefore;
+    const marginGainYear = revenueGainYear * margin;
+    const netGain = marginGainYear - cost;
+    const roiPct = cost > 0 ? (netGain / cost) * 100 : 0;
+    const paybackMonths = marginGainYear > 0 ? cost / (marginGainYear / 12) : null;
+
+    document.getElementById('roi-out-before').textContent = fmtEUR(yearlyBefore);
+    document.getElementById('roi-out-after').textContent = fmtEUR(yearlyAfter);
+    document.getElementById('roi-out-gain').textContent = fmtEUR(revenueGainYear);
+    document.getElementById('roi-out-margin').textContent = fmtEUR(marginGainYear);
+    document.getElementById('roi-out-cost').textContent = fmtEUR(cost);
+    document.getElementById('roi-out-net').textContent = fmtEUR(netGain);
+    document.getElementById('roi-out-roi').textContent = (roiPct >= 0 ? '+' : '') + roiPct.toFixed(0) + '%';
+    document.getElementById('roi-out-payback').textContent = paybackMonths !== null
+      ? (paybackMonths < 1 ? '< 1 mois' : paybackMonths.toFixed(1).replace('.0','') + ' mois')
+      : '—';
+  }
+
+  ['roi-sessions','roi-conv','roi-aov','roi-margin','roi-convgain','roi-aovgain','roi-cost'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', computeROI);
+  });
+  computeROI();
+
+
   /*
-    BRANCHEMENT DU FORMULAIRE — FORMSPREE (gratuit jusqu'à 50 envois/mois)
-    1. Créez un compte sur https://formspree.io (gratuit).
-    2. Créez un formulaire, Formspree vous donne une URL du type
-       https://formspree.io/f/xxxxabcd
-    3. Remplacez FORMSPREE_ENDPOINT ci-dessous par cette URL.
-    4. Dans les réglages du formulaire sur Formspree, ajoutez contact@heurix.fr
-       comme destinataire (email de réception) si vous voulez recevoir les
-       demandes directement sur cette adresse plutôt que sur l'email du compte.
+    BRANCHEMENT DU FORMULAIRE — FORMSUBMIT (gratuit, sans inscription)
+    Ce formulaire envoie directement vers contact@heurix.fr (votre boîte Zimbra OVH).
+    Aucune création de compte n'est nécessaire.
+
+    IMPORTANT — étape d'activation obligatoire :
+    La toute première fois que le formulaire est soumis, FormSubmit envoie un
+    email de confirmation à contact@heurix.fr. Il faut ouvrir cet email et
+    cliquer sur le lien de confirmation pour activer définitivement l'envoi.
+    Sans ce clic, les soumissions suivantes ne seront pas délivrées.
   */
-  const FORMSPREE_ENDPOINT = "https://formspree.io/f/VOTRE_ID_FORMSPREE";
+  const FORMSUBMIT_ENDPOINT = "https://formsubmit.co/ajax/contact@heurix.fr";
 
   const form = document.getElementById('heurix-form');
   const feedback = document.getElementById('form-feedback');
@@ -324,21 +496,20 @@
   form.addEventListener('submit', async function(e){
     e.preventDefault();
 
-    if (FORMSPREE_ENDPOINT.includes('VOTRE_ID_FORMSPREE')) {
-      feedback.style.display = 'block';
-      feedback.style.color = 'var(--red-muted)';
-      feedback.textContent = "Formulaire pas encore configuré — remplacez FORMSPREE_ENDPOINT dans le code par votre URL Formspree.";
-      return;
-    }
-
     submitBtn.disabled = true;
     submitBtn.textContent = "Envoi en cours…";
 
     try {
-      const res = await fetch(FORMSPREE_ENDPOINT, {
+      const formData = new FormData(form);
+      const payload = Object.fromEntries(formData.entries());
+
+      const res = await fetch(FORMSUBMIT_ENDPOINT, {
         method: "POST",
-        headers: { "Accept": "application/json" },
-        body: new FormData(form)
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify(payload)
       });
 
       feedback.style.display = 'block';
