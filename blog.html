@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blog — Heurix</title>
+<meta name="description" content="Notes sur la recherche interne et le e-commerce, publiées chaque mois par Heurix.">
+<link rel="icon" type="image/png" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header>
+  <nav>
+    <a href="index.html" class="logo"><img src="logo.png" alt="Heurix"> HEURIX</a>
+    <div class="nav-links">
+      <a href="index.html#probleme">Le problème</a>
+      <a href="index.html#offre">L'offre</a>
+      <a href="index.html#moteur">Le moteur</a>
+      <a href="index.html#tarifs">Tarifs</a>
+      <a href="blog.html">Blog</a>
+    </div>
+    <a href="index.html#contact" class="btn">Réserver un audit</a>
+  </nav>
+</header>
+
+<section class="blog-hero">
+  <div class="wrap">
+    <div class="kicker">Blog</div>
+    <h1>Notes sur la recherche et le e-commerce.</h1>
+    <p class="lede">Des cas concrets, des observations techniques et des retours d'expérience, publiés chaque mois.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="blog-index-grid">
+      <a class="blog-card" href="blog-moteur-natif-ne-suffit-pas.html">
+        <div class="blog-date mono">Juillet 2026</div>
+        <h3>Pourquoi le moteur natif de votre plateforme ne suffit pas</h3>
+        <p>Les trois angles morts les plus fréquents des moteurs livrés par défaut, et comment les repérer en cinq minutes.</p>
+        <span class="blog-link">Lire l'article →</span>
+      </a>
+      <a class="blog-card" href="blog-5-signes-recherche-vous-coute-des-ventes.html">
+        <div class="blog-date mono">Juillet 2026</div>
+        <h3>5 signes que votre moteur de recherche vous coûte des ventes</h3>
+        <p>Des symptômes concrets à vérifier sur votre propre site, sans outil technique, en moins de dix minutes.</p>
+        <span class="blog-link">Lire l'article →</span>
+      </a>
+      <a class="blog-card" href="blog-glossaire-search-ecommerce.html">
+        <div class="blog-date mono">Juillet 2026</div>
+        <h3>Le glossaire du search e-commerce, sans jargon</h3>
+        <p>Synonymes, facettes, tolérance aux fautes : ce que ces termes veulent dire concrètement pour votre catalogue.</p>
+        <span class="blog-link">Lire l'article →</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot-grid">
+    <a href="index.html" class="logo" style="font-size:15px;"><img src="logo.png" alt="Heurix" style="height:22px;width:22px;"> HEURIX</a>
+    <div class="foot-links">
+      <a href="blog.html">Blog</a>
+      <a href="mailto:contact@heurix.fr">contact@heurix.fr</a>
+    </div>
+    <div class="foot-legal">
+      Heurix — Entreprise individuelle (micro-entreprise). SIRET [à compléter]. Conseil en systèmes et logiciels informatiques.<br>
+      © <span id="year"></span> Heurix. Tous droits réservés.
+    </div>
+  </div>
+</footer>
+
+<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+
+</body>
+</html>

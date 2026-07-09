@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pourquoi le moteur natif de votre plateforme ne suffit pas — Heurix</title>
+<meta name="description" content="Les trois angles morts les plus fréquents des moteurs de recherche livrés par défaut avec Shopify, PrestaShop ou WooCommerce.">
+<link rel="icon" type="image/png" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header>
+  <nav>
+    <a href="index.html" class="logo"><img src="logo.png" alt="Heurix"> HEURIX</a>
+    <div class="nav-links">
+      <a href="index.html#probleme">Le problème</a>
+      <a href="index.html#offre">L'offre</a>
+      <a href="index.html#moteur">Le moteur</a>
+      <a href="index.html#tarifs">Tarifs</a>
+      <a href="blog.html">Blog</a>
+    </div>
+    <a href="index.html#contact" class="btn">Réserver un audit</a>
+  </nav>
+</header>
+
+<article class="post">
+  <div class="wrap post-wrap">
+    <a href="blog.html" class="back-link">← Tous les articles</a>
+    <div class="kicker">Blog · Juillet 2026</div>
+    <h1>Pourquoi le moteur natif de votre plateforme ne suffit pas</h1>
+    <p class="post-lede">Shopify, PrestaShop et WooCommerce indexent correctement votre catalogue. Le problème n'est pas l'indexation — c'est tout ce qui se passe entre la question tapée par votre visiteur et les résultats qu'il obtient.</p>
+
+    <div class="post-body">
+      <p>La plupart des sites e-commerce lancent leur moteur de recherche une fois, au démarrage, puis n'y retouchent plus jamais. Ça se comprend : la recherche interne ne fait pas partie des sujets qu'on surveille naturellement, contrairement au taux de rebond sur la page d'accueil ou au tunnel de paiement. Pourtant, c'est souvent là que se joue une partie non négligeable des ventes perdues.</p>
+
+      <p>Voici les trois angles morts qui reviennent le plus souvent quand on audite un moteur natif.</p>
+
+      <h2>1. Aucune tolérance aux fautes de frappe</h2>
+      <p>Un visiteur qui tape « pul » au lieu de « pull », ou « chausure » au lieu de « chaussure », obtient dans la majorité des cas une page vide. Le moteur cherche une correspondance exacte, ne la trouve pas, et s'arrête là. Sur mobile, où les fautes de frappe sont statistiquement plus fréquentes, l'impact est encore plus marqué.</p>
+      <p>La correction n'est pas complexe techniquement : il s'agit de configurer une tolérance de un à deux caractères sur les termes recherchés. Mais elle n'est presque jamais activée par défaut.</p>
+
+      <h2>2. Un ordre de tri qui ignore la disponibilité et la marge</h2>
+      <p>Par défaut, la plupart des moteurs trient les résultats par pertinence textuelle brute, ou pire, par date d'ajout au catalogue. Résultat : un produit en rupture de stock peut apparaître en première position, pendant qu'une référence disponible et plus rentable se retrouve en page trois.</p>
+      <p>Un tri qui prend en compte le stock, la marge et la pertinence réelle change directement le taux de conversion des pages de résultats — sans toucher au reste du site.</p>
+
+      <h2>3. Des synonymes et un vocabulaire métier absents</h2>
+      <p>Vos clients ne parlent pas toujours le langage de votre catalogue. Un acheteur peut chercher « pull » là où votre fiche produit dit « maille », ou « baskets » là où vous avez écrit « sneakers ». Sans dictionnaire de synonymes propre à votre activité, chacune de ces recherches ramène zéro résultat, alors que le produit existe bel et bien.</p>
+
+      <blockquote>Un moteur de recherche qui renvoie « aucun résultat » sur un produit que vous avez en stock n'est pas un détail technique — c'est une vente perdue à chaque occurrence.</blockquote>
+
+      <h2>Comment vérifier où vous en êtes</h2>
+      <p>Trois tests suffisent pour se faire une première idée, directement sur votre site :</p>
+      <ul>
+        <li>Tapez un nom de produit que vous savez en stock, avec une faute de frappe volontaire</li>
+        <li>Tapez un terme générique de votre secteur (« pull », « chaussures »...) et regardez ce qui remonte en premier</li>
+        <li>Tapez un synonyme courant d'un de vos produits phares plutôt que son nom exact</li>
+      </ul>
+      <p>Si l'un de ces trois tests échoue, c'est un signal concret — pas une question d'opinion sur le design ou l'ergonomie, mais un problème mesurable qui coûte des ventes chaque jour.</p>
+    </div>
+
+    <div class="post-footer-cta">
+      <p>Envie de savoir précisément où se situent les pertes sur votre propre site ?</p>
+      <a href="index.html#contact" class="btn">Réserver un audit initial</a>
+    </div>
+  </div>
+</article>
+
+<footer>
+  <div class="wrap foot-grid">
+    <a href="index.html" class="logo" style="font-size:15px;"><img src="logo.png" alt="Heurix" style="height:22px;width:22px;"> HEURIX</a>
+    <div class="foot-links">
+      <a href="blog.html">Blog</a>
+      <a href="mailto:contact@heurix.fr">contact@heurix.fr</a>
+    </div>
+    <div class="foot-legal">
+      Heurix — Entreprise individuelle (micro-entreprise). SIRET [à compléter]. Conseil en systèmes et logiciels informatiques.<br>
+      © <span id="year"></span> Heurix. Tous droits réservés.
+    </div>
+  </div>
+</footer>
+
+<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+
+</body>
+</html>

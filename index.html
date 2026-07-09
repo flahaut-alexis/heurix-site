@@ -5,306 +5,24 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Heurix — Conseil en moteurs de recherche pour le e-commerce</title>
 <meta name="description" content="Audit, intégration et optimisation de moteurs de recherche pour sites e-commerce. Un moteur mal réglé coûte des ventes : Heurix le corrige.">
+<link rel="icon" type="image/png" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --bg:#FFFFFF;
-    --bg-soft:#F7F8FC;
-    --ink:#12142B;
-    --ink-muted:#5B5E76;
-    --blue:#5468FF;
-    --blue-deep:#3F52E8;
-    --blue-tint:#EEF1FF;
-    --line:#E7E9F2;
-    --green:#1FAA6B;
-    --green-tint:#E8F8F0;
-    --red-muted:#D6584B;
-    --red-tint:#FCEDEB;
-    --radius:10px;
-  }
-  *{box-sizing:border-box;}
-  html{scroll-behavior:smooth;}
-  body{
-    margin:0;
-    background:var(--bg);
-    color:var(--ink);
-    font-family:'Plus Jakarta Sans', sans-serif;
-    line-height:1.55;
-    -webkit-font-smoothing:antialiased;
-  }
-  .mono{ font-family:'IBM Plex Mono', monospace; }
-  a{ color:inherit; }
-  .wrap{ max-width:1100px; margin:0 auto; padding:0 28px; }
-
-  /* NAV */
-  header{
-    position:sticky; top:0; z-index:50;
-    background:rgba(255,255,255,0.92);
-    backdrop-filter:blur(8px);
-    border-bottom:1px solid var(--line);
-  }
-  nav{
-    display:flex; align-items:center; justify-content:space-between;
-    padding:16px 28px;
-    max-width:1100px; margin:0 auto;
-  }
-  .logo{
-    font-weight:800;
-    font-size:19px;
-    letter-spacing:-0.01em;
-    display:flex; align-items:center; gap:8px;
-  }
-  .logo::before{
-    content:"";
-    width:10px; height:10px;
-    background:var(--blue);
-    border-radius:3px;
-    display:inline-block;
-  }
-  .nav-links{ display:flex; gap:30px; font-size:14.5px; color:var(--ink-muted); font-weight:500; }
-  .nav-links a{ text-decoration:none; }
-  .nav-links a:hover{ color:var(--ink); }
-  .btn{
-    display:inline-flex; align-items:center; gap:8px;
-    background:var(--blue);
-    color:#fff;
-    font-weight:600;
-    font-size:14.5px;
-    padding:11px 20px;
-    border-radius:8px;
-    text-decoration:none;
-    border:none;
-    cursor:pointer;
-    font-family:'Plus Jakarta Sans', sans-serif;
-    transition:transform .15s ease, background .15s ease;
-  }
-  .btn:hover{ background:var(--blue-deep); transform:translateY(-1px); }
-  .btn-ghost{ background:transparent; color:var(--ink); border:1px solid var(--line); }
-  .btn-ghost:hover{ background:var(--bg-soft); }
-  @media (max-width:760px){ .nav-links{display:none;} }
-
-  /* HERO */
-  .hero{ padding:76px 0 60px; }
-  .badge{
-    display:inline-flex; align-items:center; gap:8px;
-    background:var(--blue-tint); color:var(--blue-deep);
-    font-size:13px; font-weight:600;
-    padding:7px 14px; border-radius:100px;
-    margin-bottom:22px;
-  }
-  .badge::before{ content:"●"; font-size:8px; color:var(--green); }
-  h1{
-    font-size:clamp(34px, 5vw, 54px);
-    line-height:1.1;
-    font-weight:800;
-    margin:0 0 20px;
-    letter-spacing:-0.02em;
-    max-width:820px;
-    color:var(--ink);
-  }
-  h1 span{ color:var(--blue); }
-  .lede{ font-size:18.5px; color:var(--ink-muted); max-width:560px; margin:0 0 32px; }
-  .hero-cta{ display:flex; gap:14px; flex-wrap:wrap; margin-bottom:56px; }
-
-  /* DEMO WIDGET */
-  .demo{
-    background:var(--bg);
-    border:1px solid var(--line);
-    border-radius:16px;
-    overflow:hidden;
-    box-shadow:0 20px 40px -24px rgba(18,20,43,0.18);
-  }
-  .demo-bar{
-    display:flex; align-items:center; gap:12px; flex-wrap:wrap;
-    padding:16px 20px;
-    border-bottom:1px solid var(--line);
-    background:var(--bg-soft);
-  }
-  .demo-search{
-    flex:1; min-width:200px;
-    display:flex; align-items:center; gap:10px;
-    background:#fff;
-    border:1px solid var(--line);
-    border-radius:8px;
-    padding:10px 14px;
-    font-size:15px;
-    color:var(--ink);
-  }
-  .demo-search svg{ flex-shrink:0; color:var(--ink-muted); }
-  .toggle{ display:flex; background:#fff; border:1px solid var(--line); border-radius:8px; padding:3px; gap:2px; }
-  .toggle button{
-    font-size:13px; font-weight:600;
-    padding:8px 14px;
-    border:none; background:transparent; color:var(--ink-muted);
-    border-radius:6px; cursor:pointer;
-    transition:all .15s ease;
-    white-space:nowrap;
-    font-family:'Plus Jakarta Sans', sans-serif;
-  }
-  .toggle button.active{ background:var(--ink); color:#fff; }
-  .toggle button.active.good{ background:var(--green); }
-  .toggle button.active.bad{ background:var(--red-muted); }
-
-  .demo-body{ padding:24px; }
-  .demo-status{
-    font-size:13.5px; font-weight:600;
-    margin-bottom:16px;
-    padding:10px 14px;
-    border-radius:8px;
-    display:inline-block;
-  }
-  .demo-status.bad{ background:var(--red-tint); color:var(--red-muted); }
-  .demo-status.good{ background:var(--green-tint); color:var(--green); }
-
-  .results{ display:grid; gap:9px; }
-  .result{
-    display:flex; justify-content:space-between; align-items:center;
-    padding:14px 16px;
-    background:var(--bg-soft);
-    border:1px solid var(--line);
-    border-radius:8px;
-    font-size:14.5px;
-    opacity:0; transform:translateY(4px);
-    animation:rise .35s ease forwards;
-  }
-  .result:nth-child(1){animation-delay:.02s;}
-  .result:nth-child(2){animation-delay:.08s;}
-  .result:nth-child(3){animation-delay:.14s;}
-  .result:nth-child(4){animation-delay:.20s;}
-  @keyframes rise{ to{ opacity:1; transform:translateY(0); } }
-  .result .name{ color:var(--ink); }
-  .result .name mark{ background:var(--blue-tint); color:var(--blue-deep); font-weight:700; padding:1px 3px; border-radius:3px; }
-  .result .tag{ font-family:'IBM Plex Mono', monospace; font-size:11.5px; color:var(--ink-muted); }
-  .result.dim{ opacity:0.6 !important; }
-  .result.dim .tag{ color:var(--red-muted); }
-
-  /* BENEFITS strip */
-  .benefits{
-    display:grid; grid-template-columns:repeat(4,1fr); gap:1px;
-    background:var(--line); border:1px solid var(--line); border-radius:16px; overflow:hidden;
-    margin-top:56px;
-  }
-  @media (max-width:760px){ .benefits{ grid-template-columns:1fr 1fr; } }
-  .benefit{ background:#fff; padding:26px 22px; }
-  .benefit .icn{
-    width:36px; height:36px; border-radius:9px;
-    background:var(--blue-tint); color:var(--blue-deep);
-    display:flex; align-items:center; justify-content:center;
-    margin-bottom:14px;
-  }
-  .benefit h4{ font-size:15px; margin:0 0 6px; font-weight:700; }
-  .benefit p{ margin:0; font-size:13.5px; color:var(--ink-muted); }
-
-  /* SECTION generic */
-  section{ padding:80px 0; }
-  section.soft{ background:var(--bg-soft); }
-  .kicker{ font-size:13px; font-weight:700; color:var(--blue-deep); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:14px; }
-  h2{ font-size:clamp(26px,3.4vw,34px); font-weight:800; margin:0 0 18px; max-width:640px; letter-spacing:-0.01em; }
-  .section-lede{ color:var(--ink-muted); font-size:16.5px; max-width:600px; margin-bottom:44px; }
-
-  .problem-grid{ display:grid; grid-template-columns:1fr 1fr; gap:40px; margin-bottom:48px; }
-  @media (max-width:760px){ .problem-grid{ grid-template-columns:1fr; } }
-  .problem-grid p{ color:var(--ink-muted); font-size:15.5px; }
-  .problem-grid strong{ color:var(--ink); }
-
-  .stat-row{ display:grid; grid-template-columns:repeat(4,1fr); gap:24px; }
-  @media (max-width:760px){ .stat-row{ grid-template-columns:1fr 1fr; } }
-  .stat .num{ font-size:32px; font-weight:800; color:var(--blue); letter-spacing:-0.01em; }
-  .stat .lbl{ font-size:13.5px; color:var(--ink-muted); margin-top:4px; }
-
-  /* SERVICES */
-  .services{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
-  @media (max-width:900px){ .services{ grid-template-columns:1fr 1fr; } }
-  @media (max-width:560px){ .services{ grid-template-columns:1fr; } }
-  .service{ background:#fff; border:1px solid var(--line); border-radius:14px; padding:26px 22px; }
-  .service-num{
-    width:32px; height:32px; border-radius:8px;
-    background:var(--blue-tint); color:var(--blue-deep);
-    display:flex; align-items:center; justify-content:center;
-    font-weight:700; font-size:14px;
-    margin-bottom:16px;
-  }
-  .service h3{ font-size:16.5px; margin:0 0 8px; font-weight:700; }
-  .service p{ margin:0; color:var(--ink-muted); font-size:14px; }
-
-  /* ENGINE */
-  .engine{ display:grid; grid-template-columns:1.1fr 0.9fr; gap:48px; align-items:center; }
-  @media (max-width:760px){ .engine{ grid-template-columns:1fr; } }
-  .index-card{
-    background:var(--ink); color:#fff;
-    border-radius:14px; padding:24px;
-    font-family:'IBM Plex Mono', monospace; font-size:13px;
-  }
-  .index-card .line{ display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.1); }
-  .index-card .line:last-child{ border-bottom:none; }
-  .index-card .k{ color:rgba(255,255,255,0.55); }
-  .index-card .v{ color:#8FE3BC; }
-
-  /* ICP */
-  .icp-table{ width:100%; border-collapse:collapse; }
-  .icp-table td{ padding:16px 0; border-bottom:1px solid var(--line); font-size:15px; }
-  .icp-table td:first-child{ color:var(--ink-muted); width:220px; font-weight:600; font-size:13.5px; }
-
-  /* PRICING */
-  .price-hero{ display:flex; align-items:baseline; gap:14px; margin-bottom:36px; }
-  .price-hero .amount{ font-size:44px; font-weight:800; color:var(--blue); letter-spacing:-0.02em; }
-  .price-hero .unit{ color:var(--ink-muted); font-size:15px; }
-  .price-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
-  @media (max-width:760px){ .price-grid{ grid-template-columns:1fr 1fr; } }
-  .price-card{ background:#fff; border:1px solid var(--line); border-radius:12px; padding:20px; }
-  .price-card .t{ font-weight:700; font-size:14.5px; margin-bottom:8px; }
-  .price-card .d{ color:var(--ink-muted); font-size:13px; }
-
-  /* CTA */
-  .cta-section{ text-align:center; padding:88px 0; }
-  .cta-section h2, .cta-section .section-lede{ margin-left:auto; margin-right:auto; }
-  .cta-form{
-    max-width:480px; margin:0 auto;
-    display:flex; flex-direction:column; gap:12px;
-    text-align:left;
-    background:#fff; border:1px solid var(--line); border-radius:16px;
-    padding:28px;
-    box-shadow:0 20px 40px -28px rgba(18,20,43,0.16);
-  }
-  .cta-form label{ font-size:13px; font-weight:600; color:var(--ink-muted); }
-  .cta-form input, .cta-form textarea{
-    width:100%;
-    background:var(--bg-soft);
-    border:1px solid var(--line);
-    border-radius:8px;
-    padding:11px 13px;
-    color:var(--ink);
-    font-family:'Plus Jakarta Sans', sans-serif;
-    font-size:14.5px;
-  }
-  .cta-form input:focus, .cta-form textarea:focus{ outline:2px solid var(--blue); outline-offset:1px; }
-  .cta-form button{ margin-top:6px; justify-content:center; }
-  .form-note{ font-size:12.5px; color:var(--ink-muted); text-align:center; margin-top:14px; }
-  #form-feedback{ font-size:13.5px; font-weight:600; text-align:center; margin-top:4px; display:none; }
-
-  footer{ padding:40px 0; border-top:1px solid var(--line); }
-  .foot-grid{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:20px; align-items:center; }
-  .foot-legal{ color:var(--ink-muted); font-size:12.5px; line-height:1.7; max-width:520px; }
-
-  ::selection{ background:var(--blue-tint); color:var(--blue-deep); }
-  :focus-visible{ outline:2px solid var(--blue); outline-offset:2px; }
-  @media (prefers-reduced-motion: reduce){
-    *{ animation-duration:0.01ms !important; transition-duration:0.01ms !important; }
-  }
-</style>
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
 <header>
   <nav>
-    <div class="logo">HEURIX</div>
+    <a href="index.html" class="logo"><img src="logo.png" alt="Heurix"> HEURIX</a>
     <div class="nav-links">
       <a href="#probleme">Le problème</a>
       <a href="#offre">L'offre</a>
       <a href="#moteur">Le moteur</a>
       <a href="#tarifs">Tarifs</a>
+      <a href="blog.html">Blog</a>
     </div>
     <a href="#contact" class="btn">Réserver un audit</a>
   </nav>
@@ -366,11 +84,11 @@
   <div class="wrap">
     <div class="kicker">Le problème</div>
     <h2>La recherche interne est le point de conversion le moins surveillé d'un site marchand.</h2>
-    <div class="problem-grid">
+    <div class="problem-grid reveal">
       <p>Les moteurs livrés par défaut avec Shopify, PrestaShop ou WooCommerce indexent le catalogue, mais ne comprennent ni les fautes de frappe, ni les synonymes, ni l'ordre de pertinence attendu par un acheteur. <strong>Le visiteur voit une page vide ou des résultats hors sujet — et referme l'onglet.</strong></p>
       <p>Corriger cela ne demande pas une nouvelle plateforme e-commerce. Cela demande un audit précis de ce qui casse la pertinence, puis un paramétrage ciblé : synonymes métier, tolérance aux fautes, tri par disponibilité et par marge, filtres à facettes qui reflètent la façon dont vos clients cherchent réellement.</p>
     </div>
-    <div class="stat-row">
+    <div class="stat-row reveal">
       <div class="stat"><div class="num">850€</div><div class="lbl">TJM, facturation à la mission</div></div>
       <div class="stat"><div class="num">2-3 j</div><div class="lbl">durée type d'un audit</div></div>
       <div class="stat"><div class="num">48h</div><div class="lbl">délai de réponse à une demande</div></div>
@@ -384,7 +102,7 @@
     <div class="kicker">L'offre</div>
     <h2>Quatre étapes, dans l'ordre où elles ont du sens.</h2>
     <p class="section-lede">Chaque mission démarre par un diagnostic court. La suite dépend de ce qu'il révèle — pas d'un forfait standard imposé d'avance.</p>
-    <div class="services">
+    <div class="services reveal">
       <div class="service">
         <div class="service-num">01</div>
         <h3>Audit</h3>
@@ -413,7 +131,7 @@
   <div class="wrap">
     <div class="kicker">Le moteur</div>
     <h2>Un moteur de recherche et d'indexation développé en propre.</h2>
-    <div class="engine">
+    <div class="engine reveal">
       <div>
         <p class="section-lede" style="margin-bottom:20px;">Heurix s'appuie sur son propre moteur de recherche pour démontrer concrètement ce qu'une indexation bien pensée change sur des résultats réels — et, selon vos besoins, peut le proposer comme alternative aux solutions du marché (Algolia, Elasticsearch, Typesense) plutôt que de les reconfigurer.</p>
         <p class="section-lede" style="margin-bottom:0;">L'objectif n'est pas de vous vendre un outil de plus, mais de choisir la bonne réponse technique pour votre catalogue et votre budget — y compris quand la bonne réponse est de garder votre solution actuelle, mieux réglée.</p>
@@ -434,7 +152,7 @@
   <div class="wrap">
     <div class="kicker">Pour qui</div>
     <h2>Le profil de client où cette approche fonctionne le mieux.</h2>
-    <table class="icp-table">
+    <table class="icp-table reveal">
       <tr><td>Taille</td><td>PME e-commerce, environ 5 à 50 salariés</td></tr>
       <tr><td>Chiffre d'affaires</td><td>500 000 € à 10 M€ de CA e-commerce annuel</td></tr>
       <tr><td>Signal</td><td>Moteur natif jamais reconfiguré, ou retours clients sur des résultats de recherche peu pertinents</td></tr>
@@ -451,11 +169,42 @@
       <span class="amount">850&nbsp;€</span>
       <span class="unit">HT / jour — devis établi selon le périmètre</span>
     </div>
-    <div class="price-grid">
+    <div class="price-grid reveal">
       <div class="price-card"><div class="t">Audit</div><div class="d">2 à 3 jours<br>≈ 1 700 – 2 550 € HT</div></div>
       <div class="price-card"><div class="t">Audit + intégration</div><div class="d">5 à 8 jours<br>≈ 4 250 – 6 800 € HT</div></div>
       <div class="price-card"><div class="t">Formation</div><div class="d">1 à 2 jours<br>≈ 850 – 1 700 € HT</div></div>
       <div class="price-card"><div class="t">Optimisation continue</div><div class="d">Forfait mensuel<br>ou journées ponctuelles</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="blog">
+  <div class="wrap">
+    <div class="kicker">Blog</div>
+    <h2>Notes sur la recherche et le e-commerce.</h2>
+    <p class="section-lede">Des cas concrets et des observations techniques, publiés chaque mois.</p>
+    <div class="blog-grid reveal">
+      <a class="blog-card" href="blog-moteur-natif-ne-suffit-pas.html">
+        <div class="blog-date mono">Juillet 2026</div>
+        <h3>Pourquoi le moteur natif de votre plateforme ne suffit pas</h3>
+        <p>Les trois angles morts les plus fréquents des moteurs livrés par défaut, et comment les repérer en cinq minutes.</p>
+        <span class="blog-link">Lire l'article →</span>
+      </a>
+      <a class="blog-card" href="blog-5-signes-recherche-vous-coute-des-ventes.html">
+        <div class="blog-date mono">Juillet 2026</div>
+        <h3>5 signes que votre moteur de recherche vous coûte des ventes</h3>
+        <p>Des symptômes concrets à vérifier sur votre propre site, sans outil technique, en moins de dix minutes.</p>
+        <span class="blog-link">Lire l'article →</span>
+      </a>
+      <a class="blog-card" href="blog-glossaire-search-ecommerce.html">
+        <div class="blog-date mono">Juillet 2026</div>
+        <h3>Le glossaire du search e-commerce, sans jargon</h3>
+        <p>Synonymes, facettes, tolérance aux fautes : ce que ces termes veulent dire concrètement pour votre catalogue.</p>
+        <span class="blog-link">Lire l'article →</span>
+      </a>
+    </div>
+    <div class="blog-cta">
+      <a href="blog.html" class="btn btn-ghost">Voir tous les articles</a>
     </div>
   </div>
 </section>
@@ -478,13 +227,18 @@
       <button type="submit" class="btn" id="submit-btn">Envoyer la demande</button>
       <div id="form-feedback"></div>
     </form>
+    <p class="contact-direct">Vous préférez écrire directement ? <a href="mailto:contact@heurix.fr">contact@heurix.fr</a></p>
     <p class="form-note">Formulaire branché via Formspree — voir les instructions de configuration dans les commentaires du code source.</p>
   </div>
 </section>
 
 <footer>
   <div class="wrap foot-grid">
-    <div class="logo" style="font-size:15px;">HEURIX</div>
+    <a href="index.html" class="logo" style="font-size:15px;"><img src="logo.png" alt="Heurix" style="height:22px;width:22px;"> HEURIX</a>
+    <div class="foot-links">
+      <a href="blog.html">Blog</a>
+      <a href="mailto:contact@heurix.fr">contact@heurix.fr</a>
+    </div>
     <div class="foot-legal">
       Heurix — Entreprise individuelle (micro-entreprise). SIRET [à compléter]. Conseil en systèmes et logiciels informatiques.<br>
       © <span id="year"></span> Heurix. Tous droits réservés.
@@ -535,13 +289,31 @@
   }
   setDemo('bad');
 
+  // Scroll reveal
+  const revealEls = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    revealEls.forEach(el => io.observe(el));
+  } else {
+    revealEls.forEach(el => el.classList.add('in'));
+  }
+
   /*
     BRANCHEMENT DU FORMULAIRE — FORMSPREE (gratuit jusqu'à 50 envois/mois)
     1. Créez un compte sur https://formspree.io (gratuit).
     2. Créez un formulaire, Formspree vous donne une URL du type
        https://formspree.io/f/xxxxabcd
     3. Remplacez FORMSPREE_ENDPOINT ci-dessous par cette URL.
-    4. C'est tout : les envois arriveront dans votre boîte mail associée à Formspree.
+    4. Dans les réglages du formulaire sur Formspree, ajoutez contact@heurix.fr
+       comme destinataire (email de réception) si vous voulez recevoir les
+       demandes directement sur cette adresse plutôt que sur l'email du compte.
   */
   const FORMSPREE_ENDPOINT = "https://formspree.io/f/VOTRE_ID_FORMSPREE";
 
@@ -576,12 +348,12 @@
         form.reset();
       } else {
         feedback.style.color = 'var(--red-muted)';
-        feedback.textContent = "Une erreur est survenue — réessayez ou écrivez-nous directement.";
+        feedback.textContent = "Une erreur est survenue — réessayez ou écrivez-nous directement à contact@heurix.fr.";
       }
     } catch (err) {
       feedback.style.display = 'block';
       feedback.style.color = 'var(--red-muted)';
-      feedback.textContent = "Une erreur est survenue — réessayez ou écrivez-nous directement.";
+      feedback.textContent = "Une erreur est survenue — réessayez ou écrivez-nous directement à contact@heurix.fr.";
     } finally {
       submitBtn.disabled = false;
       submitBtn.textContent = "Envoyer la demande";
