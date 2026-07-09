@@ -152,13 +152,6 @@
         <p>Sur un catalogue produit grand public, la recherche par mots-clés suffit souvent. Sur un catalogue technique, les références suivent des formats structurés — codes produits, normes, dimensions — qu'une simple correspondance textuelle ne sait pas interpréter.</p>
         <p>Le moteur Heurix s'appuie sur des expressions régulières (regex) pour reconnaître ces formats : un client qui tape <code>M8x20</code>, <code>DIN933</code> ou une référence partielle retrouve le bon produit, même sans connaître la nomenclature exacte du catalogue. C'est ce niveau de recherche qui fait la différence sur les secteurs à forte technicité.</p>
       </div>
-      <div class="regex-demo mono">
-        <div class="regex-line"><span class="regex-label">requête</span><span class="regex-val">"m8x20 inox"</span></div>
-        <div class="regex-arrow">↓ pattern reconnu</div>
-        <div class="regex-pattern">/^(M\d{1,2})[x×](\d{1,3})\b/i</div>
-        <div class="regex-arrow">↓ résultat</div>
-        <div class="regex-line"><span class="regex-label">match</span><span class="regex-val good">Vis M8 × 20mm — inox A2, DIN 933</span></div>
-      </div>
     </div>
 
     <div class="verticals reveal">
@@ -166,18 +159,22 @@
       <p class="section-lede" style="margin-bottom:28px;">Plus un catalogue est volumineux et technique, plus le gain d'un moteur bien réglé est important — parce que le moteur natif décroche exactement là où le besoin de filtrage est le plus fin.</p>
       <div class="vertical-grid">
         <div class="vertical-card">
+          <div class="icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg></div>
           <h4>Outillage &amp; quincaillerie</h4>
           <p>Dizaines de milliers de références, codes produits normés (DIN, ISO), besoin de filtrer par dimension, matière, compatibilité.</p>
         </div>
         <div class="vertical-card">
+          <div class="icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></div>
           <h4>Pièces détachées &amp; industrie</h4>
           <p>Recherche par référence constructeur ou équivalence, tolérance aux formats de codes multiples selon le fournisseur.</p>
         </div>
         <div class="vertical-card">
+          <div class="icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6z"/></svg></div>
           <h4>Électrique &amp; électronique</h4>
           <p>Caractéristiques techniques précises (voltage, ampérage, normes), catalogues qui évoluent en continu.</p>
         </div>
         <div class="vertical-card">
+          <div class="icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21V9l9-6 9 6v12"/><path d="M9 21v-6h6v6"/></svg></div>
           <h4>Équipement pro &amp; BTP</h4>
           <p>Gros volumes, acheteurs professionnels qui cherchent par référence exacte plus que par mot-clé descriptif.</p>
         </div>
@@ -189,8 +186,8 @@
 <section>
   <div class="wrap">
     <div class="kicker">Pour qui</div>
-    <h2>Le profil de client où cette approche fonctionne le mieux.</h2>
-    <p class="section-lede">Heurix cible des PME de belle taille et des acteurs mid-market pas encore équipés d'un moteur de recherche dédié — pas les grands comptes déjà sur Algolia ou Elasticsearch, pas les micro-catalogues où la recherche native suffit.</p>
+    <h2>Vous avez d'excellents produits. Vos clients doivent pouvoir les trouver.</h2>
+    <p class="section-lede">Heurix s'adresse à toute PME ou entreprise mid-market dont le catalogue a grandi plus vite que le moteur censé le rendre accessible. Si vos équipes savent que le bon produit existe en stock mais que vos clients ne le trouvent pas, c'est du chiffre d'affaires qui vous échappe chaque jour — sans qu'il soit nécessaire de monter une équipe data en interne pour le récupérer.</p>
     <div class="icp-grid reveal">
       <div class="icp-card">
         <div class="icp-label mono">Taille</div>
@@ -227,76 +224,91 @@
     <p class="section-lede">Ajustez les hypothèses à votre catalogue. Le calcul se fait en direct — ces chiffres sont des ordres de grandeur à affiner ensemble lors de l'audit, pas une promesse.</p>
 
     <div class="roi-simulator reveal">
+
       <div class="roi-inputs">
-        <h4>Votre situation actuelle</h4>
-        <div class="roi-field">
-          <label for="roi-sessions">Sessions / mois</label>
-          <input type="number" id="roi-sessions" value="50000" min="0" step="1000">
+        <div class="roi-inputs-col">
+          <h4>Votre situation actuelle</h4>
+          <div class="roi-field">
+            <label for="roi-sessions">Sessions / mois</label>
+            <input type="number" id="roi-sessions" value="50000" min="0" step="1000">
+          </div>
+          <div class="roi-field">
+            <label for="roi-conv">Taux de conversion actuel (%)</label>
+            <input type="number" id="roi-conv" value="1.5" min="0" step="0.1">
+          </div>
+          <div class="roi-field">
+            <label for="roi-aov">Panier moyen (€)</label>
+            <input type="number" id="roi-aov" value="90" min="0" step="1">
+          </div>
+          <div class="roi-field">
+            <label for="roi-margin">Marge (%)</label>
+            <input type="number" id="roi-margin" value="30" min="0" max="100" step="1">
+          </div>
         </div>
-        <div class="roi-field">
-          <label for="roi-conv">Taux de conversion actuel (%)</label>
-          <input type="number" id="roi-conv" value="1.5" min="0" step="0.1">
-        </div>
-        <div class="roi-field">
-          <label for="roi-aov">Panier moyen (€)</label>
-          <input type="number" id="roi-aov" value="90" min="0" step="1">
-        </div>
-        <div class="roi-field">
-          <label for="roi-margin">Marge (%)</label>
-          <input type="number" id="roi-margin" value="30" min="0" max="100" step="1">
-        </div>
-
-        <h4 style="margin-top:28px;">Hypothèses d'impact Heurix</h4>
-        <div class="roi-field roi-slider">
-          <label for="roi-convgain">Gain de conversion attendu <span id="roi-convgain-val" class="mono">5%</span></label>
-          <input type="range" id="roi-convgain" value="5" min="3" max="10" step="0.5">
-          <div class="roi-range-hint">3% hypothèse basse — 10% hypothèse haute</div>
-        </div>
-        <div class="roi-field roi-slider">
-          <label for="roi-aovgain">Gain sur panier moyen (facettes / upsell) <span id="roi-aovgain-val" class="mono">3%</span></label>
-          <input type="range" id="roi-aovgain" value="3" min="0" max="13" step="0.5">
-          <div class="roi-range-hint">0% hypothèse basse — 13% moyenne marché</div>
-        </div>
-        <div class="roi-field">
-          <label for="roi-cost">Coût de la mission (€)</label>
-          <input type="number" id="roi-cost" value="5500" min="1" step="100">
-        </div>
-      </div>
-
-      <div class="roi-matrix">
-        <div class="roi-tile">
-          <div class="roi-tile-label">CA annuel actuel</div>
-          <div class="roi-tile-value mono" id="roi-out-before">—</div>
-        </div>
-        <div class="roi-tile">
-          <div class="roi-tile-label">CA annuel estimé après optimisation</div>
-          <div class="roi-tile-value mono" id="roi-out-after">—</div>
-        </div>
-        <div class="roi-tile highlight">
-          <div class="roi-tile-label">Gain de CA annuel</div>
-          <div class="roi-tile-value mono" id="roi-out-gain">—</div>
-        </div>
-        <div class="roi-tile">
-          <div class="roi-tile-label">Gain de marge annuel</div>
-          <div class="roi-tile-value mono" id="roi-out-margin">—</div>
-        </div>
-        <div class="roi-tile">
-          <div class="roi-tile-label">Coût de la mission</div>
-          <div class="roi-tile-value mono" id="roi-out-cost">—</div>
-        </div>
-        <div class="roi-tile highlight">
-          <div class="roi-tile-label">Retour sur investissement</div>
-          <div class="roi-tile-value mono" id="roi-out-roi">—</div>
-        </div>
-        <div class="roi-tile">
-          <div class="roi-tile-label">Gain net (marge − coût)</div>
-          <div class="roi-tile-value mono" id="roi-out-net">—</div>
-        </div>
-        <div class="roi-tile">
-          <div class="roi-tile-label">Mission rentabilisée en</div>
-          <div class="roi-tile-value mono" id="roi-out-payback">—</div>
+        <div class="roi-inputs-col">
+          <h4>Hypothèses d'impact Heurix</h4>
+          <div class="roi-field roi-slider">
+            <label for="roi-convgain">Gain de conversion attendu <span id="roi-convgain-val" class="mono">5%</span></label>
+            <input type="range" id="roi-convgain" value="5" min="3" max="10" step="0.5">
+            <div class="roi-range-hint">3% hypothèse basse — 10% hypothèse haute</div>
+          </div>
+          <div class="roi-field roi-slider">
+            <label for="roi-aovgain">Gain sur panier moyen (facettes / upsell) <span id="roi-aovgain-val" class="mono">3%</span></label>
+            <input type="range" id="roi-aovgain" value="3" min="0" max="13" step="0.5">
+            <div class="roi-range-hint">0% hypothèse basse — 13% moyenne marché</div>
+          </div>
+          <div class="roi-field">
+            <label for="roi-cost">Coût de la mission (€)</label>
+            <input type="number" id="roi-cost" value="5500" min="1" step="100">
+          </div>
         </div>
       </div>
+
+      <div class="roi-report">
+        <div class="roi-report-title">Votre gain potentiel estimé</div>
+        <div class="roi-highlights">
+          <div class="roi-highlight-tile">
+            <div class="icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6z"/></svg></div>
+            <div class="roi-highlight-value mono" id="roi-out-gain">—</div>
+            <div class="roi-highlight-label">Gain de CA annuel</div>
+          </div>
+          <div class="roi-highlight-tile">
+            <div class="icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg></div>
+            <div class="roi-highlight-value mono" id="roi-out-margin">—</div>
+            <div class="roi-highlight-label">Gain de marge annuel</div>
+          </div>
+          <div class="roi-highlight-tile">
+            <div class="icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></div>
+            <div class="roi-highlight-value mono" id="roi-out-roi">—</div>
+            <div class="roi-highlight-label">Retour sur investissement</div>
+          </div>
+          <div class="roi-highlight-tile">
+            <div class="icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0116 0v1"/></svg></div>
+            <div class="roi-highlight-value mono" id="roi-out-payback">—</div>
+            <div class="roi-highlight-label">Mission rentabilisée en</div>
+          </div>
+        </div>
+        <div class="roi-secondary">
+          <div class="roi-secondary-item">
+            <div class="roi-secondary-label">CA annuel actuel</div>
+            <div class="roi-secondary-value mono" id="roi-out-before">—</div>
+          </div>
+          <div class="roi-secondary-item">
+            <div class="roi-secondary-label">CA annuel estimé après optimisation</div>
+            <div class="roi-secondary-value mono" id="roi-out-after">—</div>
+          </div>
+          <div class="roi-secondary-item">
+            <div class="roi-secondary-label">Coût de la mission</div>
+            <div class="roi-secondary-value mono" id="roi-out-cost">—</div>
+          </div>
+          <div class="roi-secondary-item">
+            <div class="roi-secondary-label">Gain net (marge − coût)</div>
+            <div class="roi-secondary-value mono" id="roi-out-net">—</div>
+          </div>
+        </div>
+        <a href="#contact" class="btn" style="margin-top:22px;">Recevoir un devis basé sur ces chiffres</a>
+      </div>
+
     </div>
     <p class="form-note" style="margin-top:20px;">Coût indicatif : audit seul 1 700 – 2 550 € HT · audit + intégration 4 250 – 6 800 € HT. Chiffrage définitif sur devis.</p>
   </div>
