@@ -64,12 +64,21 @@
       <a href="#offre" class="btn btn-ghost">See the offer</a>
     </div>
 
-    <div class="demo-video hero-video">
-      <video autoplay muted loop playsinline poster="../heurix-demo-poster.jpg" aria-label="Demo: searching for an M8x20 screw with a native engine, then with Heurix">
-        <source src="../heurix-demo-outillage.webm" type="video/webm">
-        <source src="../heurix-demo-outillage.mp4" type="video/mp4">
-      </video>
-      <div class="demo-video-caption">Hardware sector example: searching "M8x20 stainless"</div>
+    <div class="demo">
+      <div class="demo-bar">
+        <div class="demo-search">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <span id="query-text">turtlneck wool sweater</span>
+        </div>
+        <div class="toggle">
+          <button id="btn-bad" class="active bad" onclick="setDemo('bad')">Native engine</button>
+          <button id="btn-good" class="good" onclick="setDemo('good')">With Heurix</button>
+        </div>
+      </div>
+      <div class="demo-body">
+        <div id="demo-status" class="demo-status bad">0 exact matches — the typo breaks the search</div>
+        <div id="results" class="results"></div>
+      </div>
     </div>
 
     <div class="benefits">
@@ -209,21 +218,12 @@
         <p>Most engines — including well-known solutions like Algolia or Elasticsearch when poorly configured — treat a product reference like any other word. Two different formats for the same reference (<code>M8x20</code> and <code>M8 x 20</code>) are then seen as two unrelated things. On a technical catalog, that's where a meaningful share of lost sales happens — not the site's design, but the engine's ability to understand what the buyer actually typed.</p>
         <p>Heurix configures custom regular expression (regex) rules for your catalog: they recognize the <em>structure</em> of a reference — family, dimension, variant — rather than comparing characters one by one. A buyer typing a partial or slightly mis-formatted reference still finds the right product. This kind of fine-tuned configuration work is something few providers offer, because it requires understanding both your catalog and how your customers actually search.</p>
       </div>
-      <div class="demo">
-        <div class="demo-bar">
-          <div class="demo-search">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-            <span id="query-text">turtlneck wool sweater</span>
-          </div>
-          <div class="toggle">
-            <button id="btn-bad" class="active bad" onclick="setDemo('bad')">Native engine</button>
-            <button id="btn-good" class="good" onclick="setDemo('good')">With Heurix</button>
-          </div>
-        </div>
-        <div class="demo-body">
-          <div id="demo-status" class="demo-status bad">0 exact matches — the typo breaks the search</div>
-          <div id="results" class="results"></div>
-        </div>
+      <div class="demo-video">
+        <video autoplay muted loop playsinline poster="../heurix-demo-poster.jpg" aria-label="Demo: searching for an M8x20 screw with a native engine, then with Heurix">
+          <source src="../heurix-demo-outillage.webm" type="video/webm">
+          <source src="../heurix-demo-outillage.mp4" type="video/mp4">
+        </video>
+        <div class="demo-video-caption">Hardware sector example: searching "M8x20 stainless"</div>
       </div>
     </div>
 
@@ -350,6 +350,25 @@
     <div class="kicker">Simulator — Professional Services</div>
     <h2>Estimate the leverage of a better-tuned search engine.</h2>
     <p class="section-lede">Internal search often accounts for only 10 to 20% of a site's traffic — but for many e-commerce businesses, it drives 30 to 50% of revenue. It's the site's most valuable segment, and the least often optimized. Adjust the sliders to your situation: the calculation updates live.</p>
+
+    <div class="copilot reveal">
+      <div class="copilot-label">
+        <span class="copilot-icn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 9.5 8.5 3 11l6.5 2.5L12 20l2.5-6.5L21 11l-6.5-2.5z"/></svg></span>
+        Sector benchmarks — to help calibrate your sliders
+      </div>
+      <div class="copilot-pills" role="tablist">
+        <button type="button" class="copilot-pill active" data-industry="outillage">Tools &amp; Industry</button>
+        <button type="button" class="copilot-pill" data-industry="mode">Fashion &amp; Retail</button>
+        <button type="button" class="copilot-pill" data-industry="sport">Sport &amp; Outdoor</button>
+        <button type="button" class="copilot-pill" data-industry="maison">Home &amp; Living</button>
+      </div>
+      <div class="copilot-bubble">
+        <div class="copilot-bubble-tail"></div>
+        <ul id="copilot-points" class="copilot-points"></ul>
+        <div id="copilot-source" class="copilot-source"></div>
+      </div>
+      <p class="copilot-disclaimer">Public examples observed on comparable sites — not a guaranteed average or a promised result for your catalog.</p>
+    </div>
 
     <div class="roi-simulator reveal">
 
@@ -644,6 +663,55 @@
   } else {
     revealEls.forEach(el => el.classList.add('in'));
   }
+
+  // Sector copilot — static data, not a chatbot
+  const COPILOT_DATA = {
+    outillage: {
+      points: [
+        "Berner (fastening &amp; industrial tools) — <strong>+20%</strong> increase in search usage",
+        "Jula (tools / DIY retail) — <strong>+30%</strong> conversion rate increase",
+        "Brico Dépôt (DIY) — <strong>69%</strong> of revenue generated by internal search"
+      ],
+      source: "Sources: public case studies, FactFinder &amp; Sensefuel, 2026"
+    },
+    mode: {
+      points: [
+        "Ulla Popken (fashion) — <strong>+42%</strong> conversion rate increase",
+        "Rouge Gorge (lingerie) — <strong>+42%</strong> search conversion increase in one year",
+        "Yves Rocher (beauty) — <strong>+28%</strong> increase in search usage"
+      ],
+      source: "Sources: public case studies, FactFinder &amp; Sensefuel, 2026"
+    },
+    sport: {
+      points: [
+        "Bergfreunde (outdoor) — <strong>+70%</strong> revenue per session",
+        "Kuebler Sport — <strong>+35%</strong> conversion rate increase",
+        "Fitstore24 (fitness) — <strong>+55.6%</strong> average order value on mobile"
+      ],
+      source: "Source: public case study, FactFinder, 2026"
+    },
+    maison: {
+      points: [
+        "Damart (apparel / home) — <strong>+368%</strong> search conversion increase in one year",
+        "Tischwelt (tableware) — <strong>+13%</strong> average order value"
+      ],
+      source: "Sources: public case studies, Sensefuel &amp; FactFinder, 2026"
+    }
+  };
+
+  function setCopilotIndustry(key){
+    const data = COPILOT_DATA[key];
+    if (!data) return;
+    document.querySelectorAll('.copilot-pill').forEach(p => p.classList.toggle('active', p.dataset.industry === key));
+    const pointsEl = document.getElementById('copilot-points');
+    pointsEl.innerHTML = data.points.map(p => `<li>${p}</li>`).join('');
+    document.getElementById('copilot-source').innerHTML = data.source;
+  }
+
+  document.querySelectorAll('.copilot-pill').forEach(pill => {
+    pill.addEventListener('click', () => setCopilotIndustry(pill.dataset.industry));
+  });
+  setCopilotIndustry('outillage');
 
   // ROI simulator
   function formatEuro(value){
