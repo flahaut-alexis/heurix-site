@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Heurix — Conseil en moteurs de recherche pour le e-commerce</title>
 <meta name="description" content="Audit, intégration et optimisation de moteurs de recherche pour sites e-commerce. Un moteur mal réglé coûte des ventes : Heurix le corrige.">
+<link rel="alternate" hreflang="fr" href="https://heurix.fr/">
+<link rel="alternate" hreflang="en" href="https://heurix.fr/en/index.html">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Heurix — Conseil en moteurs de recherche pour le e-commerce">
 <meta property="og:description" content="Audit, intégration et optimisation de moteurs de recherche pour sites e-commerce. Un moteur mal réglé coûte des ventes : Heurix le corrige.">
@@ -31,9 +33,26 @@
       <a href="#tarifs">Simulateur ROI</a>
       <a href="blog.html">Blog</a>
     </div>
+    <a href="en/index.html" class="lang-switch">EN</a>
+    <button id="heurix-search-btn" class="search-btn" aria-label="Rechercher sur le site" type="button">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    </button>
     <a href="#contact" class="btn">Réserver un audit</a>
   </nav>
 </header>
+<div id="heurix-search-modal" class="search-modal">
+  <div id="heurix-search-backdrop" class="search-backdrop" data-search-close></div>
+  <div class="search-panel">
+    <div class="search-panel-head">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input id="heurix-search-input" type="text" placeholder="Rechercher sur heurix.fr..." autocomplete="off">
+      <button class="search-close" data-search-close type="button">Échap</button>
+    </div>
+    <div id="heurix-search-results" class="search-results"></div>
+    <p id="heurix-search-empty" class="search-empty" hidden>Aucun résultat pour cette recherche. Essayez un autre terme.</p>
+  </div>
+</div>
+
 
 <section class="hero">
   <div class="wrap">
@@ -132,26 +151,43 @@
     <div class="kicker">L'offre</div>
     <h2>Quatre étapes, dans l'ordre où elles ont du sens.</h2>
     <p class="section-lede">Chaque mission démarre par un diagnostic court. La suite dépend de ce qu'il révèle — pas d'un forfait standard imposé d'avance.</p>
-    <div class="services reveal">
+    <div class="services-flow reveal">
       <div class="service">
-        <div class="service-num">01</div>
-        <h3>Audit</h3>
+        <div class="service-icn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+        <div class="service-num">01 · Audit</div>
+        <h3>Diagnostic</h3>
         <p>Évaluation de la pertinence des résultats actuels, des points de friction et du potentiel de gain. Recommandations priorisées.</p>
+        <div class="service-duration mono">2-3 jours</div>
       </div>
+
+      <div class="service-arrow" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
+
       <div class="service">
-        <div class="service-num">02</div>
-        <h3>Intégration</h3>
+        <div class="service-icn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"/><circle cx="9" cy="6" r="2"/><line x1="4" y1="12" x2="20" y2="12"/><circle cx="15" cy="12" r="2"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="9" cy="18" r="2"/></svg></div>
+        <div class="service-num">02 · Intégration</div>
+        <h3>Configuration</h3>
         <p>Indexation du catalogue, filtres à facettes, tri, synonymes métier, tolérance aux fautes de frappe.</p>
+        <div class="service-duration mono">Selon périmètre</div>
       </div>
+
+      <div class="service-arrow" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
+
       <div class="service">
-        <div class="service-num">03</div>
-        <h3>Formation</h3>
+        <div class="service-icn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 2 8l10 5 10-5-10-5z"/><path d="M6 10v5c0 1.5 2.5 3 6 3s6-1.5 6-3v-5"/></svg></div>
+        <div class="service-num">03 · Formation</div>
+        <h3>Autonomie</h3>
         <p>Montée en compétence de vos équipes sur l'administration et l'ajustement du moteur au quotidien.</p>
+        <div class="service-duration mono">1-2 jours</div>
       </div>
+
+      <div class="service-arrow" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
+
       <div class="service">
-        <div class="service-num">04</div>
+        <div class="service-icn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg></div>
+        <div class="service-num">04 · Suivi</div>
         <h3>Optimisation continue</h3>
         <p>Suivi de performance dans la durée, ajustements réguliers à mesure que catalogue et usages évoluent.</p>
+        <div class="service-duration mono">En continu</div>
       </div>
     </div>
   </div>
@@ -181,6 +217,13 @@
         <h3>L'avantage des expressions régulières sur les catalogues techniques</h3>
         <p>Sur un catalogue produit grand public, la recherche par mots-clés suffit souvent. Sur un catalogue technique, les références suivent des formats structurés — codes produits, normes, dimensions — qu'une simple correspondance textuelle ne sait pas interpréter.</p>
         <p>Le moteur Heurix s'appuie sur des expressions régulières (regex) pour reconnaître ces formats : un client qui tape <code>M8x20</code>, <code>DIN933</code> ou une référence partielle retrouve le bon produit, même sans connaître la nomenclature exacte du catalogue. C'est ce niveau de recherche qui fait la différence sur les secteurs à forte technicité.</p>
+      </div>
+      <div class="demo-video">
+        <video autoplay muted loop playsinline poster="heurix-demo-poster.jpg" aria-label="Démonstration : recherche d'une vis M8x20 avec un moteur natif, puis avec Heurix">
+          <source src="heurix-demo-outillage.webm" type="video/webm">
+          <source src="heurix-demo-outillage.mp4" type="video/mp4">
+        </video>
+        <div class="demo-video-caption">Exemple secteur outillage : recherche « M8x20 inox »</div>
       </div>
     </div>
 
@@ -213,11 +256,11 @@
   </div>
 </section>
 
-<section>
+<section id="pourqui">
   <div class="wrap">
     <div class="kicker">Pour qui</div>
-    <h2>Vous avez d'excellents produits. Vos clients doivent pouvoir les trouver.</h2>
-    <p class="section-lede">Heurix s'adresse à toute PME ou entreprise mid-market dont le catalogue a grandi plus vite que le moteur censé le rendre accessible. Si vos équipes savent que le bon produit existe en stock mais que vos clients ne le trouvent pas, c'est du chiffre d'affaires qui vous échappe chaque jour — sans qu'il soit nécessaire de monter une équipe data en interne pour le récupérer.</p>
+    <h2>Heurix est-il fait pour vous ?</h2>
+    <p class="section-lede">Vous êtes une PME de belle taille ou une entreprise mid-market, votre catalogue est devenu trop technique et trop volumineux pour le moteur natif de votre plateforme, et vous n'avez pas encore de solution de recherche dédiée ? Heurix est fait pour vous.</p>
     <div class="icp-grid reveal">
       <div class="icp-card">
         <div class="icp-label mono">Taille</div>
@@ -385,6 +428,58 @@
   </div>
 </section>
 
+<section id="faq" class="soft">
+  <div class="wrap">
+    <div class="kicker">Questions fréquentes</div>
+    <h2>Ce qu'on me demande le plus souvent.</h2>
+    <div class="faq-list reveal">
+
+      <details class="faq-item">
+        <summary>Combien coûte une mission ?</summary>
+        <div class="faq-answer">
+          <p>Facturation à la journée, 850 € HT/jour, sur devis établi selon le périmètre exact. À titre indicatif : un audit seul se règle en 2 à 3 jours, une mission complète (audit + intégration) coûte entre 4 250 € et 8 500 € HT selon la taille du catalogue. Utilisez le <a href="#tarifs">simulateur ROI</a> ci-dessus pour estimer le gain attendu face à ce coût.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>Et si les résultats ne sont pas au rendez-vous ?</summary>
+        <div class="faq-answer">
+          <p>Aucun consultant ne peut garantir un pourcentage de gain à l'avance — les chiffres du simulateur sont des ordres de grandeur, pas une promesse contractuelle. Ce qui limite le risque de votre côté : pas d'abonnement, pas d'engagement dans la durée. L'audit initial (2 à 3 jours) vous donne un diagnostic concret et chiffrable avant de décider d'aller plus loin. Si le diagnostic ne révèle pas de gain significatif, vous le saurez dès cette étape, pour un coût limité.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>Dois-je changer de plateforme e-commerce ?</summary>
+        <div class="faq-answer">
+          <p>Non. Heurix intervient sur la couche recherche de votre site existant (Shopify, PrestaShop, WooCommerce, Magento ou autre), sans toucher au reste de votre architecture. C'est justement l'alternative à un projet de refonte complète : dans la grande majorité des cas, le problème se règle en reconfigurant ou en branchant un moteur de recherche, pas en changeant de CMS.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>Moteur propriétaire Heurix ou Algolia / Elasticsearch / Typesense — comment choisissez-vous ?</summary>
+        <div class="faq-answer">
+          <p>Le choix se fait pendant l'audit, en fonction de votre catalogue, de votre budget et de ce que vous avez déjà en place. Si votre solution actuelle est simplement mal configurée, on la corrige — inutile de payer un nouvel outil. Si aucune solution du marché ne convient à votre cas (catalogue très technique, besoin de regex sur mesure, budget serré), le moteur propriétaire Heurix devient une option pertinente. L'objectif n'est jamais de vous vendre un outil par défaut.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>Combien de temps dure une mission ?</summary>
+        <div class="faq-answer">
+          <p>L'audit initial prend 2 à 3 jours. L'intégration qui suit dépend du périmètre retenu à l'issue du diagnostic. Dans tous les cas, on reste loin d'un projet IT de plusieurs mois — c'est un principe de fonctionnement, pas seulement un argument commercial.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>Travaillez-vous avec mon secteur d'activité ?</summary>
+        <div class="faq-answer">
+          <p>Heurix est particulièrement pertinent sur les catalogues volumineux et techniques — outillage, pièces détachées, électrique/électronique, équipement pro/BTP notamment (voir <a href="#moteur">la section Le moteur</a> pour le détail). Le principe s'applique à tout site avec un moteur de recherche interne mal exploité, quel que soit le secteur ; ces catalogues techniques sont simplement les cas où le gain est le plus net.</p>
+        </div>
+      </details>
+
+    </div>
+  </div>
+</section>
+
 <section class="cta-section" id="contact">
   <div class="wrap">
     <div class="kicker">Devis sur demande</div>
@@ -422,8 +517,10 @@
     <a href="index.html" class="logo" style="font-size:15px;"><img src="logo.png" alt="Heurix" style="height:22px;width:22px;"> HEURIX</a>
     <div class="foot-links">
       <a href="blog.html">Blog</a>
+      <a href="#faq">FAQ</a>
       <a href="mentions-legales.html">Mentions légales</a>
       <a href="mailto:contact@heurix.fr">contact@heurix.fr</a>
+      <a href="https://www.linkedin.com/company/heurix-search/" target="_blank" rel="noopener">LinkedIn</a>
     </div>
     <div class="foot-legal">
       Heurix — Entreprise individuelle (micro-entreprise). SIRET [à compléter]. Conseil en systèmes et logiciels informatiques.<br>
@@ -787,5 +884,6 @@
   });
 </script>
 
+<script src="search.js"></script>
 </body>
 </html>

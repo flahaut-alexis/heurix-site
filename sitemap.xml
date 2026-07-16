@@ -1,13 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://heurix.fr/index.html</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
-  <url><loc>https://heurix.fr/blog.html</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://heurix.fr/blog/recherche-reference-sku-b2b.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://heurix.fr/blog/limites-moteurs-natifs-gros-catalogue.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://heurix.fr/blog/facettes-b2b-multi-attributs.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://heurix.fr/blog/synonymes-jargon-industriel.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://heurix.fr/blog/impact-ebitda-recherche-interne.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://heurix.fr/blog/moteur-natif-ne-suffit-pas.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://heurix.fr/blog/5-signes-recherche-vous-coute-des-ventes.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://heurix.fr/blog/glossaire-search-ecommerce.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+
+  <url>
+    <loc>https://heurix.fr/index.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://heurix.fr/index.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://heurix.fr/en/index.html"/>
+    <changefreq>weekly</changefreq><priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://heurix.fr/en/index.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://heurix.fr/index.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://heurix.fr/en/index.html"/>
+    <changefreq>weekly</changefreq><priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://heurix.fr/blog.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://heurix.fr/blog.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://heurix.fr/en/blog.html"/>
+    <changefreq>weekly</changefreq><priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://heurix.fr/en/blog.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://heurix.fr/blog.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://heurix.fr/en/blog.html"/>
+    <changefreq>weekly</changefreq><priority>0.7</priority>
+  </url>
+
+  <url><loc>https://heurix.fr/blog/recherche-reference-sku-b2b.html</loc><xhtml:link rel="alternate" hreflang="en" href="https://heurix.fr/en/blog/recherche-reference-sku-b2b.html"/><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://heurix.fr/en/blog/recherche-reference-sku-b2b.html</loc><xhtml:link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/recherche-reference-sku-b2b.html"/><changefreq>monthly</changefreq><priority>0.5</priority></url>
+
+  <url><loc>https://heurix.fr/blog/limites-moteurs-natifs-gros-catalogue.html</loc><xhtml:link rel="alternate" hreflang="en" href="https://heurix.fr/en/blog/limites-moteurs-natifs-gros-catalogue.html"/><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://heurix.fr/en/blog/limites-moteurs-natifs-gros-catalogue.html</loc><xhtml:link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/limites-moteurs-natifs-gros-catalogue.html"/><changefreq>monthly</changefreq><priority>0.5</priority></url>
+
+  <url><loc>https://heurix.fr/blog/facettes-b2b-multi-attributs.html</loc><xhtml:link rel="alternate" hreflang="en" href="https://heurix.fr/en/blog/facettes-b2b-multi-attributs.html"/><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://heurix.fr/en/blog/facettes-b2b-multi-attributs.html</loc><xhtml:link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/facettes-b2b-multi-attributs.html"/><changefreq>monthly</changefreq><priority>0.5</priority></url>
+
+  <url><loc>https://heurix.fr/blog/synonymes-jargon-industriel.html</loc><xhtml:link rel="alternate" hreflang="en" href="https://heurix.fr/en/blog/synonymes-jargon-industriel.html"/><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://heurix.fr/en/blog/synonymes-jargon-industriel.html</loc><xhtml:link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/synonymes-jargon-industriel.html"/><changefreq>monthly</changefreq><priority>0.5</priority></url>
+
+  <url><loc>https://heurix.fr/blog/impact-ebitda-recherche-interne.html</loc><xhtml:link rel="alternate" hreflang="en" href="https://heurix.fr/en/blog/impact-ebitda-recherche-interne.html"/><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://heurix.fr/en/blog/impact-ebitda-recherche-interne.html</loc><xhtml:link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/impact-ebitda-recherche-interne.html"/><changefreq>monthly</changefreq><priority>0.5</priority></url>
+
+  <url><loc>https://heurix.fr/blog/moteur-natif-ne-suffit-pas.html</loc><xhtml:link rel="alternate" hreflang="en" href="https://heurix.fr/en/blog/moteur-natif-ne-suffit-pas.html"/><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://heurix.fr/en/blog/moteur-natif-ne-suffit-pas.html</loc><xhtml:link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/moteur-natif-ne-suffit-pas.html"/><changefreq>monthly</changefreq><priority>0.5</priority></url>
+
+  <url><loc>https://heurix.fr/blog/5-signes-recherche-vous-coute-des-ventes.html</loc><xhtml:link rel="alternate" hreflang="en" href="https://heurix.fr/en/blog/5-signes-recherche-vous-coute-des-ventes.html"/><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://heurix.fr/en/blog/5-signes-recherche-vous-coute-des-ventes.html</loc><xhtml:link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/5-signes-recherche-vous-coute-des-ventes.html"/><changefreq>monthly</changefreq><priority>0.5</priority></url>
+
+  <url><loc>https://heurix.fr/blog/glossaire-search-ecommerce.html</loc><xhtml:link rel="alternate" hreflang="en" href="https://heurix.fr/en/blog/glossaire-search-ecommerce.html"/><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://heurix.fr/en/blog/glossaire-search-ecommerce.html</loc><xhtml:link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/glossaire-search-ecommerce.html"/><changefreq>monthly</changefreq><priority>0.5</priority></url>
+
 </urlset>
