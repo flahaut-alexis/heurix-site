@@ -28,9 +28,9 @@
     <a href="index.html" class="logo"><img src="logo.png" alt="Heurix"> HEURIX</a>
     <div class="nav-links">
       <a href="#probleme">Le problème</a>
-      <a href="#offre">L'offre</a>
       <a href="#moteur">Le moteur</a>
-      <a href="#tarifs">Simulateur ROI</a>
+      <a href="pricing.html">Search API</a>
+      <a href="#tarifs">Professional Services</a>
       <a href="blog.html">Blog</a>
     </div>
     <a href="en/index.html" class="lang-switch">EN</a>
@@ -64,21 +64,12 @@
       <a href="#offre" class="btn btn-ghost">Voir l'offre</a>
     </div>
 
-    <div class="demo">
-      <div class="demo-bar">
-        <div class="demo-search">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-          <span id="query-text">pul col roulé laine</span>
-        </div>
-        <div class="toggle">
-          <button id="btn-bad" class="active bad" onclick="setDemo('bad')">Moteur natif</button>
-          <button id="btn-good" class="good" onclick="setDemo('good')">Avec Heurix</button>
-        </div>
-      </div>
-      <div class="demo-body">
-        <div id="demo-status" class="demo-status bad">0 correspondance exacte — la faute de frappe casse la recherche</div>
-        <div id="results" class="results"></div>
-      </div>
+    <div class="demo-video hero-video">
+      <video autoplay muted loop playsinline poster="heurix-demo-poster.jpg" aria-label="Démonstration : recherche d'une vis M8x20 avec un moteur natif, puis avec Heurix">
+        <source src="heurix-demo-outillage.webm" type="video/webm">
+        <source src="heurix-demo-outillage.mp4" type="video/mp4">
+      </video>
+      <div class="demo-video-caption">Exemple secteur outillage : recherche « M8x20 inox »</div>
     </div>
 
     <div class="benefits">
@@ -214,16 +205,58 @@
 
     <div class="regex-block reveal">
       <div class="regex-copy">
-        <h3>L'avantage des expressions régulières sur les catalogues techniques</h3>
-        <p>Sur un catalogue produit grand public, la recherche par mots-clés suffit souvent. Sur un catalogue technique, les références suivent des formats structurés — codes produits, normes, dimensions — qu'une simple correspondance textuelle ne sait pas interpréter.</p>
-        <p>Le moteur Heurix s'appuie sur des expressions régulières (regex) pour reconnaître ces formats : un client qui tape <code>M8x20</code>, <code>DIN933</code> ou une référence partielle retrouve le bon produit, même sans connaître la nomenclature exacte du catalogue. C'est ce niveau de recherche qui fait la différence sur les secteurs à forte technicité.</p>
+        <h3>Un avantage concurrentiel concret : comprendre les références, pas seulement les mots</h3>
+        <p>La plupart des moteurs — y compris des solutions reconnues comme Algolia ou Elasticsearch mal configurées — traitent une référence produit comme n'importe quel autre mot. Deux formats différents pour la même référence (<code>M8x20</code> et <code>M8 x 20</code>) sont alors vus comme deux choses distinctes. Sur un catalogue technique, c'est là que se joue une bonne partie des ventes perdues — pas sur le design du site, sur la capacité du moteur à comprendre ce que tape réellement l'acheteur.</p>
+        <p>Heurix configure des règles d'expressions régulières (regex) sur mesure pour votre catalogue : elles reconnaissent la <em>structure</em> d'une référence — famille, dimension, variante — plutôt que de comparer des caractères un par un. Un acheteur qui tape une référence partielle ou mal formatée retrouve quand même le bon produit. C'est un travail de configuration fine que peu de prestataires proposent, parce qu'il demande de comprendre à la fois votre catalogue et la façon dont vos clients cherchent réellement.</p>
       </div>
-      <div class="demo-video">
-        <video autoplay muted loop playsinline poster="heurix-demo-poster.jpg" aria-label="Démonstration : recherche d'une vis M8x20 avec un moteur natif, puis avec Heurix">
-          <source src="heurix-demo-outillage.webm" type="video/webm">
-          <source src="heurix-demo-outillage.mp4" type="video/mp4">
-        </video>
-        <div class="demo-video-caption">Exemple secteur outillage : recherche « M8x20 inox »</div>
+      <div class="demo">
+        <div class="demo-bar">
+          <div class="demo-search">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <span id="query-text">pul col roulé laine</span>
+          </div>
+          <div class="toggle">
+            <button id="btn-bad" class="active bad" onclick="setDemo('bad')">Moteur natif</button>
+            <button id="btn-good" class="good" onclick="setDemo('good')">Avec Heurix</button>
+          </div>
+        </div>
+        <div class="demo-body">
+          <div id="demo-status" class="demo-status bad">0 correspondance exacte — la faute de frappe casse la recherche</div>
+          <div id="results" class="results"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="regex-examples reveal">
+      <div class="regex-example-card">
+        <div class="regex-example-vertical mono">Outillage &amp; quincaillerie</div>
+        <div class="regex-example-query">« m8x20 inox »</div>
+        <div class="regex-example-arrow">↓ le moteur reconnaît</div>
+        <div class="regex-example-tags">
+          <span class="regex-tag">diamètre : M8</span>
+          <span class="regex-tag">longueur : 20mm</span>
+          <span class="regex-tag">matière : inox</span>
+        </div>
+        <p class="regex-example-note">Même si la fiche produit est enregistrée « M8 x 20 — A2 ».</p>
+      </div>
+      <div class="regex-example-card">
+        <div class="regex-example-vertical mono">Retail &amp; mode</div>
+        <div class="regex-example-query">« jean 32/34 bleu délavé »</div>
+        <div class="regex-example-arrow">↓ le moteur reconnaît</div>
+        <div class="regex-example-tags">
+          <span class="regex-tag">taille : 32/34</span>
+          <span class="regex-tag">coloris : bleu délavé</span>
+        </div>
+        <p class="regex-example-note">Même si la fiche produit utilise « W32L34 » et « denim washed ».</p>
+      </div>
+      <div class="regex-example-card">
+        <div class="regex-example-vertical mono">Industrie &amp; pièces détachées</div>
+        <div class="regex-example-query">« roulement 6205-2RS »</div>
+        <div class="regex-example-arrow">↓ le moteur reconnaît</div>
+        <div class="regex-example-tags">
+          <span class="regex-tag">référence normalisée : 6205-2RS</span>
+        </div>
+        <p class="regex-example-note">Même si le fournisseur l'a enregistrée « SKF 6205 2RS1 ».</p>
       </div>
     </div>
 
@@ -290,9 +323,31 @@
   </div>
 </section>
 
+<section id="offres">
+  <div class="wrap">
+    <div class="kicker">Deux façons de travailler avec Heurix</div>
+    <h2>Un accompagnement sur mesure, ou le moteur en self-service.</h2>
+    <p class="section-lede">Selon où vous en êtes, l'un ou l'autre — ou les deux à la fois.</p>
+    <div class="offers-grid reveal">
+      <div class="offer-card">
+        <div class="offer-kicker mono">Professional Services</div>
+        <h3>Un audit, une intégration, un expert qui s'en occupe avec vous.</h3>
+        <p>Facturation à la mission, 850 € HT/jour. Idéal si votre catalogue est déjà en place et que vous voulez un diagnostic et une correction ciblée — sur votre solution actuelle ou sur le moteur Heurix.</p>
+        <a href="#tarifs" class="btn btn-ghost">Voir le simulateur ROI</a>
+      </div>
+      <div class="offer-card offer-card-highlight">
+        <div class="offer-kicker mono">Search API</div>
+        <h3>Le moteur Heurix, en self-service, à partir de gratuit.</h3>
+        <p>Intégrez directement l'API du moteur propriétaire Heurix sur votre site. Facturation à l'usage, sans engagement, un plan gratuit pour démarrer. Idéal pour tester sans passer par une mission complète.</p>
+        <a href="pricing.html" class="btn">Voir les tarifs de l'API</a>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section id="tarifs" class="soft">
   <div class="wrap">
-    <div class="kicker">Simulateur</div>
+    <div class="kicker">Simulateur — Professional Services</div>
     <h2>Estimez l'effet de levier d'un moteur de recherche mieux réglé.</h2>
     <p class="section-lede">La recherche interne ne représente souvent que 10 à 20 % du trafic d'un site — mais chez de nombreux e-commerçants, elle concentre 30 à 50 % du chiffre d'affaires. C'est le segment le plus précieux du site, et le moins souvent optimisé. Ajustez les curseurs à votre situation : le calcul se fait en direct.</p>
 
