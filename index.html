@@ -17,9 +17,6 @@
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -118,7 +115,7 @@
     <div class="kicker">Le problème</div>
     <h2>La recherche interne est le point de conversion le moins surveillé d'un site marchand.</h2>
     <div class="problem-grid reveal">
-      <p>Les moteurs livrés par défaut avec Shopify, PrestaShop ou WooCommerce indexent le catalogue, mais ne comprennent ni les fautes de frappe, ni les synonymes, ni l'ordre de pertinence attendu par un acheteur. <strong>Le visiteur voit une page vide ou des résultats hors sujet — et referme l'onglet.</strong></p>
+      <p>Le moteur livré par défaut avec la plupart des CMS indexe le catalogue, mais ne comprend ni les fautes de frappe, ni les synonymes, ni l'ordre de pertinence attendu par un acheteur. <strong>Le visiteur voit une page vide ou des résultats hors sujet — et referme l'onglet.</strong></p>
       <p>Corriger cela ne demande pas une nouvelle plateforme e-commerce. Cela demande un audit précis de ce qui casse la pertinence, puis un paramétrage ciblé : synonymes métier, tolérance aux fautes, tri par disponibilité et par marge, filtres à facettes qui reflètent la façon dont vos clients cherchent réellement.</p>
     </div>
     <div class="stat-row reveal">
@@ -167,7 +164,7 @@
     <div class="engine reveal">
       <div>
         <p class="section-lede" style="margin-bottom:20px;">Heurix s'appuie sur son propre moteur de recherche pour démontrer concrètement ce qu'une indexation bien pensée change sur des résultats réels — et, selon vos besoins, peut le proposer comme alternative aux solutions du marché (Algolia, Elasticsearch, Typesense) plutôt que de les reconfigurer.</p>
-        <p class="section-lede" style="margin-bottom:0;">L'objectif n'est pas de vous vendre un outil de plus, mais de choisir la bonne réponse technique pour votre catalogue et votre budget — y compris quand la bonne réponse est de garder votre solution actuelle, mieux réglée.</p>
+        <p class="section-lede" style="margin-bottom:0;">Le bon choix dépend de votre catalogue et de votre budget — y compris quand ce choix est de garder votre solution actuelle, mieux réglée.</p>
       </div>
       <div class="index-card">
         <div class="line"><span class="k">index_size</span><span class="v">14 820 refs</span></div>
@@ -267,8 +264,8 @@
             <label for="roi-ca">Chiffre d'affaires annuel</label>
             <span id="roi-ca-val" class="roi-slider-badge mono">15 M€</span>
           </div>
-          <input type="range" id="roi-ca" min="2" max="50" step="1" value="15">
-          <div class="roi-range-hint"><span>2 M€</span><span class="roi-range-mid">Cible PME &amp; Mid-Market</span><span>50 M€</span></div>
+          <input type="range" id="roi-ca" min="5" max="50" step="1" value="15">
+          <div class="roi-range-hint"><span>5 M€</span><span class="roi-range-mid">Cible PME &amp; Mid-Market</span><span>50 M€</span></div>
         </div>
 
         <div class="roi-field roi-slider">
@@ -336,6 +333,8 @@
               <div class="roi-bar-gain" id="roi-bar-gain"></div>
             </div>
           </div>
+
+          <div id="roi-sr-live" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
         </div>
 
         <a href="#contact" class="btn roi-cta">Recevoir mon étude de ROI personnalisée</a>
@@ -389,18 +388,28 @@
 <section class="cta-section" id="contact">
   <div class="wrap">
     <div class="kicker">Devis sur demande</div>
-    <h2>Recevez un devis adapté à votre catalogue.</h2>
-    <p class="section-lede">Décrivez votre site en deux lignes — réponse sous 48h ouvrées. Vous pouvez reprendre les chiffres du simulateur ci-dessus si vous voulez.</p>
+    <h2>Réservez votre audit initial.</h2>
+    <p class="section-lede">Décrivez votre site en deux lignes — vous recevrez un devis chiffré et une proposition de créneau sous 48h ouvrées. Vous pouvez reprendre les chiffres du simulateur ci-dessus si vous voulez.</p>
 
     <form class="cta-form" id="heurix-form">
       <label for="name">Nom</label>
       <input id="name" name="name" type="text" required>
-      <label for="email">E-mail</label>
+      <label for="company">Entreprise</label>
+      <input id="company" name="company" type="text" required>
+      <label for="email">E-mail professionnel</label>
       <input id="email" name="email" type="email" required>
       <label for="site">Site e-commerce (URL)</label>
       <input id="site" name="site" type="url" placeholder="https://">
+      <label for="catalog-size">Taille approximative du catalogue</label>
+      <select id="catalog-size" name="catalog_size">
+        <option value="">Sélectionner…</option>
+        <option value="< 10 000 refs">Moins de 10 000 références</option>
+        <option value="10 000 - 50 000 refs">10 000 à 50 000 références</option>
+        <option value="> 50 000 refs">Plus de 50 000 références</option>
+        <option value="Je ne sais pas">Je ne sais pas</option>
+      </select>
       <label for="msg">Votre besoin</label>
-      <textarea id="msg" name="message" rows="4"></textarea>
+      <textarea id="msg" name="message" rows="4" placeholder="Ex. : environ 30 000 références, moteur natif PrestaShop jamais reconfiguré, beaucoup de recherches sans résultat sur les référence techniques."></textarea>
       <button type="submit" class="btn" id="submit-btn">Envoyer la demande</button>
       <div id="form-feedback"></div>
     </form>
@@ -492,15 +501,26 @@
   }
 
   function computeROI(){
-    const ca = parseFloat(document.getElementById('roi-ca').value) * 1000000;
-    const share = parseFloat(document.getElementById('roi-share').value) / 100;
-    const lift = parseFloat(document.getElementById('roi-lift').value) / 100;
-    const margin = parseFloat(document.getElementById('roi-margin').value) / 100;
+    const caInput = document.getElementById('roi-ca');
+    const shareInput = document.getElementById('roi-share');
+    const liftInput = document.getElementById('roi-lift');
+    const marginInput = document.getElementById('roi-margin');
 
-    document.getElementById('roi-ca-val').textContent = document.getElementById('roi-ca').value + ' M€';
-    document.getElementById('roi-share-val').textContent = document.getElementById('roi-share').value + '%';
-    document.getElementById('roi-lift-val').textContent = document.getElementById('roi-lift').value + '%';
-    document.getElementById('roi-margin-val').textContent = document.getElementById('roi-margin').value + '%';
+    const ca = parseFloat(caInput.value) * 1000000;
+    const share = parseFloat(shareInput.value) / 100;
+    const lift = parseFloat(liftInput.value) / 100;
+    const margin = parseFloat(marginInput.value) / 100;
+
+    document.getElementById('roi-ca-val').textContent = caInput.value + ' M€';
+    document.getElementById('roi-share-val').textContent = shareInput.value + '%';
+    document.getElementById('roi-lift-val').textContent = liftInput.value + '%';
+    document.getElementById('roi-margin-val').textContent = marginInput.value + '%';
+
+    // aria-valuetext : ce que le lecteur d'écran annonce doit correspondre au badge affiché
+    caInput.setAttribute('aria-valuetext', caInput.value + ' millions d\'euros');
+    shareInput.setAttribute('aria-valuetext', shareInput.value + ' pour cent');
+    liftInput.setAttribute('aria-valuetext', liftInput.value + ' pour cent');
+    marginInput.setAttribute('aria-valuetext', marginInput.value + ' pour cent');
 
     // Coût de mission indicatif selon la taille du catalogue / CA
     let cost = 5800;
@@ -522,25 +542,48 @@
     document.getElementById('roi-out-cost').textContent = cost.toLocaleString('fr-FR') + ' € HT';
 
     const paybackEl = document.getElementById('roi-out-payback');
+    let paybackText = '—';
     if (paybackDays === null) {
-      paybackEl.textContent = '—';
+      paybackText = '—';
     } else if (paybackDays <= 1) {
-      paybackEl.textContent = '1 jour';
+      paybackText = '1 jour';
     } else if (paybackDays < 30) {
-      paybackEl.textContent = paybackDays + ' jours';
+      paybackText = paybackDays + ' jours';
     } else {
-      paybackEl.textContent = (paybackDays / 30).toFixed(1).replace('.', ',') + ' mois';
+      paybackText = (paybackDays / 30).toFixed(1).replace('.', ',') + ' mois';
     }
+    paybackEl.textContent = paybackText;
 
     const total = cost + gainMarge;
     const costPercent = total > 0 ? Math.max((cost / total) * 100, 2) : 50;
     document.getElementById('roi-bar-cost').style.width = costPercent + '%';
     document.getElementById('roi-bar-gain').style.width = (100 - costPercent) + '%';
+
+    return {
+      gainCA: formatEuro(gainCA),
+      gainMarge: formatEuro(gainMarge),
+      roi: roi.toFixed(1).replace('.', ',') + ' x',
+      payback: paybackText
+    };
+  }
+
+  // Résumé vocal pour lecteurs d'écran — annoncé seulement au relâchement du
+  // curseur (événement "change"), jamais à chaque pixel de glissement (événement
+  // "input"), pour éviter de saturer la lecture vocale pendant le réglage.
+  function announceROISummary(){
+    const r = computeROI();
+    const liveRegion = document.getElementById('roi-sr-live');
+    if (liveRegion) {
+      liveRegion.textContent = `Gain de chiffre d'affaires annuel estimé : ${r.gainCA}. Gain de marge net annuel : ${r.gainMarge}. Retour sur investissement : ${r.roi}. Mission amortie en ${r.payback}.`;
+    }
   }
 
   ['roi-ca','roi-share','roi-lift','roi-margin'].forEach(id => {
     const el = document.getElementById(id);
-    if (el) el.addEventListener('input', computeROI);
+    if (el) {
+      el.addEventListener('input', computeROI);
+      el.addEventListener('change', announceROISummary);
+    }
   });
   computeROI();
 
