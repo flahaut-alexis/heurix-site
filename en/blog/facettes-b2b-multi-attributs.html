@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Faceted search in B2B: how to structure filters for multi-attribute products? — Heurix</title>
+<meta name="description" content="Designing dynamic, well-ordered facets for technical catalogs.">
+<link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/facettes-b2b-multi-attributs.html">
+<link rel="alternate" hreflang="en" href="https://heurix.fr/en/blog/facettes-b2b-multi-attributs.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Faceted search in B2B: how to structure filters for multi-attribute products? — Heurix">
+<meta property="og:description" content="Designing dynamic, well-ordered facets for technical catalogs.">
+<meta property="og:image" content="https://heurix.fr/og-image.png">
+<meta property="og:url" content="https://heurix.fr/en/blog/facettes-b2b-multi-attributs.html">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Faceted search in B2B: how to structure filters for multi-attribute products? — Heurix">
+<meta name="twitter:description" content="Designing dynamic, well-ordered facets for technical catalogs.">
+<meta name="twitter:image" content="https://heurix.fr/og-image.png">
+<link rel="icon" type="image/png" href="../../favicon-32.png">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<link rel="stylesheet" href="../../styles.css">
+</head>
+<body>
+
+<header>
+  <nav>
+    <a href="../index.html" class="logo"><img src="../../logo.png" alt="Heurix"> HEURIX</a>
+    <div class="nav-links">
+      <a href="../index.html#probleme">The problem</a>
+      <a href="../index.html#offre">The offer</a>
+      <a href="../index.html#moteur">The engine</a>
+      <a href="../index.html#tarifs">ROI simulator</a>
+      <a href="../blog.html">Blog</a>
+    </div>
+    <a href="../../blog/facettes-b2b-multi-attributs.html" class="lang-switch">FR</a>
+    <button id="heurix-search-btn" class="search-btn" aria-label="Search the site" type="button">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    </button>
+    <a href="../index.html#contact" class="btn">Book an audit</a>
+  </nav>
+</header>
+
+<div id="heurix-search-modal" class="search-modal">
+  <div id="heurix-search-backdrop" class="search-backdrop" data-search-close></div>
+  <div class="search-panel">
+    <div class="search-panel-head">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input id="heurix-search-input" type="text" placeholder="Search heurix.fr..." autocomplete="off">
+      <button class="search-close" data-search-close type="button">Esc</button>
+    </div>
+    <div id="heurix-search-results" class="search-results"></div>
+    <p id="heurix-search-empty" class="search-empty" hidden>No results for this search. Try another term.</p>
+  </div>
+</div>
+
+<article class="post">
+  <div class="wrap post-wrap">
+    <a href="../blog.html" class="back-link">← All articles</a>
+    <div class="kicker">Blog · July 2026</div>
+    <h1>Faceted search in B2B: how to structure filters for multi-attribute products?</h1>
+    <p class="post-lede">A buyer is searching for an electrical component. They're faced with a sidebar of 45 mixed filters — amperage, voltage, color, material, thread pitch. Navigation becomes impossible.</p>
+
+    <div class="post-body">
+      <p>Facets (the filters shown alongside search results) matter especially in technical B2B, where a single product can have ten different attributes and the buyer knows exactly what they're looking for. Poorly structured, they hurt the experience just as much as an imprecise search engine.</p>
+
+      <h2>The most common problem: showing everything, all the time</h2>
+      <p>By default, many setups display every catalog attribute as an available filter, on every results page. Result: on a search for electrical components, the buyer sees color filters even though that criterion is meaningless for this product type, mixed in with genuinely useful technical filters (voltage, amperage). The list becomes long and hard to scan.</p>
+
+      <h2>The fix: dynamic, contextual facets</h2>
+      <p>A well-designed facet setup adapts to the category being searched: only the attributes relevant to the displayed results appear as filters. A screw search shows diameter, length, and material; an electrical component search shows voltage and amperage. Irrelevant attributes for that category simply disappear.</p>
+      <p>Two design principles to follow:</p>
+      <ul>
+        <li><strong>Filter order should follow the buyer's search intent</strong>, not alphabetical order or back-office creation order. The most discriminating attributes for that product type should appear first.</li>
+        <li><strong>The number of filters shown at once should stay limited</strong> (ideally 5 to 8), with an option to show more if needed, rather than forcing an exhaustive list on first glance.</li>
+      </ul>
+
+      <blockquote>A good facet answers the question the buyer is already asking themselves. A bad facet asks them a question they hadn't thought about.</blockquote>
+
+      <h2>A point to watch: fake filters</h2>
+      <p>Some technical attributes seem relevant but actually add little value — a filter with a single possible value across 95% of the catalog doesn't help anyone narrow their search. Regularly reviewing which filters actually get used (via facet click stats, where available) helps trim what serves no purpose.</p>
+
+      <h2>Assessing your current filters</h2>
+      <p>Open a results page for one of your technical categories. Count the filters shown, and ask yourself whether a buyer in a hurry would immediately know which one to use to narrow their search. If the answer is no, that's a signal that reconfiguring your facets would improve clarity — and conversion.</p>
+    </div>
+
+    <div class="post-footer-cta">
+      <p>We can review the structure of your current filters together.</p>
+      <a href="../index.html#contact" class="btn">Book an initial audit</a>
+    </div>
+  </div>
+</article>
+
+<footer>
+  <div class="wrap foot-grid">
+    <a href="../index.html" class="logo" style="font-size:15px;"><img src="../../logo.png" alt="Heurix" style="height:22px;width:22px;"> HEURIX</a>
+    <div class="foot-links">
+      <a href="../blog.html">Blog</a>
+      <a href="../index.html#faq">FAQ</a>
+      <a href="../mentions-legales.html">Legal notice</a>
+      <a href="mailto:contact@heurix.fr">contact@heurix.fr</a>
+      <a href="https://www.linkedin.com/company/heurix-search/" target="_blank" rel="noopener">LinkedIn</a>
+    </div>
+    <div class="foot-legal">
+      Heurix — Sole proprietorship (French micro-entreprise). SIRET [to be added]. IT systems and software consulting.<br>
+      © <span id="year">2026</span> Heurix. All rights reserved.
+    </div>
+  </div>
+</footer>
+
+<script src="../../search-en.js"></script>
+<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+
+</body>
+</html>

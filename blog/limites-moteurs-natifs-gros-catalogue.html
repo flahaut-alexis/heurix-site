@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shopify, PrestaShop, Magento : pourquoi leurs moteurs natifs échouent au-delà de 10 000 références techniques ? — Heurix</title>
+<meta name="description" content="Les limites d'indexation des moteurs natifs sur les gros catalogues, et comment y remédier sans refondre le site.">
+<link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/limites-moteurs-natifs-gros-catalogue.html">
+<link rel="alternate" hreflang="en" href="https://heurix.fr/en/blog/limites-moteurs-natifs-gros-catalogue.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Shopify, PrestaShop, Magento : pourquoi leurs moteurs natifs échouent au-delà de 10 000 références techniques ? — Heurix">
+<meta property="og:description" content="Les limites d'indexation des moteurs natifs sur les gros catalogues, et comment y remédier sans refondre le site.">
+<meta property="og:image" content="https://heurix.fr/og-image.png">
+<meta property="og:url" content="https://heurix.fr/blog/limites-moteurs-natifs-gros-catalogue.html">
+<meta property="og:locale" content="fr_FR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Shopify, PrestaShop, Magento : pourquoi leurs moteurs natifs échouent au-delà de 10 000 références techniques ? — Heurix">
+<meta name="twitter:description" content="Les limites d'indexation des moteurs natifs sur les gros catalogues, et comment y remédier sans refondre le site.">
+<meta name="twitter:image" content="https://heurix.fr/og-image.png">
+<link rel="icon" type="image/png" href="../favicon-32.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+
+<header>
+  <nav>
+    <a href="../index.html" class="logo"><img src="../logo.png" alt="Heurix"> HEURIX</a>
+    <div class="nav-links">
+      <a href="../index.html#probleme">Le problème</a>
+      <a href="../index.html#offre">L'offre</a>
+      <a href="../index.html#moteur">Le moteur</a>
+      <a href="../index.html#tarifs">Simulateur ROI</a>
+      <a href="../blog.html">Blog</a>
+    </div>
+    <a href="../en/blog/limites-moteurs-natifs-gros-catalogue.html" class="lang-switch">EN</a>
+    <button id="heurix-search-btn" class="search-btn" aria-label="Rechercher sur le site" type="button">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    </button>
+    <a href="../index.html#contact" class="btn">Réserver un audit</a>
+  </nav>
+</header>
+<div id="heurix-search-modal" class="search-modal">
+  <div id="heurix-search-backdrop" class="search-backdrop" data-search-close></div>
+  <div class="search-panel">
+    <div class="search-panel-head">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input id="heurix-search-input" type="text" placeholder="Rechercher sur heurix.fr..." autocomplete="off">
+      <button class="search-close" data-search-close type="button">Échap</button>
+    </div>
+    <div id="heurix-search-results" class="search-results"></div>
+    <p id="heurix-search-empty" class="search-empty" hidden>Aucun résultat pour cette recherche. Essayez un autre terme.</p>
+  </div>
+</div>
+
+
+<article class="post">
+  <div class="wrap post-wrap">
+    <a href="../blog.html" class="back-link">← Tous les articles</a>
+    <div class="kicker">Blog · Juillet 2026</div>
+    <h1>Shopify, PrestaShop, Magento : pourquoi leurs moteurs natifs échouent au-delà de 10 000 références techniques ?</h1>
+    <p class="post-lede">Le site a grossi. Le catalogue compte désormais des dizaines de milliers de déclinaisons. Et la recherche interne, qui fonctionnait très bien à ses débuts, est devenue lente ou renvoie des résultats hors sujet.</p>
+
+    <div class="post-body">
+      <p>C'est un scénario classique : un site e-commerce B2B démarre avec quelques milliers de références, le moteur de recherche natif de la plateforme (Shopify, PrestaShop, Magento) fait très bien le travail. Puis le catalogue grossit — nouvelles gammes, nouveaux fournisseurs, déclinaisons multiples — et la recherche se dégrade progressivement, sans qu'on identifie clairement pourquoi.</p>
+
+      <h2>Ce qui se passe techniquement</h2>
+      <p>Les moteurs natifs de la plupart des CMS e-commerce reposent sur des bases de données relationnelles classiques (SQL), qui ne sont pas conçues à l'origine pour la recherche textuelle à grande échelle. Ce type de base de données gère très bien les transactions (commandes, stocks, paiements), mais devient sensiblement plus lent dès que le volume de texte à indexer et la fréquence de mise à jour augmentent.</p>
+      <p>Au-delà d'un certain volume de références — le seuil varie selon la plateforme et la structure du catalogue, mais se situe généralement autour de quelques dizaines de milliers de fiches produits — deux symptômes apparaissent typiquement :</p>
+      <ul>
+        <li>Un temps de réponse de la recherche qui se dégrade, perceptible par les visiteurs</li>
+        <li>Une pertinence des résultats qui décroît, le moteur natif n'étant pas conçu pour affiner son classement sur un très grand volume</li>
+      </ul>
+
+      <h2>L'alternative : brancher un moteur externe, sans refondre le site</h2>
+      <p>La réaction la plus fréquente face à ce problème est de penser qu'il faut changer de plateforme e-commerce — un projet lourd, coûteux, et souvent injustifié. Dans la grande majorité des cas, la vraie solution est plus ciblée : brancher un moteur de recherche externe spécialisé (Typesense, Elasticsearch, Algolia, ou une solution sur-mesure) qui prend le relais uniquement pour la fonction recherche, sans toucher au reste de l'architecture du site.</p>
+      <p>Le CMS continue de gérer les commandes, les stocks et les paiements normalement. Seule la recherche est déléguée à un outil pensé pour l'indexation de gros volumes de texte, avec une latence qui reste stable même à 100 000 références et plus.</p>
+
+      <blockquote>Le bon réflexe n'est pas « il faut tout refaire », c'est « il faut isoler le bon composant » — et la recherche est presque toujours isolable sans refonte.</blockquote>
+
+      <h2>Comment savoir si vous êtes concerné</h2>
+      <p>Si votre catalogue dépasse 10 000 références et que vous constatez un ralentissement perceptible de la recherche, ou une pertinence qui s'est dégradée avec la croissance du catalogue, c'est le signal à surveiller. Un audit permet de mesurer précisément le temps de réponse actuel et d'évaluer si un moteur externe est justifié — ou si un simple réglage du moteur natif suffit encore.</p>
+    </div>
+
+    <div class="post-footer-cta">
+      <p>Utilisez le simulateur pour estimer ce que cette friction vous coûte chaque mois.</p>
+      <a href="../index.html#tarifs" class="btn">Ouvrir le simulateur de ROI</a>
+    </div>
+  </div>
+</article>
+
+<footer>
+  <div class="wrap foot-grid">
+    <a href="../index.html" class="logo" style="font-size:15px;"><img src="../logo.png" alt="Heurix" style="height:22px;width:22px;"> HEURIX</a>
+    <div class="foot-links">
+      <a href="../blog.html">Blog</a>
+      <a href="../index.html#faq">FAQ</a>
+      <a href="../mentions-legales.html">Mentions légales</a>
+      <a href="mailto:contact@heurix.fr">contact@heurix.fr</a>
+      <a href="https://www.linkedin.com/company/heurix-search/" target="_blank" rel="noopener">LinkedIn</a>
+    </div>
+    <div class="foot-legal">
+      Heurix — Entreprise individuelle (micro-entreprise). SIRET [à compléter]. Conseil en systèmes et logiciels informatiques.<br>
+      © <span id="year">2026</span> Heurix. Tous droits réservés.
+    </div>
+  </div>
+</footer>
+
+<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+
+<script src="../search.js"></script>
+</body>
+</html>

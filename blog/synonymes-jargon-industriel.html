@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Synonymes et jargon industriel : quand le vocabulaire de vos clients fait planter votre moteur de recherche — Heurix</title>
+<meta name="description" content="Concevoir et maintenir un dictionnaire de synonymes métier sans créer de faux positifs.">
+<link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/synonymes-jargon-industriel.html">
+<link rel="alternate" hreflang="en" href="https://heurix.fr/en/blog/synonymes-jargon-industriel.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Synonymes et jargon industriel : quand le vocabulaire de vos clients fait planter votre moteur de recherche — Heurix">
+<meta property="og:description" content="Concevoir et maintenir un dictionnaire de synonymes métier sans créer de faux positifs.">
+<meta property="og:image" content="https://heurix.fr/og-image.png">
+<meta property="og:url" content="https://heurix.fr/blog/synonymes-jargon-industriel.html">
+<meta property="og:locale" content="fr_FR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Synonymes et jargon industriel : quand le vocabulaire de vos clients fait planter votre moteur de recherche — Heurix">
+<meta name="twitter:description" content="Concevoir et maintenir un dictionnaire de synonymes métier sans créer de faux positifs.">
+<meta name="twitter:image" content="https://heurix.fr/og-image.png">
+<link rel="icon" type="image/png" href="../favicon-32.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+
+<header>
+  <nav>
+    <a href="../index.html" class="logo"><img src="../logo.png" alt="Heurix"> HEURIX</a>
+    <div class="nav-links">
+      <a href="../index.html#probleme">Le problème</a>
+      <a href="../index.html#offre">L'offre</a>
+      <a href="../index.html#moteur">Le moteur</a>
+      <a href="../index.html#tarifs">Simulateur ROI</a>
+      <a href="../blog.html">Blog</a>
+    </div>
+    <a href="../en/blog/synonymes-jargon-industriel.html" class="lang-switch">EN</a>
+    <button id="heurix-search-btn" class="search-btn" aria-label="Rechercher sur le site" type="button">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    </button>
+    <a href="../index.html#contact" class="btn">Réserver un audit</a>
+  </nav>
+</header>
+<div id="heurix-search-modal" class="search-modal">
+  <div id="heurix-search-backdrop" class="search-backdrop" data-search-close></div>
+  <div class="search-panel">
+    <div class="search-panel-head">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input id="heurix-search-input" type="text" placeholder="Rechercher sur heurix.fr..." autocomplete="off">
+      <button class="search-close" data-search-close type="button">Échap</button>
+    </div>
+    <div id="heurix-search-results" class="search-results"></div>
+    <p id="heurix-search-empty" class="search-empty" hidden>Aucun résultat pour cette recherche. Essayez un autre terme.</p>
+  </div>
+</div>
+
+
+<article class="post">
+  <div class="wrap post-wrap">
+    <a href="../blog.html" class="back-link">← Tous les articles</a>
+    <div class="kicker">Blog · Juillet 2026</div>
+    <h1>Synonymes et jargon industriel : quand le vocabulaire de vos clients fait planter votre moteur de recherche</h1>
+    <p class="post-lede">L'acheteur cherche « vis à tôle ». Votre fiche produit est enregistrée sous « vis autoforeuse ». Résultat : page vide, frustration, panier abandonné — alors que le produit existe.</p>
+
+    <div class="post-body">
+      <p>Dans les secteurs techniques, le même produit peut avoir plusieurs désignations selon l'usage, la région, ou l'habitude de l'acheteur. Sans dictionnaire de synonymes adapté à votre métier, chacune de ces variantes de vocabulaire non anticipées ramène un résultat vide.</p>
+
+      <h2>Pourquoi les synonymes génériques ne suffisent pas</h2>
+      <p>Certains moteurs de recherche embarquent un dictionnaire de synonymes généraliste (langue française standard). C'est utile, mais insuffisant pour du vocabulaire métier : « vis autoforeuse » et « vis à tôle » ne sont pas des synonymes du dictionnaire français, ce sont des synonymes propres à votre secteur — et seul un dictionnaire construit à partir de votre activité peut les relier.</p>
+
+      <h2>Construire un dictionnaire de synonymes qui ne se retourne pas contre vous</h2>
+      <p>Le piège classique est de créer des associations trop larges, qui génèrent des faux positifs. Un exemple concret : associer « inox » à « acier inoxydable » a du sens dans le sens où un client qui tape l'un doit trouver l'autre. Mais associer trop largement tous les termes contenant « acier » à « inox » ferait remonter des aciers non inoxydables sur une recherche inox — un faux positif qui nuit à la confiance dans le moteur.</p>
+      <p>Deux types de règles à distinguer :</p>
+      <ul>
+        <li><strong>Synonymes bidirectionnels :</strong> les deux termes sont réellement interchangeables dans les deux sens (« pull » ↔ « maille »).</li>
+        <li><strong>Synonymes unidirectionnels :</strong> un terme doit ramener l'autre, mais pas l'inverse — utile quand un terme est plus générique que l'autre.</li>
+      </ul>
+
+      <blockquote>Un dictionnaire de synonymes trop permissif est presque aussi problématique qu'un dictionnaire vide : il ramène des résultats qui n'ont rien à voir, et l'acheteur perd confiance dans la recherche.</blockquote>
+
+      <h2>Repérer les opportunités de synonymes sans deviner au hasard</h2>
+      <p>La méthode la plus fiable ne consiste pas à imaginer les synonymes a priori, mais à analyser les requêtes réellement tapées par vos visiteurs qui ramènent zéro résultat. Ces « recherches sans résultat », visibles dans la plupart des outils analytics ou dans les statistiques internes du moteur, révèlent directement le vocabulaire que vos clients emploient et que votre catalogue ne reconnaît pas encore.</p>
+      <p>Un examen régulier de cette liste, même simple (les 50 requêtes à zéro résultat les plus fréquentes du mois), suffit souvent à identifier les synonymes qui rapportent le plus, sans devoir couvrir tout le vocabulaire possible d'un coup.</p>
+    </div>
+
+    <div class="post-footer-cta">
+      <p>Marre de voir vos clients chercher dans le vide ?</p>
+      <a href="../index.html#contact" class="btn">Confier l'analyse à Heurix</a>
+    </div>
+  </div>
+</article>
+
+<footer>
+  <div class="wrap foot-grid">
+    <a href="../index.html" class="logo" style="font-size:15px;"><img src="../logo.png" alt="Heurix" style="height:22px;width:22px;"> HEURIX</a>
+    <div class="foot-links">
+      <a href="../blog.html">Blog</a>
+      <a href="../index.html#faq">FAQ</a>
+      <a href="../mentions-legales.html">Mentions légales</a>
+      <a href="mailto:contact@heurix.fr">contact@heurix.fr</a>
+      <a href="https://www.linkedin.com/company/heurix-search/" target="_blank" rel="noopener">LinkedIn</a>
+    </div>
+    <div class="foot-legal">
+      Heurix — Entreprise individuelle (micro-entreprise). SIRET [à compléter]. Conseil en systèmes et logiciels informatiques.<br>
+      © <span id="year">2026</span> Heurix. Tous droits réservés.
+    </div>
+  </div>
+</footer>
+
+<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+
+<script src="../search.js"></script>
+</body>
+</html>

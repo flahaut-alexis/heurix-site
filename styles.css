@@ -169,11 +169,16 @@ nav{
 .search-empty{ padding:24px 18px; text-align:center; color:var(--ink-muted); font-size:14px; margin:0; }
 
 /* HERO */
-.hero{ padding:76px 0 60px; position:relative; overflow:hidden; }
+.hero{
+  padding:76px 0 60px; position:relative; overflow:hidden;
+  background:
+    radial-gradient(ellipse 1100px 620px at 50% -8%, var(--blue-tint) 0%, rgba(238,241,255,0) 62%),
+    linear-gradient(180deg, #F4F6FF 0%, #FFFFFF 78%);
+}
 .hero::before{
   content:"";
   position:absolute; left:-10%; right:-10%; top:-40px; height:480px;
-  background-image: radial-gradient(var(--blue-tint) 1.6px, transparent 1.6px);
+  background-image: radial-gradient(rgba(84,104,255,0.35) 1.6px, transparent 1.6px);
   background-size: 24px 24px;
   -webkit-mask-image: radial-gradient(ellipse 55% 60% at 50% 0%, black 35%, transparent 75%);
   mask-image: radial-gradient(ellipse 55% 60% at 50% 0%, black 35%, transparent 75%);

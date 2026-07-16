@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recherche à facettes en B2B : comment structurer vos filtres pour des produits multi-attributs ? — Heurix</title>
+<meta name="description" content="Concevoir des facettes dynamiques et bien ordonnées pour des catalogues techniques à attributs multiples.">
+<link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/facettes-b2b-multi-attributs.html">
+<link rel="alternate" hreflang="en" href="https://heurix.fr/en/blog/facettes-b2b-multi-attributs.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Recherche à facettes en B2B : comment structurer vos filtres pour des produits multi-attributs ? — Heurix">
+<meta property="og:description" content="Concevoir des facettes dynamiques et bien ordonnées pour des catalogues techniques à attributs multiples.">
+<meta property="og:image" content="https://heurix.fr/og-image.png">
+<meta property="og:url" content="https://heurix.fr/blog/facettes-b2b-multi-attributs.html">
+<meta property="og:locale" content="fr_FR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Recherche à facettes en B2B : comment structurer vos filtres pour des produits multi-attributs ? — Heurix">
+<meta name="twitter:description" content="Concevoir des facettes dynamiques et bien ordonnées pour des catalogues techniques à attributs multiples.">
+<meta name="twitter:image" content="https://heurix.fr/og-image.png">
+<link rel="icon" type="image/png" href="../favicon-32.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+
+<header>
+  <nav>
+    <a href="../index.html" class="logo"><img src="../logo.png" alt="Heurix"> HEURIX</a>
+    <div class="nav-links">
+      <a href="../index.html#probleme">Le problème</a>
+      <a href="../index.html#offre">L'offre</a>
+      <a href="../index.html#moteur">Le moteur</a>
+      <a href="../index.html#tarifs">Simulateur ROI</a>
+      <a href="../blog.html">Blog</a>
+    </div>
+    <a href="../en/blog/facettes-b2b-multi-attributs.html" class="lang-switch">EN</a>
+    <button id="heurix-search-btn" class="search-btn" aria-label="Rechercher sur le site" type="button">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    </button>
+    <a href="../index.html#contact" class="btn">Réserver un audit</a>
+  </nav>
+</header>
+<div id="heurix-search-modal" class="search-modal">
+  <div id="heurix-search-backdrop" class="search-backdrop" data-search-close></div>
+  <div class="search-panel">
+    <div class="search-panel-head">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input id="heurix-search-input" type="text" placeholder="Rechercher sur heurix.fr..." autocomplete="off">
+      <button class="search-close" data-search-close type="button">Échap</button>
+    </div>
+    <div id="heurix-search-results" class="search-results"></div>
+    <p id="heurix-search-empty" class="search-empty" hidden>Aucun résultat pour cette recherche. Essayez un autre terme.</p>
+  </div>
+</div>
+
+
+<article class="post">
+  <div class="wrap post-wrap">
+    <a href="../blog.html" class="back-link">← Tous les articles</a>
+    <div class="kicker">Blog · Juillet 2026</div>
+    <h1>Recherche à facettes en B2B : comment structurer vos filtres pour des produits multi-attributs ?</h1>
+    <p class="post-lede">Un acheteur cherche un composant électrique. Il se retrouve face à une barre latérale de 45 filtres mélangés — ampérage, voltage, couleur, matière, pas de vis. La navigation devient impossible.</p>
+
+    <div class="post-body">
+      <p>Les facettes (les filtres affichés à côté des résultats de recherche) sont particulièrement importantes en B2B technique, où un même produit peut avoir dix attributs différents et où l'acheteur sait précisément ce qu'il cherche. Mal structurées, elles nuisent autant à l'expérience qu'un moteur de recherche imprécis.</p>
+
+      <h2>Le problème le plus courant : tout afficher, tout le temps</h2>
+      <p>Par défaut, beaucoup de configurations affichent l'ensemble des attributs du catalogue comme filtres disponibles, sur toutes les pages de résultats. Résultat : sur une recherche de composants électriques, l'acheteur voit des filtres de couleur alors que ce critère n'a aucun sens pour ce type de produit, mélangés avec des filtres techniques réellement utiles (voltage, ampérage). La liste devient longue et peu lisible.</p>
+
+      <h2>La solution : des facettes dynamiques et contextuelles</h2>
+      <p>Une bonne configuration de facettes s'adapte à la catégorie recherchée : seuls les attributs pertinents pour les résultats affichés apparaissent comme filtres. Une recherche de vis affiche diamètre, longueur et matière ; une recherche de composant électrique affiche voltage et ampérage. Les attributs non pertinents pour cette catégorie disparaissent simplement.</p>
+      <p>Deux principes de conception à respecter :</p>
+      <ul>
+        <li><strong>L'ordre des filtres doit suivre l'intention de recherche de l'acheteur</strong>, pas l'ordre alphabétique ou l'ordre de création dans le back-office. Les attributs les plus discriminants pour ce type de produit doivent apparaître en premier.</li>
+        <li><strong>Le nombre de filtres visibles simultanément doit rester limité</strong> (5 à 8 dans l'idéal), avec une option pour en afficher davantage si besoin, plutôt que d'imposer une liste exhaustive dès le premier regard.</li>
+      </ul>
+
+      <blockquote>Une bonne facette répond à la question que l'acheteur se pose déjà dans sa tête. Une mauvaise facette lui pose une question à laquelle il n'avait pas pensé.</blockquote>
+
+      <h2>Un point de vigilance : les faux filtres</h2>
+      <p>Certains attributs techniques semblent pertinents mais génèrent en réalité très peu de valeur — un filtre avec une seule valeur possible sur 95% du catalogue n'aide personne à restreindre sa recherche. Une revue régulière des filtres réellement utilisés (via les statistiques de clics sur les facettes, quand elles sont disponibles) permet d'élaguer ce qui ne sert à rien.</p>
+
+      <h2>Évaluer vos filtres actuels</h2>
+      <p>Ouvrez une page de résultats sur une catégorie technique de votre site. Comptez le nombre de filtres affichés, et demandez-vous si un acheteur pressé saurait immédiatement lequel utiliser pour affiner sa recherche. Si la réponse est non, c'est un signal qu'une reconfiguration des facettes ferait gagner en clarté — et en conversion.</p>
+    </div>
+
+    <div class="post-footer-cta">
+      <p>On peut évaluer ensemble la structure actuelle de vos filtres.</p>
+      <a href="../index.html#contact" class="btn">Réserver un audit initial</a>
+    </div>
+  </div>
+</article>
+
+<footer>
+  <div class="wrap foot-grid">
+    <a href="../index.html" class="logo" style="font-size:15px;"><img src="../logo.png" alt="Heurix" style="height:22px;width:22px;"> HEURIX</a>
+    <div class="foot-links">
+      <a href="../blog.html">Blog</a>
+      <a href="../index.html#faq">FAQ</a>
+      <a href="../mentions-legales.html">Mentions légales</a>
+      <a href="mailto:contact@heurix.fr">contact@heurix.fr</a>
+      <a href="https://www.linkedin.com/company/heurix-search/" target="_blank" rel="noopener">LinkedIn</a>
+    </div>
+    <div class="foot-legal">
+      Heurix — Entreprise individuelle (micro-entreprise). SIRET [à compléter]. Conseil en systèmes et logiciels informatiques.<br>
+      © <span id="year">2026</span> Heurix. Tous droits réservés.
+    </div>
+  </div>
+</footer>
+
+<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+
+<script src="../search.js"></script>
+</body>
+</html>

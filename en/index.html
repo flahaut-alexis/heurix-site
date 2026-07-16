@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Heurix — Search & Discovery Consulting for E-commerce</title>
+<meta name="description" content="Audit, integration, and optimization of search engines for e-commerce sites. A poorly tuned engine costs you sales: Heurix fixes it.">
+<link rel="alternate" hreflang="fr" href="https://heurix.fr/index.html">
+<link rel="alternate" hreflang="en" href="https://heurix.fr/en/index.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Heurix — Search & Discovery Consulting for E-commerce">
+<meta property="og:description" content="Audit, integration, and optimization of search engines for e-commerce sites. A poorly tuned engine costs you sales: Heurix fixes it.">
+<meta property="og:image" content="https://heurix.fr/og-image.png">
+<meta property="og:url" content="https://heurix.fr/en/">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Heurix — Search & Discovery Consulting for E-commerce">
+<meta name="twitter:description" content="Audit, integration, and optimization of search engines for e-commerce sites.">
+<meta name="twitter:image" content="https://heurix.fr/og-image.png">
+<link rel="icon" type="image/png" href="../favicon-32.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+
+<header>
+  <nav>
+    <a href="index.html" class="logo"><img src="../logo.png" alt="Heurix"> HEURIX</a>
+    <div class="nav-links">
+      <a href="#probleme">The problem</a>
+      <a href="#offre">The offer</a>
+      <a href="#moteur">The engine</a>
+      <a href="#tarifs">ROI simulator</a>
+      <a href="blog.html">Blog</a>
+    </div>
+    <a href="../index.html" class="lang-switch">FR</a>
+    <button id="heurix-search-btn" class="search-btn" aria-label="Search the site" type="button">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    </button>
+    <a href="#contact" class="btn">Book an audit</a>
+  </nav>
+</header>
+
+<div id="heurix-search-modal" class="search-modal">
+  <div id="heurix-search-backdrop" class="search-backdrop" data-search-close></div>
+  <div class="search-panel">
+    <div class="search-panel-head">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input id="heurix-search-input" type="text" placeholder="Search heurix.fr..." autocomplete="off">
+      <button class="search-close" data-search-close type="button">Esc</button>
+    </div>
+    <div id="heurix-search-results" class="search-results"></div>
+    <p id="heurix-search-empty" class="search-empty" hidden>No results for this search. Try another term.</p>
+  </div>
+</div>
+
+<section class="hero">
+  <div class="wrap">
+    <div class="badge">Independent search &amp; discovery consulting</div>
+    <h1>Your search bar is turning away customers who were already ready to buy.</h1>
+    <p class="lede">A visitor who can't find what they're looking for in a few seconds leaves without complaint. Heurix audits, fixes, and optimizes your site's search engine — no rebuild, no six-month IT project.</p>
+    <div class="hero-cta">
+      <a href="#contact" class="btn">Book an initial audit</a>
+      <a href="#offre" class="btn btn-ghost">See the offer</a>
+    </div>
+
+    <div class="demo">
+      <div class="demo-bar">
+        <div class="demo-search">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <span id="query-text">turtlneck wool sweater</span>
+        </div>
+        <div class="toggle">
+          <button id="btn-bad" class="active bad" onclick="setDemo('bad')">Native engine</button>
+          <button id="btn-good" class="good" onclick="setDemo('good')">With Heurix</button>
+        </div>
+      </div>
+      <div class="demo-body">
+        <div id="demo-status" class="demo-status bad">0 exact matches — the typo breaks the search</div>
+        <div id="results" class="results"></div>
+      </div>
+    </div>
+
+    <div class="benefits">
+      <div class="benefit">
+        <div class="icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6z"/></svg></div>
+        <h4>Fast to launch</h4>
+        <p>An audit takes 2 to 3 days — not a months-long IT project.</p>
+      </div>
+      <div class="benefit">
+        <div class="icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg></div>
+        <h4>No bias</h4>
+        <p>Off-the-shelf tools or a proprietary engine: the answer depends on your needs, not on what we're trying to sell.</p>
+      </div>
+      <div class="benefit">
+        <div class="icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></div>
+        <h4>No lock-in</h4>
+        <p>Billed per mission. No subscription required to keep working together.</p>
+      </div>
+      <div class="benefit">
+        <div class="icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0116 0v1"/></svg></div>
+        <h4>Single point of contact</h4>
+        <p>One contact from diagnosis to implementation — no ticket that changes hands.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="tech-strip">
+  <div class="wrap">
+    <div class="tech-strip-row">
+      <span class="tech-strip-label">CMS audited</span>
+      <div class="tech-chips">
+        <span class="tech-chip">Shopify</span>
+        <span class="tech-chip">PrestaShop</span>
+        <span class="tech-chip">WooCommerce</span>
+        <span class="tech-chip">Magento</span>
+      </div>
+    </div>
+    <div class="tech-strip-row">
+      <span class="tech-strip-label">Engines configured</span>
+      <div class="tech-chips">
+        <span class="tech-chip">Algolia</span>
+        <span class="tech-chip">Typesense</span>
+        <span class="tech-chip">Elasticsearch</span>
+        <span class="tech-chip">Proprietary Heurix engine</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="probleme" class="soft">
+  <div class="wrap">
+    <div class="kicker">The problem</div>
+    <h2>Internal search is the least-monitored conversion point on an online store.</h2>
+    <div class="problem-grid reveal">
+      <p>The default search engine on most CMS platforms indexes the catalog, but understands neither typos, synonyms, nor the relevance order a buyer expects. <strong>The visitor sees a blank page or unrelated results — and closes the tab.</strong></p>
+      <p>Fixing this doesn't require a new e-commerce platform. It requires a precise audit of what's breaking relevance, then targeted configuration: business synonyms, typo tolerance, sorting by stock and margin, faceted filters that reflect how your customers actually search.</p>
+    </div>
+    <div class="stat-row reveal">
+      <div class="stat"><div class="num">€850</div><div class="lbl">day rate, billed per mission</div></div>
+      <div class="stat"><div class="num">2-3 d</div><div class="lbl">typical audit duration</div></div>
+      <div class="stat"><div class="num">48h</div><div class="lbl">response time to a request</div></div>
+      <div class="stat"><div class="num">100%</div><div class="lbl">independent from any vendor</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="offre">
+  <div class="wrap">
+    <div class="kicker">The offer</div>
+    <h2>Four steps, in the order that makes sense.</h2>
+    <p class="section-lede">Every mission starts with a short diagnostic. What follows depends on what it reveals — not a standard package decided in advance.</p>
+    <div class="services-flow reveal">
+      <div class="service">
+        <div class="service-icn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+        <div class="service-num">01 · Audit</div>
+        <h3>Diagnosis</h3>
+        <p>Assessment of current result relevance, friction points, and potential gain. Prioritized recommendations.</p>
+        <div class="service-duration mono">2-3 days</div>
+      </div>
+
+      <div class="service-arrow" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
+
+      <div class="service">
+        <div class="service-icn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"/><circle cx="9" cy="6" r="2"/><line x1="4" y1="12" x2="20" y2="12"/><circle cx="15" cy="12" r="2"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="9" cy="18" r="2"/></svg></div>
+        <div class="service-num">02 · Integration</div>
+        <h3>Configuration</h3>
+        <p>Catalog indexing, faceted filters, sorting, business synonyms, typo tolerance.</p>
+        <div class="service-duration mono">Depends on scope</div>
+      </div>
+
+      <div class="service-arrow" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
+
+      <div class="service">
+        <div class="service-icn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 2 8l10 5 10-5-10-5z"/><path d="M6 10v5c0 1.5 2.5 3 6 3s6-1.5 6-3v-5"/></svg></div>
+        <div class="service-num">03 · Training</div>
+        <h3>Autonomy</h3>
+        <p>Upskilling your teams on day-to-day search engine administration and tuning.</p>
+        <div class="service-duration mono">1-2 days</div>
+      </div>
+
+      <div class="service-arrow" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
+
+      <div class="service">
+        <div class="service-icn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg></div>
+        <div class="service-num">04 · Follow-up</div>
+        <h3>Ongoing optimization</h3>
+        <p>Ongoing performance monitoring, regular adjustments as your catalog and usage evolve.</p>
+        <div class="service-duration mono">Ongoing</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="moteur" class="soft">
+  <div class="wrap">
+    <div class="kicker">The engine</div>
+    <h2>A proprietary search and indexing engine.</h2>
+    <div class="engine reveal">
+      <div>
+        <p class="section-lede" style="margin-bottom:20px;">Heurix relies on its own search engine to concretely demonstrate what well-designed indexing changes on real results — and, depending on your needs, can offer it as an alternative to market solutions (Algolia, Elasticsearch, Typesense) rather than reconfiguring them.</p>
+        <p class="section-lede" style="margin-bottom:0;">The right choice depends on your catalog and your budget — including when that choice is to keep your current solution, better tuned.</p>
+      </div>
+      <div class="index-card">
+        <div class="line"><span class="k">index_size</span><span class="v">14,820 refs</span></div>
+        <div class="line"><span class="k">typo_tolerance</span><span class="v">2 characters</span></div>
+        <div class="line"><span class="k">facets</span><span class="v">size, color, price</span></div>
+        <div class="line"><span class="k">synonyms</span><span class="v">312 rules</span></div>
+        <div class="line"><span class="k">avg_query_time</span><span class="v">28 ms</span></div>
+        <div class="line"><span class="k">ranking</span><span class="v">stock &gt; margin &gt; relevance</span></div>
+      </div>
+    </div>
+
+    <div class="regex-block reveal">
+      <div class="regex-copy">
+        <h3>The advantage of regular expressions for technical catalogs</h3>
+        <p>On a general consumer catalog, keyword search is often enough. On a technical catalog, references follow structured formats — product codes, standards, dimensions — that simple text matching can't interpret.</p>
+        <p>The Heurix engine uses regular expressions (regex) to recognize these formats: a customer typing <code>M8x20</code>, <code>DIN933</code>, or a partial reference finds the right product, even without knowing the catalog's exact naming convention. This level of search is what makes the difference in highly technical sectors.</p>
+      </div>
+      <div class="demo-video">
+        <video autoplay muted loop playsinline poster="../heurix-demo-poster.jpg" aria-label="Demo: searching for an M8x20 screw with a native engine, then with Heurix">
+          <source src="../heurix-demo-outillage.webm" type="video/webm">
+          <source src="../heurix-demo-outillage.mp4" type="video/mp4">
+        </video>
+        <div class="demo-video-caption">Hardware sector example: searching "M8x20 stainless"</div>
+      </div>
+    </div>
+
+    <div class="verticals reveal">
+      <h3>The sectors where this approach changes the most</h3>
+      <p class="section-lede" style="margin-bottom:28px;">The larger and more technical a catalog, the more a well-tuned engine matters — because native search fails exactly where fine-grained filtering is needed most.</p>
+      <div class="vertical-grid">
+        <div class="vertical-card">
+          <div class="icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg></div>
+          <h4>Tools &amp; hardware</h4>
+          <p>Tens of thousands of references, standardized product codes (DIN, ISO), need to filter by dimension, material, compatibility.</p>
+        </div>
+        <div class="vertical-card">
+          <div class="icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></div>
+          <h4>Spare parts &amp; industry</h4>
+          <p>Search by manufacturer reference or equivalence, tolerance for multiple code formats depending on the supplier.</p>
+        </div>
+        <div class="vertical-card">
+          <div class="icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6z"/></svg></div>
+          <h4>Electrical &amp; electronics</h4>
+          <p>Precise technical specs (voltage, amperage, standards), catalogs that evolve continuously.</p>
+        </div>
+        <div class="vertical-card">
+          <div class="icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21V9l9-6 9 6v12"/><path d="M9 21v-6h6v6"/></svg></div>
+          <h4>Professional equipment &amp; construction</h4>
+          <p>High volumes, professional buyers who search by exact reference more than by descriptive keyword.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="pourqui">
+  <div class="wrap">
+    <div class="kicker">Who it's for</div>
+    <h2>Is Heurix right for you?</h2>
+    <p class="section-lede">You're a sizeable SME or a mid-market company, your catalog has become too technical and too large for your platform's native engine, and you don't yet have a dedicated search solution? Heurix is right for you.</p>
+    <div class="icp-grid reveal">
+      <div class="icp-card">
+        <div class="icp-label mono">Size</div>
+        <p>Sizeable SME to mid-market, 50 to 250 employees</p>
+      </div>
+      <div class="icp-card">
+        <div class="icp-label mono">Revenue</div>
+        <p>€10M to €50M in annual e-commerce revenue</p>
+      </div>
+      <div class="icp-card">
+        <div class="icp-label mono">Catalog</div>
+        <p>Large technical catalog (tens of thousands of references), fine-grained filters needed: dimensions, compatibility, standards</p>
+      </div>
+      <div class="icp-card">
+        <div class="icp-label mono">Signal</div>
+        <p>Not yet equipped with a dedicated engine — native solution only, or a basic tool never properly configured</p>
+      </div>
+      <div class="icp-card">
+        <div class="icp-label mono">Pain point</div>
+        <p>Internal search conversion rate lagging, support tickets about failed searches, catalog that has outgrown native engine capabilities</p>
+      </div>
+      <div class="icp-card">
+        <div class="icp-label mono">Decision maker</div>
+        <p>Head of E-commerce, Digital Director, or CTO — budget decidable without a heavy purchasing committee</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="tarifs" class="soft">
+  <div class="wrap">
+    <div class="kicker">Simulator</div>
+    <h2>Estimate the leverage of a better-tuned search engine.</h2>
+    <p class="section-lede">Internal search often accounts for only 10 to 20% of a site's traffic — but for many e-commerce businesses, it drives 30 to 50% of revenue. It's the site's most valuable segment, and the least often optimized. Adjust the sliders to your situation: the calculation updates live.</p>
+
+    <div class="roi-simulator reveal">
+
+      <div class="roi-inputs">
+        <h4>Configure your assumptions</h4>
+        <p class="roi-inputs-intro">Adjust the sliders to reflect your e-commerce situation.</p>
+
+        <div class="roi-field roi-slider">
+          <div class="roi-slider-head">
+            <label for="roi-ca">Annual revenue</label>
+            <span id="roi-ca-val" class="roi-slider-badge mono">15 M€</span>
+          </div>
+          <input type="range" id="roi-ca" min="5" max="50" step="1" value="15">
+          <div class="roi-range-hint"><span>€5M</span><span class="roi-range-mid">Target: SME &amp; Mid-Market</span><span>€50M</span></div>
+        </div>
+
+        <div class="roi-field roi-slider">
+          <div class="roi-slider-head">
+            <label for="roi-share">Share of revenue from internal search</label>
+            <span id="roi-share-val" class="roi-slider-badge mono">30%</span>
+          </div>
+          <input type="range" id="roi-share" min="10" max="50" step="5" value="30">
+          <div class="roi-range-hint"><span>10%</span><span class="roi-range-mid">E-commerce average: ~30%</span><span>50%</span></div>
+        </div>
+
+        <div class="roi-field roi-slider">
+          <div class="roi-slider-head">
+            <label for="roi-lift">Expected conversion gain from search</label>
+            <span id="roi-lift-val" class="roi-slider-badge mono">12%</span>
+          </div>
+          <input type="range" id="roi-lift" min="3" max="25" step="1" value="12">
+          <div class="roi-range-hint"><span>3% conservative</span><span class="roi-range-mid">Typical observed gain: 10 to 15%</span><span>25% ambitious</span></div>
+        </div>
+
+        <div class="roi-field roi-slider">
+          <div class="roi-slider-head">
+            <label for="roi-margin">Net commercial margin</label>
+            <span id="roi-margin-val" class="roi-slider-badge mono">40%</span>
+          </div>
+          <input type="range" id="roi-margin" min="15" max="70" step="5" value="40">
+          <div class="roi-range-hint"><span>15%</span><span class="roi-range-mid">Depends on your sector</span><span>70%</span></div>
+        </div>
+      </div>
+
+      <div class="roi-results">
+        <div class="roi-results-top">
+          <div class="kicker" style="color:#8FE3BC;">Estimated impact</div>
+          <h4>Your potential gains</h4>
+
+          <div class="roi-metric">
+            <div class="roi-metric-label">Annual revenue gain</div>
+            <div class="roi-metric-value mono" id="roi-out-gainca">—</div>
+          </div>
+          <div class="roi-metric">
+            <div class="roi-metric-label">Net annual margin gain <span class="roi-tag">Cash</span></div>
+            <div class="roi-metric-value mono roi-metric-green" id="roi-out-gainmarge">—</div>
+          </div>
+
+          <div class="roi-mini-grid">
+            <div class="roi-mini-tile">
+              <div class="roi-mini-label">ROI multiplier</div>
+              <div class="roi-mini-value mono" id="roi-out-roi">—</div>
+              <div class="roi-mini-sub">on your investment</div>
+            </div>
+            <div class="roi-mini-tile">
+              <div class="roi-mini-label">Mission paid back in</div>
+              <div class="roi-mini-value mono" id="roi-out-payback">—</div>
+              <div class="roi-mini-sub">only</div>
+            </div>
+          </div>
+
+          <div class="roi-compare">
+            <div class="roi-compare-row">
+              <span>Estimated mission cost</span>
+              <span class="mono" id="roi-out-cost">—</span>
+            </div>
+            <div class="roi-compare-bar">
+              <div class="roi-bar-cost" id="roi-bar-cost"></div>
+              <div class="roi-bar-gain" id="roi-bar-gain"></div>
+            </div>
+          </div>
+
+          <div id="roi-sr-live" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
+        </div>
+
+        <a href="#contact" class="btn roi-cta">Get my personalized ROI report</a>
+        <div class="roi-cta-note">Final quote provided, within 48h.</div>
+
+        <button type="button" id="roi-pdf-toggle" class="roi-pdf-toggle">Download this report as PDF →</button>
+        <form id="roi-pdf-form" class="roi-pdf-form" hidden>
+          <input type="text" id="roi-pdf-name" placeholder="First name" required>
+          <input type="email" id="roi-pdf-email" placeholder="Business email" required>
+          <button type="submit" class="btn roi-cta" id="roi-pdf-submit">Generate my PDF report</button>
+          <div id="roi-pdf-feedback" class="roi-pdf-feedback"></div>
+        </form>
+      </div>
+
+    </div>
+    <p class="form-note" style="margin-top:20px;">Indicative mission cost based on catalog size: from €4,250 excl. VAT under €10M revenue, up to €8,500 excl. VAT for larger volumes. Impact assumptions are order-of-magnitude estimates to refine together during the audit, not a promise.</p>
+  </div>
+</section>
+
+<section id="blog">
+  <div class="wrap">
+    <div class="kicker">Blog</div>
+    <h2>Notes on search and e-commerce.</h2>
+    <p class="section-lede">Concrete cases and technical observations, published monthly.</p>
+    <div class="blog-grid reveal">
+      <a class="blog-card" href="blog/recherche-reference-sku-b2b.html">
+        <div class="blog-date mono">July 2026</div>
+        <h3>How to configure search by reference (SKU, DIN, ISO) on a B2B e-commerce site?</h3>
+        <p>Why default engines fail on technical product codes, and how regex changes the game.</p>
+        <span class="blog-link">Read the article →</span>
+      </a>
+      <a class="blog-card" href="blog/impact-ebitda-recherche-interne.html">
+        <div class="blog-date mono">July 2026</div>
+        <h3>Poor internal search: what's the real impact on EBITDA?</h3>
+        <p>The economic leverage of internal search, and how to estimate precisely what it's costing you today.</p>
+        <span class="blog-link">Read the article →</span>
+      </a>
+      <a class="blog-card" href="blog/5-signes-recherche-vous-coute-des-ventes.html">
+        <div class="blog-date mono">July 2026</div>
+        <h3>5 signs your search engine is costing you sales</h3>
+        <p>Concrete symptoms to check on your own site, no technical tools required, in under ten minutes.</p>
+        <span class="blog-link">Read the article →</span>
+      </a>
+    </div>
+    <div class="blog-cta">
+      <a href="blog.html" class="btn btn-ghost">See all articles</a>
+    </div>
+  </div>
+</section>
+
+<section id="faq" class="soft">
+  <div class="wrap">
+    <div class="kicker">Frequently asked questions</div>
+    <h2>What people ask me the most.</h2>
+    <div class="faq-list reveal">
+
+      <details class="faq-item">
+        <summary>How much does a mission cost?</summary>
+        <div class="faq-answer">
+          <p>Billed daily, €850/day excl. VAT, quoted based on exact scope. As a guide: an audit alone takes 2 to 3 days, a full mission (audit + integration) costs between €4,250 and €8,500 excl. VAT depending on catalog size. Use the <a href="#tarifs">ROI simulator</a> above to estimate the expected gain against this cost.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>What if the results don't show up?</summary>
+        <div class="faq-answer">
+          <p>No consultant can guarantee a percentage gain in advance — the simulator's numbers are order-of-magnitude estimates, not a contractual promise. What limits your risk: no subscription, no long-term commitment. The initial audit (2 to 3 days) gives you a concrete, quantifiable diagnosis before deciding to go further. If the diagnosis doesn't reveal a significant gain, you'll know at that stage, for a limited cost.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>Do I need to change e-commerce platforms?</summary>
+        <div class="faq-answer">
+          <p>No. Heurix works on the search layer of your existing site (Shopify, PrestaShop, WooCommerce, Magento, or other), without touching the rest of your architecture. That's exactly the alternative to a full rebuild: in most cases, the problem is solved by reconfiguring or connecting a search engine, not by switching CMS.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>Proprietary Heurix engine or Algolia / Elasticsearch / Typesense — how do you choose?</summary>
+        <div class="faq-answer">
+          <p>The choice is made during the audit, based on your catalog, your budget, and what you already have in place. If your current solution is simply misconfigured, we fix it — no need to pay for a new tool. If no market solution fits your case (highly technical catalog, need for custom regex, tight budget), the proprietary Heurix engine becomes a relevant option. The goal is never to sell you a default tool.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>How long does a mission take?</summary>
+        <div class="faq-answer">
+          <p>The initial audit takes 2 to 3 days. The integration that follows depends on the scope defined after the diagnostic. Either way, this stays far from a months-long IT project — that's an operating principle, not just a sales pitch.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>Do you work with my industry?</summary>
+        <div class="faq-answer">
+          <p>Heurix is particularly relevant for large, technical catalogs — tools &amp; hardware, spare parts, electrical/electronics, professional equipment/construction in particular (see <a href="#moteur">the Engine section</a> for detail). The principle applies to any site with an underused internal search engine, regardless of sector; these technical catalogs are simply where the gain is clearest.</p>
+        </div>
+      </details>
+
+    </div>
+  </div>
+</section>
+
+<section class="cta-section" id="contact">
+  <div class="wrap">
+    <div class="kicker">Quote on request</div>
+    <h2>Book your initial audit.</h2>
+    <p class="section-lede">Describe your site in a couple of lines — you'll get a priced quote and a proposed time slot within 48 business hours. Feel free to reuse the numbers from the simulator above.</p>
+
+    <form class="cta-form" id="heurix-form">
+      <label for="name">Name</label>
+      <input id="name" name="name" type="text" required>
+      <label for="company">Company</label>
+      <input id="company" name="company" type="text" required>
+      <label for="email">Business email</label>
+      <input id="email" name="email" type="email" required>
+      <label for="site">E-commerce site (URL)</label>
+      <input id="site" name="site" type="url" placeholder="https://">
+      <label for="catalog-size">Approximate catalog size</label>
+      <select id="catalog-size" name="catalog_size">
+        <option value="">Select…</option>
+        <option value="< 10,000 refs">Under 10,000 references</option>
+        <option value="10,000 - 50,000 refs">10,000 to 50,000 references</option>
+        <option value="> 50,000 refs">Over 50,000 references</option>
+        <option value="Not sure">Not sure</option>
+      </select>
+      <label for="msg">Your need</label>
+      <textarea id="msg" name="message" rows="4" placeholder="E.g.: around 30,000 references, native PrestaShop engine never reconfigured, lots of searches returning no results on technical references."></textarea>
+      <button type="submit" class="btn" id="submit-btn">Send request</button>
+      <div id="form-feedback"></div>
+    </form>
+    <p class="contact-direct">Prefer to write directly? <a href="mailto:contact@heurix.fr">contact@heurix.fr</a></p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot-grid">
+    <a href="index.html" class="logo" style="font-size:15px;"><img src="../logo.png" alt="Heurix" style="height:22px;width:22px;"> HEURIX</a>
+    <div class="foot-links">
+      <a href="blog.html">Blog</a>
+      <a href="#faq">FAQ</a>
+      <a href="mentions-legales.html">Legal notice</a>
+      <a href="mailto:contact@heurix.fr">contact@heurix.fr</a>
+      <a href="https://www.linkedin.com/company/heurix-search/" target="_blank" rel="noopener">LinkedIn</a>
+    </div>
+    <div class="foot-legal">
+      Heurix — Sole proprietorship (French micro-entreprise). SIRET [to be added]. IT systems and software consulting.<br>
+      © <span id="year">2026</span> Heurix. All rights reserved.
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="../search-en.js"></script>
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  const DATA = {
+    bad: {
+      status: {cls:"bad", text:"0 exact matches — the typo breaks the search"},
+      results: [
+        {name:"No direct result for “turtlneck”", tag:"0 items", dim:true},
+        {name:"Approximate results shown at random:", tag:"", dim:true},
+        {name:"Sleeveless cotton sweater — out of stock", tag:"unavailable", dim:true},
+        {name:"Wool cushion cover", tag:"unrelated", dim:true},
+      ]
+    },
+    good: {
+      status: {cls:"good", text:"4 relevant results — sorted by availability and relevance"},
+      results: [
+        {name:'<mark>Turtleneck</mark> wool sweater, merino — camel', tag:"in stock"},
+        {name:'<mark>Turtleneck</mark> wool-blend sweater — charcoal', tag:"in stock"},
+        {name:'<mark>Turtleneck</mark> ribbed wool sweater — off-white', tag:"3 left"},
+        {name:'<mark>Turtleneck</mark> wool sweater — capsule edition', tag:"in stock"},
+      ]
+    }
+  };
+
+  function setDemo(state){
+    const d = DATA[state];
+    document.getElementById('btn-bad').classList.toggle('active', state==='bad');
+    document.getElementById('btn-good').classList.toggle('active', state==='good');
+    const statusEl = document.getElementById('demo-status');
+    statusEl.className = 'demo-status ' + d.status.cls;
+    statusEl.textContent = d.status.text;
+
+    const resultsEl = document.getElementById('results');
+    resultsEl.innerHTML = '';
+    d.results.forEach(r => {
+      const div = document.createElement('div');
+      div.className = 'result' + (r.dim ? ' dim' : '');
+      div.innerHTML = `<span class="name">${r.name}</span><span class="tag">${r.tag}</span>`;
+      resultsEl.appendChild(div);
+    });
+  }
+  setDemo('bad');
+
+  // Scroll reveal
+  const revealEls = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    revealEls.forEach(el => io.observe(el));
+  } else {
+    revealEls.forEach(el => el.classList.add('in'));
+  }
+
+  // ROI simulator
+  function formatEuro(value){
+    if (Math.abs(value) >= 1000000) {
+      return (value / 1000000).toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + ' M€';
+    }
+    return '€' + Math.round(value).toLocaleString('en-US');
+  }
+
+  function computeROI(){
+    const caInput = document.getElementById('roi-ca');
+    const shareInput = document.getElementById('roi-share');
+    const liftInput = document.getElementById('roi-lift');
+    const marginInput = document.getElementById('roi-margin');
+
+    const ca = parseFloat(caInput.value) * 1000000;
+    const share = parseFloat(shareInput.value) / 100;
+    const lift = parseFloat(liftInput.value) / 100;
+    const margin = parseFloat(marginInput.value) / 100;
+
+    document.getElementById('roi-ca-val').textContent = caInput.value + ' M€';
+    document.getElementById('roi-share-val').textContent = shareInput.value + '%';
+    document.getElementById('roi-lift-val').textContent = liftInput.value + '%';
+    document.getElementById('roi-margin-val').textContent = marginInput.value + '%';
+
+    caInput.setAttribute('aria-valuetext', caInput.value + ' million euros');
+    shareInput.setAttribute('aria-valuetext', shareInput.value + ' percent');
+    liftInput.setAttribute('aria-valuetext', liftInput.value + ' percent');
+    marginInput.setAttribute('aria-valuetext', marginInput.value + ' percent');
+
+    let cost = 5800;
+    if (ca < 10000000) {
+      cost = 4250;
+    } else if (ca >= 25000000) {
+      cost = 8500;
+    }
+
+    const caSearch = ca * share;
+    const gainCA = caSearch * lift;
+    const gainMarge = gainCA * margin;
+    const roi = gainMarge / cost;
+    const paybackDays = gainMarge > 0 ? Math.round((cost / gainMarge) * 365) : null;
+
+    document.getElementById('roi-out-gainca').textContent = formatEuro(gainCA);
+    document.getElementById('roi-out-gainmarge').textContent = formatEuro(gainMarge);
+    document.getElementById('roi-out-roi').textContent = roi.toFixed(1) + 'x';
+    document.getElementById('roi-out-cost').textContent = '€' + cost.toLocaleString('en-US');
+
+    const paybackEl = document.getElementById('roi-out-payback');
+    let paybackText = '—';
+    if (paybackDays === null) {
+      paybackText = '—';
+    } else if (paybackDays <= 1) {
+      paybackText = '1 day';
+    } else if (paybackDays < 30) {
+      paybackText = paybackDays + ' days';
+    } else {
+      paybackText = (paybackDays / 30).toFixed(1) + ' months';
+    }
+    paybackEl.textContent = paybackText;
+
+    const total = cost + gainMarge;
+    const costPercent = total > 0 ? Math.max((cost / total) * 100, 2) : 50;
+    document.getElementById('roi-bar-cost').style.width = costPercent + '%';
+    document.getElementById('roi-bar-gain').style.width = (100 - costPercent) + '%';
+
+    return {
+      gainCA: formatEuro(gainCA),
+      gainMarge: formatEuro(gainMarge),
+      roi: roi.toFixed(1) + 'x',
+      payback: paybackText
+    };
+  }
+
+  function announceROISummary(){
+    const r = computeROI();
+    const liveRegion = document.getElementById('roi-sr-live');
+    if (liveRegion) {
+      liveRegion.textContent = `Estimated annual revenue gain: ${r.gainCA}. Net annual margin gain: ${r.gainMarge}. Return on investment: ${r.roi}. Mission paid back in ${r.payback}.`;
+    }
+  }
+
+  ['roi-ca','roi-share','roi-lift','roi-margin'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.addEventListener('input', computeROI);
+      el.addEventListener('change', announceROISummary);
+    }
+  });
+  computeROI();
+
+  // PDF report download (lead capture)
+  const pdfToggle = document.getElementById('roi-pdf-toggle');
+  const pdfForm = document.getElementById('roi-pdf-form');
+  const pdfFeedback = document.getElementById('roi-pdf-feedback');
+  const pdfSubmit = document.getElementById('roi-pdf-submit');
+
+  pdfToggle.addEventListener('click', () => {
+    pdfForm.hidden = !pdfForm.hidden;
+    pdfToggle.style.display = pdfForm.hidden ? 'block' : 'none';
+  });
+
+  pdfForm.addEventListener('submit', async function(e){
+    e.preventDefault();
+    const name = document.getElementById('roi-pdf-name').value;
+    const email = document.getElementById('roi-pdf-email').value;
+
+    pdfSubmit.disabled = true;
+    pdfSubmit.textContent = "Generating…";
+
+    try {
+      await fetch("https://formsubmit.co/ajax/contact@heurix.fr", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify({
+          _subject: "New lead — ROI report download (EN site)",
+          first_name: name,
+          email: email,
+          revenue: document.getElementById('roi-ca-val').textContent,
+          search_share: document.getElementById('roi-share-val').textContent,
+          conversion_gain: document.getElementById('roi-lift-val').textContent,
+          margin: document.getElementById('roi-margin-val').textContent,
+          estimated_revenue_gain: document.getElementById('roi-out-gainca').textContent,
+          estimated_margin_gain: document.getElementById('roi-out-gainmarge').textContent
+        })
+      });
+    } catch (err) {
+      // The PDF still generates even if the lead notification fails
+    }
+
+    generateROIPdf(name);
+
+    pdfFeedback.textContent = "Report downloaded — thank you!";
+    pdfFeedback.style.color = "#8FE3BC";
+    pdfSubmit.disabled = false;
+    pdfSubmit.textContent = "Generate my PDF report";
+  });
+
+  function generateROIPdf(name){
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    const ink = [18, 20, 43];
+    const blue = [84, 104, 255];
+    const muted = [91, 94, 118];
+    const green = [31, 170, 107];
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(22);
+    doc.setTextColor(...blue);
+    doc.text('HEURIX', 20, 25);
+
+    doc.setFontSize(11);
+    doc.setTextColor(...muted);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Search & discovery consulting for e-commerce', 20, 32);
+
+    doc.setDrawColor(230, 230, 235);
+    doc.line(20, 38, 190, 38);
+
+    doc.setFontSize(16);
+    doc.setTextColor(...ink);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Your personalized ROI report', 20, 50);
+
+    doc.setFontSize(10);
+    doc.setTextColor(...muted);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Prepared for ' + (name || 'you') + ' — ' + new Date().toLocaleDateString('en-US'), 20, 57);
+
+    doc.setFontSize(12);
+    doc.setTextColor(...ink);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Assumptions entered', 20, 72);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10.5);
+    const inputs = [
+      ['Annual revenue', document.getElementById('roi-ca-val').textContent],
+      ['Share of revenue from internal search', document.getElementById('roi-share-val').textContent],
+      ['Expected conversion gain', document.getElementById('roi-lift-val').textContent],
+      ['Net commercial margin', document.getElementById('roi-margin-val').textContent],
+    ];
+    let y = 80;
+    inputs.forEach(row => {
+      doc.setTextColor(...muted);
+      doc.text(row[0], 20, y);
+      doc.setTextColor(...ink);
+      doc.text(row[1], 130, y);
+      y += 7;
+    });
+
+    y += 8;
+    doc.setFontSize(12);
+    doc.setTextColor(...ink);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Estimated results', 20, y);
+    y += 8;
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10.5);
+    const outputs = [
+      ['Estimated annual revenue gain', document.getElementById('roi-out-gainca').textContent],
+      ['Net annual margin gain', document.getElementById('roi-out-gainmarge').textContent],
+      ['Indicative mission cost', document.getElementById('roi-out-cost').textContent],
+      ['ROI multiplier', document.getElementById('roi-out-roi').textContent],
+      ['Mission paid back in', document.getElementById('roi-out-payback').textContent],
+    ];
+    outputs.forEach(row => {
+      doc.setTextColor(...muted);
+      doc.text(row[0], 20, y);
+      doc.setTextColor(...green);
+      doc.setFont('helvetica', 'bold');
+      doc.text(row[1], 130, y);
+      doc.setFont('helvetica', 'normal');
+      y += 7;
+    });
+
+    y += 12;
+    doc.setDrawColor(230, 230, 235);
+    doc.line(20, y, 190, y);
+    y += 8;
+    doc.setFontSize(9);
+    doc.setTextColor(...muted);
+    doc.text('These figures are order-of-magnitude estimates based on your assumptions, to refine', 20, y);
+    y += 5;
+    doc.text('together during an audit. They are not a contractual commitment.', 20, y);
+    y += 12;
+    doc.setTextColor(...blue);
+    doc.setFont('helvetica', 'bold');
+    doc.text('contact@heurix.fr  —  heurix.fr', 20, y);
+
+    doc.save('heurix-roi-report.pdf');
+  }
+
+  /*
+    CONTACT FORM — FORMSUBMIT (free, no signup required)
+    This form sends directly to contact@heurix.fr (Zimbra mailbox hosted on OVH).
+    IMPORTANT: the first time the form is submitted, FormSubmit sends a
+    confirmation email to contact@heurix.fr. That link must be clicked once
+    to activate delivery — already done when the FR form was first configured,
+    since both forms deliver to the same address.
+  */
+  const FORMSUBMIT_ENDPOINT = "https://formsubmit.co/ajax/contact@heurix.fr";
+
+  const form = document.getElementById('heurix-form');
+  const feedback = document.getElementById('form-feedback');
+  const submitBtn = document.getElementById('submit-btn');
+
+  form.addEventListener('submit', async function(e){
+    e.preventDefault();
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Sending…";
+
+    try {
+      const formData = new FormData(form);
+      const payload = Object.fromEntries(formData.entries());
+
+      const res = await fetch(FORMSUBMIT_ENDPOINT, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
+
+      feedback.style.display = 'block';
+      if (res.ok) {
+        feedback.style.color = 'var(--green)';
+        feedback.textContent = "Thank you, your request has been sent.";
+        form.reset();
+      } else {
+        feedback.style.color = 'var(--red-muted)';
+        feedback.textContent = "Something went wrong — please try again or email us directly at contact@heurix.fr.";
+      }
+    } catch (err) {
+      feedback.style.display = 'block';
+      feedback.style.color = 'var(--red-muted)';
+      feedback.textContent = "Something went wrong — please try again or email us directly at contact@heurix.fr.";
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Send request";
+    }
+  });
+</script>
+
+</body>
+</html>

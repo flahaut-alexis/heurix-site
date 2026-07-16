@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comment configurer la recherche par référence (SKU, DIN, ISO) sur un e-commerce B2B ? — Heurix</title>
+<meta name="description" content="Pourquoi les moteurs par défaut échouent sur les codes produits techniques, et comment les expressions régulières corrigent le problème.">
+<link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/recherche-reference-sku-b2b.html">
+<link rel="alternate" hreflang="en" href="https://heurix.fr/en/blog/recherche-reference-sku-b2b.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Comment configurer la recherche par référence (SKU, DIN, ISO) sur un e-commerce B2B ? — Heurix">
+<meta property="og:description" content="Pourquoi les moteurs par défaut échouent sur les codes produits techniques, et comment les expressions régulières corrigent le problème.">
+<meta property="og:image" content="https://heurix.fr/og-image.png">
+<meta property="og:url" content="https://heurix.fr/blog/recherche-reference-sku-b2b.html">
+<meta property="og:locale" content="fr_FR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Comment configurer la recherche par référence (SKU, DIN, ISO) sur un e-commerce B2B ? — Heurix">
+<meta name="twitter:description" content="Pourquoi les moteurs par défaut échouent sur les codes produits techniques, et comment les expressions régulières corrigent le problème.">
+<meta name="twitter:image" content="https://heurix.fr/og-image.png">
+<link rel="icon" type="image/png" href="../favicon-32.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+
+<header>
+  <nav>
+    <a href="../index.html" class="logo"><img src="../logo.png" alt="Heurix"> HEURIX</a>
+    <div class="nav-links">
+      <a href="../index.html#probleme">Le problème</a>
+      <a href="../index.html#offre">L'offre</a>
+      <a href="../index.html#moteur">Le moteur</a>
+      <a href="../index.html#tarifs">Simulateur ROI</a>
+      <a href="../blog.html">Blog</a>
+    </div>
+    <a href="../en/blog/recherche-reference-sku-b2b.html" class="lang-switch">EN</a>
+    <button id="heurix-search-btn" class="search-btn" aria-label="Rechercher sur le site" type="button">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    </button>
+    <a href="../index.html#contact" class="btn">Réserver un audit</a>
+  </nav>
+</header>
+<div id="heurix-search-modal" class="search-modal">
+  <div id="heurix-search-backdrop" class="search-backdrop" data-search-close></div>
+  <div class="search-panel">
+    <div class="search-panel-head">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input id="heurix-search-input" type="text" placeholder="Rechercher sur heurix.fr..." autocomplete="off">
+      <button class="search-close" data-search-close type="button">Échap</button>
+    </div>
+    <div id="heurix-search-results" class="search-results"></div>
+    <p id="heurix-search-empty" class="search-empty" hidden>Aucun résultat pour cette recherche. Essayez un autre terme.</p>
+  </div>
+</div>
+
+
+<article class="post">
+  <div class="wrap post-wrap">
+    <a href="../blog.html" class="back-link">← Tous les articles</a>
+    <div class="kicker">Blog · Juillet 2026</div>
+    <h1>Comment configurer la recherche par référence (SKU, DIN, ISO) sur un e-commerce B2B ?</h1>
+    <p class="post-lede">Un acheteur tape « M8x20 ». Le moteur cherche « M8x20 » exactement. Votre base de données contient « M8 x 20 ». Résultat : zéro correspondance, alors que le produit est en stock.</p>
+
+    <div class="post-body">
+      <p>Sur un catalogue grand public, la recherche par mots-clés suffit dans la plupart des cas : un visiteur tape « robe rouge », le moteur trouve des robes rouges. Sur un catalogue B2B technique, le problème est différent — l'acheteur ne cherche pas une catégorie, il cherche une référence exacte : une désignation de vis, une norme, un code fournisseur.</p>
+
+      <h2>Pourquoi la recherche par mot-clé échoue sur les références techniques</h2>
+      <p>Les moteurs de recherche par défaut découpent le texte mot par mot (on parle de tokenisation) et cherchent des correspondances entre ces mots. Ce mécanisme fonctionne bien pour du texte naturel, mais mal pour des chaînes de caractères structurées comme <code>M8x20</code> ou <code>DIN 933</code>.</p>
+      <p>Le problème vient des variations de format : la même référence peut être enregistrée <code>DIN933</code>, <code>DIN-933</code> ou <code>DIN 933</code> selon qui a rempli la fiche produit, et la requête tapée par le client suit rarement le même format. Le moteur ne fait pas le lien — pour lui, ce sont des chaînes différentes.</p>
+
+      <h2>La solution : expressions régulières et normalisation</h2>
+      <p>Deux mécanismes complémentaires permettent de corriger ce problème :</p>
+      <ul>
+        <li><strong>La normalisation des requêtes avant indexation :</strong> les espaces, tirets et variations de casse sont uniformisés à la fois dans le catalogue et dans la requête tapée, avant toute comparaison. <code>DIN-933</code>, <code>DIN 933</code> et <code>din933</code> deviennent équivalents.</li>
+        <li><strong>Les expressions régulières (regex) :</strong> elles permettent de reconnaître un format de référence (par exemple une désignation de vis metric) et d'en extraire les composants pertinents — diamètre, longueur, norme — plutôt que de chercher une correspondance texte à texte.</li>
+      </ul>
+      <p>Concrètement, un client qui tape une référence partielle ou légèrement mal formatée retrouve quand même le bon produit, parce que le moteur comprend la structure de la référence plutôt que de se contenter de comparer des caractères.</p>
+
+      <blockquote>Un acheteur professionnel qui ne trouve pas une référence qu'il connaît déjà ne cherche pas ailleurs sur votre site — il va chez le concurrent.</blockquote>
+
+      <h2>Comment évaluer votre situation</h2>
+      <p>Un test simple : prenez cinq références de votre catalogue, tapez-les dans votre moteur avec un format légèrement différent de celui enregistré (espace en plus, tiret en moins, casse différente). Si plus d'une requête sur cinq échoue, le sujet mérite un audit — c'est un problème structurel de configuration, pas un manque de contenu.</p>
+    </div>
+
+    <div class="post-footer-cta">
+      <p>Vous suspectez que vos clients n'arrivent pas à saisir vos codes produits ?</p>
+      <a href="../index.html#contact" class="btn">Demander un audit de pertinence</a>
+    </div>
+  </div>
+</article>
+
+<footer>
+  <div class="wrap foot-grid">
+    <a href="../index.html" class="logo" style="font-size:15px;"><img src="../logo.png" alt="Heurix" style="height:22px;width:22px;"> HEURIX</a>
+    <div class="foot-links">
+      <a href="../blog.html">Blog</a>
+      <a href="../index.html#faq">FAQ</a>
+      <a href="../mentions-legales.html">Mentions légales</a>
+      <a href="mailto:contact@heurix.fr">contact@heurix.fr</a>
+      <a href="https://www.linkedin.com/company/heurix-search/" target="_blank" rel="noopener">LinkedIn</a>
+    </div>
+    <div class="foot-legal">
+      Heurix — Entreprise individuelle (micro-entreprise). SIRET [à compléter]. Conseil en systèmes et logiciels informatiques.<br>
+      © <span id="year">2026</span> Heurix. Tous droits réservés.
+    </div>
+  </div>
+</footer>
+
+<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+
+<script src="../search.js"></script>
+</body>
+</html>
