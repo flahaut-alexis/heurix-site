@@ -5,6 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Heurix — Conseil en moteurs de recherche pour le e-commerce</title>
 <meta name="description" content="Audit, intégration et optimisation de moteurs de recherche pour sites e-commerce. Un moteur mal réglé coûte des ventes : Heurix le corrige.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Heurix — Conseil en moteurs de recherche pour le e-commerce">
+<meta property="og:description" content="Audit, intégration et optimisation de moteurs de recherche pour sites e-commerce. Un moteur mal réglé coûte des ventes : Heurix le corrige.">
+<meta property="og:image" content="https://heurix.fr/og-image.png">
+<meta property="og:url" content="https://heurix.fr/">
+<meta property="og:locale" content="fr_FR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Heurix — Conseil en moteurs de recherche pour le e-commerce">
+<meta name="twitter:description" content="Audit, intégration et optimisation de moteurs de recherche pour sites e-commerce.">
+<meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -75,6 +85,29 @@
         <div class="icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0116 0v1"/></svg></div>
         <h4>Interlocuteur unique</h4>
         <p>Un seul contact du diagnostic à la mise en œuvre — pas de ticket qui change de main.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="tech-strip">
+  <div class="wrap">
+    <div class="tech-strip-row">
+      <span class="tech-strip-label">CMS audités</span>
+      <div class="tech-chips">
+        <span class="tech-chip">Shopify</span>
+        <span class="tech-chip">PrestaShop</span>
+        <span class="tech-chip">WooCommerce</span>
+        <span class="tech-chip">Magento</span>
+      </div>
+    </div>
+    <div class="tech-strip-row">
+      <span class="tech-strip-label">Moteurs configurés</span>
+      <div class="tech-chips">
+        <span class="tech-chip">Algolia</span>
+        <span class="tech-chip">Typesense</span>
+        <span class="tech-chip">Elasticsearch</span>
+        <span class="tech-chip">Moteur propriétaire Heurix</span>
       </div>
     </div>
   </div>
@@ -307,6 +340,14 @@
 
         <a href="#contact" class="btn roi-cta">Recevoir mon étude de ROI personnalisée</a>
         <div class="roi-cta-note">Chiffrage définitif sur devis, sous 48h.</div>
+
+        <button type="button" id="roi-pdf-toggle" class="roi-pdf-toggle">Télécharger ce rapport en PDF →</button>
+        <form id="roi-pdf-form" class="roi-pdf-form" hidden>
+          <input type="text" id="roi-pdf-name" placeholder="Prénom" required>
+          <input type="email" id="roi-pdf-email" placeholder="Email professionnel" required>
+          <button type="submit" class="btn roi-cta" id="roi-pdf-submit">Générer mon rapport PDF</button>
+          <div id="roi-pdf-feedback" class="roi-pdf-feedback"></div>
+        </form>
       </div>
 
     </div>
@@ -320,22 +361,22 @@
     <h2>Notes sur la recherche et le e-commerce.</h2>
     <p class="section-lede">Des cas concrets et des observations techniques, publiés chaque mois.</p>
     <div class="blog-grid reveal">
-      <a class="blog-card" href="blog-moteur-natif-ne-suffit-pas.html">
+      <a class="blog-card" href="blog/recherche-reference-sku-b2b.html">
         <div class="blog-date mono">Juillet 2026</div>
-        <h3>Pourquoi le moteur natif de votre plateforme ne suffit pas</h3>
-        <p>Les trois angles morts les plus fréquents des moteurs livrés par défaut, et comment les repérer en cinq minutes.</p>
+        <h3>Comment configurer la recherche par référence (SKU, DIN, ISO) sur un e-commerce B2B ?</h3>
+        <p>Pourquoi les moteurs par défaut échouent sur les codes produits techniques, et comment les regex changent la donne.</p>
         <span class="blog-link">Lire l'article →</span>
       </a>
-      <a class="blog-card" href="blog-5-signes-recherche-vous-coute-des-ventes.html">
+      <a class="blog-card" href="blog/impact-ebitda-recherche-interne.html">
+        <div class="blog-date mono">Juillet 2026</div>
+        <h3>Mauvais moteur de recherche interne : quel impact réel sur l'EBITDA ?</h3>
+        <p>Le levier économique de la recherche interne, et comment estimer précisément ce qu'elle vous coûte aujourd'hui.</p>
+        <span class="blog-link">Lire l'article →</span>
+      </a>
+      <a class="blog-card" href="blog/5-signes-recherche-vous-coute-des-ventes.html">
         <div class="blog-date mono">Juillet 2026</div>
         <h3>5 signes que votre moteur de recherche vous coûte des ventes</h3>
         <p>Des symptômes concrets à vérifier sur votre propre site, sans outil technique, en moins de dix minutes.</p>
-        <span class="blog-link">Lire l'article →</span>
-      </a>
-      <a class="blog-card" href="blog-glossaire-search-ecommerce.html">
-        <div class="blog-date mono">Juillet 2026</div>
-        <h3>Le glossaire du search e-commerce, sans jargon</h3>
-        <p>Synonymes, facettes, tolérance aux fautes : ce que ces termes veulent dire concrètement pour votre catalogue.</p>
         <span class="blog-link">Lire l'article →</span>
       </a>
     </div>
@@ -372,15 +413,17 @@
     <a href="index.html" class="logo" style="font-size:15px;"><img src="logo.png" alt="Heurix" style="height:22px;width:22px;"> HEURIX</a>
     <div class="foot-links">
       <a href="blog.html">Blog</a>
+      <a href="mentions-legales.html">Mentions légales</a>
       <a href="mailto:contact@heurix.fr">contact@heurix.fr</a>
     </div>
     <div class="foot-legal">
       Heurix — Entreprise individuelle (micro-entreprise). SIRET [à compléter]. Conseil en systèmes et logiciels informatiques.<br>
-      © <span id="year"></span> Heurix. Tous droits réservés.
+      © <span id="year">2026</span> Heurix. Tous droits réservés.
     </div>
   </div>
 </footer>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
   document.getElementById('year').textContent = new Date().getFullYear();
 
@@ -500,6 +543,149 @@
     if (el) el.addEventListener('input', computeROI);
   });
   computeROI();
+
+  // PDF report download (lead capture)
+  const pdfToggle = document.getElementById('roi-pdf-toggle');
+  const pdfForm = document.getElementById('roi-pdf-form');
+  const pdfFeedback = document.getElementById('roi-pdf-feedback');
+  const pdfSubmit = document.getElementById('roi-pdf-submit');
+
+  pdfToggle.addEventListener('click', () => {
+    pdfForm.hidden = !pdfForm.hidden;
+    pdfToggle.style.display = pdfForm.hidden ? 'block' : 'none';
+  });
+
+  pdfForm.addEventListener('submit', async function(e){
+    e.preventDefault();
+    const name = document.getElementById('roi-pdf-name').value;
+    const email = document.getElementById('roi-pdf-email').value;
+
+    pdfSubmit.disabled = true;
+    pdfSubmit.textContent = "Génération en cours…";
+
+    // Envoi du lead vers contact@heurix.fr (même mécanisme que le formulaire principal)
+    try {
+      await fetch("https://formsubmit.co/ajax/contact@heurix.fr", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify({
+          _subject: "Nouveau lead — téléchargement rapport ROI",
+          prenom: name,
+          email: email,
+          ca: document.getElementById('roi-ca-val').textContent,
+          part_recherche: document.getElementById('roi-share-val').textContent,
+          gain_conversion: document.getElementById('roi-lift-val').textContent,
+          marge: document.getElementById('roi-margin-val').textContent,
+          gain_ca_estime: document.getElementById('roi-out-gainca').textContent,
+          gain_marge_estime: document.getElementById('roi-out-gainmarge').textContent
+        })
+      });
+    } catch (err) {
+      // Le PDF se génère quand même même si l'envoi du lead échoue
+    }
+
+    generateROIPdf(name);
+
+    pdfFeedback.textContent = "Rapport téléchargé — merci !";
+    pdfFeedback.style.color = "#8FE3BC";
+    pdfSubmit.disabled = false;
+    pdfSubmit.textContent = "Générer mon rapport PDF";
+  });
+
+  function generateROIPdf(name){
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    const ink = [18, 20, 43];
+    const blue = [84, 104, 255];
+    const muted = [91, 94, 118];
+    const green = [31, 170, 107];
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(22);
+    doc.setTextColor(...blue);
+    doc.text('HEURIX', 20, 25);
+
+    doc.setFontSize(11);
+    doc.setTextColor(...muted);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Conseil en moteurs de recherche pour le e-commerce', 20, 32);
+
+    doc.setDrawColor(230, 230, 235);
+    doc.line(20, 38, 190, 38);
+
+    doc.setFontSize(16);
+    doc.setTextColor(...ink);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Votre étude de ROI personnalisée', 20, 50);
+
+    doc.setFontSize(10);
+    doc.setTextColor(...muted);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Préparée pour ' + (name || 'vous') + ' — ' + new Date().toLocaleDateString('fr-FR'), 20, 57);
+
+    doc.setFontSize(12);
+    doc.setTextColor(...ink);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Hypothèses saisies', 20, 72);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10.5);
+    const inputs = [
+      ['Chiffre d\'affaires annuel', document.getElementById('roi-ca-val').textContent],
+      ['Part du CA via la recherche interne', document.getElementById('roi-share-val').textContent],
+      ['Hausse de conversion visée', document.getElementById('roi-lift-val').textContent],
+      ['Marge commerciale nette', document.getElementById('roi-margin-val').textContent],
+    ];
+    let y = 80;
+    inputs.forEach(row => {
+      doc.setTextColor(...muted);
+      doc.text(row[0], 20, y);
+      doc.setTextColor(...ink);
+      doc.text(row[1], 130, y);
+      y += 7;
+    });
+
+    y += 8;
+    doc.setFontSize(12);
+    doc.setTextColor(...ink);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Résultats estimés', 20, y);
+    y += 8;
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10.5);
+    const outputs = [
+      ['Gain de CA annuel estimé', document.getElementById('roi-out-gainca').textContent],
+      ['Gain de marge net annuel', document.getElementById('roi-out-gainmarge').textContent],
+      ['Coût de mission indicatif', document.getElementById('roi-out-cost').textContent],
+      ['Multiplicateur ROI', document.getElementById('roi-out-roi').textContent],
+      ['Mission amortie en', document.getElementById('roi-out-payback').textContent],
+    ];
+    outputs.forEach(row => {
+      doc.setTextColor(...muted);
+      doc.text(row[0], 20, y);
+      doc.setTextColor(...green);
+      doc.setFont('helvetica', 'bold');
+      doc.text(row[1], 130, y);
+      doc.setFont('helvetica', 'normal');
+      y += 7;
+    });
+
+    y += 12;
+    doc.setDrawColor(230, 230, 235);
+    doc.line(20, y, 190, y);
+    y += 8;
+    doc.setFontSize(9);
+    doc.setTextColor(...muted);
+    doc.text('Ces chiffres sont des ordres de grandeur basés sur vos hypothèses, à affiner ensemble', 20, y);
+    y += 5;
+    doc.text('lors d\'un audit. Ils ne constituent pas un engagement contractuel.', 20, y);
+    y += 12;
+    doc.setTextColor(...blue);
+    doc.setFont('helvetica', 'bold');
+    doc.text('contact@heurix.fr  —  heurix.fr', 20, y);
+
+    doc.save('heurix-etude-roi.pdf');
+  }
 
 
   /*
