@@ -220,97 +220,97 @@
 <section id="tarifs" class="soft">
   <div class="wrap">
     <div class="kicker">Simulateur</div>
-    <h2>Estimez le gain d'un moteur de recherche mieux réglé.</h2>
-    <p class="section-lede">Ajustez les hypothèses à votre catalogue. Le calcul se fait en direct — ces chiffres sont des ordres de grandeur à affiner ensemble lors de l'audit, pas une promesse.</p>
+    <h2>Estimez l'effet de levier d'un moteur de recherche mieux réglé.</h2>
+    <p class="section-lede">La recherche interne ne représente souvent que 10 à 20 % du trafic d'un site — mais chez de nombreux e-commerçants, elle concentre 30 à 50 % du chiffre d'affaires. C'est le segment le plus précieux du site, et le moins souvent optimisé. Ajustez les curseurs à votre situation : le calcul se fait en direct.</p>
 
     <div class="roi-simulator reveal">
 
       <div class="roi-inputs">
-        <div class="roi-inputs-col">
-          <h4>Votre situation actuelle</h4>
-          <div class="roi-field">
-            <label for="roi-sessions">Sessions / mois</label>
-            <input type="number" id="roi-sessions" value="50000" min="0" step="1000">
+        <h4>Configurez vos hypothèses</h4>
+        <p class="roi-inputs-intro">Ajustez les curseurs pour refléter la situation de votre e-commerce.</p>
+
+        <div class="roi-field roi-slider">
+          <div class="roi-slider-head">
+            <label for="roi-ca">Chiffre d'affaires annuel</label>
+            <span id="roi-ca-val" class="roi-slider-badge mono">15 M€</span>
           </div>
-          <div class="roi-field">
-            <label for="roi-conv">Taux de conversion actuel (%)</label>
-            <input type="number" id="roi-conv" value="1.5" min="0" step="0.1">
-          </div>
-          <div class="roi-field">
-            <label for="roi-aov">Panier moyen (€)</label>
-            <input type="number" id="roi-aov" value="90" min="0" step="1">
-          </div>
-          <div class="roi-field">
-            <label for="roi-margin">Marge (%)</label>
-            <input type="number" id="roi-margin" value="30" min="0" max="100" step="1">
-          </div>
+          <input type="range" id="roi-ca" min="2" max="50" step="1" value="15">
+          <div class="roi-range-hint"><span>2 M€</span><span class="roi-range-mid">Cible PME &amp; Mid-Market</span><span>50 M€</span></div>
         </div>
-        <div class="roi-inputs-col">
-          <h4>Hypothèses d'impact Heurix</h4>
-          <div class="roi-field roi-slider">
-            <label for="roi-convgain">Gain de conversion attendu <span id="roi-convgain-val" class="mono">5%</span></label>
-            <input type="range" id="roi-convgain" value="5" min="3" max="10" step="0.5">
-            <div class="roi-range-hint">3% hypothèse basse — 10% hypothèse haute</div>
+
+        <div class="roi-field roi-slider">
+          <div class="roi-slider-head">
+            <label for="roi-share">Part du CA générée via la recherche interne</label>
+            <span id="roi-share-val" class="roi-slider-badge mono">30%</span>
           </div>
-          <div class="roi-field roi-slider">
-            <label for="roi-aovgain">Gain sur panier moyen (facettes / upsell) <span id="roi-aovgain-val" class="mono">3%</span></label>
-            <input type="range" id="roi-aovgain" value="3" min="0" max="13" step="0.5">
-            <div class="roi-range-hint">0% hypothèse basse — 13% moyenne marché</div>
+          <input type="range" id="roi-share" min="10" max="50" step="5" value="30">
+          <div class="roi-range-hint"><span>10%</span><span class="roi-range-mid">Moyenne e-commerce : ~30%</span><span>50%</span></div>
+        </div>
+
+        <div class="roi-field roi-slider">
+          <div class="roi-slider-head">
+            <label for="roi-lift">Hausse de conversion visée sur la recherche</label>
+            <span id="roi-lift-val" class="roi-slider-badge mono">12%</span>
           </div>
-          <div class="roi-field">
-            <label for="roi-cost">Coût de la mission (€)</label>
-            <input type="number" id="roi-cost" value="5500" min="1" step="100">
+          <input type="range" id="roi-lift" min="3" max="25" step="1" value="12">
+          <div class="roi-range-hint"><span>3% prudent</span><span class="roi-range-mid">Gain courant observé : 10 à 15%</span><span>25% ambitieux</span></div>
+        </div>
+
+        <div class="roi-field roi-slider">
+          <div class="roi-slider-head">
+            <label for="roi-margin">Taux de marge commerciale nette</label>
+            <span id="roi-margin-val" class="roi-slider-badge mono">40%</span>
           </div>
+          <input type="range" id="roi-margin" min="15" max="70" step="5" value="40">
+          <div class="roi-range-hint"><span>15%</span><span class="roi-range-mid">Selon votre secteur</span><span>70%</span></div>
         </div>
       </div>
 
-      <div class="roi-report">
-        <div class="roi-report-title">Votre gain potentiel estimé</div>
-        <div class="roi-highlights">
-          <div class="roi-highlight-tile">
-            <div class="icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6z"/></svg></div>
-            <div class="roi-highlight-value mono" id="roi-out-gain">—</div>
-            <div class="roi-highlight-label">Gain de CA annuel</div>
+      <div class="roi-results">
+        <div class="roi-results-top">
+          <div class="kicker" style="color:#8FE3BC;">Impact estimé</div>
+          <h4>Vos gains potentiels</h4>
+
+          <div class="roi-metric">
+            <div class="roi-metric-label">Gain de CA annuel</div>
+            <div class="roi-metric-value mono" id="roi-out-gainca">—</div>
           </div>
-          <div class="roi-highlight-tile">
-            <div class="icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg></div>
-            <div class="roi-highlight-value mono" id="roi-out-margin">—</div>
-            <div class="roi-highlight-label">Gain de marge annuel</div>
+          <div class="roi-metric">
+            <div class="roi-metric-label">Gain de marge net annuel <span class="roi-tag">Trésorerie</span></div>
+            <div class="roi-metric-value mono roi-metric-green" id="roi-out-gainmarge">—</div>
           </div>
-          <div class="roi-highlight-tile">
-            <div class="icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></div>
-            <div class="roi-highlight-value mono" id="roi-out-roi">—</div>
-            <div class="roi-highlight-label">Retour sur investissement</div>
+
+          <div class="roi-mini-grid">
+            <div class="roi-mini-tile">
+              <div class="roi-mini-label">Multiplicateur ROI</div>
+              <div class="roi-mini-value mono" id="roi-out-roi">—</div>
+              <div class="roi-mini-sub">votre investissement</div>
+            </div>
+            <div class="roi-mini-tile">
+              <div class="roi-mini-label">Mission amortie en</div>
+              <div class="roi-mini-value mono" id="roi-out-payback">—</div>
+              <div class="roi-mini-sub">seulement</div>
+            </div>
           </div>
-          <div class="roi-highlight-tile">
-            <div class="icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0116 0v1"/></svg></div>
-            <div class="roi-highlight-value mono" id="roi-out-payback">—</div>
-            <div class="roi-highlight-label">Mission rentabilisée en</div>
-          </div>
-        </div>
-        <div class="roi-secondary">
-          <div class="roi-secondary-item">
-            <div class="roi-secondary-label">CA annuel actuel</div>
-            <div class="roi-secondary-value mono" id="roi-out-before">—</div>
-          </div>
-          <div class="roi-secondary-item">
-            <div class="roi-secondary-label">CA annuel estimé après optimisation</div>
-            <div class="roi-secondary-value mono" id="roi-out-after">—</div>
-          </div>
-          <div class="roi-secondary-item">
-            <div class="roi-secondary-label">Coût de la mission</div>
-            <div class="roi-secondary-value mono" id="roi-out-cost">—</div>
-          </div>
-          <div class="roi-secondary-item">
-            <div class="roi-secondary-label">Gain net (marge − coût)</div>
-            <div class="roi-secondary-value mono" id="roi-out-net">—</div>
+
+          <div class="roi-compare">
+            <div class="roi-compare-row">
+              <span>Coût estimé de la mission</span>
+              <span class="mono" id="roi-out-cost">—</span>
+            </div>
+            <div class="roi-compare-bar">
+              <div class="roi-bar-cost" id="roi-bar-cost"></div>
+              <div class="roi-bar-gain" id="roi-bar-gain"></div>
+            </div>
           </div>
         </div>
-        <a href="#contact" class="btn" style="margin-top:22px;">Recevoir un devis basé sur ces chiffres</a>
+
+        <a href="#contact" class="btn roi-cta">Recevoir mon étude de ROI personnalisée</a>
+        <div class="roi-cta-note">Chiffrage définitif sur devis, sous 48h.</div>
       </div>
 
     </div>
-    <p class="form-note" style="margin-top:20px;">Coût indicatif : audit seul 1 700 – 2 550 € HT · audit + intégration 4 250 – 6 800 € HT. Chiffrage définitif sur devis.</p>
+    <p class="form-note" style="margin-top:20px;">Coût de mission indicatif selon la taille du catalogue : à partir de 4 250 € HT sous 10 M€ de CA, jusqu'à 8 500 € HT pour les plus gros volumes. Les hypothèses d'impact sont des ordres de grandeur à affiner ensemble lors de l'audit, pas une promesse.</p>
   </div>
 </section>
 
@@ -441,47 +441,61 @@
   }
 
   // ROI simulator
-  const fmtEUR = (n) => new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(n);
-
-  function computeROI(){
-    const sessions = parseFloat(document.getElementById('roi-sessions').value) || 0;
-    const conv = (parseFloat(document.getElementById('roi-conv').value) || 0) / 100;
-    const aov = parseFloat(document.getElementById('roi-aov').value) || 0;
-    const margin = (parseFloat(document.getElementById('roi-margin').value) || 0) / 100;
-    const convGain = (parseFloat(document.getElementById('roi-convgain').value) || 0) / 100;
-    const aovGain = (parseFloat(document.getElementById('roi-aovgain').value) || 0) / 100;
-    const cost = parseFloat(document.getElementById('roi-cost').value) || 0;
-
-    document.getElementById('roi-convgain-val').textContent = (convGain*100).toFixed(1).replace('.0','') + '%';
-    document.getElementById('roi-aovgain-val').textContent = (aovGain*100).toFixed(1).replace('.0','') + '%';
-
-    const newConv = conv * (1 + convGain);
-    const newAov = aov * (1 + aovGain);
-
-    const monthlyBefore = sessions * conv * aov;
-    const monthlyAfter = sessions * newConv * newAov;
-    const yearlyBefore = monthlyBefore * 12;
-    const yearlyAfter = monthlyAfter * 12;
-
-    const revenueGainYear = yearlyAfter - yearlyBefore;
-    const marginGainYear = revenueGainYear * margin;
-    const netGain = marginGainYear - cost;
-    const roiPct = cost > 0 ? (netGain / cost) * 100 : 0;
-    const paybackMonths = marginGainYear > 0 ? cost / (marginGainYear / 12) : null;
-
-    document.getElementById('roi-out-before').textContent = fmtEUR(yearlyBefore);
-    document.getElementById('roi-out-after').textContent = fmtEUR(yearlyAfter);
-    document.getElementById('roi-out-gain').textContent = fmtEUR(revenueGainYear);
-    document.getElementById('roi-out-margin').textContent = fmtEUR(marginGainYear);
-    document.getElementById('roi-out-cost').textContent = fmtEUR(cost);
-    document.getElementById('roi-out-net').textContent = fmtEUR(netGain);
-    document.getElementById('roi-out-roi').textContent = (roiPct >= 0 ? '+' : '') + roiPct.toFixed(0) + '%';
-    document.getElementById('roi-out-payback').textContent = paybackMonths !== null
-      ? (paybackMonths < 1 ? '< 1 mois' : paybackMonths.toFixed(1).replace('.0','') + ' mois')
-      : '—';
+  function formatEuro(value){
+    if (Math.abs(value) >= 1000000) {
+      return (value / 1000000).toLocaleString('fr-FR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + ' M€';
+    }
+    return Math.round(value).toLocaleString('fr-FR') + ' €';
   }
 
-  ['roi-sessions','roi-conv','roi-aov','roi-margin','roi-convgain','roi-aovgain','roi-cost'].forEach(id => {
+  function computeROI(){
+    const ca = parseFloat(document.getElementById('roi-ca').value) * 1000000;
+    const share = parseFloat(document.getElementById('roi-share').value) / 100;
+    const lift = parseFloat(document.getElementById('roi-lift').value) / 100;
+    const margin = parseFloat(document.getElementById('roi-margin').value) / 100;
+
+    document.getElementById('roi-ca-val').textContent = document.getElementById('roi-ca').value + ' M€';
+    document.getElementById('roi-share-val').textContent = document.getElementById('roi-share').value + '%';
+    document.getElementById('roi-lift-val').textContent = document.getElementById('roi-lift').value + '%';
+    document.getElementById('roi-margin-val').textContent = document.getElementById('roi-margin').value + '%';
+
+    // Coût de mission indicatif selon la taille du catalogue / CA
+    let cost = 5800;
+    if (ca < 10000000) {
+      cost = 4250;
+    } else if (ca >= 25000000) {
+      cost = 8500;
+    }
+
+    const caSearch = ca * share;
+    const gainCA = caSearch * lift;
+    const gainMarge = gainCA * margin;
+    const roi = gainMarge / cost;
+    const paybackDays = gainMarge > 0 ? Math.round((cost / gainMarge) * 365) : null;
+
+    document.getElementById('roi-out-gainca').textContent = formatEuro(gainCA);
+    document.getElementById('roi-out-gainmarge').textContent = formatEuro(gainMarge);
+    document.getElementById('roi-out-roi').textContent = roi.toFixed(1).replace('.', ',') + ' x';
+    document.getElementById('roi-out-cost').textContent = cost.toLocaleString('fr-FR') + ' € HT';
+
+    const paybackEl = document.getElementById('roi-out-payback');
+    if (paybackDays === null) {
+      paybackEl.textContent = '—';
+    } else if (paybackDays <= 1) {
+      paybackEl.textContent = '1 jour';
+    } else if (paybackDays < 30) {
+      paybackEl.textContent = paybackDays + ' jours';
+    } else {
+      paybackEl.textContent = (paybackDays / 30).toFixed(1).replace('.', ',') + ' mois';
+    }
+
+    const total = cost + gainMarge;
+    const costPercent = total > 0 ? Math.max((cost / total) * 100, 2) : 50;
+    document.getElementById('roi-bar-cost').style.width = costPercent + '%';
+    document.getElementById('roi-bar-gain').style.width = (100 - costPercent) + '%';
+  }
+
+  ['roi-ca','roi-share','roi-lift','roi-margin'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.addEventListener('input', computeROI);
   });
