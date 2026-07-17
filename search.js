@@ -6,6 +6,7 @@ const HEURIX_SEARCH_INDEX = [
   { title: "L'offre", excerpt: "Audit, intégration, formation, optimisation continue — quatre étapes dans l'ordre où elles ont du sens.", path: "index.html#offre" },
   { title: "Search API — Tarifs", excerpt: "Le moteur de recherche Heurix en self-service, à partir de gratuit. Facturation à l'usage, sans engagement.", path: "pricing.html" },
   { title: "Le moteur", excerpt: "Un moteur de recherche et d'indexation développé en propre, avec expressions régulières pour les catalogues techniques.", path: "index.html#moteur" },
+  { title: "Qui sommes-nous", excerpt: "Une expertise indépendante, made in France. Entreprise et moteur conçus et développés en France.", path: "index.html#apropos" },
   { title: "Pour qui : Heurix est-il fait pour vous ?", excerpt: "PME de belle taille et mid-market, catalogue technique volumineux, pas encore équipé d'un moteur dédié.", path: "index.html#pourqui" },
   { title: "Simulateur ROI", excerpt: "Estimez l'effet de levier d'un moteur de recherche mieux réglé sur votre chiffre d'affaires.", path: "index.html#tarifs" },
   { title: "Blog", excerpt: "Notes sur la recherche et le e-commerce, publiées chaque mois.", path: "blog.html" },
