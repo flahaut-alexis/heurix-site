@@ -75,6 +75,7 @@ const HEURIX_SEARCH_INDEX = [
       resultsEl.innerHTML = "";
       emptyEl.hidden = true;
       setTimeout(() => input.focus(), 10);
+      if (window.dataLayer) window.dataLayer.push({ event: "site_search_open" });
     }
     function close() {
       modal.classList.remove("open");

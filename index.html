@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-XXXXXXX');</script>
+<!-- End Google Tag Manager -->
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Heurix — Conseil en moteurs de recherche pour le e-commerce</title>
@@ -20,8 +28,97 @@
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="stylesheet" href="styles.css">
+<link rel="canonical" href="https://heurix.fr/">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Heurix",
+  "url": "https://heurix.fr",
+  "logo": "https://heurix.fr/logo.png",
+  "image": "https://heurix.fr/og-image.png",
+  "description": "Conseil indépendant en moteurs de recherche et search & discovery pour sites e-commerce, basé en France.",
+  "email": "contact@heurix.fr",
+  "sameAs": [
+    "https://www.linkedin.com/company/heurix-search/"
+  ],
+  "founder": {
+    "@type": "Person",
+    "name": "Alexis Flahaut"
+  },
+  "areaServed": "FR",
+  "knowsAbout": [
+    "Search and discovery",
+    "E-commerce search engines",
+    "Algolia",
+    "Elasticsearch",
+    "Typesense"
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Combien coûte une mission ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Facturation à la journée, 850 € HT/jour, sur devis établi selon le périmètre exact. À titre indicatif : un audit seul se règle en 2 à 3 jours, une mission complète (audit + intégration) coûte entre 4 250 € et 8 500 € HT selon la taille du catalogue. Utilisez le simulateur ROI pour estimer le gain attendu face à ce coût."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Et si les résultats ne sont pas au rendez-vous ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Aucun consultant ne peut garantir un pourcentage de gain à l'avance — les chiffres du simulateur sont des ordres de grandeur, pas une promesse contractuelle. Ce qui limite le risque de votre côté : pas d'abonnement, pas d'engagement dans la durée. L'audit initial (2 à 3 jours) vous donne un diagnostic concret et chiffrable avant de décider d'aller plus loin."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Dois-je changer de plateforme e-commerce ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Non. Heurix intervient sur la couche recherche de votre site existant (Shopify, PrestaShop, WooCommerce, Magento ou autre), sans toucher au reste de votre architecture. Dans la grande majorité des cas, le problème se règle en reconfigurant ou en branchant un moteur de recherche, pas en changeant de CMS."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Moteur propriétaire Heurix ou Algolia / Elasticsearch / Typesense — comment choisissez-vous ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Le choix se fait pendant l'audit, en fonction de votre catalogue, de votre budget et de ce que vous avez déjà en place. Si votre solution actuelle est simplement mal configurée, on la corrige. Si aucune solution du marché ne convient à votre cas, le moteur propriétaire Heurix devient une option pertinente."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Combien de temps dure une mission ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "L'audit initial prend 2 à 3 jours. L'intégration qui suit dépend du périmètre retenu à l'issue du diagnostic. Dans tous les cas, on reste loin d'un projet IT de plusieurs mois."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Travaillez-vous avec mon secteur d'activité ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Heurix est particulièrement pertinent sur les catalogues volumineux et techniques — outillage, pièces détachées, électrique/électronique, équipement pro/BTP notamment. Le principe s'applique à tout site avec un moteur de recherche interne mal exploité, quel que soit le secteur."
+      }
+    }
+  ]
+}
+</script>
 </head>
 <body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
 
 <header>
   <nav>
@@ -30,6 +127,7 @@
       <a href="#probleme">Le problème</a>
       <a href="#moteur">Le moteur</a>
       <a href="pricing.html">Search API</a>
+      <a href="pricing.html#developers">Developers</a>
       <a href="#tarifs">Professional Services</a>
       <a href="blog.html">Blog</a>
     </div>
@@ -37,6 +135,7 @@
     <button id="heurix-search-btn" class="search-btn" aria-label="Rechercher sur le site" type="button">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
     </button>
+    <a href="pricing.html" class="btn btn-ghost nav-cta-ghost">Découvrir le Search API</a>
     <a href="#contact" class="btn">Réserver un audit</a>
   </nav>
 </header>
@@ -295,7 +394,7 @@
     <div class="kicker">Qui sommes-nous</div>
     <h2>Une expertise indépendante, made in France.</h2>
     <div class="apropos-grid reveal">
-      <p>Heurix est porté par un consultant indépendant basé en France, à la croisée d'une expérience commerciale terrain (plusieurs années en tant que Senior Account Executive) et d'une expertise technique en moteurs de recherche et indexation. Le moteur propriétaire Heurix est conçu, développé et maintenu en France — pas une plateforme low-cost délocalisée avec un support générique.</p>
+      <p>Heurix est porté par Alexis Flahaut, consultant indépendant basé en France, à la croisée d'une expérience commerciale terrain (plusieurs années en tant que Senior Account Executive) et d'une expertise technique en moteurs de recherche et indexation. Le moteur propriétaire Heurix est conçu, développé et maintenu en France — pas une plateforme low-cost délocalisée avec un support générique.</p>
       <p>Marque déposée à l'INPI, entreprise immatriculée en France : quand vous travaillez avec Heurix, vous avez un interlocuteur direct, en français, du premier audit à la mise en œuvre — pas un ticket qui traverse plusieurs fuseaux horaires avant d'obtenir une réponse.</p>
     </div>
     <div class="apropos-facts">
@@ -828,11 +927,18 @@
     }
   }
 
+  let roiInteractionTracked = false;
   ['roi-ca','roi-share','roi-lift','roi-margin'].forEach(id => {
     const el = document.getElementById(id);
     if (el) {
       el.addEventListener('input', computeROI);
-      el.addEventListener('change', announceROISummary);
+      el.addEventListener('change', () => {
+        announceROISummary();
+        if (!roiInteractionTracked && window.dataLayer) {
+          window.dataLayer.push({ event: "roi_simulator_interaction" });
+          roiInteractionTracked = true;
+        }
+      });
     }
   });
   computeROI();
@@ -878,6 +984,7 @@
     }
 
     generateROIPdf(name);
+    if (window.dataLayer) window.dataLayer.push({ event: "roi_pdf_download" });
 
     pdfFeedback.textContent = "Rapport téléchargé — merci !";
     pdfFeedback.style.color = "#8FE3BC";
@@ -1022,6 +1129,7 @@
         feedback.style.color = 'var(--green)';
         feedback.textContent = "Merci, votre demande a bien été envoyée.";
         form.reset();
+        if (window.dataLayer) window.dataLayer.push({ event: "contact_form_submit" });
       } else {
         feedback.style.color = 'var(--red-muted)';
         feedback.textContent = "Une erreur est survenue — réessayez ou écrivez-nous directement à contact@heurix.fr.";

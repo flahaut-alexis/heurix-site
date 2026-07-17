@@ -103,6 +103,8 @@ nav{
 }
 .btn:hover{ background:var(--blue-deep); transform:translateY(-1px); }
 .btn-ghost{ background:transparent; color:var(--ink); border:1px solid var(--line); }
+.nav-cta-ghost{ padding:11px 16px; font-size:13.5px; }
+@media (max-width:1040px){ .nav-cta-ghost{ display:none; } }
 .btn-ghost:hover{ background:var(--bg-soft); }
 @media (max-width:760px){ .nav-links{display:none;} }
 
