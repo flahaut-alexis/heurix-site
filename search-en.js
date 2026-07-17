@@ -3,6 +3,7 @@
 
 const HEURIX_SEARCH_INDEX = [
   { title: "The problem", excerpt: "Internal search is the least-monitored conversion point on an online store.", path: "en/index.html#probleme" },
+  { title: "Our mission", excerpt: "Search should never be a burden. It's a conversion lever.", path: "en/index.html#mission" },
   { title: "The offer", excerpt: "Audit, integration, training, ongoing optimization — four steps in the order that makes sense.", path: "en/index.html#offre" },
   { title: "Search API — Pricing", excerpt: "The Heurix search engine, self-service, starting free. Usage-based billing, no commitment.", path: "en/pricing.html" },
   { title: "The engine", excerpt: "A proprietary search and indexing engine, with regular-expression support for technical catalogs.", path: "en/index.html#moteur" },

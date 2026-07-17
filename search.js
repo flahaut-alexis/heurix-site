@@ -3,6 +3,7 @@
 
 const HEURIX_SEARCH_INDEX = [
   { title: "Le problème", excerpt: "La recherche interne est le point de conversion le moins surveillé d'un site marchand.", path: "index.html#probleme" },
+  { title: "Notre mission", excerpt: "La recherche ne devrait jamais être un fardeau. C'est un levier de conversion.", path: "index.html#mission" },
   { title: "L'offre", excerpt: "Audit, intégration, formation, optimisation continue — quatre étapes dans l'ordre où elles ont du sens.", path: "index.html#offre" },
   { title: "Search API — Tarifs", excerpt: "Le moteur de recherche Heurix en self-service, à partir de gratuit. Facturation à l'usage, sans engagement.", path: "pricing.html" },
   { title: "Le moteur", excerpt: "Un moteur de recherche et d'indexation développé en propre, avec expressions régulières pour les catalogues techniques.", path: "index.html#moteur" },
