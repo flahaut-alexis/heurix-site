@@ -1,4 +1,4 @@
-// Heurix — recherche interne du site
+// Heurix Search — recherche interne du site
 // Index statique, correspondance insensible à la casse et aux accents.
 
 const HEURIX_SEARCH_INDEX = [
@@ -25,6 +25,13 @@ const HEURIX_SEARCH_INDEX = [
   { title: "5 signes que votre moteur de recherche vous coûte des ventes", excerpt: "Des symptômes concrets à vérifier sur votre propre site, en moins de dix minutes.", path: "blog/5-signes-recherche-vous-coute-des-ventes.html" },
   { title: "Le glossaire du search e-commerce, sans jargon", excerpt: "Synonymes, facettes, tolérance aux fautes : ce que ces termes veulent dire concrètement.", path: "blog/glossaire-search-ecommerce.html" }
 ];
+
+// Derniers articles du blog — affichés par défaut, avant toute frappe.
+const HEURIX_LATEST_ARTICLES = [
+  "blog/recherche-reference-sku-b2b.html",
+  "blog/impact-ebitda-recherche-interne.html",
+  "blog/5-signes-recherche-vous-coute-des-ventes.html"
+].map((p) => HEURIX_SEARCH_INDEX.find((item) => item.path === p)).filter(Boolean);
 
 (function () {
   function normalize(str) {
@@ -66,14 +73,33 @@ const HEURIX_SEARCH_INDEX = [
     const input = document.getElementById("heurix-search-input");
     const resultsEl = document.getElementById("heurix-search-results");
     const emptyEl = document.getElementById("heurix-search-empty");
+    const suggestLabel = document.getElementById("heurix-search-suggest-label");
     if (!btn || !modal) return;
+
+    function renderItems(items, query) {
+      resultsEl.innerHTML = "";
+      items.forEach((item) => {
+        const a = document.createElement("a");
+        a.className = "search-result";
+        a.href = root + item.path;
+        a.innerHTML =
+          '<div class="search-result-title">' + highlight(item.title, query) + "</div>" +
+          '<div class="search-result-excerpt">' + highlight(item.excerpt, query) + "</div>";
+        resultsEl.appendChild(a);
+      });
+    }
+
+    function showDefaultSuggestions() {
+      emptyEl.hidden = true;
+      if (suggestLabel) suggestLabel.hidden = false;
+      renderItems(HEURIX_LATEST_ARTICLES, "");
+    }
 
     function open() {
       modal.classList.add("open");
       document.body.style.overflow = "hidden";
       input.value = "";
-      resultsEl.innerHTML = "";
-      emptyEl.hidden = true;
+      showDefaultSuggestions();
       setTimeout(() => input.focus(), 10);
       if (window.dataLayer) window.dataLayer.push({ event: "site_search_open" });
     }
@@ -95,18 +121,14 @@ const HEURIX_SEARCH_INDEX = [
 
     input.addEventListener("input", () => {
       const q = input.value;
+      if (!q.trim()) {
+        showDefaultSuggestions();
+        return;
+      }
+      if (suggestLabel) suggestLabel.hidden = true;
       const results = runSearch(q);
-      resultsEl.innerHTML = "";
-      emptyEl.hidden = !(q.trim() && results.length === 0);
-      results.forEach((item) => {
-        const a = document.createElement("a");
-        a.className = "search-result";
-        a.href = root + item.path;
-        a.innerHTML =
-          '<div class="search-result-title">' + highlight(item.title, q) + "</div>" +
-          '<div class="search-result-excerpt">' + highlight(item.excerpt, q) + "</div>";
-        resultsEl.appendChild(a);
-      });
+      emptyEl.hidden = results.length !== 0;
+      renderItems(results, q);
     });
 
     modal.querySelectorAll("[data-search-close]").forEach((el) => el.addEventListener("click", close));

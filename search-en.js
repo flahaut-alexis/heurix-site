@@ -1,4 +1,4 @@
-// Heurix — internal site search (English index)
+// Heurix Search — internal site search (English index)
 // Static index, case- and accent-insensitive matching.
 
 const HEURIX_SEARCH_INDEX = [
@@ -25,6 +25,13 @@ const HEURIX_SEARCH_INDEX = [
   { title: "5 signs your search engine is costing you sales", excerpt: "Concrete symptoms to check on your own site, in under ten minutes.", path: "en/blog/5-signes-recherche-vous-coute-des-ventes.html" },
   { title: "The e-commerce search glossary, no jargon", excerpt: "Synonyms, facets, typo tolerance: what these terms actually mean.", path: "en/blog/glossaire-search-ecommerce.html" }
 ];
+
+// Latest blog articles — shown by default, before any typing.
+const HEURIX_LATEST_ARTICLES = [
+  "en/blog/recherche-reference-sku-b2b.html",
+  "en/blog/impact-ebitda-recherche-interne.html",
+  "en/blog/5-signes-recherche-vous-coute-des-ventes.html"
+].map((p) => HEURIX_SEARCH_INDEX.find((item) => item.path === p)).filter(Boolean);
 
 (function () {
   function normalize(str) {
@@ -59,8 +66,6 @@ const HEURIX_SEARCH_INDEX = [
   }
 
   function init() {
-    // All EN index paths are root-relative (e.g. "en/index.html#..."), so we
-    // always resolve from the actual site root regardless of current page depth.
     const depth = (window.location.pathname.match(/\/en\/blog\//) ? 2 : window.location.pathname.match(/\/en\//) ? 1 : 0);
     const root = depth === 2 ? "../../" : depth === 1 ? "../" : "";
 
@@ -70,14 +75,33 @@ const HEURIX_SEARCH_INDEX = [
     const input = document.getElementById("heurix-search-input");
     const resultsEl = document.getElementById("heurix-search-results");
     const emptyEl = document.getElementById("heurix-search-empty");
+    const suggestLabel = document.getElementById("heurix-search-suggest-label");
     if (!btn || !modal) return;
+
+    function renderItems(items, query) {
+      resultsEl.innerHTML = "";
+      items.forEach((item) => {
+        const a = document.createElement("a");
+        a.className = "search-result";
+        a.href = root + item.path;
+        a.innerHTML =
+          '<div class="search-result-title">' + highlight(item.title, query) + "</div>" +
+          '<div class="search-result-excerpt">' + highlight(item.excerpt, query) + "</div>";
+        resultsEl.appendChild(a);
+      });
+    }
+
+    function showDefaultSuggestions() {
+      emptyEl.hidden = true;
+      if (suggestLabel) suggestLabel.hidden = false;
+      renderItems(HEURIX_LATEST_ARTICLES, "");
+    }
 
     function open() {
       modal.classList.add("open");
       document.body.style.overflow = "hidden";
       input.value = "";
-      resultsEl.innerHTML = "";
-      emptyEl.hidden = true;
+      showDefaultSuggestions();
       setTimeout(() => input.focus(), 10);
       if (window.dataLayer) window.dataLayer.push({ event: "site_search_open" });
     }
@@ -99,18 +123,14 @@ const HEURIX_SEARCH_INDEX = [
 
     input.addEventListener("input", () => {
       const q = input.value;
+      if (!q.trim()) {
+        showDefaultSuggestions();
+        return;
+      }
+      if (suggestLabel) suggestLabel.hidden = true;
       const results = runSearch(q);
-      resultsEl.innerHTML = "";
-      emptyEl.hidden = !(q.trim() && results.length === 0);
-      results.forEach((item) => {
-        const a = document.createElement("a");
-        a.className = "search-result";
-        a.href = root + item.path;
-        a.innerHTML =
-          '<div class="search-result-title">' + highlight(item.title, q) + "</div>" +
-          '<div class="search-result-excerpt">' + highlight(item.excerpt, q) + "</div>";
-        resultsEl.appendChild(a);
-      });
+      emptyEl.hidden = results.length !== 0;
+      renderItems(results, q);
     });
 
     modal.querySelectorAll("[data-search-close]").forEach((el) => el.addEventListener("click", close));
