@@ -11,19 +11,19 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Heurix — Search & Discovery Consulting for E-commerce</title>
-<meta name="description" content="Audit, integration, and optimization of search engines for e-commerce sites. A poorly tuned engine costs you sales: Heurix fixes it.">
+<title>Heurix — Search & Discovery Engine for E-commerce</title>
+<meta name="description" content="The Heurix search engine understands your product references through regular expressions — not just your keywords. Self-service or hands-on.">
 <link rel="alternate" hreflang="fr" href="https://heurix.fr/index.html">
 <link rel="alternate" hreflang="en" href="https://heurix.fr/en/index.html">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Heurix — Search & Discovery Consulting for E-commerce">
-<meta property="og:description" content="Audit, integration, and optimization of search engines for e-commerce sites. A poorly tuned engine costs you sales: Heurix fixes it.">
+<meta property="og:title" content="Heurix — Search & Discovery Engine for E-commerce">
+<meta property="og:description" content="The Heurix search engine understands your product references through regular expressions — not just your keywords. Self-service or hands-on.">
 <meta property="og:image" content="https://heurix.fr/og-image.png">
 <meta property="og:url" content="https://heurix.fr/en/">
 <meta property="og:locale" content="en_US">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Heurix — Search & Discovery Consulting for E-commerce">
-<meta name="twitter:description" content="Audit, integration, and optimization of search engines for e-commerce sites.">
+<meta name="twitter:title" content="Heurix — Search & Discovery Engine for E-commerce">
+<meta name="twitter:description" content="The Heurix search engine understands your product references through regex — not just your keywords.">
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="../favicon-32.png">
 <link rel="apple-touch-icon" href="../apple-touch-icon.png">
@@ -37,7 +37,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   "url": "https://heurix.fr",
   "logo": "https://heurix.fr/logo.png",
   "image": "https://heurix.fr/og-image.png",
-  "description": "Independent search engine and search & discovery consulting for e-commerce sites, based in France.",
+  "description": "Regex-powered search and discovery engine for e-commerce sites, designed in France.",
   "email": "contact@heurix.fr",
   "sameAs": [
     "https://www.linkedin.com/company/heurix-search/"
@@ -169,7 +169,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div class="demo-bar">
         <div class="demo-search">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-          <span id="query-text">red turtlneck swetaer</span>
+          <span id="query-text"></span><span class="demo-cursor" id="demo-cursor">|</span>
         </div>
         <div class="toggle">
           <button id="btn-bad" class="active bad" onclick="setDemo('bad')">Native engine</button>
@@ -177,7 +177,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
       </div>
       <div class="demo-body">
-        <div id="demo-status" class="demo-status bad">0 exact matches — the typo breaks the search</div>
+        <div id="demo-status" class="demo-status bad demo-pending">0 exact matches — multiple typos break the search</div>
         <div id="results" class="results"></div>
       </div>
     </div>
@@ -216,15 +216,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <span class="tech-chip">PrestaShop</span>
         <span class="tech-chip">WooCommerce</span>
         <span class="tech-chip">Magento</span>
-      </div>
-    </div>
-    <div class="tech-strip-row">
-      <span class="tech-strip-label">Engines configured</span>
-      <div class="tech-chips">
-        <span class="tech-chip">Algolia</span>
-        <span class="tech-chip">Typesense</span>
-        <span class="tech-chip">Elasticsearch</span>
-        <span class="tech-chip">Proprietary Heurix engine</span>
       </div>
     </div>
   </div>
@@ -813,6 +804,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     const statusEl = document.getElementById('demo-status');
     statusEl.className = 'demo-status ' + d.status.cls;
     statusEl.textContent = d.status.text;
+    statusEl.classList.remove('demo-pending');
 
     const resultsEl = document.getElementById('results');
     resultsEl.innerHTML = '';
@@ -823,7 +815,36 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       resultsEl.appendChild(div);
     });
   }
-  setDemo('bad');
+
+  // Intro animation: type the query live, reveal the bad results, then
+  // auto-transition to the Heurix results — runs once on load.
+  const HERO_QUERY = "red turtlneck swetaer";
+  const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function playDemoIntro(){
+    const queryEl = document.getElementById('query-text');
+    const cursorEl = document.getElementById('demo-cursor');
+
+    if (reduceMotion){
+      queryEl.textContent = HERO_QUERY;
+      if (cursorEl) cursorEl.style.display = 'none';
+      setDemo('good');
+      return;
+    }
+
+    let i = 0;
+    queryEl.textContent = '';
+    const typeInterval = setInterval(() => {
+      i++;
+      queryEl.textContent = HERO_QUERY.slice(0, i);
+      if (i >= HERO_QUERY.length){
+        clearInterval(typeInterval);
+        setTimeout(() => { setDemo('bad'); }, 350);
+        setTimeout(() => { setDemo('good'); }, 3300);
+      }
+    }, 55);
+  }
+  playDemoIntro();
 
   // Scroll reveal
   const revealEls = document.querySelectorAll('.reveal');
@@ -1052,7 +1073,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     doc.setFontSize(11);
     doc.setTextColor(...muted);
     doc.setFont('helvetica', 'normal');
-    doc.text('Search & discovery consulting for e-commerce', 20, 32);
+    doc.text('Search & discovery engine for e-commerce', 20, 32);
 
     doc.setDrawColor(230, 230, 235);
     doc.line(20, 38, 190, 38);

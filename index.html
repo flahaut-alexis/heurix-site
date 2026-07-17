@@ -11,19 +11,19 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Heurix — Conseil en moteurs de recherche pour le e-commerce</title>
-<meta name="description" content="Audit, intégration et optimisation de moteurs de recherche pour sites e-commerce. Un moteur mal réglé coûte des ventes : Heurix le corrige.">
+<title>Heurix — Moteur de recherche & discovery pour le e-commerce</title>
+<meta name="description" content="Le moteur de recherche Heurix comprend vos références produits grâce aux expressions régulières — pas seulement vos mots-clés. Self-service ou accompagné.">
 <link rel="alternate" hreflang="fr" href="https://heurix.fr/">
 <link rel="alternate" hreflang="en" href="https://heurix.fr/en/index.html">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Heurix — Conseil en moteurs de recherche pour le e-commerce">
-<meta property="og:description" content="Audit, intégration et optimisation de moteurs de recherche pour sites e-commerce. Un moteur mal réglé coûte des ventes : Heurix le corrige.">
+<meta property="og:title" content="Heurix — Moteur de recherche & discovery pour le e-commerce">
+<meta property="og:description" content="Le moteur de recherche Heurix comprend vos références produits grâce aux expressions régulières — pas seulement vos mots-clés. Self-service ou accompagné.">
 <meta property="og:image" content="https://heurix.fr/og-image.png">
 <meta property="og:url" content="https://heurix.fr/">
 <meta property="og:locale" content="fr_FR">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Heurix — Conseil en moteurs de recherche pour le e-commerce">
-<meta name="twitter:description" content="Audit, intégration et optimisation de moteurs de recherche pour sites e-commerce.">
+<meta name="twitter:title" content="Heurix — Moteur de recherche & discovery pour le e-commerce">
+<meta name="twitter:description" content="Le moteur de recherche Heurix comprend vos références produits grâce aux regex — pas seulement vos mots-clés.">
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -37,7 +37,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   "url": "https://heurix.fr",
   "logo": "https://heurix.fr/logo.png",
   "image": "https://heurix.fr/og-image.png",
-  "description": "Conseil indépendant en moteurs de recherche et search & discovery pour sites e-commerce, basé en France.",
+  "description": "Moteur de recherche et search & discovery pour sites e-commerce, basé sur des expressions régulières, conçu en France.",
   "email": "contact@heurix.fr",
   "sameAs": [
     "https://www.linkedin.com/company/heurix-search/"
@@ -169,7 +169,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div class="demo-bar">
         <div class="demo-search">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-          <span id="query-text">pul col rolé roug</span>
+          <span id="query-text"></span><span class="demo-cursor" id="demo-cursor">|</span>
         </div>
         <div class="toggle">
           <button id="btn-bad" class="active bad" onclick="setDemo('bad')">Moteur natif</button>
@@ -177,7 +177,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
       </div>
       <div class="demo-body">
-        <div id="demo-status" class="demo-status bad">0 correspondance exacte — la faute de frappe casse la recherche</div>
+        <div id="demo-status" class="demo-status bad demo-pending">0 correspondance exacte — plusieurs fautes cassent la recherche</div>
         <div id="results" class="results"></div>
       </div>
     </div>
@@ -216,15 +216,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <span class="tech-chip">PrestaShop</span>
         <span class="tech-chip">WooCommerce</span>
         <span class="tech-chip">Magento</span>
-      </div>
-    </div>
-    <div class="tech-strip-row">
-      <span class="tech-strip-label">Moteurs configurés</span>
-      <div class="tech-chips">
-        <span class="tech-chip">Algolia</span>
-        <span class="tech-chip">Typesense</span>
-        <span class="tech-chip">Elasticsearch</span>
-        <span class="tech-chip">Moteur propriétaire Heurix</span>
       </div>
     </div>
   </div>
@@ -812,6 +803,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     const statusEl = document.getElementById('demo-status');
     statusEl.className = 'demo-status ' + d.status.cls;
     statusEl.textContent = d.status.text;
+    statusEl.classList.remove('demo-pending');
 
     const resultsEl = document.getElementById('results');
     resultsEl.innerHTML = '';
@@ -822,7 +814,36 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       resultsEl.appendChild(div);
     });
   }
-  setDemo('bad');
+
+  // Intro animation: type the query live, reveal the bad results, then
+  // auto-transition to the Heurix results — runs once on load.
+  const HERO_QUERY = "pul col rolé roug";
+  const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function playDemoIntro(){
+    const queryEl = document.getElementById('query-text');
+    const cursorEl = document.getElementById('demo-cursor');
+
+    if (reduceMotion){
+      queryEl.textContent = HERO_QUERY;
+      if (cursorEl) cursorEl.style.display = 'none';
+      setDemo('good');
+      return;
+    }
+
+    let i = 0;
+    queryEl.textContent = '';
+    const typeInterval = setInterval(() => {
+      i++;
+      queryEl.textContent = HERO_QUERY.slice(0, i);
+      if (i >= HERO_QUERY.length){
+        clearInterval(typeInterval);
+        setTimeout(() => { setDemo('bad'); }, 350);
+        setTimeout(() => { setDemo('good'); }, 3300);
+      }
+    }, 55);
+  }
+  playDemoIntro();
 
   // Scroll reveal
   const revealEls = document.querySelectorAll('.reveal');
@@ -1057,7 +1078,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     doc.setFontSize(11);
     doc.setTextColor(...muted);
     doc.setFont('helvetica', 'normal');
-    doc.text('Conseil en moteurs de recherche pour le e-commerce', 20, 32);
+    doc.text('Moteur de recherche & discovery pour le e-commerce', 20, 32);
 
     doc.setDrawColor(230, 230, 235);
     doc.line(20, 38, 190, 38);

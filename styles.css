@@ -265,6 +265,15 @@ h1 span{ color:var(--blue); }
   color:var(--ink);
 }
 .demo-search svg{ flex-shrink:0; color:var(--ink-muted); }
+.demo-cursor{
+  color:var(--blue); font-weight:600; margin-left:1px;
+  animation:demo-blink 1s step-end infinite;
+}
+@keyframes demo-blink{ 0%,100%{ opacity:1; } 50%{ opacity:0; } }
+.demo-pending{ opacity:0; }
+@media (prefers-reduced-motion: reduce){
+  .demo-cursor{ animation:none; opacity:0; }
+}
 .toggle{ display:flex; background:#fff; border:1px solid var(--line); border-radius:8px; padding:3px; gap:2px; }
 .toggle button{
   font-size:13px; font-weight:600;
