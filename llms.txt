@@ -1,0 +1,27 @@
+# Heurix
+
+> Heurix est un moteur de recherche et de discovery pour l'e-commerce, basé sur des expressions régulières et une cascade d'annotations, conçu en France. Il est pensé pour les catalogues techniques (outillage, pièces détachées, mode, industrie) où les moteurs classiques échouent sur les références produits (M8x20, DIN 933, 6205-2RS, W32L34). Deux offres : un Search API en self-service (plan gratuit disponible) et des missions de conseil (Professional Services, 850 € HT/jour).
+
+Heurix is a regex-powered search & discovery engine for e-commerce, designed in France, built for technical catalogs where standard engines fail on product references. Two offerings: a self-service Search API (free plan available) and consulting missions (Professional Services).
+
+## Pages principales / Main pages
+
+- [Accueil (FR)](https://heurix.fr/): présentation du moteur, démo interactive, simulateur ROI, FAQ
+- [Home (EN)](https://heurix.fr/en/): engine overview, live demo, ROI simulator, FAQ
+- [Tarifs Search API / Pricing](https://heurix.fr/pricing.html): plans Free (0 €), Growth (39 €/mois), Scale (149 €/mois), facturation à l'usage
+- [Documentation API (FR)](https://heurix.fr/docs.html): référence complète — authentification, indexation, recherche, synonymes, packs de règles, cascade d'annotations
+- [API Documentation (EN)](https://heurix.fr/en/docs.html): full reference — authentication, indexing, search, synonyms, rule packs, annotation cascade
+- [Blog](https://heurix.fr/blog.html): articles sur la recherche e-commerce (SKU, facettes, synonymes, impact EBITDA)
+
+## Concepts clés / Key concepts
+
+- Cascade d'annotations : documents et requêtes traversent le même pipeline de règles regex par niveaux ; « m8x20 » et « M8 x 20 — A2 » produisent les mêmes annotations (DIAM_M8, LONG_20, VIS_M8X20) et se retrouvent.
+- Tolérance aux fautes : distance de Damerau-Levenshtein bornée (1 faute dès 4 caractères, 2 dès 8).
+- Packs de règles fournis : outillage, mode, industrie. Packs sur mesure en mission de conseil.
+- Base URL de l'API : https://api.heurix.fr — authentification par clé (Authorization: Bearer).
+
+## Contact
+
+- Email : contact@heurix.fr
+- LinkedIn : https://www.linkedin.com/company/heurix-search/
+- Fondateur / Founder : Alexis Flahaut

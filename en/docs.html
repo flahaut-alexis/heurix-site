@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-XXXXXXX');</script>
+<!-- End Google Tag Manager -->
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>API Documentation — Heurix</title>
+<meta name="description" content="Complete Heurix Search API reference: authentication, indexing, search, synonyms, rule packs. A working first search in minutes.">
+<link rel="alternate" hreflang="fr" href="https://heurix.fr/docs.html">
+<link rel="alternate" hreflang="en" href="https://heurix.fr/en/docs.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="API Documentation — Heurix">
+<meta property="og:description" content="Complete Heurix Search API reference: authentication, indexing, search, synonyms, rule packs.">
+<meta property="og:image" content="https://heurix.fr/og-image.png">
+<meta property="og:url" content="https://heurix.fr/en/docs.html">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="API Documentation — Heurix">
+<meta name="twitter:image" content="https://heurix.fr/og-image.png">
+<link rel="icon" type="image/png" href="../favicon-32.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<link rel="stylesheet" href="../styles.css">
+<link rel="canonical" href="https://heurix.fr/en/docs.html">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Heurix",
+  "url": "https://heurix.fr",
+  "logo": "https://heurix.fr/logo.png",
+  "image": "https://heurix.fr/og-image.png",
+  "description": "Regex-powered search and discovery engine for e-commerce sites, designed in France.",
+  "email": "contact@heurix.fr",
+  "sameAs": [
+    "https://www.linkedin.com/company/heurix-search/"
+  ],
+  "founder": {
+    "@type": "Person",
+    "name": "Alexis Flahaut"
+  },
+  "areaServed": "FR",
+  "knowsAbout": [
+    "Search and discovery",
+    "E-commerce search engines",
+    "Algolia",
+    "Elasticsearch",
+    "Typesense"
+  ]
+}
+</script>
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+<header>
+  <nav>
+    <a href="index.html" class="logo"><img src="../logo.png" alt="Heurix"> <span class="wordmark">HEURIX</span></a>
+    <div class="nav-links">
+      <a href="index.html#probleme">The problem</a>
+      <a href="index.html#moteur">The engine</a>
+      <a href="pricing.html">Search API</a>
+      <a href="index.html#tarifs">Professional Services</a>
+      <a href="blog.html">Blog</a>
+    </div>
+    <a href="../docs.html" class="lang-switch">FR</a>
+    <button id="heurix-search-btn" class="search-trigger" aria-label="Heurix Search — search the site" type="button">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <span class="search-trigger-text">Heurix Search</span>
+      <span class="search-trigger-kbd">Ctrl K</span>
+    </button>
+    <a href="index.html#moteur" class="btn">Discover the engine</a>
+  </nav>
+</header>
+
+<div id="heurix-search-modal" class="search-modal">
+  <div id="heurix-search-backdrop" class="search-backdrop" data-search-close></div>
+  <div class="search-panel">
+    <div class="search-panel-head">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input id="heurix-search-input" type="text" placeholder="Heurix Search..." autocomplete="off">
+      <button class="search-close" data-search-close type="button">Esc</button>
+    </div>
+    <p id="heurix-search-suggest-label" class="search-suggest-label" hidden>Latest articles</p>
+    <div id="heurix-search-results" class="search-results"></div>
+    <p id="heurix-search-empty" class="search-empty" hidden>No results for this search. Try another term.</p>
+  </div>
+</div>
+
+<section class="docs-hero">
+  <div class="wrap">
+    <div class="badge">Documentation</div>
+    <h1>Search API — Reference</h1>
+    <p class="lede">Everything you need to index a catalog and run a first search in minutes. Base URL: <code class="docs-inline-code">https://api.heurix.fr</code></p>
+    <p class="docs-hero-note">Access requires an API key. Self-service sign-up isn't open yet — <a href="pricing.html#waitlist">join the waitlist</a> to be notified, or <a href="index.html#contact">contact us</a> for early access.</p>
+  </div>
+</section>
+
+<div class="wrap docs-layout">
+
+  <aside class="docs-sidebar">
+    <nav aria-label="Documentation contents">
+      <div class="docs-sidebar-group">Getting started</div>
+      <a href="#introduction">Introduction</a>
+      <a href="#quickstart">Quickstart</a>
+      <a href="#authentification">Authentication</a>
+      <a href="#comptage">Request counting</a>
+      <a href="#produits">Product structure</a>
+      <div class="docs-sidebar-group">Endpoints</div>
+      <a href="#ep-search">Search</a>
+      <a href="#ep-items">Indexing</a>
+      <a href="#ep-delete">Deletion</a>
+      <a href="#ep-synonyms">Synonyms</a>
+      <a href="#ep-stats">Statistics</a>
+      <a href="#ep-usage">Usage</a>
+      <a href="#ep-rulepacks">Rule packs</a>
+      <a href="#ep-health">Service health</a>
+      <div class="docs-sidebar-group">Reference</div>
+      <a href="#cascade">The annotation cascade</a>
+      <a href="#bonnes-pratiques">Good practices</a>
+      <a href="#erreurs">Error codes</a>
+      <a href="#limites">Limits</a>
+    </nav>
+  </aside>
+
+  <main class="docs-content">
+
+    <section id="introduction" class="docs-section">
+      <h2>Introduction</h2>
+      <p>The Search API exposes the Heurix engine: a search engine built for technical catalogs, where queries and product records go through the same pipeline — normalization (case, accents), business synonyms, typo tolerance, then a <strong>rule cascade</strong> that turns text into structured annotations. That cascade is what lets <code class="docs-inline-code">m8x20</code> find a record stored as "M8 x 20 — A2".</p>
+      <p>The API is REST, JSON, HTTPS only. All responses are UTF-8 encoded.</p>
+    </section>
+
+    <section id="quickstart" class="docs-section">
+      <h2>Quickstart</h2>
+      <p>Three calls are enough for a working first search.</p>
+
+      <p class="docs-step"><span class="docs-step-num">1</span> Index your products (the catalog is created automatically on first send):</p>
+      <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/index/mycatalog/items \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "rulepack": "outillage",
+    "items": [
+      {"id": "V1", "name": "Hex head screw", "ref": "M8 x 20 — A2", "stock": 100},
+      {"id": "V2", "name": "Hex head screw", "ref": "M8 x 30 — A2", "stock": 50}
+    ]
+  }'</code></pre>
+
+      <p class="docs-step"><span class="docs-step-num">2</span> Search — typos are welcome:</p>
+      <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/index/mycatalog/search \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"q": "m8x20 stainless"}'</code></pre>
+
+      <p class="docs-step"><span class="docs-step-num">3</span> Read the response — every result explains why it matched:</p>
+      <pre class="docs-code"><code>{
+  "query": "m8x20 stainless",
+  "total": 2,
+  "hits": [
+    {
+      "product": {"id": "V1", "name": "Hex head screw", "ref": "M8 x 20 — A2", "stock": 100},
+      "score": 37.5,
+      "in_stock": true,
+      "matched": ["annotation #VIS_M8X20", "annotation #DIAM_M8", "annotation #LONG_20"]
+    }
+  ]
+}</code></pre>
+    </section>
+
+    <section id="authentification" class="docs-section">
+      <h2>Authentication</h2>
+      <p>Every call must carry your API key in the <code class="docs-inline-code">Authorization</code> header:</p>
+      <pre class="docs-code"><code>Authorization: Bearer hx_your_api_key</code></pre>
+      <p>A missing or malformed key returns <code class="docs-inline-code">401</code>; an invalid key returns <code class="docs-inline-code">403</code>. Keep your key server-side — never expose it in your site's public JavaScript. If your key leaks, contact us for immediate rotation.</p>
+    </section>
+
+    <section id="comptage" class="docs-section">
+      <h2>Request counting</h2>
+      <p>Billing is based on a monthly request counter, simple by design:</p>
+      <table class="icp-table">
+        <tr><td>Search</td><td>1 <code class="docs-inline-code">search</code> call = 1 request</td></tr>
+        <tr><td>Indexing</td><td>1 request per started batch of 100 products — indexing 1,000 products counts as 10 requests</td></tr>
+        <tr><td>Management</td><td>Every other API call (synonyms, stats, deletion...) = 1 request</td></tr>
+        <tr><td>Overage</td><td>Beyond your plan's volume, extra usage is billed at the rate shown on the <a href="pricing.html">pricing page</a> — never an abrupt cutoff</td></tr>
+      </table>
+      <p>Your current usage is available anytime via <a href="#ep-usage"><code class="docs-inline-code">GET /v1/usage</code></a>.</p>
+    </section>
+
+    <section id="produits" class="docs-section">
+      <h2>Product structure</h2>
+      <p>A product is a free-form JSON object. Four fields play a special role:</p>
+      <table class="docs-params">
+        <tr><th>Field</th><th>Type</th><th>Role</th></tr>
+        <tr><td><code class="docs-inline-code">id</code></td><td>string <span class="docs-required">required</span></td><td>Unique identifier within the catalog. Re-indexing the same id replaces the product (upsert).</td></tr>
+        <tr><td><code class="docs-inline-code">ref</code></td><td>string</td><td>Product reference (SKU, manufacturer code). Indexed, highest weight.</td></tr>
+        <tr><td><code class="docs-inline-code">name</code></td><td>string</td><td>Product name. Indexed, high weight.</td></tr>
+        <tr><td><code class="docs-inline-code">description</code></td><td>string</td><td>Description. Indexed, standard weight.</td></tr>
+        <tr><td><code class="docs-inline-code">stock</code></td><td>number | bool | string</td><td>Availability — used for sorting at equal relevance. <code class="docs-inline-code">0</code>, <code class="docs-inline-code">false</code>, <code class="docs-inline-code">"out"</code> = unavailable.</td></tr>
+      </table>
+      <p>Any other field (price, image, URL, category...) is stored as-is and returned in results, without being indexed.</p>
+    </section>
+
+    <!-- ================= ENDPOINTS ================= -->
+
+    <section id="ep-search" class="docs-section">
+      <div class="docs-endpoint"><span class="docs-method docs-method-post">POST</span><code>/v1/index/{catalog}/search</code></div>
+      <h2>Search</h2>
+      <p>Runs a search on a catalog. Results sorted by relevance, then availability at equal score.</p>
+      <h3>Request body</h3>
+      <table class="docs-params">
+        <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+        <tr><td><code class="docs-inline-code">q</code></td><td>string <span class="docs-required">required</span></td><td>The search query (1 to 500 characters).</td></tr>
+        <tr><td><code class="docs-inline-code">limit</code></td><td>integer</td><td>Results per page (1–100, default 10).</td></tr>
+        <tr><td><code class="docs-inline-code">offset</code></td><td>integer</td><td>Pagination offset (default 0).</td></tr>
+      </table>
+      <h3>Response</h3>
+      <p><code class="docs-inline-code">total</code> (match count), <code class="docs-inline-code">hits</code> — each hit contains the full <code class="docs-inline-code">product</code> as indexed, its <code class="docs-inline-code">score</code>, <code class="docs-inline-code">in_stock</code>, and <code class="docs-inline-code">matched</code>: a readable list of why it matched (terms found, typos corrected, shared annotations) — useful for understanding and tuning relevance.</p>
+    </section>
+
+    <section id="ep-items" class="docs-section">
+      <div class="docs-endpoint"><span class="docs-method docs-method-post">POST</span><code>/v1/index/{catalog}/items</code></div>
+      <h2>Indexing</h2>
+      <p>Adds or updates products in batch (upsert on <code class="docs-inline-code">id</code>). The catalog is created automatically if it doesn't exist.</p>
+      <h3>Request body</h3>
+      <table class="docs-params">
+        <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+        <tr><td><code class="docs-inline-code">items</code></td><td>array <span class="docs-required">required</span></td><td>1 to 5,000 products per call. Every product must have an <code class="docs-inline-code">id</code>.</td></tr>
+        <tr><td><code class="docs-inline-code">rulepack</code></td><td>string</td><td>Rule pack to attach to the catalog (<code class="docs-inline-code">outillage</code>, <code class="docs-inline-code">mode</code>, <code class="docs-inline-code">industrie</code>). Changing the pack re-indexes the catalog.</td></tr>
+      </table>
+      <h3>Response</h3>
+      <pre class="docs-code"><code>{"indexed": 2, "catalog": {"catalog": "mycatalog", "products": 2, "terms": 11,
+ "annotations": 9, "rulepack": "outillage", "synonym_groups": 0}}</code></pre>
+    </section>
+
+    <section id="ep-delete" class="docs-section">
+      <div class="docs-endpoint"><span class="docs-method docs-method-delete">DELETE</span><code>/v1/index/{catalog}/items/{id}</code></div>
+      <h2>Deletion</h2>
+      <p>Removes a product from the index and storage. Returns <code class="docs-inline-code">404</code> if the id is unknown.</p>
+      <pre class="docs-code"><code>curl -X DELETE https://api.heurix.fr/v1/index/mycatalog/items/V1 \
+  -H "Authorization: Bearer YOUR_API_KEY"</code></pre>
+    </section>
+
+    <section id="ep-synonyms" class="docs-section">
+      <div class="docs-endpoint"><span class="docs-method docs-method-get">GET</span><span class="docs-method docs-method-put">PUT</span><code>/v1/index/{catalog}/synonyms</code></div>
+      <h2>Synonyms</h2>
+      <p>Business synonyms expand search: "screw" can find "bolt". <code class="docs-inline-code">GET</code> reads the current groups, <code class="docs-inline-code">PUT</code> replaces them entirely. Groups sharing a term are merged automatically.</p>
+      <pre class="docs-code"><code>curl -X PUT https://api.heurix.fr/v1/index/mycatalog/synonyms \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"groups": [["screw", "bolt"], ["nut", "ecrou"]]}'</code></pre>
+    </section>
+
+    <section id="ep-stats" class="docs-section">
+      <div class="docs-endpoint"><span class="docs-method docs-method-get">GET</span><code>/v1/index/{catalog}/stats</code></div>
+      <h2>Statistics</h2>
+      <p>Catalog state: number of products, indexed terms, annotations produced by the cascade, active rule pack, synonym groups.</p>
+    </section>
+
+    <section id="ep-usage" class="docs-section">
+      <div class="docs-endpoint"><span class="docs-method docs-method-get">GET</span><code>/v1/usage</code></div>
+      <h2>Usage</h2>
+      <p>Request counter for the current month, for the calling key.</p>
+      <pre class="docs-code"><code>{"month": "2026-07", "requests": 1284}</code></pre>
+    </section>
+
+    <section id="ep-rulepacks" class="docs-section">
+      <div class="docs-endpoint"><span class="docs-method docs-method-get">GET</span><code>/v1/rulepacks</code></div>
+      <h2>Rule packs</h2>
+      <p>Lists the packs available on your instance, with their level and rule counts. Three standard packs ship by default: <code class="docs-inline-code">outillage</code> (fasteners, DIN/ISO standards, materials), <code class="docs-inline-code">mode</code> (sizes, colors, materials, families), <code class="docs-inline-code">industrie</code> (bearings, standardized references). Custom packs for your catalog can be designed as a <a href="index.html#tarifs">Professional Services</a> mission.</p>
+    </section>
+
+    <section id="ep-health" class="docs-section">
+      <div class="docs-endpoint"><span class="docs-method docs-method-get">GET</span><code>/health</code></div>
+      <h2>Service health</h2>
+      <p>Liveness, no authentication — handy for your monitoring probes.</p>
+      <pre class="docs-code"><code>{"status": "ok", "catalogs": 3}</code></pre>
+    </section>
+
+    <!-- ================= REFERENCE ================= -->
+
+    <section id="cascade" class="docs-section">
+      <h2>The annotation cascade</h2>
+      <p>This is the engine's core. A rule pack is organized in levels: level 1 applies regular expressions to normalized text and produces annotations; the next levels apply to the annotation stream and compose them. Documents and queries go through the same cascade, so matching happens in a shared space:</p>
+      <pre class="docs-code"><code>"m8x20 stainless"                       "M8 x 20 — A2"   (product record)
+      │                                        │
+      ▼  level 1                               ▼  level 1
+DIAM_M8, LONG_20, MAT_INOX             DIAM_M8, LONG_20, MAT_INOX
+      │                                        │
+      ▼  level 2                               ▼  level 2
+VIS_M8X20  ──────────── match ─────────────  VIS_M8X20</code></pre>
+      <p>Every shared annotation weighs heavily in the score — that's what puts the right reference first even when the written form differs. The <code class="docs-inline-code">matched</code> field of each result makes those annotations visible.</p>
+    </section>
+
+    <section id="bonnes-pratiques" class="docs-section">
+      <h2>Good practices</h2>
+      <p><strong>Fill <code class="docs-inline-code">ref</code>, <code class="docs-inline-code">name</code>, and <code class="docs-inline-code">description</code> separately.</strong> Field weighting is what makes ranking good — concatenating everything into <code class="docs-inline-code">name</code> flattens relevance.</p>
+      <p><strong>Keep references as they are.</strong> Don't "clean" product references before indexing (stripping spaces, dashes...): normalization and the cascade handle it, and the original form stays available for display.</p>
+      <p><strong>Index in batches of 1,000 to 5,000.</strong> One batch = one network call; too small multiplies calls, the cap is 5,000 per call.</p>
+      <p><strong>Send stock with every update.</strong> Tie-break sorting relies on it; up-to-date stock avoids promoting unavailable products.</p>
+      <p><strong>One catalog per language.</strong> If your store exists in French and English, create <code class="docs-inline-code">store-fr</code> and <code class="docs-inline-code">store-en</code> — synonyms and rules stay consistent per language.</p>
+      <p><strong>Use <code class="docs-inline-code">matched</code> to tune relevance.</strong> Every result explains why it ranks: if a product surfaces wrongly, this field shows which term or annotation made it match — it's your diagnostic tool.</p>
+    </section>
+
+    <section id="erreurs" class="docs-section">
+      <h2>Error codes</h2>
+      <table class="docs-params">
+        <tr><th>Code</th><th>Meaning</th><th>What to do</th></tr>
+        <tr><td><code class="docs-inline-code">401</code></td><td>Authorization header missing or malformed</td><td>Send <code class="docs-inline-code">Authorization: Bearer &lt;key&gt;</code></td></tr>
+        <tr><td><code class="docs-inline-code">403</code></td><td>Invalid API key</td><td>Check the key; contact us if it was revoked</td></tr>
+        <tr><td><code class="docs-inline-code">404</code></td><td>Catalog or product not found</td><td>Check the catalog name and id — the catalog is created on first indexing call, not before</td></tr>
+        <tr><td><code class="docs-inline-code">422</code></td><td>Invalid request body</td><td>The error detail names the field at fault (e.g. product missing an <code class="docs-inline-code">id</code>)</td></tr>
+        <tr><td><code class="docs-inline-code">5xx</code></td><td>Server-side error</td><td>Retry; if it persists, write to <a href="mailto:contact@heurix.fr">contact@heurix.fr</a></td></tr>
+      </table>
+    </section>
+
+    <section id="limites" class="docs-section">
+      <h2>Limits</h2>
+      <table class="icp-table">
+        <tr><td>Search query</td><td>500 characters maximum</td></tr>
+        <tr><td>Results per page</td><td>100 maximum (<code class="docs-inline-code">limit</code>)</td></tr>
+        <tr><td>Indexing</td><td>5,000 products per call — send multiple batches for a larger catalog</td></tr>
+        <tr><td>Synonym groups</td><td>2,000 per catalog</td></tr>
+        <tr><td>CORS</td><td>Browser calls are not open: call the API from your server, not from public JavaScript (your key would be exposed)</td></tr>
+      </table>
+      <p class="docs-hero-note" style="margin-top:18px;">Need more than these limits? <a href="index.html#contact">Let's talk</a> — that's what the Scale plan and dedicated setups are for.</p>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  <div class="wrap foot-grid">
+    <a href="index.html" class="logo" style="font-size:15px;"><img src="../logo.png" alt="Heurix" style="height:22px;width:22px;"> <span class="wordmark">HEURIX</span></a>
+    <div class="foot-links">
+      <a href="blog.html">Blog</a>
+      <a href="docs.html">API Documentation</a>
+      <a href="index.html#faq">FAQ</a>
+      <a href="mentions-legales.html">Legal notice</a>
+      <a href="mailto:contact@heurix.fr">contact@heurix.fr</a>
+    </div>
+    <div class="foot-social">
+      <span class="foot-social-label">Social networks</span>
+      <a href="https://www.linkedin.com/company/heurix-search/" target="_blank" rel="noopener" aria-label="LinkedIn" class="foot-social-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+      </a>
+    </div>
+    <div class="foot-legal">
+      Heurix — Sole proprietorship (French micro-entreprise). SIRET [to be added]. IT systems and software consulting.<br>
+      © <span id="year">2026</span> Heurix. All rights reserved.
+    </div>
+  </div>
+</footer>
+
+<script src="../search-en.js"></script>
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  const sections = document.querySelectorAll('.docs-section');
+  const sideLinks = document.querySelectorAll('.docs-sidebar a');
+  if ('IntersectionObserver' in window && sections.length) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          sideLinks.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + entry.target.id));
+        }
+      });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+    sections.forEach(s => io.observe(s));
+  }
+</script>
+
+</body>
+</html>

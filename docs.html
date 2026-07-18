@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-XXXXXXX');</script>
+<!-- End Google Tag Manager -->
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Documentation API — Heurix</title>
+<meta name="description" content="Référence complète du Search API Heurix : authentification, indexation, recherche, synonymes, packs de règles. Une première recherche fonctionnelle en quelques minutes.">
+<link rel="alternate" hreflang="fr" href="https://heurix.fr/docs.html">
+<link rel="alternate" hreflang="en" href="https://heurix.fr/en/docs.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Documentation API — Heurix">
+<meta property="og:description" content="Référence complète du Search API Heurix : authentification, indexation, recherche, synonymes, packs de règles.">
+<meta property="og:image" content="https://heurix.fr/og-image.png">
+<meta property="og:url" content="https://heurix.fr/docs.html">
+<meta property="og:locale" content="fr_FR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Documentation API — Heurix">
+<meta name="twitter:image" content="https://heurix.fr/og-image.png">
+<link rel="icon" type="image/png" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="styles.css">
+<link rel="canonical" href="https://heurix.fr/docs.html">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Heurix",
+  "url": "https://heurix.fr",
+  "logo": "https://heurix.fr/logo.png",
+  "image": "https://heurix.fr/og-image.png",
+  "description": "Moteur de recherche et search & discovery pour sites e-commerce, basé sur des expressions régulières, conçu en France.",
+  "email": "contact@heurix.fr",
+  "sameAs": [
+    "https://www.linkedin.com/company/heurix-search/"
+  ],
+  "founder": {
+    "@type": "Person",
+    "name": "Alexis Flahaut"
+  },
+  "areaServed": "FR",
+  "knowsAbout": [
+    "Search and discovery",
+    "E-commerce search engines",
+    "Algolia",
+    "Elasticsearch",
+    "Typesense"
+  ]
+}
+</script>
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+<header>
+  <nav>
+    <a href="index.html" class="logo"><img src="logo.png" alt="Heurix"> <span class="wordmark">HEURIX</span></a>
+    <div class="nav-links">
+      <a href="index.html#probleme">Le problème</a>
+      <a href="index.html#moteur">Le moteur</a>
+      <a href="pricing.html">Search API</a>
+      <a href="index.html#tarifs">Professional Services</a>
+      <a href="blog.html">Blog</a>
+    </div>
+    <a href="en/docs.html" class="lang-switch">EN</a>
+    <button id="heurix-search-btn" class="search-trigger" aria-label="Heurix Search — rechercher sur le site" type="button">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <span class="search-trigger-text">Heurix Search</span>
+      <span class="search-trigger-kbd">Ctrl K</span>
+    </button>
+    <a href="index.html#moteur" class="btn">Découvrir le moteur</a>
+  </nav>
+</header>
+
+<div id="heurix-search-modal" class="search-modal">
+  <div id="heurix-search-backdrop" class="search-backdrop" data-search-close></div>
+  <div class="search-panel">
+    <div class="search-panel-head">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input id="heurix-search-input" type="text" placeholder="Heurix Search..." autocomplete="off">
+      <button class="search-close" data-search-close type="button">Échap</button>
+    </div>
+    <p id="heurix-search-suggest-label" class="search-suggest-label" hidden>Derniers articles</p>
+    <div id="heurix-search-results" class="search-results"></div>
+    <p id="heurix-search-empty" class="search-empty" hidden>Aucun résultat pour cette recherche. Essayez un autre terme.</p>
+  </div>
+</div>
+
+<section class="docs-hero">
+  <div class="wrap">
+    <div class="badge">Documentation</div>
+    <h1>Search API — Référence</h1>
+    <p class="lede">Tout ce qu'il faut pour indexer un catalogue et lancer une première recherche en quelques minutes. Base URL : <code class="docs-inline-code">https://api.heurix.fr</code></p>
+    <p class="docs-hero-note">L'accès nécessite une clé API. Le self-service n'est pas encore ouvert — <a href="pricing.html#waitlist">rejoignez la liste d'attente</a> pour être prévenu, ou <a href="index.html#contact">contactez-nous</a> pour un accès anticipé.</p>
+  </div>
+</section>
+
+<div class="wrap docs-layout">
+
+  <aside class="docs-sidebar">
+    <nav aria-label="Sommaire de la documentation">
+      <div class="docs-sidebar-group">Prise en main</div>
+      <a href="#introduction">Introduction</a>
+      <a href="#quickstart">Démarrage rapide</a>
+      <a href="#authentification">Authentification</a>
+      <a href="#comptage">Comptage des requêtes</a>
+      <a href="#produits">Structure des produits</a>
+      <div class="docs-sidebar-group">Endpoints</div>
+      <a href="#ep-search">Recherche</a>
+      <a href="#ep-items">Indexation</a>
+      <a href="#ep-delete">Suppression</a>
+      <a href="#ep-synonyms">Synonymes</a>
+      <a href="#ep-stats">Statistiques</a>
+      <a href="#ep-usage">Consommation</a>
+      <a href="#ep-rulepacks">Packs de règles</a>
+      <a href="#ep-health">Santé du service</a>
+      <div class="docs-sidebar-group">Référence</div>
+      <a href="#cascade">La cascade d'annotations</a>
+      <a href="#bonnes-pratiques">Bonnes pratiques</a>
+      <a href="#erreurs">Codes d'erreur</a>
+      <a href="#limites">Limites</a>
+    </nav>
+  </aside>
+
+  <main class="docs-content">
+
+    <section id="introduction" class="docs-section">
+      <h2>Introduction</h2>
+      <p>Le Search API expose le moteur Heurix : un moteur de recherche pensé pour les catalogues techniques, où les requêtes et les fiches produits traversent le même pipeline — normalisation (casse, accents), synonymes métier, tolérance aux fautes de frappe, puis une <strong>cascade de règles</strong> qui transforme le texte en annotations structurées. C'est cette cascade qui permet à <code class="docs-inline-code">m8x20</code> de retrouver une fiche enregistrée « M8 x 20 — A2 ».</p>
+      <p>L'API est REST, en JSON, sur HTTPS uniquement. Toutes les réponses sont encodées en UTF-8.</p>
+    </section>
+
+    <section id="quickstart" class="docs-section">
+      <h2>Démarrage rapide</h2>
+      <p>Trois appels suffisent pour une première recherche fonctionnelle.</p>
+
+      <p class="docs-step"><span class="docs-step-num">1</span> Indexez vos produits (le catalogue est créé automatiquement au premier envoi) :</p>
+      <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/index/moncatalogue/items \
+  -H "Authorization: Bearer VOTRE_CLE_API" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "rulepack": "outillage",
+    "items": [
+      {"id": "V1", "name": "Vis tête hexagonale", "ref": "M8 x 20 — A2", "stock": 100},
+      {"id": "V2", "name": "Vis tête hexagonale", "ref": "M8 x 30 — A2", "stock": 50}
+    ]
+  }'</code></pre>
+
+      <p class="docs-step"><span class="docs-step-num">2</span> Cherchez — les fautes de frappe sont tolérées :</p>
+      <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/index/moncatalogue/search \
+  -H "Authorization: Bearer VOTRE_CLE_API" \
+  -H "Content-Type: application/json" \
+  -d '{"q": "m8x20 inox"}'</code></pre>
+
+      <p class="docs-step"><span class="docs-step-num">3</span> Lisez la réponse — chaque résultat explique pourquoi il correspond :</p>
+      <pre class="docs-code"><code>{
+  "query": "m8x20 inox",
+  "total": 2,
+  "hits": [
+    {
+      "product": {"id": "V1", "name": "Vis tête hexagonale", "ref": "M8 x 20 — A2", "stock": 100},
+      "score": 37.5,
+      "in_stock": true,
+      "matched": ["annotation #VIS_M8X20", "annotation #DIAM_M8", "annotation #LONG_20"]
+    }
+  ]
+}</code></pre>
+    </section>
+
+    <section id="authentification" class="docs-section">
+      <h2>Authentification</h2>
+      <p>Chaque appel doit porter votre clé API dans l'en-tête <code class="docs-inline-code">Authorization</code> :</p>
+      <pre class="docs-code"><code>Authorization: Bearer hx_votre_cle_api</code></pre>
+      <p>Une clé manquante ou mal formée renvoie <code class="docs-inline-code">401</code> ; une clé invalide renvoie <code class="docs-inline-code">403</code>. Gardez votre clé côté serveur — ne l'exposez jamais dans le code JavaScript public de votre site. Si votre clé fuite, contactez-nous pour rotation immédiate.</p>
+    </section>
+
+    <section id="comptage" class="docs-section">
+      <h2>Comptage des requêtes</h2>
+      <p>La facturation repose sur un compteur mensuel de requêtes, simple par principe :</p>
+      <table class="icp-table">
+        <tr><td>Recherche</td><td>1 appel <code class="docs-inline-code">search</code> = 1 requête</td></tr>
+        <tr><td>Indexation</td><td>1 requête par tranche de 100 produits entamée — indexer 1 000 produits compte pour 10 requêtes</td></tr>
+        <tr><td>Gestion</td><td>Chaque autre appel API (synonymes, stats, suppression...) = 1 requête</td></tr>
+        <tr><td>Dépassement</td><td>Au-delà du volume de votre plan, le surplus est facturé au tarif indiqué sur la <a href="pricing.html">page tarifs</a> — jamais de coupure brutale</td></tr>
+      </table>
+      <p>Votre consommation en cours est consultable à tout moment via <a href="#ep-usage"><code class="docs-inline-code">GET /v1/usage</code></a>.</p>
+    </section>
+
+    <section id="produits" class="docs-section">
+      <h2>Structure des produits</h2>
+      <p>Un produit est un objet JSON libre. Quatre champs ont un rôle particulier :</p>
+      <table class="docs-params">
+        <tr><th>Champ</th><th>Type</th><th>Rôle</th></tr>
+        <tr><td><code class="docs-inline-code">id</code></td><td>string <span class="docs-required">requis</span></td><td>Identifiant unique dans le catalogue. Ré-indexer le même id remplace le produit (upsert).</td></tr>
+        <tr><td><code class="docs-inline-code">ref</code></td><td>string</td><td>Référence produit (SKU, code fabricant). Indexée, poids le plus fort.</td></tr>
+        <tr><td><code class="docs-inline-code">name</code></td><td>string</td><td>Nom du produit. Indexé, poids fort.</td></tr>
+        <tr><td><code class="docs-inline-code">description</code></td><td>string</td><td>Description. Indexée, poids standard.</td></tr>
+        <tr><td><code class="docs-inline-code">stock</code></td><td>number | bool | string</td><td>Disponibilité — utilisée pour le tri à pertinence égale. <code class="docs-inline-code">0</code>, <code class="docs-inline-code">false</code>, <code class="docs-inline-code">"rupture"</code> = indisponible.</td></tr>
+      </table>
+      <p>Tout autre champ (prix, image, URL, catégorie...) est stocké tel quel et restitué dans les résultats, sans être indexé.</p>
+    </section>
+
+    <!-- ================= ENDPOINTS ================= -->
+
+    <section id="ep-search" class="docs-section">
+      <div class="docs-endpoint"><span class="docs-method docs-method-post">POST</span><code>/v1/index/{catalog}/search</code></div>
+      <h2>Recherche</h2>
+      <p>Lance une recherche sur un catalogue. Résultats triés par pertinence, puis disponibilité à score égal.</p>
+      <h3>Corps de la requête</h3>
+      <table class="docs-params">
+        <tr><th>Paramètre</th><th>Type</th><th>Description</th></tr>
+        <tr><td><code class="docs-inline-code">q</code></td><td>string <span class="docs-required">requis</span></td><td>La requête de recherche (1 à 500 caractères).</td></tr>
+        <tr><td><code class="docs-inline-code">limit</code></td><td>integer</td><td>Nombre de résultats par page (1–100, défaut 10).</td></tr>
+        <tr><td><code class="docs-inline-code">offset</code></td><td>integer</td><td>Décalage de pagination (défaut 0).</td></tr>
+      </table>
+      <h3>Réponse</h3>
+      <p><code class="docs-inline-code">total</code> (nombre de correspondances), <code class="docs-inline-code">hits</code> — chaque hit contient le <code class="docs-inline-code">product</code> complet tel qu'indexé, son <code class="docs-inline-code">score</code>, <code class="docs-inline-code">in_stock</code>, et <code class="docs-inline-code">matched</code> : la liste lisible des raisons de la correspondance (termes trouvés, fautes corrigées, annotations partagées) — utile pour comprendre et régler la pertinence.</p>
+    </section>
+
+    <section id="ep-items" class="docs-section">
+      <div class="docs-endpoint"><span class="docs-method docs-method-post">POST</span><code>/v1/index/{catalog}/items</code></div>
+      <h2>Indexation</h2>
+      <p>Ajoute ou met à jour des produits par lot (upsert sur <code class="docs-inline-code">id</code>). Le catalogue est créé automatiquement s'il n'existe pas.</p>
+      <h3>Corps de la requête</h3>
+      <table class="docs-params">
+        <tr><th>Paramètre</th><th>Type</th><th>Description</th></tr>
+        <tr><td><code class="docs-inline-code">items</code></td><td>array <span class="docs-required">requis</span></td><td>1 à 5 000 produits par appel. Chaque produit doit avoir un <code class="docs-inline-code">id</code>.</td></tr>
+        <tr><td><code class="docs-inline-code">rulepack</code></td><td>string</td><td>Pack de règles à associer au catalogue (<code class="docs-inline-code">outillage</code>, <code class="docs-inline-code">mode</code>, <code class="docs-inline-code">industrie</code>). Changer de pack ré-indexe le catalogue.</td></tr>
+      </table>
+      <h3>Réponse</h3>
+      <pre class="docs-code"><code>{"indexed": 2, "catalog": {"catalog": "moncatalogue", "products": 2, "terms": 11,
+ "annotations": 9, "rulepack": "outillage", "synonym_groups": 0}}</code></pre>
+    </section>
+
+    <section id="ep-delete" class="docs-section">
+      <div class="docs-endpoint"><span class="docs-method docs-method-delete">DELETE</span><code>/v1/index/{catalog}/items/{id}</code></div>
+      <h2>Suppression</h2>
+      <p>Retire un produit de l'index et du stockage. Renvoie <code class="docs-inline-code">404</code> si l'identifiant est inconnu.</p>
+      <pre class="docs-code"><code>curl -X DELETE https://api.heurix.fr/v1/index/moncatalogue/items/V1 \
+  -H "Authorization: Bearer VOTRE_CLE_API"</code></pre>
+    </section>
+
+    <section id="ep-synonyms" class="docs-section">
+      <div class="docs-endpoint"><span class="docs-method docs-method-get">GET</span><span class="docs-method docs-method-put">PUT</span><code>/v1/index/{catalog}/synonyms</code></div>
+      <h2>Synonymes</h2>
+      <p>Les synonymes métier étendent la recherche : « vis » peut retrouver « boulon ». <code class="docs-inline-code">GET</code> lit les groupes en place, <code class="docs-inline-code">PUT</code> les remplace intégralement. Les groupes qui partagent un terme sont fusionnés automatiquement.</p>
+      <pre class="docs-code"><code>curl -X PUT https://api.heurix.fr/v1/index/moncatalogue/synonyms \
+  -H "Authorization: Bearer VOTRE_CLE_API" \
+  -H "Content-Type: application/json" \
+  -d '{"groups": [["vis", "boulon", "visserie"], ["ecrou", "nut"]]}'</code></pre>
+    </section>
+
+    <section id="ep-stats" class="docs-section">
+      <div class="docs-endpoint"><span class="docs-method docs-method-get">GET</span><code>/v1/index/{catalog}/stats</code></div>
+      <h2>Statistiques</h2>
+      <p>État du catalogue : nombre de produits, de termes indexés, d'annotations produites par la cascade, pack de règles actif, groupes de synonymes.</p>
+    </section>
+
+    <section id="ep-usage" class="docs-section">
+      <div class="docs-endpoint"><span class="docs-method docs-method-get">GET</span><code>/v1/usage</code></div>
+      <h2>Consommation</h2>
+      <p>Compteur de requêtes du mois en cours pour la clé appelante.</p>
+      <pre class="docs-code"><code>{"month": "2026-07", "requests": 1284}</code></pre>
+    </section>
+
+    <section id="ep-rulepacks" class="docs-section">
+      <div class="docs-endpoint"><span class="docs-method docs-method-get">GET</span><code>/v1/rulepacks</code></div>
+      <h2>Packs de règles</h2>
+      <p>Liste les packs disponibles sur votre instance, avec leur nombre de niveaux et de règles. Trois packs standards sont fournis : <code class="docs-inline-code">outillage</code> (visserie, normes DIN/ISO, matières), <code class="docs-inline-code">mode</code> (tailles, coloris, matières, familles), <code class="docs-inline-code">industrie</code> (roulements, références normalisées). Des packs sur mesure pour votre catalogue peuvent être conçus en mission <a href="index.html#tarifs">Professional Services</a>.</p>
+    </section>
+
+    <section id="ep-health" class="docs-section">
+      <div class="docs-endpoint"><span class="docs-method docs-method-get">GET</span><code>/health</code></div>
+      <h2>Santé du service</h2>
+      <p>Liveness, sans authentification — pratique pour vos sondes de supervision.</p>
+      <pre class="docs-code"><code>{"status": "ok", "catalogs": 3}</code></pre>
+    </section>
+
+    <!-- ================= RÉFÉRENCE ================= -->
+
+    <section id="cascade" class="docs-section">
+      <h2>La cascade d'annotations</h2>
+      <p>C'est le cœur du moteur. Un pack de règles est organisé en niveaux : le niveau 1 applique des expressions régulières sur le texte normalisé et produit des annotations ; les niveaux suivants s'appliquent sur le flux d'annotations et les composent. Documents et requêtes traversent la même cascade, la correspondance se fait donc dans un espace partagé :</p>
+      <pre class="docs-code"><code>« m8x20 inox »                          « M8 x 20 — A2 »   (fiche produit)
+      │                                        │
+      ▼  niveau 1                              ▼  niveau 1
+DIAM_M8, LONG_20, MAT_INOX             DIAM_M8, LONG_20, MAT_INOX
+      │                                        │
+      ▼  niveau 2                              ▼  niveau 2
+VIS_M8X20  ────────── correspondance ──────  VIS_M8X20</code></pre>
+      <p>Chaque annotation partagée pèse fortement dans le score — c'est ce qui fait passer la bonne référence en tête même quand la forme écrite diffère. Le champ <code class="docs-inline-code">matched</code> de chaque résultat rend ces annotations visibles.</p>
+    </section>
+
+    <section id="bonnes-pratiques" class="docs-section">
+      <h2>Bonnes pratiques</h2>
+      <p><strong>Remplissez <code class="docs-inline-code">ref</code>, <code class="docs-inline-code">name</code> et <code class="docs-inline-code">description</code> distinctement.</strong> C'est la pondération entre ces trois champs qui fait la qualité du tri — tout concaténer dans <code class="docs-inline-code">name</code> aplatit la pertinence.</p>
+      <p><strong>Gardez les références telles quelles.</strong> N'essayez pas de « nettoyer » vos références produits avant indexation (retirer les espaces, les tirets...) : la normalisation et la cascade s'en chargent, et la forme d'origine reste disponible pour l'affichage.</p>
+      <p><strong>Indexez par lots de 1 000 à 5 000.</strong> Un lot = un appel réseau ; trop petit multiplie les appels, la limite est à 5 000 par appel.</p>
+      <p><strong>Envoyez le stock à chaque mise à jour.</strong> Le tri à pertinence égale repose dessus ; un stock à jour évite de mettre en avant des produits indisponibles.</p>
+      <p><strong>Un catalogue par langue.</strong> Si votre boutique existe en français et en anglais, créez <code class="docs-inline-code">boutique-fr</code> et <code class="docs-inline-code">boutique-en</code> — les synonymes et les règles restent cohérents par langue.</p>
+      <p><strong>Utilisez <code class="docs-inline-code">matched</code> pour régler la pertinence.</strong> Chaque résultat explique pourquoi il sort : si un produit remonte à tort, ce champ montre quel terme ou quelle annotation l'a fait matcher — c'est votre outil de diagnostic.</p>
+    </section>
+
+    <section id="erreurs" class="docs-section">
+      <h2>Codes d'erreur</h2>
+      <table class="docs-params">
+        <tr><th>Code</th><th>Signification</th><th>Que faire</th></tr>
+        <tr><td><code class="docs-inline-code">401</code></td><td>En-tête Authorization absent ou mal formé</td><td>Envoyez <code class="docs-inline-code">Authorization: Bearer &lt;clé&gt;</code></td></tr>
+        <tr><td><code class="docs-inline-code">403</code></td><td>Clé API invalide</td><td>Vérifiez la clé ; contactez-nous si elle a été révoquée</td></tr>
+        <tr><td><code class="docs-inline-code">404</code></td><td>Catalogue ou produit introuvable</td><td>Vérifiez le nom du catalogue et l'id — le catalogue est créé au premier appel d'indexation, pas avant</td></tr>
+        <tr><td><code class="docs-inline-code">422</code></td><td>Corps de requête invalide</td><td>Le détail de l'erreur indique le champ en cause (ex : produit sans <code class="docs-inline-code">id</code>)</td></tr>
+        <tr><td><code class="docs-inline-code">5xx</code></td><td>Erreur côté serveur</td><td>Réessayez ; si l'erreur persiste, écrivez à <a href="mailto:contact@heurix.fr">contact@heurix.fr</a></td></tr>
+      </table>
+    </section>
+
+    <section id="limites" class="docs-section">
+      <h2>Limites</h2>
+      <table class="icp-table">
+        <tr><td>Requête de recherche</td><td>500 caractères maximum</td></tr>
+        <tr><td>Résultats par page</td><td>100 maximum (<code class="docs-inline-code">limit</code>)</td></tr>
+        <tr><td>Indexation</td><td>5 000 produits par appel — envoyez plusieurs lots pour un catalogue plus grand</td></tr>
+        <tr><td>Groupes de synonymes</td><td>2 000 par catalogue</td></tr>
+        <tr><td>CORS</td><td>Les appels navigateur ne sont pas ouverts : appelez l'API depuis votre serveur, pas depuis le JavaScript public (votre clé y serait exposée)</td></tr>
+      </table>
+      <p class="docs-hero-note" style="margin-top:18px;">Un besoin au-delà de ces limites ? <a href="index.html#contact">Parlons-en</a> — c'est le rôle du plan Scale et des configurations dédiées.</p>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  <div class="wrap foot-grid">
+    <a href="index.html" class="logo" style="font-size:15px;"><img src="logo.png" alt="Heurix" style="height:22px;width:22px;"> <span class="wordmark">HEURIX</span></a>
+    <div class="foot-links">
+      <a href="blog.html">Blog</a>
+      <a href="docs.html">Documentation API</a>
+      <a href="index.html#faq">FAQ</a>
+      <a href="mentions-legales.html">Mentions légales</a>
+      <a href="mailto:contact@heurix.fr">contact@heurix.fr</a>
+    </div>
+    <div class="foot-social">
+      <span class="foot-social-label">Réseaux sociaux</span>
+      <a href="https://www.linkedin.com/company/heurix-search/" target="_blank" rel="noopener" aria-label="LinkedIn" class="foot-social-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+      </a>
+    </div>
+    <div class="foot-legal">
+      Heurix — Entreprise individuelle (micro-entreprise). SIRET [à compléter]. Conseil en systèmes et logiciels informatiques.<br>
+      © <span id="year">2026</span> Heurix. Tous droits réservés.
+    </div>
+  </div>
+</footer>
+
+<script src="search.js"></script>
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  // Sidebar : lien actif au scroll
+  const sections = document.querySelectorAll('.docs-section');
+  const sideLinks = document.querySelectorAll('.docs-sidebar a');
+  if ('IntersectionObserver' in window && sections.length) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          sideLinks.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + entry.target.id));
+        }
+      });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+    sections.forEach(s => io.observe(s));
+  }
+</script>
+
+</body>
+</html>

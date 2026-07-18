@@ -65,4 +65,14 @@
   <url><loc>https://heurix.fr/blog/glossaire-search-ecommerce.html</loc><xhtml:link rel="alternate" hreflang="en" href="https://heurix.fr/en/blog/glossaire-search-ecommerce.html"/><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://heurix.fr/en/blog/glossaire-search-ecommerce.html</loc><xhtml:link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/glossaire-search-ecommerce.html"/><changefreq>monthly</changefreq><priority>0.5</priority></url>
 
+  <url>
+    <loc>https://heurix.fr/docs.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://heurix.fr/docs.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://heurix.fr/en/docs.html"/>
+  </url>
+  <url>
+    <loc>https://heurix.fr/en/docs.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://heurix.fr/docs.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://heurix.fr/en/docs.html"/>
+  </url>
 </urlset>
