@@ -254,11 +254,22 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <p>The default search engine on most CMS platforms indexes the catalog, but understands neither typos, synonyms, nor the relevance order a buyer expects. <strong>The visitor sees a blank page or unrelated results — and closes the tab.</strong></p>
       <p>Fixing this doesn't require a new e-commerce platform. It requires a precise audit of what's breaking relevance, then targeted configuration: business synonyms, typo tolerance, sorting by stock and margin, faceted filters that reflect how your customers actually search.</p>
     </div>
-    <div class="stat-row reveal">
-      <div class="stat"><div class="num">€850</div><div class="lbl">day rate, billed per mission</div></div>
-      <div class="stat"><div class="num">2-3 d</div><div class="lbl">typical audit duration</div></div>
-      <div class="stat"><div class="num">48h</div><div class="lbl">response time to a request</div></div>
-      <div class="stat"><div class="num">100%</div><div class="lbl">independent from any vendor</div></div>
+    <div class="why-cards reveal">
+      <div class="why-card">
+        <div class="why-num">≈ 10 ms</div>
+        <h3>Instant response</h3>
+        <p>Median engine response time, measured on a 10,000-product catalog. Every millisecond of latency costs conversions.</p>
+      </div>
+      <div class="why-card why-card-highlight">
+        <div class="why-num">2 typos</div>
+        <h3>Tolerated per word</h3>
+        <p>"red turtlneck swetaer" still finds the red turtleneck sweaters. Only one on references — a changed digit means a different product.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-num">€0</div>
+        <h3>To get started</h3>
+        <p>The Search API Free plan: 2,000 requests and 5,000 products per month, no commitment. <a href="pricing.html">See pricing</a>.</p>
+      </div>
     </div>
   </div>
 </section>
@@ -403,6 +414,37 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
       </div>
     </div>
+  </div>
+</section>
+
+<section id="comment-ca-marche" class="soft">
+  <div class="wrap">
+    <div class="kicker">How it works</div>
+    <h2>Up and running in 3 steps.</h2>
+    <p class="section-lede">No plugin, no rebuild: your catalog, one API call, and the engine does the rest.</p>
+    <div class="how-steps reveal">
+      <div class="how-step">
+        <div class="how-step-num">1</div>
+        <h3>Index your catalog</h3>
+        <p>One API call is enough — the catalog is created automatically, with your industry's rule pack (hardware, fashion, industry).</p>
+      </div>
+      <div class="how-step">
+        <div class="how-step-num">2</div>
+        <h3>The cascade annotates every product</h3>
+        <p>"M8 x 20 — A2" becomes <code class="docs-inline-code">DIAM_M8</code> + <code class="docs-inline-code">LONG_20</code> + <code class="docs-inline-code">MAT_INOX</code>. Your customers' queries go through the same rules: matching happens on meaning, not spelling.</p>
+      </div>
+      <div class="how-step">
+        <div class="how-step-num">3</div>
+        <h3>Your customers find</h3>
+        <p>Despite typos, despite different spellings — sorted by relevance then availability. And every result explains why it matches.</p>
+      </div>
+    </div>
+    <pre class="docs-code how-code"><code>curl -X POST https://api.heurix.fr/v1/index/mycatalog/search \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -d '{"q": "m8x20 stainless"}'
+
+→ 1st result: Hex head screw M8 x 20 — A2   (annotation #VIS_M8X20)</code></pre>
+    <p class="how-note">The full endpoint reference is in the <a href="docs.html">API documentation</a>. Shopify, PrestaShop, WooCommerce, and Magento connectors: in the works.</p>
   </div>
 </section>
 

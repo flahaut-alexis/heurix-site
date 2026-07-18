@@ -3,6 +3,7 @@
 
 const HEURIX_SEARCH_INDEX = [
   { title: "Le problème", excerpt: "La recherche interne est le point de conversion le moins surveillé d'un site marchand.", path: "index.html#probleme" },
+  { title: "Comment ça marche", excerpt: "Opérationnel en 3 étapes : indexez votre catalogue, la cascade annote chaque produit, vos clients trouvent.", path: "index.html#comment-ca-marche" },
   { title: "Notre mission", excerpt: "La recherche ne devrait jamais être un fardeau. C'est un levier de conversion.", path: "index.html#mission" },
   { title: "L'offre", excerpt: "Audit, intégration, formation, optimisation continue — quatre étapes dans l'ordre où elles ont du sens.", path: "index.html#offre" },
   { title: "Documentation API", excerpt: "Référence complète du Search API : authentification, indexation, recherche, synonymes, cascade d'annotations, bonnes pratiques.", path: "docs.html" },

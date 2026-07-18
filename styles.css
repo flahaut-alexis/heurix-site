@@ -930,6 +930,41 @@ h2{ font-size:clamp(26px,3.4vw,34px); font-weight:800; margin:0 0 18px; max-widt
   transform:translateY(3px);
 }
 
+/* POURQUOI HEURIX — cartes de stats */
+.why-cards{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:36px; }
+@media (max-width:800px){ .why-cards{ grid-template-columns:1fr; } }
+.why-card{
+  background:#fff; border:1px solid var(--line); border-radius:14px; padding:28px 24px;
+}
+.why-card-highlight{ border-color:var(--blue); box-shadow:0 0 0 1px var(--blue); }
+.why-num{
+  font-size:34px; font-weight:800; color:var(--blue-deep);
+  letter-spacing:-0.02em; margin-bottom:10px;
+}
+.why-card h3{ font-size:15.5px; margin:0 0 8px; font-weight:700; }
+.why-card p{ margin:0; font-size:13.5px; color:var(--ink-muted); line-height:1.6; }
+.why-card p a{ color:var(--blue-deep); font-weight:600; text-decoration:none; }
+.why-card p a:hover{ text-decoration:underline; }
+
+/* COMMENT ÇA MARCHE */
+.how-steps{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin:36px 0 26px; }
+@media (max-width:800px){ .how-steps{ grid-template-columns:1fr; } }
+.how-step{
+  background:#fff; border:1px solid var(--line); border-radius:14px; padding:26px 24px;
+}
+.how-step-num{
+  width:34px; height:34px; border-radius:50%;
+  background:var(--blue); color:#fff; font-size:16px; font-weight:800;
+  display:flex; align-items:center; justify-content:center;
+  margin-bottom:16px;
+}
+.how-step h3{ font-size:15.5px; margin:0 0 8px; font-weight:700; }
+.how-step p{ margin:0; font-size:13.5px; color:var(--ink-muted); line-height:1.6; }
+.how-code{ max-width:100%; }
+.how-note{ font-size:13.5px; color:var(--ink-muted); margin:14px 0 0; }
+.how-note a{ color:var(--blue-deep); font-weight:600; text-decoration:none; }
+.how-note a:hover{ text-decoration:underline; }
+
 /* CTA */
 .cta-section{
   text-align:center; padding:96px 0 88px;

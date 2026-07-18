@@ -254,11 +254,22 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <p>Le moteur livré par défaut avec la plupart des CMS indexe le catalogue, mais ne comprend ni les fautes de frappe, ni les synonymes, ni l'ordre de pertinence attendu par un acheteur. <strong>Le visiteur voit une page vide ou des résultats hors sujet — et referme l'onglet.</strong></p>
       <p>Corriger cela ne demande pas une nouvelle plateforme e-commerce. Cela demande un audit précis de ce qui casse la pertinence, puis un paramétrage ciblé : synonymes métier, tolérance aux fautes, tri par disponibilité et par marge, filtres à facettes qui reflètent la façon dont vos clients cherchent réellement.</p>
     </div>
-    <div class="stat-row reveal">
-      <div class="stat"><div class="num">850€</div><div class="lbl">TJM, facturation à la mission</div></div>
-      <div class="stat"><div class="num">2-3 j</div><div class="lbl">durée type d'un audit</div></div>
-      <div class="stat"><div class="num">48h</div><div class="lbl">délai de réponse à une demande</div></div>
-      <div class="stat"><div class="num">100%</div><div class="lbl">indépendant de tout éditeur</div></div>
+    <div class="why-cards reveal">
+      <div class="why-card">
+        <div class="why-num">≈ 10 ms</div>
+        <h3>Réponse instantanée</h3>
+        <p>Temps de réponse médian du moteur, mesuré sur un catalogue de 10 000 produits. Chaque milliseconde de latence coûte des conversions.</p>
+      </div>
+      <div class="why-card why-card-highlight">
+        <div class="why-num">2 fautes</div>
+        <h3>Tolérées par mot</h3>
+        <p>« pul col rolé roug » trouve quand même les pulls col roulé rouges. Une seule sur les références — un chiffre changé, c'est un autre produit.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-num">0 €</div>
+        <h3>Pour commencer</h3>
+        <p>Le plan Free du Search API : 2 000 requêtes et 5 000 produits par mois, sans engagement. <a href="pricing.html">Voir les tarifs</a>.</p>
+      </div>
     </div>
   </div>
 </section>
@@ -403,6 +414,37 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
       </div>
     </div>
+  </div>
+</section>
+
+<section id="comment-ca-marche" class="soft">
+  <div class="wrap">
+    <div class="kicker">Comment ça marche</div>
+    <h2>Opérationnel en 3 étapes.</h2>
+    <p class="section-lede">Pas de plugin, pas de refonte : votre catalogue, un appel API, et le moteur fait le reste.</p>
+    <div class="how-steps reveal">
+      <div class="how-step">
+        <div class="how-step-num">1</div>
+        <h3>Indexez votre catalogue</h3>
+        <p>Un appel API suffit — le catalogue est créé automatiquement, avec le pack de règles de votre secteur (outillage, mode, industrie).</p>
+      </div>
+      <div class="how-step">
+        <div class="how-step-num">2</div>
+        <h3>La cascade annote chaque produit</h3>
+        <p>« M8 x 20 — A2 » devient <code class="docs-inline-code">DIAM_M8</code> + <code class="docs-inline-code">LONG_20</code> + <code class="docs-inline-code">MAT_INOX</code>. Les requêtes de vos clients traversent les mêmes règles : la correspondance se fait sur le sens, pas sur la forme.</p>
+      </div>
+      <div class="how-step">
+        <div class="how-step-num">3</div>
+        <h3>Vos clients trouvent</h3>
+        <p>Malgré les fautes de frappe, malgré les écritures différentes — triés par pertinence puis disponibilité. Et chaque résultat explique pourquoi il correspond.</p>
+      </div>
+    </div>
+    <pre class="docs-code how-code"><code>curl -X POST https://api.heurix.fr/v1/index/moncatalogue/search \
+  -H "Authorization: Bearer VOTRE_CLE_API" \
+  -d '{"q": "m8x20 inox"}'
+
+→ 1er résultat : Vis tête hexagonale M8 x 20 — A2   (annotation #VIS_M8X20)</code></pre>
+    <p class="how-note">La référence complète des endpoints est dans la <a href="docs.html">documentation API</a>. Connecteurs Shopify, PrestaShop, WooCommerce et Magento : en préparation.</p>
   </div>
 </section>
 
