@@ -61,54 +61,10 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   "@context": "https://schema.org",
   "@type": "FAQPage",
   "mainEntity": [
-    {
-      "@type": "Question",
-      "name": "How much does a mission cost?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Billed daily, €850/day excl. VAT, quoted based on exact scope. As a guide: an audit alone takes 2 to 3 days, a full mission (audit + integration) costs between €4,250 and €8,500 excl. VAT depending on catalog size. Use the ROI simulator to estimate the expected gain against this cost."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "What if the results don't show up?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "No consultant can guarantee a percentage gain in advance — the simulator's numbers are order-of-magnitude estimates, not a contractual promise. What limits your risk: no subscription, no long-term commitment. The initial audit (2 to 3 days) gives you a concrete, quantifiable diagnosis before deciding to go further."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Do I need to change e-commerce platforms?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "No. Heurix works on the search layer of your existing site (Shopify, PrestaShop, WooCommerce, Magento, or other), without touching the rest of your architecture. In most cases, the problem is solved by reconfiguring or connecting a search engine, not by switching CMS."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Proprietary Heurix engine or Algolia / Elasticsearch / Typesense — how do you choose?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "The choice is made during the audit, based on your catalog, your budget, and what you already have in place. If your current solution is simply misconfigured, we fix it. If no market solution fits your case, the proprietary Heurix engine becomes a relevant option."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "How long does a mission take?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "The initial audit takes 2 to 3 days. The integration that follows depends on the scope defined after the diagnostic. Either way, this stays far from a months-long IT project."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Do you work with my industry?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Heurix is particularly relevant for large, technical catalogs — tools & hardware, spare parts, electrical/electronics, professional equipment/construction in particular. The principle applies to any site with an underused internal search engine, regardless of sector."
-      }
-    }
+    {"@type": "Question", "name": "How do I integrate the Heurix engine into my site?", "acceptedAnswer": {"@type": "Answer", "text": "Via API: index your catalog, wire up search, you're live. No plugin, no rebuild, no CMS dependency. Shopify, PrestaShop, WooCommerce, and Magento connectors are in the works."}},
+    {"@type": "Question", "name": "How much does the Heurix Search API cost?", "acceptedAnswer": {"@type": "Answer", "text": "A Free plan (2,000 requests and 5,000 products per month) to test without a credit card, then usage-based plans from €39/month. Counting rules are public and usage is available in real time."}},
+    {"@type": "Question", "name": "Why pick Heurix over Algolia, Elasticsearch, or Typesense?", "acceptedAnswer": {"@type": "Answer", "text": "Generalist engines compare characters; Heurix reads the structure of product references through its annotation cascade — dimensions, standards, sizes, vintages, editions — with rule packs per vertical and explainable results."}},
+    {"@type": "Question", "name": "Where is the data hosted?", "acceptedAnswer": {"@type": "Answer", "text": "In France, at OVH (Gravelines or Strasbourg). Catalogs never leave the European Union."}}
   ]
 }
 </script>
@@ -127,7 +83,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <a href="#probleme">The problem</a>
       <a href="#moteur">The engine</a>
       <a href="pricing.html">Search API</a>
-      <a href="#tarifs">Professional Services</a>
+      <a href="#tarifs">ROI Simulator</a>
       <a href="blog.html">Blog</a>
     </div>
     <a href="../index.html" class="lang-switch">FR</a>
@@ -171,12 +127,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </div>
       <div class="play-chips">
         <span class="play-chips-label">Try:</span>
-        <button type="button" class="play-chip" data-q="red turtlneck swetaer">red turtlneck swetaer</button>
-        <button type="button" class="play-chip" data-q="washed jeans 32/34">washed jeans 32/34</button>
-        <button type="button" class="play-chip" data-q="flanel shirt">flanel shirt</button>
-        <button type="button" class="play-chip" data-q="cashmere scarf">cashmere scarf</button>
+        <button type="button" class="play-chip" data-q="scandinavian crime pocket">scandinavian crime pocket</button>
+        <button type="button" class="play-chip" data-q="dostoievsky doorstop">dostoievsky doorstop</button>
+        <button type="button" class="play-chip" data-q="jules vern illustrated">jules vern illustrated</button>
+        <button type="button" class="play-chip" data-q="tolkien collector">tolkien collector</button>
       </div>
       <p class="play-meta"></p>
+      <div class="play-prisms"></div>
       <div class="play-grid"></div>
     </div>
 
@@ -201,6 +158,33 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <h4>Explainable and sovereign</h4>
         <p>Every result says why it ranks. Designed in France, hosted at OVH, data in the EU.</p>
       </div>
+      <details class="faq-item">
+        <summary>Where is my data hosted?</summary>
+        <div class="faq-answer">
+          <p>In France, at OVH (Gravelines or Strasbourg). Your catalogs never leave the European Union, and the engine itself is designed and built in France. For GDPR requirements, it's the simplest scenario to document with your DPO.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>What happens if I exceed my plan's quota?</summary>
+        <div class="faq-answer">
+          <p>Never an abrupt cutoff: overage is billed at the usage rate shown on the <a href="pricing.html">pricing page</a>. Counting rules are public (1 search = 1 request, 1,000 indexed products = 10 requests) and your usage is available in real time via the API.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>Can I create my own annotation rules?</summary>
+        <div class="faq-answer">
+          <p>Three packs ship with the engine (hardware, fashion, industry) and cover the most common cases. For a catalog with very specific references, we design a custom pack as a mission — a matter of days, not months, and the configuration remains yours.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>Does the demo on this page really use the engine?</summary>
+        <div class="faq-answer">
+          <p>Yes — it's the Heurix engine logic, ported to JavaScript and embedded in the page with a demo catalog: same normalization, same typo tolerance, same annotation cascade, same scoring. Developers can even query it from the console: <code>window.heurixDemo.search("...")</code>.</p>
+        </div>
+      </details>
     </div>
   </div>
 </section>
@@ -293,7 +277,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </div>
       <div class="feature-card">
         <h3>Industry rule packs</h3>
-        <p>Hardware, fashion, industry — shipped with the engine. Custom packs for your catalog as a mission.</p>
+        <p>Hardware, fashion, industry — shipped with the engine. Custom packs available on Scale plans.</p>
       </div>
       <div class="feature-card">
         <h3>Business synonyms</h3>
@@ -338,7 +322,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div class="regex-copy">
         <h3>A concrete competitive edge: understanding references, not just words</h3>
         <p>Most engines — including well-known solutions like Algolia or Elasticsearch when poorly configured — treat a product reference like any other word. Two different formats for the same reference (<code>M8x20</code> and <code>M8 x 20</code>) are then seen as two unrelated things. On a technical catalog, that's where a meaningful share of lost sales happens — not the site's design, but the engine's ability to understand what the buyer actually typed.</p>
-        <p>Heurix configures custom regular expression (regex) rules for your catalog: they recognize the <em>structure</em> of a reference — family, dimension, variant — rather than comparing characters one by one. A buyer typing a partial or slightly mis-formatted reference still finds the right product. This kind of fine-tuned configuration work is something few providers offer, because it requires understanding both your catalog and how your customers actually search.</p>
+        <p>Heurix configures custom regular expression (regex) rules for your catalog: they recognize the <em>structure</em> of a reference — family, dimension, variant — rather than comparing characters one by one. A buyer typing a partial or slightly mis-formatted reference still finds the right product. This is fine-grained catalog understanding, encoded once and for all into the engine's rule packs — it takes understanding both your catalog and how your customers actually search.</p>
       </div>
       <div class="demo-video">
         <video autoplay muted loop playsinline poster="../heurix-demo-poster.jpg" aria-label="Demo: searching for an M8x20 screw with a native engine, then with Heurix">
@@ -406,6 +390,26 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <h4>Professional equipment &amp; construction</h4>
           <p>High volumes, professional buyers who search by exact reference more than by descriptive keyword.</p>
         </div>
+        <div class="vertical-card">
+          <div class="icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.38 3.46 16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.47a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.47a2 2 0 00-1.34-2.23z"/></svg></div>
+          <h4>Fashion &amp; retail</h4>
+          <p>Compound sizes (W32/L34), colors, materials, variants — and customers who type fast, with typos.</p>
+        </div>
+        <div class="vertical-card">
+          <div class="icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg></div>
+          <h4>Books &amp; culture</h4>
+          <p>ISBNs, editions, formats, collections: the same title exists in dozens of versions — the demo on this page is the proof.</p>
+        </div>
+        <div class="vertical-card">
+          <div class="icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 22h8"/><path d="M12 15v7"/><path d="M12 15a5 5 0 005-5V3H7v7a5 5 0 005 5z"/></svg></div>
+          <h4>Wine &amp; spirits</h4>
+          <p>Vintages, estates, appellations, formats (37.5 cl, magnum): references where every digit matters.</p>
+        </div>
+        <div class="vertical-card vertical-card-cta">
+          <div class="icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+          <h4>And yours?</h4>
+          <p>If your customers search by reference, dimension, or variant, the engine adapts. <a href="index.html#contact">Tell us about your catalog</a>.</p>
+        </div>
       </div>
     </div>
   </div>
@@ -444,29 +448,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 <section id="offres">
   <div class="wrap">
-    <div class="kicker">Two ways to work with Heurix</div>
-    <h2>The engine in self-service — or hands-on support.</h2>
-    <p class="section-lede">Depending on where you're at — one, or both.</p>
-    <div class="offers-grid reveal">
-      <div class="offer-card offer-card-highlight">
-        <div class="offer-kicker mono">Search API</div>
-        <h3>The Heurix engine, self-service, starting free.</h3>
-        <p>Integrate the proprietary Heurix engine API directly on your site. Usage-based billing, no commitment, a free plan to get started. Ideal for testing without a full consulting mission.</p>
-        <a href="pricing.html" class="btn">Discover the Heurix API</a>
-      </div>
-      <div class="offer-card">
-        <div class="offer-kicker mono">Professional Services</div>
-        <h3>An audit, an integration, an expert working with you.</h3>
-        <p>Billed per mission, €850/day excl. VAT. Ideal if your catalog is already live and you want a diagnosis and a targeted fix — on your current solution or on the Heurix engine.</p>
-        <a href="#tarifs" class="btn btn-ghost">See the ROI simulator</a>
-      </div>
+    <div class="kicker">The offer</div>
+    <h2>One engine, one subscription, zero commitment.</h2>
+    <p class="section-lede">The Heurix Search API is self-service: a free plan to plug in your catalog and judge for yourself, usage-based plans when you go to production, and metered billing — transparent, cancellable anytime.</p>
+    <div class="about-cta" style="margin-top:22px;">
+      <a href="pricing.html" class="btn">See plans and pricing</a>
+      <a href="docs.html" class="btn btn-ghost">Read the documentation</a>
     </div>
   </div>
 </section>
 
 <section id="tarifs" class="soft">
   <div class="wrap">
-    <div class="kicker">Simulator — Professional Services</div>
+    <div class="kicker">ROI simulator</div>
     <h2>Estimate the leverage of a better-tuned search engine.</h2>
     <p class="section-lede">Internal search often accounts for only 10 to 20% of a site's traffic — but for many e-commerce businesses, it drives 30 to 50% of revenue. It's the site's most valuable segment, and the least often optimized. Adjust the sliders to your situation: the calculation updates live.</p>
 
@@ -553,7 +547,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               <div class="roi-mini-sub">on your investment</div>
             </div>
             <div class="roi-mini-tile">
-              <div class="roi-mini-label">Mission paid back in</div>
+              <div class="roi-mini-label">Subscription paid back in</div>
               <div class="roi-mini-value mono" id="roi-out-payback">—</div>
               <div class="roi-mini-sub">only</div>
             </div>
@@ -561,7 +555,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
           <div class="roi-compare">
             <div class="roi-compare-row">
-              <span>Estimated mission cost</span>
+              <span>Annual Search API cost</span>
               <span class="mono" id="roi-out-cost">—</span>
             </div>
             <div class="roi-compare-bar">
@@ -573,8 +567,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <div id="roi-sr-live" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
         </div>
 
-        <a href="#contact" class="btn roi-cta">Get my personalized ROI report</a>
-        <div class="roi-cta-note">Final quote provided, within 48h.</div>
+        <a href="pricing.html" class="btn roi-cta">Try the Search API for free</a>
+        <div class="roi-cta-note">Free plan, no credit card required.</div>
 
         <button type="button" id="roi-pdf-toggle" class="roi-pdf-toggle">Download this report as PDF →</button>
         <form id="roi-pdf-form" class="roi-pdf-form" hidden>
@@ -586,7 +580,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </div>
 
     </div>
-    <p class="form-note" style="margin-top:20px;">Indicative mission cost based on catalog size: from €4,250 excl. VAT under €10M revenue, up to €8,500 excl. VAT for larger volumes. Impact assumptions are order-of-magnitude estimates to refine together during the audit, not a promise.</p>
+    <p class="form-note" style="margin-top:20px;">Cost estimated from an annual Search API subscription (Growth or Scale plan depending on catalog size). Impact assumptions are order-of-magnitude estimates, not a promise.</p>
   </div>
 </section>
 
@@ -624,74 +618,80 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <section id="faq" class="soft">
   <div class="wrap">
     <div class="kicker">Frequently asked questions</div>
-    <h2>What people ask us the most.</h2>
+    <h2>Answers to the questions we get asked.</h2>
     <div class="faq-list reveal">
 
       <details class="faq-item">
         <summary>How do I integrate the Heurix engine into my site?</summary>
         <div class="faq-answer">
-          <p>Via API: you index your catalog (one call), you wire up search (one call), you're live. No plugin to install, no rebuild, no dependency on your CMS. The <a href="docs.html">quickstart guide</a> fits in 3 calls — and if you'd rather delegate, we integrate it for you as a mission.</p>
+          <p>Via API: you index your catalog (one call), you wire up search (one call), you're live. No plugin to install, no rebuild, no dependency on your CMS. The <a href="docs.html">quickstart guide</a> fits in 3 calls. Shopify, PrestaShop, WooCommerce, and Magento connectors are in the works.</p>
         </div>
       </details>
 
       <details class="faq-item">
-        <summary>How much does the Search API cost?</summary>
+        <summary>How much does it cost?</summary>
         <div class="faq-answer">
           <p>A Free plan (2,000 requests and 5,000 products per month) to test without a credit card, then usage-based plans from €39/month. Counting rules are public and your usage is available in real time — no end-of-month surprise. <a href="pricing.html">Plan details are here</a>.</p>
         </div>
       </details>
 
       <details class="faq-item">
-        <summary>How much does a mission cost?</summary>
-        <div class="faq-answer">
-          <p>Billed daily, €850/day excl. VAT, quoted based on exact scope. As a guide: an audit alone takes 2 to 3 days, a full mission (audit + integration) costs between €4,250 and €8,500 excl. VAT depending on catalog size. Use the <a href="#tarifs">ROI simulator</a> above to estimate the expected gain against this cost.</p>
-        </div>
-      </details>
-
-      <details class="faq-item">
-        <summary>What if the results don't show up?</summary>
-        <div class="faq-answer">
-          <p>No consultant can guarantee a percentage gain in advance — the simulator's numbers are order-of-magnitude estimates, not a contractual promise. What limits your risk: no subscription, no long-term commitment. The initial audit (2 to 3 days) gives you a concrete, quantifiable diagnosis before deciding to go further. If the diagnosis doesn't reveal a significant gain, you'll know at that stage, for a limited cost.</p>
-        </div>
-      </details>
-
-      <details class="faq-item">
-        <summary>Do I need to change e-commerce platforms?</summary>
-        <div class="faq-answer">
-          <p>No. Heurix works on the search layer of your existing site (Shopify, PrestaShop, WooCommerce, Magento, or other), without touching the rest of your architecture. That's exactly the alternative to a full rebuild: in most cases, the problem is solved by reconfiguring or connecting a search engine, not by switching CMS.</p>
-        </div>
-      </details>
-
-      <details class="faq-item">
         <summary>Heurix or Algolia / Elasticsearch / Typesense — why pick Heurix?</summary>
         <div class="faq-answer">
-          <p>The choice is made during the audit, based on your catalog, your budget, and what you already have in place. If your current solution is simply misconfigured, we fix it — no need to pay for a new tool. If no market solution fits your case (highly technical catalog, need for custom regex, tight budget), the proprietary Heurix engine becomes a relevant option. The goal is never to sell you a default tool.</p>
+          <p>Generalist engines compare characters; Heurix reads the structure of your references through its annotation cascade. If your catalog is technical (dimensions, standards, sizes, vintages, editions), that's precisely what Heurix is built for — with rule packs per vertical, stock-aware ranking, and explainable results. For a simple blog or editorial site, a generalist engine is plenty.</p>
         </div>
       </details>
 
       <details class="faq-item">
-        <summary>How long does a mission take?</summary>
+        <summary>Do I need to change my e-commerce platform?</summary>
         <div class="faq-answer">
-          <p>The initial audit takes 2 to 3 days. The integration that follows depends on the scope defined after the diagnostic. Either way, this stays far from a months-long IT project — that's an operating principle, not just a sales pitch.</p>
+          <p>No. Heurix plugs into your existing site via API, whatever your CMS — Shopify, PrestaShop, WooCommerce, Magento, or a custom build. Your catalog stays with you; the engine only replaces search.</p>
         </div>
       </details>
 
       <details class="faq-item">
-        <summary>Do you work with my industry?</summary>
+        <summary>How do I measure the impact on my sales?</summary>
         <div class="faq-answer">
-          <p>Heurix is particularly relevant for large, technical catalogs — tools &amp; hardware, spare parts, electrical/electronics, professional equipment/construction in particular (see <a href="#moteur">the Engine section</a> for detail). The principle applies to any site with an underused internal search engine, regardless of sector; these technical catalogs are simply where the gain is clearest.</p>
+          <p>The <code>matched</code> field of every result explains why it ranks, and the <a href="#tarifs">ROI simulator</a> on this page gives you an order of magnitude based on your traffic and average basket. The most reliable method remains a before/after test on your zero-result queries — measurable in your analytics tool within the first week.</p>
         </div>
       </details>
 
+      <details class="faq-item">
+        <summary>Is my industry covered?</summary>
+        <div class="faq-answer">
+          <p>Three rule packs ship with the engine (hardware, fashion, industry) and the mechanics apply to any catalog searched by reference, dimension, or variant — books, wine, spare parts, electronics... If your references are very specific, <a href="#contact">tell us about your catalog</a>: custom packs are available on Scale plans.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>Where is my data hosted?</summary>
+        <div class="faq-answer">
+          <p>In France, at OVH (Gravelines or Strasbourg). Your catalogs never leave the European Union, and the engine itself is designed and built in France. For GDPR requirements, it's the simplest scenario to document with your DPO.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>What happens if I exceed my plan's quota?</summary>
+        <div class="faq-answer">
+          <p>Never an abrupt cutoff: overage is billed at the usage rate shown on the <a href="pricing.html">pricing page</a>. Counting rules are public (1 search = 1 request, 1,000 indexed products = 10 requests) and your usage is available in real time via the API.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>Does the demo on this page really use the engine?</summary>
+        <div class="faq-answer">
+          <p>Yes — it's the Heurix engine logic, ported to JavaScript and embedded in the page with a generated demo catalog: same normalization, same typo tolerance, same annotation cascade, same scoring. Developers can query it from the console: <code>window.heurixDemo.search("...")</code>.</p>
+        </div>
+      </details>
     </div>
   </div>
 </section>
 
 <section class="cta-section" id="contact">
   <div class="wrap">
-    <div class="kicker">Quote on request</div>
-    <h2>Book your initial audit.</h2>
-    <p class="section-lede">Describe your site in a couple of lines — you'll get a priced quote and a proposed time slot within 48 business hours. Feel free to reuse the numbers from the simulator above.</p>
+    <div class="kicker">Contact us</div>
+    <h2>A question, an unusual catalog?</h2>
+    <p class="section-lede">The Free plan is enough to get started without writing to us. If you have a question before diving in, or your references are specific enough to warrant a custom rule pack (Scale plans), describe your catalog in a couple of lines — reply within 48 business hours.</p>
 
     <form class="cta-form" id="heurix-form">
       <label for="name">Name</label>
@@ -711,8 +711,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <option value="Not sure">Not sure</option>
       </select>
       <label for="msg">Your need</label>
-      <textarea id="msg" name="message" rows="4" placeholder="E.g.: around 30,000 references, native PrestaShop engine never reconfigured, lots of searches returning no results on technical references."></textarea>
-      <button type="submit" class="btn" id="submit-btn">Send request</button>
+      <textarea id="msg" name="message" rows="4" placeholder="E.g.: catalog of 30,000 very specific references, wondering if a custom rule pack would help before moving to the Scale plan."></textarea>
+      <button type="submit" class="btn" id="submit-btn">Send message</button>
       <div id="form-feedback"></div>
     </form>
     <p class="contact-direct">Prefer to write directly? <a href="mailto:contact@heurix.fr">contact@heurix.fr</a></p>
@@ -844,11 +844,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     liftInput.setAttribute('aria-valuetext', liftInput.value + ' percent');
     marginInput.setAttribute('aria-valuetext', marginInput.value + ' percent');
 
-    let cost = 5800;
+    // Annual Search API cost by catalog size / revenue
+    // (Growth plan €39/mo under €10M revenue, Scale plan €149/mo above €25M)
+    let cost = 1128; // midpoint between annualized Growth and Scale
     if (ca < 10000000) {
-      cost = 4250;
+      cost = 468; // Growth: €39 x 12
     } else if (ca >= 25000000) {
-      cost = 8500;
+      cost = 1788; // Scale: €149 x 12
     }
 
     const caSearch = ca * share;
@@ -892,7 +894,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     const r = computeROI();
     const liveRegion = document.getElementById('roi-sr-live');
     if (liveRegion) {
-      liveRegion.textContent = `Estimated annual revenue gain: ${r.gainCA}. Net annual margin gain: ${r.gainMarge}. Return on investment: ${r.roi}. Mission paid back in ${r.payback}.`;
+      liveRegion.textContent = `Estimated annual revenue gain: ${r.gainCA}. Net annual margin gain: ${r.gainMarge}. Return on investment: ${r.roi}. Subscription paid back in ${r.payback}.`;
     }
   }
 
@@ -1024,9 +1026,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     const outputs = [
       ['Estimated annual revenue gain', document.getElementById('roi-out-gainca').textContent],
       ['Net annual margin gain', document.getElementById('roi-out-gainmarge').textContent],
-      ['Indicative mission cost', document.getElementById('roi-out-cost').textContent],
+      ['Annual Search API cost', document.getElementById('roi-out-cost').textContent],
       ['ROI multiplier', document.getElementById('roi-out-roi').textContent],
-      ['Mission paid back in', document.getElementById('roi-out-payback').textContent],
+      ['Subscription paid back in', document.getElementById('roi-out-payback').textContent],
     ];
     outputs.forEach(row => {
       doc.setTextColor(...muted);

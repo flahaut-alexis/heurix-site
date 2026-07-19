@@ -1,31 +1,57 @@
 // Heurix — interactive engine demo (EN)
-// Portage JavaScript fidèle de la logique du moteur Heurix (Python) :
-// normalisation, tolérance aux fautes (Damerau-Levenshtein bornée),
-// cascade de règles du pack "mode", synonymes, scoring pondéré.
-// Catalogue de démonstration embarqué : 40 produits.
+// Logique du moteur Heurix portée en JavaScript : normalisation, tolérance
+// aux fautes (Damerau-Levenshtein bornée), cascade de règles, synonymes,
+// scoring pondéré, et PRISMES (filtres par annotations).
+// Catalogue librairie généré procéduralement.
 
 (function () {
   "use strict";
 
-  /* ---------------- Normalisation ---------------- */
-  function fold(s) {
-    return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  /* ---------------- Locale ---------------- */
+  var L = {
+    fmt: { PO: "Pocket", BR: "Paperback", GF: "Hardcover", IL: "Illustrated", AU: "Audiobook" },
+    ed: { std: "", ann: "annotated edition", col: "collector", bil: "bilingual", vo: "original language", gc: "large print" },
+    empty: "Type a search — typos are welcome.",
+    results: function (n, ms, size) { return "<strong>" + n + " result" + (n > 1 ? "s" : "") + "</strong> · " + ms + " ms · embedded Heurix engine, demo catalog (" + size.toLocaleString("en-GB") + " references)"; },
+    none: function (ms) { return "No results · " + ms + " ms"; },
+    stock: function (s) { return s > 0 ? (s <= 3 ? s + " left" : "in stock") : "out of stock"; },
+    prisms: "Prisms:",
+    pages: function (p) { return p + " pp."; },
+    intro: "scandinavian crime poket"
+  };
+  var PRISM_LABELS = {
+    GENRE_ROMAN: "Fiction", GENRE_POLAR: "Crime", GENRE_SF: "Sci-fi", GENRE_FANTASY: "Fantasy",
+    GENRE_CLASSIQUE: "Classics", GENRE_JEUNESSE: "Children", GENRE_BD: "Comics & manga",
+    GENRE_ESSAI: "Essay", GENRE_POESIE: "Poetry",
+    FORMAT_PO: "Pocket", FORMAT_BR: "Paperback", FORMAT_GF: "Hardcover", FORMAT_IL: "Illustrated", FORMAT_AU: "Audio",
+    PAYS_FR: "France", PAYS_UK: "United Kingdom", PAYS_US: "United States", PAYS_RU: "Russia",
+    PAYS_JP: "Japan", PAYS_SE: "Scandinavia", PAYS_DE: "Germany", PAYS_IT: "Italy",
+    PAYS_ES: "Spain", PAYS_CO: "Colombia", PAYS_CZ: "Czechia", PAYS_BE: "Belgium",
+    LONG_COURT: "Short (<180 pp.)", LONG_MOYEN: "Medium", LONG_PAVE: "Doorstop (500+ pp.)"
+  };
+  function eraLabel(a) {
+    var m = a.match(/^ERA_(\d+)S$/);
+    if (m) { var c = Math.floor(parseInt(m[1], 10) / 100) + 1; return c + "th century"; }
+    m = a.match(/^ERA_(\d{4})$/);
+    return m ? m[1] + "s" : a;
   }
+
+  /* ---------------- Normalisation ---------------- */
+  function fold(s) { return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""); }
   var WORD_RE = /[a-z0-9]+(?:[./-][a-z0-9]+)*/g;
   function tokenize(s) { return fold(s).match(WORD_RE) || []; }
 
-  /* ---------------- Fuzzy (Damerau-Levenshtein bornée) ---------------- */
+  /* ---------------- Fuzzy ---------------- */
   function maxEdits(t) {
     if (t.length <= 3) return 0;
-    if (/\d/.test(t)) return 1;           // référence : 1 faute max
+    if (/\d/.test(t)) return 1;
     if (t.length <= 7) return 1;
     return 2;
   }
   function dlDistance(a, b, cap) {
     if (Math.abs(a.length - b.length) > cap) return cap + 1;
     if (a === b) return 0;
-    var la = a.length, lb = b.length;
-    var prev2 = null, prev = [], curr, i, j;
+    var la = a.length, lb = b.length, prev2 = null, prev = [], curr, i, j;
     for (j = 0; j <= lb; j++) prev[j] = j;
     for (i = 1; i <= la; i++) {
       curr = [i];
@@ -33,9 +59,7 @@
       for (j = 1; j <= lb; j++) {
         var cost = a[i - 1] === b[j - 1] ? 0 : 1;
         var v = Math.min(prev[j] + 1, curr[j - 1] + 1, prev[j - 1] + cost);
-        if (prev2 && i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]) {
-          v = Math.min(v, prev2[j - 2] + 1);
-        }
+        if (prev2 && i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]) v = Math.min(v, prev2[j - 2] + 1);
         curr[j] = v;
         if (v < rowMin) rowMin = v;
       }
@@ -45,44 +69,43 @@
     return prev[lb];
   }
 
-  /* ---------------- Pack de règles "mode" (cascade) ---------------- */
+  /* ---------------- Règles requête (bilingues) ---------------- */
   var LEVEL1 = [
-    [/\b(\d{2})\/(\d{2})\b/g, "TAILLE_$1_$2"],
-    [/\bw\s?(\d{2})\s?l\s?(\d{2})\b/g, "TAILLE_$1_$2"],
-    [/\b(xs|s|m|l|xl|xxl)\b/g, "TAILLE_$1"],
-    [/\brouge|red\b/g, "COL_ROUGE"],
-    [/\bbordeaux|burgundy\b/g, "COL_BORDEAUX"],
-    [/\bbleu(?:e|s)?|marine|navy|blue\b/g, "COL_BLEU"],
-    [/\bnoir(?:e|s)?|black\b/g, "COL_NOIR"],
-    [/\becru|creme|blanc(?:he|hes|s)? casse\b/g, "COL_ECRU"],
-    [/\bblanc(?:he|hes|s)?|white\b/g, "COL_BLANC"],
-    [/\bgris(?:e|es)?|grey|gray|chine\b/g, "COL_GRIS"],
-    [/\bvert(?:e|es|s)?|green|foret\b/g, "COL_VERT"],
-    [/\bcamel|beige\b/g, "COL_CAMEL"],
-    [/\blaine|merinos|wool|cachemire\b/g, "MAT_LAINE"],
-    [/\bcoton|cotton|bio\b/g, "MAT_COTON"],
-    [/\bdenim\b/g, "MAT_DENIM"],
-    [/\bflanelle|flannel\b/g, "MAT_FLANELLE"],
-    [/\blin\b/g, "MAT_LIN"],
-    [/\bpull(?:over)?s?|sweater|sweat\b/g, "FAM_PULL"],
-    [/\bt.?shirts?|tee\b/g, "FAM_TSHIRT"],
-    [/\bchemises?|shirt\b/g, "FAM_CHEMISE"],
-    [/\bjeans?\b/g, "FAM_JEAN"],
-    [/\bpantalons?|chino\b/g, "FAM_PANTALON"],
-    [/\becharpes?|scarf\b/g, "FAM_ECHARPE"],
-    [/\bmanteaux?|coat\b/g, "FAM_MANTEAU"],
-    [/\bvestes?|jacket\b/g, "FAM_VESTE"],
-    [/\bcol\s?roule|turtle\s?neck|roll\s?neck\b/g, "ATTR_COL_ROULE"],
-    [/\bcol\s?v\b/g, "ATTR_COL_V"],
-    [/\bslim\b/g, "ATTR_SLIM"],
-    [/\bdelave|delavee?s?|washed\b/g, "ATTR_DELAVE"],
-    [/\bcapuche|hoodie\b/g, "ATTR_CAPUCHE"]
+    [/\bpolars?|thrillers?|policiers?|crimes?\b/g, "GENRE_POLAR"],
+    [/\bsf\b|science.?fiction\b/g, "GENRE_SF"],
+    [/\bfantasy|fantastique\b/g, "GENRE_FANTASY"],
+    [/\bjeunesse|enfants?\b|children\b/g, "GENRE_JEUNESSE"],
+    [/\bbd\b|bande.?dessinee|mangas?\b|comics?\b/g, "GENRE_BD"],
+    [/\bessais?\b|essays?\b/g, "GENRE_ESSAI"],
+    [/\bpoesie|poemes?|poetry\b/g, "GENRE_POESIE"],
+    [/\bclassiques?\b/g, "GENRE_CLASSIQUE"],
+    [/\bromans?\b|novels?\b/g, "GENRE_ROMAN"],
+    [/\bpoches?\b|pocket\b/g, "FORMAT_PO"],
+    [/\bbroches?\b|paperback\b/g, "FORMAT_BR"],
+    [/\bgrand.?format\b|hardcover\b/g, "FORMAT_GF"],
+    [/\billustres?|illustrated\b/g, "FORMAT_IL"],
+    [/\baudio\b|audiobook\b/g, "FORMAT_AU"],
+    [/\bannotee?s?\b|annotated\b/g, "ED_ANNOTE"],
+    [/\bcollector\b/g, "ED_COLLECTOR"],
+    [/\bbilingues?\b/g, "ED_BILINGUE"],
+    [/\bvo\b/g, "ED_VO"],
+    [/\bfrancais(?:e|es)?\b|french\b/g, "PAYS_FR"],
+    [/\banglais(?:e|es)?\b|britanniques?\b|english|british\b/g, "PAYS_UK"],
+    [/\bamericains?(?:e|es)?\b|american\b/g, "PAYS_US"],
+    [/\brusses?\b|russian\b/g, "PAYS_RU"],
+    [/\bjaponais(?:e|es)?\b|japanese\b/g, "PAYS_JP"],
+    [/\bscandinaves?\b|suedois(?:e|es)?\b|nordiques?\b|scandinavian|swedish|nordic\b/g, "PAYS_SE"],
+    [/\ballemands?(?:e|es)?\b|german\b/g, "PAYS_DE"],
+    [/\bitaliens?(?:ne|nes)?\b|italian\b/g, "PAYS_IT"],
+    [/\bcourts?\b|short\b/g, "LONG_COURT"],
+    [/\bpaves?\b/g, "LONG_PAVE"],
+    [/\bannees?\s?(\d{2})\b|\b(?:19|20)(\d{2})s\b/g, "ERA_19$1$2"],
+    [/\b(1[5-9])e?m?e?\s?siecle\b|\b(1[5-9])th\s?century\b/g, "ERA_C$1$2"]
   ];
   var LEVEL2 = [
-    [/ATTR_COL_ROULE.*FAM_PULL|FAM_PULL.*ATTR_COL_ROULE/, "PULL_COL_ROULE"],
-    [/ATTR_COL_V.*FAM_PULL|FAM_PULL.*ATTR_COL_V/, "PULL_COL_V"],
-    [/FAM_JEAN.*TAILLE_(\d+)_(\d+)|TAILLE_(\d+)_(\d+).*FAM_JEAN/, "JEAN_TAILLE"],
-    [/ATTR_DELAVE.*FAM_JEAN|FAM_JEAN.*ATTR_DELAVE/, "JEAN_DELAVE"]
+    [/GENRE_POLAR.*PAYS_SE|PAYS_SE.*GENRE_POLAR/, "POLAR_NORDIQUE"],
+    [/GENRE_CLASSIQUE.*FORMAT_PO|FORMAT_PO.*GENRE_CLASSIQUE/, "CLASSIQUE_POCHE"],
+    [/ED_(?:COLLECTOR|ANNOTE)|FORMAT_IL/, "EDITION_SOIGNEE"]
   ];
 
   function annotate(tokens) {
@@ -93,103 +116,198 @@
       while ((m = re.exec(spaced)) !== null) {
         var a = rule[1];
         for (var g = 1; g < m.length; g++) a = a.replace("$" + g, m[g] || "");
+        a = a.replace(/undefined/g, "");
+        if (/^ERA_C(\d+)/.test(a)) a = "ERA_" + ((parseInt(a.slice(5), 10) - 1) * 100) + "S";
         ann[a] = true;
       }
     });
     var stream = Object.keys(ann).sort().join(" ");
-    LEVEL2.forEach(function (rule) {
-      if (rule[0].test(stream)) ann[rule[1]] = true;
-    });
+    LEVEL2.forEach(function (rule) { if (rule[0].test(stream)) ann[rule[1]] = true; });
     return Object.keys(ann);
   }
 
   /* ---------------- Synonymes ---------------- */
-  var SYN_GROUPS = [
-    ["pull", "pullover", "sweat", "sweater"],
-    ["tshirt", "tee"],
-    ["chemise", "shirt"],
-    ["echarpe", "scarf"],
-    ["jean", "denim"]
-  ];
+  var SYN_GROUPS = [["polar", "policier", "thriller"], ["poche", "pocket"], ["bd", "manga"], ["sf", "anticipation"]];
   var SYN = {};
-  SYN_GROUPS.forEach(function (g) {
-    g.forEach(function (t) { SYN[t] = g; });
-  });
+  SYN_GROUPS.forEach(function (g) { g.forEach(function (t) { SYN[t] = g; }); });
 
-  /* ---------------- Catalogue de démonstration (40 produits) ---------------- */
-  // [ref, nom, description, stock, famille_icone, couleur_icone]
-  var CATALOG = [
-    ["PCR-1042", "Turtleneck sweater, red", "Merino wool, fine knit", 12, "sweater", "#C0392B"],
-    ["PCR-1087", "Turtleneck sweater, red", "Heavy cotton, straight fit", 8, "sweater", "#B8412E"],
-    ["PCR-1103", "Turtleneck sweater, burgundy", "Wool blend", 5, "sweater", "#7B241C"],
-    ["PCR-1099", "Turtleneck sweater, red — capsule edition", "Numbered limited run", 3, "sweater", "#A8321F"],
-    ["PCR-1120", "Turtleneck sweater, off-white", "Ribbed wool", 15, "sweater", "#D8CBB8"],
-    ["PCR-1135", "Turtleneck sweater, black", "Extra-fine merino", 20, "sweater", "#2B2B33"],
-    ["PCV-2010", "V-neck sweater, navy blue", "Combed cotton", 18, "sweater", "#1F3A5F"],
-    ["PCV-2024", "V-neck sweater, heather grey", "Wool and cashmere", 0, "sweater", "#8E8E99"],
-    ["SWT-3005", "Grey hoodie sweatshirt", "Brushed fleece, loose fit", 25, "sweater", "#9A9AA5"],
-    ["SWT-3018", "Crewneck sweatshirt, forest green", "Organic cotton 380g", 11, "sweater", "#2E5E42"],
-    ["TSH-4001", "White t-shirt", "Organic cotton, crew neck", 60, "tshirt", "#F2F0EA"],
-    ["TSH-4002", "Black t-shirt", "Organic cotton, crew neck", 55, "tshirt", "#2B2B33"],
-    ["TSH-4015", "Navy blue t-shirt", "Heavy jersey", 40, "tshirt", "#1F3A5F"],
-    ["TSH-4022", "Washed red t-shirt", "Pigment dyed", 9, "tshirt", "#C0564A"],
-    ["TSH-4030", "Striped breton t-shirt", "Cotton, blue/ecru stripes", 22, "tshirt", "#3D5A80"],
-    ["CHM-5001", "White shirt", "Cotton poplin, french collar", 30, "shirt", "#F5F3EC"],
-    ["CHM-5008", "Blue oxford shirt", "Oxford cotton, button-down", 26, "shirt", "#5B7FA6"],
-    ["CHM-5015", "Check flannel shirt", "Brushed flannel, red and black", 7, "shirt", "#8C3A32"],
-    ["CHM-5021", "Off-white linen shirt", "Washed linen, relaxed fit", 4, "shirt", "#DDD2BC"],
-    ["CHM-5030", "Black shirt", "Cotton twill", 16, "shirt", "#2B2B33"],
-    ["JEA-6001", "Raw denim jeans 32/34", "14oz selvedge denim, straight fit", 14, "pants", "#27364B"],
-    ["JEA-6002", "Raw denim jeans 30/32", "14oz selvedge denim, straight fit", 10, "pants", "#27364B"],
-    ["JEA-6003", "Raw denim jeans 34/34", "14oz selvedge denim, straight fit", 0, "pants", "#27364B"],
-    ["JEA-6010", "Washed slim jeans 31/32", "Stretch denim, light wash", 19, "pants", "#6E87A8"],
-    ["JEA-6015", "Black jeans 33/32", "Black denim, tapered fit", 12, "pants", "#33333B"],
-    ["PAN-7001", "Camel chino trousers", "Cotton gabardine", 21, "pants", "#B08D57"],
-    ["PAN-7009", "Grey flannel trousers", "Worsted wool, pleated", 6, "pants", "#75757F"],
-    ["PAN-7014", "Green cargo trousers", "Sturdy canvas, side pockets", 13, "pants", "#4A5D43"],
-    ["ECH-4471", "Red wool scarf", "Lambswool, fringed", 20, "scarf", "#B03A2E"],
-    ["ECH-4480", "Grey cashmere scarf", "2-ply cashmere", 3, "scarf", "#8E8E99"],
-    ["ECH-4492", "Camel check scarf", "Wool blend", 17, "scarf", "#B08D57"],
-    ["MAN-8001", "Navy wool coat", "Wool cloth, straight cut", 5, "coat", "#22314A"],
-    ["MAN-8007", "Camel coat", "Wool and cashmere, double-breasted", 2, "coat", "#B08D57"],
-    ["MAN-8012", "Lined khaki parka", "Water-repellent canvas, hood", 8, "coat", "#5A6350"],
-    ["VES-9001", "Raw denim jacket", "Rigid denim, metal buttons", 15, "jacket", "#2E4057"],
-    ["VES-9008", "Off-white work jacket", "Heavy cotton canvas", 9, "jacket", "#D9CDB4"],
-    ["VES-9015", "Charcoal wool blazer", "Half-lined, two buttons", 6, "jacket", "#4A4A55"],
-    ["PCR-1150", "Striped sailor sweater", "Wool, ecru/navy stripes", 13, "sweater", "#31486B"],
-    ["TSH-4040", "Sage green t-shirt", "Washed cotton", 28, "tshirt", "#8BA88E"],
-    ["CHM-5042", "Blue and white striped shirt", "Striped poplin", 24, "shirt", "#7C9BC0"]
+  /* ---------------- Catalogue librairie (généré) ---------------- */
+  // [auteur, pays, genre, [[titre, année, pages], ...]]
+  var SEED = [
+    ["Victor Hugo", "FR", "classique", [["Les Misérables", 1862, 1900], ["Notre-Dame de Paris", 1831, 940], ["Les Contemplations", 1856, 480]]],
+    ["Marcel Proust", "FR", "classique", [["Du côté de chez Swann", 1913, 530], ["Le Temps retrouvé", 1927, 450]]],
+    ["Albert Camus", "FR", "roman", [["L'Étranger", 1942, 185], ["La Peste", 1947, 350], ["Le Mythe de Sisyphe", 1942, 190]]],
+    ["Simone de Beauvoir", "FR", "essai", [["Le Deuxième Sexe", 1949, 660], ["Mémoires d'une jeune fille rangée", 1958, 470]]],
+    ["Gustave Flaubert", "FR", "classique", [["Madame Bovary", 1857, 560], ["L'Éducation sentimentale", 1869, 620]]],
+    ["Émile Zola", "FR", "classique", [["Germinal", 1885, 640], ["Au Bonheur des Dames", 1883, 540], ["L'Assommoir", 1877, 590]]],
+    ["Honoré de Balzac", "FR", "classique", [["Le Père Goriot", 1835, 440], ["Illusions perdues", 1843, 860]]],
+    ["Stendhal", "FR", "classique", [["Le Rouge et le Noir", 1830, 700], ["La Chartreuse de Parme", 1839, 640]]],
+    ["Alexandre Dumas", "FR", "classique", [["Le Comte de Monte-Cristo", 1844, 1400], ["Les Trois Mousquetaires", 1844, 890]]],
+    ["Jules Verne", "FR", "sf", [["Vingt Mille Lieues sous les mers", 1870, 620], ["Le Tour du monde en 80 jours", 1872, 330], ["Voyage au centre de la Terre", 1864, 370]]],
+    ["Antoine de Saint-Exupéry", "FR", "jeunesse", [["Le Petit Prince", 1943, 120], ["Vol de nuit", 1931, 190]]],
+    ["Marguerite Duras", "FR", "roman", [["L'Amant", 1984, 145], ["Un barrage contre le Pacifique", 1950, 370]]],
+    ["Annie Ernaux", "FR", "roman", [["Les Années", 2008, 260], ["La Place", 1983, 115]]],
+    ["Michel Houellebecq", "FR", "roman", [["Les Particules élémentaires", 1998, 400], ["La Carte et le Territoire", 2010, 430]]],
+    ["Amélie Nothomb", "BE", "roman", [["Stupeur et Tremblements", 1999, 190], ["Métaphysique des tubes", 2000, 170]]],
+    ["Romain Gary", "FR", "roman", [["La Vie devant soi", 1975, 270], ["La Promesse de l'aube", 1960, 390]]],
+    ["Boris Vian", "FR", "roman", [["L'Écume des jours", 1947, 320], ["J'irai cracher sur vos tombes", 1946, 220]]],
+    ["Fred Vargas", "FR", "polar", [["Pars vite et reviens tard", 2001, 350], ["L'Homme à l'envers", 1999, 320], ["Debout les morts", 1995, 330]]],
+    ["Georges Simenon", "BE", "polar", [["Le Chien jaune", 1931, 190], ["Maigret et le clochard", 1963, 185], ["La nuit du carrefour", 1931, 180]]],
+    ["Pierre Lemaitre", "FR", "polar", [["Au revoir là-haut", 2013, 580], ["Alex", 2011, 400]]],
+    ["Jean-Christophe Grangé", "FR", "polar", [["Les Rivières pourpres", 1998, 400], ["Le Vol des cigognes", 1994, 430]]],
+    ["Guillaume Musso", "FR", "roman", [["Et après...", 2004, 380], ["La Jeune Fille et la Nuit", 2018, 430]]],
+    ["Jane Austen", "UK", "classique", [["Orgueil et Préjugés", 1813, 480], ["Raison et Sentiments", 1811, 430], ["Emma", 1815, 550]]],
+    ["Charles Dickens", "UK", "classique", [["Oliver Twist", 1838, 560], ["De grandes espérances", 1861, 640], ["David Copperfield", 1850, 950]]],
+    ["Virginia Woolf", "UK", "classique", [["Mrs Dalloway", 1925, 260], ["Vers le phare", 1927, 290]]],
+    ["George Orwell", "UK", "sf", [["1984", 1949, 400], ["La Ferme des animaux", 1945, 150]]],
+    ["Aldous Huxley", "UK", "sf", [["Le Meilleur des mondes", 1932, 320]]],
+    ["J.R.R. Tolkien", "UK", "fantasy", [["Le Seigneur des anneaux", 1954, 1250], ["Le Hobbit", 1937, 400], ["Le Silmarillion", 1977, 480]]],
+    ["J.K. Rowling", "UK", "jeunesse", [["Harry Potter à l'école des sorciers", 1997, 320], ["Harry Potter et la Chambre des secrets", 1998, 360], ["Harry Potter et le Prisonnier d'Azkaban", 1999, 460]]],
+    ["Agatha Christie", "UK", "polar", [["Le Crime de l'Orient-Express", 1934, 280], ["Dix Petits Nègres", 1939, 260], ["Mort sur le Nil", 1937, 340]]],
+    ["Arthur Conan Doyle", "UK", "polar", [["Le Chien des Baskerville", 1902, 250], ["Une étude en rouge", 1887, 200]]],
+    ["Ian McEwan", "UK", "roman", [["Expiation", 2001, 490], ["Sur la plage de Chesil", 2007, 180]]],
+    ["Kazuo Ishiguro", "UK", "roman", [["Les Vestiges du jour", 1989, 290], ["Auprès de moi toujours", 2005, 440]]],
+    ["Mary Shelley", "UK", "sf", [["Frankenstein", 1818, 320]]],
+    ["Bram Stoker", "UK", "fantasy", [["Dracula", 1897, 580]]],
+    ["Ernest Hemingway", "US", "roman", [["Le Vieil Homme et la Mer", 1952, 140], ["Pour qui sonne le glas", 1940, 640]]],
+    ["F. Scott Fitzgerald", "US", "classique", [["Gatsby le Magnifique", 1925, 220], ["Tendre est la nuit", 1934, 450]]],
+    ["John Steinbeck", "US", "classique", [["Les Raisins de la colère", 1939, 640], ["Des souris et des hommes", 1937, 140]]],
+    ["Toni Morrison", "US", "roman", [["Beloved", 1987, 400], ["Le Chant de Salomon", 1977, 460]]],
+    ["Philip Roth", "US", "roman", [["Pastorale américaine", 1997, 580], ["La Tache", 2000, 480]]],
+    ["Cormac McCarthy", "US", "roman", [["La Route", 2006, 250], ["Méridien de sang", 1985, 450]]],
+    ["Stephen King", "US", "fantasy", [["Shining", 1977, 590], ["Ça", 1986, 1380], ["Misery", 1987, 400]]],
+    ["Isaac Asimov", "US", "sf", [["Fondation", 1951, 280], ["Les Robots", 1950, 300], ["Seconde Fondation", 1953, 260]]],
+    ["Philip K. Dick", "US", "sf", [["Ubik", 1969, 280], ["Le Maître du Haut Château", 1962, 330], ["Blade Runner", 1968, 290]]],
+    ["Frank Herbert", "US", "sf", [["Dune", 1965, 830], ["Le Messie de Dune", 1969, 380]]],
+    ["Ursula K. Le Guin", "US", "sf", [["La Main gauche de la nuit", 1969, 360], ["Les Dépossédés", 1974, 440]]],
+    ["Ray Bradbury", "US", "sf", [["Fahrenheit 451", 1953, 210], ["Chroniques martiennes", 1950, 310]]],
+    ["Harper Lee", "US", "roman", [["Ne tirez pas sur l'oiseau moqueur", 1960, 400]]],
+    ["Paul Auster", "US", "roman", [["Trilogie new-yorkaise", 1987, 450], ["Moon Palace", 1989, 460]]],
+    ["Donna Tartt", "US", "roman", [["Le Chardonneret", 2013, 1100], ["Le Maître des illusions", 1992, 700]]],
+    ["Fiodor Dostoïevski", "RU", "classique", [["Crime et Châtiment", 1866, 700], ["Les Frères Karamazov", 1880, 990], ["L'Idiot", 1869, 820]]],
+    ["Léon Tolstoï", "RU", "classique", [["Guerre et Paix", 1869, 1600], ["Anna Karénine", 1877, 980]]],
+    ["Anton Tchekhov", "RU", "classique", [["La Dame au petit chien", 1899, 130], ["La Cerisaie", 1904, 120]]],
+    ["Mikhaïl Boulgakov", "RU", "fantasy", [["Le Maître et Marguerite", 1967, 560]]],
+    ["Haruki Murakami", "JP", "roman", [["Kafka sur le rivage", 2002, 640], ["1Q84", 2009, 1500], ["La Ballade de l'impossible", 1987, 440]]],
+    ["Yasunari Kawabata", "JP", "roman", [["Pays de neige", 1947, 190], ["Les Belles Endormies", 1961, 140]]],
+    ["Yukio Mishima", "JP", "roman", [["Le Pavillon d'or", 1956, 280], ["Confessions d'un masque", 1949, 250]]],
+    ["Stieg Larsson", "SE", "polar", [["Les Hommes qui n'aimaient pas les femmes", 2005, 710], ["La Fille qui rêvait d'un bidon d'essence", 2006, 650]]],
+    ["Henning Mankell", "SE", "polar", [["Meurtriers sans visage", 1991, 380], ["Les Chiens de Riga", 1992, 360]]],
+    ["Camilla Läckberg", "SE", "polar", [["La Princesse des glaces", 2003, 480], ["Le Prédicateur", 2004, 460]]],
+    ["Jo Nesbø", "SE", "polar", [["Le Bonhomme de neige", 2007, 580], ["L'Étoile du diable", 2003, 520]]],
+    ["Arnaldur Indriðason", "SE", "polar", [["La Cité des jarres", 2000, 330], ["La Femme en vert", 2001, 350]]],
+    ["Franz Kafka", "CZ", "classique", [["Le Procès", 1925, 350], ["La Métamorphose", 1915, 130], ["Le Château", 1926, 500]]],
+    ["Thomas Mann", "DE", "classique", [["La Montagne magique", 1924, 1000], ["Mort à Venise", 1912, 140]]],
+    ["Hermann Hesse", "DE", "roman", [["Siddhartha", 1922, 180], ["Le Loup des steppes", 1927, 310]]],
+    ["Stefan Zweig", "DE", "classique", [["Le Joueur d'échecs", 1942, 130], ["Lettre d'une inconnue", 1922, 110], ["La Confusion des sentiments", 1927, 180]]],
+    ["Patrick Süskind", "DE", "roman", [["Le Parfum", 1985, 340]]],
+    ["Umberto Eco", "IT", "polar", [["Le Nom de la rose", 1980, 640], ["Le Pendule de Foucault", 1988, 750]]],
+    ["Elena Ferrante", "IT", "roman", [["L'Amie prodigieuse", 2011, 430], ["Le Nouveau Nom", 2012, 560]]],
+    ["Italo Calvino", "IT", "roman", [["Le Baron perché", 1957, 300], ["Si par une nuit d'hiver un voyageur", 1979, 280]]],
+    ["Miguel de Cervantès", "ES", "classique", [["Don Quichotte", 1605, 1100]]],
+    ["Carlos Ruiz Zafón", "ES", "roman", [["L'Ombre du vent", 2001, 540], ["Le Jeu de l'ange", 2008, 620]]],
+    ["Gabriel García Márquez", "CO", "roman", [["Cent Ans de solitude", 1967, 460], ["L'Amour aux temps du choléra", 1985, 420]]],
+    ["Jorge Luis Borges", "CO", "roman", [["Fictions", 1944, 200], ["L'Aleph", 1949, 220]]],
+    ["Hergé", "BE", "bd", [["Tintin : Objectif Lune", 1953, 62], ["Tintin : Le Lotus bleu", 1936, 62], ["Tintin : L'Affaire Tournesol", 1956, 62]]],
+    ["René Goscinny", "FR", "bd", [["Astérix le Gaulois", 1961, 48], ["Astérix et Cléopâtre", 1965, 48], ["Le Petit Nicolas", 1960, 140]]],
+    ["Marjane Satrapi", "FR", "bd", [["Persepolis", 2000, 370]]],
+    ["Art Spiegelman", "US", "bd", [["Maus", 1986, 300]]],
+    ["Eiichiro Oda", "JP", "bd", [["One Piece — Tome 1", 1997, 208], ["One Piece — Tome 2", 1998, 200]]],
+    ["Akira Toriyama", "JP", "bd", [["Dragon Ball — Tome 1", 1984, 192], ["Dragon Ball — Tome 2", 1985, 192]]],
+    ["Naoki Urasawa", "JP", "bd", [["Monster — Tome 1", 1994, 216], ["20th Century Boys — Tome 1", 1999, 216]]],
+    ["Jirō Taniguchi", "JP", "bd", [["Quartier lointain", 1998, 410], ["Le Sommet des dieux — Tome 1", 2000, 330]]],
+    ["Antonio Machado", "ES", "poesie", [["Champs de Castille", 1912, 180]]],
+    ["Charles Baudelaire", "FR", "poesie", [["Les Fleurs du mal", 1857, 300], ["Le Spleen de Paris", 1869, 200]]],
+    ["Arthur Rimbaud", "FR", "poesie", [["Illuminations", 1886, 130], ["Une saison en enfer", 1873, 110]]],
+    ["Paul Verlaine", "FR", "poesie", [["Romances sans paroles", 1874, 120]]],
+    ["Yuval Noah Harari", "UK", "essai", [["Sapiens", 2011, 500], ["Homo Deus", 2015, 460]]],
+    ["Michel de Montaigne", "FR", "essai", [["Essais — Livre I", 1580, 470]]],
+    ["Hannah Arendt", "DE", "essai", [["La Condition de l'homme moderne", 1958, 400], ["Eichmann à Jérusalem", 1963, 480]]]
   ];
 
-  /* ---------------- Indexation ---------------- */
+  /* ---------------- Génération + indexation ---------------- */
   var FIELD_W = { ref: 4, name: 3, desc: 1 };
   var ANN_W = 5;
   var products = [], termIndex = {}, annIndex = {}, vocabByLen = {};
+  var seq = 1000;
 
-  CATALOG.forEach(function (row, i) {
-    var p = { id: row[0], name: row[1], desc: row[2], stock: row[3], icon: row[4], color: row[5], anns: [] };
-    products.push(p);
-    ["ref", "name", "desc"].forEach(function (field) {
-      var text = field === "ref" ? p.id : field === "name" ? p.name : p.desc;
-      tokenize(text).forEach(function (t) {
-        (termIndex[t] = termIndex[t] || {})[i] = (termIndex[t][i] || 0) + FIELD_W[field];
-        (vocabByLen[t.length] = vocabByLen[t.length] || {})[t] = true;
+  function addTerm(t, pid, w, isSku) {
+    (termIndex[t] = termIndex[t] || {})[pid] = (termIndex[t][pid] || 0) + w;
+    if (!isSku) (vocabByLen[t.length] = vocabByLen[t.length] || {})[t] = true;
+  }
+  function rng(s) { return function () { s = (s * 1103515245 + 12345) % 2147483648; return s / 2147483648; }; }
+  function eraOf(year) {
+    if (year >= 1900) return "ERA_" + (Math.floor(year / 10) * 10);
+    return "ERA_" + (Math.floor(year / 100) * 100) + "S";
+  }
+  function lengthOf(pages) { return pages < 180 ? "LONG_COURT" : (pages >= 500 ? "LONG_PAVE" : "LONG_MOYEN"); }
+
+  (function build() {
+    // [format, édition, plausible pour BD?, delta prix]
+    var VAR = [
+      ["PO", "std", true, 0], ["PO", "ann", false, 2], ["PO", "bil", false, 3], ["PO", "gc", false, 2],
+      ["BR", "std", true, 6], ["BR", "ann", false, 8], ["BR", "vo", false, 7],
+      ["GF", "std", true, 13], ["GF", "col", true, 24], ["GF", "ann", false, 16],
+      ["IL", "std", true, 19], ["IL", "col", true, 32],
+      ["AU", "std", false, 9]
+    ];
+    SEED.forEach(function (row, ai) {
+      var author = row[0], pays = row[1], genre = row[2], works = row[3];
+      works.forEach(function (w, bi) {
+        var title = w[0], year = w[1], pages = w[2];
+        var rand = rng(ai * 131 + bi * 17 + 3);
+        VAR.forEach(function (v) {
+          if (genre === "bd" && !v[2]) return;
+          if (v[1] === "vo" && (pays === "FR" || pays === "BE")) return;
+          // Retirages : les classiques vivent en plusieurs collections et millésimes
+          var P = { "PO.std": 16, "PO.ann": 2, "PO.bil": 2, "PO.gc": 2, "BR.std": 9, "BR.ann": 2, "BR.vo": 2,
+                    "GF.std": 6, "GF.col": 2, "GF.ann": 2, "IL.std": 3, "IL.col": 2, "AU.std": 4 };
+          var presses = P[v[0] + "." + v[1]] || 1;
+          for (var pr = 0; pr < presses; pr++) {
+            var pid = products.length;
+            var fmt = v[0], ed = v[1];
+            var edYear = 1995 + Math.floor(rand() * 30);
+            var sku = "HRX-" + fmt + "-" + (seq++);
+            var descParts = [L.fmt[fmt]];
+            if (L.ed[ed]) descParts.push(L.ed[ed]);
+            descParts.push(String(edYear), L.pages(pages));
+            var price = Math.max(3, 8 + v[3] + Math.floor(rand() * 4) + (pages > 700 ? 4 : 0));
+            var stock = rand() < 0.07 ? 0 : 1 + Math.floor(rand() * 22);
+            var anns = ["FORMAT_" + fmt, "GENRE_" + genre.toUpperCase(), "PAYS_" + pays, eraOf(year), lengthOf(pages)];
+            if (ed === "ann") anns.push("ED_ANNOTE");
+            if (ed === "col") anns.push("ED_COLLECTOR");
+            if (ed === "bil") anns.push("ED_BILINGUE");
+            if (ed === "vo") anns.push("ED_VO");
+            if (genre === "polar" && pays === "SE") anns.push("POLAR_NORDIQUE");
+            if (genre === "classique" && fmt === "PO") anns.push("CLASSIQUE_POCHE");
+            if (ed === "col" || ed === "ann" || fmt === "IL") anns.push("EDITION_SOIGNEE");
+
+            var p = { id: sku, author: author, title: title, desc: descParts.join(" · "),
+                      fmt: fmt, pages: pages, price: price, stock: stock, anns: anns,
+                      hue: (ai * 41 + bi * 97) % 360, pat: (ai + bi) % 5 };
+            products.push(p);
+            tokenize(sku).forEach(function (t) { addTerm(t, pid, FIELD_W.ref, true); });
+            tokenize(author + " " + title).forEach(function (t) { addTerm(t, pid, FIELD_W.name, false); });
+            tokenize(p.desc + " " + genre).forEach(function (t) { addTerm(t, pid, FIELD_W.desc, false); });
+            anns.forEach(function (a) { (annIndex[a] = annIndex[a] || []).push(pid); });
+          }
+        });
       });
     });
-    p.anns = annotate(tokenize(p.id + " " + p.name + " " + p.desc));
-    p.anns.forEach(function (a) { (annIndex[a] = annIndex[a] || []).push(i); });
-  });
+  })();
 
+  /* ---------------- Recherche ---------------- */
   function fuzzyVariants(term) {
-    var cap = maxEdits(term), out = [];
-    for (var L = term.length - cap; L <= term.length + cap; L++) {
-      var bucket = vocabByLen[L];
+    var cap = maxEdits(term), out = [], seen = {};
+    for (var Len = term.length - cap; Len <= term.length + cap; Len++) {
+      var bucket = vocabByLen[Len];
       if (!bucket) continue;
       for (var cand in bucket) {
         var d = cand === term ? 0 : dlDistance(term, cand, cap);
-        if (d <= cap) out.push([cand, d]);
+        if (d <= cap) { out.push([cand, d]); seen[cand] = true; }
       }
     }
+    if (termIndex[term] && !seen[term]) out.push([term, 0]);
     return out;
   }
 
@@ -197,25 +315,18 @@
 
   function search(query) {
     var tokens = tokenize(query);
-    if (!tokens.length) return { hits: [], tokens: [] };
+    if (!tokens.length) return { all: [], total: 0, tokens: [] };
     var scores = {}, cover = {}, why = {};
 
     tokens.forEach(function (tok, pos) {
       var cands = {};
-      fuzzyVariants(tok).forEach(function (v) {
-        cands[v[0]] = Math.max(cands[v[0]] || 0, FUZZY_P[v[1]]);
-      });
+      fuzzyVariants(tok).forEach(function (v) { cands[v[0]] = Math.max(cands[v[0]] || 0, FUZZY_P[v[1]]); });
       (SYN[tok] || []).forEach(function (syn) {
         if (syn === tok) return;
-        fuzzyVariants(syn).forEach(function (v) {
-          cands[v[0]] = Math.max(cands[v[0]] || 0, FUZZY_P[v[1]] * SYN_P);
-        });
+        fuzzyVariants(syn).forEach(function (v) { cands[v[0]] = Math.max(cands[v[0]] || 0, FUZZY_P[v[1]] * SYN_P); });
       });
       var entries = Object.keys(cands).map(function (k) { return [k, cands[k]]; });
-      if (entries.length > MAX_EXP) {
-        entries.sort(function (a, b) { return b[1] - a[1]; });
-        entries = entries.slice(0, MAX_EXP);
-      }
+      if (entries.length > MAX_EXP) { entries.sort(function (a, b) { return b[1] - a[1]; }); entries = entries.slice(0, MAX_EXP); }
       entries.forEach(function (e) {
         var postings = termIndex[e[0]] || {};
         for (var pid in postings) {
@@ -234,70 +345,119 @@
       });
     });
 
-    var res = Object.keys(scores).map(function (pid) {
-      var covered = Object.keys(cover[pid]).filter(function (k) { return k !== "a"; }).length;
+    var res = [];
+    for (var pid in scores) {
+      var covered = 0, hasAnn = false;
+      for (var k in cover[pid]) { if (k === "a") hasAnn = true; else covered++; }
       var c = covered / tokens.length;
-      if (cover[pid]["a"]) c = Math.max(c, 0.5);
-      return { p: products[pid], score: scores[pid] * (1 + c), why: why[pid] || [] };
-    });
+      if (hasAnn) c = Math.max(c, 0.5);
+      res.push({ p: products[pid], score: scores[pid] * (1 + c), why: why[pid] || [] });
+    }
     res.sort(function (a, b) {
       if (b.score !== a.score) return b.score - a.score;
       var sa = a.p.stock > 0 ? 0 : 1, sb = b.p.stock > 0 ? 0 : 1;
       if (sa !== sb) return sa - sb;
       return a.p.id < b.p.id ? -1 : 1;
     });
-    return { hits: res.slice(0, 9), total: res.length, tokens: tokens };
+    return { all: res, total: res.length, tokens: tokens };
   }
 
-  /* ---------------- Icônes produit (SVG plats) ---------------- */
-  function icon(kind, color) {
-    var body = {
-      sweater: '<path d="M12 11 L4 9 L3 17 L10 20 Z" fill="C"/><path d="M28 11 L36 9 L37 17 L30 20 Z" fill="C"/><path d="M13 9 Q13 13 20 13 Q27 13 27 9 L29 12 L29 33 Q29 35 27 35 L13 35 Q11 35 11 33 L11 12 Z" fill="C"/><ellipse cx="20" cy="8.5" rx="6.5" ry="3" fill="C" fill-opacity="0.72"/>',
-      tshirt: '<path d="M13 8 L6 12 L9 18 L12 16 L12 34 Q12 35 13 35 L27 35 Q28 35 28 34 L28 16 L31 18 L34 12 L27 8 Q25 11 20 11 Q15 11 13 8 Z" fill="C"/>',
-      shirt: '<path d="M13 7 L7 11 L9 17 L12 15 L12 34 L28 34 L28 15 L31 17 L33 11 L27 7 L24 10 L20 22 L16 10 Z" fill="C"/><path d="M16 7.5 L20 11 L24 7.5 L22 6 L18 6 Z" fill="C" fill-opacity="0.7"/>',
-      pants: '<path d="M13 6 L27 6 L28 34 L22.5 34 L20.5 16 L19.5 16 L17.5 34 L12 34 Z" fill="C"/>',
-      scarf: '<path d="M12 8 Q20 4 28 8 L28 14 Q20 10 12 14 Z" fill="C"/><path d="M14 12 L18 12 L17 32 L12 32 Z" fill="C" fill-opacity="0.85"/><path d="M22 12 L26 12 L27 28 L22 28 Z" fill="C" fill-opacity="0.72"/>',
-      coat: '<path d="M12 8 L6 12 L8 20 L11 18 L11 36 L18 36 L18 14 L20 12 L22 14 L22 36 L29 36 L29 18 L32 20 L34 12 L28 8 Q24 11 20 11 Q16 11 12 8 Z" fill="C"/>',
-      jacket: '<path d="M12 8 L6 12 L8 19 L11 17 L11 33 L18 33 L18 13 L20 11 L22 13 L22 33 L29 33 L29 17 L32 19 L34 12 L28 8 Q24 11 20 11 Q16 11 12 8 Z" fill="C"/><circle cx="20" cy="18" r="0.9" fill="#fff" fill-opacity="0.75"/><circle cx="20" cy="23" r="0.9" fill="#fff" fill-opacity="0.75"/>'
-    }[kind] || "";
-    return '<svg viewBox="0 0 40 40" width="44" height="44" aria-hidden="true">' + body.split("C").join(color) + "</svg>";
+  /* ---------------- Couvertures procédurales ---------------- */
+  function coverArt(p) {
+    var h = p.hue, h2 = (h + 46 + p.pat * 21) % 360;
+    var c1 = "hsl(" + h + ",58%,46%)", c2 = "hsl(" + h2 + ",64%,32%)", c3 = "hsl(" + ((h + 180) % 360) + ",60%,74%)";
+    var pats = [
+      '<circle cx="22" cy="12" r="8" fill="' + c3 + '" fill-opacity="0.9"/>',
+      '<rect x="7" y="24" width="20" height="4" fill="' + c3 + '" fill-opacity="0.9"/><rect x="7" y="30" width="14" height="2.5" fill="' + c3 + '" fill-opacity="0.55"/>',
+      '<path d="M7 42 L34 10 L34 22 L17 42 Z" fill="' + c3 + '" fill-opacity="0.65"/>',
+      '<circle cx="20" cy="21" r="10" fill="none" stroke="' + c3 + '" stroke-width="2.5" stroke-opacity="0.9"/>',
+      '<rect x="9" y="8" width="9" height="9" fill="' + c3 + '" fill-opacity="0.9"/><rect x="20" y="26" width="9" height="9" fill="' + c3 + '" fill-opacity="0.55"/>'
+    ];
+    var initial = (p.author.replace(/^(La |Le |Les |The )/, "")[0] || "H").toUpperCase();
+    var audio = p.fmt === "AU"
+      ? '<circle cx="20" cy="21" r="7.5" fill="rgba(0,0,0,0.28)"/><path d="M18 17.5 L18 24.5 L24 21 Z" fill="#fff"/>' : "";
+    return '<svg viewBox="0 0 40 44" width="40" height="44" aria-hidden="true">' +
+      '<defs><linearGradient id="bk' + p.hue + "_" + p.pat + '" x1="0" y1="0" x2="1" y2="1">' +
+      '<stop offset="0" stop-color="' + c1 + '"/><stop offset="1" stop-color="' + c2 + '"/></linearGradient></defs>' +
+      '<rect x="3" y="1" width="34" height="42" rx="2.5" fill="url(#bk' + p.hue + "_" + p.pat + ')"/>' +
+      '<rect x="3" y="1" width="4.5" height="42" rx="2" fill="rgba(0,0,0,0.28)"/>' +
+      pats[p.pat] + audio +
+      '<text x="23" y="39" text-anchor="middle" font-family="Georgia,serif" font-size="10" font-weight="bold" fill="rgba(255,255,255,0.92)">' + initial + '</text>' +
+      '<rect x="3" y="1" width="34" height="42" rx="2.5" fill="none" stroke="rgba(0,0,0,0.14)"/></svg>';
   }
 
-  /* ---------------- UI ---------------- */
+  /* ---------------- UI + Prismes ---------------- */
   function esc(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;"); }
-
   function each(list, fn) { Array.prototype.forEach.call(list, fn); }
+  function prismLabel(a) { return PRISM_LABELS[a] || (a.indexOf("ERA_") === 0 ? eraLabel(a) : null); }
 
   function initOne(rootEl) {
     var input = rootEl.querySelector(".play-input");
     var grid = rootEl.querySelector(".play-grid");
     var meta = rootEl.querySelector(".play-meta");
+    var prismsEl = rootEl.querySelector(".play-prisms");
     var chips = rootEl.querySelectorAll(".play-chip");
     if (!input || !grid) return;
+    var active = {}; // annotation -> true
 
-    function render(query) {
+    function render(query, keepFilters) {
+      if (!keepFilters) active = {};
       var t0 = performance.now();
       var r = search(query);
-      var ms = Math.max(1, Math.round(performance.now() - t0));
-      if (!query.trim()) {
-        grid.innerHTML = "";
-        meta.innerHTML = "Type a search — typos are welcome.";
-        return;
+      // Application des prismes actifs
+      var filtered = r.all;
+      var keys = Object.keys(active);
+      if (keys.length) {
+        filtered = r.all.filter(function (h) {
+          return keys.every(function (a) { return h.p.anns.indexOf(a) !== -1; });
+        });
       }
-      meta.innerHTML = r.total
-        ? "<strong>" + r.total + " result" + (r.total > 1 ? "s" : "") + "</strong> · " + ms + " ms · embedded Heurix engine, demo catalog (" + products.length + " products)"
-        : "No results · " + ms + " ms";
-      grid.innerHTML = r.hits.map(function (h) {
+      var ms = Math.max(1, Math.round(performance.now() - t0));
+      if (!query.trim()) { grid.innerHTML = ""; if (prismsEl) prismsEl.innerHTML = ""; meta.innerHTML = L.empty; return; }
+      meta.innerHTML = filtered.length ? L.results(filtered.length, ms, products.length) : L.none(ms);
+
+      // Barre de prismes : les annotations les plus fréquentes dans les résultats
+      if (prismsEl) {
+        var counts = {};
+        r.all.forEach(function (h) { h.p.anns.forEach(function (a) { counts[a] = (counts[a] || 0) + 1; }); });
+        var groups = {};
+        Object.keys(counts).forEach(function (a) {
+          var lbl = prismLabel(a);
+          if (!lbl) return;
+          var g = a.split("_")[0];
+          (groups[g] = groups[g] || []).push([a, counts[a], lbl]);
+        });
+        var chipsHtml = [];
+        ["GENRE", "FORMAT", "PAYS", "ERA", "LONG"].forEach(function (g) {
+          if (!groups[g]) return;
+          groups[g].sort(function (a, b) { return b[1] - a[1]; });
+          groups[g].slice(0, g === "ERA" ? 2 : 3).forEach(function (item) {
+            var on = active[item[0]] ? " play-prism-on" : "";
+            chipsHtml.push('<button type="button" class="play-prism' + on + '" data-ann="' + item[0] + '">' + esc(item[2]) + ' <span class="play-prism-n">' + item[1] + "</span></button>");
+          });
+        });
+        prismsEl.innerHTML = chipsHtml.length ? '<span class="play-prisms-label">' + L.prisms + "</span>" + chipsHtml.join("") : "";
+        each(prismsEl.querySelectorAll(".play-prism"), function (btn) {
+          btn.addEventListener("click", function () {
+            var a = btn.getAttribute("data-ann");
+            if (active[a]) delete active[a]; else active[a] = true;
+            render(input.value, true);
+          });
+        });
+      }
+
+      grid.innerHTML = filtered.slice(0, 9).map(function (h) {
         var whyChips = h.why.filter(function (w, i, arr) { return arr.indexOf(w) === i; })
           .slice(0, 3).map(function (w) {
             return '<span class="play-why' + (w[0] === "#" ? " play-why-ann" : "") + '">' + esc(w) + "</span>";
           }).join("");
         return '<div class="play-card' + (h.p.stock === 0 ? " play-card-out" : "") + '">' +
-          '<div class="play-thumb">' + icon(h.p.icon, h.p.color) + "</div>" +
-          '<div class="play-body"><div class="play-name">' + esc(h.p.name) + "</div>" +
-          '<div class="play-ref mono">' + esc(h.p.id) + "</div>" +
+          '<div class="play-thumb">' + coverArt(h.p) + "</div>" +
+          '<div class="play-body"><div class="play-name">' + esc(h.p.title) + " — " + esc(h.p.author) + "</div>" +
+          '<div class="play-ref mono">' + esc(h.p.id) + " · " + esc(h.p.desc) + "</div>" +
           '<div class="play-tags">' + whyChips + "</div></div>" +
-          '<span class="play-stock">' + (h.p.stock > 0 ? (h.p.stock <= 3 ? h.p.stock + " left" : "in stock") : "out of stock") + "</span>" +
+          '<div class="play-side"><span class="play-price">' + h.p.price + " €</span>" +
+          '<span class="play-stock">' + L.stock(h.p.stock) + "</span></div>" +
           "</div>";
       }).join("");
     }
@@ -311,30 +471,22 @@
       });
     });
 
-    // Intro : frappe automatique de la requête d'exemple, une seule fois.
-    var INTRO = "red turtlneck swetaer";
     var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduce || rootEl.getAttribute("data-no-intro") === "1") {
-      input.value = INTRO;
-      render(INTRO);
-      return;
-    }
+    if (reduce || rootEl.getAttribute("data-no-intro") === "1") { input.value = L.intro; render(L.intro); return; }
     var i = 0;
     var iv = setInterval(function () {
-      if (document.activeElement === input) { clearInterval(iv); return; } // l'utilisateur a pris la main
+      if (document.activeElement === input) { clearInterval(iv); return; }
       i++;
-      input.value = INTRO.slice(0, i);
+      input.value = L.intro.slice(0, i);
       render(input.value);
-      if (i >= INTRO.length) clearInterval(iv);
+      if (i >= L.intro.length) clearInterval(iv);
     }, 55);
   }
 
-  function init() {
-    each(document.querySelectorAll(".play"), initOne);
-  }
+  function init() { each(document.querySelectorAll(".play"), initOne); }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
   else init();
 
-  // Exposed for the curious (and our tests): try window.heurixDemo.search("red turtlneck swetaer")
+  // For the curious: window.heurixDemo.search("scandinavian crim novel pocket")
   window.heurixDemo = { search: search, annotate: annotate, catalogSize: products.length };
 })();

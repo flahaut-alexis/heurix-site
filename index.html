@@ -61,54 +61,10 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   "@context": "https://schema.org",
   "@type": "FAQPage",
   "mainEntity": [
-    {
-      "@type": "Question",
-      "name": "Combien coûte une mission ?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Facturation à la journée, 850 € HT/jour, sur devis établi selon le périmètre exact. À titre indicatif : un audit seul se règle en 2 à 3 jours, une mission complète (audit + intégration) coûte entre 4 250 € et 8 500 € HT selon la taille du catalogue. Utilisez le simulateur ROI pour estimer le gain attendu face à ce coût."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Et si les résultats ne sont pas au rendez-vous ?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Aucun consultant ne peut garantir un pourcentage de gain à l'avance — les chiffres du simulateur sont des ordres de grandeur, pas une promesse contractuelle. Ce qui limite le risque de votre côté : pas d'abonnement, pas d'engagement dans la durée. L'audit initial (2 à 3 jours) vous donne un diagnostic concret et chiffrable avant de décider d'aller plus loin."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Dois-je changer de plateforme e-commerce ?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Non. Heurix intervient sur la couche recherche de votre site existant (Shopify, PrestaShop, WooCommerce, Magento ou autre), sans toucher au reste de votre architecture. Dans la grande majorité des cas, le problème se règle en reconfigurant ou en branchant un moteur de recherche, pas en changeant de CMS."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Moteur propriétaire Heurix ou Algolia / Elasticsearch / Typesense — comment choisissez-vous ?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Le choix se fait pendant l'audit, en fonction de votre catalogue, de votre budget et de ce que vous avez déjà en place. Si votre solution actuelle est simplement mal configurée, on la corrige. Si aucune solution du marché ne convient à votre cas, le moteur propriétaire Heurix devient une option pertinente."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Combien de temps dure une mission ?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "L'audit initial prend 2 à 3 jours. L'intégration qui suit dépend du périmètre retenu à l'issue du diagnostic. Dans tous les cas, on reste loin d'un projet IT de plusieurs mois."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Travaillez-vous avec mon secteur d'activité ?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Heurix est particulièrement pertinent sur les catalogues volumineux et techniques — outillage, pièces détachées, électrique/électronique, équipement pro/BTP notamment. Le principe s'applique à tout site avec un moteur de recherche interne mal exploité, quel que soit le secteur."
-      }
-    }
+    {"@type": "Question", "name": "Comment intégrer le moteur Heurix à mon site ?", "acceptedAnswer": {"@type": "Answer", "text": "Par API : vous indexez votre catalogue, vous branchez la recherche, c'est en ligne. Pas de plugin, pas de refonte, pas de dépendance à votre CMS. Des connecteurs Shopify, PrestaShop, WooCommerce et Magento sont en préparation."}},
+    {"@type": "Question", "name": "Combien coûte le Search API Heurix ?", "acceptedAnswer": {"@type": "Answer", "text": "Un plan Free (2 000 requêtes et 5 000 produits par mois) pour tester sans carte bancaire, puis des plans à l'usage à partir de 39 €/mois. Les règles de comptage sont publiques et la consommation est consultable en temps réel."}},
+    {"@type": "Question", "name": "Pourquoi choisir Heurix plutôt qu'Algolia, Elasticsearch ou Typesense ?", "acceptedAnswer": {"@type": "Answer", "text": "Les moteurs généralistes comparent des caractères ; Heurix lit la structure des références produits grâce à sa cascade d'annotations — dimensions, normes, tailles, millésimes, éditions — avec des packs de règles par verticale et des résultats explicables."}},
+    {"@type": "Question", "name": "Où sont hébergées les données ?", "acceptedAnswer": {"@type": "Answer", "text": "En France, chez OVH (Gravelines ou Strasbourg). Les catalogues ne quittent pas l'Union européenne."}}
   ]
 }
 </script>
@@ -127,7 +83,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <a href="#probleme">Le problème</a>
       <a href="#moteur">Le moteur</a>
       <a href="pricing.html">Search API</a>
-      <a href="#tarifs">Professional Services</a>
+      <a href="#tarifs">Simulateur ROI</a>
       <a href="blog.html">Blog</a>
     </div>
     <a href="en/index.html" class="lang-switch">EN</a>
@@ -171,12 +127,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </div>
       <div class="play-chips">
         <span class="play-chips-label">Essayez :</span>
-        <button type="button" class="play-chip" data-q="pul col rolé roug">pul col rolé roug</button>
-        <button type="button" class="play-chip" data-q="jean délavé 32/34">jean délavé 32/34</button>
-        <button type="button" class="play-chip" data-q="chemse flanelle">chemse flanelle</button>
-        <button type="button" class="play-chip" data-q="écharpe cachemire">écharpe cachemire</button>
+        <button type="button" class="play-chip" data-q="polar scandinave poche">polar scandinave poche</button>
+        <button type="button" class="play-chip" data-q="dostoievsky pavé">dostoievsky pavé</button>
+        <button type="button" class="play-chip" data-q="jules vern illustré">jules vern illustré</button>
+        <button type="button" class="play-chip" data-q="sf années 50">sf années 50</button>
       </div>
       <p class="play-meta"></p>
+      <div class="play-prisms"></div>
       <div class="play-grid"></div>
     </div>
 
@@ -201,6 +158,33 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <h4>Explicable et souverain</h4>
         <p>Chaque résultat dit pourquoi il sort. Conçu en France, hébergé chez OVH, données dans l'UE.</p>
       </div>
+      <details class="faq-item">
+        <summary>Où sont hébergées mes données ?</summary>
+        <div class="faq-answer">
+          <p>En France, chez OVH (Gravelines ou Strasbourg). Vos catalogues ne quittent pas l'Union européenne, et le moteur lui-même est conçu et développé en France. Pour les exigences RGPD, c'est le scénario le plus simple à documenter auprès de votre DPO.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>Que se passe-t-il si je dépasse le quota de mon plan ?</summary>
+        <div class="faq-answer">
+          <p>Jamais de coupure brutale : le surplus est facturé au tarif à l'usage indiqué sur la <a href="pricing.html">page tarifs</a>. Les règles de comptage sont publiques (1 recherche = 1 requête, 1 000 produits indexés = 10 requêtes) et votre consommation est consultable en temps réel via l'API.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>Puis-je créer mes propres règles d'annotation ?</summary>
+        <div class="faq-answer">
+          <p>Trois packs sont fournis avec le moteur (outillage, mode, industrie) et couvrent les cas les plus courants. Pour un catalogue aux références très spécifiques, nous concevons un pack sur mesure en mission — c'est un travail de quelques jours, pas de quelques mois, et il reste votre configuration.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>La démo sur cette page utilise-t-elle vraiment le moteur ?</summary>
+        <div class="faq-answer">
+          <p>Oui — c'est la logique du moteur Heurix, portée en JavaScript et embarquée dans la page avec un catalogue de démonstration : même normalisation, même tolérance aux fautes, même cascade d'annotations, même scoring. Les développeurs peuvent même l'interroger en console : <code>window.heurixDemo.search("...")</code>.</p>
+        </div>
+      </details>
     </div>
   </div>
 </section>
@@ -293,7 +277,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </div>
       <div class="feature-card">
         <h3>Packs de règles métier</h3>
-        <p>Outillage, mode, industrie — fournis avec le moteur. Sur mesure pour votre catalogue en mission.</p>
+        <p>Outillage, mode, industrie — fournis avec le moteur. Packs sur mesure possibles sur les plans Scale.</p>
       </div>
       <div class="feature-card">
         <h3>Synonymes métier</h3>
@@ -338,7 +322,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div class="regex-copy">
         <h3>Un avantage concurrentiel concret : comprendre les références, pas seulement les mots</h3>
         <p>La plupart des moteurs — y compris des solutions reconnues comme Algolia ou Elasticsearch mal configurées — traitent une référence produit comme n'importe quel autre mot. Deux formats différents pour la même référence (<code>M8x20</code> et <code>M8 x 20</code>) sont alors vus comme deux choses distinctes. Sur un catalogue technique, c'est là que se joue une bonne partie des ventes perdues — pas sur le design du site, sur la capacité du moteur à comprendre ce que tape réellement l'acheteur.</p>
-        <p>Heurix configure des règles d'expressions régulières (regex) sur mesure pour votre catalogue : elles reconnaissent la <em>structure</em> d'une référence — famille, dimension, variante — plutôt que de comparer des caractères un par un. Un acheteur qui tape une référence partielle ou mal formatée retrouve quand même le bon produit. C'est un travail de configuration fine que peu de prestataires proposent, parce qu'il demande de comprendre à la fois votre catalogue et la façon dont vos clients cherchent réellement.</p>
+        <p>Heurix configure des règles d'expressions régulières (regex) sur mesure pour votre catalogue : elles reconnaissent la <em>structure</em> d'une référence — famille, dimension, variante — plutôt que de comparer des caractères un par un. Un acheteur qui tape une référence partielle ou mal formatée retrouve quand même le bon produit. C'est un travail de compréhension fine du catalogue, encodé une fois pour toutes dans les packs de règles du moteur, parce qu'il demande de comprendre à la fois votre catalogue et la façon dont vos clients cherchent réellement.</p>
       </div>
       <div class="demo-video">
         <video autoplay muted loop playsinline poster="heurix-demo-poster.jpg" aria-label="Démonstration : recherche d'une vis M8x20 avec un moteur natif, puis avec Heurix">
@@ -406,6 +390,26 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <h4>Équipement pro &amp; BTP</h4>
           <p>Gros volumes, acheteurs professionnels qui cherchent par référence exacte plus que par mot-clé descriptif.</p>
         </div>
+        <div class="vertical-card">
+          <div class="icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.38 3.46 16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.47a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.47a2 2 0 00-1.34-2.23z"/></svg></div>
+          <h4>Mode &amp; retail</h4>
+          <p>Tailles composées (W32/L34), coloris, matières, déclinaisons — et des clients qui tapent vite, avec des fautes.</p>
+        </div>
+        <div class="vertical-card">
+          <div class="icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg></div>
+          <h4>Librairie &amp; culture</h4>
+          <p>ISBN, éditions, formats, collections : le même titre existe en dizaines de versions — la démo de cette page en est la preuve.</p>
+        </div>
+        <div class="vertical-card">
+          <div class="icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 22h8"/><path d="M12 15v7"/><path d="M12 15a5 5 0 005-5V3H7v7a5 5 0 005 5z"/></svg></div>
+          <h4>Vins &amp; spiritueux</h4>
+          <p>Millésimes, domaines, appellations, formats (37,5 cl, magnum) : des références où chaque chiffre compte.</p>
+        </div>
+        <div class="vertical-card vertical-card-cta">
+          <div class="icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+          <h4>Et le vôtre ?</h4>
+          <p>Si vos clients cherchent par référence, dimension ou variante, le moteur s'y adapte. <a href="index.html#contact">Parlez-nous de votre catalogue</a>.</p>
+        </div>
       </div>
     </div>
   </div>
@@ -445,29 +449,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 <section id="offres">
   <div class="wrap">
-    <div class="kicker">Deux façons de travailler avec Heurix</div>
-    <h2>Le moteur en self-service — ou un accompagnement sur mesure.</h2>
-    <p class="section-lede">Selon où vous en êtes, l'un ou l'autre — ou les deux à la fois.</p>
-    <div class="offers-grid reveal">
-      <div class="offer-card offer-card-highlight">
-        <div class="offer-kicker mono">Search API</div>
-        <h3>Le moteur Heurix, en self-service, à partir de gratuit.</h3>
-        <p>Intégrez directement l'API du moteur propriétaire Heurix sur votre site. Facturation à l'usage, sans engagement, un plan gratuit pour démarrer. Idéal pour tester sans passer par une mission complète.</p>
-        <a href="pricing.html" class="btn">Découvrir l'API Heurix</a>
-      </div>
-      <div class="offer-card">
-        <div class="offer-kicker mono">Professional Services</div>
-        <h3>Un audit, une intégration, un expert qui s'en occupe avec vous.</h3>
-        <p>Facturation à la mission, 850 € HT/jour. Idéal si votre catalogue est déjà en place et que vous voulez un diagnostic et une correction ciblée — sur votre solution actuelle ou sur le moteur Heurix.</p>
-        <a href="#tarifs" class="btn btn-ghost">Voir le simulateur ROI</a>
-      </div>
+    <div class="kicker">L'offre</div>
+    <h2>Un moteur, un abonnement, zéro engagement.</h2>
+    <p class="section-lede">Le Search API Heurix est en self-service : un plan gratuit pour brancher votre catalogue et juger sur pièces, des plans à l'usage quand vous passez en production, et une facturation au compteur — transparente, résiliable à tout moment.</p>
+    <div class="about-cta" style="margin-top:22px;">
+      <a href="pricing.html" class="btn">Voir les plans et tarifs</a>
+      <a href="docs.html" class="btn btn-ghost">Lire la documentation</a>
     </div>
   </div>
 </section>
 
 <section id="tarifs" class="soft">
   <div class="wrap">
-    <div class="kicker">Simulateur — Professional Services</div>
+    <div class="kicker">Simulateur ROI</div>
     <h2>Estimez l'effet de levier d'un moteur de recherche mieux réglé.</h2>
     <p class="section-lede">La recherche interne ne représente souvent que 10 à 20 % du trafic d'un site — mais chez de nombreux e-commerçants, elle concentre 30 à 50 % du chiffre d'affaires. C'est le segment le plus précieux du site, et le moins souvent optimisé. Ajustez les curseurs à votre situation : le calcul se fait en direct.</p>
 
@@ -554,7 +548,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               <div class="roi-mini-sub">votre investissement</div>
             </div>
             <div class="roi-mini-tile">
-              <div class="roi-mini-label">Mission amortie en</div>
+              <div class="roi-mini-label">Abonnement rentabilisé en</div>
               <div class="roi-mini-value mono" id="roi-out-payback">—</div>
               <div class="roi-mini-sub">seulement</div>
             </div>
@@ -562,7 +556,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
           <div class="roi-compare">
             <div class="roi-compare-row">
-              <span>Coût estimé de la mission</span>
+              <span>Coût annuel du Search API</span>
               <span class="mono" id="roi-out-cost">—</span>
             </div>
             <div class="roi-compare-bar">
@@ -574,8 +568,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <div id="roi-sr-live" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
         </div>
 
-        <a href="#contact" class="btn roi-cta">Recevoir mon étude de ROI personnalisée</a>
-        <div class="roi-cta-note">Chiffrage définitif sur devis, sous 48h.</div>
+        <a href="pricing.html" class="btn roi-cta">Essayer le Search API gratuitement</a>
+        <div class="roi-cta-note">Plan Free, aucune carte bancaire requise.</div>
 
         <button type="button" id="roi-pdf-toggle" class="roi-pdf-toggle">Télécharger ce rapport en PDF →</button>
         <form id="roi-pdf-form" class="roi-pdf-form" hidden>
@@ -587,7 +581,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </div>
 
     </div>
-    <p class="form-note" style="margin-top:20px;">Coût de mission indicatif selon la taille du catalogue : à partir de 4 250 € HT sous 10 M€ de CA, jusqu'à 8 500 € HT pour les plus gros volumes. Les hypothèses d'impact sont des ordres de grandeur à affiner ensemble lors de l'audit, pas une promesse.</p>
+    <p class="form-note" style="margin-top:20px;">Coût estimé sur la base d'un abonnement annuel au Search API (plan Growth ou Scale selon la taille du catalogue). Les hypothèses d'impact sont des ordres de grandeur, pas une promesse.</p>
   </div>
 </section>
 
@@ -631,68 +625,74 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <details class="faq-item">
         <summary>Comment intégrer le moteur Heurix à mon site ?</summary>
         <div class="faq-answer">
-          <p>Par API : vous indexez votre catalogue (un appel), vous branchez la recherche (un appel), c'est en ligne. Pas de plugin à installer, pas de refonte, pas de dépendance à votre CMS. Le <a href="docs.html">guide de démarrage</a> tient en 3 appels — et si vous préférez déléguer, on l'intègre pour vous en mission.</p>
+          <p>Par API : vous indexez votre catalogue (un appel), vous branchez la recherche (un appel), c'est en ligne. Pas de plugin à installer, pas de refonte, pas de dépendance à votre CMS. Le <a href="docs.html">guide de démarrage</a> tient en 3 appels. Des connecteurs Shopify, PrestaShop, WooCommerce et Magento sont en préparation.</p>
         </div>
       </details>
 
       <details class="faq-item">
-        <summary>Combien coûte le Search API ?</summary>
+        <summary>Combien ça coûte ?</summary>
         <div class="faq-answer">
           <p>Un plan Free (2 000 requêtes et 5 000 produits par mois) pour tester sans carte bancaire, puis des plans à l'usage à partir de 39 €/mois. Les règles de comptage sont publiques et votre consommation est consultable en temps réel — pas de surprise en fin de mois. <a href="pricing.html">Le détail des plans est ici</a>.</p>
         </div>
       </details>
 
       <details class="faq-item">
-        <summary>Combien coûte une mission ?</summary>
+        <summary>Heurix ou Algolia / Elasticsearch / Typesense — pourquoi choisir Heurix ?</summary>
         <div class="faq-answer">
-          <p>Facturation à la journée, 850 € HT/jour, sur devis établi selon le périmètre exact. À titre indicatif : un audit seul se règle en 2 à 3 jours, une mission complète (audit + intégration) coûte entre 4 250 € et 8 500 € HT selon la taille du catalogue. Utilisez le <a href="#tarifs">simulateur ROI</a> ci-dessus pour estimer le gain attendu face à ce coût.</p>
-        </div>
-      </details>
-
-      <details class="faq-item">
-        <summary>Et si les résultats ne sont pas au rendez-vous ?</summary>
-        <div class="faq-answer">
-          <p>Aucun consultant ne peut garantir un pourcentage de gain à l'avance — les chiffres du simulateur sont des ordres de grandeur, pas une promesse contractuelle. Ce qui limite le risque de votre côté : pas d'abonnement, pas d'engagement dans la durée. L'audit initial (2 à 3 jours) vous donne un diagnostic concret et chiffrable avant de décider d'aller plus loin. Si le diagnostic ne révèle pas de gain significatif, vous le saurez dès cette étape, pour un coût limité.</p>
+          <p>Les moteurs généralistes comparent des caractères ; Heurix lit la structure de vos références grâce à sa cascade d'annotations. Si votre catalogue est technique (dimensions, normes, tailles, millésimes, éditions), c'est précisément le cas pour lequel Heurix est construit — avec des packs de règles fournis par verticale, un tri qui respecte le stock, et des résultats explicables. Pour un blog ou un site éditorial simple, un moteur généraliste suffit largement.</p>
         </div>
       </details>
 
       <details class="faq-item">
         <summary>Dois-je changer de plateforme e-commerce ?</summary>
         <div class="faq-answer">
-          <p>Non. Heurix intervient sur la couche recherche de votre site existant (Shopify, PrestaShop, WooCommerce, Magento ou autre), sans toucher au reste de votre architecture. C'est justement l'alternative à un projet de refonte complète : dans la grande majorité des cas, le problème se règle en reconfigurant ou en branchant un moteur de recherche, pas en changeant de CMS.</p>
+          <p>Non. Heurix s'ajoute à votre site existant par API, quel que soit votre CMS — Shopify, PrestaShop, WooCommerce, Magento ou solution maison. Votre catalogue reste chez vous ; le moteur ne remplace que la recherche.</p>
         </div>
       </details>
 
       <details class="faq-item">
-        <summary>Heurix ou Algolia / Elasticsearch / Typesense — pourquoi choisir Heurix ?</summary>
+        <summary>Comment mesurer l'impact sur mes ventes ?</summary>
         <div class="faq-answer">
-          <p>Le choix se fait pendant l'audit, en fonction de votre catalogue, de votre budget et de ce que vous avez déjà en place. Si votre solution actuelle est simplement mal configurée, on la corrige — inutile de payer un nouvel outil. Si aucune solution du marché ne convient à votre cas (catalogue très technique, besoin de regex sur mesure, budget serré), le moteur propriétaire Heurix devient une option pertinente. L'objectif n'est jamais de vous vendre un outil par défaut.</p>
+          <p>Le champ <code>matched</code> de chaque résultat explique pourquoi il sort, et le <a href="#tarifs">simulateur ROI</a> de cette page vous donne un ordre de grandeur du levier économique selon votre trafic et votre panier moyen. La méthode la plus fiable reste un test avant/après sur vos requêtes sans résultat — mesurable dans votre outil d'analytics dès la première semaine.</p>
         </div>
       </details>
 
       <details class="faq-item">
-        <summary>Combien de temps dure une mission ?</summary>
+        <summary>Mon secteur est-il couvert ?</summary>
         <div class="faq-answer">
-          <p>L'audit initial prend 2 à 3 jours. L'intégration qui suit dépend du périmètre retenu à l'issue du diagnostic. Dans tous les cas, on reste loin d'un projet IT de plusieurs mois — c'est un principe de fonctionnement, pas seulement un argument commercial.</p>
+          <p>Trois packs de règles sont fournis (outillage, mode, industrie) et la mécanique s'applique à tout catalogue où l'on cherche par référence, dimension ou variante — librairie, vin, pièces détachées, électronique... Si votre secteur a des références très spécifiques, <a href="#contact">décrivez-nous votre catalogue</a> : la conception d'un pack sur mesure est possible sur les plans Scale.</p>
         </div>
       </details>
 
       <details class="faq-item">
-        <summary>Travaillez-vous avec mon secteur d'activité ?</summary>
+        <summary>Où sont hébergées mes données ?</summary>
         <div class="faq-answer">
-          <p>Heurix est particulièrement pertinent sur les catalogues volumineux et techniques — outillage, pièces détachées, électrique/électronique, équipement pro/BTP notamment (voir <a href="#moteur">la section Le moteur</a> pour le détail). Le principe s'applique à tout site avec un moteur de recherche interne mal exploité, quel que soit le secteur ; ces catalogues techniques sont simplement les cas où le gain est le plus net.</p>
+          <p>En France, chez OVH (Gravelines ou Strasbourg). Vos catalogues ne quittent pas l'Union européenne, et le moteur lui-même est conçu et développé en France. Pour les exigences RGPD, c'est le scénario le plus simple à documenter auprès de votre DPO.</p>
         </div>
       </details>
 
+      <details class="faq-item">
+        <summary>Que se passe-t-il si je dépasse le quota de mon plan ?</summary>
+        <div class="faq-answer">
+          <p>Jamais de coupure brutale : le surplus est facturé au tarif à l'usage indiqué sur la <a href="pricing.html">page tarifs</a>. Les règles de comptage sont publiques (1 recherche = 1 requête, 1 000 produits indexés = 10 requêtes) et votre consommation est consultable en temps réel via l'API.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>La démo sur cette page utilise-t-elle vraiment le moteur ?</summary>
+        <div class="faq-answer">
+          <p>Oui — c'est la logique du moteur Heurix, portée en JavaScript et embarquée dans la page avec un catalogue de démonstration généré : même normalisation, même tolérance aux fautes, même cascade d'annotations, même scoring. Les développeurs peuvent l'interroger en console : <code>window.heurixDemo.search("...")</code>.</p>
+        </div>
+      </details>
     </div>
   </div>
 </section>
 
 <section class="cta-section" id="contact">
   <div class="wrap">
-    <div class="kicker">Devis sur demande</div>
-    <h2>Réservez votre audit initial.</h2>
-    <p class="section-lede">Décrivez votre site en deux lignes — vous recevrez un devis chiffré et une proposition de créneau sous 48h ouvrées. Vous pouvez reprendre les chiffres du simulateur ci-dessus si vous voulez.</p>
+    <div class="kicker">Nous contacter</div>
+    <h2>Une question, un catalogue à part ?</h2>
+    <p class="section-lede">Le plan Free suffit pour démarrer sans nous écrire. Si vous avez une question avant de vous lancer, ou si vos références sont assez particulières pour justifier un pack de règles sur mesure (plans Scale), décrivez votre catalogue en deux lignes — réponse sous 48h ouvrées.</p>
 
     <form class="cta-form" id="heurix-form">
       <label for="name">Nom</label>
@@ -712,8 +712,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <option value="Je ne sais pas">Je ne sais pas</option>
       </select>
       <label for="msg">Votre besoin</label>
-      <textarea id="msg" name="message" rows="4" placeholder="Ex. : environ 30 000 références, moteur natif PrestaShop jamais reconfiguré, beaucoup de recherches sans résultat sur les référence techniques."></textarea>
-      <button type="submit" class="btn" id="submit-btn">Envoyer la demande</button>
+      <textarea id="msg" name="message" rows="4" placeholder="Ex. : catalogue de 30 000 références très spécifiques, on se demande si un pack de règles sur mesure serait utile avant de passer sur le plan Scale."></textarea>
+      <button type="submit" class="btn" id="submit-btn">Envoyer le message</button>
       <div id="form-feedback"></div>
     </form>
     <p class="contact-direct">Vous préférez écrire directement ? <a href="mailto:contact@heurix.fr">contact@heurix.fr</a></p>
@@ -845,12 +845,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     liftInput.setAttribute('aria-valuetext', liftInput.value + ' pour cent');
     marginInput.setAttribute('aria-valuetext', marginInput.value + ' pour cent');
 
-    // Coût de mission indicatif selon la taille du catalogue / CA
-    let cost = 5800;
+    // Coût annuel du Search API selon la taille du catalogue / CA
+    // (plan Growth 39€/mois pour les catalogues sous 10M€ de CA, Scale 149€/mois au-delà de 25M€)
+    let cost = 1128; // valeur intermédiaire entre Growth et Scale annualisés
     if (ca < 10000000) {
-      cost = 4250;
+      cost = 468; // Growth : 39€ x 12
     } else if (ca >= 25000000) {
-      cost = 8500;
+      cost = 1788; // Scale : 149€ x 12
     }
 
     const caSearch = ca * share;
@@ -897,7 +898,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     const r = computeROI();
     const liveRegion = document.getElementById('roi-sr-live');
     if (liveRegion) {
-      liveRegion.textContent = `Gain de chiffre d'affaires annuel estimé : ${r.gainCA}. Gain de marge net annuel : ${r.gainMarge}. Retour sur investissement : ${r.roi}. Mission amortie en ${r.payback}.`;
+      liveRegion.textContent = `Gain de chiffre d'affaires annuel estimé : ${r.gainCA}. Gain de marge net annuel : ${r.gainMarge}. Retour sur investissement : ${r.roi}. Abonnement rentabilisé en ${r.payback}.`;
     }
   }
 
@@ -1030,9 +1031,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     const outputs = [
       ['Gain de CA annuel estimé', document.getElementById('roi-out-gainca').textContent],
       ['Gain de marge net annuel', document.getElementById('roi-out-gainmarge').textContent],
-      ['Coût de mission indicatif', document.getElementById('roi-out-cost').textContent],
+      ['Coût annuel du Search API', document.getElementById('roi-out-cost').textContent],
       ['Multiplicateur ROI', document.getElementById('roi-out-roi').textContent],
-      ['Mission amortie en', document.getElementById('roi-out-payback').textContent],
+      ['Abonnement rentabilisé en', document.getElementById('roi-out-payback').textContent],
     ];
     outputs.forEach(row => {
       doc.setTextColor(...muted);
