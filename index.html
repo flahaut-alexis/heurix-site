@@ -165,21 +165,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <a href="#contact" class="btn btn-ghost">Réserver un audit</a>
     </div>
 
-    <div class="demo">
-      <div class="demo-bar">
-        <div class="demo-search">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-          <span id="query-text"></span><span class="demo-cursor" id="demo-cursor">|</span>
-        </div>
-        <div class="toggle">
-          <button id="btn-bad" class="active bad" onclick="setDemo('bad')">Moteur natif</button>
-          <button id="btn-good" class="good" onclick="setDemo('good')">Avec Heurix</button>
-        </div>
+    <div class="demo play">
+      <div class="play-bar">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <input class="play-input" type="text" placeholder="Cherchez dans le catalogue de démo…" aria-label="Rechercher dans le catalogue de démonstration" autocomplete="off" spellcheck="false">
       </div>
-      <div class="demo-body">
-        <div id="demo-status" class="demo-status bad demo-pending">0 correspondance exacte — plusieurs fautes cassent la recherche</div>
-        <div id="results" class="results"></div>
+      <div class="play-chips">
+        <span class="play-chips-label">Essayez :</span>
+        <button type="button" class="play-chip" data-q="pul col rolé roug">pul col rolé roug</button>
+        <button type="button" class="play-chip" data-q="jean délavé 32/34">jean délavé 32/34</button>
+        <button type="button" class="play-chip" data-q="chemse flanelle">chemse flanelle</button>
+        <button type="button" class="play-chip" data-q="écharpe cachemire">écharpe cachemire</button>
       </div>
+      <p class="play-meta"></p>
+      <div class="play-grid"></div>
     </div>
 
     <div class="benefits">
@@ -444,69 +443,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 </section>
 
-
-<section id="apropos">
-  <div class="wrap">
-    <div class="kicker">Qui sommes-nous</div>
-    <h2>Une expertise indépendante, made in France.</h2>
-    <div class="apropos-grid reveal">
-      <p>Heurix est porté par Alexis Flahaut, consultant indépendant basé en France, à la croisée d'une expérience commerciale terrain (plusieurs années en tant que Senior Account Executive) et d'une expertise technique en moteurs de recherche et indexation. Le moteur propriétaire Heurix est conçu, développé et maintenu en France — pas une plateforme low-cost délocalisée avec un support générique.</p>
-      <p>Marque déposée à l'INPI, entreprise immatriculée en France : quand vous travaillez avec Heurix, vous avez un interlocuteur direct, en français, du premier audit à la mise en œuvre — pas un ticket qui traverse plusieurs fuseaux horaires avant d'obtenir une réponse.</p>
-    </div>
-    <div class="apropos-facts">
-      <div class="apropos-fact">
-        <div class="apropos-fact-label">Entreprise</div>
-        <div class="apropos-fact-value">Immatriculée en France</div>
-      </div>
-      <div class="apropos-fact">
-        <div class="apropos-fact-label">Marque</div>
-        <div class="apropos-fact-value">Déposée à l'INPI</div>
-      </div>
-      <div class="apropos-fact">
-        <div class="apropos-fact-label">Moteur</div>
-        <div class="apropos-fact-value">Conçu &amp; développé en France</div>
-      </div>
-      <div class="apropos-fact">
-        <div class="apropos-fact-label">Support</div>
-        <div class="apropos-fact-value">Direct, en français</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section id="pourqui">
-  <div class="wrap">
-    <div class="kicker">Pour qui</div>
-    <h2>Heurix est-il fait pour vous ?</h2>
-    <p class="section-lede">Vous êtes une PME de belle taille ou une entreprise mid-market, votre catalogue est devenu trop technique et trop volumineux pour le moteur natif de votre plateforme, et vous n'avez pas encore de solution de recherche dédiée ? Heurix est fait pour vous.</p>
-    <div class="icp-grid reveal">
-      <div class="icp-card">
-        <div class="icp-label mono">Taille</div>
-        <p>PME de belle taille à mid-market, 50 à 250 salariés</p>
-      </div>
-      <div class="icp-card">
-        <div class="icp-label mono">Chiffre d'affaires</div>
-        <p>10 M€ à 50 M€ de CA e-commerce annuel</p>
-      </div>
-      <div class="icp-card">
-        <div class="icp-label mono">Catalogue</div>
-        <p>Gros catalogue technique (dizaines de milliers de références), filtres fins nécessaires : dimensions, compatibilité, normes</p>
-      </div>
-      <div class="icp-card">
-        <div class="icp-label mono">Signal</div>
-        <p>Pas encore équipé d'un moteur dédié — solution native seule, ou outil basique jamais vraiment configuré</p>
-      </div>
-      <div class="icp-card">
-        <div class="icp-label mono">Douleur</div>
-        <p>Taux de conversion sur la recherche interne en retrait, retours support sur des recherches infructueuses, catalogue qui a dépassé les capacités du moteur natif</p>
-      </div>
-      <div class="icp-card">
-        <div class="icp-label mono">Décideur</div>
-        <p>Directeur e-commerce, Directeur digital ou CTO — budget arbitrable sans comité d'achat lourd</p>
-      </div>
-    </div>
-  </div>
-</section>
 
 <section id="offres">
   <div class="wrap">
@@ -777,6 +713,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="foot-links">
       <a href="blog.html">Blog</a>
       <a href="docs.html">Documentation API</a>
+      <a href="about.html">À propos</a>
       <a href="#faq">FAQ</a>
       <a href="mentions-legales.html">Mentions légales</a>
       <a href="mailto:contact@heurix.fr">contact@heurix.fr</a>
@@ -795,95 +732,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="demo-search.js"></script>
 <script>
   document.getElementById('year').textContent = new Date().getFullYear();
 
-  function sweaterIcon(color, dim){
-    const fill = dim ? '#B8BCC8' : color;
-    const dark = dim ? '#9297A6' : color;
-    return `<svg width="36" height="36" viewBox="0 0 40 40">
-      <path d="M12 11 L4 9 L3 17 L10 20 Z" fill="${fill}"/>
-      <path d="M28 11 L36 9 L37 17 L30 20 Z" fill="${fill}"/>
-      <path d="M13 9 Q13 13 20 13 Q27 13 27 9 L29 12 L29 33 Q29 35 27 35 L13 35 Q11 35 11 33 L11 12 Z" fill="${fill}"/>
-      <ellipse cx="20" cy="8.5" rx="6.5" ry="3" fill="${dark}" fill-opacity="0.75"/>
-    </svg>`;
-  }
-  function noMatchIcon(){
-    return `<svg width="36" height="36" viewBox="0 0 40 40">
-      <circle cx="20" cy="20" r="15" fill="none" stroke="#C7CBD6" stroke-width="2.2"/>
-      <line x1="12" y1="12" x2="28" y2="28" stroke="#C7CBD6" stroke-width="2.2" stroke-linecap="round"/>
-    </svg>`;
-  }
-
-  const DATA = {
-    bad: {
-      status: {cls:"bad", text:"0 correspondance exacte — plusieurs fautes cassent la recherche"},
-      results: [
-        {name:"Aucun résultat direct pour « pul col rolé roug »", tag:"0 réf.", dim:true, icon: noMatchIcon()},
-        {name:"Résultats approximatifs affichés au hasard :", tag:"", dim:true, icon: noMatchIcon()},
-        {name:"Écharpe rouge en laine — réf. ECH-4471", tag:"hors sujet", dim:true, icon: sweaterIcon('#C0392B', true)},
-        {name:"Pull sans manche écru — réf. PU-2210", tag:"indispo", dim:true, icon: sweaterIcon('#D8CBB8', true)},
-      ]
-    },
-    good: {
-      status: {cls:"good", text:"4 résultats pertinents — triés par pertinence et disponibilité"},
-      results: [
-        {name:'<mark>Pull col roulé</mark> rouge, laine mérinos — réf. PCR-1042', tag:"en stock", icon: sweaterIcon('#C0392B')},
-        {name:'<mark>Pull col roulé</mark> rouge, coton épais — réf. PCR-1087', tag:"en stock", icon: sweaterIcon('#B8412E')},
-        {name:'<mark>Pull col roulé</mark> bordeaux, laine mélangée — réf. PCR-1103', tag:"en stock", icon: sweaterIcon('#7B241C')},
-        {name:'<mark>Pull col roulé</mark> rouge — édition capsule — réf. PCR-1099', tag:"3 restants", icon: sweaterIcon('#A8321F')},
-      ]
-    }
-  };
-
-  function setDemo(state){
-    const d = DATA[state];
-    document.getElementById('btn-bad').classList.toggle('active', state==='bad');
-    document.getElementById('btn-good').classList.toggle('active', state==='good');
-    const statusEl = document.getElementById('demo-status');
-    statusEl.className = 'demo-status ' + d.status.cls;
-    statusEl.textContent = d.status.text;
-    statusEl.classList.remove('demo-pending');
-
-    const resultsEl = document.getElementById('results');
-    resultsEl.innerHTML = '';
-    d.results.forEach(r => {
-      const div = document.createElement('div');
-      div.className = 'result' + (r.dim ? ' dim' : '');
-      div.innerHTML = `<span class="result-thumb">${r.icon}</span><span class="name">${r.name}</span><span class="tag">${r.tag}</span>`;
-      resultsEl.appendChild(div);
-    });
-  }
-
-  // Intro animation: type the query live, reveal the bad results, then
-  // auto-transition to the Heurix results — runs once on load.
-  const HERO_QUERY = "pul col rolé roug";
-  const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  function playDemoIntro(){
-    const queryEl = document.getElementById('query-text');
-    const cursorEl = document.getElementById('demo-cursor');
-
-    if (reduceMotion){
-      queryEl.textContent = HERO_QUERY;
-      if (cursorEl) cursorEl.style.display = 'none';
-      setDemo('good');
-      return;
-    }
-
-    let i = 0;
-    queryEl.textContent = '';
-    const typeInterval = setInterval(() => {
-      i++;
-      queryEl.textContent = HERO_QUERY.slice(0, i);
-      if (i >= HERO_QUERY.length){
-        clearInterval(typeInterval);
-        setTimeout(() => { setDemo('bad'); }, 350);
-        setTimeout(() => { setDemo('good'); }, 3300);
-      }
-    }, 55);
-  }
-  playDemoIntro();
 
   // Scroll reveal
   const revealEls = document.querySelectorAll('.reveal');

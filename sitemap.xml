@@ -75,4 +75,14 @@
     <xhtml:link rel="alternate" hreflang="fr" href="https://heurix.fr/docs.html"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://heurix.fr/en/docs.html"/>
   </url>
+  <url>
+    <loc>https://heurix.fr/about.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://heurix.fr/about.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://heurix.fr/en/about.html"/>
+  </url>
+  <url>
+    <loc>https://heurix.fr/en/about.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://heurix.fr/about.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://heurix.fr/en/about.html"/>
+  </url>
 </urlset>

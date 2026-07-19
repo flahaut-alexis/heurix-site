@@ -165,21 +165,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <a href="#contact" class="btn btn-ghost">Book an audit</a>
     </div>
 
-    <div class="demo">
-      <div class="demo-bar">
-        <div class="demo-search">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-          <span id="query-text"></span><span class="demo-cursor" id="demo-cursor">|</span>
-        </div>
-        <div class="toggle">
-          <button id="btn-bad" class="active bad" onclick="setDemo('bad')">Native engine</button>
-          <button id="btn-good" class="good" onclick="setDemo('good')">With Heurix</button>
-        </div>
+    <div class="demo play">
+      <div class="play-bar">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <input class="play-input" type="text" placeholder="Search the demo catalog…" aria-label="Search the demo catalog" autocomplete="off" spellcheck="false">
       </div>
-      <div class="demo-body">
-        <div id="demo-status" class="demo-status bad demo-pending">0 exact matches — multiple typos break the search</div>
-        <div id="results" class="results"></div>
+      <div class="play-chips">
+        <span class="play-chips-label">Try:</span>
+        <button type="button" class="play-chip" data-q="red turtlneck swetaer">red turtlneck swetaer</button>
+        <button type="button" class="play-chip" data-q="washed jeans 32/34">washed jeans 32/34</button>
+        <button type="button" class="play-chip" data-q="flanel shirt">flanel shirt</button>
+        <button type="button" class="play-chip" data-q="cashmere scarf">cashmere scarf</button>
       </div>
+      <p class="play-meta"></p>
+      <div class="play-grid"></div>
     </div>
 
     <div class="benefits">
@@ -441,69 +440,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 → 1st result: Hex head screw M8 x 20 — A2   (annotation #VIS_M8X20)</code></pre>
     <p class="how-note">The full endpoint reference is in the <a href="docs.html">API documentation</a>. Shopify, PrestaShop, WooCommerce, and Magento connectors: in the works.</p>
-  </div>
-</section>
-
-<section id="apropos">
-  <div class="wrap">
-    <div class="kicker">About us</div>
-    <h2>Independent expertise, made in France.</h2>
-    <div class="apropos-grid reveal">
-      <p>Heurix is run by Alexis Flahaut, an independent consultant based in France, combining hands-on commercial experience (several years as a Senior Account Executive) with technical expertise in search and indexing engines. The proprietary Heurix engine is designed, built, and maintained in France — not an outsourced low-cost platform with generic support.</p>
-      <p>Trademark registered with the French INPI, business registered in France: when you work with Heurix, you get a direct point of contact from the first audit through implementation — not a ticket crossing time zones before you get an answer.</p>
-    </div>
-    <div class="apropos-facts">
-      <div class="apropos-fact">
-        <div class="apropos-fact-label">Company</div>
-        <div class="apropos-fact-value">Registered in France</div>
-      </div>
-      <div class="apropos-fact">
-        <div class="apropos-fact-label">Trademark</div>
-        <div class="apropos-fact-value">Registered with INPI</div>
-      </div>
-      <div class="apropos-fact">
-        <div class="apropos-fact-label">Engine</div>
-        <div class="apropos-fact-value">Designed &amp; built in France</div>
-      </div>
-      <div class="apropos-fact">
-        <div class="apropos-fact-label">Support</div>
-        <div class="apropos-fact-value">Direct, no outsourcing</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section id="pourqui">
-  <div class="wrap">
-    <div class="kicker">Who it's for</div>
-    <h2>Is Heurix right for you?</h2>
-    <p class="section-lede">You're a sizeable SME or a mid-market company, your catalog has become too technical and too large for your platform's native engine, and you don't yet have a dedicated search solution? Heurix is right for you.</p>
-    <div class="icp-grid reveal">
-      <div class="icp-card">
-        <div class="icp-label mono">Size</div>
-        <p>Sizeable SME to mid-market, 50 to 250 employees</p>
-      </div>
-      <div class="icp-card">
-        <div class="icp-label mono">Revenue</div>
-        <p>€10M to €50M in annual e-commerce revenue</p>
-      </div>
-      <div class="icp-card">
-        <div class="icp-label mono">Catalog</div>
-        <p>Large technical catalog (tens of thousands of references), fine-grained filters needed: dimensions, compatibility, standards</p>
-      </div>
-      <div class="icp-card">
-        <div class="icp-label mono">Signal</div>
-        <p>Not yet equipped with a dedicated engine — native solution only, or a basic tool never properly configured</p>
-      </div>
-      <div class="icp-card">
-        <div class="icp-label mono">Pain point</div>
-        <p>Internal search conversion rate lagging, support tickets about failed searches, catalog that has outgrown native engine capabilities</p>
-      </div>
-      <div class="icp-card">
-        <div class="icp-label mono">Decision maker</div>
-        <p>Head of E-commerce, Digital Director, or CTO — budget decidable without a heavy purchasing committee</p>
-      </div>
-    </div>
   </div>
 </section>
 
@@ -776,6 +712,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="foot-links">
       <a href="blog.html">Blog</a>
       <a href="docs.html">API Documentation</a>
+      <a href="about.html">About</a>
       <a href="#faq">FAQ</a>
       <a href="mentions-legales.html">Legal notice</a>
       <a href="mailto:contact@heurix.fr">contact@heurix.fr</a>
@@ -794,96 +731,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="../demo-search-en.js"></script>
 <script src="../search-en.js"></script>
 <script>
   document.getElementById('year').textContent = new Date().getFullYear();
 
-  function sweaterIcon(color, dim){
-    const fill = dim ? '#B8BCC8' : color;
-    const dark = dim ? '#9297A6' : color;
-    return `<svg width="36" height="36" viewBox="0 0 40 40">
-      <path d="M12 11 L4 9 L3 17 L10 20 Z" fill="${fill}"/>
-      <path d="M28 11 L36 9 L37 17 L30 20 Z" fill="${fill}"/>
-      <path d="M13 9 Q13 13 20 13 Q27 13 27 9 L29 12 L29 33 Q29 35 27 35 L13 35 Q11 35 11 33 L11 12 Z" fill="${fill}"/>
-      <ellipse cx="20" cy="8.5" rx="6.5" ry="3" fill="${dark}" fill-opacity="0.75"/>
-    </svg>`;
-  }
-  function noMatchIcon(){
-    return `<svg width="36" height="36" viewBox="0 0 40 40">
-      <circle cx="20" cy="20" r="15" fill="none" stroke="#C7CBD6" stroke-width="2.2"/>
-      <line x1="12" y1="12" x2="28" y2="28" stroke="#C7CBD6" stroke-width="2.2" stroke-linecap="round"/>
-    </svg>`;
-  }
-
-  const DATA = {
-    bad: {
-      status: {cls:"bad", text:"0 exact matches — multiple typos break the search"},
-      results: [
-        {name:"No direct result for “red turtlneck swetaer”", tag:"0 items", dim:true, icon: noMatchIcon()},
-        {name:"Approximate results shown at random:", tag:"", dim:true, icon: noMatchIcon()},
-        {name:"Red wool scarf — ref. SCF-4471", tag:"unrelated", dim:true, icon: sweaterIcon('#C0392B', true)},
-        {name:"Sleeveless sweater, off-white — ref. SW-2210", tag:"unavailable", dim:true, icon: sweaterIcon('#D8CBB8', true)},
-      ]
-    },
-    good: {
-      status: {cls:"good", text:"4 relevant results — sorted by relevance and availability"},
-      results: [
-        {name:'<mark>Turtleneck sweater</mark>, red, merino wool — ref. TNS-1042', tag:"in stock", icon: sweaterIcon('#C0392B')},
-        {name:'<mark>Turtleneck sweater</mark>, red, heavy cotton — ref. TNS-1087', tag:"in stock", icon: sweaterIcon('#B8412E')},
-        {name:'<mark>Turtleneck sweater</mark>, burgundy, wool blend — ref. TNS-1103', tag:"in stock", icon: sweaterIcon('#7B241C')},
-        {name:'<mark>Turtleneck sweater</mark>, red — capsule edition — ref. TNS-1099', tag:"3 left", icon: sweaterIcon('#A8321F')},
-      ]
-    }
-  };
-
-  function setDemo(state){
-    const d = DATA[state];
-    document.getElementById('btn-bad').classList.toggle('active', state==='bad');
-    document.getElementById('btn-good').classList.toggle('active', state==='good');
-    const statusEl = document.getElementById('demo-status');
-    statusEl.className = 'demo-status ' + d.status.cls;
-    statusEl.textContent = d.status.text;
-    statusEl.classList.remove('demo-pending');
-
-    const resultsEl = document.getElementById('results');
-    resultsEl.innerHTML = '';
-    d.results.forEach(r => {
-      const div = document.createElement('div');
-      div.className = 'result' + (r.dim ? ' dim' : '');
-      div.innerHTML = `<span class="result-thumb">${r.icon}</span><span class="name">${r.name}</span><span class="tag">${r.tag}</span>`;
-      resultsEl.appendChild(div);
-    });
-  }
-
-  // Intro animation: type the query live, reveal the bad results, then
-  // auto-transition to the Heurix results — runs once on load.
-  const HERO_QUERY = "red turtlneck swetaer";
-  const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  function playDemoIntro(){
-    const queryEl = document.getElementById('query-text');
-    const cursorEl = document.getElementById('demo-cursor');
-
-    if (reduceMotion){
-      queryEl.textContent = HERO_QUERY;
-      if (cursorEl) cursorEl.style.display = 'none';
-      setDemo('good');
-      return;
-    }
-
-    let i = 0;
-    queryEl.textContent = '';
-    const typeInterval = setInterval(() => {
-      i++;
-      queryEl.textContent = HERO_QUERY.slice(0, i);
-      if (i >= HERO_QUERY.length){
-        clearInterval(typeInterval);
-        setTimeout(() => { setDemo('bad'); }, 350);
-        setTimeout(() => { setDemo('good'); }, 3300);
-      }
-    }, 55);
-  }
-  playDemoIntro();
 
   // Scroll reveal
   const revealEls = document.querySelectorAll('.reveal');

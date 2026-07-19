@@ -11,23 +11,23 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Blog — Heurix</title>
-<meta name="description" content="Notes sur la recherche interne et le e-commerce, publiées chaque mois par Heurix.">
-<link rel="alternate" hreflang="fr" href="https://heurix.fr/blog.html">
-<link rel="alternate" hreflang="en" href="https://heurix.fr/en/blog.html">
+<title>À propos — Heurix</title>
+<meta name="description" content="L'histoire de Heurix : d'un moteur d'annotation né en 2014 à un moteur de recherche pour les catalogues e-commerce techniques, conçu en France.">
+<link rel="alternate" hreflang="fr" href="https://heurix.fr/about.html">
+<link rel="alternate" hreflang="en" href="https://heurix.fr/en/about.html">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Blog — Heurix">
-<meta property="og:description" content="Notes sur la recherche interne et le e-commerce, publiées chaque mois par Heurix.">
+<meta property="og:title" content="À propos — Heurix">
+<meta property="og:description" content="L'histoire de Heurix : d'un moteur d'annotation né en 2014 à un moteur de recherche pour les catalogues e-commerce techniques, conçu en France.">
 <meta property="og:image" content="https://heurix.fr/og-image.png">
-<meta property="og:url" content="https://heurix.fr/blog.html">
+<meta property="og:url" content="https://heurix.fr/about.html">
 <meta property="og:locale" content="fr_FR">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Blog — Heurix">
+<meta name="twitter:title" content="À propos — Heurix">
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="stylesheet" href="styles.css">
-<link rel="canonical" href="https://heurix.fr/blog.html">
+<link rel="canonical" href="https://heurix.fr/about.html">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -62,7 +62,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
 
-
 <header>
   <nav>
     <a href="index.html" class="logo"><img src="logo.png" alt="Heurix"> <span class="wordmark">HEURIX</span></a>
@@ -73,7 +72,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <a href="index.html#tarifs">Professional Services</a>
       <a href="blog.html">Blog</a>
     </div>
-    <a href="en/blog.html" class="lang-switch">EN</a>
+    <a href="en/about.html" class="lang-switch">EN</a>
     <button id="heurix-search-btn" class="search-trigger" aria-label="Heurix Search — rechercher sur le site" type="button">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       <span class="search-trigger-text">Heurix Search</span>
@@ -82,6 +81,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <a href="index.html#moteur" class="btn">Découvrir le moteur</a>
   </nav>
 </header>
+
 <div id="heurix-search-modal" class="search-modal">
   <div id="heurix-search-backdrop" class="search-backdrop" data-search-close></div>
   <div class="search-panel">
@@ -96,75 +96,50 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 </div>
 
-
-<section class="blog-hero">
+<section class="docs-hero">
   <div class="wrap">
-    <div class="kicker">Blog</div>
-    <h1>Notes sur la recherche et le e-commerce.</h1>
-    <p class="lede">Des cas concrets, des observations techniques et des retours d'expérience, publiés chaque mois.</p>
+    <div class="badge">À propos</div>
+    <h1>Notre histoire</h1>
+    <p class="lede">Heurix est un moteur de recherche et de discovery pour l'e-commerce, pensé pour les catalogues techniques — là où les moteurs classiques échouent sur les références produits.</p>
   </div>
 </section>
 
-<section>
+<section class="about-body">
   <div class="wrap">
-    <div class="blog-index-grid">
+    <div class="about-text">
+      <p>Heurix est né deux fois.</p>
+      <p>La première fois, c'était en 2014. Mon frère développait alors un moteur d'annotation sémantique : un système capable de lire des documents — factures, bons de commande — et d'en extraire le sens grâce à une <strong>cascade d'automates finis</strong>. Des règles écrites comme des expressions régulières, compilées, composées, appliquées par niveaux : le niveau 1 reconnaît les motifs bruts, le niveau 2 les combine en concepts. Une architecture élégante, en avance sur son temps, et restée dans un tiroir.</p>
+      <p>La seconde fois, c'est aujourd'hui. En reprenant ce code des années plus tard, une évidence : ce qui savait lire une facture Renault sait lire un catalogue de visserie. « M8 x 20 — A2 » n'est pas une chaîne de caractères — c'est un diamètre, une longueur et une matière. La cascade de règles héritée de ce premier moteur est devenue le cœur de Heurix, réécrite de zéro avec les standards d'aujourd'hui, et appliquée au problème que je connais le mieux pour l'avoir vécu côté vente : <strong>des acheteurs prêts à acheter qui ne trouvent pas des produits pourtant en stock</strong>.</p>
+      <p><strong>Notre mission : faire de la recherche interne un levier de conversion, pas un fardeau.</strong> Les grandes plateformes de search sont pensées pour l'enterprise — chères, complexes, surdimensionnées. Les moteurs livrés par défaut avec les CMS échouent dès que le catalogue devient technique. Entre les deux, des milliers de PME au catalogue volumineux subissent leur moteur de recherche au lieu de s'en servir. C'est pour elles que Heurix existe.</p>
+      <p>Heurix est une entreprise française, indépendante, sans levée de fonds. Le moteur est conçu et développé en France, hébergé chez OVH, et chaque résultat qu'il renvoie est explicable — il vous dit pourquoi il sort, terme par terme, annotation par annotation. Pas de boîte noire, pas de magie : de la mécanique de précision.</p>
+      <p class="about-signature">Alexis Flahaut, fondateur</p>
+    </div>
+  </div>
+</section>
 
-      <a class="blog-card" href="blog/recherche-reference-sku-b2b.html">
-        <div class="blog-date mono">Juillet 2026</div>
-        <h3>Comment configurer la recherche par référence (SKU, DIN, ISO) sur un e-commerce B2B ?</h3>
-        <p>Pourquoi les moteurs par défaut échouent sur les codes produits techniques, et comment les regex changent la donne.</p>
-        <span class="blog-link">Lire l'article →</span>
-      </a>
-
-      <a class="blog-card" href="blog/limites-moteurs-natifs-gros-catalogue.html">
-        <div class="blog-date mono">Juillet 2026</div>
-        <h3>Shopify, PrestaShop, Magento : pourquoi leurs moteurs natifs échouent au-delà de 10 000 références ?</h3>
-        <p>Les limites d'indexation des gros catalogues, et comment y remédier sans refondre le site.</p>
-        <span class="blog-link">Lire l'article →</span>
-      </a>
-
-      <a class="blog-card" href="blog/facettes-b2b-multi-attributs.html">
-        <div class="blog-date mono">Juillet 2026</div>
-        <h3>Recherche à facettes en B2B : comment structurer vos filtres multi-attributs ?</h3>
-        <p>Concevoir des facettes dynamiques et bien ordonnées pour des catalogues techniques.</p>
-        <span class="blog-link">Lire l'article →</span>
-      </a>
-
-      <a class="blog-card" href="blog/synonymes-jargon-industriel.html">
-        <div class="blog-date mono">Juillet 2026</div>
-        <h3>Synonymes et jargon industriel : quand le vocabulaire de vos clients fait planter votre moteur</h3>
-        <p>Concevoir un dictionnaire de synonymes métier sans créer de faux positifs.</p>
-        <span class="blog-link">Lire l'article →</span>
-      </a>
-
-      <a class="blog-card" href="blog/impact-ebitda-recherche-interne.html">
-        <div class="blog-date mono">Juillet 2026</div>
-        <h3>Mauvais moteur de recherche interne : quel impact réel sur l'EBITDA ?</h3>
-        <p>Le levier économique de la recherche interne, et une méthode simple pour chiffrer la perte actuelle.</p>
-        <span class="blog-link">Lire l'article →</span>
-      </a>
-
-      <a class="blog-card" href="blog/moteur-natif-ne-suffit-pas.html">
-        <div class="blog-date mono">Juillet 2026</div>
-        <h3>Pourquoi le moteur natif de votre plateforme ne suffit pas</h3>
-        <p>Les trois angles morts les plus fréquents des moteurs livrés par défaut, et comment les repérer en cinq minutes.</p>
-        <span class="blog-link">Lire l'article →</span>
-      </a>
-
-      <a class="blog-card" href="blog/5-signes-recherche-vous-coute-des-ventes.html">
-        <div class="blog-date mono">Juillet 2026</div>
-        <h3>5 signes que votre moteur de recherche vous coûte des ventes</h3>
-        <p>Des symptômes concrets à vérifier sur votre propre site, sans outil technique, en moins de dix minutes.</p>
-        <span class="blog-link">Lire l'article →</span>
-      </a>
-
-      <a class="blog-card" href="blog/glossaire-search-ecommerce.html">
-        <div class="blog-date mono">Juillet 2026</div>
-        <h3>Le glossaire du search e-commerce, sans jargon</h3>
-        <p>Synonymes, facettes, tolérance aux fautes : ce que ces termes veulent dire concrètement pour votre catalogue.</p>
-        <span class="blog-link">Lire l'article →</span>
-      </a>
-
+<section class="soft about-demo">
+  <div class="wrap">
+    <div class="kicker">Essayez le moteur</div>
+    <h2>La démonstration vaut mieux que le discours.</h2>
+    <p class="section-lede">Le moteur Heurix, embarqué dans cette page, sur un catalogue de démonstration de 40 produits. Tapez ce que vous voulez — avec des fautes.</p>
+    <div class="demo play" data-no-intro="1">
+      <div class="play-bar">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <input class="play-input" type="text" placeholder="Cherchez dans le catalogue de démo…" aria-label="Rechercher dans le catalogue de démonstration" autocomplete="off" spellcheck="false">
+      </div>
+      <div class="play-chips">
+        <span class="play-chips-label">Essayez :</span>
+        <button type="button" class="play-chip" data-q="pul col rolé roug">pul col rolé roug</button>
+        <button type="button" class="play-chip" data-q="jean délavé 32/34">jean délavé 32/34</button>
+        <button type="button" class="play-chip" data-q="chemse flanelle">chemse flanelle</button>
+        <button type="button" class="play-chip" data-q="écharpe cachemire">écharpe cachemire</button>
+      </div>
+      <p class="play-meta"></p>
+      <div class="play-grid"></div>
+    </div>
+    <div class="about-cta">
+      <a href="pricing.html" class="btn">Découvrir l'API Heurix</a>
+      <a href="index.html#contact" class="btn btn-ghost">Nous contacter</a>
     </div>
   </div>
 </section>
@@ -193,8 +168,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 </footer>
 
-<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
-
 <script src="search.js"></script>
+<script src="demo-search.js"></script>
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+
 </body>
 </html>
