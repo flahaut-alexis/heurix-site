@@ -77,9 +77,11 @@ header{
 }
 nav{
   display:flex; align-items:center; justify-content:space-between;
-  padding:14px 28px;
-  max-width:1100px; margin:0 auto;
+  gap:26px;
+  padding:14px 48px;
+  max-width:1360px; margin:0 auto;
 }
+@media (max-width:1200px){ nav{ padding:14px 28px; gap:16px; } }
 .logo{
   font-weight:800;
   font-size:19px;
@@ -855,6 +857,8 @@ h2{ font-size:clamp(26px,3.4vw,34px); font-weight:800; margin:0 0 18px; max-widt
 @media (max-width:900px){ .docs-layout{ grid-template-columns:1fr; gap:8px; } }
 
 .docs-sidebar{ position:sticky; top:84px; }
+/* Le sélecteur global nav{display:flex} du site s'applique aussi ici : on le neutralise. */
+.docs-sidebar nav{ display:block; padding:0; margin:0; max-width:none; }
 @media (max-width:900px){ .docs-sidebar{ position:static; border-bottom:1px solid var(--line); padding-bottom:16px; margin-bottom:18px; } }
 .docs-sidebar-group{
   font-size:11px; font-weight:700; color:var(--ink-muted);
@@ -964,6 +968,22 @@ h2{ font-size:clamp(26px,3.4vw,34px); font-weight:800; margin:0 0 18px; max-widt
 .how-note{ font-size:13.5px; color:var(--ink-muted); margin:14px 0 0; }
 .how-note a{ color:var(--blue-deep); font-weight:600; text-decoration:none; }
 .how-note a:hover{ text-decoration:underline; }
+
+/* FONCTIONNALITÉS — grille type Typesense */
+.features-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-top:36px; }
+@media (max-width:1000px){ .features-grid{ grid-template-columns:repeat(2,1fr); } }
+@media (max-width:600px){ .features-grid{ grid-template-columns:1fr; } }
+.feature-card{
+  background:var(--bg-soft); border:1px solid var(--line); border-radius:12px;
+  padding:20px 18px;
+  transition:border-color .15s ease, transform .15s ease;
+}
+.feature-card:hover{ border-color:var(--blue); transform:translateY(-2px); }
+.feature-card-highlight{ background:var(--blue-tint); border-color:var(--blue); }
+.feature-card h3{ font-size:14.5px; margin:0 0 7px; font-weight:700; }
+.feature-card p{ margin:0; font-size:12.8px; color:var(--ink-muted); line-height:1.55; }
+.feature-card p a{ color:var(--blue-deep); font-weight:600; text-decoration:none; white-space:nowrap; }
+.feature-card p a:hover{ text-decoration:underline; }
 
 /* CTA */
 .cta-section{
