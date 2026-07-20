@@ -165,7 +165,7 @@
 
   loginForm.addEventListener("submit", function (e) {
     e.preventDefault();
-    var key = apiKeyInput.value.trim();
+    var key = apiKeyInput.value.replace(/\s+/g, "");  // retire tout espace invisible, pas seulement en debut/fin
     if (key) tryLogin(key);
   });
 
