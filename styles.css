@@ -1047,6 +1047,83 @@ h2{ font-size:clamp(26px,3.4vw,34px); font-weight:800; margin:0 0 18px; max-widt
 .feat-cta .btn-ghost{ background:transparent; color:#fff; border-color:rgba(255,255,255,0.3); }
 .feat-cta .btn-ghost:hover{ background:rgba(255,255,255,0.08); }
 
+/* CONSOLE — espace client */
+.console-login{
+  min-height:calc(100vh - 73px); display:flex; align-items:center;
+  background:
+    radial-gradient(ellipse 900px 480px at 50% -10%, var(--blue-tint) 0%, rgba(238,241,255,0) 65%),
+    linear-gradient(180deg, #F4F6FF 0%, #FFFFFF 78%);
+}
+.console-login-wrap{ max-width:460px; padding-top:40px; padding-bottom:40px; }
+.console-login h1{ margin:14px 0 10px; }
+.console-login .lede{ margin-bottom:28px; }
+.console-login-form{ display:flex; flex-direction:column; gap:10px; }
+.console-login-form label{ font-size:12.5px; font-weight:700; color:var(--ink-muted); }
+.console-login-form input{
+  font-family:'IBM Plex Mono', monospace; font-size:14px;
+  padding:12px 14px; border:1.5px solid var(--line); border-radius:10px;
+  outline:none; transition:border-color .15s ease, box-shadow .15s ease;
+}
+.console-login-form input:focus{ border-color:var(--blue); box-shadow:0 0 0 3px var(--blue-tint); }
+.console-login-form .btn{ margin-top:6px; }
+.console-login-error{
+  font-size:13px; color:#C0392B; background:rgba(192,57,43,0.08);
+  border-radius:8px; padding:10px 12px; margin:4px 0 0;
+}
+.console-login-note{ font-size:12.5px; color:var(--ink-muted); margin-top:22px; line-height:1.6; }
+.console-login-note a{ color:var(--blue-deep); font-weight:600; text-decoration:none; }
+.console-login-note a:hover{ text-decoration:underline; }
+
+.console-dash{ padding:40px 0 72px; }
+.console-dash-head{
+  display:flex; align-items:flex-end; justify-content:space-between;
+  flex-wrap:wrap; gap:16px; margin-bottom:30px;
+}
+.console-dash-head h1{ margin:8px 0 0; font-size:28px; }
+.console-dash-actions{ display:flex; align-items:center; gap:10px; }
+.console-period{
+  font-family:'Plus Jakarta Sans', sans-serif; font-size:13.5px; font-weight:600;
+  color:var(--ink); background:#fff; border:1.5px solid var(--line); border-radius:9999px;
+  padding:9px 16px; cursor:pointer;
+}
+.console-loading{ padding:60px 0; text-align:center; color:var(--ink-muted); font-size:14px; }
+
+.console-stats{ display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:24px; }
+@media (max-width:800px){ .console-stats{ grid-template-columns:repeat(2,1fr); } }
+.console-stat{
+  background:var(--bg-soft); border:1px solid var(--line); border-radius:14px; padding:20px;
+}
+.console-stat-num{ font-size:28px; font-weight:800; color:var(--ink); letter-spacing:-0.02em; }
+.console-stat-label{ font-size:12px; color:var(--ink-muted); font-weight:600; margin-top:4px; }
+
+.console-panel{
+  background:#fff; border:1px solid var(--line); border-radius:16px;
+  padding:26px 28px; margin-bottom:20px;
+}
+.console-panel h2{ font-size:16px; margin:0 0 16px; }
+.console-panel-warn{ background:#FFFAF0; border-color:#F0DDB8; }
+.console-panel-note{ font-size:13px; color:var(--ink-muted); margin:-8px 0 16px; line-height:1.55; }
+.console-chart-wrap{ position:relative; height:220px; }
+
+.console-grid-2{ display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+@media (max-width:900px){ .console-grid-2{ grid-template-columns:1fr; } }
+
+.console-table{ width:100%; border-collapse:collapse; font-size:13.5px; }
+.console-table th{
+  text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:0.04em;
+  color:var(--ink-muted); font-weight:700; padding:0 10px 10px 0; border-bottom:2px solid var(--line);
+}
+.console-table td{ padding:10px 10px 10px 0; border-bottom:1px solid var(--line); color:var(--ink); }
+.console-table td.mono{ font-family:'IBM Plex Mono', monospace; font-size:12px; color:var(--ink-muted); }
+.console-table tr:last-child td{ border-bottom:none; }
+.console-empty{ font-size:13px; color:var(--ink-muted); padding:10px 0 0; }
+
+.header-signin{
+  font-size:13.5px; font-weight:600; color:var(--ink-muted); text-decoration:none;
+  white-space:nowrap;
+}
+.header-signin:hover{ color:var(--blue-deep); }
+
 /* CTA */
 .cta-section{
   text-align:center; padding:96px 0 88px;

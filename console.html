@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-XXXXXXX');</script>
+<!-- End Google Tag Manager -->
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Console — Heurix</title>
+<meta name="description" content="Tableau de bord Heurix : recherches les plus fréquentes, requêtes sans résultat, erreurs, consommation — connectez-vous avec votre clé API.">
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/png" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="styles.css">
+<link rel="canonical" href="https://heurix.fr/console.html">
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+<header>
+  <nav>
+    <a href="index.html" class="logo"><img src="logo.png" alt="Heurix"> <span class="wordmark">HEURIX</span></a>
+    <div class="nav-links">
+      <a href="index.html#probleme">Le problème</a>
+      <a href="index.html#moteur">Le moteur</a>
+      <a href="fonctionnalites.html">Fonctionnalités</a>
+      <a href="pricing.html">Search API</a>
+      <a href="docs.html">Documentation</a>
+    </div>
+    <a href="en/console.html" class="lang-switch">EN</a>
+    <a href="docs.html" class="btn btn-ghost">Documentation</a>
+  </nav>
+</header>
+
+<!-- ===================== ÉCRAN DE CONNEXION ===================== -->
+<section id="login-screen" class="console-login">
+  <div class="wrap console-login-wrap">
+    <div class="badge">Console</div>
+    <h1>Votre tableau de bord.</h1>
+    <p class="lede">Mots les plus recherchés, recherches sans résultat, erreurs récentes, consommation — connectez-vous avec votre clé API pour les consulter.</p>
+
+    <form id="login-form" class="console-login-form" autocomplete="off">
+      <label for="api-key">Clé API</label>
+      <input type="password" id="api-key" name="api-key" placeholder="hx_..." autocomplete="off" spellcheck="false" required>
+      <button type="submit" class="btn" id="login-btn">Se connecter</button>
+      <p id="login-error" class="console-login-error" hidden></p>
+    </form>
+    <p class="console-login-note">Pas encore de clé ? <a href="pricing.html">Créez un compte gratuit</a>. Votre clé n'est envoyée qu'à <code class="docs-inline-code">api.heurix.fr</code> et reste dans votre navigateur — jamais stockée par nos soins ailleurs que dans vos propres journaux d'usage.</p>
+  </div>
+</section>
+
+<!-- ===================== TABLEAU DE BORD ===================== -->
+<section id="dashboard" class="console-dash" hidden>
+  <div class="wrap">
+    <div class="console-dash-head">
+      <div>
+        <div class="badge">Console</div>
+        <h1 id="dash-title">Tableau de bord</h1>
+      </div>
+      <div class="console-dash-actions">
+        <select id="period-select" class="console-period">
+          <option value="7">7 derniers jours</option>
+          <option value="30" selected>30 derniers jours</option>
+          <option value="90">90 derniers jours</option>
+        </select>
+        <button id="logout-btn" class="btn btn-ghost" type="button">Se déconnecter</button>
+      </div>
+    </div>
+
+    <div id="dash-loading" class="console-loading">Chargement des données…</div>
+    <div id="dash-content" hidden>
+
+      <div class="console-stats">
+        <div class="console-stat">
+          <div class="console-stat-num" id="stat-searches">–</div>
+          <div class="console-stat-label">Recherches</div>
+        </div>
+        <div class="console-stat">
+          <div class="console-stat-num" id="stat-zero-rate">–</div>
+          <div class="console-stat-label">Taux sans résultat</div>
+        </div>
+        <div class="console-stat">
+          <div class="console-stat-num" id="stat-errors">–</div>
+          <div class="console-stat-label">Erreurs</div>
+        </div>
+        <div class="console-stat">
+          <div class="console-stat-num" id="stat-usage">–</div>
+          <div class="console-stat-label">Requêtes ce mois-ci</div>
+        </div>
+      </div>
+
+      <div class="console-panel">
+        <h2>Volume de recherches</h2>
+        <div class="console-chart-wrap"><canvas id="searches-chart" height="90"></canvas></div>
+      </div>
+
+      <div class="console-grid-2">
+        <div class="console-panel">
+          <h2>Mots les plus recherchés</h2>
+          <table class="console-table" id="top-queries-table">
+            <thead><tr><th>Requête</th><th>Nb</th><th>Résultats (moy.)</th></tr></thead>
+            <tbody></tbody>
+          </table>
+          <p class="console-empty" id="top-queries-empty" hidden>Aucune recherche sur cette période.</p>
+        </div>
+
+        <div class="console-panel console-panel-warn">
+          <h2>Recherches sans résultat</h2>
+          <p class="console-panel-note">Ce que vos clients cherchent sans jamais rien trouver — des ventes potentiellement manquées. Chaque ligne est un candidat pour un synonyme ou une règle à ajouter.</p>
+          <table class="console-table" id="zero-results-table">
+            <thead><tr><th>Requête</th><th>Nb de fois</th></tr></thead>
+            <tbody></tbody>
+          </table>
+          <p class="console-empty" id="zero-results-empty" hidden>Aucune recherche sans résultat sur cette période — bon signe.</p>
+        </div>
+      </div>
+
+      <div class="console-panel">
+        <h2>Erreurs récentes</h2>
+        <table class="console-table" id="errors-table">
+          <thead><tr><th>Endpoint</th><th>Code</th><th>Message</th><th>Quand</th></tr></thead>
+          <tbody></tbody>
+        </table>
+        <p class="console-empty" id="errors-empty" hidden>Aucune erreur sur cette période.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot-grid">
+    <a href="index.html" class="logo" style="font-size:15px;"><img src="logo.png" alt="Heurix" style="height:22px;width:22px;"> <span class="wordmark">HEURIX</span></a>
+    <div class="foot-links">
+      <a href="blog.html">Blog</a>
+      <a href="docs.html">Documentation API</a>
+      <a href="fonctionnalites.html">Fonctionnalités</a>
+      <a href="about.html">À propos</a>
+      <a href="mentions-legales.html">Mentions légales</a>
+      <a href="mailto:contact@heurix.fr">contact@heurix.fr</a>
+    </div>
+    <div class="foot-social">
+      <span class="foot-social-label">Réseaux sociaux</span>
+      <a href="https://www.linkedin.com/company/heurix-search/" target="_blank" rel="noopener" aria-label="LinkedIn" class="foot-social-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+      </a>
+    </div>
+    <div class="foot-legal">
+      Heurix — Entreprise individuelle (micro-entreprise). SIRET 107 681 900 00018. Conseil en systèmes et logiciels informatiques.<br>
+      © <span id="year">2026</span> Heurix. Tous droits réservés.
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="console.js"></script>
+<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+
+</body>
+</html>
