@@ -1047,6 +1047,15 @@ h2{ font-size:clamp(26px,3.4vw,34px); font-weight:800; margin:0 0 18px; max-widt
 .feat-cta .btn-ghost{ background:transparent; color:#fff; border-color:rgba(255,255,255,0.3); }
 .feat-cta .btn-ghost:hover{ background:rgba(255,255,255,0.08); }
 
+.console-key-field{ position:relative; }
+.console-key-field input{ width:100%; padding-right:44px; }
+.console-key-toggle{
+  position:absolute; right:6px; top:50%; transform:translateY(-50%);
+  width:32px; height:32px; display:flex; align-items:center; justify-content:center;
+  background:transparent; border:none; border-radius:7px; color:var(--ink-muted); cursor:pointer;
+}
+.console-key-toggle:hover{ background:var(--bg-soft); color:var(--ink); }
+
 /* CONSOLE — espace client */
 .console-login{
   min-height:calc(100vh - 73px); display:flex; align-items:center;

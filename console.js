@@ -39,6 +39,7 @@
   var loginError = document.getElementById("login-error");
   var loginBtn = document.getElementById("login-btn");
   var apiKeyInput = document.getElementById("api-key");
+  var toggleKeyBtn = document.getElementById("toggle-key-visibility");
   var logoutBtn = document.getElementById("logout-btn");
   var periodSelect = document.getElementById("period-select");
   var dashLoading = document.getElementById("dash-loading");
@@ -166,6 +167,12 @@
     e.preventDefault();
     var key = apiKeyInput.value.trim();
     if (key) tryLogin(key);
+  });
+
+  toggleKeyBtn.addEventListener("click", function () {
+    var showing = apiKeyInput.type === "text";
+    apiKeyInput.type = showing ? "password" : "text";
+    toggleKeyBtn.setAttribute("aria-label", showing ? "Afficher la clé" : "Masquer la clé");
   });
 
   logoutBtn.addEventListener("click", function () {
