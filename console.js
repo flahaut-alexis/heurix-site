@@ -28,7 +28,11 @@
   function apiFetch(path, key) {
     return fetch(API_BASE + path, { headers: { Authorization: "Bearer " + key } })
       .then(function (r) {
-        if (!r.ok) throw new Error("HTTP " + r.status);
+        if (!r.ok) {
+          var err = new Error("HTTP " + r.status);
+          err.status = r.status;
+          throw err;
+        }
         return r.json();
       });
   }
@@ -154,8 +158,11 @@
         showDashboard();
         loadDashboard(key, periodSelect.value);
       })
-      .catch(function () {
-        showLogin(L.loginErrorInvalid);
+      .catch(function (err) {
+        var reason = err && err.status
+          ? "Le serveur a répondu " + err.status + "."
+          : "Aucune réponse du serveur (réseau).";
+        showLogin(reason + " Clé envoyée (" + key.length + " caractères) : \u201c" + key + "\u201d");
       })
       .then(function () {
         loginBtn.disabled = false;
