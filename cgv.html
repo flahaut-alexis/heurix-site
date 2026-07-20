@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-XXXXXXX');</script>
+<!-- End Google Tag Manager -->
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Conditions Générales de Vente — Heurix</title>
+<meta name="description" content="Conditions générales de vente et d'utilisation du Search API Heurix : plans, facturation, résiliation, responsabilité, propriété des données.">
+<meta name="robots" content="noindex, follow">
+<link rel="alternate" hreflang="fr" href="https://heurix.fr/cgv.html">
+<link rel="alternate" hreflang="en" href="https://heurix.fr/en/cgv.html">
+<link rel="icon" type="image/png" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="styles.css">
+<link rel="canonical" href="https://heurix.fr/cgv.html">
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+<header>
+  <nav>
+    <a href="index.html" class="logo"><img src="logo.png" alt="Heurix"> <span class="wordmark">HEURIX</span></a>
+    <div class="nav-links">
+      <a href="index.html#probleme">Le problème</a>
+      <a href="index.html#moteur">Le moteur</a>
+      <a href="fonctionnalites.html">Fonctionnalités</a>
+      <a href="pricing.html">Search API</a>
+      <a href="docs.html">Documentation</a>
+    </div>
+    <a href="console.html" class="header-signin">Se connecter</a>
+    <a href="en/cgv.html" class="lang-switch">EN</a>
+    <a href="pricing.html" class="btn">Voir les tarifs</a>
+  </nav>
+</header>
+
+<section class="docs-hero">
+  <div class="wrap">
+    <div class="badge">Conditions générales</div>
+    <h1>Conditions Générales de Vente</h1>
+    <p class="lede">Applicables à tout abonnement au Search API Heurix — acceptées automatiquement à la souscription, consultables ici à tout moment.</p>
+    <p class="docs-hero-note">Dernière mise à jour : 20 juillet 2026. Version 1.0.</p>
+  </div>
+</section>
+
+<div class="wrap docs-layout">
+
+  <aside class="docs-sidebar">
+    <nav aria-label="Sommaire des CGV">
+      <div class="docs-sidebar-group">Préambule</div>
+      <a href="#objet">Objet</a>
+      <a href="#definitions">Définitions</a>
+      <a href="#acceptation">Acceptation</a>
+      <div class="docs-sidebar-group">L'abonnement</div>
+      <a href="#service">Description du service</a>
+      <a href="#plans">Plans et tarification</a>
+      <a href="#free">Le plan Free</a>
+      <a href="#facturation">Facturation et paiement</a>
+      <a href="#duree">Durée et résiliation</a>
+      <div class="docs-sidebar-group">Engagements</div>
+      <a href="#disponibilite">Disponibilité du service</a>
+      <a href="#donnees">Données du client</a>
+      <a href="#propriete">Propriété intellectuelle</a>
+      <a href="#responsabilite">Garanties et responsabilité</a>
+      <div class="docs-sidebar-group">Dispositions générales</div>
+      <a href="#modification">Modification des CGV</a>
+      <a href="#droit">Droit applicable</a>
+      <a href="#contact">Contact et litiges</a>
+    </nav>
+  </aside>
+
+  <main class="docs-content">
+
+    <div class="cgv-notice">
+      <strong>Note de transparence.</strong> Ce document a été rédigé pour couvrir les points essentiels d'un abonnement SaaS B2B standard, sur le modèle structurel de ce que proposent des éditeurs comme Algolia ou Brevo. Il ne constitue pas un avis juridique définitif et n'a pas encore été relu par un professionnel du droit — une relecture est recommandée avant toute mise en production commerciale à grande échelle.
+    </div>
+
+    <section id="objet" class="docs-section">
+      <h2>Article 1 — Objet</h2>
+      <p>Les présentes Conditions Générales de Vente (les « CGV ») régissent la souscription et l'utilisation du Search API Heurix (le « Service »), proposé par Alexis Flahaut, entrepreneur individuel (micro-entreprise), sous le nom commercial Heurix, immatriculé sous le SIRET 107 681 900 00018, dont l'adresse est 22 rue Mélingue, 75019 Paris, France (« Heurix », « nous »).</p>
+      <p>Toute souscription à un plan payant ou gratuit du Service implique l'acceptation pleine et entière des présentes CGV par la personne physique ou morale souscriptrice (le « Client », « vous »).</p>
+    </section>
+
+    <section id="definitions" class="docs-section">
+      <h2>Article 2 — Définitions</h2>
+      <table class="docs-params">
+        <tr><th>Terme</th><th>Définition</th></tr>
+        <tr><td><strong>Service</strong></td><td>Le Search API Heurix, moteur de recherche accessible par API REST, ses packs de règles, sa documentation et sa console de gestion.</td></tr>
+        <tr><td><strong>Clé API</strong></td><td>Identifiant secret permettant au Client d'authentifier ses appels au Service.</td></tr>
+        <tr><td><strong>Catalogue</strong></td><td>Ensemble de données produit indexées par le Client via le Service.</td></tr>
+        <tr><td><strong>Plan</strong></td><td>Formule d'abonnement (Free, Growth, Scale ou toute formule ultérieure) définissant les capacités et limites applicables.</td></tr>
+        <tr><td><strong>Requête</strong></td><td>Unité de facturation telle que définie sur la <a href="pricing.html">page tarifs</a> et détaillée dans la <a href="docs.html#comptage">documentation</a>.</td></tr>
+      </table>
+    </section>
+
+    <section id="acceptation" class="docs-section">
+      <h2>Article 3 — Acceptation</h2>
+      <p>Les CGV sont acceptées de façon dématérialisée au moment de la souscription à un Plan, par validation explicite (case à cocher ou action équivalente) préalable à toute mise à disposition du Service. Cette acceptation vaut signature électronique au sens de l'article 1367 du Code civil.</p>
+      <p>Le Client déclare avoir la capacité juridique de contracter, agir dans le cadre d'une activité professionnelle, et disposer du pouvoir d'engager la personne morale qu'il représente le cas échéant.</p>
+    </section>
+
+    <section id="service" class="docs-section">
+      <h2>Article 4 — Description du service</h2>
+      <p>Le Service permet au Client d'indexer un ou plusieurs Catalogues et d'y effectuer des recherches via une API REST documentée, incluant notamment : cascade d'annotations, tolérance aux fautes de frappe, synonymes métier, facettes et filtres, recherche fédérée entre catalogues. Le détail fonctionnel à jour figure sur les pages <a href="fonctionnalites.html">Fonctionnalités</a> et <a href="docs.html">Documentation</a>, qui font partie intégrante de la présente offre par référence.</p>
+      <p>Heurix se réserve le droit de faire évoluer les fonctionnalités du Service, notamment pour l'améliorer ou l'adapter aux évolutions techniques, sans que cela ne constitue une modification substantielle des présentes CGV dès lors que les capacités essentielles du Plan souscrit sont maintenues.</p>
+    </section>
+
+    <section id="plans" class="docs-section">
+      <h2>Article 5 — Plans et tarification</h2>
+      <p>Les Plans disponibles, leurs tarifs et les volumes inclus sont détaillés sur la <a href="pricing.html">page tarifs</a>, qui fait partie intégrante des présentes CGV. Les tarifs y sont indiqués hors taxes (HT) ; la TVA applicable, le cas échéant, est ajoutée conformément à la réglementation en vigueur au moment de la facturation.</p>
+      <p>Heurix se réserve le droit de modifier ses tarifs. Toute modification tarifaire est communiquée au Client au moins trente (30) jours avant son entrée en vigueur et ne s'applique qu'aux échéances de facturation postérieures à cette entrée en vigueur — les sommes déjà facturées ne sont pas rétroactivement affectées.</p>
+    </section>
+
+    <section id="free" class="docs-section">
+      <h2>Article 6 — Le plan Free</h2>
+      <p>Le plan Free est fourni à titre gratuit, dans la limite des volumes indiqués sur la <a href="pricing.html">page tarifs</a>. Il est destiné à l'évaluation technique du Service dans un cadre de test (« sandbox ») et non à une exploitation en production sur un site marchand actif générant un volume de recherche réel.</p>
+      <p>Heurix se réserve le droit de suspendre ou limiter un usage du plan Free manifestement détourné de cette finalité d'évaluation, après notification préalable au Client lorsque cela est raisonnablement possible.</p>
+    </section>
+
+    <section id="facturation" class="docs-section">
+      <h2>Article 7 — Facturation et paiement</h2>
+      <p>Les Plans payants sont facturés mensuellement, par prélèvement automatique sur le moyen de paiement renseigné par le Client lors de la souscription, via notre prestataire de paiement. Toute période mensuelle entamée est due dans son intégralité, sauf disposition contraire expressément prévue par le Plan souscrit.</p>
+      <p>En cas de dépassement des volumes inclus dans le Plan, le surplus est facturé selon les règles de comptage publiques détaillées dans la <a href="docs.html#comptage">documentation</a>, sans interruption du Service au moment du dépassement.</p>
+      <p>En cas d'échec de paiement, Heurix se réserve le droit, après relance, de suspendre l'accès aux fonctionnalités payantes du Service et de ramener la clé API concernée aux limites du plan Free jusqu'à régularisation.</p>
+    </section>
+
+    <section id="duree" class="docs-section">
+      <h2>Article 8 — Durée et résiliation</h2>
+      <p>L'abonnement est conclu pour une durée indéterminée, sans engagement de durée minimale, et peut être résilié par le Client à tout moment, avec effet à la fin de la période de facturation mensuelle en cours, depuis son espace de gestion d'abonnement.</p>
+      <p>Heurix peut résilier ou suspendre l'accès au Service en cas de manquement grave du Client aux présentes CGV (usage frauduleux, atteinte à la sécurité du Service, non-paiement persistant après relance), après notification préalable sauf urgence caractérisée.</p>
+      <p>À la résiliation, les données du Client peuvent être conservées pendant une durée raisonnable permettant une éventuelle réactivation, puis sont supprimées. Le Client peut demander l'export ou la suppression immédiate de ses données à tout moment en écrivant à <a href="mailto:contact@heurix.fr">contact@heurix.fr</a>.</p>
+    </section>
+
+    <section id="disponibilite" class="docs-section">
+      <h2>Article 9 — Disponibilité du service</h2>
+      <p>Heurix met en œuvre les moyens raisonnables pour assurer une disponibilité continue du Service, hébergé en France. À ce stade de développement de l'offre, aucun engagement contractuel de taux de disponibilité (SLA chiffré) n'est garanti au-delà d'une obligation de moyens ; un SLA formalisé avec engagements chiffrés pourra être proposé aux plans supérieurs à l'avenir.</p>
+      <p>Des interruptions ponctuelles pour maintenance sont possibles ; Heurix s'efforce, dans la mesure du possible, de les annoncer à l'avance et de les programmer en dehors des heures ouvrées.</p>
+    </section>
+
+    <section id="donnees" class="docs-section">
+      <h2>Article 10 — Données du client</h2>
+      <p>Le Client demeure seul propriétaire des données de son ou ses Catalogues (références produits, descriptions, prix, stocks et tout autre contenu indexé). Heurix ne revendique aucun droit de propriété sur ces données et ne les utilise que dans la stricte mesure nécessaire à la fourniture du Service au Client concerné.</p>
+      <p>Heurix n'utilise pas les données d'un Catalogue client pour entraîner un modèle ou service destiné à un autre client, ni ne les cède à des tiers, sauf obligation légale.</p>
+      <p>Le Client garantit disposer des droits nécessaires sur les données qu'il indexe et s'engage à ne pas transmettre via le Service de données dont le traitement serait illicite.</p>
+    </section>
+
+    <section id="propriete" class="docs-section">
+      <h2>Article 11 — Propriété intellectuelle</h2>
+      <p>Le Service, le moteur de recherche Heurix, sa documentation, sa marque et son contenu (à l'exclusion des données du Client visées à l'article 10) sont la propriété exclusive de Heurix et sont protégés par le droit de la propriété intellectuelle. Aucune disposition des présentes CGV ne confère au Client de droit de propriété sur le Service lui-même.</p>
+      <p>Il est concédé au Client, pour la durée de son abonnement, un droit d'usage du Service non exclusif, non cessible et non transférable, dans la limite du Plan souscrit.</p>
+    </section>
+
+    <section id="responsabilite" class="docs-section">
+      <h2>Article 12 — Garanties et limitation de responsabilité</h2>
+      <p>Le Service est fourni « en l'état ». Heurix ne garantit pas que les résultats de recherche renvoyés répondent à un objectif commercial déterminé du Client (taux de conversion, chiffre d'affaires ou autre indicateur), ces résultats dépendant notamment de la qualité et de la structure du Catalogue fourni par le Client.</p>
+      <p>Dans les limites autorisées par la loi française, la responsabilité de Heurix au titre des présentes CGV est limitée aux dommages directs et ne saurait excéder, sur une période de douze (12) mois, le montant total effectivement versé par le Client à Heurix au cours de cette même période. Heurix ne saurait être tenu responsable de dommages indirects, tels que perte de chiffre d'affaires, de clientèle ou de données résultant d'une cause hors de son contrôle raisonnable.</p>
+      <p>Aucune disposition des présentes CGV n'a pour objet d'exclure ou de limiter une responsabilité qui ne pourrait être exclue ou limitée en vertu du droit français (notamment en cas de faute lourde, dol, ou dommage corporel).</p>
+    </section>
+
+    <section id="modification" class="docs-section">
+      <h2>Article 13 — Modification des CGV</h2>
+      <p>Heurix peut modifier les présentes CGV, notamment pour refléter une évolution du Service, de la réglementation applicable, ou de son modèle tarifaire. Toute modification substantielle est notifiée au Client par email au moins trente (30) jours avant son entrée en vigueur. La poursuite de l'utilisation du Service après cette date vaut acceptation des CGV modifiées ; le Client qui refuse la modification peut résilier son abonnement dans les conditions de l'article 8.</p>
+    </section>
+
+    <section id="droit" class="docs-section">
+      <h2>Article 14 — Droit applicable</h2>
+      <p>Les présentes CGV sont soumises au droit français, à l'exclusion de toute autre législation, y compris pour les Clients domiciliés hors de France, sauf disposition impérative contraire du droit de la consommation applicable au Client s'il agit en tant que consommateur (ce qui n'est pas la vocation première du Service, destiné à un usage professionnel).</p>
+    </section>
+
+    <section id="contact" class="docs-section">
+      <h2>Article 15 — Contact et litiges</h2>
+      <p>Toute question relative aux présentes CGV peut être adressée à <a href="mailto:contact@heurix.fr">contact@heurix.fr</a>. En cas de litige, les parties s'efforceront de trouver une solution amiable avant toute action contentieuse. À défaut d'accord amiable, les tribunaux français compétents seront seuls saisis, sous réserve des règles impératives de compétence applicables.</p>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  <div class="wrap foot-grid">
+    <a href="index.html" class="logo" style="font-size:15px;"><img src="logo.png" alt="Heurix" style="height:22px;width:22px;"> <span class="wordmark">HEURIX</span></a>
+    <div class="foot-links">
+      <a href="blog.html">Blog</a>
+      <a href="docs.html">Documentation API</a>
+      <a href="fonctionnalites.html">Fonctionnalités</a>
+      <a href="about.html">À propos</a>
+      <a href="cgv.html">CGV</a>
+      <a href="mentions-legales.html">Mentions légales</a>
+      <a href="mailto:contact@heurix.fr">contact@heurix.fr</a>
+    </div>
+    <div class="foot-social">
+      <span class="foot-social-label">Réseaux sociaux</span>
+      <a href="https://www.linkedin.com/company/heurix-search/" target="_blank" rel="noopener" aria-label="LinkedIn" class="foot-social-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+      </a>
+    </div>
+    <div class="foot-legal">
+      Heurix — Entreprise individuelle (micro-entreprise). SIRET 107 681 900 00018. Conseil en systèmes et logiciels informatiques.<br>
+      © <span id="year">2026</span> Heurix. Tous droits réservés.
+    </div>
+  </div>
+</footer>
+
+<script src="search.js"></script>
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+  const revealEls = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) { entry.target.classList.add('in'); io.unobserve(entry.target); }
+      });
+    }, { threshold: 0.15 });
+    revealEls.forEach(el => io.observe(el));
+  } else {
+    revealEls.forEach(el => el.classList.add('in'));
+  }
+
+  const sections = document.querySelectorAll('.docs-section');
+  const sideLinks = document.querySelectorAll('.docs-sidebar a');
+  if ('IntersectionObserver' in window && sections.length) {
+    const io2 = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          sideLinks.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + entry.target.id));
+        }
+      });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+    sections.forEach(s => io2.observe(s));
+  }
+</script>
+
+</body>
+</html>
