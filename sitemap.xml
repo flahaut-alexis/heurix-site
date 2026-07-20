@@ -85,4 +85,14 @@
     <xhtml:link rel="alternate" hreflang="fr" href="https://heurix.fr/about.html"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://heurix.fr/en/about.html"/>
   </url>
+  <url>
+    <loc>https://heurix.fr/fonctionnalites.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://heurix.fr/fonctionnalites.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://heurix.fr/en/fonctionnalites.html"/>
+  </url>
+  <url>
+    <loc>https://heurix.fr/en/fonctionnalites.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://heurix.fr/fonctionnalites.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://heurix.fr/en/fonctionnalites.html"/>
+  </url>
 </urlset>

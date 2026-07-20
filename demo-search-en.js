@@ -27,8 +27,17 @@
     PAYS_FR: "France", PAYS_UK: "United Kingdom", PAYS_US: "United States", PAYS_RU: "Russia",
     PAYS_JP: "Japan", PAYS_SE: "Scandinavia", PAYS_DE: "Germany", PAYS_IT: "Italy",
     PAYS_ES: "Spain", PAYS_CO: "Colombia", PAYS_CZ: "Czechia", PAYS_BE: "Belgium",
-    LONG_COURT: "Short (<180 pp.)", LONG_MOYEN: "Medium", LONG_PAVE: "Doorstop (500+ pp.)"
+    LONG_COURT: "Short (<180 pp.)", LONG_MOYEN: "Medium length", LONG_PAVE: "Doorstop (500+ pp.)",
+    ED_ANNOTE: "Annotated edition", ED_COLLECTOR: "Collector", ED_BILINGUE: "Bilingual", ED_VO: "Original language",
+    POLAR_NORDIQUE: "Nordic crime", CLASSIQUE_POCHE: "Pocket classic", EDITION_SOIGNEE: "Premium edition"
   };
+  // Compact version for the "why it matched" chips: no parenthetical detail.
+  function shortLabel(code) {
+    var full = prismLabel(code);
+    if (full) return full.replace(/\s*\([^)]*\)\s*$/, "");
+    var words = code.toLowerCase().split("_");
+    return words.map(function (w) { return w.charAt(0).toUpperCase() + w.slice(1); }).join(" ");
+  }
   function eraLabel(a) {
     var m = a.match(/^ERA_(\d+)S$/);
     if (m) { var c = Math.floor(parseInt(m[1], 10) / 100) + 1; return c + "th century"; }
@@ -283,7 +292,7 @@
             if (ed === "col" || ed === "ann" || fmt === "IL") anns.push("EDITION_SOIGNEE");
 
             var p = { id: sku, author: author, title: title, desc: descParts.join(" · "),
-                      fmt: fmt, pages: pages, price: price, stock: stock, anns: anns,
+                      fmt: fmt, genre: genre, pages: pages, price: price, stock: stock, anns: anns,
                       hue: (ai * 41 + bi * 97) % 360, pat: (ai + bi) % 5 };
             products.push(p);
             tokenize(sku).forEach(function (t) { addTerm(t, pid, FIELD_W.ref, true); });
@@ -362,28 +371,32 @@
     return { all: res, total: res.length, tokens: tokens };
   }
 
-  /* ---------------- Couvertures procédurales ---------------- */
-  function coverArt(p) {
-    var h = p.hue, h2 = (h + 46 + p.pat * 21) % 360;
-    var c1 = "hsl(" + h + ",58%,46%)", c2 = "hsl(" + h2 + ",64%,32%)", c3 = "hsl(" + ((h + 180) % 360) + ",60%,74%)";
-    var pats = [
-      '<circle cx="22" cy="12" r="8" fill="' + c3 + '" fill-opacity="0.9"/>',
-      '<rect x="7" y="24" width="20" height="4" fill="' + c3 + '" fill-opacity="0.9"/><rect x="7" y="30" width="14" height="2.5" fill="' + c3 + '" fill-opacity="0.55"/>',
-      '<path d="M7 42 L34 10 L34 22 L17 42 Z" fill="' + c3 + '" fill-opacity="0.65"/>',
-      '<circle cx="20" cy="21" r="10" fill="none" stroke="' + c3 + '" stroke-width="2.5" stroke-opacity="0.9"/>',
-      '<rect x="9" y="8" width="9" height="9" fill="' + c3 + '" fill-opacity="0.9"/><rect x="20" y="26" width="9" height="9" fill="' + c3 + '" fill-opacity="0.55"/>'
-    ];
-    var initial = (p.author.replace(/^(La |Le |Les |The )/, "")[0] || "H").toUpperCase();
-    var audio = p.fmt === "AU"
-      ? '<circle cx="20" cy="21" r="7.5" fill="rgba(0,0,0,0.28)"/><path d="M18 17.5 L18 24.5 L24 21 Z" fill="#fff"/>' : "";
-    return '<svg viewBox="0 0 40 44" width="40" height="44" aria-hidden="true">' +
-      '<defs><linearGradient id="bk' + p.hue + "_" + p.pat + '" x1="0" y1="0" x2="1" y2="1">' +
-      '<stop offset="0" stop-color="' + c1 + '"/><stop offset="1" stop-color="' + c2 + '"/></linearGradient></defs>' +
-      '<rect x="3" y="1" width="34" height="42" rx="2.5" fill="url(#bk' + p.hue + "_" + p.pat + ')"/>' +
-      '<rect x="3" y="1" width="4.5" height="42" rx="2" fill="rgba(0,0,0,0.28)"/>' +
-      pats[p.pat] + audio +
-      '<text x="23" y="39" text-anchor="middle" font-family="Georgia,serif" font-size="10" font-weight="bold" fill="rgba(255,255,255,0.92)">' + initial + '</text>' +
-      '<rect x="3" y="1" width="34" height="42" rx="2.5" fill="none" stroke="rgba(0,0,0,0.14)"/></svg>';
+  /* ---------------- Procedural cover art ---------------- */
+  // Fully generated (gradients, geometric shapes, typography) — never real artwork:
+  // an actual book cover is a protected work, so it can neither be fetched nor imitated.
+  // The visual family + palette varies by genre, the exact hue by title, so each book
+  // stays recognizable without ever reproducing a real cover.
+  var FAMILY_BY_GENRE = {
+    polar: "noir", sf: "cosmic", fantasy: "cosmic",
+    classique: "classic", essai: "classic", poesie: "classic",
+    jeunesse: "bright", bd: "bright", roman: "warm"
+  };
+
+  function wrapTitle(text, maxChars, maxLines) {
+    var words = text.split(" "), lines = [], cur = "";
+    for (var i = 0; i < words.length; i++) {
+      var test = cur ? cur + " " + words[i] : words[i];
+      if (test.length <= maxChars) { cur = test; }
+      else { if (cur) lines.push(cur); cur = words[i]; if (lines.length >= maxLines) break; }
+    }
+    if (cur && lines.length < maxLines) lines.push(cur);
+    if (lines.length > maxLines) lines = lines.slice(0, maxLines);
+    if (lines.join(" ").length < text.length && lines.length === maxLines) {
+      var last = lines[maxLines - 1];
+      while (last.length > maxChars - 1) last = last.slice(0, -1);
+      lines[maxLines - 1] = last.replace(/\s+\S*$/, "") + "…";
+    }
+    return lines;
   }
 
   /* ---------------- UI + Prismes ---------------- */
@@ -446,10 +459,19 @@
         });
       }
 
-      grid.innerHTML = filtered.slice(0, 9).map(function (h) {
+      // Diversité d'affichage : au plus 2 éditions du même titre dans le haut de liste,
+      // pour montrer la variété du catalogue plutôt qu'une pile de pressages identiques.
+      var seenTitle = {}, diverse = [];
+      for (var di = 0; di < filtered.length && diverse.length < 9; di++) {
+        var tk = filtered[di].p.author + "|" + filtered[di].p.title;
+        seenTitle[tk] = (seenTitle[tk] || 0) + 1;
+        if (seenTitle[tk] <= 2) diverse.push(filtered[di]);
+      }
+      grid.innerHTML = diverse.map(function (h) {
         var whyChips = h.why.filter(function (w, i, arr) { return arr.indexOf(w) === i; })
           .slice(0, 3).map(function (w) {
-            return '<span class="play-why' + (w[0] === "#" ? " play-why-ann" : "") + '">' + esc(w) + "</span>";
+            if (w[0] === "#") return '<span class="play-why play-why-ann">' + esc(shortLabel(w.slice(1))) + "</span>";
+            return '<span class="play-why">' + esc(w) + "</span>";
           }).join("");
         return '<div class="play-card' + (h.p.stock === 0 ? " play-card-out" : "") + '">' +
           '<div class="play-thumb">' + coverArt(h.p) + "</div>" +
@@ -488,5 +510,5 @@
   else init();
 
   // For the curious: window.heurixDemo.search("scandinavian crim novel pocket")
-  window.heurixDemo = { search: search, annotate: annotate, catalogSize: products.length };
+  window.heurixDemo = { search: search, annotate: annotate, catalogSize: products.length, shortLabel: shortLabel };
 })();

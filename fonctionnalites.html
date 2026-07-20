@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-XXXXXXX');</script>
+<!-- End Google Tag Manager -->
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fonctionnalités — Heurix</title>
+<meta name="description" content="Cascade d'annotations, tolérance aux fautes, synonymes métier, packs de règles par secteur : toutes les fonctionnalités du moteur de recherche Heurix, avec liens vers la documentation API.">
+<link rel="alternate" hreflang="fr" href="https://heurix.fr/fonctionnalites.html">
+<link rel="alternate" hreflang="en" href="https://heurix.fr/en/fonctionnalites.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Fonctionnalités — Heurix">
+<meta property="og:description" content="Cascade d'annotations, tolérance aux fautes, synonymes métier, packs de règles par secteur : toutes les fonctionnalités du moteur Heurix.">
+<meta property="og:image" content="https://heurix.fr/og-image.png">
+<meta property="og:url" content="https://heurix.fr/fonctionnalites.html">
+<meta property="og:locale" content="fr_FR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Fonctionnalités — Heurix">
+<meta name="twitter:image" content="https://heurix.fr/og-image.png">
+<link rel="icon" type="image/png" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="styles.css">
+<link rel="canonical" href="https://heurix.fr/fonctionnalites.html">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Heurix",
+  "url": "https://heurix.fr",
+  "logo": "https://heurix.fr/logo.png",
+  "image": "https://heurix.fr/og-image.png",
+  "description": "Moteur de recherche et search & discovery pour sites e-commerce, basé sur des expressions régulières, conçu en France.",
+  "email": "contact@heurix.fr",
+  "sameAs": ["https://www.linkedin.com/company/heurix-search/"],
+  "founder": {"@type": "Person", "name": "Alexis Flahaut"},
+  "areaServed": "FR"
+}
+</script>
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+<header>
+  <nav>
+    <a href="index.html" class="logo"><img src="logo.png" alt="Heurix"> <span class="wordmark">HEURIX</span></a>
+    <div class="nav-links">
+      <a href="index.html#probleme">Le problème</a>
+      <a href="index.html#moteur">Le moteur</a>
+      <a href="fonctionnalites.html">Fonctionnalités</a>
+      <a href="pricing.html">Search API</a>
+      <a href="index.html#tarifs">Simulateur ROI</a>
+      <a href="blog.html">Blog</a>
+    </div>
+    <a href="en/fonctionnalites.html" class="lang-switch">EN</a>
+    <button id="heurix-search-btn" class="search-trigger" aria-label="Heurix Search — rechercher sur le site" type="button">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <span class="search-trigger-text">Heurix Search</span>
+      <span class="search-trigger-kbd">Ctrl K</span>
+    </button>
+    <a href="pricing.html" class="btn">Essayer gratuitement</a>
+  </nav>
+</header>
+
+<div id="heurix-search-modal" class="search-modal">
+  <div id="heurix-search-backdrop" class="search-backdrop" data-search-close></div>
+  <div class="search-panel">
+    <div class="search-panel-head">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input id="heurix-search-input" type="text" placeholder="Heurix Search..." autocomplete="off">
+      <button class="search-close" data-search-close type="button">Échap</button>
+    </div>
+    <p id="heurix-search-suggest-label" class="search-suggest-label" hidden>Derniers articles</p>
+    <div id="heurix-search-results" class="search-results"></div>
+    <p id="heurix-search-empty" class="search-empty" hidden>Aucun résultat pour cette recherche. Essayez un autre terme.</p>
+  </div>
+</div>
+
+<section class="docs-hero">
+  <div class="wrap">
+    <div class="badge">Fonctionnalités</div>
+    <h1>Ce que le moteur sait faire.</h1>
+    <p class="lede">Douze capacités, toutes livrées aujourd'hui — pas sur une feuille de route. Chaque section renvoie vers l'endpoint ou la page de doc correspondante.</p>
+  </div>
+</section>
+
+<div class="wrap feat-page">
+
+  <section class="feat-group">
+    <div class="feat-group-title">Comprendre vos références</div>
+    <div class="feat-grid-2 reveal">
+
+      <div class="feat-card feat-card-highlight">
+        <h3>Cascade d'annotations</h3>
+        <p>Des règles regex organisées en niveaux : le niveau 1 reconnaît les motifs bruts d'un texte (« m8 » → diamètre, « 20 » après un « x » → longueur), le niveau 2 compose ces annotations entre elles (diamètre + longueur → référence complète). Documents et requêtes traversent la même cascade — la correspondance se fait dans un espace partagé, pas seulement sur les mots.</p>
+        <pre class="docs-code"><code>« m8x20 »  →  DIAM_M8 + LONG_20  →  VIS_M8X20
+« M8 x 20 — A2 » (fiche produit)  →  même résultat</code></pre>
+        <a href="docs.html#cascade">Comment ça marche →</a>
+      </div>
+
+      <div class="feat-card">
+        <h3>Références composées</h3>
+        <p>6205-2RS, W32L34, M8.5 : la normalisation préserve les séparateurs internes (points, tirets, barres obliques) pour que ces références restent un seul token, au lieu d'être éclatées en morceaux qui perdent leur sens.</p>
+        <a href="docs.html#produits">Structure des produits →</a>
+      </div>
+
+      <div class="feat-card">
+        <h3>Tolérance aux fautes</h3>
+        <p>Distance de Damerau-Levenshtein bornée : 1 faute tolérée dès 4 caractères, 2 au-delà de 8. Sur les références chiffrées, la tolérance est plafonnée à 1 faute — un chiffre changé désigne un autre produit, pas une faute de frappe.</p>
+        <a href="index.html#moteur">Voir la démo en haut du site →</a>
+      </div>
+
+      <div class="feat-card">
+        <h3>Accents et casse ignorés</h3>
+        <p>« Écrou », « ecrou », « ECROU » : même requête normalisée, mêmes résultats. La normalisation s'applique identiquement aux documents indexés et aux requêtes, avant toute autre étape.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="feat-group">
+    <div class="feat-group-title">Adapter le moteur à votre catalogue</div>
+    <div class="feat-grid-2 reveal">
+
+      <div class="feat-card">
+        <h3>Packs de règles par secteur</h3>
+        <p>Trois packs fournis avec le moteur — outillage (normes DIN/ISO, diamètres, matières), mode (tailles composées, coloris, matières), industrie (roulements, références normalisées). Un pack sur mesure pour vos références spécifiques est possible sur les plans Scale.</p>
+        <a href="docs.html#ep-rulepacks">Endpoint /v1/rulepacks →</a>
+      </div>
+
+      <div class="feat-card">
+        <h3>Synonymes métier</h3>
+        <p>« Vis » retrouve « boulon », « perceuse » retrouve « visseuse ». Les groupes de synonymes sont gérés par API, avec fusion automatique des groupes qui partagent un terme — sans configuration manuelle des doublons.</p>
+        <pre class="docs-code"><code>PUT /v1/index/{catalog}/synonyms
+{"groups": [["vis", "boulon", "visserie"]]}</code></pre>
+        <a href="docs.html#ep-synonyms">Endpoint synonymes →</a>
+      </div>
+
+      <div class="feat-card">
+        <h3>Multi-catalogues</h3>
+        <p>Un compte, autant de catalogues que nécessaire — par langue, par marque, par site. Chaque catalogue a son propre pack de règles, ses propres synonymes, son propre index.</p>
+        <a href="docs.html#ep-items">Endpoint indexation →</a>
+      </div>
+
+      <div class="feat-card">
+        <h3>Prismes : filtres par annotation</h3>
+        <p>Les annotations qui alimentent le classement (genre, format, dimension, matière...) peuvent aussi servir à filtrer les résultats côté client — comme dans la démonstration de la page d'accueil. Un endpoint dédié de comptage par facette est sur la feuille de route pour simplifier cette construction côté serveur.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="feat-group">
+    <div class="feat-group-title">Livrer les bons résultats</div>
+    <div class="feat-grid-2 reveal">
+
+      <div class="feat-card">
+        <h3>Tri pertinence puis stock</h3>
+        <p>Champs pondérés (référence &gt; nom &gt; description), score composite incluant les annotations partagées, puis disponibilité en départage à score égal — un produit en rupture ne passe jamais devant un produit disponible équivalent.</p>
+        <a href="docs.html#ep-search">Endpoint recherche →</a>
+      </div>
+
+      <div class="feat-card">
+        <h3>Résultats explicables</h3>
+        <p>Chaque résultat inclut un champ <code class="docs-inline-code">matched</code> qui liste pourquoi il sort : terme trouvé, faute corrigée, annotation partagée. C'est votre outil de diagnostic quand un résultat surprend.</p>
+        <pre class="docs-code"><code>"matched": ["annotation #VIS_M8X20", "terme 'inox'"]</code></pre>
+        <a href="docs.html#ep-search">Voir un exemple de réponse →</a>
+      </div>
+
+      <div class="feat-card">
+        <h3>Pagination</h3>
+        <p>Paramètres <code class="docs-inline-code">limit</code> et <code class="docs-inline-code">offset</code> standards, jusqu'à 100 résultats par page.</p>
+        <a href="docs.html#ep-search">Paramètres de recherche →</a>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="feat-group">
+    <div class="feat-group-title">Exploiter en confiance</div>
+    <div class="feat-grid-2 reveal">
+
+      <div class="feat-card">
+        <h3>Indexation par lot</h3>
+        <p>Jusqu'à 5 000 produits par appel, upsert automatique sur l'identifiant, création du catalogue à la volée dès le premier envoi.</p>
+        <a href="docs.html#ep-items">Endpoint indexation →</a>
+      </div>
+
+      <div class="feat-card">
+        <h3>Usage transparent</h3>
+        <p>Règles de comptage publiques (1 recherche = 1 requête, 1 000 produits indexés = 10 requêtes), consommation consultable en temps réel via l'API. Jamais de coupure surprise en cas de dépassement.</p>
+        <a href="docs.html#comptage">Comment le comptage fonctionne →</a>
+      </div>
+
+      <div class="feat-card">
+        <h3>Données en France</h3>
+        <p>Moteur conçu et développé en France, hébergement OVH (Gravelines ou Strasbourg). Vos catalogues ne quittent pas l'Union européenne.</p>
+        <a href="about.html">Notre histoire →</a>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="feat-cta">
+    <h2>Essayez sur votre catalogue.</h2>
+    <p>Plan Free : 2 000 requêtes et 5 000 produits par mois, sans carte bancaire.</p>
+    <div class="about-cta">
+      <a href="pricing.html" class="btn">Voir les tarifs</a>
+      <a href="docs.html" class="btn btn-ghost">Lire la documentation</a>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <div class="wrap foot-grid">
+    <a href="index.html" class="logo" style="font-size:15px;"><img src="logo.png" alt="Heurix" style="height:22px;width:22px;"> <span class="wordmark">HEURIX</span></a>
+    <div class="foot-links">
+      <a href="blog.html">Blog</a>
+      <a href="docs.html">Documentation API</a>
+      <a href="about.html">À propos</a>
+      <a href="index.html#faq">FAQ</a>
+      <a href="mentions-legales.html">Mentions légales</a>
+      <a href="mailto:contact@heurix.fr">contact@heurix.fr</a>
+    </div>
+    <div class="foot-social">
+      <span class="foot-social-label">Réseaux sociaux</span>
+      <a href="https://www.linkedin.com/company/heurix-search/" target="_blank" rel="noopener" aria-label="LinkedIn" class="foot-social-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+      </a>
+    </div>
+    <div class="foot-legal">
+      Heurix — Entreprise individuelle (micro-entreprise). SIRET 107 681 900 00018. Conseil en systèmes et logiciels informatiques.<br>
+      © <span id="year">2026</span> Heurix. Tous droits réservés.
+    </div>
+  </div>
+</footer>
+
+<script src="search.js"></script>
+<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+
+</body>
+</html>

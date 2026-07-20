@@ -27,8 +27,18 @@
     PAYS_FR: "France", PAYS_UK: "Royaume-Uni", PAYS_US: "États-Unis", PAYS_RU: "Russie",
     PAYS_JP: "Japon", PAYS_SE: "Scandinavie", PAYS_DE: "Allemagne", PAYS_IT: "Italie",
     PAYS_ES: "Espagne", PAYS_CO: "Colombie", PAYS_CZ: "Rép. tchèque", PAYS_BE: "Belgique",
-    LONG_COURT: "Court (<180 p.)", LONG_MOYEN: "Moyen", LONG_PAVE: "Pavé (500+ p.)"
+    LONG_COURT: "Court (<180 p.)", LONG_MOYEN: "Format moyen", LONG_PAVE: "Pavé (500+ p.)",
+    ED_ANNOTE: "Édition annotée", ED_COLLECTOR: "Collector", ED_BILINGUE: "Bilingue", ED_VO: "Version originale",
+    POLAR_NORDIQUE: "Polar nordique", CLASSIQUE_POCHE: "Classique en poche", EDITION_SOIGNEE: "Édition soignée"
   };
+  // Version compacte pour les puces "pourquoi ce résultat" : sans le détail entre parenthèses.
+  function shortLabel(code) {
+    var full = prismLabel(code);
+    if (full) return full.replace(/\s*\([^)]*\)\s*$/, "");
+    // Filet de sécurité si un code n'est pas dans la table : humanise "MA_CLE" -> "Ma clé".
+    var words = code.toLowerCase().split("_");
+    return words.map(function (w) { return w.charAt(0).toUpperCase() + w.slice(1); }).join(" ");
+  }
   function eraLabel(a) {
     var m = a.match(/^ERA_(\d+)S$/);
     if (m) { var c = Math.floor(parseInt(m[1], 10) / 100) + 1; return c + "ᵉ siècle"; }
@@ -283,7 +293,7 @@
             if (ed === "col" || ed === "ann" || fmt === "IL") anns.push("EDITION_SOIGNEE");
 
             var p = { id: sku, author: author, title: title, desc: descParts.join(" · "),
-                      fmt: fmt, pages: pages, price: price, stock: stock, anns: anns,
+                      fmt: fmt, genre: genre, pages: pages, price: price, stock: stock, anns: anns,
                       hue: (ai * 41 + bi * 97) % 360, pat: (ai + bi) % 5 };
             products.push(p);
             tokenize(sku).forEach(function (t) { addTerm(t, pid, FIELD_W.ref, true); });
@@ -363,27 +373,100 @@
   }
 
   /* ---------------- Couvertures procédurales ---------------- */
+  // Entièrement générées (dégradés, formes géométriques, typographie) — jamais de
+  // visuel existant : une vraie jaquette de livre est une œuvre protégée, on ne
+  // peut ni la récupérer ni l'imiter. Le style (famille visuelle + palette) varie
+  // par genre, la teinte exacte par ouvrage, pour que chaque titre soit reconnaissable
+  // sans jamais reproduire une couverture réelle.
+  var FAMILY_BY_GENRE = {
+    polar: "noir", sf: "cosmic", fantasy: "cosmic",
+    classique: "classic", essai: "classic", poesie: "classic",
+    jeunesse: "bright", bd: "bright", roman: "warm"
+  };
+
+  function wrapTitle(text, maxChars, maxLines) {
+    var words = text.split(" "), lines = [], cur = "";
+    for (var i = 0; i < words.length; i++) {
+      var test = cur ? cur + " " + words[i] : words[i];
+      if (test.length <= maxChars) { cur = test; }
+      else { if (cur) lines.push(cur); cur = words[i]; if (lines.length >= maxLines) break; }
+    }
+    if (cur && lines.length < maxLines) lines.push(cur);
+    if (lines.length > maxLines) lines = lines.slice(0, maxLines);
+    if (lines.join(" ").length < text.length && lines.length === maxLines) {
+      var last = lines[maxLines - 1];
+      while (last.length > maxChars - 1) last = last.slice(0, -1);
+      lines[maxLines - 1] = last.replace(/\s+\S*$/, "") + "…";
+    }
+    return lines;
+  }
+
   function coverArt(p) {
-    var h = p.hue, h2 = (h + 46 + p.pat * 21) % 360;
-    var c1 = "hsl(" + h + ",58%,46%)", c2 = "hsl(" + h2 + ",64%,32%)", c3 = "hsl(" + ((h + 180) % 360) + ",60%,74%)";
-    var pats = [
-      '<circle cx="22" cy="12" r="8" fill="' + c3 + '" fill-opacity="0.9"/>',
-      '<rect x="7" y="24" width="20" height="4" fill="' + c3 + '" fill-opacity="0.9"/><rect x="7" y="30" width="14" height="2.5" fill="' + c3 + '" fill-opacity="0.55"/>',
-      '<path d="M7 42 L34 10 L34 22 L17 42 Z" fill="' + c3 + '" fill-opacity="0.65"/>',
-      '<circle cx="20" cy="21" r="10" fill="none" stroke="' + c3 + '" stroke-width="2.5" stroke-opacity="0.9"/>',
-      '<rect x="9" y="8" width="9" height="9" fill="' + c3 + '" fill-opacity="0.9"/><rect x="20" y="26" width="9" height="9" fill="' + c3 + '" fill-opacity="0.55"/>'
-    ];
-    var initial = (p.author.replace(/^(La |Le |Les |The )/, "")[0] || "H").toUpperCase();
-    var audio = p.fmt === "AU"
-      ? '<circle cx="20" cy="21" r="7.5" fill="rgba(0,0,0,0.28)"/><path d="M18 17.5 L18 24.5 L24 21 Z" fill="#fff"/>' : "";
-    return '<svg viewBox="0 0 40 44" width="40" height="44" aria-hidden="true">' +
-      '<defs><linearGradient id="bk' + p.hue + "_" + p.pat + '" x1="0" y1="0" x2="1" y2="1">' +
-      '<stop offset="0" stop-color="' + c1 + '"/><stop offset="1" stop-color="' + c2 + '"/></linearGradient></defs>' +
-      '<rect x="3" y="1" width="34" height="42" rx="2.5" fill="url(#bk' + p.hue + "_" + p.pat + ')"/>' +
-      '<rect x="3" y="1" width="4.5" height="42" rx="2" fill="rgba(0,0,0,0.28)"/>' +
-      pats[p.pat] + audio +
-      '<text x="23" y="39" text-anchor="middle" font-family="Georgia,serif" font-size="10" font-weight="bold" fill="rgba(255,255,255,0.92)">' + initial + '</text>' +
-      '<rect x="3" y="1" width="34" height="42" rx="2.5" fill="none" stroke="rgba(0,0,0,0.14)"/></svg>';
+    var h = p.hue;
+    var family = FAMILY_BY_GENRE[p.genre] || "warm";
+    var W = 100, H = 140;
+    var titleLines, authorLast = p.author.split(" ").slice(-1)[0];
+    var bg, motif = "", titleColor, titleFamily = "'Plus Jakarta Sans',sans-serif", titleWeight = "700";
+    var titleSize = 12, titleY = 46, lineHeight = 14, ls = "0";
+    var ruleColor, authorColor;
+
+    if (family === "noir") {
+      var accent = "hsl(" + ((h + 15) % 360) + ",68%,52%)";
+      bg = '<rect width="' + W + '" height="' + H + '" fill="hsl(' + h + ',22%,13%)"/>' +
+           '<rect width="' + W + '" height="' + H + '" fill="hsl(' + ((h+30)%360) + ',30%,9%)" opacity="0.55"/>';
+      for (var i = 0; i < 5; i++) motif += '<rect x="0" y="' + (18 + i * 5) + '" width="' + W + '" height="1.3" fill="rgba(255,255,255,0.05)"/>';
+      motif += '<rect x="10" y="' + (H - 34) + '" width="26" height="3" fill="' + accent + '"/>';
+      titleColor = "#F4F1EA"; titleFamily = "Georgia,'Times New Roman',serif"; titleWeight = "700";
+      ruleColor = accent; authorColor = "rgba(244,241,234,0.65)";
+    } else if (family === "cosmic") {
+      bg = '<rect width="' + W + '" height="' + H + '" fill="hsl(' + h + ',48%,26%)"/>' +
+           '<rect width="' + W + '" height="' + H + '" fill="hsl(' + ((h+45)%360) + ',60%,16%)" opacity="0.6"/>';
+      var mx = 20 + (p.pat * 12), my = 26 + (p.pat % 3) * 6;
+      motif = '<circle cx="' + mx + '" cy="' + my + '" r="16" fill="none" stroke="rgba(255,255,255,0.22)" stroke-width="1"/>' +
+              '<circle cx="' + mx + '" cy="' + my + '" r="2" fill="rgba(255,255,255,0.55)"/>' +
+              '<circle cx="' + (W - 18) + '" cy="20" r="1.4" fill="rgba(255,255,255,0.4)"/>' +
+              '<circle cx="' + (W - 30) + '" cy="34" r="0.9" fill="rgba(255,255,255,0.3)"/>';
+      titleColor = "#FFFFFF"; titleFamily = "'Plus Jakarta Sans',sans-serif"; titleWeight = "700"; ls = "0.3";
+      ruleColor = "rgba(255,255,255,0.4)"; authorColor = "rgba(255,255,255,0.62)";
+    } else if (family === "classic") {
+      bg = '<rect width="' + W + '" height="' + H + '" fill="hsl(38,32%,93%)"/>' +
+           '<rect width="' + W + '" height="' + H + '" fill="hsl(' + h + ',25%,88%)" opacity="0.35"/>';
+      motif = '<rect x="6" y="6" width="' + (W - 12) + '" height="' + (H - 12) + '" fill="none" stroke="hsl(' + h + ',35%,38%)" stroke-width="1" opacity="0.55"/>' +
+              '<rect x="9" y="9" width="' + (W - 18) + '" height="' + (H - 18) + '" fill="none" stroke="hsl(' + h + ',35%,38%)" stroke-width="0.5" opacity="0.4"/>';
+      titleColor = "hsl(" + h + ",30%,22%)"; titleFamily = "Georgia,'Times New Roman',serif"; titleWeight = "700";
+      ruleColor = "hsl(" + h + ",35%,38%)"; authorColor = "hsl(" + h + ",20%,38%)";
+    } else if (family === "bright") {
+      bg = '<rect width="' + W + '" height="' + H + '" fill="hsl(' + h + ',72%,58%)"/>' +
+           '<rect width="' + W + '" height="' + H + '" fill="hsl(' + ((h+55)%360) + ',70%,50%)" opacity="0.5"/>';
+      motif = '<circle cx="' + (W - 24) + '" cy="24" r="18" fill="rgba(255,255,255,0.18)"/>' +
+              '<circle cx="14" cy="' + (H - 26) + '" r="12" fill="rgba(255,255,255,0.15)"/>';
+      titleColor = "#FFFFFF"; titleFamily = "'Plus Jakarta Sans',sans-serif"; titleWeight = "800";
+      ruleColor = "rgba(255,255,255,0.55)"; authorColor = "rgba(255,255,255,0.8)";
+    } else { // warm (roman, défaut)
+      bg = '<rect width="' + W + '" height="' + H + '" fill="hsl(' + h + ',42%,40%)"/>' +
+           '<rect width="' + W + '" height="' + H + '" fill="hsl(' + ((h+25)%360) + ',48%,26%)" opacity="0.55"/>';
+      motif = '<path d="M0 ' + (H-30) + ' Q ' + (W/2) + ' ' + (H-46) + ' ' + W + ' ' + (H-30) + ' L ' + W + ' ' + H + ' L 0 ' + H + ' Z" fill="rgba(255,255,255,0.07)"/>';
+      titleColor = "#FBF8F2"; titleFamily = "Georgia,'Times New Roman',serif"; titleWeight = "700";
+      ruleColor = "rgba(251,248,242,0.5)"; authorColor = "rgba(251,248,242,0.68)";
+    }
+
+    var maxChars = family === "cosmic" || family === "bright" ? 13 : 14;
+    titleLines = wrapTitle(p.title, maxChars, 3);
+    var titleTspans = titleLines.map(function (line, i) {
+      return '<tspan x="10" dy="' + (i === 0 ? 0 : lineHeight) + '">' + esc(line) + "</tspan>";
+    }).join("");
+
+    var badge = "";
+    if (p.fmt === "AU") badge = '<circle cx="' + (W-16) + '" cy="' + (H-18) + '" r="8" fill="rgba(0,0,0,0.32)"/><path d="M' + (W-19) + ' ' + (H-22) + ' L' + (W-19) + ' ' + (H-14) + ' L' + (W-12) + ' ' + (H-18) + ' Z" fill="#fff"/>';
+
+    return '<svg viewBox="0 0 ' + W + ' ' + H + '" width="48" height="66" aria-hidden="true">' +
+      '<clipPath id="cc' + h + "_" + p.pat + '"><rect width="' + W + '" height="' + H + '" rx="4"/></clipPath>' +
+      '<g clip-path="url(#cc' + h + "_" + p.pat + ')">' + bg + motif +
+      '<text x="10" y="' + titleY + '" font-family="' + titleFamily + '" font-size="' + titleSize + '" font-weight="' + titleWeight + '" letter-spacing="' + ls + '" fill="' + titleColor + '">' + titleTspans + '</text>' +
+      '<line x1="10" y1="' + (H - 16) + '" x2="' + (W - 10) + '" y2="' + (H - 16) + '" stroke="' + ruleColor + '" stroke-width="0.7"/>' +
+      '<text x="10" y="' + (H - 8) + '" font-family="\'Plus Jakarta Sans\',sans-serif" font-size="7.5" font-weight="600" letter-spacing="0.4" fill="' + authorColor + '">' + esc(authorLast.toUpperCase()) + "</text>" +
+      badge +
+      '</g><rect x="0.5" y="0.5" width="' + (W-1) + '" height="' + (H-1) + '" rx="4" fill="none" stroke="rgba(0,0,0,0.16)"/></svg>';
   }
 
   /* ---------------- UI + Prismes ---------------- */
@@ -446,10 +529,19 @@
         });
       }
 
-      grid.innerHTML = filtered.slice(0, 9).map(function (h) {
+      // Diversité d'affichage : au plus 2 éditions du même titre dans le haut de liste,
+      // pour montrer la variété du catalogue plutôt qu'une pile de pressages identiques.
+      var seenTitle = {}, diverse = [];
+      for (var di = 0; di < filtered.length && diverse.length < 9; di++) {
+        var tk = filtered[di].p.author + "|" + filtered[di].p.title;
+        seenTitle[tk] = (seenTitle[tk] || 0) + 1;
+        if (seenTitle[tk] <= 2) diverse.push(filtered[di]);
+      }
+      grid.innerHTML = diverse.map(function (h) {
         var whyChips = h.why.filter(function (w, i, arr) { return arr.indexOf(w) === i; })
           .slice(0, 3).map(function (w) {
-            return '<span class="play-why' + (w[0] === "#" ? " play-why-ann" : "") + '">' + esc(w) + "</span>";
+            if (w[0] === "#") return '<span class="play-why play-why-ann">' + esc(shortLabel(w.slice(1))) + "</span>";
+            return '<span class="play-why">' + esc(w) + "</span>";
           }).join("");
         return '<div class="play-card' + (h.p.stock === 0 ? " play-card-out" : "") + '">' +
           '<div class="play-thumb">' + coverArt(h.p) + "</div>" +
@@ -488,5 +580,5 @@
   else init();
 
   // Pour les curieux : window.heurixDemo.search("polar scandinav poche")
-  window.heurixDemo = { search: search, annotate: annotate, catalogSize: products.length };
+  window.heurixDemo = { search: search, annotate: annotate, catalogSize: products.length, shortLabel: shortLabel };
 })();

@@ -11,6 +11,7 @@ Heurix is a regex-powered search & discovery engine for e-commerce, designed in 
 - [Tarifs Search API / Pricing](https://heurix.fr/pricing.html): plans Free (0 €), Growth (39 €/mois), Scale (149 €/mois), facturation à l'usage
 - [Documentation API (FR)](https://heurix.fr/docs.html): référence complète — authentification, indexation, recherche, synonymes, packs de règles, cascade d'annotations
 - [API Documentation (EN)](https://heurix.fr/en/docs.html): full reference — authentication, indexing, search, synonyms, rule packs, annotation cascade
+- [Fonctionnalités / Features](https://heurix.fr/fonctionnalites.html): détail de chaque capacité du moteur avec liens vers la documentation API
 - [À propos / About](https://heurix.fr/about.html): l'histoire de Heurix, la mission, et une démo interactive du moteur
 - [Blog](https://heurix.fr/blog.html): articles sur la recherche e-commerce (SKU, facettes, synonymes, impact EBITDA)
 
