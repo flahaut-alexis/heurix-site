@@ -6,6 +6,7 @@ const HEURIX_SEARCH_INDEX = [
   { title: "Comment ça marche", excerpt: "Opérationnel en 3 étapes : indexez votre catalogue, la cascade annote chaque produit, vos clients trouvent.", path: "index.html#comment-ca-marche" },
   { title: "Notre mission", excerpt: "La recherche ne devrait jamais être un fardeau. C'est un levier de conversion.", path: "index.html#mission" },
   { title: "Console — tableau de bord", excerpt: "Mots les plus recherchés, recherches sans résultat, erreurs, consommation. Connexion avec votre clé API.", path: "console.html" },
+  { title: "Intégrations", excerpt: "Guides techniques Shopify, PrestaShop, WooCommerce, Magento — recherche et synchronisation de catalogue, avec du vrai code.", path: "integrations.html" },
   { title: "Fonctionnalités", excerpt: "Cascade d'annotations, tolérance aux fautes, références composées, synonymes métier, résultats explicables — page dédiée avec liens vers la doc API.", path: "fonctionnalites.html" },
   { title: "Documentation API", excerpt: "Référence complète du Search API : authentification, indexation, recherche, synonymes, cascade d'annotations, bonnes pratiques.", path: "docs.html" },
   { title: "Search API — Tarifs", excerpt: "Le moteur de recherche Heurix en self-service, à partir de gratuit. Facturation à l'usage, sans engagement.", path: "pricing.html" },

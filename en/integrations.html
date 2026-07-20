@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-XXXXXXX');</script>
+<!-- End Google Tag Manager -->
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Integrations — Heurix</title>
+<meta name="description" content="Technical guides to connect the Heurix Search API to Shopify, PrestaShop, WooCommerce, and Magento: search and catalog sync, with real code.">
+<link rel="alternate" hreflang="fr" href="https://heurix.fr/integrations.html">
+<link rel="alternate" hreflang="en" href="https://heurix.fr/en/integrations.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Integrations — Heurix">
+<meta property="og:description" content="Technical guides to connect the Heurix Search API to Shopify, PrestaShop, WooCommerce, and Magento.">
+<meta property="og:image" content="https://heurix.fr/og-image.png">
+<meta property="og:url" content="https://heurix.fr/en/integrations.html">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Integrations — Heurix">
+<meta name="twitter:image" content="https://heurix.fr/og-image.png">
+<link rel="icon" type="image/png" href="../favicon-32.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<link rel="stylesheet" href="../styles.css">
+<link rel="canonical" href="https://heurix.fr/en/integrations.html">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Heurix", "url": "https://heurix.fr", "logo": "https://heurix.fr/logo.png",
+  "email": "contact@heurix.fr",
+  "sameAs": ["https://www.linkedin.com/company/heurix-search/"],
+  "founder": {"@type": "Person", "name": "Alexis Flahaut"}, "areaServed": "FR"
+}
+</script>
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+<header>
+  <nav>
+    <a href="index.html" class="logo"><img src="../logo.png" alt="Heurix"> <span class="wordmark">HEURIX</span></a>
+    <div class="nav-links">
+      <a href="index.html#moteur">The engine</a>
+      <a href="fonctionnalites.html">Features</a>
+      <a href="integrations.html">Integrations</a>
+      <a href="pricing.html">Search API</a>
+      <a href="docs.html">Documentation</a>
+    </div>
+    <a href="console.html" class="header-signin">Sign in</a>
+    <a href="../integrations.html" class="lang-switch">FR</a>
+    <a href="pricing.html" class="btn">Try it free</a>
+  </nav>
+</header>
+
+<section class="docs-hero">
+  <div class="wrap">
+    <div class="badge">Integrations</div>
+    <h1>Connect Heurix to your platform.</h1>
+    <p class="lede">Technical guides with real code, not empty promises. Each integration covers two things: showing Heurix results instead of native search, and keeping your catalog in sync.</p>
+    <p class="docs-hero-note">Honesty first: these are integration guides meant for a developer, not "one-click install" apps from the Shopify/PrestaShop/etc. stores — that may come if demand justifies it, but we didn't want to claim it before it's true.</p>
+  </div>
+</section>
+
+<div class="wrap integ-page">
+
+  <div class="integ-tabs" role="tablist">
+    <button type="button" class="integ-tab active" data-platform="shopify" role="tab" aria-selected="true">
+      <span>Shopify</span>
+    </button>
+    <button type="button" class="integ-tab" data-platform="prestashop" role="tab" aria-selected="false">
+      <span>PrestaShop</span>
+    </button>
+    <button type="button" class="integ-tab" data-platform="woocommerce" role="tab" aria-selected="false">
+      <span>WooCommerce</span>
+    </button>
+    <button type="button" class="integ-tab" data-platform="magento" role="tab" aria-selected="false">
+      <span>Magento</span>
+    </button>
+  </div>
+
+  <!-- ============================= SHOPIFY ============================= -->
+  <div class="integ-panel" data-panel="shopify">
+    <div class="integ-notice">
+      <strong>Shopify specifics.</strong> Shopify doesn't allow running server code with a secret key directly inside a theme (Liquid is server-rendered but can't make authenticated outbound calls). The right architecture: a small serverless function (Cloudflare Worker below, free up to 100,000 requests/day) that holds the real Heurix key and relays requests between your theme and the API — your key is never exposed in the browser.
+    </div>
+
+    <h2>1. Wiring up search</h2>
+    <p>The relay (Cloudflare Worker):</p>
+    <pre class="docs-code"><code>// worker.js — déployé sur Cloudflare Workers (gratuit pour ce volume)
+export default {
+  async fetch(request, env) {
+    const url = new URL(request.url);
+    const q = url.searchParams.get("q") || "";
+    const res = await fetch("https://api.heurix.fr/v1/index/" + env.HEURIX_CATALOG + "/search", {
+      method: "POST",
+      headers: {
+        "Authorization": "Bearer " + env.HEURIX_API_KEY,  // secret Cloudflare, jamais exposé
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ q, limit: 20 })
+    });
+    return new Response(await res.text(), {
+      headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "https://votre-boutique.myshopify.com" }
+    });
+  }
+}</code></pre>
+    <p>In the theme (Online Store 2.0), replace the rendering of <code class="docs-inline-code">sections/search-results.liquid</code> with a call to this relay:</p>
+    <pre class="docs-code"><code>&lt;div id="heurix-results"&gt;&lt;/div&gt;
+&lt;script&gt;
+  const params = new URLSearchParams(window.location.search);
+  fetch("https://votre-worker.workers.dev/search?q=" + encodeURIComponent(params.get("q") || ""))
+    .then(r =&gt; r.json())
+    .then(data =&gt; {
+      document.getElementById("heurix-results").innerHTML = data.hits.map(h =&gt;
+        `&lt;a href="/products/${h.product.handle}" class="heurix-hit"&gt;
+           &lt;span&gt;${h.product.name}&lt;/span&gt;&lt;span&gt;${h.product.price} €&lt;/span&gt;
+         &lt;/a&gt;`
+      ).join("");
+    });
+&lt;/script&gt;</code></pre>
+
+    <h2>2. Syncing the catalog</h2>
+    <p>Register a Shopify webhook (Admin API or <code class="docs-inline-code">shopify.app.toml</code> for a custom app) on the <code class="docs-inline-code">products/create</code>, <code class="docs-inline-code">products/update</code>, <code class="docs-inline-code">products/delete</code> topics, pointed at the same Worker:</p>
+    <pre class="docs-code"><code>// Ajout dans worker.js : gestion du webhook Shopify
+async function handleWebhook(request, env) {
+  const product = await request.json();
+  await fetch("https://api.heurix.fr/v1/index/" + env.HEURIX_CATALOG + "/items", {
+    method: "POST",
+    headers: { "Authorization": "Bearer " + env.HEURIX_API_KEY, "Content-Type": "application/json" },
+    body: JSON.stringify({
+      rulepack: "mode",
+      items: [{
+        id: String(product.id),
+        name: product.title,
+        ref: product.variants?.[0]?.sku || "",
+        description: product.body_html?.replace(/<[^>]+>/g, "") || "",
+        stock: product.variants?.reduce((s, v) =&gt; s + (v.inventory_quantity || 0), 0) || 0,
+        handle: product.handle,
+        price: product.variants?.[0]?.price
+      }]
+    })
+  });
+}</code></pre>
+    <p class="docs-hero-note">Remember to verify the Shopify webhook's HMAC signature (<code class="docs-inline-code">X-Shopify-Hmac-Sha256</code>) before processing the payload, to avoid accepting forged requests.</p>
+  </div>
+
+  <!-- ============================= PRESTASHOP ============================= -->
+  <div class="integ-panel" data-panel="prestashop" hidden>
+    <div class="integ-notice">
+      <strong>PrestaShop advantage.</strong> PrestaShop runs server-side PHP — no need for an external relay like Shopify. A PrestaShop module can call the Heurix API directly, the key stays in server config, never sent to the browser.
+    </div>
+
+    <h2>1. Wiring up search</h2>
+    <p>In a custom module, hook <code class="docs-inline-code">displaySearchResults</code> or override the search controller:</p>
+    <pre class="docs-code"><code>&lt;?php
+// modules/heurixsearch/heurixsearch.php
+class HeurixSearch extends Module
+{
+    public function search($query)
+    {
+        $ch = curl_init('https://api.heurix.fr/v1/index/' . Configuration::get('HEURIX_CATALOG') . '/search');
+        curl_setopt_array($ch, [
+            CURLOPT_POST => true,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HTTPHEADER => [
+                'Authorization: Bearer ' . Configuration::get('HEURIX_API_KEY'),
+                'Content-Type: application/json',
+            ],
+            CURLOPT_POSTFIELDS => json_encode(['q' => $query, 'limit' => 24]),
+        ]);
+        $response = json_decode(curl_exec($ch), true);
+        curl_close($ch);
+        return $response['hits'] ?? [];
+    }
+}</code></pre>
+    <p>In the results template (<code class="docs-inline-code">search.tpl</code>), loop over these results instead of PrestaShop's native search.</p>
+
+    <h2>2. Syncing the catalog</h2>
+    <p>Three hooks are enough to stay in sync in real time:</p>
+    <pre class="docs-code"><code>&lt;?php
+public function install()
+{
+    return parent::install()
+        &amp;&amp; $this-&gt;registerHook('actionProductAdd')
+        &amp;&amp; $this-&gt;registerHook('actionProductUpdate')
+        &amp;&amp; $this-&gt;registerHook('actionProductDelete');
+}
+
+public function hookActionProductUpdate($params)
+{
+    $product = $params['product'];
+    $this-&gt;pushToHeurix([
+        'id' =&gt; (string) $product->id,
+        'name' =&gt; $product->name,
+        'ref' =&gt; $product->reference,
+        'description' =&gt; strip_tags($product->description_short),
+        'stock' =&gt; (int) StockAvailable::getQuantityAvailableByProduct($product->id),
+    ]);
+}
+
+private function pushToHeurix($item)
+{
+    $ch = curl_init('https://api.heurix.fr/v1/index/' . Configuration::get('HEURIX_CATALOG') . '/items');
+    curl_setopt_array($ch, [
+        CURLOPT_POST =&gt; true,
+        CURLOPT_HTTPHEADER =&gt; [
+            'Authorization: Bearer ' . Configuration::get('HEURIX_API_KEY'),
+            'Content-Type: application/json',
+        ],
+        CURLOPT_POSTFIELDS =&gt; json_encode(['rulepack' =&gt; 'mode', 'items' =&gt; [$item]]),
+    ]);
+    curl_exec($ch);
+    curl_close($ch);
+}</code></pre>
+  </div>
+
+  <!-- ============================= WOOCOMMERCE ============================= -->
+  <div class="integ-panel" data-panel="woocommerce" hidden>
+    <div class="integ-notice">
+      <strong>WooCommerce advantage.</strong> Like PrestaShop, WordPress/WooCommerce runs server-side PHP — direct API call from a plugin, key never exposed to the browser. We use <code class="docs-inline-code">wp_remote_post()</code>, WordPress's native HTTP function, rather than raw cURL.
+    </div>
+
+    <h2>1. Wiring up search</h2>
+    <pre class="docs-code"><code>&lt;?php
+// Dans functions.php ou un plugin dédié
+add_filter('woocommerce_product_query_meta_query', function ($meta_query, $query) {
+    if (!is_search()) return $meta_query;
+
+    $response = wp_remote_post('https://api.heurix.fr/v1/index/' . HEURIX_CATALOG . '/search', [
+        'headers' =&gt; [
+            'Authorization' =&gt; 'Bearer ' . HEURIX_API_KEY,
+            'Content-Type'  =&gt; 'application/json',
+        ],
+        'body' =&gt; json_encode(['q' =&gt; get_search_query(), 'limit' =&gt; 24]),
+    ]);
+    $hits = json_decode(wp_remote_retrieve_body($response), true)['hits'] ?? [];
+    $ids  = array_map(fn($h) =&gt; (int) $h['product']['id'], $hits);
+
+    // Réordonne les résultats WooCommerce natifs selon le classement Heurix
+    $query-&gt;set('post__in', $ids ?: [0]);
+    $query-&gt;set('orderby', 'post__in');
+    return $meta_query;
+}, 10, 2);</code></pre>
+    <p>This approach has an advantage: it reuses WooCommerce's native display (product cards, existing filters), Heurix only reranks results — less template to rewrite.</p>
+
+    <h2>2. Syncing the catalog</h2>
+    <pre class="docs-code"><code>&lt;?php
+add_action('woocommerce_update_product', 'heurix_sync_product');
+add_action('woocommerce_new_product', 'heurix_sync_product');
+
+function heurix_sync_product($product_id) {
+    $product = wc_get_product($product_id);
+    wp_remote_post('https://api.heurix.fr/v1/index/' . HEURIX_CATALOG . '/items', [
+        'headers' =&gt; [
+            'Authorization' =&gt; 'Bearer ' . HEURIX_API_KEY,
+            'Content-Type'  =&gt; 'application/json',
+        ],
+        'body' =&gt; json_encode([
+            'rulepack' =&gt; 'mode',
+            'items' =&gt; [[
+                'id'    =&gt; (string) $product_id,
+                'name'  =&gt; $product-&gt;get_name(),
+                'ref'   =&gt; $product-&gt;get_sku(),
+                'description' =&gt; wp_strip_all_tags($product-&gt;get_short_description()),
+                'stock' =&gt; $product-&gt;get_stock_quantity() ?? 0,
+            ]],
+        ]),
+    ]);
+}
+
+add_action('woocommerce_delete_product', function ($product_id) {
+    wp_remote_request('https://api.heurix.fr/v1/index/' . HEURIX_CATALOG . '/items/' . $product_id, [
+        'method' =&gt; 'DELETE',
+        'headers' =&gt; ['Authorization' =&gt; 'Bearer ' . HEURIX_API_KEY],
+    ]);
+});</code></pre>
+  </div>
+
+  <!-- ============================= MAGENTO ============================= -->
+  <div class="integ-panel" data-panel="magento" hidden>
+    <div class="integ-notice">
+      <strong>Heads up on Magento.</strong> Magento 2's architecture (modules, observers, DI) is heavier than the other three — expect more development time. The principle stays the same: direct server call, key never exposed.
+    </div>
+
+    <h2>1. Wiring up search</h2>
+    <p>A custom module with a plugin on the search results block:</p>
+    <pre class="docs-code"><code>&lt;?php
+// app/code/Heurix/Search/Model/SearchClient.php
+namespace Heurix\Search\Model;
+
+use Magento\Framework\HTTP\Client\Curl;
+
+class SearchClient
+{
+    public function __construct(private Curl $curl) {}
+
+    public function search(string $query): array
+    {
+        $this-&gt;curl-&gt;addHeader('Authorization', 'Bearer ' . HEURIX_API_KEY);
+        $this-&gt;curl-&gt;addHeader('Content-Type', 'application/json');
+        $this-&gt;curl-&gt;post(
+            'https://api.heurix.fr/v1/index/' . HEURIX_CATALOG . '/search',
+            json_encode(['q' =&gt; $query, 'limit' =&gt; 24])
+        );
+        $data = json_decode($this-&gt;curl-&gt;getBody(), true);
+        return $data['hits'] ?? [];
+    }
+}</code></pre>
+    <p>Inject this service into a plugin on <code class="docs-inline-code">Magento\CatalogSearch\Model\Layer\Filter</code>, or directly replace the search results template with rendering based on this data.</p>
+
+    <h2>2. Syncing the catalog</h2>
+    <p>An observer on the catalog's standard events:</p>
+    <pre class="docs-code"><code>&lt;?php
+// app/code/Heurix/Search/Observer/SyncProduct.php
+namespace Heurix\Search\Observer;
+
+use Magento\Framework\Event\ObserverInterface;
+use Magento\Framework\Event\Observer;
+
+class SyncProduct implements ObserverInterface
+{
+    public function __construct(private \Magento\Framework\HTTP\Client\Curl $curl) {}
+
+    public function execute(Observer $observer)
+    {
+        $product = $observer-&gt;getEvent()-&gt;getProduct();
+        $this-&gt;curl-&gt;addHeader('Authorization', 'Bearer ' . HEURIX_API_KEY);
+        $this-&gt;curl-&gt;addHeader('Content-Type', 'application/json');
+        $this-&gt;curl-&gt;post('https://api.heurix.fr/v1/index/' . HEURIX_CATALOG . '/items', json_encode([
+            'rulepack' =&gt; 'mode',
+            'items' =&gt; [[
+                'id' =&gt; (string) $product-&gt;getId(),
+                'name' =&gt; $product-&gt;getName(),
+                'ref' =&gt; $product-&gt;getSku(),
+                'stock' =&gt; (int) $product-&gt;getExtensionAttributes()?-&gt;getStockItem()?-&gt;getQty(),
+            ]],
+        ]));
+    }
+}</code></pre>
+    <p>Declared in <code class="docs-inline-code">events.xml</code> on <code class="docs-inline-code">catalog_product_save_after</code> and <code class="docs-inline-code">catalog_product_delete_after</code>.</p>
+  </div>
+
+  <section class="feat-cta">
+    <h2>A question about your platform?</h2>
+    <p>These guides are a technical starting point, not a turnkey module. If your setup is out of the ordinary, get in touch.</p>
+    <div class="about-cta">
+      <a href="docs.html" class="btn">Read the full documentation</a>
+      <a href="index.html#contact" class="btn btn-ghost">Contact us</a>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <div class="wrap foot-grid">
+    <a href="index.html" class="logo" style="font-size:15px;"><img src="../logo.png" alt="Heurix" style="height:22px;width:22px;"> <span class="wordmark">HEURIX</span></a>
+    <div class="foot-links">
+      <a href="blog.html">Blog</a>
+      <a href="docs.html">Documentation API</a>
+      <a href="fonctionnalites.html">Features</a>
+      <a href="about.html">About</a>
+      <a href="cgv.html">Terms of Service</a>
+      <a href="mentions-legales.html">Legal notice</a>
+      <a href="mailto:contact@heurix.fr">contact@heurix.fr</a>
+    </div>
+    <div class="foot-social">
+      <span class="foot-social-label">Social networks</span>
+      <a href="https://www.linkedin.com/company/heurix-search/" target="_blank" rel="noopener" aria-label="LinkedIn" class="foot-social-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+      </a>
+    </div>
+    <div class="foot-legal">
+      Heurix — Sole proprietorship (French micro-entreprise). SIRET 107 681 900 00018. IT systems and software consulting.<br>
+      © <span id="year">2026</span> Heurix. All rights reserved.
+    </div>
+  </div>
+</footer>
+
+<script src="../search-en.js"></script>
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  const tabs = document.querySelectorAll('.integ-tab');
+  const panels = document.querySelectorAll('.integ-panel');
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      const target = tab.getAttribute('data-platform');
+      tabs.forEach(t => { t.classList.toggle('active', t === tab); t.setAttribute('aria-selected', t === tab ? 'true' : 'false'); });
+      panels.forEach(p => { p.hidden = p.getAttribute('data-panel') !== target; });
+    });
+  });
+
+  const revealEls = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('in'); io.unobserve(entry.target); } });
+    }, { threshold: 0.15 });
+    revealEls.forEach(el => io.observe(el));
+  } else {
+    revealEls.forEach(el => el.classList.add('in'));
+  }
+</script>
+
+</body>
+</html>

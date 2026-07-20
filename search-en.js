@@ -6,6 +6,7 @@ const HEURIX_SEARCH_INDEX = [
   { title: "How it works", excerpt: "Up and running in 3 steps: index your catalog, the cascade annotates every product, your customers find.", path: "en/index.html#comment-ca-marche" },
   { title: "Our mission", excerpt: "Search should never be a burden. It's a conversion lever.", path: "en/index.html#mission" },
   { title: "Console — dashboard", excerpt: "Top searched terms, zero-result searches, errors, usage. Sign in with your API key.", path: "en/console.html" },
+  { title: "Integrations", excerpt: "Technical guides for Shopify, PrestaShop, WooCommerce, Magento — search and catalog sync, with real code.", path: "en/integrations.html" },
   { title: "Features", excerpt: "Annotation cascade, typo tolerance, compound references, business synonyms, explainable results — dedicated page with links into the API docs.", path: "en/fonctionnalites.html" },
   { title: "API Documentation", excerpt: "Complete Search API reference: authentication, indexing, search, synonyms, annotation cascade, good practices.", path: "en/docs.html" },
   { title: "Search API — Pricing", excerpt: "The Heurix search engine, self-service, starting free. Usage-based billing, no commitment.", path: "en/pricing.html" },
