@@ -151,9 +151,32 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <a href="docs.html#ep-items">Indexing endpoint →</a>
       </div>
 
+      <div class="feat-card feat-card-highlight">
+        <h3>Faceted search</h3>
+        <p>Filter by genre, country, dimension, material... with disjunctive counting per group: selecting "Sweden" doesn't erase the other countries from the count — exactly like a standard e-commerce filter sidebar. This is what powers the prisms in the homepage demo.</p>
+        <pre class="docs-code"><code>{"q": "crime", "facets": ["PAYS"], "filters": ["PAYS_SE"]}
+→ "facets": {"PAYS": {"PAYS_SE": 12, "PAYS_FR": 34, ...}}</code></pre>
+        <a href="docs.html#facettes">Facets and filters →</a>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="feat-group">
+    <div class="feat-group-title">Search across multiple catalogs</div>
+    <div class="feat-grid-2 reveal">
+
+      <div class="feat-card feat-card-highlight">
+        <h3>Federated search</h3>
+        <p>A multilingual site, multiple brands? Query several catalogs in one call, results merged by relevance, each result flagged with its source. Scoring weights are global to the engine: comparable across catalogs, even with different rule packs.</p>
+        <pre class="docs-code"><code>POST /v1/federated-search
+{"catalogs": ["store-fr", "store-en"], "q": "red sweater"}</code></pre>
+        <a href="docs.html#ep-federated">Federated search endpoint →</a>
+      </div>
+
       <div class="feat-card">
-        <h3>Prisms: annotation-based filters</h3>
-        <p>The same annotations that power ranking (genre, format, dimension, material...) can also filter results client-side — as shown in the homepage demo. A dedicated facet-counting endpoint is on the roadmap to simplify building this server-side.</p>
+        <h3>Browse mode (no query)</h3>
+        <p>A search with an empty query becomes a pure catalog browse — combined with facets, it's how you build a filterable category page without a visitor needing to type anything.</p>
       </div>
 
     </div>

@@ -118,6 +118,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <a href="#produits">Structure des produits</a>
       <div class="docs-sidebar-group">Endpoints</div>
       <a href="#ep-search">Recherche</a>
+      <a href="#facettes">Facettes et filtres</a>
+      <a href="#ep-federated">Recherche fédérée</a>
       <a href="#ep-items">Indexation</a>
       <a href="#ep-delete">Suppression</a>
       <a href="#ep-synonyms">Synonymes</a>
@@ -216,16 +218,54 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <section id="ep-search" class="docs-section">
       <div class="docs-endpoint"><span class="docs-method docs-method-post">POST</span><code>/v1/index/{catalog}/search</code></div>
       <h2>Recherche</h2>
-      <p>Lance une recherche sur un catalogue. Résultats triés par pertinence, puis disponibilité à score égal.</p>
+      <p>Lance une recherche sur un catalogue. Résultats triés par pertinence, puis disponibilité à score égal. Une requête vide (<code class="docs-inline-code">q: ""</code>) est acceptée : c'est le mode parcours, pour naviguer un catalogue par facettes seules, avant toute saisie texte.</p>
       <h3>Corps de la requête</h3>
       <table class="docs-params">
         <tr><th>Paramètre</th><th>Type</th><th>Description</th></tr>
-        <tr><td><code class="docs-inline-code">q</code></td><td>string <span class="docs-required">requis</span></td><td>La requête de recherche (1 à 500 caractères).</td></tr>
+        <tr><td><code class="docs-inline-code">q</code></td><td>string</td><td>La requête de recherche (0 à 500 caractères — vide autorisé, voir mode parcours ci-dessus).</td></tr>
         <tr><td><code class="docs-inline-code">limit</code></td><td>integer</td><td>Nombre de résultats par page (1–100, défaut 10).</td></tr>
         <tr><td><code class="docs-inline-code">offset</code></td><td>integer</td><td>Décalage de pagination (défaut 0).</td></tr>
+        <tr><td><code class="docs-inline-code">facets</code></td><td>array de string</td><td>Groupes d'annotations pour lesquels renvoyer un décompte (ex. <code class="docs-inline-code">["PAYS", "FORMAT"]</code>). Voir <a href="#facettes">Facettes et filtres</a>.</td></tr>
+        <tr><td><code class="docs-inline-code">filters</code></td><td>array de string</td><td>Annotations exactes exigées, combinées en ET (ex. <code class="docs-inline-code">["PAYS_SE", "FORMAT_PO"]</code>).</td></tr>
       </table>
       <h3>Réponse</h3>
-      <p><code class="docs-inline-code">total</code> (nombre de correspondances), <code class="docs-inline-code">hits</code> — chaque hit contient le <code class="docs-inline-code">product</code> complet tel qu'indexé, son <code class="docs-inline-code">score</code>, <code class="docs-inline-code">in_stock</code>, et <code class="docs-inline-code">matched</code> : la liste lisible des raisons de la correspondance (termes trouvés, fautes corrigées, annotations partagées) — utile pour comprendre et régler la pertinence.</p>
+      <p><code class="docs-inline-code">total</code> (nombre de correspondances), <code class="docs-inline-code">hits</code> — chaque hit contient le <code class="docs-inline-code">product</code> complet tel qu'indexé, son <code class="docs-inline-code">score</code>, <code class="docs-inline-code">in_stock</code>, et <code class="docs-inline-code">matched</code> : la liste lisible des raisons de la correspondance (termes trouvés, fautes corrigées, annotations partagées) — utile pour comprendre et régler la pertinence. Si <code class="docs-inline-code">facets</code> a été demandé, un champ <code class="docs-inline-code">facets</code> supplémentaire liste les décomptes par groupe.</p>
+    </section>
+
+    <section id="facettes" class="docs-section">
+      <h2>Facettes et filtres</h2>
+      <p>Une facette regroupe les annotations qui partagent un même préfixe — <code class="docs-inline-code">PAYS_SE</code> et <code class="docs-inline-code">PAYS_FR</code> appartiennent au groupe <code class="docs-inline-code">PAYS</code>. Demandez un décompte par groupe avec <code class="docs-inline-code">facets</code>, restreignez les résultats avec <code class="docs-inline-code">filters</code> :</p>
+      <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/index/moncatalogue/search \
+  -H "Authorization: Bearer VOTRE_CLE_API" \
+  -d '{"q": "polar", "facets": ["PAYS", "FORMAT"], "filters": ["PAYS_SE"]}'</code></pre>
+      <pre class="docs-code"><code>{
+  "total": 12,
+  "hits": [ ... ],
+  "facets": {
+    "PAYS":   {"PAYS_SE": 12, "PAYS_FR": 34, "PAYS_UK": 9},
+    "FORMAT": {"FORMAT_PO": 8, "FORMAT_BR": 4}
+  }
+}</code></pre>
+      <p><strong>Le décompte est disjonctif au sein d'un même groupe</strong> : filtrer sur <code class="docs-inline-code">PAYS_SE</code> ne fait pas disparaître <code class="docs-inline-code">PAYS_FR</code> du décompte — c'est ce qui permet d'afficher « France (34) » comme option alternative même une fois la Suède sélectionnée, exactement comme un filtre de boutique en ligne classique. Entre deux groupes différents, en revanche, les filtres restent cumulatifs (ET logique).</p>
+    </section>
+
+    <section id="ep-federated" class="docs-section">
+      <div class="docs-endpoint"><span class="docs-method docs-method-post">POST</span><code>/v1/federated-search</code></div>
+      <h2>Recherche fédérée</h2>
+      <p>Interroge plusieurs catalogues en un seul appel et fusionne les résultats par pertinence — utile pour un site multilingue (un catalogue par langue) ou multi-marque. Les poids de score sont globaux au moteur, pas propres à un catalogue : les scores restent comparables entre catalogues, même avec des packs de règles différents.</p>
+      <h3>Corps de la requête</h3>
+      <table class="docs-params">
+        <tr><th>Paramètre</th><th>Type</th><th>Description</th></tr>
+        <tr><td><code class="docs-inline-code">catalogs</code></td><td>array de string <span class="docs-required">requis</span></td><td>1 à 10 noms de catalogues à interroger.</td></tr>
+        <tr><td><code class="docs-inline-code">q</code></td><td>string</td><td>La requête de recherche.</td></tr>
+        <tr><td><code class="docs-inline-code">limit</code> / <code class="docs-inline-code">offset</code></td><td>integer</td><td>Pagination sur l'ensemble fusionné.</td></tr>
+      </table>
+      <h3>Réponse</h3>
+      <p>Identique à une recherche classique, avec un champ <code class="docs-inline-code">catalog</code> ajouté à chaque hit pour identifier sa provenance, et <code class="docs-inline-code">catalogs_searched</code> / <code class="docs-inline-code">catalogs_not_found</code> pour repérer un nom de catalogue invalide.</p>
+      <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/federated-search \
+  -H "Authorization: Bearer VOTRE_CLE_API" \
+  -d '{"catalogs": ["boutique-fr", "boutique-en"], "q": "pull rouge"}'</code></pre>
+      <p class="docs-hero-note">Comptage : 1 requête par catalogue effectivement interrogé — une fédération sur 3 catalogues compte pour 3 requêtes, à l'image de l'indexation par tranche.</p>
     </section>
 
     <section id="ep-items" class="docs-section">

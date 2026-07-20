@@ -151,9 +151,32 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <a href="docs.html#ep-items">Endpoint indexation →</a>
       </div>
 
+      <div class="feat-card feat-card-highlight">
+        <h3>Recherche à facettes</h3>
+        <p>Filtrez par genre, pays, dimension, matière... avec un décompte disjonctif par groupe : sélectionner « Suède » n'efface pas les autres pays du décompte, exactement comme un filtre de boutique en ligne classique. C'est ce qui alimente les prismes de la démonstration en page d'accueil.</p>
+        <pre class="docs-code"><code>{"q": "polar", "facets": ["PAYS"], "filters": ["PAYS_SE"]}
+→ "facets": {"PAYS": {"PAYS_SE": 12, "PAYS_FR": 34, ...}}</code></pre>
+        <a href="docs.html#facettes">Facettes et filtres →</a>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="feat-group">
+    <div class="feat-group-title">Chercher à travers plusieurs catalogues</div>
+    <div class="feat-grid-2 reveal">
+
+      <div class="feat-card feat-card-highlight">
+        <h3>Recherche fédérée</h3>
+        <p>Un site en plusieurs langues, plusieurs marques ? Interrogez plusieurs catalogues en un seul appel, résultats fusionnés par pertinence, chaque résultat indique sa provenance. Les poids de score sont globaux au moteur : comparables entre catalogues, même avec des packs de règles différents.</p>
+        <pre class="docs-code"><code>POST /v1/federated-search
+{"catalogs": ["boutique-fr", "boutique-en"], "q": "pull rouge"}</code></pre>
+        <a href="docs.html#ep-federated">Endpoint recherche fédérée →</a>
+      </div>
+
       <div class="feat-card">
-        <h3>Prismes : filtres par annotation</h3>
-        <p>Les annotations qui alimentent le classement (genre, format, dimension, matière...) peuvent aussi servir à filtrer les résultats côté client — comme dans la démonstration de la page d'accueil. Un endpoint dédié de comptage par facette est sur la feuille de route pour simplifier cette construction côté serveur.</p>
+        <h3>Mode parcours (sans requête)</h3>
+        <p>Une recherche à requête vide devient un parcours pur du catalogue — combinée aux facettes, elle sert à construire une page de catégorie filtrable, sans qu'un visiteur ait besoin de taper quoi que ce soit.</p>
       </div>
 
     </div>

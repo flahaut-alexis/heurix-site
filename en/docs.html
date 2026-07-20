@@ -118,6 +118,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <a href="#produits">Product structure</a>
       <div class="docs-sidebar-group">Endpoints</div>
       <a href="#ep-search">Search</a>
+      <a href="#facettes">Facets and filters</a>
+      <a href="#ep-federated">Federated search</a>
       <a href="#ep-items">Indexing</a>
       <a href="#ep-delete">Deletion</a>
       <a href="#ep-synonyms">Synonyms</a>
@@ -216,16 +218,54 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <section id="ep-search" class="docs-section">
       <div class="docs-endpoint"><span class="docs-method docs-method-post">POST</span><code>/v1/index/{catalog}/search</code></div>
       <h2>Search</h2>
-      <p>Runs a search on a catalog. Results sorted by relevance, then availability at equal score.</p>
+      <p>Runs a search on a catalog. Results sorted by relevance, then availability at equal score. An empty query (<code class="docs-inline-code">q: ""</code>) is accepted: that's browse mode, for navigating a catalog by facets alone, before any text input.</p>
       <h3>Request body</h3>
       <table class="docs-params">
         <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
-        <tr><td><code class="docs-inline-code">q</code></td><td>string <span class="docs-required">required</span></td><td>The search query (1 to 500 characters).</td></tr>
+        <tr><td><code class="docs-inline-code">q</code></td><td>string</td><td>The search query (0 to 500 characters — empty allowed, see browse mode above).</td></tr>
         <tr><td><code class="docs-inline-code">limit</code></td><td>integer</td><td>Results per page (1–100, default 10).</td></tr>
         <tr><td><code class="docs-inline-code">offset</code></td><td>integer</td><td>Pagination offset (default 0).</td></tr>
+        <tr><td><code class="docs-inline-code">facets</code></td><td>array of string</td><td>Annotation groups to return counts for (e.g. <code class="docs-inline-code">["PAYS", "FORMAT"]</code>). See <a href="#facettes">Facets and filters</a>.</td></tr>
+        <tr><td><code class="docs-inline-code">filters</code></td><td>array of string</td><td>Exact annotations required, combined with AND (e.g. <code class="docs-inline-code">["PAYS_SE", "FORMAT_PO"]</code>).</td></tr>
       </table>
       <h3>Response</h3>
-      <p><code class="docs-inline-code">total</code> (match count), <code class="docs-inline-code">hits</code> — each hit contains the full <code class="docs-inline-code">product</code> as indexed, its <code class="docs-inline-code">score</code>, <code class="docs-inline-code">in_stock</code>, and <code class="docs-inline-code">matched</code>: a readable list of why it matched (terms found, typos corrected, shared annotations) — useful for understanding and tuning relevance.</p>
+      <p><code class="docs-inline-code">total</code> (match count), <code class="docs-inline-code">hits</code> — each hit contains the full <code class="docs-inline-code">product</code> as indexed, its <code class="docs-inline-code">score</code>, <code class="docs-inline-code">in_stock</code>, and <code class="docs-inline-code">matched</code>: a readable list of why it matched (terms found, typos corrected, shared annotations) — useful for understanding and tuning relevance. If <code class="docs-inline-code">facets</code> was requested, an additional <code class="docs-inline-code">facets</code> field lists the counts per group.</p>
+    </section>
+
+    <section id="facettes" class="docs-section">
+      <h2>Facets and filters</h2>
+      <p>A facet groups the annotations that share a common prefix — <code class="docs-inline-code">PAYS_SE</code> and <code class="docs-inline-code">PAYS_FR</code> belong to the <code class="docs-inline-code">PAYS</code> group. Request a per-group count with <code class="docs-inline-code">facets</code>, narrow results with <code class="docs-inline-code">filters</code>:</p>
+      <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/index/mycatalog/search \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -d '{"q": "crime", "facets": ["PAYS", "FORMAT"], "filters": ["PAYS_SE"]}'</code></pre>
+      <pre class="docs-code"><code>{
+  "total": 12,
+  "hits": [ ... ],
+  "facets": {
+    "PAYS":   {"PAYS_SE": 12, "PAYS_FR": 34, "PAYS_UK": 9},
+    "FORMAT": {"FORMAT_PO": 8, "FORMAT_BR": 4}
+  }
+}</code></pre>
+      <p><strong>Counting is disjunctive within a single group</strong>: filtering on <code class="docs-inline-code">PAYS_SE</code> doesn't make <code class="docs-inline-code">PAYS_FR</code> disappear from the count — that's what lets you show "France (34)" as an alternative option even once Sweden is selected, exactly like a standard e-commerce filter sidebar. Across different groups, however, filters remain cumulative (logical AND).</p>
+    </section>
+
+    <section id="ep-federated" class="docs-section">
+      <div class="docs-endpoint"><span class="docs-method docs-method-post">POST</span><code>/v1/federated-search</code></div>
+      <h2>Federated search</h2>
+      <p>Queries multiple catalogs in a single call and merges results by relevance — useful for a multilingual site (one catalog per language) or multi-brand setup. Scoring weights are global to the engine, not per-catalog: scores stay comparable across catalogs, even with different rule packs.</p>
+      <h3>Request body</h3>
+      <table class="docs-params">
+        <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+        <tr><td><code class="docs-inline-code">catalogs</code></td><td>array of string <span class="docs-required">required</span></td><td>1 to 10 catalog names to query.</td></tr>
+        <tr><td><code class="docs-inline-code">q</code></td><td>string</td><td>The search query.</td></tr>
+        <tr><td><code class="docs-inline-code">limit</code> / <code class="docs-inline-code">offset</code></td><td>integer</td><td>Pagination over the merged set.</td></tr>
+      </table>
+      <h3>Response</h3>
+      <p>Same shape as a regular search, with a <code class="docs-inline-code">catalog</code> field added to each hit to identify its source, and <code class="docs-inline-code">catalogs_searched</code> / <code class="docs-inline-code">catalogs_not_found</code> to spot an invalid catalog name.</p>
+      <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/federated-search \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -d '{"catalogs": ["store-fr", "store-en"], "q": "red sweater"}'</code></pre>
+      <p class="docs-hero-note">Counting: 1 request per catalog actually queried — federating across 3 catalogs counts as 3 requests, same principle as batch indexing.</p>
     </section>
 
     <section id="ep-items" class="docs-section">
