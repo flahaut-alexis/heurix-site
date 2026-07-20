@@ -72,25 +72,54 @@
   }
 
   function renderChart(daily) {
-    var ctx = document.getElementById("searches-chart").getContext("2d");
+    var canvas = document.getElementById("searches-chart");
+    var ctx = canvas.getContext("2d");
     var labels = daily.map(function (d) {
       var parts = d.day.split("-");
       return parts[2] + "/" + parts[1];
     });
     var data = daily.map(function (d) { return d.count; });
     if (chart) chart.destroy();
+
+    var gradient = ctx.createLinearGradient(0, 0, 0, canvas.clientHeight || 220);
+    gradient.addColorStop(0, "#5468FF");
+    gradient.addColorStop(1, "#8B9BFF");
+
     chart = new Chart(ctx, {
       type: "bar",
       data: {
         labels: labels,
-        datasets: [{ data: data, backgroundColor: "#5468FF", borderRadius: 4, maxBarThickness: 28 }],
+        datasets: [{
+          data: data,
+          backgroundColor: gradient,
+          borderRadius: 6,
+          maxBarThickness: 26,
+          hoverBackgroundColor: "#3F52E8",
+        }],
       },
       options: {
         responsive: true,
-        plugins: { legend: { display: false }, tooltip: { displayColors: false } },
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            displayColors: false,
+            backgroundColor: "#12142B",
+            titleFont: { family: "'Plus Jakarta Sans', sans-serif", weight: "600" },
+            bodyFont: { family: "'IBM Plex Mono', monospace", size: 12.5 },
+            padding: 10,
+            cornerRadius: 8,
+          },
+        },
         scales: {
-          y: { beginAtZero: true, ticks: { precision: 0 }, grid: { color: "#EEF1FF" } },
-          x: { grid: { display: false } },
+          y: {
+            beginAtZero: true, ticks: { precision: 0, color: "#5B5E76", font: { size: 11.5 } },
+            grid: { color: "#EEF1FF" }, border: { display: false },
+          },
+          x: {
+            grid: { display: false }, border: { display: false },
+            ticks: { color: "#5B5E76", font: { size: 11.5 } },
+          },
         },
       },
     });
@@ -130,10 +159,10 @@
       renderChart(summary.daily_searches);
 
       renderTable("top-queries-table", "top-queries-empty", topQueries, function (q) {
-        return "<td>" + esc(q.query) + "</td><td>" + q.count + "</td><td>" + q.avg_results + "</td>";
+        return "<td>" + esc(q.query) + "</td><td class='num'>" + q.count + "</td><td>" + q.avg_results + "</td>";
       });
       renderTable("zero-results-table", "zero-results-empty", zeroResults, function (q) {
-        return "<td>" + esc(q.query) + "</td><td>" + q.count + "</td>";
+        return "<td>" + esc(q.query) + "</td><td class='num'>" + q.count + "</td>";
       });
       renderTable("errors-table", "errors-empty", errors, function (e) {
         return "<td class='mono'>" + esc(e.endpoint) + "</td><td>" + e.status_code + "</td><td>" + esc(e.message) + "</td><td>" + L.when(e.at) + "</td>";
@@ -157,6 +186,7 @@
         sessionStorage.setItem(STORAGE_KEY, key);
         showDashboard();
         loadDashboard(key, periodSelect.value);
+        dashboard.scrollIntoView({ behavior: "smooth", block: "start" });
       })
       .catch(function (err) {
         var reason = err && err.status
