@@ -88,8 +88,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <section class="docs-hero">
   <div class="wrap">
     <div class="badge">Features</div>
-    <h1>What the engine can do.</h1>
-    <p class="lede">Twelve capabilities, all shipped today — not on a roadmap. Every section links to the matching endpoint or doc page.</p>
+    <h1>The search engine your references deserve.</h1>
+    <p class="lede">Annotation cascade, typo tolerance, business synonyms, industry rule packs: it's all there, packaged, ready to plug into your catalog in a few API calls. Not a kit to assemble — a complete engine.</p>
   </div>
 </section>
 
@@ -246,7 +246,24 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </footer>
 
 <script src="../search-en.js"></script>
-<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  const revealEls = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    revealEls.forEach(el => io.observe(el));
+  } else {
+    revealEls.forEach(el => el.classList.add('in'));
+  }
+</script>
 
 </body>
 </html>

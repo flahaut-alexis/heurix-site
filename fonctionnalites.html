@@ -88,8 +88,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <section class="docs-hero">
   <div class="wrap">
     <div class="badge">Fonctionnalités</div>
-    <h1>Ce que le moteur sait faire.</h1>
-    <p class="lede">Douze capacités, toutes livrées aujourd'hui — pas sur une feuille de route. Chaque section renvoie vers l'endpoint ou la page de doc correspondante.</p>
+    <h1>Le moteur de recherche que vos références méritent.</h1>
+    <p class="lede">Cascade d'annotations, tolérance aux fautes, synonymes métier, packs par secteur : tout est là, packagé, prêt à brancher sur votre catalogue en quelques appels API. Pas une brique à assembler — un moteur complet.</p>
   </div>
 </section>
 
@@ -246,7 +246,24 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </footer>
 
 <script src="search.js"></script>
-<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  const revealEls = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    revealEls.forEach(el => io.observe(el));
+  } else {
+    revealEls.forEach(el => el.classList.add('in'));
+  }
+</script>
 
 </body>
 </html>
