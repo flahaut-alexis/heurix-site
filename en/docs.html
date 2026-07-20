@@ -117,6 +117,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <a href="#quickstart">Quickstart</a>
       <a href="#authentification">Authentication</a>
       <a href="#comptage">Request counting</a>
+      <a href="#plafonds">Plans and limits</a>
       <a href="#produits">Product structure</a>
       <div class="docs-sidebar-group">Endpoints</div>
       <a href="#ep-search">Search</a>
@@ -195,10 +196,32 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <table class="icp-table">
         <tr><td>Search</td><td>1 <code class="docs-inline-code">search</code> call = 1 request</td></tr>
         <tr><td>Indexing</td><td>1 request per started batch of 100 products — indexing 1,000 products counts as 10 requests</td></tr>
+        <tr><td>Federated search</td><td>1 request per catalog queried</td></tr>
         <tr><td>Management</td><td>Every other API call (synonyms, stats, deletion...) = 1 request</td></tr>
-        <tr><td>Overage</td><td>Beyond your plan's volume, extra usage is billed at the rate shown on the <a href="pricing.html">pricing page</a> — never an abrupt cutoff</td></tr>
+        <tr><td>Overage (Scale)</td><td>Extra usage is billed at the rate shown on the <a href="pricing.html">pricing page</a> — never a cutoff</td></tr>
+        <tr><td>Overage (other plans)</td><td>A 10% grace margin absorbs a one-off spike; beyond that, the request is rejected with a clear <code class="docs-inline-code">429</code> code</td></tr>
       </table>
       <p>Your current usage is available anytime via <a href="#ep-usage"><code class="docs-inline-code">GET /v1/usage</code></a>.</p>
+    </section>
+
+    <section id="plafonds" class="docs-section">
+      <h2>Plans and limits</h2>
+      <p>Every API key is tied to a plan that defines its monthly request volume, its indexable product count, and its number of catalogs. Feature details for each plan are on the <a href="pricing.html">pricing page</a>; here are the raw limits:</p>
+      <table class="docs-params">
+        <tr><th>Plan</th><th>Requests / month</th><th>Max products</th><th>Catalogs</th></tr>
+        <tr><td><strong>Trial (14 days)</strong></td><td>2,000</td><td>2,000</td><td>2</td></tr>
+        <tr><td><strong>Starter</strong> — €19/month</td><td>5,000</td><td>5,000</td><td>1</td></tr>
+        <tr><td><strong>Growth</strong> — €49/month</td><td>30,000</td><td>25,000</td><td>3</td></tr>
+        <tr><td><strong>Scale</strong> — €139/month</td><td>150,000 then billed</td><td>100,000</td><td>unlimited</td></tr>
+      </table>
+      <p>Past the 14-day trial without subscribing to a paid plan, a key automatically reverts to trial limits until subscription — your catalogs and their configuration remain intact, simply less accessible in volume until you move to a paid plan.</p>
+      <p>Exceeding a limit returns a <code class="docs-inline-code">429</code> code with the detail of the cause:</p>
+      <pre class="docs-code"><code>{
+  "detail": "Starter plan request limit exceeded (5,512/5,000, 10% grace margin also exceeded). Upgrade to a higher plan to continue.",
+  "plan": "starter",
+  "limit_type": "requests",
+  "upgrade_url": "https://heurix.fr/pricing.html"
+}</code></pre>
     </section>
 
     <section id="produits" class="docs-section">

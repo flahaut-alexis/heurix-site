@@ -59,10 +59,33 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Heurix Search API",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Web",
+  "description": "Search and discovery engine for technical e-commerce catalogs, available via REST API: annotation cascade, typo tolerance, business synonyms, facets, federated search.",
+  "url": "https://heurix.fr/pricing.html",
+  "offers": {
+    "@type": "AggregateOffer",
+    "priceCurrency": "EUR",
+    "lowPrice": "19",
+    "highPrice": "139",
+    "offerCount": "3"
+  },
+  "provider": {
+    "@type": "Organization",
+    "name": "Heurix",
+    "url": "https://heurix.fr"
+  }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
   "@type": "FAQPage",
   "mainEntity": [
-    {"@type": "Question", "name": "How do I integrate the Heurix engine into my site?", "acceptedAnswer": {"@type": "Answer", "text": "Via API: index your catalog, wire up search, you're live. No plugin, no rebuild, no CMS dependency. Shopify, PrestaShop, WooCommerce, and Magento connectors are in the works."}},
-    {"@type": "Question", "name": "How much does the Heurix Search API cost?", "acceptedAnswer": {"@type": "Answer", "text": "A Free plan (2,000 requests and 5,000 products per month) to test without a credit card, then usage-based plans from €39/month. Counting rules are public and usage is available in real time."}},
+    {"@type": "Question", "name": "How do I integrate the Heurix engine into my site?", "acceptedAnswer": {"@type": "Answer", "text": "Via API: index your catalog, wire up search, you're live. No plugin, no rebuild, no CMS dependency. Technical integration guides with real code are available for Shopify, PrestaShop, WooCommerce, and Magento."}},
+    {"@type": "Question", "name": "How much does the Heurix Search API cost?", "acceptedAnswer": {"@type": "Answer", "text": "A 14-day free trial (up to 2,000 requests and 2,000 products) to test without a credit card, then plans from €19/month. Counting rules are public and usage is available in real time."}},
     {"@type": "Question", "name": "Why pick Heurix over Algolia, Elasticsearch, or Typesense?", "acceptedAnswer": {"@type": "Answer", "text": "Generalist engines compare characters; Heurix reads the structure of product references through its annotation cascade — dimensions, standards, sizes, vintages, editions — with rule packs per vertical and explainable results."}},
     {"@type": "Question", "name": "Where is the data hosted?", "acceptedAnswer": {"@type": "Answer", "text": "In France, at OVH (Gravelines or Strasbourg). Catalogs never leave the European Union."}}
   ]
@@ -117,27 +140,56 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <div class="wrap">
     <div class="badge">Search &amp; discovery engine for e-commerce</div>
     <h1>Your search bar is turning away customers who were already ready to buy.</h1>
-    <p class="lede">Heurix understands your product references — not just your keywords. "M8x20", "6205-2RS", "jeans 32/34": the engine reads what your customers mean, even badly typed. Try it, right here, right now ↓</p>
+    <p class="lede">Heurix understands your product references — not just your keywords. "M8x20", "6205-2RS", "jeans 32/34": the engine reads what your customers mean, even badly typed. Integration guides with real code for your platform, or a direct REST API.</p>
     <div class="hero-cta">
-      <a href="#moteur" class="btn">Discover the engine</a>
-      <a href="pricing.html" class="btn btn-ghost">See pricing</a>
+      <a href="pricing.html" class="btn">Try it free — 14 days</a>
+      <a href="#moteur" class="btn btn-ghost">Discover the engine</a>
     </div>
 
     <div class="demo play">
-      <div class="play-bar">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-        <input class="play-input" type="text" placeholder="Search the demo catalog…" aria-label="Search the demo catalog" autocomplete="off" spellcheck="false">
+      <div class="play-view-toggle" role="tablist">
+        <button type="button" class="play-view-tab active" data-view="demo" role="tab" aria-selected="true">Interactive demo</button>
+        <button type="button" class="play-view-tab" data-view="api" role="tab" aria-selected="false">API preview</button>
       </div>
-      <div class="play-chips">
-        <span class="play-chips-label">Try:</span>
-        <button type="button" class="play-chip" data-q="scandinavian crime pocket">scandinavian crime pocket</button>
-        <button type="button" class="play-chip" data-q="dostoievsky doorstop">dostoievsky doorstop</button>
-        <button type="button" class="play-chip" data-q="jules vern illustrated">jules vern illustrated</button>
-        <button type="button" class="play-chip" data-q="tolkien collector">tolkien collector</button>
+
+      <div class="play-view" data-view-panel="demo">
+        <div class="play-bar">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <input class="play-input" type="text" placeholder="Search the demo catalog…" aria-label="Search the demo catalog" autocomplete="off" spellcheck="false">
+        </div>
+        <div class="play-chips">
+          <span class="play-chips-label">Try:</span>
+          <button type="button" class="play-chip" data-q="scandinavian crime pocket">scandinavian crime pocket</button>
+          <button type="button" class="play-chip" data-q="dostoievsky doorstop">dostoievsky doorstop</button>
+          <button type="button" class="play-chip" data-q="jules vern illustrated">jules vern illustrated</button>
+          <button type="button" class="play-chip" data-q="tolkien collector">tolkien collector</button>
+        </div>
+        <p class="play-meta"></p>
+        <div class="play-prisms"></div>
+        <div class="play-grid"></div>
       </div>
-      <p class="play-meta"></p>
-      <div class="play-prisms"></div>
-      <div class="play-grid"></div>
+
+      <div class="play-view play-view-api" data-view-panel="api" hidden>
+        <p class="play-api-label">What a developer sees — the real API response, on the "m8x20 stainless" example:</p>
+        <pre class="docs-code play-api-code"><code>curl -X POST https://api.heurix.fr/v1/index/mycatalog/search \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -d '{"q": "m8x20 stainless"}'</code></pre>
+        <pre class="docs-code play-api-code"><code>{
+  "query": "m8x20 stainless",
+  "tokens": ["m8x20", "stainless"],
+  "total": 1,
+  "hits": [{
+    "product": {"id": "V1", "name": "Hex head screw", "ref": "M8 x 20 — A2", "stock": 100},
+    "score": 37.5,
+    "in_stock": true,
+    "matched": [
+      "annotation #DIAM_M8", "annotation #LONG_20",
+      "annotation #MAT_INOX", "annotation #VIS_M8X20"
+    ]
+  }]
+}</code></pre>
+        <p class="play-api-note">The <code class="docs-inline-code">matched</code> field explains the ranking — useful in development, not just in demos. <a href="docs.html">Full documentation →</a></p>
+      </div>
     </div>
 
     <div class="benefits">
@@ -226,7 +278,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div class="why-card">
         <div class="why-num">€0</div>
         <h3>To get started</h3>
-        <p>The Search API Free plan: 2,000 requests and 5,000 products per month, no commitment. <a href="pricing.html">See pricing</a>.</p>
+        <p>14 days free trial on the Search API: up to 2,000 requests and 2,000 products, no credit card. <a href="pricing.html">See pricing</a>.</p>
       </div>
     </div>
   </div>
@@ -261,11 +313,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </div>
       <div class="feature-card">
         <h3>Relevance + stock sorting</h3>
-        <p>Weighted fields, availability as tiebreaker — the unavailable never ranks first.</p>
+        <p>Weighted fields, availability as tiebreaker at equal score — an out-of-stock product never outranks an equivalent available one.</p>
       </div>
       <div class="feature-card">
         <h3>Explainable results</h3>
         <p>Every result says why it ranks: term found, typo corrected, shared annotation. No more black box.</p>
+      </div>
+      <div class="feature-card feature-card-highlight">
+        <h3>Zero-result searches tracked</h3>
+        <p>Every "no results" your customers hit is logged and available in your console — the concrete list of missed sales, not an estimate. <a href="console.html">See the console →</a></p>
+      </div>
+      <div class="feature-card">
+        <h3>Search-as-you-type</h3>
+        <p>≈ 10 ms response time: fast enough to query the API on every keystroke, with no perceptible lag for the visitor.</p>
       </div>
       <div class="feature-card">
         <h3>Data in France</h3>
@@ -300,6 +360,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <h3>A concrete competitive edge: understanding references, not just words</h3>
         <p>Most engines — including well-known solutions like Algolia or Elasticsearch when poorly configured — treat a product reference like any other word. Two different formats for the same reference (<code>M8x20</code> and <code>M8 x 20</code>) are then seen as two unrelated things. On a technical catalog, that's where a meaningful share of lost sales happens — not the site's design, but the engine's ability to understand what the buyer actually typed.</p>
         <p>Heurix configures custom regular expression (regex) rules for your catalog: they recognize the <em>structure</em> of a reference — family, dimension, variant — rather than comparing characters one by one. A buyer typing a partial or slightly mis-formatted reference still finds the right product. This is fine-grained catalog understanding, encoded once and for all into the engine's rule packs — it takes understanding both your catalog and how your customers actually search.</p>
+        <p class="regex-reassure">⚡ You never write a single regex yourself. Our rule packs — hardware, fashion, industry — are pre-configured and activate with your industry choice, at indexing time.</p>
       </div>
       <div class="demo-video">
         <video autoplay muted loop playsinline poster="../heurix-demo-poster.jpg" aria-label="Demo: searching for an M8x20 screw with a native engine, then with Heurix">
@@ -545,7 +606,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
 
         <a href="pricing.html" class="btn roi-cta">Try the Search API for free</a>
-        <div class="roi-cta-note">Free plan, no credit card required.</div>
+        <div class="roi-cta-note">Free 14-day trial, no credit card required.</div>
 
         <button type="button" id="roi-pdf-toggle" class="roi-pdf-toggle">Download this report as PDF →</button>
         <form id="roi-pdf-form" class="roi-pdf-form" hidden>
@@ -601,14 +662,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <details class="faq-item">
         <summary>How do I integrate the Heurix engine into my site?</summary>
         <div class="faq-answer">
-          <p>Via API: you index your catalog (one call), you wire up search (one call), you're live. No plugin to install, no rebuild, no dependency on your CMS. The <a href="docs.html">quickstart guide</a> fits in 3 calls. Shopify, PrestaShop, WooCommerce, and Magento connectors are in the works.</p>
+          <p>Via API: you index your catalog (one call), you wire up search (one call), you're live. No plugin to install, no rebuild, no dependency on your CMS. The <a href="docs.html">quickstart guide</a> fits in 3 calls. <a href="integrations.html">Integration guides with real code</a> are available for Shopify, PrestaShop, WooCommerce, and Magento.</p>
         </div>
       </details>
 
       <details class="faq-item">
         <summary>How much does it cost?</summary>
         <div class="faq-answer">
-          <p>A Free plan (2,000 requests and 5,000 products per month) to test without a credit card, then usage-based plans from €39/month. Counting rules are public and your usage is available in real time — no end-of-month surprise. <a href="pricing.html">Plan details are here</a>.</p>
+          <p>A 14-day free trial (up to 2,000 requests and 2,000 products) to test without a credit card, then plans from €19/month. Counting rules are public and your usage is available in real time — no end-of-month surprise. <a href="pricing.html">Plan details are here</a>.</p>
         </div>
       </details>
 
@@ -668,7 +729,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <div class="wrap">
     <div class="kicker">Contact us</div>
     <h2>A question, an unusual catalog?</h2>
-    <p class="section-lede">The Free plan is enough to get started without writing to us. If you have a question before diving in, or your references are specific enough to warrant a custom rule pack (Scale plans), describe your catalog in a couple of lines — reply within 48 business hours.</p>
+    <p class="section-lede">The 14-day free trial is enough to get started without writing to us. If you have a question before diving in, or your references are specific enough to warrant a custom rule pack (Scale plans), describe your catalog in a couple of lines — reply within 48 business hours.</p>
 
     <form class="cta-form" id="heurix-form">
       <label for="name">Name</label>
@@ -731,6 +792,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 
   // Scroll reveal
+  const playViewTabs = document.querySelectorAll('.play-view-tab');
+  playViewTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      const target = tab.getAttribute('data-view');
+      playViewTabs.forEach(t => {
+        t.classList.toggle('active', t === tab);
+        t.setAttribute('aria-selected', t === tab ? 'true' : 'false');
+      });
+      document.querySelectorAll('.play-view').forEach(panel => {
+        panel.hidden = panel.getAttribute('data-view-panel') !== target;
+      });
+    });
+  });
+
   const revealEls = document.querySelectorAll('.reveal');
   if ('IntersectionObserver' in window) {
     const io = new IntersectionObserver((entries) => {
@@ -825,12 +900,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     marginInput.setAttribute('aria-valuetext', marginInput.value + ' percent');
 
     // Annual Search API cost by catalog size / revenue
-    // (Growth plan €39/mo under €10M revenue, Scale plan €149/mo above €25M)
-    let cost = 1128; // midpoint between annualized Growth and Scale
+    // (Starter plan €19/mo for small catalogs, Growth €49/mo as the real
+    // middle tier, Scale €139/mo for large volumes / high revenue)
+    let cost = 588; // Growth annualized: €49 x 12 — the real middle tier, not an arbitrary average
     if (ca < 10000000) {
-      cost = 468; // Growth: €39 x 12
+      cost = 228; // Starter: €19 x 12
     } else if (ca >= 25000000) {
-      cost = 1788; // Scale: €149 x 12
+      cost = 1668; // Scale: €139 x 12
     }
 
     const caSearch = ca * share;

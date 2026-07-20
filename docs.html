@@ -117,6 +117,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <a href="#quickstart">Démarrage rapide</a>
       <a href="#authentification">Authentification</a>
       <a href="#comptage">Comptage des requêtes</a>
+      <a href="#plafonds">Plans et plafonds</a>
       <a href="#produits">Structure des produits</a>
       <div class="docs-sidebar-group">Endpoints</div>
       <a href="#ep-search">Recherche</a>
@@ -195,10 +196,32 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <table class="icp-table">
         <tr><td>Recherche</td><td>1 appel <code class="docs-inline-code">search</code> = 1 requête</td></tr>
         <tr><td>Indexation</td><td>1 requête par tranche de 100 produits entamée — indexer 1 000 produits compte pour 10 requêtes</td></tr>
+        <tr><td>Recherche fédérée</td><td>1 requête par catalogue interrogé</td></tr>
         <tr><td>Gestion</td><td>Chaque autre appel API (synonymes, stats, suppression...) = 1 requête</td></tr>
-        <tr><td>Dépassement</td><td>Au-delà du volume de votre plan, le surplus est facturé au tarif indiqué sur la <a href="pricing.html">page tarifs</a> — jamais de coupure brutale</td></tr>
+        <tr><td>Dépassement (Scale)</td><td>Le surplus est facturé au tarif indiqué sur la <a href="pricing.html">page tarifs</a> — jamais de coupure</td></tr>
+        <tr><td>Dépassement (autres plans)</td><td>Une marge de tolérance de 10 % absorbe un pic ponctuel ; au-delà, la requête est refusée avec un code <code class="docs-inline-code">429</code> explicite</td></tr>
       </table>
       <p>Votre consommation en cours est consultable à tout moment via <a href="#ep-usage"><code class="docs-inline-code">GET /v1/usage</code></a>.</p>
+    </section>
+
+    <section id="plafonds" class="docs-section">
+      <h2>Plans et plafonds</h2>
+      <p>Chaque clé API est rattachée à un plan qui définit son volume de requêtes mensuelles, son nombre de produits indexables, et son nombre de catalogues. Le détail des fonctionnalités de chaque plan est sur la <a href="pricing.html">page tarifs</a> ; voici les plafonds bruts :</p>
+      <table class="docs-params">
+        <tr><th>Plan</th><th>Requêtes / mois</th><th>Produits max</th><th>Catalogues</th></tr>
+        <tr><td><strong>Essai (14 jours)</strong></td><td>2 000</td><td>2 000</td><td>2</td></tr>
+        <tr><td><strong>Starter</strong> — 19 €/mois</td><td>5 000</td><td>5 000</td><td>1</td></tr>
+        <tr><td><strong>Growth</strong> — 49 €/mois</td><td>30 000</td><td>25 000</td><td>3</td></tr>
+        <tr><td><strong>Scale</strong> — 139 €/mois</td><td>150 000 puis facturé</td><td>100 000</td><td>illimité</td></tr>
+      </table>
+      <p>Passé les 14 jours d'essai sans souscription à un plan payant, une clé repasse automatiquement aux plafonds de l'essai jusqu'à souscription — vos catalogues et leur configuration restent intacts, simplement moins accessibles en volume le temps de passer à un plan payant.</p>
+      <p>Un dépassement de plafond renvoie un code <code class="docs-inline-code">429</code> avec le détail de la cause :</p>
+      <pre class="docs-code"><code>{
+  "detail": "Plafond de requêtes du plan 'starter' dépassé (5 512/5 000, marge de 10% également dépassée). Passez à un plan supérieur pour continuer.",
+  "plan": "starter",
+  "limit_type": "requests",
+  "upgrade_url": "https://heurix.fr/pricing.html"
+}</code></pre>
     </section>
 
     <section id="produits" class="docs-section">

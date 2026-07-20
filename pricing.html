@@ -104,7 +104,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <div class="wrap">
     <div class="badge">Search API</div>
     <h1>Le moteur Heurix, en self-service.</h1>
-    <p class="lede">Le moteur Heurix — regex sur les références techniques, synonymes métier, cascade d'annotations — accessible directement par API. Facturation à l'usage, sans engagement, un plan gratuit pour démarrer.</p>
+    <p class="lede">Le moteur Heurix — regex sur les références techniques, synonymes métier, cascade d'annotations — accessible directement par API. Facturation à l'usage, sans engagement.</p>
+    <p class="trial-banner">🎁 <strong>14 jours d'essai gratuit</strong> sur n'importe quel palier — jusqu'à 2 000 requêtes et 2 000 produits pour tester en conditions réelles. Sans carte bancaire.</p>
   </div>
 </section>
 
@@ -113,54 +114,107 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="pricing-grid reveal">
 
       <div class="price-tier-card">
-        <div class="price-tier-name">Free</div>
-        <div class="price-tier-amount">0&nbsp;€<span class="price-tier-period">/mois</span></div>
-        <p class="price-tier-desc">Pour tester le moteur sur un vrai catalogue, sans engagement.</p>
+        <div class="price-tier-name">Starter</div>
+        <div class="price-tier-amount">19&nbsp;€<span class="price-tier-period">/mois</span></div>
+        <p class="price-tier-desc">Un catalogue, un besoin simple — l'essentiel du moteur sans complexité.</p>
         <ul class="price-tier-features">
-          <li>2 000 requêtes / mois incluses</li>
+          <li>5 000 requêtes / mois incluses</li>
           <li>Jusqu'à 5 000 produits indexés</li>
+          <li>1 catalogue</li>
           <li>Tolérance aux fautes de frappe</li>
           <li>Facettes de base</li>
           <li>Support par documentation</li>
-          <li>Sans carte bancaire</li>
         </ul>
-        <a href="#waitlist" class="btn btn-ghost">Rejoindre la liste d'attente</a>
+        <a href="#waitlist" class="btn btn-ghost">Démarrer l'essai gratuit</a>
       </div>
 
       <div class="price-tier-card price-tier-highlight">
         <div class="price-tier-badge">Le plus choisi</div>
         <div class="price-tier-name">Growth</div>
-        <div class="price-tier-amount">39&nbsp;€<span class="price-tier-period">/mois</span></div>
-        <p class="price-tier-desc">Pour un site en croissance, avec un catalogue déjà conséquent.</p>
+        <div class="price-tier-amount">49&nbsp;€<span class="price-tier-period">/mois</span></div>
+        <p class="price-tier-desc">Pour un site en croissance, avec plusieurs catalogues à gérer.</p>
         <ul class="price-tier-features">
-          <li>20 000 requêtes / mois incluses<br><span class="price-tier-overage">puis 1,50 € / 1 000 requêtes</span></li>
-          <li>Jusqu'à 50 000 produits indexés</li>
+          <li>30 000 requêtes / mois incluses</li>
+          <li>Jusqu'à 25 000 produits indexés</li>
+          <li>3 catalogues</li>
           <li>Regex sur les références techniques</li>
           <li>Synonymes métier</li>
-          <li>Facettes dynamiques, tri personnalisé</li>
+          <li>Facettes dynamiques, recherche fédérée</li>
           <li>Support par email</li>
         </ul>
-        <a href="#waitlist" class="btn">Rejoindre la liste d'attente</a>
+        <a href="#waitlist" class="btn">Démarrer l'essai gratuit</a>
       </div>
 
       <div class="price-tier-card">
         <div class="price-tier-name">Scale</div>
-        <div class="price-tier-amount">149&nbsp;€<span class="price-tier-period">/mois</span></div>
+        <div class="price-tier-amount">139&nbsp;€<span class="price-tier-period">/mois</span></div>
         <p class="price-tier-desc">Pour un catalogue volumineux et un trafic recherche important.</p>
         <ul class="price-tier-features">
-          <li>100 000 requêtes / mois incluses<br><span class="price-tier-overage">puis 1 € / 1 000 requêtes</span></li>
-          <li>Jusqu'à 250 000 produits indexés</li>
+          <li>150 000 requêtes / mois incluses<br><span class="price-tier-overage">puis 0,80 € / 1 000 requêtes</span></li>
+          <li>Jusqu'à 100 000 produits indexés</li>
+          <li>Catalogues illimités</li>
           <li>Tout Growth, plus :</li>
           <li>Règles de merchandising avancées</li>
           <li>A/B test simple sur le ranking</li>
           <li>Support prioritaire</li>
         </ul>
-        <a href="#waitlist" class="btn btn-ghost">Rejoindre la liste d'attente</a>
+        <a href="#waitlist" class="btn btn-ghost">Démarrer l'essai gratuit</a>
       </div>
 
     </div>
 
     <p class="pricing-note">Tarifs HT. Facturation mensuelle, sans engagement de durée — vous changez ou arrêtez à tout moment. Besoin d'un volume plus important ou d'un hébergement dédié ? <a href="index.html#contact">Contactez-nous</a>, on regarde ensemble. En souscrivant, vous acceptez nos <a href="cgv.html">CGV</a>.</p>
+  </div>
+</section>
+
+<section id="calculator">
+  <div class="wrap">
+    <div class="kicker">Quel palier pour vous ?</div>
+    <h2>Estimez votre volume de requêtes.</h2>
+    <p class="section-lede">Pas besoin de connaître Heurix pour répondre — juste votre trafic. On calcule le reste.</p>
+
+    <div class="calc-simulator reveal">
+      <div class="calc-inputs">
+        <div class="roi-field roi-slider">
+          <div class="roi-slider-head">
+            <label for="calc-visitors">Visiteurs mensuels sur votre site</label>
+            <span id="calc-visitors-val" class="roi-slider-badge mono">20 000</span>
+          </div>
+          <input type="range" id="calc-visitors" min="1000" max="200000" step="1000" value="20000">
+          <div class="roi-range-hint"><span>1 000</span><span class="roi-range-mid">Trouvez ce chiffre dans votre outil d'analytics</span><span>200 000</span></div>
+        </div>
+
+        <div class="roi-field roi-slider">
+          <div class="roi-slider-head">
+            <label for="calc-rate">Part des visiteurs qui utilisent la recherche</label>
+            <span id="calc-rate-val" class="roi-slider-badge mono">25%</span>
+          </div>
+          <input type="range" id="calc-rate" min="5" max="60" step="5" value="25">
+          <div class="roi-range-hint"><span>5%</span><span class="roi-range-mid">Moyenne e-commerce : ~20-30%</span><span>60%</span></div>
+        </div>
+
+        <div class="roi-field roi-slider">
+          <div class="roi-slider-head">
+            <label for="calc-per-user">Recherches moyennes par visiteur qui cherche</label>
+            <span id="calc-per-user-val" class="roi-slider-badge mono">2</span>
+          </div>
+          <input type="range" id="calc-per-user" min="1" max="6" step="1" value="2">
+          <div class="roi-range-hint"><span>1</span><span class="roi-range-mid">Reformulations, fautes de frappe incluses</span><span>6</span></div>
+        </div>
+      </div>
+
+      <div class="calc-results">
+        <div class="kicker" style="color:#8FE3BC;">Estimation</div>
+        <h4>Votre volume mensuel</h4>
+        <div class="calc-results-num" id="calc-out-requests">10 000</div>
+        <div class="calc-results-label">requêtes de recherche / mois</div>
+        <div class="calc-recommend" id="calc-out-recommend">
+          <span class="calc-recommend-label">Palier recommandé</span>
+          <span class="calc-recommend-plan" id="calc-out-plan">Growth — 49 €/mois</span>
+        </div>
+        <p class="calc-results-note">Cette estimation ne compte que les recherches — l'indexation de votre catalogue s'ajoute à part (voir le détail de comptage dans la <a href="docs.html#comptage">documentation</a>).</p>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -252,7 +306,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <details class="faq-item">
         <summary>Comment démarrer ?</summary>
         <div class="faq-answer">
-          <p>Créez une clé sur le plan Free (aucune carte bancaire requise), indexez un premier lot de produits, lancez une recherche. Le <a href="docs.html">guide de démarrage rapide</a> tient en 3 appels API.</p>
+          <p>Démarrez l'essai gratuit de 14 jours (aucune carte bancaire requise), indexez un premier lot de produits, lancez une recherche. Le <a href="docs.html">guide de démarrage rapide</a> tient en 3 appels API.</p>
         </div>
       </details>
 
@@ -333,6 +387,38 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   } else {
     revealEls.forEach(el => el.classList.add('in'));
   }
+
+  // Calculatrice de volume de requêtes
+  const TIERS = [
+    { name: 'Starter', price: 19, limit: 5000 },
+    { name: 'Growth', price: 49, limit: 30000 },
+    { name: 'Scale', price: 139, limit: 150000 },
+  ];
+  function computeCalc() {
+    const visitors = parseInt(document.getElementById('calc-visitors').value, 10);
+    const rate = parseInt(document.getElementById('calc-rate').value, 10);
+    const perUser = parseInt(document.getElementById('calc-per-user').value, 10);
+
+    document.getElementById('calc-visitors-val').textContent = visitors.toLocaleString('fr-FR');
+    document.getElementById('calc-rate-val').textContent = rate + '%';
+    document.getElementById('calc-per-user-val').textContent = perUser;
+
+    const requests = Math.round(visitors * (rate / 100) * perUser);
+    document.getElementById('calc-out-requests').textContent = requests.toLocaleString('fr-FR');
+
+    let recommended = TIERS[TIERS.length - 1];
+    for (const tier of TIERS) {
+      if (requests <= tier.limit) { recommended = tier; break; }
+    }
+    const beyond = requests > TIERS[TIERS.length - 1].limit;
+    document.getElementById('calc-out-plan').textContent =
+      (beyond ? 'Scale + dépassement facturé' : recommended.name + ' — ' + recommended.price + ' €/mois');
+  }
+  ['calc-visitors', 'calc-rate', 'calc-per-user'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', computeCalc);
+  });
+  if (document.getElementById('calc-visitors')) computeCalc();
 
   const wlForm = document.getElementById('heurix-waitlist-form');
   const wlFeedback = document.getElementById('wl-form-feedback');

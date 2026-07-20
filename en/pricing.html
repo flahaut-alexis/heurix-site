@@ -104,7 +104,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <div class="wrap">
     <div class="badge">Search API</div>
     <h1>The Heurix engine, self-service.</h1>
-    <p class="lede">The Heurix engine — regex on technical references, business synonyms, annotation cascade — available directly through an API. Usage-based billing, no commitment, a free plan to get started.</p>
+    <p class="lede">The Heurix engine — regex on technical references, business synonyms, annotation cascade — available directly through an API. Usage-based billing, no commitment.</p>
+    <p class="trial-banner">🎁 <strong>14-day free trial</strong> on any tier — up to 2,000 requests and 2,000 products to test under real conditions. No credit card.</p>
   </div>
 </section>
 
@@ -113,54 +114,107 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="pricing-grid reveal">
 
       <div class="price-tier-card">
-        <div class="price-tier-name">Free</div>
-        <div class="price-tier-amount">€0<span class="price-tier-period">/month</span></div>
-        <p class="price-tier-desc">To test the engine on a real catalog, no commitment.</p>
+        <div class="price-tier-name">Starter</div>
+        <div class="price-tier-amount">€19<span class="price-tier-period">/month</span></div>
+        <p class="price-tier-desc">One catalog, a simple need — the essentials of the engine, no complexity.</p>
         <ul class="price-tier-features">
-          <li>2,000 requests / month included</li>
+          <li>5,000 requests / month included</li>
           <li>Up to 5,000 indexed products</li>
+          <li>1 catalog</li>
           <li>Typo tolerance</li>
           <li>Basic facets</li>
           <li>Documentation support</li>
-          <li>No credit card required</li>
         </ul>
-        <a href="#waitlist" class="btn btn-ghost">Join the waitlist</a>
+        <a href="#waitlist" class="btn btn-ghost">Start free trial</a>
       </div>
 
       <div class="price-tier-card price-tier-highlight">
         <div class="price-tier-badge">Most popular</div>
         <div class="price-tier-name">Growth</div>
-        <div class="price-tier-amount">€39<span class="price-tier-period">/month</span></div>
-        <p class="price-tier-desc">For a growing site with an already sizeable catalog.</p>
+        <div class="price-tier-amount">€49<span class="price-tier-period">/month</span></div>
+        <p class="price-tier-desc">For a growing site with several catalogs to manage.</p>
         <ul class="price-tier-features">
-          <li>20,000 requests / month included<br><span class="price-tier-overage">then €1.50 / 1,000 requests</span></li>
-          <li>Up to 50,000 indexed products</li>
+          <li>30,000 requests / month included</li>
+          <li>Up to 25,000 indexed products</li>
+          <li>3 catalogs</li>
           <li>Regex on technical references</li>
           <li>Business synonyms</li>
-          <li>Dynamic facets, custom sorting</li>
+          <li>Dynamic facets, federated search</li>
           <li>Email support</li>
         </ul>
-        <a href="#waitlist" class="btn">Join the waitlist</a>
+        <a href="#waitlist" class="btn">Start free trial</a>
       </div>
 
       <div class="price-tier-card">
         <div class="price-tier-name">Scale</div>
-        <div class="price-tier-amount">€149<span class="price-tier-period">/month</span></div>
+        <div class="price-tier-amount">€139<span class="price-tier-period">/month</span></div>
         <p class="price-tier-desc">For a large catalog and significant search traffic.</p>
         <ul class="price-tier-features">
-          <li>100,000 requests / month included<br><span class="price-tier-overage">then €1 / 1,000 requests</span></li>
-          <li>Up to 250,000 indexed products</li>
+          <li>150,000 requests / month included<br><span class="price-tier-overage">then €0.80 / 1,000 requests</span></li>
+          <li>Up to 100,000 indexed products</li>
+          <li>Unlimited catalogs</li>
           <li>Everything in Growth, plus:</li>
           <li>Advanced merchandising rules</li>
           <li>Simple ranking A/B testing</li>
           <li>Priority support</li>
         </ul>
-        <a href="#waitlist" class="btn btn-ghost">Join the waitlist</a>
+        <a href="#waitlist" class="btn btn-ghost">Start free trial</a>
       </div>
 
     </div>
 
     <p class="pricing-note">Prices excl. VAT. Monthly billing, no long-term commitment — change or cancel anytime. Need higher volume or dedicated hosting? <a href="index.html#contact">Get in touch</a>, we'll figure it out together. By subscribing, you accept our <a href="cgv.html">Terms of Service</a>.</p>
+  </div>
+</section>
+
+<section id="calculator">
+  <div class="wrap">
+    <div class="kicker">Which tier is right for you?</div>
+    <h2>Estimate your request volume.</h2>
+    <p class="section-lede">No need to know Heurix to answer — just your traffic. We compute the rest.</p>
+
+    <div class="calc-simulator reveal">
+      <div class="calc-inputs">
+        <div class="roi-field roi-slider">
+          <div class="roi-slider-head">
+            <label for="calc-visitors">Monthly visitors on your site</label>
+            <span id="calc-visitors-val" class="roi-slider-badge mono">20,000</span>
+          </div>
+          <input type="range" id="calc-visitors" min="1000" max="200000" step="1000" value="20000">
+          <div class="roi-range-hint"><span>1,000</span><span class="roi-range-mid">Find this figure in your analytics tool</span><span>200,000</span></div>
+        </div>
+
+        <div class="roi-field roi-slider">
+          <div class="roi-slider-head">
+            <label for="calc-rate">Share of visitors who use search</label>
+            <span id="calc-rate-val" class="roi-slider-badge mono">25%</span>
+          </div>
+          <input type="range" id="calc-rate" min="5" max="60" step="5" value="25">
+          <div class="roi-range-hint"><span>5%</span><span class="roi-range-mid">E-commerce average: ~20-30%</span><span>60%</span></div>
+        </div>
+
+        <div class="roi-field roi-slider">
+          <div class="roi-slider-head">
+            <label for="calc-per-user">Average searches per searching visitor</label>
+            <span id="calc-per-user-val" class="roi-slider-badge mono">2</span>
+          </div>
+          <input type="range" id="calc-per-user" min="1" max="6" step="1" value="2">
+          <div class="roi-range-hint"><span>1</span><span class="roi-range-mid">Rephrasing and typos included</span><span>6</span></div>
+        </div>
+      </div>
+
+      <div class="calc-results">
+        <div class="kicker" style="color:#8FE3BC;">Estimate</div>
+        <h4>Your monthly volume</h4>
+        <div class="calc-results-num" id="calc-out-requests">10,000</div>
+        <div class="calc-results-label">search requests / month</div>
+        <div class="calc-recommend" id="calc-out-recommend">
+          <span class="calc-recommend-label">Recommended tier</span>
+          <span class="calc-recommend-plan" id="calc-out-plan">Growth — €49/month</span>
+        </div>
+        <p class="calc-results-note">This estimate only counts searches — indexing your catalog is separate (see the counting details in the <a href="docs.html#comptage">documentation</a>).</p>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -252,7 +306,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <details class="faq-item">
         <summary>How do I get started?</summary>
         <div class="faq-answer">
-          <p>Create a key on the Free plan (no credit card required), index a first batch of products, run a search. The <a href="docs.html">quickstart guide</a> fits in 3 API calls.</p>
+          <p>Start the 14-day free trial (no credit card required), index a first batch of products, run a search. The <a href="docs.html">quickstart guide</a> fits in 3 API calls.</p>
         </div>
       </details>
 
@@ -333,6 +387,38 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   } else {
     revealEls.forEach(el => el.classList.add('in'));
   }
+
+  // Request volume calculator
+  const TIERS = [
+    { name: 'Starter', price: 19, limit: 5000 },
+    { name: 'Growth', price: 49, limit: 30000 },
+    { name: 'Scale', price: 139, limit: 150000 },
+  ];
+  function computeCalc() {
+    const visitors = parseInt(document.getElementById('calc-visitors').value, 10);
+    const rate = parseInt(document.getElementById('calc-rate').value, 10);
+    const perUser = parseInt(document.getElementById('calc-per-user').value, 10);
+
+    document.getElementById('calc-visitors-val').textContent = visitors.toLocaleString('en-GB');
+    document.getElementById('calc-rate-val').textContent = rate + '%';
+    document.getElementById('calc-per-user-val').textContent = perUser;
+
+    const requests = Math.round(visitors * (rate / 100) * perUser);
+    document.getElementById('calc-out-requests').textContent = requests.toLocaleString('en-GB');
+
+    let recommended = TIERS[TIERS.length - 1];
+    for (const tier of TIERS) {
+      if (requests <= tier.limit) { recommended = tier; break; }
+    }
+    const beyond = requests > TIERS[TIERS.length - 1].limit;
+    document.getElementById('calc-out-plan').textContent =
+      (beyond ? 'Scale + billed overage' : recommended.name + ' — €' + recommended.price + '/month');
+  }
+  ['calc-visitors', 'calc-rate', 'calc-per-user'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', computeCalc);
+  });
+  if (document.getElementById('calc-visitors')) computeCalc();
 
   const wlForm = document.getElementById('heurix-waitlist-form');
   const wlFeedback = document.getElementById('wl-form-feedback');
