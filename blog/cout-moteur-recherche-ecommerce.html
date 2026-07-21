@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-XXXXXXX');</script>
+<!-- End Google Tag Manager -->
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Combien coûte un moteur de recherche e-commerce en 2026 ? — Heurix</title>
+<meta name="description" content="Algolia, Meilisearch, Typesense, Heurix : les modèles de facturation comparés, et comment estimer votre propre volume avant de choisir.">
+<link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/cout-moteur-recherche-ecommerce.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Combien coûte un moteur de recherche e-commerce en 2026 ? — Heurix">
+<meta property="og:description" content="Algolia, Meilisearch, Typesense, Heurix : les modèles de facturation comparés, et comment estimer votre propre volume avant de choisir.">
+<meta property="og:image" content="https://heurix.fr/og-image.png">
+<meta property="og:url" content="https://heurix.fr/blog/cout-moteur-recherche-ecommerce.html">
+<meta property="og:locale" content="fr_FR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Combien coûte un moteur de recherche e-commerce en 2026 ? — Heurix">
+<meta name="twitter:description" content="Algolia, Meilisearch, Typesense, Heurix : les modèles de facturation comparés, et comment estimer votre propre volume avant de choisir.">
+<meta name="twitter:image" content="https://heurix.fr/og-image.png">
+<link rel="icon" type="image/png" href="../favicon-32.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<link rel="stylesheet" href="../styles.css">
+<link rel="canonical" href="https://heurix.fr/blog/cout-moteur-recherche-ecommerce.html">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Heurix",
+  "url": "https://heurix.fr",
+  "logo": "https://heurix.fr/logo.png",
+  "image": "https://heurix.fr/og-image.png",
+  "description": "Moteur de recherche et search & discovery pour sites e-commerce, basé sur des expressions régulières, conçu en France.",
+  "email": "contact@heurix.fr",
+  "sameAs": ["https://www.linkedin.com/company/heurix-search/"],
+  "founder": {"@type": "Person", "name": "Alexis Flahaut"},
+  "areaServed": "FR"
+}
+</script>
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+<header>
+  <div class="header-top">
+    <nav class="header-top-inner">
+      <a href="../index.html" class="logo"><img src="../logo.png" alt="Heurix"> <span class="wordmark">HEURIX</span></a>
+      <div class="header-search">
+        <button id="heurix-search-btn" class="search-trigger" aria-label="Heurix Search — rechercher sur le site" type="button">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <span class="search-trigger-text">Heurix Search</span>
+          <span class="search-trigger-kbd">Ctrl K</span>
+        </button>
+      </div>
+      <div class="header-utility">
+        <button type="button" id="mobile-nav-toggle" class="mobile-nav-toggle" aria-label="Menu" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+        <a href="../console.html" class="header-signin">Se connecter</a>
+        <a href="../en/blog.html" class="lang-switch">EN</a>
+        <a href="../pricing.html" class="btn">Découvrir le moteur</a>
+      </div>
+    </nav>
+  </div>
+  <div class="header-nav-row">
+    <nav class="header-nav-row-inner" aria-label="Navigation principale">
+      <div class="nav-links">
+        <a href="../index.html#probleme">Le problème</a>
+        <a href="../index.html#moteur">Le moteur</a>
+        <a href="../fonctionnalites.html">Fonctionnalités</a>
+        <a href="../integrations.html">Intégrations</a>
+        <a href="../index.html#moteur">Search API</a>
+        <a href="../index.html#tarifs">Simulateur ROI</a>
+        <a href="../blog.html">Blog</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<div id="heurix-search-modal" class="search-modal">
+  <div id="heurix-search-backdrop" class="search-backdrop" data-search-close></div>
+  <div class="search-panel">
+    <div class="search-panel-head">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input id="heurix-search-input" type="text" placeholder="Heurix Search..." autocomplete="off">
+      <button class="search-close" data-search-close type="button">Échap</button>
+    </div>
+    <p id="heurix-search-suggest-label" class="search-suggest-label" hidden>Derniers articles</p>
+    <div id="heurix-search-results" class="search-results"></div>
+    <p id="heurix-search-empty" class="search-empty" hidden>Aucun résultat pour cette recherche. Essayez un autre terme.</p>
+  </div>
+</div>
+
+<article class="post">
+  <div class="wrap post-wrap">
+    <a href="../blog.html" class="back-link">← Tous les articles</a>
+    <div class="kicker">Blog · Juillet 2026</div>
+    <h1>Combien coûte un moteur de recherche e-commerce en 2026 ?</h1>
+    <p class="post-lede">Le prix affiché ne dit pas grand-chose tant qu'on ne sait pas ce qu'il facture. Voici comment comparer les offres du marché sans se tromper d'unité.</p>
+
+    <div class="post-body">
+      <h2>Une question mal posée</h2>
+      <p>« Combien coûte un moteur de recherche ? » n'a pas de réponse unique, parce que les modèles de facturation varient fortement d'un fournisseur à l'autre : au nombre de recherches, au nombre de produits indexés, au forfait fixe, ou à un mélange des trois. Comparer deux offres sans comprendre l'unité facturée mène presque toujours à une mauvaise estimation.</p>
+
+      <h2>Les grands modèles du marché</h2>
+      <p>Algolia facture principalement au volume d'opérations de recherche, avec un premier palier gratuit limité puis une montée en coût qui peut surprendre au-delà de quelques dizaines de milliers de requêtes mensuelles. Meilisearch Cloud et Typesense Cloud proposent des forfaits mensuels à partir d'une vingtaine d'euros, généralement liés à la taille de l'index plutôt qu'au volume de recherche pur. Heurix suit une logique proche de ce dernier modèle : facturation au volume de requêtes avec des paliers explicites, à partir de <a href="../pricing.html">19 €/mois</a>.</p>
+
+      <h2>Le vrai coût est rarement dans l'abonnement</h2>
+      <p>Le prix affiché d'un moteur de recherche ne représente souvent qu'une partie du coût réel. La configuration initiale (synonymes, règles de correspondance, tri par pertinence) demande du temps de développeur, parfois plusieurs jours selon la complexité du catalogue. Un moteur qui livre des packs de règles pré-configurés par secteur réduit ce coût caché — pas en le rendant gratuit, mais en le rendant beaucoup plus rapide à obtenir un résultat correct.</p>
+
+      <h2>Estimer son propre volume avant de comparer les prix</h2>
+      <p>La question à se poser en premier n'est pas « quel est le prix le plus bas » mais « quel volume de recherches mon site génère-t-il réellement ». Une estimation simple : trafic mensuel × part des visiteurs qui utilisent la recherche (en général 15 à 30 % sur un site e-commerce) × nombre moyen de recherches par visiteur qui cherche. La <a href="../pricing.html#calculator">calculatrice de la page tarifs</a> fait ce calcul directement à partir de ces trois chiffres.</p>
+
+      <blockquote>Un moteur à 19 €/mois qui couvre 5 000 requêtes suffit largement à une boutique qui débute. Un moteur "gratuit" qui facture au-delà d'un palier bas peut coûter bien plus cher dès que le trafic grossit.</blockquote>
+
+      <h2>Ce qu'il faut vérifier avant de signer</h2>
+      <p>Trois questions simples permettent d'éviter une mauvaise surprise : que se passe-t-il en cas de dépassement de quota (blocage brutal ou facturation transparente au-delà) ? Le prix inclut-il la configuration des règles de correspondance ou faut-il un développeur en plus ? Et enfin — souvent oublié — peut-on tester sur un vrai catalogue avant de payer ? Un essai gratuit sans carte bancaire reste le moyen le plus fiable de vérifier qu'un moteur convient avant de s'engager.</p>
+        </div>
+
+    <div class="post-footer-cta">
+      <p>Envie d'estimer votre propre volume et le palier qui correspond ?</p>
+      <a href="../pricing.html" class="btn">Voir les tarifs et la calculatrice</a>
+    </div>
+  </div>
+</article>
+
+<footer>
+  <div class="wrap foot-grid">
+    <a href="../index.html" class="logo" style="font-size:15px;"><img src="../logo.png" alt="Heurix" style="height:22px;width:22px;"> <span class="wordmark">HEURIX</span></a>
+    <div class="foot-links">
+      <a href="../blog.html">Blog</a>
+      <a href="../docs.html">Documentation API</a>
+      <a href="../fonctionnalites.html">Fonctionnalités</a>
+      <a href="../integrations.html">Intégrations</a>
+      <a href="../console.html">Console</a>
+      <a href="../about.html">À propos</a>
+      <a href="../index.html#faq">FAQ</a>
+      <a href="../cgv.html">CGV</a>
+      <a href="../mentions-legales.html">Mentions légales</a>
+      <a href="mailto:contact@heurix.fr">contact@heurix.fr</a>
+    </div>
+    <div class="foot-social">
+      <span class="foot-social-label">Réseaux sociaux</span>
+      <a href="https://www.linkedin.com/company/heurix-search/" target="_blank" rel="noopener" aria-label="LinkedIn" class="foot-social-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+      </a>
+    </div>
+    <div class="foot-legal">
+      Heurix — Entreprise individuelle (micro-entreprise). SIRET 107 681 900 00018. Conseil en systèmes et logiciels informatiques.<br>
+      © <span id="year">2026</span> Heurix. Tous droits réservés.
+    </div>
+  </div>
+</footer>
+
+<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+
+<script src="../search.js"></script>
+<script src="../mobile-nav.js"></script>
+<div id="pricing-nudge" class="pricing-nudge">
+  <button type="button" class="pricing-nudge-close" aria-label="Fermer">&times;</button>
+  <div class="pricing-nudge-kicker">Essai gratuit 14 jours</div>
+  <p>Testez le Search API sur votre catalogue, sans carte bancaire.</p>
+  <a href="../pricing.html" class="btn">Voir les tarifs</a>
+</div>
+<script src="../pricing-nudge.js"></script>
+</body>
+</html>

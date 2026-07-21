@@ -17,7 +17,8 @@
     stock: function (s) { return s > 0 ? (s <= 3 ? s + " restants" : "en stock") : "rupture"; },
     prisms: "Prismes :",
     pages: function (p) { return p + " p."; },
-    intro: "polar scandinave poch"
+    intro: "polar scandinave poch",
+    showMore: function (n) { return "Afficher " + n + " résultat" + (n > 1 ? "s" : "") + " de plus"; }
   };
   var PRISM_LABELS = {
     GENRE_ROMAN: "Roman", GENRE_POLAR: "Polar", GENRE_SF: "SF", GENRE_FANTASY: "Fantasy",
@@ -479,12 +480,14 @@
     var grid = rootEl.querySelector(".play-grid");
     var meta = rootEl.querySelector(".play-meta");
     var prismsEl = rootEl.querySelector(".play-prisms");
+    var moreBtn = rootEl.querySelector(".play-more");
     var chips = rootEl.querySelectorAll(".play-chip");
     if (!input || !grid) return;
     var active = {}; // annotation -> true
+    var expanded = false; // "afficher plus" sur mobile
 
     function render(query, keepFilters) {
-      if (!keepFilters) active = {};
+      if (!keepFilters) { active = {}; expanded = false; }
       var t0 = performance.now();
       var r = search(query);
       // Application des prismes actifs
@@ -531,11 +534,12 @@
 
       // Diversité d'affichage : au plus 2 éditions du même titre dans le haut de liste,
       // pour montrer la variété du catalogue plutôt qu'une pile de pressages identiques.
-      // Sur mobile, on limite aussi le nombre total affiché — pas la peine de faire
-      // défiler 9 cartes pleine largeur sur un écran de téléphone.
-      var maxResults = window.innerWidth < 640 ? 3 : 9;
+      // Sur mobile, on limite l'affichage initial à 3 avec un bouton "Afficher plus" —
+      // pas la peine de faire défiler 9 cartes pleine largeur sur un écran de téléphone.
+      var isMobile = window.innerWidth < 640;
+      var visibleCount = (isMobile && !expanded) ? 3 : 9;
       var seenTitle = {}, diverse = [];
-      for (var di = 0; di < filtered.length && diverse.length < maxResults; di++) {
+      for (var di = 0; di < filtered.length && diverse.length < visibleCount; di++) {
         var tk = filtered[di].p.author + "|" + filtered[di].p.title;
         seenTitle[tk] = (seenTitle[tk] || 0) + 1;
         if (seenTitle[tk] <= 2) diverse.push(filtered[di]);
@@ -555,7 +559,20 @@
           '<span class="play-stock">' + L.stock(h.p.stock) + "</span></div>" +
           "</div>";
       }).join("");
+
+      if (isMobile && !expanded && filtered.length > diverse.length) {
+        var remaining = Math.min(filtered.length, 9) - diverse.length;
+        moreBtn.hidden = false;
+        moreBtn.textContent = L.showMore(remaining);
+      } else {
+        moreBtn.hidden = true;
+      }
     }
+
+    moreBtn.addEventListener("click", function () {
+      expanded = true;
+      render(input.value, true);
+    });
 
     input.addEventListener("input", function () { render(input.value); });
     each(chips, function (chip) {

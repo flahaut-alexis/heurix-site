@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-XXXXXXX');</script>
+<!-- End Google Tag Manager -->
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Algolia, Typesense, Meilisearch : quelle alternative pour un catalogue technique ? — Heurix</title>
+<meta name="description" content="Comparatif honnête entre les moteurs de recherche e-commerce les plus courants, du point de vue précis d'un catalogue à références techniques.">
+<link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/alternative-algolia-catalogue-technique.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Algolia, Typesense, Meilisearch : quelle alternative pour un catalogue technique ? — Heurix">
+<meta property="og:description" content="Comparatif honnête entre les moteurs de recherche e-commerce les plus courants, du point de vue précis d'un catalogue à références techniques.">
+<meta property="og:image" content="https://heurix.fr/og-image.png">
+<meta property="og:url" content="https://heurix.fr/blog/alternative-algolia-catalogue-technique.html">
+<meta property="og:locale" content="fr_FR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Algolia, Typesense, Meilisearch : quelle alternative pour un catalogue technique ? — Heurix">
+<meta name="twitter:description" content="Comparatif honnête entre les moteurs de recherche e-commerce les plus courants, du point de vue précis d'un catalogue à références techniques.">
+<meta name="twitter:image" content="https://heurix.fr/og-image.png">
+<link rel="icon" type="image/png" href="../favicon-32.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<link rel="stylesheet" href="../styles.css">
+<link rel="canonical" href="https://heurix.fr/blog/alternative-algolia-catalogue-technique.html">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Heurix",
+  "url": "https://heurix.fr",
+  "logo": "https://heurix.fr/logo.png",
+  "image": "https://heurix.fr/og-image.png",
+  "description": "Moteur de recherche et search & discovery pour sites e-commerce, basé sur des expressions régulières, conçu en France.",
+  "email": "contact@heurix.fr",
+  "sameAs": ["https://www.linkedin.com/company/heurix-search/"],
+  "founder": {"@type": "Person", "name": "Alexis Flahaut"},
+  "areaServed": "FR"
+}
+</script>
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+<header>
+  <div class="header-top">
+    <nav class="header-top-inner">
+      <a href="../index.html" class="logo"><img src="../logo.png" alt="Heurix"> <span class="wordmark">HEURIX</span></a>
+      <div class="header-search">
+        <button id="heurix-search-btn" class="search-trigger" aria-label="Heurix Search — rechercher sur le site" type="button">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <span class="search-trigger-text">Heurix Search</span>
+          <span class="search-trigger-kbd">Ctrl K</span>
+        </button>
+      </div>
+      <div class="header-utility">
+        <button type="button" id="mobile-nav-toggle" class="mobile-nav-toggle" aria-label="Menu" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+        <a href="../console.html" class="header-signin">Se connecter</a>
+        <a href="../en/blog.html" class="lang-switch">EN</a>
+        <a href="../pricing.html" class="btn">Découvrir le moteur</a>
+      </div>
+    </nav>
+  </div>
+  <div class="header-nav-row">
+    <nav class="header-nav-row-inner" aria-label="Navigation principale">
+      <div class="nav-links">
+        <a href="../index.html#probleme">Le problème</a>
+        <a href="../index.html#moteur">Le moteur</a>
+        <a href="../fonctionnalites.html">Fonctionnalités</a>
+        <a href="../integrations.html">Intégrations</a>
+        <a href="../index.html#moteur">Search API</a>
+        <a href="../index.html#tarifs">Simulateur ROI</a>
+        <a href="../blog.html">Blog</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<div id="heurix-search-modal" class="search-modal">
+  <div id="heurix-search-backdrop" class="search-backdrop" data-search-close></div>
+  <div class="search-panel">
+    <div class="search-panel-head">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input id="heurix-search-input" type="text" placeholder="Heurix Search..." autocomplete="off">
+      <button class="search-close" data-search-close type="button">Échap</button>
+    </div>
+    <p id="heurix-search-suggest-label" class="search-suggest-label" hidden>Derniers articles</p>
+    <div id="heurix-search-results" class="search-results"></div>
+    <p id="heurix-search-empty" class="search-empty" hidden>Aucun résultat pour cette recherche. Essayez un autre terme.</p>
+  </div>
+</div>
+
+<article class="post">
+  <div class="wrap post-wrap">
+    <a href="../blog.html" class="back-link">← Tous les articles</a>
+    <div class="kicker">Blog · Juillet 2026</div>
+    <h1>Algolia, Typesense, Meilisearch : quelle alternative pour un catalogue technique ?</h1>
+    <p class="post-lede">Ces trois moteurs sont d'excellents choix génériques. Voici précisément où ils s'arrêtent face à un catalogue de références techniques — et où ça se joue vraiment.</p>
+
+    <div class="post-body">
+      <h2>Ce que ces moteurs font très bien</h2>
+      <p>Algolia, Typesense et Meilisearch partagent une force commune : l'indexation full-text extrêmement rapide, la tolérance aux fautes de frappe généraliste, et une infrastructure éprouvée à grande échelle. Pour un catalogue de mode, de déco ou de contenu éditorial — où les termes de recherche sont des mots du langage courant — ce sont d'excellents choix, souvent meilleurs que ce qu'une petite structure pourrait construire elle-même.</p>
+
+      <h2>Là où ça se complique : les références structurées</h2>
+      <p>Le problème apparaît sur un type de recherche précis : celle où la référence elle-même porte l'information. « M8x20 », « 6205-2RS », « DIN 933 » ne sont pas des mots — ce sont des codes dont chaque segment a un sens (diamètre, longueur, norme). Un moteur de tolérance aux fautes généraliste traite ces chaînes comme du texte à faute près, pas comme une structure à décomposer. Résultat : une référence mal formatée, un espace en trop ou en moins, une variante d'écriture fournisseur, et la recherche échoue silencieusement.</p>
+      <p>Ces trois moteurs permettent bien de configurer des règles de synonymes ou des règles de correspondance personnalisées — mais c'est à vous de les écrire, une par une, référence par référence. Sur un catalogue de 500 produits, c'est faisable. Sur 50 000, ça ne l'est plus.</p>
+
+      <h2>La différence d'approche</h2>
+      <p>Heurix ne remplace pas ces moteurs sur leur terrain — il répond à un problème plus étroit et plus précis : des packs de règles pré-configurés par secteur (outillage, mode, industrie) qui reconnaissent la <em>structure</em> d'une référence automatiquement, sans configuration manuelle règle par règle. « M8 x 20 — A2 » et « m8x20 inox » pointent vers le même produit parce que le moteur comprend qu'il s'agit d'un diamètre, d'une longueur et d'une matière — pas parce que quelqu'un a écrit une règle de correspondance entre ces deux chaînes précises.</p>
+
+      <blockquote>La question n'est pas "quel est le meilleur moteur de recherche" — c'est "quel moteur correspond à la nature de vos références". Un bon choix pour un catalogue de vêtements peut être un mauvais choix pour un catalogue de roulements, et inversement.</blockquote>
+
+      <h2>Et le prix ?</h2>
+      <p>Algolia facture à l'opération de recherche, avec des paliers qui montent vite dès qu'on dépasse quelques dizaines de milliers de requêtes mensuelles. Meilisearch Cloud et Typesense Cloud sont plus accessibles en entrée de gamme mais demandent davantage de configuration technique pour obtenir un résultat comparable sur des références structurées. Heurix se positionne sur le même principe de facturation à l'usage (<a href="../pricing.html">à partir de 19 €/mois</a>), avec l'avantage que la compréhension des références est incluse dans le prix, pas à construire à côté.</p>
+
+      <h2>Comment trancher</h2>
+      <p>Une question simple : si vous tapez une référence produit avec une faute ou un format légèrement différent de celui enregistré, votre moteur actuel la retrouve-t-il ? Si la réponse est non plus d'une fois sur cinq, le problème n'est probablement pas la tolérance aux fautes générale — c'est l'absence de compréhension de la structure de vos références. C'est exactement le problème que packs de règles d'Heurix ont été conçus pour résoudre.</p>
+    </div>
+
+    <div class="post-footer-cta">
+      <p>Envie de voir comment le moteur traite vos propres références ?</p>
+      <a href="../pricing.html" class="btn">Essayer le Search API gratuitement</a>
+    </div>
+  </div>
+</article>
+
+<footer>
+  <div class="wrap foot-grid">
+    <a href="../index.html" class="logo" style="font-size:15px;"><img src="../logo.png" alt="Heurix" style="height:22px;width:22px;"> <span class="wordmark">HEURIX</span></a>
+    <div class="foot-links">
+      <a href="../blog.html">Blog</a>
+      <a href="../docs.html">Documentation API</a>
+      <a href="../fonctionnalites.html">Fonctionnalités</a>
+      <a href="../integrations.html">Intégrations</a>
+      <a href="../console.html">Console</a>
+      <a href="../about.html">À propos</a>
+      <a href="../index.html#faq">FAQ</a>
+      <a href="../cgv.html">CGV</a>
+      <a href="../mentions-legales.html">Mentions légales</a>
+      <a href="mailto:contact@heurix.fr">contact@heurix.fr</a>
+    </div>
+    <div class="foot-social">
+      <span class="foot-social-label">Réseaux sociaux</span>
+      <a href="https://www.linkedin.com/company/heurix-search/" target="_blank" rel="noopener" aria-label="LinkedIn" class="foot-social-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+      </a>
+    </div>
+    <div class="foot-legal">
+      Heurix — Entreprise individuelle (micro-entreprise). SIRET 107 681 900 00018. Conseil en systèmes et logiciels informatiques.<br>
+      © <span id="year">2026</span> Heurix. Tous droits réservés.
+    </div>
+  </div>
+</footer>
+
+<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+
+<script src="../search.js"></script>
+<script src="../mobile-nav.js"></script>
+<div id="pricing-nudge" class="pricing-nudge">
+  <button type="button" class="pricing-nudge-close" aria-label="Fermer">&times;</button>
+  <div class="pricing-nudge-kicker">Essai gratuit 14 jours</div>
+  <p>Testez le Search API sur votre catalogue, sans carte bancaire.</p>
+  <a href="../pricing.html" class="btn">Voir les tarifs</a>
+</div>
+<script src="../pricing-nudge.js"></script>
+</body>
+</html>

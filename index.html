@@ -111,9 +111,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </button>
       </div>
       <div class="header-utility">
+      <button type="button" id="mobile-nav-toggle" class="mobile-nav-toggle" aria-label="Menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
       <a href="console.html" class="header-signin">Se connecter</a>
       <a href="en/index.html" class="lang-switch">EN</a>
-      <a href="#moteur" class="btn">Découvrir le moteur</a>
+      <a href="pricing.html" class="btn">Découvrir le moteur</a>
       </div>
     </nav>
   </div>
@@ -124,7 +127,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <a href="#moteur">Le moteur</a>
       <a href="fonctionnalites.html">Fonctionnalités</a>
       <a href="integrations.html">Intégrations</a>
-      <a href="pricing.html">Search API</a>
+      <a href="#moteur">Search API</a>
       <a href="#tarifs">Simulateur ROI</a>
       <a href="blog.html">Blog</a>
     </div>
@@ -154,7 +157,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <p class="lede">Heurix comprend vos références produits — pas seulement vos mots-clés. « M8x20 », « 6205-2RS », « jean 32/34 » : le moteur lit ce que vos clients veulent dire, même mal écrit. Guides d'intégration avec du vrai code pour votre plateforme, ou API REST directe.</p>
     <div class="hero-cta">
       <a href="pricing.html" class="btn">Essayer gratuitement — 14 jours</a>
-      <a href="#moteur" class="btn btn-ghost">Découvrir le moteur</a>
+      <a href="pricing.html" class="btn btn-ghost">Découvrir le moteur</a>
     </div>
 
     <div class="demo play">
@@ -178,6 +181,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <p class="play-meta"></p>
         <div class="play-prisms"></div>
         <div class="play-grid"></div>
+        <button type="button" class="play-more" hidden>Afficher plus de résultats</button>
       </div>
 
       <div class="play-view play-view-api" data-view-panel="api" hidden>
@@ -223,20 +227,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></div>
         <h4>Explicable et souverain</h4>
         <p>Chaque résultat dit pourquoi il sort. Conçu en France, hébergé chez OVH, données dans l'UE.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="tech-strip">
-  <div class="wrap">
-    <div class="tech-strip-row">
-      <span class="tech-strip-label">CMS audités</span>
-      <div class="tech-chips">
-        <span class="tech-chip">Shopify</span>
-        <span class="tech-chip">PrestaShop</span>
-        <span class="tech-chip">WooCommerce</span>
-        <span class="tech-chip">Magento</span>
       </div>
     </div>
   </div>
@@ -302,7 +292,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <h2>Tout ce qu'il faut, sans la complexité.</h2>
     <p class="section-lede">Un aperçu de ce que le moteur sait faire — chaque capacité est dans le produit aujourd'hui, pas sur une roadmap.</p>
     <div class="features-grid reveal">
-      <div class="feature-card feature-card-highlight">
+      <div class="feature-card">
         <h3>Cascade d'annotations</h3>
         <p>La signature Heurix : des règles regex par niveaux qui comprennent M8x20 comme un diamètre et une longueur. <a href="docs.html#cascade">Comment ça marche →</a></p>
       </div>
@@ -330,7 +320,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <h3>Résultats explicables</h3>
         <p>Chaque résultat dit pourquoi il sort : terme trouvé, faute corrigée, annotation partagée. Fini la boîte noire.</p>
       </div>
-      <div class="feature-card feature-card-highlight">
+      <div class="feature-card">
         <h3>Recherches sans résultat traquées</h3>
         <p>Chaque « aucun résultat » de vos clients est loggé et consultable dans votre console — la liste concrète des ventes ratées, pas une estimation. <a href="console.html">Voir la console →</a></p>
       </div>
@@ -382,43 +372,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </div>
     </div>
 
-    <div class="regex-examples reveal">
-      <div class="regex-example-card">
-        <div class="regex-example-vertical mono">Outillage &amp; quincaillerie</div>
-        <div class="regex-example-query">« m8x20 inox »</div>
-        <div class="regex-example-arrow">↓ le moteur reconnaît</div>
-        <div class="regex-example-tags">
-          <span class="regex-tag">diamètre : M8</span>
-          <span class="regex-tag">longueur : 20mm</span>
-          <span class="regex-tag">matière : inox</span>
-        </div>
-        <p class="regex-example-note">Même si la fiche produit est enregistrée « M8 x 20 — A2 ».</p>
-      </div>
-      <div class="regex-example-card">
-        <div class="regex-example-vertical mono">Retail &amp; mode</div>
-        <div class="regex-example-query">« jean 32/34 bleu délavé »</div>
-        <div class="regex-example-arrow">↓ le moteur reconnaît</div>
-        <div class="regex-example-tags">
-          <span class="regex-tag">taille : 32/34</span>
-          <span class="regex-tag">coloris : bleu délavé</span>
-        </div>
-        <p class="regex-example-note">Même si la fiche produit utilise « W32L34 » et « denim washed ».</p>
-      </div>
-      <div class="regex-example-card">
-        <div class="regex-example-vertical mono">Industrie &amp; pièces détachées</div>
-        <div class="regex-example-query">« roulement 6205-2RS »</div>
-        <div class="regex-example-arrow">↓ le moteur reconnaît</div>
-        <div class="regex-example-tags">
-          <span class="regex-tag">référence normalisée : 6205-2RS</span>
-        </div>
-        <p class="regex-example-note">Même si le fournisseur l'a enregistrée « SKF 6205 2RS1 ».</p>
-      </div>
-    </div>
-
     <div class="verticals reveal">
       <h3>Les secteurs où cette approche change le plus de choses</h3>
       <p class="section-lede" style="margin-bottom:28px;">Plus un catalogue ou une base de contenu est volumineux, plus le gain d'une recherche bien réglée est important — parce que la recherche native décroche exactement là où le besoin de précision est le plus fin.</p>
       <div class="vertical-grid">
+        <div class="vertical-card">
+          <div class="icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.38 3.46 16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.47a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.47a2 2 0 00-1.34-2.23z"/></svg></div>
+          <h4>Mode &amp; retail</h4>
+          <p>Tailles composées (W32/L34), coloris, matières, déclinaisons — et des clients qui tapent vite, avec des fautes.</p>
+        </div>
         <div class="vertical-card">
           <div class="icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg></div>
           <h4>Outillage &amp; quincaillerie</h4>
@@ -428,6 +390,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <div class="icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></div>
           <h4>Pièces détachées &amp; industrie</h4>
           <p>Recherche par référence constructeur ou équivalence, tolérance aux formats de codes multiples selon le fournisseur.</p>
+        </div>
+        <div class="vertical-card">
+          <div class="icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg></div>
+          <h4>Librairie &amp; culture</h4>
+          <p>ISBN, éditions, formats, collections : le même titre existe en dizaines de versions — la démo de cette page en est la preuve.</p>
         </div>
         <div class="vertical-card">
           <div class="icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6z"/></svg></div>
@@ -440,16 +407,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <p>Gros volumes, acheteurs professionnels qui cherchent par référence exacte plus que par mot-clé descriptif.</p>
         </div>
         <div class="vertical-card">
-          <div class="icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.38 3.46 16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.47a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.47a2 2 0 00-1.34-2.23z"/></svg></div>
-          <h4>Mode &amp; retail</h4>
-          <p>Tailles composées (W32/L34), coloris, matières, déclinaisons — et des clients qui tapent vite, avec des fautes.</p>
-        </div>
-        <div class="vertical-card">
-          <div class="icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg></div>
-          <h4>Librairie &amp; culture</h4>
-          <p>ISBN, éditions, formats, collections : le même titre existe en dizaines de versions — la démo de cette page en est la preuve.</p>
-        </div>
-        <div class="vertical-card">
           <div class="icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 22h8"/><path d="M12 15v7"/><path d="M12 15a5 5 0 005-5V3H7v7a5 5 0 005 5z"/></svg></div>
           <h4>Vins &amp; spiritueux</h4>
           <p>Millésimes, domaines, appellations, formats (37,5 cl, magnum) : des références où chaque chiffre compte.</p>
@@ -457,7 +414,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="vertical-card">
           <div class="icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
           <h4>Contenu, blog &amp; documentation</h4>
-          <p>Articles, FAQ, base de connaissances : la même tolérance aux fautes qui retrouve une référence produit retrouve une question mal formulée. Le zéro-résultat devient un radar de contenus manquants — précieux pour une équipe communication ou support. (Essayez Ctrl+K sur cette page : c'est exactement ce cas d'usage.)</p>
+          <p>Articles, FAQ, base de connaissances : la même tolérance aux fautes qui retrouve une référence produit retrouve une question mal formulée. (Essayez Ctrl+K sur cette page.)</p>
         </div>
         <div class="vertical-card vertical-card-cta">
           <div class="icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
@@ -496,20 +453,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   -d '{"q": "m8x20 inox"}'
 
 → 1er résultat : Vis tête hexagonale M8 x 20 — A2   (annotation #VIS_M8X20)</code></pre>
-    <p class="how-note">La référence complète des endpoints est dans la <a href="docs.html">documentation API</a>. Connecteurs Shopify, PrestaShop, WooCommerce et Magento : en préparation.</p>
-  </div>
-</section>
-
-
-<section id="offres">
-  <div class="wrap">
-    <div class="kicker">L'offre</div>
-    <h2>Un moteur, un abonnement, zéro engagement.</h2>
-    <p class="section-lede">Le Search API Heurix est en self-service : un plan gratuit pour brancher votre catalogue et juger sur pièces, des plans à l'usage quand vous passez en production, et une facturation au compteur — transparente, résiliable à tout moment.</p>
-    <div class="about-cta" style="margin-top:22px;">
-      <a href="pricing.html" class="btn">Voir les plans et tarifs</a>
-      <a href="docs.html" class="btn btn-ghost">Lire la documentation</a>
-    </div>
+    <p class="how-note">La référence complète des endpoints est dans la <a href="docs.html">documentation API</a>. <a href="integrations.html">Guides d'intégration avec du vrai code</a> disponibles pour Shopify, PrestaShop, WooCommerce et Magento.</p>
   </div>
 </section>
 
@@ -802,7 +746,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="demo-search.js"></script>
+<script src="demo-search.js?v=1784631357"></script>
 <script>
   document.getElementById('year').textContent = new Date().getFullYear();
 
@@ -1193,5 +1137,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </script>
 
 <script src="search.js"></script>
+<script src="mobile-nav.js"></script>
+<div id="pricing-nudge" class="pricing-nudge">
+  <button type="button" class="pricing-nudge-close" aria-label="Fermer">&times;</button>
+  <div class="pricing-nudge-kicker">Essai gratuit 14 jours</div>
+  <p>Testez le Search API sur votre catalogue, sans carte bancaire.</p>
+  <a href="pricing.html" class="btn">Voir les tarifs</a>
+</div>
+<script src="pricing-nudge.js"></script>
 </body>
 </html>

@@ -36,7 +36,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </button>
       </div>
       <div class="header-utility">
-      <a href="index.html#moteur" class="btn">Découvrir le moteur</a>
+      <button type="button" id="mobile-nav-toggle" class="mobile-nav-toggle" aria-label="Menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+      <a href="pricing.html" class="btn">Découvrir le moteur</a>
       </div>
     </nav>
   </div>
@@ -47,7 +50,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <a href="index.html#moteur">Le moteur</a>
       <a href="fonctionnalites.html">Fonctionnalités</a>
       <a href="integrations.html">Intégrations</a>
-      <a href="pricing.html">Search API</a>
+      <a href="index.html#moteur">Search API</a>
       <a href="index.html#tarifs">Simulateur ROI</a>
       <a href="blog.html">Blog</a>
     </div>
@@ -111,5 +114,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 
 <script src="search.js"></script>
+<script src="mobile-nav.js"></script>
 </body>
 </html>

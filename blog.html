@@ -75,9 +75,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </button>
       </div>
       <div class="header-utility">
+      <button type="button" id="mobile-nav-toggle" class="mobile-nav-toggle" aria-label="Menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
       <a href="console.html" class="header-signin">Se connecter</a>
       <a href="en/blog.html" class="lang-switch">EN</a>
-      <a href="index.html#moteur" class="btn">Découvrir le moteur</a>
+      <a href="pricing.html" class="btn">Découvrir le moteur</a>
       </div>
     </nav>
   </div>
@@ -88,7 +91,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <a href="index.html#moteur">Le moteur</a>
       <a href="fonctionnalites.html">Fonctionnalités</a>
       <a href="integrations.html">Intégrations</a>
-      <a href="pricing.html">Search API</a>
+      <a href="index.html#moteur">Search API</a>
       <a href="index.html#tarifs">Simulateur ROI</a>
       <a href="blog.html">Blog</a>
     </div>
@@ -122,6 +125,34 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <section>
   <div class="wrap">
     <div class="blog-index-grid">
+
+      <a class="blog-card" href="blog/cout-moteur-recherche-ecommerce.html">
+        <div class="blog-date mono">Juillet 2026</div>
+        <h3>Combien coûte un moteur de recherche e-commerce en 2026 ?</h3>
+        <p>Algolia, Meilisearch, Typesense, Heurix : les modèles de facturation comparés, et comment estimer votre propre volume.</p>
+        <span class="blog-link">Lire l'article →</span>
+      </a>
+
+      <a class="blog-card" href="blog/recherches-sans-resultat-tableau-bord.html">
+        <div class="blog-date mono">Juillet 2026</div>
+        <h3>Recherches sans résultat : le tableau de bord que la plupart des sites n'ont pas</h3>
+        <p>Vos clients tapent exactement ce qu'ils veulent acheter — la plupart des sites ne savent jamais quand cette recherche échoue.</p>
+        <span class="blog-link">Lire l'article →</span>
+      </a>
+
+      <a class="blog-card" href="blog/recherche-blog-faq-contenu.html">
+        <div class="blog-date mono">Juillet 2026</div>
+        <h3>La recherche de votre blog ou de votre FAQ mérite aussi d'être bonne</h3>
+        <p>Le search e-commerce se concentre sur le catalogue produit et oublie souvent le contenu éditorial — un point aveugle coûteux.</p>
+        <span class="blog-link">Lire l'article →</span>
+      </a>
+
+      <a class="blog-card" href="blog/alternative-algolia-catalogue-technique.html">
+        <div class="blog-date mono">Juillet 2026</div>
+        <h3>Algolia, Typesense, Meilisearch : quelle alternative pour un catalogue technique ?</h3>
+        <p>Comparatif honnête entre les moteurs les plus courants, du point de vue précis d'un catalogue à références techniques.</p>
+        <span class="blog-link">Lire l'article →</span>
+      </a>
 
       <a class="blog-card" href="blog/recherche-reference-sku-b2b.html">
         <div class="blog-date mono">Juillet 2026</div>
@@ -213,5 +244,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 
 <script src="search.js"></script>
+<script src="mobile-nav.js"></script>
+<div id="pricing-nudge" class="pricing-nudge">
+  <button type="button" class="pricing-nudge-close" aria-label="Fermer">&times;</button>
+  <div class="pricing-nudge-kicker">Essai gratuit 14 jours</div>
+  <p>Testez le Search API sur votre catalogue, sans carte bancaire.</p>
+  <a href="pricing.html" class="btn">Voir les tarifs</a>
+</div>
+<script src="pricing-nudge.js"></script>
 </body>
 </html>

@@ -76,9 +76,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </button>
       </div>
       <div class="header-utility">
+      <button type="button" id="mobile-nav-toggle" class="mobile-nav-toggle" aria-label="Menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
       <a href="../console.html" class="header-signin">Sign in</a>
       <a href="../../blog/recherche-reference-sku-b2b.html" class="lang-switch">FR</a>
-      <a href="../index.html#moteur" class="btn">Discover the engine</a>
+      <a href="../pricing.html" class="btn">Discover the engine</a>
       </div>
     </nav>
   </div>
@@ -89,7 +92,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <a href="../index.html#moteur">The engine</a>
       <a href="../fonctionnalites.html">Features</a>
       <a href="../integrations.html">Integrations</a>
-      <a href="../pricing.html">Search API</a>
+      <a href="../index.html#moteur">Search API</a>
       <a href="../index.html#tarifs">ROI Simulator</a>
       <a href="../blog.html">Blog</a>
     </div>
@@ -177,5 +180,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script src="../../search-en.js"></script>
 <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 
+<script src="../../mobile-nav.js"></script>
+<div id="pricing-nudge" class="pricing-nudge">
+  <button type="button" class="pricing-nudge-close" aria-label="Close">&times;</button>
+  <div class="pricing-nudge-kicker">14-day free trial</div>
+  <p>Try the Search API on your catalog, no credit card.</p>
+  <a href="../pricing.html" class="btn">See pricing</a>
+</div>
+<script src="../../pricing-nudge.js"></script>
 </body>
 </html>

@@ -74,9 +74,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </button>
       </div>
       <div class="header-utility">
+      <button type="button" id="mobile-nav-toggle" class="mobile-nav-toggle" aria-label="Menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
       <a href="console.html" class="header-signin">Se connecter</a>
       <a href="en/about.html" class="lang-switch">EN</a>
-      <a href="index.html#moteur" class="btn">Découvrir le moteur</a>
+      <a href="pricing.html" class="btn">Découvrir le moteur</a>
       </div>
     </nav>
   </div>
@@ -87,7 +90,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <a href="index.html#moteur">Le moteur</a>
       <a href="fonctionnalites.html">Fonctionnalités</a>
       <a href="integrations.html">Intégrations</a>
-      <a href="pricing.html">Search API</a>
+      <a href="index.html#moteur">Search API</a>
       <a href="index.html#tarifs">Simulateur ROI</a>
       <a href="blog.html">Blog</a>
     </div>
@@ -151,6 +154,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <p class="play-meta"></p>
       <div class="play-prisms"></div>
       <div class="play-grid"></div>
+        <button type="button" class="play-more" hidden>Afficher plus de résultats</button>
     </div>
     <div class="about-cta">
       <a href="pricing.html" class="btn">Découvrir l'API Heurix</a>
@@ -187,10 +191,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </footer>
 
 <script src="search.js"></script>
-<script src="demo-search.js"></script>
+<script src="demo-search.js?v=1784631357"></script>
 <script>
   document.getElementById('year').textContent = new Date().getFullYear();
 </script>
 
+<script src="mobile-nav.js"></script>
+<div id="pricing-nudge" class="pricing-nudge">
+  <button type="button" class="pricing-nudge-close" aria-label="Fermer">&times;</button>
+  <div class="pricing-nudge-kicker">Essai gratuit 14 jours</div>
+  <p>Testez le Search API sur votre catalogue, sans carte bancaire.</p>
+  <a href="pricing.html" class="btn">Voir les tarifs</a>
+</div>
+<script src="pricing-nudge.js"></script>
 </body>
 </html>

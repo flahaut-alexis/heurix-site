@@ -27,14 +27,18 @@ const HEURIX_SEARCH_INDEX = [
   { title: "Mauvais moteur de recherche interne : quel impact réel sur l'EBITDA ?", excerpt: "Le levier économique de la recherche interne, et une méthode simple pour chiffrer la perte actuelle.", path: "blog/impact-ebitda-recherche-interne.html" },
   { title: "Pourquoi le moteur natif de votre plateforme ne suffit pas", excerpt: "Les trois angles morts les plus fréquents des moteurs livrés par défaut.", path: "blog/moteur-natif-ne-suffit-pas.html" },
   { title: "5 signes que votre moteur de recherche vous coûte des ventes", excerpt: "Des symptômes concrets à vérifier sur votre propre site, en moins de dix minutes.", path: "blog/5-signes-recherche-vous-coute-des-ventes.html" },
-  { title: "Le glossaire du search e-commerce, sans jargon", excerpt: "Synonymes, facettes, tolérance aux fautes : ce que ces termes veulent dire concrètement.", path: "blog/glossaire-search-ecommerce.html" }
+  { title: "Le glossaire du search e-commerce, sans jargon", excerpt: "Synonymes, facettes, tolérance aux fautes : ce que ces termes veulent dire concrètement.", path: "blog/glossaire-search-ecommerce.html" },
+  { title: "Algolia, Typesense, Meilisearch : quelle alternative pour un catalogue technique ?", excerpt: "Comparatif honnête entre les moteurs les plus courants, du point de vue d'un catalogue technique.", path: "blog/alternative-algolia-catalogue-technique.html" },
+  { title: "La recherche de votre blog ou de votre FAQ mérite aussi d'être bonne", excerpt: "Le search e-commerce oublie souvent le contenu éditorial — un point aveugle coûteux.", path: "blog/recherche-blog-faq-contenu.html" },
+  { title: "Recherches sans résultat : le tableau de bord que la plupart des sites n'ont pas", excerpt: "Vos clients tapent exactement ce qu'ils veulent acheter — peu de sites savent quand ça échoue.", path: "blog/recherches-sans-resultat-tableau-bord.html" },
+  { title: "Combien coûte un moteur de recherche e-commerce en 2026 ?", excerpt: "Les modèles de facturation comparés, et comment estimer votre propre volume.", path: "blog/cout-moteur-recherche-ecommerce.html" }
 ];
 
 // Derniers articles du blog — affichés par défaut, avant toute frappe.
 const HEURIX_LATEST_ARTICLES = [
-  "blog/recherche-reference-sku-b2b.html",
-  "blog/impact-ebitda-recherche-interne.html",
-  "blog/5-signes-recherche-vous-coute-des-ventes.html"
+  "blog/cout-moteur-recherche-ecommerce.html",
+  "blog/recherches-sans-resultat-tableau-bord.html",
+  "blog/recherche-blog-faq-contenu.html"
 ].map((p) => HEURIX_SEARCH_INDEX.find((item) => item.path === p)).filter(Boolean);
 
 (function () {
