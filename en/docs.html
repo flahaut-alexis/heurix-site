@@ -209,7 +209,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <p>Billing is based on a monthly request counter, simple by design:</p>
       <div class="table-scroll"><table class="icp-table">
         <tr><td>Search</td><td>1 <code class="docs-inline-code">search</code> call = 1 request</td></tr>
-        <tr><td>Indexing</td><td>1 request per started batch of 100 products — indexing 1,000 products counts as 10 requests</td></tr>
+        <tr><td>Indexing</td><td>never counted against your request quota — update your catalog as often as needed, only the total number of indexed products is capped by plan</td></tr>
         <tr><td>Federated search</td><td>1 request per catalog queried</td></tr>
         <tr><td>Management</td><td>Every other API call (synonyms, stats, deletion...) = 1 request</td></tr>
         <tr><td>Overage (Scale)</td><td>Extra usage is billed at the rate shown on the <a href="pricing.html">pricing page</a> — never a cutoff</td></tr>
@@ -224,7 +224,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div class="table-scroll"><table class="docs-params">
         <tr><th>Plan</th><th>Requests / month</th><th>Max products</th><th>Catalogs</th></tr>
         <tr><td><strong>Trial (14 days)</strong></td><td>2,000</td><td>2,000</td><td>2</td></tr>
-        <tr><td><strong>Starter</strong> — €19/month</td><td>5,000</td><td>5,000</td><td>1</td></tr>
+        <tr><td><strong>Starter</strong> — €19/month</td><td>15,000</td><td>8,000</td><td>1</td></tr>
         <tr><td><strong>Growth</strong> — €49/month</td><td>30,000</td><td>25,000</td><td>3</td></tr>
         <tr><td><strong>Scale</strong> — €139/month</td><td>150,000 then billed</td><td>100,000</td><td>unlimited</td></tr>
       </table></div>

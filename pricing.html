@@ -130,12 +130,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div class="price-tier-card">
         <div class="price-tier-name">Starter</div>
         <div class="price-tier-amount">19&nbsp;€<span class="price-tier-period">/mois</span></div>
-        <p class="price-tier-desc">Un catalogue, un besoin simple — l'essentiel du moteur sans complexité.</p>
+        <p class="price-tier-desc">Un catalogue, un besoin simple — le moteur complet, sans complexité de mise en route.</p>
         <ul class="price-tier-features">
-          <li>5 000 requêtes / mois incluses</li>
-          <li>Jusqu'à 5 000 produits indexés</li>
+          <li>15 000 requêtes / mois incluses</li>
+          <li>Jusqu'à 8 000 produits indexés</li>
           <li>1 catalogue</li>
-          <li>Tolérance aux fautes de frappe</li>
+          <li>Cascade d'annotations &amp; regex sur les références techniques</li>
+          <li>Tolérance aux fautes, synonymes métier</li>
           <li>Facettes de base</li>
           <li>Support par documentation</li>
         </ul>
@@ -151,8 +152,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <li>30 000 requêtes / mois incluses</li>
           <li>Jusqu'à 25 000 produits indexés</li>
           <li>3 catalogues</li>
-          <li>Regex sur les références techniques</li>
-          <li>Synonymes métier</li>
+          <li>Tout Starter, plus :</li>
           <li>Facettes dynamiques, recherche fédérée</li>
           <li>Support par email</li>
         </ul>
@@ -177,7 +177,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     </div>
 
-    <p class="pricing-note">Tarifs HT. Facturation mensuelle, sans engagement de durée — vous changez ou arrêtez à tout moment. Besoin d'un volume plus important ou d'un hébergement dédié ? <a href="index.html#contact">Contactez-nous</a>, on regarde ensemble. En souscrivant, vous acceptez nos <a href="cgv.html">CGV</a>.</p>
+    <p class="pricing-note">Tarifs HT. Facturation mensuelle, sans engagement de durée — vous changez ou arrêtez à tout moment. L'indexation de votre catalogue n'est jamais décomptée de votre quota de requêtes — mettez à jour vos stocks et vos prix aussi souvent que nécessaire. Besoin d'un volume plus important ou d'un hébergement dédié ? <a href="index.html#contact">Contactez-nous</a>, on regarde ensemble. En souscrivant, vous acceptez nos <a href="cgv.html">CGV</a>.</p>
   </div>
 </section>
 
@@ -404,7 +404,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   // Calculatrice de volume de requêtes
   const TIERS = [
-    { name: 'Starter', price: 19, limit: 5000 },
+    { name: 'Starter', price: 19, limit: 15000 },
     { name: 'Growth', price: 49, limit: 30000 },
     { name: 'Scale', price: 139, limit: 150000 },
   ];

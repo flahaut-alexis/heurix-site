@@ -130,12 +130,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div class="price-tier-card">
         <div class="price-tier-name">Starter</div>
         <div class="price-tier-amount">€19<span class="price-tier-period">/month</span></div>
-        <p class="price-tier-desc">One catalog, a simple need — the essentials of the engine, no complexity.</p>
+        <p class="price-tier-desc">One catalog, a simple need — the full engine, no complexity to get started.</p>
         <ul class="price-tier-features">
-          <li>5,000 requests / month included</li>
-          <li>Up to 5,000 indexed products</li>
+          <li>15,000 requests / month included</li>
+          <li>Up to 8,000 indexed products</li>
           <li>1 catalog</li>
-          <li>Typo tolerance</li>
+          <li>Annotation cascade &amp; regex on technical references</li>
+          <li>Typo tolerance, business synonyms</li>
           <li>Basic facets</li>
           <li>Documentation support</li>
         </ul>
@@ -151,8 +152,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <li>30,000 requests / month included</li>
           <li>Up to 25,000 indexed products</li>
           <li>3 catalogs</li>
-          <li>Regex on technical references</li>
-          <li>Business synonyms</li>
+          <li>Everything in Starter, plus:</li>
           <li>Dynamic facets, federated search</li>
           <li>Email support</li>
         </ul>
@@ -177,7 +177,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     </div>
 
-    <p class="pricing-note">Prices excl. VAT. Monthly billing, no long-term commitment — change or cancel anytime. Need higher volume or dedicated hosting? <a href="index.html#contact">Get in touch</a>, we'll figure it out together. By subscribing, you accept our <a href="cgv.html">Terms of Service</a>.</p>
+    <p class="pricing-note">Prices excl. VAT. Monthly billing, no long-term commitment — change or cancel anytime. Indexing your catalog is never counted against your request quota — update your stock and prices as often as you need. Need higher volume or dedicated hosting? <a href="index.html#contact">Get in touch</a>, we'll figure it out together. By subscribing, you accept our <a href="cgv.html">Terms of Service</a>.</p>
   </div>
 </section>
 
@@ -404,7 +404,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   // Request volume calculator
   const TIERS = [
-    { name: 'Starter', price: 19, limit: 5000 },
+    { name: 'Starter', price: 19, limit: 15000 },
     { name: 'Growth', price: 49, limit: 30000 },
     { name: 'Scale', price: 139, limit: 150000 },
   ];
