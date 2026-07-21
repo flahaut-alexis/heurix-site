@@ -204,27 +204,27 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <section id="comptage" class="docs-section">
       <h2>Request counting</h2>
       <p>Billing is based on a monthly request counter, simple by design:</p>
-      <table class="icp-table">
+      <div class="table-scroll"><table class="icp-table">
         <tr><td>Search</td><td>1 <code class="docs-inline-code">search</code> call = 1 request</td></tr>
         <tr><td>Indexing</td><td>1 request per started batch of 100 products — indexing 1,000 products counts as 10 requests</td></tr>
         <tr><td>Federated search</td><td>1 request per catalog queried</td></tr>
         <tr><td>Management</td><td>Every other API call (synonyms, stats, deletion...) = 1 request</td></tr>
         <tr><td>Overage (Scale)</td><td>Extra usage is billed at the rate shown on the <a href="pricing.html">pricing page</a> — never a cutoff</td></tr>
         <tr><td>Overage (other plans)</td><td>A 10% grace margin absorbs a one-off spike; beyond that, the request is rejected with a clear <code class="docs-inline-code">429</code> code</td></tr>
-      </table>
+      </table></div>
       <p>Your current usage is available anytime via <a href="#ep-usage"><code class="docs-inline-code">GET /v1/usage</code></a>.</p>
     </section>
 
     <section id="plafonds" class="docs-section">
       <h2>Plans and limits</h2>
       <p>Every API key is tied to a plan that defines its monthly request volume, its indexable product count, and its number of catalogs. Feature details for each plan are on the <a href="pricing.html">pricing page</a>; here are the raw limits:</p>
-      <table class="docs-params">
+      <div class="table-scroll"><table class="docs-params">
         <tr><th>Plan</th><th>Requests / month</th><th>Max products</th><th>Catalogs</th></tr>
         <tr><td><strong>Trial (14 days)</strong></td><td>2,000</td><td>2,000</td><td>2</td></tr>
         <tr><td><strong>Starter</strong> — €19/month</td><td>5,000</td><td>5,000</td><td>1</td></tr>
         <tr><td><strong>Growth</strong> — €49/month</td><td>30,000</td><td>25,000</td><td>3</td></tr>
         <tr><td><strong>Scale</strong> — €139/month</td><td>150,000 then billed</td><td>100,000</td><td>unlimited</td></tr>
-      </table>
+      </table></div>
       <p>Past the 14-day trial without subscribing to a paid plan, a key automatically reverts to trial limits until subscription — your catalogs and their configuration remain intact, simply less accessible in volume until you move to a paid plan.</p>
       <p>Exceeding a limit returns a <code class="docs-inline-code">429</code> code with the detail of the cause:</p>
       <pre class="docs-code"><code>{
@@ -238,14 +238,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <section id="produits" class="docs-section">
       <h2>Product structure</h2>
       <p>A product is a free-form JSON object. Four fields play a special role:</p>
-      <table class="docs-params">
+      <div class="table-scroll"><table class="docs-params">
         <tr><th>Field</th><th>Type</th><th>Role</th></tr>
         <tr><td><code class="docs-inline-code">id</code></td><td>string <span class="docs-required">required</span></td><td>Unique identifier within the catalog. Re-indexing the same id replaces the product (upsert).</td></tr>
         <tr><td><code class="docs-inline-code">ref</code></td><td>string</td><td>Product reference (SKU, manufacturer code). Indexed, highest weight.</td></tr>
         <tr><td><code class="docs-inline-code">name</code></td><td>string</td><td>Product name. Indexed, high weight.</td></tr>
         <tr><td><code class="docs-inline-code">description</code></td><td>string</td><td>Description. Indexed, standard weight.</td></tr>
         <tr><td><code class="docs-inline-code">stock</code></td><td>number | bool | string</td><td>Availability — used for sorting at equal relevance. <code class="docs-inline-code">0</code>, <code class="docs-inline-code">false</code>, <code class="docs-inline-code">"out"</code> = unavailable.</td></tr>
-      </table>
+      </table></div>
       <p>Any other field (price, image, URL, category...) is stored as-is and returned in results, without being indexed.</p>
     </section>
 
@@ -256,14 +256,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <h2>Search</h2>
       <p>Runs a search on a catalog. Results sorted by relevance, then availability at equal score. An empty query (<code class="docs-inline-code">q: ""</code>) is accepted: that's browse mode, for navigating a catalog by facets alone, before any text input.</p>
       <h3>Request body</h3>
-      <table class="docs-params">
+      <div class="table-scroll"><table class="docs-params">
         <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
         <tr><td><code class="docs-inline-code">q</code></td><td>string</td><td>The search query (0 to 500 characters — empty allowed, see browse mode above).</td></tr>
         <tr><td><code class="docs-inline-code">limit</code></td><td>integer</td><td>Results per page (1–100, default 10).</td></tr>
         <tr><td><code class="docs-inline-code">offset</code></td><td>integer</td><td>Pagination offset (default 0).</td></tr>
         <tr><td><code class="docs-inline-code">facets</code></td><td>array of string</td><td>Annotation groups to return counts for (e.g. <code class="docs-inline-code">["PAYS", "FORMAT"]</code>). See <a href="#facettes">Facets and filters</a>.</td></tr>
         <tr><td><code class="docs-inline-code">filters</code></td><td>array of string</td><td>Exact annotations required, combined with AND (e.g. <code class="docs-inline-code">["PAYS_SE", "FORMAT_PO"]</code>).</td></tr>
-      </table>
+      </table></div>
       <h3>Response</h3>
       <p><code class="docs-inline-code">total</code> (match count), <code class="docs-inline-code">hits</code> — each hit contains the full <code class="docs-inline-code">product</code> as indexed, its <code class="docs-inline-code">score</code>, <code class="docs-inline-code">in_stock</code>, and <code class="docs-inline-code">matched</code>: a readable list of why it matched (terms found, typos corrected, shared annotations) — useful for understanding and tuning relevance. If <code class="docs-inline-code">facets</code> was requested, an additional <code class="docs-inline-code">facets</code> field lists the counts per group.</p>
     </section>
@@ -290,12 +290,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <h2>Federated search</h2>
       <p>Queries multiple catalogs in a single call and merges results by relevance — useful for a multilingual site (one catalog per language) or multi-brand setup. Scoring weights are global to the engine, not per-catalog: scores stay comparable across catalogs, even with different rule packs.</p>
       <h3>Request body</h3>
-      <table class="docs-params">
+      <div class="table-scroll"><table class="docs-params">
         <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
         <tr><td><code class="docs-inline-code">catalogs</code></td><td>array of string <span class="docs-required">required</span></td><td>1 to 10 catalog names to query.</td></tr>
         <tr><td><code class="docs-inline-code">q</code></td><td>string</td><td>The search query.</td></tr>
         <tr><td><code class="docs-inline-code">limit</code> / <code class="docs-inline-code">offset</code></td><td>integer</td><td>Pagination over the merged set.</td></tr>
-      </table>
+      </table></div>
       <h3>Response</h3>
       <p>Same shape as a regular search, with a <code class="docs-inline-code">catalog</code> field added to each hit to identify its source, and <code class="docs-inline-code">catalogs_searched</code> / <code class="docs-inline-code">catalogs_not_found</code> to spot an invalid catalog name.</p>
       <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/federated-search \
@@ -309,11 +309,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <h2>Indexing</h2>
       <p>Adds or updates products in batch (upsert on <code class="docs-inline-code">id</code>). The catalog is created automatically if it doesn't exist.</p>
       <h3>Request body</h3>
-      <table class="docs-params">
+      <div class="table-scroll"><table class="docs-params">
         <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
         <tr><td><code class="docs-inline-code">items</code></td><td>array <span class="docs-required">required</span></td><td>1 to 5,000 products per call. Every product must have an <code class="docs-inline-code">id</code>.</td></tr>
         <tr><td><code class="docs-inline-code">rulepack</code></td><td>string</td><td>Rule pack to attach to the catalog (<code class="docs-inline-code">outillage</code>, <code class="docs-inline-code">mode</code>, <code class="docs-inline-code">industrie</code>). Changing the pack re-indexes the catalog.</td></tr>
-      </table>
+      </table></div>
       <h3>Response</h3>
       <pre class="docs-code"><code>{"indexed": 2, "catalog": {"catalog": "mycatalog", "products": 2, "terms": 11,
  "annotations": 9, "rulepack": "outillage", "synonym_groups": 0}}</code></pre>
@@ -390,25 +390,25 @@ VIS_M8X20  ──────────── match ────────�
 
     <section id="erreurs" class="docs-section">
       <h2>Error codes</h2>
-      <table class="docs-params">
+      <div class="table-scroll"><table class="docs-params">
         <tr><th>Code</th><th>Meaning</th><th>What to do</th></tr>
         <tr><td><code class="docs-inline-code">401</code></td><td>Authorization header missing or malformed</td><td>Send <code class="docs-inline-code">Authorization: Bearer &lt;key&gt;</code></td></tr>
         <tr><td><code class="docs-inline-code">403</code></td><td>Invalid API key</td><td>Check the key; contact us if it was revoked</td></tr>
         <tr><td><code class="docs-inline-code">404</code></td><td>Catalog or product not found</td><td>Check the catalog name and id — the catalog is created on first indexing call, not before</td></tr>
         <tr><td><code class="docs-inline-code">422</code></td><td>Invalid request body</td><td>The error detail names the field at fault (e.g. product missing an <code class="docs-inline-code">id</code>)</td></tr>
         <tr><td><code class="docs-inline-code">5xx</code></td><td>Server-side error</td><td>Retry; if it persists, write to <a href="mailto:contact@heurix.fr">contact@heurix.fr</a></td></tr>
-      </table>
+      </table></div>
     </section>
 
     <section id="limites" class="docs-section">
       <h2>Limits</h2>
-      <table class="icp-table">
+      <div class="table-scroll"><table class="icp-table">
         <tr><td>Search query</td><td>500 characters maximum</td></tr>
         <tr><td>Results per page</td><td>100 maximum (<code class="docs-inline-code">limit</code>)</td></tr>
         <tr><td>Indexing</td><td>5,000 products per call — send multiple batches for a larger catalog</td></tr>
         <tr><td>Synonym groups</td><td>2,000 per catalog</td></tr>
         <tr><td>CORS</td><td>Browser calls are not open: call the API from your server, not from public JavaScript (your key would be exposed)</td></tr>
-      </table>
+      </table></div>
       <p class="docs-hero-note" style="margin-top:18px;">Need more than these limits? <a href="index.html#contact">Let's talk</a> — that's what the Scale plan and dedicated setups are for.</p>
     </section>
 

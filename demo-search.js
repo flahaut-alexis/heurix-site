@@ -531,8 +531,11 @@
 
       // Diversité d'affichage : au plus 2 éditions du même titre dans le haut de liste,
       // pour montrer la variété du catalogue plutôt qu'une pile de pressages identiques.
+      // Sur mobile, on limite aussi le nombre total affiché — pas la peine de faire
+      // défiler 9 cartes pleine largeur sur un écran de téléphone.
+      var maxResults = window.innerWidth < 640 ? 3 : 9;
       var seenTitle = {}, diverse = [];
-      for (var di = 0; di < filtered.length && diverse.length < 9; di++) {
+      for (var di = 0; di < filtered.length && diverse.length < maxResults; di++) {
         var tk = filtered[di].p.author + "|" + filtered[di].p.title;
         seenTitle[tk] = (seenTitle[tk] || 0) + 1;
         if (seenTitle[tk] <= 2) diverse.push(filtered[di]);
