@@ -1208,6 +1208,45 @@ h2{ font-size:clamp(26px,3.4vw,34px); font-weight:800; margin:0 0 18px; max-widt
 .pricing-nudge p{ font-size:13px; color:var(--ink-muted); margin:0 0 12px; line-height:1.5; }
 .pricing-nudge .btn{ width:100%; justify-content:center; font-size:13.5px; padding:10px 14px; }
 @media (max-width:640px){ .pricing-nudge{ right:14px; left:14px; width:auto; } }
+.welcome-section{
+  min-height:calc(100vh - 122px); display:flex; align-items:center;
+  background:
+    radial-gradient(ellipse 900px 480px at 50% -10%, var(--blue-tint) 0%, rgba(238,241,255,0) 65%),
+    linear-gradient(180deg, #F4F6FF 0%, #FFFFFF 78%);
+}
+.welcome-wrap{ max-width:560px; padding:48px 0; text-align:center; }
+.welcome-card h1{ font-size:26px; margin:0 0 12px; }
+.welcome-card p{ color:var(--ink-muted); font-size:15px; line-height:1.6; margin:0 0 8px; }
+.welcome-spinner{
+  width:34px; height:34px; margin:0 auto 22px;
+  border:3px solid var(--blue-tint); border-top-color:var(--blue); border-radius:50%;
+  animation:welcome-spin 0.8s linear infinite;
+}
+@keyframes welcome-spin{ to{ transform:rotate(360deg); } }
+.welcome-badge{
+  display:inline-block; background:var(--blue-tint); color:var(--blue-deep);
+  font-size:12.5px; font-weight:700; padding:6px 14px; border-radius:9999px; margin-bottom:16px;
+}
+.welcome-plan{ margin-bottom:20px; }
+.welcome-plan strong{ color:var(--ink); }
+.welcome-key-box{
+  display:flex; align-items:center; gap:10px;
+  background:var(--ink); border-radius:12px; padding:16px 18px; margin:0 0 18px;
+}
+.welcome-key-box code{
+  flex:1; font-family:'IBM Plex Mono', monospace; font-size:14px; color:#fff;
+  text-align:left; overflow-x:auto; white-space:nowrap;
+}
+.welcome-copy-btn{
+  flex-shrink:0; background:var(--blue); color:#fff; border:none; border-radius:8px;
+  padding:9px 16px; font-size:13px; font-weight:700; font-family:'Plus Jakarta Sans', sans-serif;
+  cursor:pointer;
+}
+.welcome-copy-btn:hover{ background:var(--blue-deep); }
+.welcome-note{ font-size:13px; margin-bottom:24px; }
+.welcome-note a{ color:var(--blue-deep); text-decoration:none; font-weight:600; }
+.welcome-cta{ display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+
 .console-login{
   min-height:calc(100vh - 73px); display:flex; align-items:center;
   background:

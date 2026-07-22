@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-XXXXXXX');</script>
+<!-- End Google Tag Manager -->
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bienvenue — Heurix</title>
+<meta name="description" content="Votre abonnement Heurix est actif — récupérez votre clé API.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/png" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="styles.css">
+<link rel="canonical" href="https://heurix.fr/bienvenue.html">
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+<header>
+  <div class="header-top">
+    <nav class="header-top-inner">
+      <a href="index.html" class="logo"><img src="logo.png" alt="Heurix"> <span class="wordmark">HEURIX</span></a>
+      <div class="header-search">
+        <button id="heurix-search-btn" class="search-trigger" aria-label="Heurix Search — rechercher sur le site" type="button">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <span class="search-trigger-text">Heurix Search</span>
+          <span class="search-trigger-kbd">Ctrl K</span>
+        </button>
+      </div>
+      <div class="header-utility">
+        <button type="button" id="mobile-nav-toggle" class="mobile-nav-toggle" aria-label="Menu" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+        <a href="console.html" class="header-signin">Se connecter</a>
+        <a href="en/bienvenue.html" class="lang-switch">EN</a>
+        <a href="pricing.html" class="btn">Voir les tarifs</a>
+      </div>
+    </nav>
+  </div>
+  <div class="header-nav-row">
+    <nav class="header-nav-row-inner" aria-label="Navigation principale">
+      <div class="nav-links">
+        <a href="index.html#probleme">Le problème</a>
+        <a href="index.html#moteur">Le moteur</a>
+        <a href="fonctionnalites.html">Fonctionnalités</a>
+        <a href="integrations.html">Intégrations</a>
+        <a href="index.html#moteur">Search API</a>
+        <a href="docs.html">Documentation</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<div id="heurix-search-modal" class="search-modal">
+  <div id="heurix-search-backdrop" class="search-backdrop" data-search-close></div>
+  <div class="search-panel">
+    <div class="search-panel-head">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input id="heurix-search-input" type="text" placeholder="Heurix Search..." autocomplete="off">
+      <button class="search-close" data-search-close type="button">Échap</button>
+    </div>
+    <p id="heurix-search-suggest-label" class="search-suggest-label" hidden>Derniers articles</p>
+    <div id="heurix-search-results" class="search-results"></div>
+    <p id="heurix-search-empty" class="search-empty" hidden>Aucun résultat pour cette recherche. Essayez un autre terme.</p>
+  </div>
+</div>
+
+<section class="welcome-section">
+  <div class="wrap welcome-wrap">
+
+    <div id="welcome-loading" class="welcome-card">
+      <div class="welcome-spinner"></div>
+      <h1>Activation de votre abonnement…</h1>
+      <p>Stripe nous confirme votre paiement — ça prend généralement quelques secondes.</p>
+    </div>
+
+    <div id="welcome-ready" class="welcome-card" hidden>
+      <div class="welcome-badge">✓ Abonnement actif</div>
+      <h1>Bienvenue chez Heurix.</h1>
+      <p class="welcome-plan">Plan <strong id="welcome-plan-name">—</strong> — voici votre clé API, à conserver précieusement.</p>
+      <div class="welcome-key-box">
+        <code id="welcome-key">—</code>
+        <button type="button" id="welcome-copy-btn" class="welcome-copy-btn">Copier</button>
+      </div>
+      <p class="welcome-note">Cette clé n'est affichée qu'une seule fois ici. Elle reste consultable à tout moment en vous connectant à la <a href="console.html">console</a> avec elle.</p>
+      <div class="welcome-cta">
+        <a href="console.html" class="btn">Ouvrir ma console</a>
+        <a href="docs.html" class="btn btn-ghost">Voir la documentation</a>
+      </div>
+    </div>
+
+    <div id="welcome-pending" class="welcome-card" hidden>
+      <h1>Presque prêt…</h1>
+      <p>Votre paiement est confirmé, mais l'activation prend un peu plus de temps que d'habitude. Ça arrive parfois — pas d'inquiétude.</p>
+      <p class="welcome-note">Si rien ne se passe d'ici une minute, écrivez-nous à <a href="mailto:contact@heurix.fr">contact@heurix.fr</a> avec l'adresse email utilisée pour payer — on vous enverra votre clé manuellement.</p>
+    </div>
+
+    <div id="welcome-error" class="welcome-card" hidden>
+      <h1>Un souci pour retrouver votre abonnement.</h1>
+      <p>Si vous venez de payer, contactez-nous à <a href="mailto:contact@heurix.fr">contact@heurix.fr</a> avec l'adresse email utilisée — on retrouvera votre clé manuellement, sans frais ni délai supplémentaire de votre côté.</p>
+      <a href="pricing.html" class="btn btn-ghost">Retour aux tarifs</a>
+    </div>
+
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot-grid">
+    <a href="index.html" class="logo" style="font-size:15px;"><img src="logo.png" alt="Heurix" style="height:22px;width:22px;"> <span class="wordmark">HEURIX</span></a>
+    <div class="foot-links">
+      <a href="blog.html">Blog</a>
+      <a href="docs.html">Documentation API</a>
+      <a href="fonctionnalites.html">Fonctionnalités</a>
+      <a href="integrations.html">Intégrations</a>
+      <a href="console.html">Console</a>
+      <a href="about.html">À propos</a>
+      <a href="cgv.html">CGV</a>
+      <a href="mentions-legales.html">Mentions légales</a>
+      <a href="mailto:contact@heurix.fr">contact@heurix.fr</a>
+    </div>
+    <div class="foot-social">
+      <span class="foot-social-label">Réseaux sociaux</span>
+      <a href="https://www.linkedin.com/company/heurix-search/" target="_blank" rel="noopener" aria-label="LinkedIn" class="foot-social-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+      </a>
+    </div>
+    <div class="foot-legal">
+      Heurix — Entreprise individuelle (micro-entreprise). SIRET 107 681 900 00018. Conseil en systèmes et logiciels informatiques.<br>
+      © <span id="year">2026</span> Heurix. Tous droits réservés.
+    </div>
+  </div>
+</footer>
+
+<script src="search.js"></script>
+<script src="mobile-nav.js"></script>
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  const API_BASE = "https://api.heurix.fr";
+  const params = new URLSearchParams(window.location.search);
+  const sessionId = params.get("session_id");
+
+  const loadingEl = document.getElementById("welcome-loading");
+  const readyEl = document.getElementById("welcome-ready");
+  const pendingEl = document.getElementById("welcome-pending");
+  const errorEl = document.getElementById("welcome-error");
+
+  function showOnly(el) {
+    [loadingEl, readyEl, pendingEl, errorEl].forEach(e => { e.hidden = (e !== el); });
+  }
+
+  const PLAN_LABELS = { starter: "Starter", growth: "Growth", scale: "Scale", trial: "Essai" };
+
+  let attempts = 0;
+  const MAX_ATTEMPTS = 10; // ~15 secondes au total, le webhook Stripe arrive normalement en 1-2s
+
+  function poll() {
+    attempts++;
+    fetch(`${API_BASE}/v1/stripe/session/${encodeURIComponent(sessionId)}`)
+      .then(r => {
+        if (!r.ok) throw new Error("not found");
+        return r.json();
+      })
+      .then(data => {
+        if (data.status === "ready") {
+          document.getElementById("welcome-key").textContent = data.key;
+          document.getElementById("welcome-plan-name").textContent = PLAN_LABELS[data.plan] || data.plan;
+          showOnly(readyEl);
+        } else if (attempts < MAX_ATTEMPTS) {
+          setTimeout(poll, 1500);
+        } else {
+          showOnly(pendingEl);
+        }
+      })
+      .catch(() => showOnly(errorEl));
+  }
+
+  if (!sessionId) {
+    showOnly(errorEl);
+  } else {
+    poll();
+  }
+
+  document.getElementById("welcome-copy-btn").addEventListener("click", function () {
+    const key = document.getElementById("welcome-key").textContent;
+    navigator.clipboard.writeText(key).then(() => {
+      this.textContent = "Copié !";
+      setTimeout(() => { this.textContent = "Copier"; }, 2000);
+    });
+  });
+</script>
+
+</body>
+</html>
