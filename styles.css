@@ -140,12 +140,11 @@ header{
 }
 .logo img{ height:28px; width:28px; display:block; }
 .wordmark{
-  font-family:'Luckiest Guy', 'Plus Jakarta Sans', sans-serif;
-  font-weight:400;
-  font-size:1.22em;
-  letter-spacing:0.02em;
+  font-family:'Plus Jakarta Sans', sans-serif;
+  font-weight:800;
+  font-size:1.15em;
+  letter-spacing:-0.02em;
   line-height:1;
-  padding-top:0.1em;
 }
 .nav-links{ display:flex; gap:24px; font-size:13.5px; color:var(--ink-muted); font-weight:600; white-space:nowrap; }
 .nav-links a{ text-decoration:none; }
@@ -317,6 +316,17 @@ h1 span{ color:var(--blue); }
 .play-api-note a:hover{ text-decoration:underline; }
 
 /* DÉMO INTERACTIVE (playground) */
+.play-verticals{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px; }
+.play-vertical-pill{
+  font-family:'Plus Jakarta Sans', sans-serif; font-size:13px; font-weight:700;
+  color:var(--ink-muted); background:#fff; border:1.5px solid var(--line);
+  border-radius:100px; padding:8px 16px; cursor:pointer;
+  transition:border-color .15s ease, color .15s ease, background .15s ease;
+}
+.play-vertical-pill:hover{ border-color:var(--blue); color:var(--blue-deep); }
+.play-vertical-on{ background:var(--blue); border-color:var(--blue); color:#fff; }
+.play-vertical-on:hover{ color:#fff; }
+.play-thumb-icon svg{ display:block; border-radius:8px; }
 .play-bar{
   display:flex; align-items:center; gap:12px;
   background:#fff; border:1.5px solid var(--line); border-radius:100px;

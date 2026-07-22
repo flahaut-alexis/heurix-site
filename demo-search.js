@@ -2,57 +2,19 @@
 // Logique du moteur Heurix portée en JavaScript : normalisation, tolérance
 // aux fautes (Damerau-Levenshtein bornée), cascade de règles, synonymes,
 // scoring pondéré, et PRISMES (filtres par annotations).
-// Catalogue librairie généré procéduralement.
+// Deux verticales de démonstration (Livres, Outillage), sélectionnables —
+// le moteur générique (normalisation, fuzzy, scoring) est partagé ; seules
+// les règles d'annotation et les données changent d'une verticale à l'autre.
 
 (function () {
   "use strict";
 
-  /* ---------------- Locale ---------------- */
-  var L = {
-    fmt: { PO: "Poche", BR: "Broché", GF: "Grand format", IL: "Illustré", AU: "Livre audio" },
-    ed: { std: "", ann: "édition annotée", col: "collector", bil: "bilingue", vo: "VO", gc: "gros caractères" },
-    empty: "Tapez une recherche — les fautes de frappe sont bienvenues.",
-    results: function (n, ms, size) { return "<strong>" + n + " résultat" + (n > 1 ? "s" : "") + "</strong> · <span class=\"play-speed\">⚡ " + ms + " ms</span> · moteur Heurix embarqué, catalogue de démo (" + size.toLocaleString("fr-FR") + " références)"; },
-    none: function (ms) { return "Aucun résultat · " + ms + " ms"; },
-    stock: function (s) { return s > 0 ? (s <= 3 ? s + " restants" : "en stock") : "rupture"; },
-    prisms: "Prismes :",
-    pages: function (p) { return p + " p."; },
-    intro: "polar scandinave poch",
-    showMore: function (n) { return "Afficher " + n + " résultat" + (n > 1 ? "s" : "") + " de plus"; }
-  };
-  var PRISM_LABELS = {
-    GENRE_ROMAN: "Roman", GENRE_POLAR: "Polar", GENRE_SF: "SF", GENRE_FANTASY: "Fantasy",
-    GENRE_CLASSIQUE: "Classique", GENRE_JEUNESSE: "Jeunesse", GENRE_BD: "BD & manga",
-    GENRE_ESSAI: "Essai", GENRE_POESIE: "Poésie",
-    FORMAT_PO: "Poche", FORMAT_BR: "Broché", FORMAT_GF: "Grand format", FORMAT_IL: "Illustré", FORMAT_AU: "Audio",
-    PAYS_FR: "France", PAYS_UK: "Royaume-Uni", PAYS_US: "États-Unis", PAYS_RU: "Russie",
-    PAYS_JP: "Japon", PAYS_SE: "Scandinavie", PAYS_DE: "Allemagne", PAYS_IT: "Italie",
-    PAYS_ES: "Espagne", PAYS_CO: "Colombie", PAYS_CZ: "Rép. tchèque", PAYS_BE: "Belgique",
-    LONG_COURT: "Court (<180 p.)", LONG_MOYEN: "Format moyen", LONG_PAVE: "Pavé (500+ p.)",
-    ED_ANNOTE: "Édition annotée", ED_COLLECTOR: "Collector", ED_BILINGUE: "Bilingue", ED_VO: "Version originale",
-    POLAR_NORDIQUE: "Polar nordique", CLASSIQUE_POCHE: "Classique en poche", EDITION_SOIGNEE: "Édition soignée"
-  };
-  // Version compacte pour les puces "pourquoi ce résultat" : sans le détail entre parenthèses.
-  function shortLabel(code) {
-    var full = prismLabel(code);
-    if (full) return full.replace(/\s*\([^)]*\)\s*$/, "");
-    // Filet de sécurité si un code n'est pas dans la table : humanise "MA_CLE" -> "Ma clé".
-    var words = code.toLowerCase().split("_");
-    return words.map(function (w) { return w.charAt(0).toUpperCase() + w.slice(1); }).join(" ");
-  }
-  function eraLabel(a) {
-    var m = a.match(/^ERA_(\d+)S$/);
-    if (m) { var c = Math.floor(parseInt(m[1], 10) / 100) + 1; return c + "ᵉ siècle"; }
-    m = a.match(/^ERA_(\d{4})$/);
-    return m ? "années " + m[1].slice(2) : a;
-  }
-
-  /* ---------------- Normalisation ---------------- */
+  /* ---------------- Normalisation (partagé, indépendant de la verticale) ---------------- */
   function fold(s) { return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""); }
   var WORD_RE = /[a-z0-9]+(?:[./-][a-z0-9]+)*/g;
   function tokenize(s) { return fold(s).match(WORD_RE) || []; }
 
-  /* ---------------- Fuzzy ---------------- */
+  /* ---------------- Fuzzy (partagé) ---------------- */
   function maxEdits(t) {
     if (t.length <= 3) return 0;
     if (/\d/.test(t)) return 1;
@@ -80,8 +42,32 @@
     return prev[lb];
   }
 
-  /* ---------------- Règles requête (bilingues) ---------------- */
-  var LEVEL1 = [
+  function esc(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;"); }
+  function each(list, fn) { Array.prototype.forEach.call(list, fn); }
+  function rng(s) { return function () { s = (s * 1103515245 + 12345) % 2147483648; return s / 2147483648; }; }
+
+  /* =====================================================================
+     VERTICALE : LIVRES (existante)
+     ===================================================================== */
+  var LIVRES_LABELS = {
+    GENRE_ROMAN: "Roman", GENRE_POLAR: "Polar", GENRE_SF: "SF", GENRE_FANTASY: "Fantasy",
+    GENRE_CLASSIQUE: "Classique", GENRE_JEUNESSE: "Jeunesse", GENRE_BD: "BD & manga",
+    GENRE_ESSAI: "Essai", GENRE_POESIE: "Poésie",
+    FORMAT_PO: "Poche", FORMAT_BR: "Broché", FORMAT_GF: "Grand format", FORMAT_IL: "Illustré", FORMAT_AU: "Audio",
+    PAYS_FR: "France", PAYS_UK: "Royaume-Uni", PAYS_US: "États-Unis", PAYS_RU: "Russie",
+    PAYS_JP: "Japon", PAYS_SE: "Scandinavie", PAYS_DE: "Allemagne", PAYS_IT: "Italie",
+    PAYS_ES: "Espagne", PAYS_CO: "Colombie", PAYS_CZ: "Rép. tchèque", PAYS_BE: "Belgique",
+    LONG_COURT: "Court (<180 p.)", LONG_MOYEN: "Format moyen", LONG_PAVE: "Pavé (500+ p.)",
+    ED_ANNOTE: "Édition annotée", ED_COLLECTOR: "Collector", ED_BILINGUE: "Bilingue", ED_VO: "Version originale",
+    POLAR_NORDIQUE: "Polar nordique", CLASSIQUE_POCHE: "Classique en poche", EDITION_SOIGNEE: "Édition soignée"
+  };
+  function eraLabel(a) {
+    var m = a.match(/^ERA_(\d+)S$/);
+    if (m) { var c = Math.floor(parseInt(m[1], 10) / 100) + 1; return c + "ᵉ siècle"; }
+    m = a.match(/^ERA_(\d{4})$/);
+    return m ? "années " + m[1].slice(2) : a;
+  }
+  var LIVRES_LEVEL1 = [
     [/\bpolars?|thrillers?|policiers?|crimes?\b/g, "GENRE_POLAR"],
     [/\bsf\b|science.?fiction\b/g, "GENRE_SF"],
     [/\bfantasy|fantastique\b/g, "GENRE_FANTASY"],
@@ -113,38 +99,14 @@
     [/\bannees?\s?(\d{2})\b|\b(?:19|20)(\d{2})s\b/g, "ERA_19$1$2"],
     [/\b(1[5-9])e?m?e?\s?siecle\b|\b(1[5-9])th\s?century\b/g, "ERA_C$1$2"]
   ];
-  var LEVEL2 = [
+  var LIVRES_LEVEL2 = [
     [/GENRE_POLAR.*PAYS_SE|PAYS_SE.*GENRE_POLAR/, "POLAR_NORDIQUE"],
     [/GENRE_CLASSIQUE.*FORMAT_PO|FORMAT_PO.*GENRE_CLASSIQUE/, "CLASSIQUE_POCHE"],
     [/ED_(?:COLLECTOR|ANNOTE)|FORMAT_IL/, "EDITION_SOIGNEE"]
   ];
+  var LIVRES_SYN_GROUPS = [["polar", "policier", "thriller"], ["poche", "pocket"], ["bd", "manga"], ["sf", "anticipation"]];
 
-  function annotate(tokens) {
-    var spaced = tokens.join(" ");
-    var ann = {};
-    LEVEL1.forEach(function (rule) {
-      var re = new RegExp(rule[0].source, "g"), m;
-      while ((m = re.exec(spaced)) !== null) {
-        var a = rule[1];
-        for (var g = 1; g < m.length; g++) a = a.replace("$" + g, m[g] || "");
-        a = a.replace(/undefined/g, "");
-        if (/^ERA_C(\d+)/.test(a)) a = "ERA_" + ((parseInt(a.slice(5), 10) - 1) * 100) + "S";
-        ann[a] = true;
-      }
-    });
-    var stream = Object.keys(ann).sort().join(" ");
-    LEVEL2.forEach(function (rule) { if (rule[0].test(stream)) ann[rule[1]] = true; });
-    return Object.keys(ann);
-  }
-
-  /* ---------------- Synonymes ---------------- */
-  var SYN_GROUPS = [["polar", "policier", "thriller"], ["poche", "pocket"], ["bd", "manga"], ["sf", "anticipation"]];
-  var SYN = {};
-  SYN_GROUPS.forEach(function (g) { g.forEach(function (t) { SYN[t] = g; }); });
-
-  /* ---------------- Catalogue librairie (généré) ---------------- */
-  // [auteur, pays, genre, [[titre, année, pages], ...]]
-  var SEED = [
+  var LIVRES_SEED = [
     ["Victor Hugo", "FR", "classique", [["Les Misérables", 1862, 1900], ["Notre-Dame de Paris", 1831, 940], ["Les Contemplations", 1856, 480]]],
     ["Marcel Proust", "FR", "classique", [["Du côté de chez Swann", 1913, 530], ["Le Temps retrouvé", 1927, 450]]],
     ["Albert Camus", "FR", "roman", [["L'Étranger", 1942, 185], ["La Peste", 1947, 350], ["Le Mythe de Sisyphe", 1942, 190]]],
@@ -235,26 +197,24 @@
     ["Michel de Montaigne", "FR", "essai", [["Essais — Livre I", 1580, 470]]],
     ["Hannah Arendt", "DE", "essai", [["La Condition de l'homme moderne", 1958, 400], ["Eichmann à Jérusalem", 1963, 480]]]
   ];
+  var LIVRES_FIELD_W = { ref: 4, name: 3, desc: 1 };
+  var LIVRES_ANN_W = 5;
+  var LIVRES_FMT_LABEL = { PO: "Poche", BR: "Broché", GF: "Grand format", IL: "Illustré", AU: "Livre audio" };
+  var LIVRES_ED_LABEL = { std: "", ann: "édition annotée", col: "collector", bil: "bilingue", vo: "VO", gc: "gros caractères" };
 
-  /* ---------------- Génération + indexation ---------------- */
-  var FIELD_W = { ref: 4, name: 3, desc: 1 };
-  var ANN_W = 5;
-  var products = [], termIndex = {}, annIndex = {}, vocabByLen = {};
-  var seq = 1000;
-
-  function addTerm(t, pid, w, isSku) {
-    (termIndex[t] = termIndex[t] || {})[pid] = (termIndex[t][pid] || 0) + w;
-    if (!isSku) (vocabByLen[t.length] = vocabByLen[t.length] || {})[t] = true;
-  }
-  function rng(s) { return function () { s = (s * 1103515245 + 12345) % 2147483648; return s / 2147483648; }; }
-  function eraOf(year) {
+  function livresEraOf(year) {
     if (year >= 1900) return "ERA_" + (Math.floor(year / 10) * 10);
     return "ERA_" + (Math.floor(year / 100) * 100) + "S";
   }
-  function lengthOf(pages) { return pages < 180 ? "LONG_COURT" : (pages >= 500 ? "LONG_PAVE" : "LONG_MOYEN"); }
+  function livresLengthOf(pages) { return pages < 180 ? "LONG_COURT" : (pages >= 500 ? "LONG_PAVE" : "LONG_MOYEN"); }
 
-  (function build() {
-    // [format, édition, plausible pour BD?, delta prix]
+  function livresBuildProducts() {
+    var products = [], termIndex = {}, annIndex = {}, vocabByLen = {};
+    var seq = 1000;
+    function addTerm(t, pid, w, isSku) {
+      (termIndex[t] = termIndex[t] || {})[pid] = (termIndex[t][pid] || 0) + w;
+      if (!isSku) (vocabByLen[t.length] = vocabByLen[t.length] || {})[t] = true;
+    }
     var VAR = [
       ["PO", "std", true, 0], ["PO", "ann", false, 2], ["PO", "bil", false, 3], ["PO", "gc", false, 2],
       ["BR", "std", true, 6], ["BR", "ann", false, 8], ["BR", "vo", false, 7],
@@ -262,7 +222,7 @@
       ["IL", "std", true, 19], ["IL", "col", true, 32],
       ["AU", "std", false, 9]
     ];
-    SEED.forEach(function (row, ai) {
+    LIVRES_SEED.forEach(function (row, ai) {
       var author = row[0], pays = row[1], genre = row[2], works = row[3];
       works.forEach(function (w, bi) {
         var title = w[0], year = w[1], pages = w[2];
@@ -270,7 +230,6 @@
         VAR.forEach(function (v) {
           if (genre === "bd" && !v[2]) return;
           if (v[1] === "vo" && (pays === "FR" || pays === "BE")) return;
-          // Retirages : les classiques vivent en plusieurs collections et millésimes
           var P = { "PO.std": 16, "PO.ann": 2, "PO.bil": 2, "PO.gc": 2, "BR.std": 9, "BR.ann": 2, "BR.vo": 2,
                     "GF.std": 6, "GF.col": 2, "GF.ann": 2, "IL.std": 3, "IL.col": 2, "AU.std": 4 };
           var presses = P[v[0] + "." + v[1]] || 1;
@@ -279,12 +238,12 @@
             var fmt = v[0], ed = v[1];
             var edYear = 1995 + Math.floor(rand() * 30);
             var sku = "HRX-" + fmt + "-" + (seq++);
-            var descParts = [L.fmt[fmt]];
-            if (L.ed[ed]) descParts.push(L.ed[ed]);
-            descParts.push(String(edYear), L.pages(pages));
+            var descParts = [LIVRES_FMT_LABEL[fmt]];
+            if (LIVRES_ED_LABEL[ed]) descParts.push(LIVRES_ED_LABEL[ed]);
+            descParts.push(String(edYear), pages + " p.");
             var price = Math.max(3, 8 + v[3] + Math.floor(rand() * 4) + (pages > 700 ? 4 : 0));
             var stock = rand() < 0.07 ? 0 : 1 + Math.floor(rand() * 22);
-            var anns = ["FORMAT_" + fmt, "GENRE_" + genre.toUpperCase(), "PAYS_" + pays, eraOf(year), lengthOf(pages)];
+            var anns = ["FORMAT_" + fmt, "GENRE_" + genre.toUpperCase(), "PAYS_" + pays, livresEraOf(year), livresLengthOf(pages)];
             if (ed === "ann") anns.push("ED_ANNOTE");
             if (ed === "col") anns.push("ED_COLLECTOR");
             if (ed === "bil") anns.push("ED_BILINGUE");
@@ -297,17 +256,354 @@
                       fmt: fmt, genre: genre, pages: pages, price: price, stock: stock, anns: anns,
                       hue: (ai * 41 + bi * 97) % 360, pat: (ai + bi) % 5 };
             products.push(p);
-            tokenize(sku).forEach(function (t) { addTerm(t, pid, FIELD_W.ref, true); });
-            tokenize(author + " " + title).forEach(function (t) { addTerm(t, pid, FIELD_W.name, false); });
-            tokenize(p.desc + " " + genre).forEach(function (t) { addTerm(t, pid, FIELD_W.desc, false); });
+            tokenize(sku).forEach(function (t) { addTerm(t, pid, LIVRES_FIELD_W.ref, true); });
+            tokenize(author + " " + title).forEach(function (t) { addTerm(t, pid, LIVRES_FIELD_W.name, false); });
+            tokenize(p.desc + " " + genre).forEach(function (t) { addTerm(t, pid, LIVRES_FIELD_W.desc, false); });
             anns.forEach(function (a) { (annIndex[a] = annIndex[a] || []).push(pid); });
           }
         });
       });
     });
-  })();
+    return { products: products, termIndex: termIndex, annIndex: annIndex, vocabByLen: vocabByLen, ANN_W: LIVRES_ANN_W };
+  }
 
-  /* ---------------- Recherche ---------------- */
+  /* ---- Couvertures procédurales (jamais de visuel existant, généré) ---- */
+  var FAMILY_BY_GENRE = {
+    polar: "noir", sf: "cosmic", fantasy: "cosmic",
+    classique: "classic", essai: "classic", poesie: "classic",
+    jeunesse: "bright", bd: "bright", roman: "warm"
+  };
+  function wrapTitle(text, maxChars, maxLines) {
+    var words = text.split(" "), lines = [], cur = "";
+    for (var i = 0; i < words.length; i++) {
+      var test = cur ? cur + " " + words[i] : words[i];
+      if (test.length <= maxChars) { cur = test; }
+      else { if (cur) lines.push(cur); cur = words[i]; if (lines.length >= maxLines) break; }
+    }
+    if (cur && lines.length < maxLines) lines.push(cur);
+    if (lines.length > maxLines) lines = lines.slice(0, maxLines);
+    if (lines.join(" ").length < text.length && lines.length === maxLines) {
+      var last = lines[maxLines - 1];
+      while (last.length > maxChars - 1) last = last.slice(0, -1);
+      lines[maxLines - 1] = last.replace(/\s+\S*$/, "") + "…";
+    }
+    return lines;
+  }
+  function coverArt(p) {
+    var h = p.hue;
+    var family = FAMILY_BY_GENRE[p.genre] || "warm";
+    var W = 100, H = 140;
+    var titleLines, authorLast = p.author.split(" ").slice(-1)[0];
+    var bg, motif = "", titleColor, titleFamily = "'Plus Jakarta Sans',sans-serif", titleWeight = "700";
+    var titleSize = 12, titleY = 46, lineHeight = 14, ls = "0";
+    var ruleColor, authorColor;
+
+    if (family === "noir") {
+      var accent = "hsl(" + ((h + 15) % 360) + ",68%,52%)";
+      bg = '<rect width="' + W + '" height="' + H + '" fill="hsl(' + h + ',22%,13%)"/>' +
+           '<rect width="' + W + '" height="' + H + '" fill="hsl(' + ((h+30)%360) + ',30%,9%)" opacity="0.55"/>';
+      for (var i = 0; i < 5; i++) motif += '<rect x="0" y="' + (18 + i * 5) + '" width="' + W + '" height="1.3" fill="rgba(255,255,255,0.05)"/>';
+      motif += '<rect x="10" y="' + (H - 34) + '" width="26" height="3" fill="' + accent + '"/>';
+      titleColor = "#F4F1EA"; titleFamily = "Georgia,'Times New Roman',serif"; titleWeight = "700";
+      ruleColor = accent; authorColor = "rgba(244,241,234,0.65)";
+    } else if (family === "cosmic") {
+      bg = '<rect width="' + W + '" height="' + H + '" fill="hsl(' + h + ',48%,26%)"/>' +
+           '<rect width="' + W + '" height="' + H + '" fill="hsl(' + ((h+45)%360) + ',60%,16%)" opacity="0.6"/>';
+      var mx = 20 + (p.pat * 12), my = 26 + (p.pat % 3) * 6;
+      motif = '<circle cx="' + mx + '" cy="' + my + '" r="16" fill="none" stroke="rgba(255,255,255,0.22)" stroke-width="1"/>' +
+              '<circle cx="' + mx + '" cy="' + my + '" r="2" fill="rgba(255,255,255,0.55)"/>' +
+              '<circle cx="' + (W - 18) + '" cy="20" r="1.4" fill="rgba(255,255,255,0.4)"/>' +
+              '<circle cx="' + (W - 30) + '" cy="34" r="0.9" fill="rgba(255,255,255,0.3)"/>';
+      titleColor = "#FFFFFF"; titleFamily = "'Plus Jakarta Sans',sans-serif"; titleWeight = "700"; ls = "0.3";
+      ruleColor = "rgba(255,255,255,0.4)"; authorColor = "rgba(255,255,255,0.62)";
+    } else if (family === "classic") {
+      bg = '<rect width="' + W + '" height="' + H + '" fill="hsl(38,32%,93%)"/>' +
+           '<rect width="' + W + '" height="' + H + '" fill="hsl(' + h + ',25%,88%)" opacity="0.35"/>';
+      motif = '<rect x="6" y="6" width="' + (W - 12) + '" height="' + (H - 12) + '" fill="none" stroke="hsl(' + h + ',35%,38%)" stroke-width="1" opacity="0.55"/>' +
+              '<rect x="9" y="9" width="' + (W - 18) + '" height="' + (H - 18) + '" fill="none" stroke="hsl(' + h + ',35%,38%)" stroke-width="0.5" opacity="0.4"/>';
+      titleColor = "hsl(" + h + ",30%,22%)"; titleFamily = "Georgia,'Times New Roman',serif"; titleWeight = "700";
+      ruleColor = "hsl(" + h + ",35%,38%)"; authorColor = "hsl(" + h + ",20%,38%)";
+    } else if (family === "bright") {
+      bg = '<rect width="' + W + '" height="' + H + '" fill="hsl(' + h + ',72%,58%)"/>' +
+           '<rect width="' + W + '" height="' + H + '" fill="hsl(' + ((h+55)%360) + ',70%,50%)" opacity="0.5"/>';
+      motif = '<circle cx="' + (W - 24) + '" cy="24" r="18" fill="rgba(255,255,255,0.18)"/>' +
+              '<circle cx="14" cy="' + (H - 26) + '" r="12" fill="rgba(255,255,255,0.15)"/>';
+      titleColor = "#FFFFFF"; titleFamily = "'Plus Jakarta Sans',sans-serif"; titleWeight = "800";
+      ruleColor = "rgba(255,255,255,0.55)"; authorColor = "rgba(255,255,255,0.8)";
+    } else {
+      bg = '<rect width="' + W + '" height="' + H + '" fill="hsl(' + h + ',42%,40%)"/>' +
+           '<rect width="' + W + '" height="' + H + '" fill="hsl(' + ((h+25)%360) + ',48%,26%)" opacity="0.55"/>';
+      motif = '<path d="M0 ' + (H-30) + ' Q ' + (W/2) + ' ' + (H-46) + ' ' + W + ' ' + (H-30) + ' L ' + W + ' ' + H + ' L 0 ' + H + ' Z" fill="rgba(255,255,255,0.07)"/>';
+      titleColor = "#FBF8F2"; titleFamily = "Georgia,'Times New Roman',serif"; titleWeight = "700";
+      ruleColor = "rgba(251,248,242,0.5)"; authorColor = "rgba(251,248,242,0.68)";
+    }
+
+    var maxChars = family === "cosmic" || family === "bright" ? 13 : 14;
+    titleLines = wrapTitle(p.title, maxChars, 3);
+    var titleTspans = titleLines.map(function (line, i) {
+      return '<tspan x="10" dy="' + (i === 0 ? 0 : lineHeight) + '">' + esc(line) + "</tspan>";
+    }).join("");
+
+    var badge = "";
+    if (p.fmt === "AU") badge = '<circle cx="' + (W-16) + '" cy="' + (H-18) + '" r="8" fill="rgba(0,0,0,0.32)"/><path d="M' + (W-19) + ' ' + (H-22) + ' L' + (W-19) + ' ' + (H-14) + ' L' + (W-12) + ' ' + (H-18) + ' Z" fill="#fff"/>';
+
+    return '<svg viewBox="0 0 ' + W + ' ' + H + '" width="54" height="80" aria-hidden="true">' +
+      '<clipPath id="cc' + h + "_" + p.pat + '"><rect width="' + W + '" height="' + H + '" rx="4"/></clipPath>' +
+      '<g clip-path="url(#cc' + h + "_" + p.pat + ')">' + bg + motif +
+      '<text x="10" y="' + titleY + '" font-family="' + titleFamily + '" font-size="' + titleSize + '" font-weight="' + titleWeight + '" letter-spacing="' + ls + '" fill="' + titleColor + '">' + titleTspans + '</text>' +
+      '<line x1="10" y1="' + (H - 16) + '" x2="' + (W - 10) + '" y2="' + (H - 16) + '" stroke="' + ruleColor + '" stroke-width="0.7"/>' +
+      '<text x="10" y="' + (H - 8) + '" font-family="\'Plus Jakarta Sans\',sans-serif" font-size="7.5" font-weight="600" letter-spacing="0.4" fill="' + authorColor + '">' + esc(authorLast.toUpperCase()) + "</text>" +
+      badge +
+      '</g><rect x="0.5" y="0.5" width="' + (W-1) + '" height="' + (H-1) + '" rx="4" fill="none" stroke="rgba(0,0,0,0.16)"/></svg>';
+  }
+
+  function livresRenderCard(h) {
+    var p = h.p;
+    var whyChips = h.why.filter(function (w, i, arr) { return arr.indexOf(w) === i; })
+      .slice(0, 3).map(function (w) {
+        if (w[0] === "#") return '<span class="play-why play-why-ann">' + esc(shortLabel(w.slice(1), LIVRES_LABELS)) + "</span>";
+        return '<span class="play-why">' + esc(w) + "</span>";
+      }).join("");
+    return '<div class="play-card' + (p.stock === 0 ? " play-card-out" : "") + '">' +
+      '<div class="play-thumb">' + coverArt(p) + "</div>" +
+      '<div class="play-body"><div class="play-name">' + esc(p.title) + " — " + esc(p.author) + "</div>" +
+      '<div class="play-ref mono">' + esc(p.id) + " · " + esc(p.desc) + "</div>" +
+      '<div class="play-tags">' + whyChips + "</div></div>" +
+      '<div class="play-side"><span class="play-price">' + p.price + " €</span>" +
+      '<span class="play-stock">' + (p.stock > 0 ? (p.stock <= 3 ? p.stock + " restants" : "en stock") : "rupture") + "</span></div>" +
+      "</div>";
+  }
+
+  var LIVRES = {
+    key: "livres", emoji: "📚", label: "Édition & Livres",
+    LEVEL1: LIVRES_LEVEL1, LEVEL2: LIVRES_LEVEL2, PRISM_LABELS: LIVRES_LABELS,
+    SYN_GROUPS: LIVRES_SYN_GROUPS,
+    groupOrder: ["GENRE", "FORMAT", "PAYS", "ERA", "LONG"],
+    groupLabels: { GENRE: "Genre", FORMAT: "Format", PAYS: "Origine", ERA: "Époque", LONG: "Longueur" },
+    samples: [["polar scandinave poche", "polar scandinave poche"], ["dostoievsky pavé", "dostoievsky pavé"], ["jules vern illustré", "jules vern illustré"], ["sf années 50", "sf années 50"]],
+    intro: "polar scandinave poch",
+    placeholder: "Cherchez dans le catalogue de démo…",
+    buildProducts: livresBuildProducts,
+    renderCard: livresRenderCard
+  };
+
+  /* =====================================================================
+     VERTICALE : OUTILLAGE (nouvelle)
+     Règles d'annotation calquées sur le vrai pack de règles "outillage"
+     du moteur (diamètre, longueur, matière, type de tête, étanchéité) —
+     la même logique que celle utilisée en production, pas une simulation
+     de façade.
+     ===================================================================== */
+  var OUTILLAGE_LABELS = {
+    FAM_VIS: "Vis", FAM_ECROU: "Écrous", FAM_RONDELLE: "Rondelles", FAM_ROULEMENT: "Roulements",
+    DIAM_M4: "M4", DIAM_M5: "M5", DIAM_M6: "M6", DIAM_M8: "M8", DIAM_M10: "M10", DIAM_M12: "M12", DIAM_M14: "M14", DIAM_M16: "M16", DIAM_M20: "M20",
+    MAT_INOX: "Inox A2", MAT_ZINGUE: "Acier zingué", MAT_LAITON: "Laiton", MAT_BRUT: "Acier brut",
+    TETE_HEX: "Tête hexagonale", TETE_FRAISEE: "Tête fraisée", TETE_CYL: "Tête cylindrique", TETE_TORX: "Tête Torx",
+    ETANCHE_2RS: "Étanche (2RS)", ETANCHE_ZZ: "Blindé (ZZ)"
+  };
+  var OUTILLAGE_LEVEL1 = [
+    [/\bm(4|5|6|8|10|12|14|16|20)(?!\d)/g, "DIAM_M$1"],
+    [/(?:x|\s)(10|12|16|20|25|30|35|40|50|60|80|100)(?!\d)/g, "LONG_$1"],
+    [/\bm(4|5|6|8|10|12|14|16|20)\s?x\s?(10|12|16|20|25|30|35|40|50|60|80|100)\b/g, "VIS_M$1X$2"],
+    [/\b(6[0-9]{3})\b/g, "BRG_$1"],
+    [/\binox\b|\ba2\b|\ba4\b/g, "MAT_INOX"],
+    [/\bzingue\b|\bzinc\b/g, "MAT_ZINGUE"],
+    [/\blaiton\b|\bbrass\b/g, "MAT_LAITON"],
+    [/\bbrut\b|\bnoir\b/g, "MAT_BRUT"],
+    [/\bhexagonale?\b|\bhex\b/g, "TETE_HEX"],
+    [/\bfraisee?\b|\bcountersunk\b/g, "TETE_FRAISEE"],
+    [/\bcylindrique\b|\bcyl\b/g, "TETE_CYL"],
+    [/\btorx\b/g, "TETE_TORX"],
+    [/\b2rs\b/g, "ETANCHE_2RS"],
+    [/\bzz\b/g, "ETANCHE_ZZ"],
+    [/\bvis\b|\bscrews?\b/g, "FAM_VIS"],
+    [/\becrous?\b|\bnuts?\b/g, "FAM_ECROU"],
+    [/\brondelles?\b|\bwashers?\b/g, "FAM_RONDELLE"],
+    [/\broulements?\b|\bbearings?\b/g, "FAM_ROULEMENT"]
+  ];
+  var OUTILLAGE_LEVEL2 = [];
+  var OUTILLAGE_SYN_GROUPS = [["vis", "boulon"], ["ecrou", "nut"], ["inox", "acier inoxydable"]];
+
+  var OUTILLAGE_TETES = [["hex", "Tête hexagonale"], ["fraisee", "Tête fraisée"], ["cyl", "Tête cylindrique"], ["torx", "Tête Torx"]];
+  var OUTILLAGE_MATIERES = [["inox", "Inox A2"], ["zingue", "Acier zingué"], ["laiton", "Laiton"], ["brut", "Acier brut"]];
+  var OUTILLAGE_DIAMS = [4, 5, 6, 8, 10, 12, 14, 16];
+  var OUTILLAGE_LONGS = [10, 12, 16, 20, 25, 30, 35, 40, 50, 60, 80];
+  var OUTILLAGE_BEARINGS = [6000, 6001, 6002, 6003, 6004, 6005, 6200, 6201, 6202, 6203, 6204, 6205, 6206, 6300, 6301, 6302, 6303, 6304];
+
+  function outillageBuildProducts() {
+    var products = [], termIndex = {}, annIndex = {}, vocabByLen = {};
+    var seq = 2000;
+    function addTerm(t, pid, w, isSku) {
+      (termIndex[t] = termIndex[t] || {})[pid] = (termIndex[t][pid] || 0) + w;
+      if (!isSku) (vocabByLen[t.length] = vocabByLen[t.length] || {})[t] = true;
+    }
+    function push(p, refText, nameText) {
+      var pid = products.length;
+      products.push(p);
+      tokenize(p.id).forEach(function (t) { addTerm(t, pid, LIVRES_FIELD_W.ref, true); });
+      tokenize(refText).forEach(function (t) { addTerm(t, pid, LIVRES_FIELD_W.ref, false); });
+      tokenize(nameText).forEach(function (t) { addTerm(t, pid, LIVRES_FIELD_W.name, false); });
+      p.anns.forEach(function (a) { (annIndex[a] = annIndex[a] || []).push(pid); });
+    }
+
+    OUTILLAGE_DIAMS.forEach(function (d, di) {
+      OUTILLAGE_LONGS.forEach(function (l, li) {
+        if (l < d * 1.2) return;
+        OUTILLAGE_TETES.forEach(function (tete, ti) {
+          OUTILLAGE_MATIERES.forEach(function (mat, mi) {
+            var rand = rng(di * 97 + li * 13 + ti * 7 + mi * 3 + 11);
+            if (rand() > 0.55) return;
+            var id = "HRX-VS-" + (seq++);
+            var ref = "M" + d + " x " + l + " - " + mat[1];
+            var name = "Vis à métaux " + tete[1].toLowerCase();
+            var anns = ["DIAM_M" + d, "LONG_" + l, "VIS_M" + d + "X" + l, "MAT_" + mat[0].toUpperCase(), "TETE_" + tete[0].toUpperCase(), "FAM_VIS"];
+            var price = Math.round((0.08 + d * 0.015 + l * 0.004) * 100) / 100;
+            var stock = rand() < 0.05 ? 0 : Math.floor(rand() * 400) + 20;
+            var p = { id: id, ref: ref, name: name, desc: ref, anns: anns, price: price, stock: stock, family: "vis", diam: d };
+            push(p, ref, name);
+          });
+        });
+      });
+    });
+
+    OUTILLAGE_DIAMS.forEach(function (d) {
+      OUTILLAGE_MATIERES.forEach(function (mat, mi) {
+        var rand = rng(d * 53 + mi * 19 + 7);
+        var id = "HRX-EC-" + (seq++);
+        var ref = "M" + d + " - " + mat[1];
+        var name = "Écrou hexagonal";
+        var anns = ["DIAM_M" + d, "MAT_" + mat[0].toUpperCase(), "FAM_ECROU"];
+        var price = Math.round((0.04 + d * 0.008) * 100) / 100;
+        var stock = rand() < 0.04 ? 0 : Math.floor(rand() * 600) + 50;
+        push({ id: id, ref: ref, name: name, desc: ref, anns: anns, price: price, stock: stock, family: "ecrou", diam: d }, ref, name);
+      });
+    });
+
+    OUTILLAGE_DIAMS.forEach(function (d) {
+      OUTILLAGE_MATIERES.forEach(function (mat, mi) {
+        var rand = rng(d * 71 + mi * 23 + 13);
+        var id = "HRX-RD-" + (seq++);
+        var ref = "M" + d + " - " + mat[1];
+        var name = "Rondelle plate";
+        var anns = ["DIAM_M" + d, "MAT_" + mat[0].toUpperCase(), "FAM_RONDELLE"];
+        var price = Math.round((0.02 + d * 0.003) * 100) / 100;
+        var stock = rand() < 0.04 ? 0 : Math.floor(rand() * 800) + 100;
+        push({ id: id, ref: ref, name: name, desc: ref, anns: anns, price: price, stock: stock, family: "rondelle", diam: d }, ref, name);
+      });
+    });
+
+    OUTILLAGE_BEARINGS.forEach(function (b) {
+      [["", ""], ["-2RS", "Étanche"], ["-ZZ", "Blindé"]].forEach(function (variant, vi) {
+        var rand = rng(b + vi * 71 + 5);
+        var id = "HRX-RL-" + (seq++);
+        var ref = b + variant[0];
+        var name = "Roulement à billes" + (variant[1] ? " " + variant[1].toLowerCase() : "");
+        var anns = ["BRG_" + b, "FAM_ROULEMENT"];
+        if (variant[0] === "-2RS") anns.push("ETANCHE_2RS");
+        if (variant[0] === "-ZZ") anns.push("ETANCHE_ZZ");
+        var price = Math.round((1.8 + (b % 400) * 0.02) * 100) / 100;
+        var stock = rand() < 0.1 ? 0 : Math.floor(rand() * 60) + 3;
+        push({ id: id, ref: ref, name: name, desc: ref, anns: anns, price: price, stock: stock, family: "roulement", diam: null }, ref, name);
+      });
+    });
+
+    return { products: products, termIndex: termIndex, annIndex: annIndex, vocabByLen: vocabByLen, ANN_W: 5 };
+  }
+
+  var FAMILY_ICON = {
+    vis: '<path d="M32 8 L32 30 M24 16 L40 16 M27 20 L37 20 M27 24 L37 24" stroke="#fff" stroke-width="3.4" stroke-linecap="round"/><path d="M22 30 L42 30 L37 56 L27 56 Z" fill="#fff" opacity="0.92"/>',
+    ecrou: '<path d="M32 10 L48 19 L48 37 L32 46 L16 37 L16 19 Z" fill="none" stroke="#fff" stroke-width="3.4"/><circle cx="32" cy="28" r="8" fill="none" stroke="#fff" stroke-width="3"/>',
+    rondelle: '<circle cx="32" cy="28" r="17" fill="none" stroke="#fff" stroke-width="4.2"/><circle cx="32" cy="28" r="7" fill="none" stroke="#fff" stroke-width="3"/>',
+    roulement: '<circle cx="32" cy="28" r="18" fill="none" stroke="#fff" stroke-width="3.6"/><circle cx="32" cy="28" r="9" fill="none" stroke="#fff" stroke-width="3"/>' +
+      [0, 60, 120, 180, 240, 300].map(function (a) {
+        var r = 13.5, x = 32 + r * Math.cos(a * Math.PI / 180), y = 28 + r * Math.sin(a * Math.PI / 180);
+        return '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="2.4" fill="#fff"/>';
+      }).join("")
+  };
+  function outillageThumb(p) {
+    var hue = { vis: 228, ecrou: 234, rondelle: 220, roulement: 226 }[p.family] || 228;
+    return '<svg viewBox="0 0 64 64" width="54" height="80" aria-hidden="true">' +
+      '<rect width="64" height="64" rx="8" fill="hsl(' + hue + ',72%,64%)"/>' +
+      '<rect width="64" height="64" rx="8" fill="hsl(' + (hue + 20) + ',60%,48%)" opacity="0.35"/>' +
+      (FAMILY_ICON[p.family] || FAMILY_ICON.vis) +
+      '</svg>';
+  }
+  function outillageRenderCard(h) {
+    var p = h.p;
+    var whyChips = h.why.filter(function (w, i, arr) { return arr.indexOf(w) === i; })
+      .slice(0, 3).map(function (w) {
+        if (w[0] === "#") return '<span class="play-why play-why-ann">' + esc(shortLabel(w.slice(1), OUTILLAGE_LABELS)) + "</span>";
+        return '<span class="play-why">' + esc(w) + "</span>";
+      }).join("");
+    return '<div class="play-card' + (p.stock === 0 ? " play-card-out" : "") + '">' +
+      '<div class="play-thumb play-thumb-icon">' + outillageThumb(p) + "</div>" +
+      '<div class="play-body"><div class="play-name">' + esc(p.name) + "</div>" +
+      '<div class="play-ref mono">' + esc(p.id) + " · " + esc(p.ref) + "</div>" +
+      '<div class="play-tags">' + whyChips + "</div></div>" +
+      '<div class="play-side"><span class="play-price">' + p.price.toFixed(2).replace(".", ",") + " €</span>" +
+      '<span class="play-stock">' + (p.stock > 0 ? (p.stock <= 3 ? p.stock + " restants" : "en stock") : "rupture") + "</span></div>" +
+      "</div>";
+  }
+
+  var OUTILLAGE = {
+    key: "outillage", emoji: "🛠️", label: "Bricolage & Outillage",
+    LEVEL1: OUTILLAGE_LEVEL1, LEVEL2: OUTILLAGE_LEVEL2, PRISM_LABELS: OUTILLAGE_LABELS,
+    SYN_GROUPS: OUTILLAGE_SYN_GROUPS,
+    groupOrder: ["FAM", "DIAM", "MAT", "TETE"],
+    groupLabels: { FAM: "Famille", DIAM: "Diamètre", MAT: "Matière", TETE: "Tête" },
+    samples: [["vis m8x20 inox", "vs m8x20 inox"], ["écrou m10 zingué", "ecrou m10 zingue"], ["roulement 6205 2rs", "roulement 6205 2rs"], ["vis torx m6", "vis torx m6"]],
+    intro: "vis m8x2",
+    placeholder: "Cherchez une référence (ex. M8x20)…",
+    buildProducts: outillageBuildProducts,
+    renderCard: outillageRenderCard
+  };
+
+  /* =====================================================================
+     Moteur générique — commun aux deux verticales, paramétré par `active`
+     ===================================================================== */
+  var VERTICALS = { livres: LIVRES, outillage: OUTILLAGE };
+  var active = LIVRES;
+  var products, termIndex, annIndex, vocabByLen, ANN_W;
+  var SYN = {};
+
+  function loadVertical(key) {
+    active = VERTICALS[key];
+    var built = active.buildProducts();
+    products = built.products; termIndex = built.termIndex; annIndex = built.annIndex;
+    vocabByLen = built.vocabByLen; ANN_W = built.ANN_W;
+    SYN = {};
+    (active.SYN_GROUPS || []).forEach(function (g) { g.forEach(function (t) { SYN[t] = g; }); });
+  }
+  loadVertical("livres");
+
+  function prismLabel(a, table) {
+    return (table || active.PRISM_LABELS)[a] || (a.indexOf("ERA_") === 0 ? eraLabel(a) : null);
+  }
+  function shortLabel(code, table) {
+    var full = prismLabel(code, table);
+    if (full) return full.replace(/\s*\([^)]*\)\s*$/, "");
+    var words = code.toLowerCase().split("_");
+    return words.map(function (w) { return w.charAt(0).toUpperCase() + w.slice(1); }).join(" ");
+  }
+
+  function annotate(tokens) {
+    var spaced = tokens.join(" ");
+    var ann = {};
+    active.LEVEL1.forEach(function (rule) {
+      var re = new RegExp(rule[0].source, "g"), m;
+      while ((m = re.exec(spaced)) !== null) {
+        var a = rule[1];
+        for (var g = 1; g < m.length; g++) a = a.replace("$" + g, (m[g] || "").toUpperCase());
+        a = a.replace(/undefined/g, "");
+        if (/^ERA_C(\d+)/.test(a)) a = "ERA_" + ((parseInt(a.slice(5), 10) - 1) * 100) + "S";
+        ann[a] = true;
+      }
+    });
+    var stream = Object.keys(ann).sort().join(" ");
+    (active.LEVEL2 || []).forEach(function (rule) { if (rule[0].test(stream)) ann[rule[1]] = true; });
+    return Object.keys(ann);
+  }
+
   function fuzzyVariants(term) {
     var cap = maxEdits(term), out = [], seen = {};
     for (var Len = term.length - cap; Len <= term.length + cap; Len++) {
@@ -373,136 +669,52 @@
     return { all: res, total: res.length, tokens: tokens };
   }
 
-  /* ---------------- Couvertures procédurales ---------------- */
-  // Entièrement générées (dégradés, formes géométriques, typographie) — jamais de
-  // visuel existant : une vraie jaquette de livre est une œuvre protégée, on ne
-  // peut ni la récupérer ni l'imiter. Le style (famille visuelle + palette) varie
-  // par genre, la teinte exacte par ouvrage, pour que chaque titre soit reconnaissable
-  // sans jamais reproduire une couverture réelle.
-  var FAMILY_BY_GENRE = {
-    polar: "noir", sf: "cosmic", fantasy: "cosmic",
-    classique: "classic", essai: "classic", poesie: "classic",
-    jeunesse: "bright", bd: "bright", roman: "warm"
-  };
-
-  function wrapTitle(text, maxChars, maxLines) {
-    var words = text.split(" "), lines = [], cur = "";
-    for (var i = 0; i < words.length; i++) {
-      var test = cur ? cur + " " + words[i] : words[i];
-      if (test.length <= maxChars) { cur = test; }
-      else { if (cur) lines.push(cur); cur = words[i]; if (lines.length >= maxLines) break; }
-    }
-    if (cur && lines.length < maxLines) lines.push(cur);
-    if (lines.length > maxLines) lines = lines.slice(0, maxLines);
-    if (lines.join(" ").length < text.length && lines.length === maxLines) {
-      var last = lines[maxLines - 1];
-      while (last.length > maxChars - 1) last = last.slice(0, -1);
-      lines[maxLines - 1] = last.replace(/\s+\S*$/, "") + "…";
-    }
-    return lines;
-  }
-
-  function coverArt(p) {
-    var h = p.hue;
-    var family = FAMILY_BY_GENRE[p.genre] || "warm";
-    var W = 100, H = 140;
-    var titleLines, authorLast = p.author.split(" ").slice(-1)[0];
-    var bg, motif = "", titleColor, titleFamily = "'Plus Jakarta Sans',sans-serif", titleWeight = "700";
-    var titleSize = 12, titleY = 46, lineHeight = 14, ls = "0";
-    var ruleColor, authorColor;
-
-    if (family === "noir") {
-      var accent = "hsl(" + ((h + 15) % 360) + ",68%,52%)";
-      bg = '<rect width="' + W + '" height="' + H + '" fill="hsl(' + h + ',22%,13%)"/>' +
-           '<rect width="' + W + '" height="' + H + '" fill="hsl(' + ((h+30)%360) + ',30%,9%)" opacity="0.55"/>';
-      for (var i = 0; i < 5; i++) motif += '<rect x="0" y="' + (18 + i * 5) + '" width="' + W + '" height="1.3" fill="rgba(255,255,255,0.05)"/>';
-      motif += '<rect x="10" y="' + (H - 34) + '" width="26" height="3" fill="' + accent + '"/>';
-      titleColor = "#F4F1EA"; titleFamily = "Georgia,'Times New Roman',serif"; titleWeight = "700";
-      ruleColor = accent; authorColor = "rgba(244,241,234,0.65)";
-    } else if (family === "cosmic") {
-      bg = '<rect width="' + W + '" height="' + H + '" fill="hsl(' + h + ',48%,26%)"/>' +
-           '<rect width="' + W + '" height="' + H + '" fill="hsl(' + ((h+45)%360) + ',60%,16%)" opacity="0.6"/>';
-      var mx = 20 + (p.pat * 12), my = 26 + (p.pat % 3) * 6;
-      motif = '<circle cx="' + mx + '" cy="' + my + '" r="16" fill="none" stroke="rgba(255,255,255,0.22)" stroke-width="1"/>' +
-              '<circle cx="' + mx + '" cy="' + my + '" r="2" fill="rgba(255,255,255,0.55)"/>' +
-              '<circle cx="' + (W - 18) + '" cy="20" r="1.4" fill="rgba(255,255,255,0.4)"/>' +
-              '<circle cx="' + (W - 30) + '" cy="34" r="0.9" fill="rgba(255,255,255,0.3)"/>';
-      titleColor = "#FFFFFF"; titleFamily = "'Plus Jakarta Sans',sans-serif"; titleWeight = "700"; ls = "0.3";
-      ruleColor = "rgba(255,255,255,0.4)"; authorColor = "rgba(255,255,255,0.62)";
-    } else if (family === "classic") {
-      bg = '<rect width="' + W + '" height="' + H + '" fill="hsl(38,32%,93%)"/>' +
-           '<rect width="' + W + '" height="' + H + '" fill="hsl(' + h + ',25%,88%)" opacity="0.35"/>';
-      motif = '<rect x="6" y="6" width="' + (W - 12) + '" height="' + (H - 12) + '" fill="none" stroke="hsl(' + h + ',35%,38%)" stroke-width="1" opacity="0.55"/>' +
-              '<rect x="9" y="9" width="' + (W - 18) + '" height="' + (H - 18) + '" fill="none" stroke="hsl(' + h + ',35%,38%)" stroke-width="0.5" opacity="0.4"/>';
-      titleColor = "hsl(" + h + ",30%,22%)"; titleFamily = "Georgia,'Times New Roman',serif"; titleWeight = "700";
-      ruleColor = "hsl(" + h + ",35%,38%)"; authorColor = "hsl(" + h + ",20%,38%)";
-    } else if (family === "bright") {
-      bg = '<rect width="' + W + '" height="' + H + '" fill="hsl(' + h + ',72%,58%)"/>' +
-           '<rect width="' + W + '" height="' + H + '" fill="hsl(' + ((h+55)%360) + ',70%,50%)" opacity="0.5"/>';
-      motif = '<circle cx="' + (W - 24) + '" cy="24" r="18" fill="rgba(255,255,255,0.18)"/>' +
-              '<circle cx="14" cy="' + (H - 26) + '" r="12" fill="rgba(255,255,255,0.15)"/>';
-      titleColor = "#FFFFFF"; titleFamily = "'Plus Jakarta Sans',sans-serif"; titleWeight = "800";
-      ruleColor = "rgba(255,255,255,0.55)"; authorColor = "rgba(255,255,255,0.8)";
-    } else { // warm (roman, défaut)
-      bg = '<rect width="' + W + '" height="' + H + '" fill="hsl(' + h + ',42%,40%)"/>' +
-           '<rect width="' + W + '" height="' + H + '" fill="hsl(' + ((h+25)%360) + ',48%,26%)" opacity="0.55"/>';
-      motif = '<path d="M0 ' + (H-30) + ' Q ' + (W/2) + ' ' + (H-46) + ' ' + W + ' ' + (H-30) + ' L ' + W + ' ' + H + ' L 0 ' + H + ' Z" fill="rgba(255,255,255,0.07)"/>';
-      titleColor = "#FBF8F2"; titleFamily = "Georgia,'Times New Roman',serif"; titleWeight = "700";
-      ruleColor = "rgba(251,248,242,0.5)"; authorColor = "rgba(251,248,242,0.68)";
-    }
-
-    var maxChars = family === "cosmic" || family === "bright" ? 13 : 14;
-    titleLines = wrapTitle(p.title, maxChars, 3);
-    var titleTspans = titleLines.map(function (line, i) {
-      return '<tspan x="10" dy="' + (i === 0 ? 0 : lineHeight) + '">' + esc(line) + "</tspan>";
-    }).join("");
-
-    var badge = "";
-    if (p.fmt === "AU") badge = '<circle cx="' + (W-16) + '" cy="' + (H-18) + '" r="8" fill="rgba(0,0,0,0.32)"/><path d="M' + (W-19) + ' ' + (H-22) + ' L' + (W-19) + ' ' + (H-14) + ' L' + (W-12) + ' ' + (H-18) + ' Z" fill="#fff"/>';
-
-    return '<svg viewBox="0 0 ' + W + ' ' + H + '" width="48" height="66" aria-hidden="true">' +
-      '<clipPath id="cc' + h + "_" + p.pat + '"><rect width="' + W + '" height="' + H + '" rx="4"/></clipPath>' +
-      '<g clip-path="url(#cc' + h + "_" + p.pat + ')">' + bg + motif +
-      '<text x="10" y="' + titleY + '" font-family="' + titleFamily + '" font-size="' + titleSize + '" font-weight="' + titleWeight + '" letter-spacing="' + ls + '" fill="' + titleColor + '">' + titleTspans + '</text>' +
-      '<line x1="10" y1="' + (H - 16) + '" x2="' + (W - 10) + '" y2="' + (H - 16) + '" stroke="' + ruleColor + '" stroke-width="0.7"/>' +
-      '<text x="10" y="' + (H - 8) + '" font-family="\'Plus Jakarta Sans\',sans-serif" font-size="7.5" font-weight="600" letter-spacing="0.4" fill="' + authorColor + '">' + esc(authorLast.toUpperCase()) + "</text>" +
-      badge +
-      '</g><rect x="0.5" y="0.5" width="' + (W-1) + '" height="' + (H-1) + '" rx="4" fill="none" stroke="rgba(0,0,0,0.16)"/></svg>';
-  }
-
-  /* ---------------- UI + Prismes ---------------- */
-  function esc(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;"); }
-  function each(list, fn) { Array.prototype.forEach.call(list, fn); }
-  function prismLabel(a) { return PRISM_LABELS[a] || (a.indexOf("ERA_") === 0 ? eraLabel(a) : null); }
-
+  /* ---------------- UI + Prismes + Sélecteur de verticale ---------------- */
   function initOne(rootEl) {
     var input = rootEl.querySelector(".play-input");
     var grid = rootEl.querySelector(".play-grid");
     var meta = rootEl.querySelector(".play-meta");
     var prismsEl = rootEl.querySelector(".play-prisms");
     var moreBtn = rootEl.querySelector(".play-more");
-    var chips = rootEl.querySelectorAll(".play-chip");
+    var chipsWrap = rootEl.querySelector(".play-chips");
+    var verticalPills = rootEl.querySelectorAll(".play-vertical-pill");
     if (!input || !grid) return;
-    var active = {}; // annotation -> true
-    var expanded = false; // "afficher plus" sur mobile
+    var activeFilters = {};
+    var expanded = false;
+
+    function renderSamples() {
+      if (!chipsWrap) return;
+      var html = '<span class="play-chips-label">Essayez :</span>';
+      active.samples.forEach(function (s) {
+        html += '<button type="button" class="play-chip" data-q="' + esc(s[1]) + '">' + esc(s[0]) + "</button>";
+      });
+      chipsWrap.innerHTML = html;
+      each(chipsWrap.querySelectorAll(".play-chip"), function (chip) {
+        chip.addEventListener("click", function () {
+          input.value = chip.getAttribute("data-q");
+          render(input.value);
+          input.focus();
+        });
+      });
+    }
 
     function render(query, keepFilters) {
-      if (!keepFilters) { active = {}; expanded = false; }
+      if (!keepFilters) { activeFilters = {}; expanded = false; }
       var t0 = performance.now();
       var r = search(query);
-      // Application des prismes actifs
       var filtered = r.all;
-      var keys = Object.keys(active);
+      var keys = Object.keys(activeFilters);
       if (keys.length) {
         filtered = r.all.filter(function (h) {
           return keys.every(function (a) { return h.p.anns.indexOf(a) !== -1; });
         });
       }
       var ms = Math.max(1, Math.round(performance.now() - t0));
-      if (!query.trim()) { grid.innerHTML = ""; if (prismsEl) prismsEl.innerHTML = ""; meta.innerHTML = L.empty; return; }
-      meta.innerHTML = filtered.length ? L.results(filtered.length, ms, products.length) : L.none(ms);
+      if (!query.trim()) { grid.innerHTML = ""; if (prismsEl) prismsEl.innerHTML = ""; meta.innerHTML = "Tapez une recherche — les fautes de frappe sont bienvenues."; return; }
+      meta.innerHTML = filtered.length
+        ? "<strong>" + filtered.length + " résultat" + (filtered.length > 1 ? "s" : "") + "</strong> · <span class=\"play-speed\">⚡ " + ms + " ms</span> · moteur Heurix embarqué, catalogue de démo (" + products.length.toLocaleString("fr-FR") + " références)"
+        : "Aucun résultat · " + ms + " ms";
 
-      // Barre de prismes : les annotations les plus fréquentes dans les résultats
       if (prismsEl) {
         var counts = {};
         r.all.forEach(function (h) { h.p.anns.forEach(function (a) { counts[a] = (counts[a] || 0) + 1; }); });
@@ -514,60 +726,41 @@
           (groups[g] = groups[g] || []).push([a, counts[a], lbl]);
         });
         var chipsHtml = [];
-        var groupLabels = { GENRE: "Genre", FORMAT: "Format", PAYS: "Origine", ERA: "Époque", LONG: "Longueur" };
-        ["GENRE", "FORMAT", "PAYS", "ERA", "LONG"].forEach(function (g) {
+        active.groupOrder.forEach(function (g) {
           if (!groups[g]) return;
           groups[g].sort(function (a, b) { return b[1] - a[1]; });
-          chipsHtml.push('<span class="play-prism-group">' + (groupLabels[g] || g) + "</span>");
+          chipsHtml.push('<span class="play-prism-group">' + (active.groupLabels[g] || g) + "</span>");
           groups[g].slice(0, g === "ERA" ? 2 : 3).forEach(function (item) {
-            var on = active[item[0]] ? " play-prism-on" : "";
+            var on = activeFilters[item[0]] ? " play-prism-on" : "";
             chipsHtml.push('<button type="button" class="play-prism' + on + '" data-ann="' + item[0] + '">' + esc(item[2]) + ' <span class="play-prism-n">' + item[1] + "</span></button>");
           });
         });
-        prismsEl.innerHTML = chipsHtml.length ? '<span class="play-prisms-label">' + L.prisms + "</span>" + chipsHtml.join("") : "";
+        prismsEl.innerHTML = chipsHtml.length ? '<span class="play-prisms-label">Prismes :</span>' + chipsHtml.join("") : "";
         each(prismsEl.querySelectorAll(".play-prism"), function (btn) {
           btn.addEventListener("click", function () {
             var a = btn.getAttribute("data-ann");
-            if (active[a]) delete active[a]; else active[a] = true;
+            if (activeFilters[a]) delete activeFilters[a]; else activeFilters[a] = true;
             render(input.value, true);
           });
         });
       }
 
-      // Diversité d'affichage : au plus 2 éditions du même titre dans le haut de liste,
-      // pour montrer la variété du catalogue plutôt qu'une pile de pressages identiques.
-      // Affichage initial réduit (3 mobile / 9 desktop), "Afficher plus" révèle davantage —
-      // sur les deux formats désormais, pas seulement mobile (plafond desktop à 9 corrigé).
       var isMobile = window.innerWidth < 640;
       var baseCount = isMobile ? 3 : 9;
       var expandedCount = isMobile ? 9 : 24;
       var visibleCount = expanded ? expandedCount : baseCount;
-      var seenTitle = {}, diverse = [];
+      var seenName = {}, diverse = [];
       for (var di = 0; di < filtered.length && diverse.length < visibleCount; di++) {
-        var tk = filtered[di].p.author + "|" + filtered[di].p.title;
-        seenTitle[tk] = (seenTitle[tk] || 0) + 1;
-        if (seenTitle[tk] <= 2) diverse.push(filtered[di]);
+        var key = active.key === "livres" ? filtered[di].p.author + "|" + filtered[di].p.title : filtered[di].p.name + "|" + filtered[di].p.ref;
+        seenName[key] = (seenName[key] || 0) + 1;
+        if (seenName[key] <= 2) diverse.push(filtered[di]);
       }
-      grid.innerHTML = diverse.map(function (h) {
-        var whyChips = h.why.filter(function (w, i, arr) { return arr.indexOf(w) === i; })
-          .slice(0, 3).map(function (w) {
-            if (w[0] === "#") return '<span class="play-why play-why-ann">' + esc(shortLabel(w.slice(1))) + "</span>";
-            return '<span class="play-why">' + esc(w) + "</span>";
-          }).join("");
-        return '<div class="play-card' + (h.p.stock === 0 ? " play-card-out" : "") + '">' +
-          '<div class="play-thumb">' + coverArt(h.p) + "</div>" +
-          '<div class="play-body"><div class="play-name">' + esc(h.p.title) + " — " + esc(h.p.author) + "</div>" +
-          '<div class="play-ref mono">' + esc(h.p.id) + " · " + esc(h.p.desc) + "</div>" +
-          '<div class="play-tags">' + whyChips + "</div></div>" +
-          '<div class="play-side"><span class="play-price">' + h.p.price + " €</span>" +
-          '<span class="play-stock">' + L.stock(h.p.stock) + "</span></div>" +
-          "</div>";
-      }).join("");
+      grid.innerHTML = diverse.map(active.renderCard).join("");
 
       if (!expanded && filtered.length > diverse.length) {
         var remaining = Math.min(filtered.length, expandedCount) - diverse.length;
         moreBtn.hidden = false;
-        moreBtn.textContent = L.showMore(remaining);
+        moreBtn.textContent = "Afficher " + remaining + " résultat" + (remaining > 1 ? "s" : "") + " de plus";
       } else {
         moreBtn.hidden = true;
       }
@@ -579,23 +772,31 @@
     });
 
     input.addEventListener("input", function () { render(input.value); });
-    each(chips, function (chip) {
-      chip.addEventListener("click", function () {
-        input.value = chip.getAttribute("data-q");
-        render(input.value);
-        input.focus();
-      });
+
+    function switchTo(key) {
+      if (key === active.key) return;
+      loadVertical(key);
+      each(verticalPills, function (p) { p.classList.toggle("play-vertical-on", p.getAttribute("data-vertical") === key); });
+      input.placeholder = active.placeholder;
+      renderSamples();
+      input.value = active.intro;
+      render(active.intro);
+    }
+    each(verticalPills, function (pill) {
+      pill.addEventListener("click", function () { switchTo(pill.getAttribute("data-vertical")); });
     });
 
+    renderSamples();
+
     var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduce || rootEl.getAttribute("data-no-intro") === "1") { input.value = L.intro; render(L.intro); return; }
+    if (reduce || rootEl.getAttribute("data-no-intro") === "1") { input.value = active.intro; render(active.intro); return; }
     var i = 0;
     var iv = setInterval(function () {
       if (document.activeElement === input) { clearInterval(iv); return; }
       i++;
-      input.value = L.intro.slice(0, i);
+      input.value = active.intro.slice(0, i);
       render(input.value);
-      if (i >= L.intro.length) clearInterval(iv);
+      if (i >= active.intro.length) clearInterval(iv);
     }, 55);
   }
 
@@ -603,6 +804,5 @@
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
   else init();
 
-  // Pour les curieux : window.heurixDemo.search("polar scandinav poche")
-  window.heurixDemo = { search: search, annotate: annotate, catalogSize: products.length, shortLabel: shortLabel };
+  window.heurixDemo = { search: search, annotate: annotate, catalogSize: function () { return products.length; }, shortLabel: shortLabel, loadVertical: loadVertical };
 })();
