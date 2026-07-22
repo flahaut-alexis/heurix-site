@@ -11,23 +11,23 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>La recherche de votre blog ou de votre FAQ mérite aussi d'être bonne — Heurix</title>
-<meta name="description" content="Le search e-commerce se concentre sur le catalogue produit et oublie souvent le blog, la FAQ et la documentation — un point aveugle coûteux pour les équipes contenu.">
-<link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/recherche-blog-faq-contenu.html">
+<title>Indexez votre premier catalogue outillage en 5 minutes — Heurix</title>
+<meta name="description" content="Tutoriel pratique : indexez un petit catalogue de quincaillerie et lancez une vraie recherche avec faute de frappe, en 5 minutes, avec du vrai code à copier-coller.">
+<link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/tutoriel-catalogue-outillage-5-minutes.html">
 <meta property="og:type" content="article">
-<meta property="og:title" content="La recherche de votre blog ou de votre FAQ mérite aussi d'être bonne — Heurix">
-<meta property="og:description" content="Le search e-commerce se concentre sur le catalogue produit et oublie souvent le blog, la FAQ et la documentation — un point aveugle coûteux pour les équipes contenu.">
+<meta property="og:title" content="Indexez votre premier catalogue outillage en 5 minutes — Heurix">
+<meta property="og:description" content="Tutoriel pratique : indexez un petit catalogue de quincaillerie et lancez une vraie recherche avec faute de frappe, en 5 minutes, avec du vrai code à copier-coller.">
 <meta property="og:image" content="https://heurix.fr/og-image.png">
-<meta property="og:url" content="https://heurix.fr/blog/recherche-blog-faq-contenu.html">
+<meta property="og:url" content="https://heurix.fr/blog/tutoriel-catalogue-outillage-5-minutes.html">
 <meta property="og:locale" content="fr_FR">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="La recherche de votre blog ou de votre FAQ mérite aussi d'être bonne — Heurix">
-<meta name="twitter:description" content="Le search e-commerce se concentre sur le catalogue produit et oublie souvent le blog, la FAQ et la documentation — un point aveugle coûteux pour les équipes contenu.">
+<meta name="twitter:title" content="Indexez votre premier catalogue outillage en 5 minutes — Heurix">
+<meta name="twitter:description" content="Tutoriel pratique : indexez un petit catalogue de quincaillerie et lancez une vraie recherche avec faute de frappe, en 5 minutes, avec du vrai code à copier-coller.">
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="../favicon-32.png">
 <link rel="apple-touch-icon" href="../apple-touch-icon.png">
 <link rel="stylesheet" href="../styles.css">
-<link rel="canonical" href="https://heurix.fr/blog/recherche-blog-faq-contenu.html">
+<link rel="canonical" href="https://heurix.fr/blog/tutoriel-catalogue-outillage-5-minutes.html">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -103,31 +103,69 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <article class="post">
   <div class="wrap post-wrap">
     <a href="../blog.html" class="back-link">← Tous les articles</a>
-    <div class="kicker">Blog · Juillet 2026</div>
-    <h1>La recherche de votre blog ou de votre FAQ mérite aussi d'être bonne</h1>
-    <p class="post-lede">On configure la recherche produit avec soin, et on laisse la recherche du blog ou de la FAQ tourner sur les réglages par défaut du CMS. C'est souvent le même volume de recherches ratées, juste jamais mesuré.</p>
+    <div class="kicker">Tutoriel · Juillet 2026</div>
+    <h1>Indexez votre premier catalogue outillage en 5 minutes</h1>
+    <p class="post-lede">Deux appels API, un vrai résultat de recherche avec faute de frappe et format différent. Tout le code de cette page est testé — copiez-collez, adaptez à votre catalogue.</p>
 
     <div class="post-body">
-      <h2>Le point aveugle du search e-commerce</h2>
-      <p>Quand on parle de moteur de recherche pour un site marchand, on pense catalogue produit — SKU, tailles, références. On oublie presque toujours un autre pan du site qui reçoit tout autant de recherches : le blog, la FAQ, la base de connaissances, les pages d'aide. Ce contenu-là a généralement une recherche native de son CMS (WordPress, un centre d'aide Zendesk, une FAQ maison) — souvent la même recherche basique qui échoue sur un mot mal orthographié.</p>
+      <h2>Ce qu'il vous faut</h2>
+      <p>Une clé API (<a href="../pricing.html">essai gratuit 14 jours</a>, sans carte bancaire) et un terminal. C'est tout — pas de SDK à installer, le moteur répond en JSON brut sur des appels HTTP standards.</p>
 
-      <h2>Pourquoi c'est un vrai manque à gagner</h2>
-      <p>Un visiteur qui tape une question dans une FAQ et ne trouve rien ne revient généralement pas la reformuler — il abandonne, ou il contacte le support, ce qui coûte du temps humain à chaque occurrence. Pire : cette recherche ratée est rarement mesurée. La plupart des moteurs de recherche de contenu ne journalisent pas les requêtes sans résultat, donc personne dans l'équipe communication ou support ne sait qu'un sujet précis est cherché et jamais trouvé.</p>
+      <h2>Étape 1 — Indexez 4 produits</h2>
+      <p>Un petit catalogue de quincaillerie, avec le pack de règles <code class="docs-inline-code">outillage</code> (celui qui comprend les diamètres, longueurs et matières dans une référence) :</p>
+      <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/index/quincaillerie/items \
+  -H "Authorization: Bearer VOTRE_CLE_API" \
+  -H "Content-Type: application/json" \
+  -d '{
+  "rulepack": "outillage",
+  "items": [
+    {"id": "V001", "name": "Vis à métaux tête hexagonale", "ref": "M8 x 20 - Inox A2", "stock": 120},
+    {"id": "V002", "name": "Vis à métaux tête hexagonale", "ref": "M8 x 30 - Inox A2", "stock": 45},
+    {"id": "R001", "name": "Roulement à billes étanche", "ref": "6205-2RS", "stock": 8},
+    {"id": "E001", "name": "Écrou hexagonal", "ref": "M8 - Zingué", "stock": 300}
+  ]
+}'</code></pre>
+      <p>Réponse :</p>
+      <pre class="docs-code"><code>{"indexed": 4, "catalog": {"catalog": "quincaillerie", "products": 4,
+ "terms": 18, "annotations": 11, "rulepack": "outillage", "synonym_groups": 0}}</code></pre>
+      <p>11 annotations générées automatiquement à partir de 4 produits — c'est la cascade de règles qui vient de décomposer chaque référence (diamètre, longueur, matière) sans que vous ayez écrit la moindre regex.</p>
 
-      <h2>Ce qui change avec un moteur qui comprend le vocabulaire</h2>
-      <p>La même mécanique qui permet à un moteur de retrouver une référence produit malgré une faute de frappe fonctionne sur une question mal formulée : synonymes métier (« tuto » = « tutoriel » = « guide »), tolérance aux fautes, et surtout — c'est le point le plus utile pour une équipe de contenu — un historique exploitable des recherches sans résultat. Ce n'est plus une hypothèse sur ce qui manque au blog ou à la FAQ : c'est une liste concrète, avec le nombre de fois où chaque sujet a été cherché.</p>
+      <h2>Étape 2 — Cherchez, avec une faute et un format différent</h2>
+      <p>Le vrai test : pas la référence exacte telle qu'indexée, mais ce qu'un client tape réellement — une faute sur « vis », et « M8x20 » collé sans espaces ni tirets :</p>
+      <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/index/quincaillerie/search \
+  -H "Authorization: Bearer VOTRE_CLE_API" \
+  -H "Content-Type: application/json" \
+  -d '{"q": "vs m8x20 inox"}'</code></pre>
+      <p>Réponse (raccourcie) :</p>
+      <pre class="docs-code"><code>{
+  "total": 3,
+  "hits": [
+    {
+      "product": {"id": "V001", "ref": "M8 x 20 - Inox A2", "stock": 120},
+      "score": 43.5,
+      "matched": [
+        "terme 'inox' (depuis 'inox', x1.00)",
+        "annotation #LONG_20",
+        "annotation #DIAM_M8",
+        "annotation #VIS_M8X20",
+        "annotation #DIAM_M8_INOX",
+        "annotation #MAT_INOX"
+      ]
+    },
+    { "product": {"id": "V002", "ref": "M8 x 30 - Inox A2"}, "score": 28.5, ... },
+    { "product": {"id": "E001", "ref": "M8 - Zingué"}, "score": 7.5, ... }
+  ]
+}</code></pre>
 
-      <blockquote>Une recherche sans résultat sur une FAQ n'est pas un bug — c'est un ticket support qui n'a pas encore été ouvert, ou un article qui n'a pas encore été écrit.</blockquote>
+      <h2>Ce qui vient de se passer</h2>
+      <p>« vs m8x20 inox » n'existe littéralement nulle part dans les données indexées — ni « vs » (faute sur « vis »), ni « m8x20 » sous cette forme exacte (la référence stockée est « M8 x 20 »). Le moteur a quand même trouvé et classé en premier le bon produit, et le champ <code class="docs-inline-code">matched</code> dit précisément pourquoi : il a reconnu un diamètre (<code class="docs-inline-code">DIAM_M8</code>), une longueur (<code class="docs-inline-code">LONG_20</code>), leur combinaison en tant que référence de vis (<code class="docs-inline-code">VIS_M8X20</code>), et la matière (<code class="docs-inline-code">MAT_INOX</code>) — quatre annotations qui pèsent bien plus dans le score que la simple correction orthographique de « vis ». C'est la différence entre un moteur qui tolère les fautes sur des mots, et un moteur qui comprend la structure d'une référence.</p>
 
-      <h2>Un cas d'usage qui ne nécessite aucune règle spécifique</h2>
-      <p>Contrairement à un catalogue produit technique, indexer du contenu éditorial ne demande pas de pack de règles dédié : pas de dimension, pas de norme à décomposer, juste du texte à rendre trouvable malgré les fautes et les reformulations. C'est d'ailleurs exactement ce que fait la recherche de ce site (Ctrl+K, en haut de page) — elle tourne sur les mêmes briques que celles qui retrouvent une référence produit, appliquées à des articles de blog et des pages de documentation.</p>
-
-      <h2>Par où commencer</h2>
-      <p>Si votre site a plus d'une vingtaine d'articles, de pages d'aide ou de questions FAQ, la recherche interne à ce contenu mérite d'être auditée exactement comme la recherche produit : combien de recherches ne trouvent rien, et sur quels mots ? La réponse tient souvent en quelques minutes une fois l'indexation faite.</p>
-        </div>
+      <h2>Et avec votre vrai catalogue ?</h2>
+      <p>Remplacez le contenu du tableau <code class="docs-inline-code">items</code> par vos propres produits (5 000 par appel maximum, plusieurs appels pour un catalogue plus grand), gardez le pack <code class="docs-inline-code">outillage</code> s'il correspond à votre secteur — ou <code class="docs-inline-code">mode</code>, <code class="docs-inline-code">industrie</code> pour les deux autres packs fournis. La <a href="../docs.html">documentation complète</a> couvre les facettes, les synonymes métier et la recherche fédérée sur plusieurs catalogues.</p>
+    </div>
 
     <div class="post-footer-cta">
-      <p>Envie de voir combien de recherches sur votre contenu ne trouvent rien ?</p>
+      <p>Envie de tester avec votre propre catalogue ?</p>
       <a href="../pricing.html" class="btn">Essayer le Search API gratuitement</a>
     </div>
   </div>

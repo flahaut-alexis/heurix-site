@@ -31,14 +31,15 @@ const HEURIX_SEARCH_INDEX = [
   { title: "Algolia, Typesense, Meilisearch : quelle alternative pour un catalogue technique ?", excerpt: "Comparatif honnête entre les moteurs les plus courants, du point de vue d'un catalogue technique.", path: "blog/alternative-algolia-catalogue-technique.html" },
   { title: "La recherche de votre blog ou de votre FAQ mérite aussi d'être bonne", excerpt: "Le search e-commerce oublie souvent le contenu éditorial — un point aveugle coûteux.", path: "blog/recherche-blog-faq-contenu.html" },
   { title: "Recherches sans résultat : le tableau de bord que la plupart des sites n'ont pas", excerpt: "Vos clients tapent exactement ce qu'ils veulent acheter — peu de sites savent quand ça échoue.", path: "blog/recherches-sans-resultat-tableau-bord.html" },
-  { title: "Combien coûte un moteur de recherche e-commerce en 2026 ?", excerpt: "Les modèles de facturation comparés, et comment estimer votre propre volume.", path: "blog/cout-moteur-recherche-ecommerce.html" }
+  { title: "Combien coûte un moteur de recherche e-commerce en 2026 ?", excerpt: "Les modèles de facturation comparés, et comment estimer votre propre volume.", path: "blog/cout-moteur-recherche-ecommerce.html" },
+  { title: "Indexez votre premier catalogue outillage en 5 minutes", excerpt: "Tutoriel pratique, deux appels API testés : indexation puis une vraie recherche avec faute de frappe.", path: "blog/tutoriel-catalogue-outillage-5-minutes.html" }
 ];
 
 // Derniers articles du blog — affichés par défaut, avant toute frappe.
 const HEURIX_LATEST_ARTICLES = [
+  "blog/tutoriel-catalogue-outillage-5-minutes.html",
   "blog/cout-moteur-recherche-ecommerce.html",
-  "blog/recherches-sans-resultat-tableau-bord.html",
-  "blog/recherche-blog-faq-contenu.html"
+  "blog/recherches-sans-resultat-tableau-bord.html"
 ].map((p) => HEURIX_SEARCH_INDEX.find((item) => item.path === p)).filter(Boolean);
 
 (function () {

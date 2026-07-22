@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="heurix-icon-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6B7FFF" />
+      <stop offset="100%" stop-color="#3F52E8" />
+    </linearGradient>
+  </defs>
+  <path d="M 12 32 C 12 18.745 22.745 8 36 8 C 49.255 8 60 18.745 60 32 C 60 45.255 49.255 56 36 56"
+        stroke="url(#heurix-icon-grad)" stroke-width="6" stroke-linecap="round" />
+  <path d="M 26 32 L 34 20 L 31 32 L 44 32 L 31 46 L 36 33 H 26 Z"
+        fill="url(#heurix-icon-grad)" />
+  <circle cx="52" cy="48" r="4" fill="#3F52E8" />
+</svg>

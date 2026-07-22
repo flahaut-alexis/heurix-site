@@ -469,7 +469,9 @@
       // Sur mobile, on limite l'affichage initial à 3 avec un bouton "Show more" —
       // pas la peine de faire défiler 9 cartes pleine largeur sur un écran de téléphone.
       var isMobile = window.innerWidth < 640;
-      var visibleCount = (isMobile && !expanded) ? 3 : 9;
+      var baseCount = isMobile ? 3 : 9;
+      var expandedCount = isMobile ? 9 : 24;
+      var visibleCount = expanded ? expandedCount : baseCount;
       var seenTitle = {}, diverse = [];
       for (var di = 0; di < filtered.length && diverse.length < visibleCount; di++) {
         var tk = filtered[di].p.author + "|" + filtered[di].p.title;
@@ -492,8 +494,8 @@
           "</div>";
       }).join("");
 
-      if (isMobile && !expanded && filtered.length > diverse.length) {
-        var remaining = Math.min(filtered.length, 9) - diverse.length;
+      if (!expanded && filtered.length > diverse.length) {
+        var remaining = Math.min(filtered.length, expandedCount) - diverse.length;
         moreBtn.hidden = false;
         moreBtn.textContent = L.showMore(remaining);
       } else {

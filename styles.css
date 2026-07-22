@@ -380,6 +380,7 @@ h1 span{ color:var(--blue); }
   color:var(--blue-deep); background:var(--blue-tint); border:none;
   border-radius:9px; padding:11px; cursor:pointer;
 }
+.play-more[hidden]{ display:none; }
 .play-more:hover{ background:var(--blue); color:#fff; }
 @media (max-width:760px){ .play-grid{ grid-template-columns:1fr; } }
 .play-card{
