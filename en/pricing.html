@@ -140,7 +140,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <li>Basic facets</li>
           <li>Documentation support</li>
         </ul>
-        <a href="#waitlist" class="btn btn-ghost">Start free trial</a>
+        <button type="button" class="btn btn-ghost checkout-btn" data-plan="starter">Start free trial</button>
       </div>
 
       <div class="price-tier-card price-tier-highlight">
@@ -156,7 +156,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <li>Dynamic facets, federated search</li>
           <li>Email support</li>
         </ul>
-        <a href="#waitlist" class="btn">Start free trial</a>
+        <button type="button" class="btn checkout-btn" data-plan="growth">Start free trial</button>
       </div>
 
       <div class="price-tier-card">
@@ -172,7 +172,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <li>Simple ranking A/B testing</li>
           <li>Priority support</li>
         </ul>
-        <a href="#waitlist" class="btn btn-ghost">Start free trial</a>
+        <button type="button" class="btn btn-ghost checkout-btn" data-plan="scale">Start free trial</button>
       </div>
 
     </div>
@@ -289,25 +289,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </div>
     </div>
 
-    <p class="pricing-note">The documentation is live — <a href="docs.html">read it here</a>. For early API access, <a href="#waitlist">join the waitlist</a> below.</p>
-  </div>
-</section>
-
-<section class="soft" id="waitlist">
-  <div class="wrap" style="text-align:center;">
-    <div class="kicker">Coming soon</div>
-    <h2>Search API is being finalized.</h2>
-    <p class="section-lede" style="margin-left:auto; margin-right:auto;">Self-service sign-up isn't open yet. Leave your email to be notified at launch, or describe your need if you'd like to talk it through beforehand.</p>
-    <form class="cta-form" id="heurix-waitlist-form" style="max-width:480px; margin:0 auto; text-align:left;">
-      <label for="wl-name">Name</label>
-      <input id="wl-name" name="name" type="text" required>
-      <label for="wl-email">Email</label>
-      <input id="wl-email" name="email" type="email" required>
-      <label for="wl-site">E-commerce site (URL)</label>
-      <input id="wl-site" name="site" type="url" placeholder="https://">
-      <button type="submit" class="btn" id="wl-submit-btn">Join the waitlist</button>
-      <div id="wl-form-feedback"></div>
-    </form>
+    <p class="pricing-note">The documentation is live — <a href="docs.html">read it here</a>. Sign up directly above, in a few clicks.</p>
   </div>
 </section>
 
@@ -434,44 +416,33 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   });
   if (document.getElementById('calc-visitors')) computeCalc();
 
-  const wlForm = document.getElementById('heurix-waitlist-form');
-  const wlFeedback = document.getElementById('wl-form-feedback');
-  const wlSubmitBtn = document.getElementById('wl-submit-btn');
+  const checkoutBtns = document.querySelectorAll('.checkout-btn');
+  checkoutBtns.forEach(function (btn) {
+    const originalText = btn.textContent;
+    btn.addEventListener('click', function () {
+      const plan = btn.getAttribute('data-plan');
+      checkoutBtns.forEach(function (b) { b.disabled = true; });
+      btn.textContent = "Redirecting…";
 
-  wlForm.addEventListener('submit', async function(e){
-    e.preventDefault();
-    wlSubmitBtn.disabled = true;
-    wlSubmitBtn.textContent = "Sending…";
-
-    try {
-      const formData = new FormData(wlForm);
-      const payload = Object.fromEntries(formData.entries());
-      payload._subject = "Waitlist — Search API (EN site)";
-
-      const res = await fetch("https://formsubmit.co/ajax/contact@heurix.fr", {
+      fetch("https://api.heurix.fr/v1/stripe/create-checkout-session", {
         method: "POST",
-        headers: { "Content-Type": "application/json", "Accept": "application/json" },
-        body: JSON.stringify(payload)
-      });
-
-      wlFeedback.style.display = 'block';
-      if (res.ok) {
-        wlFeedback.style.color = 'var(--green)';
-        wlFeedback.textContent = "Thanks — you'll be notified at launch.";
-        wlForm.reset();
-        if (window.dataLayer) window.dataLayer.push({ event: "waitlist_signup" });
-      } else {
-        wlFeedback.style.color = 'var(--red-muted)';
-        wlFeedback.textContent = "Something went wrong — please try again or email contact@heurix.fr.";
-      }
-    } catch (err) {
-      wlFeedback.style.display = 'block';
-      wlFeedback.style.color = 'var(--red-muted)';
-      wlFeedback.textContent = "Something went wrong — please try again or email contact@heurix.fr.";
-    } finally {
-      wlSubmitBtn.disabled = false;
-      wlSubmitBtn.textContent = "Join the waitlist";
-    }
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ plan: plan }),
+      })
+        .then(function (r) {
+          if (!r.ok) throw new Error("HTTP " + r.status);
+          return r.json();
+        })
+        .then(function (data) {
+          if (window.dataLayer) window.dataLayer.push({ event: "checkout_started", plan: plan });
+          window.location.href = data.checkout_url;
+        })
+        .catch(function () {
+          checkoutBtns.forEach(function (b) { b.disabled = false; });
+          btn.textContent = originalText;
+          alert("Something went wrong — please try again, or email contact@heurix.fr if it persists.");
+        });
+    });
   });
 </script>
 

@@ -140,7 +140,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <li>Facettes de base</li>
           <li>Support par documentation</li>
         </ul>
-        <a href="#waitlist" class="btn btn-ghost">Démarrer l'essai gratuit</a>
+        <button type="button" class="btn btn-ghost checkout-btn" data-plan="starter">Démarrer l'essai gratuit</button>
       </div>
 
       <div class="price-tier-card price-tier-highlight">
@@ -156,7 +156,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <li>Facettes dynamiques, recherche fédérée</li>
           <li>Support par email</li>
         </ul>
-        <a href="#waitlist" class="btn">Démarrer l'essai gratuit</a>
+        <button type="button" class="btn checkout-btn" data-plan="growth">Démarrer l'essai gratuit</button>
       </div>
 
       <div class="price-tier-card">
@@ -172,7 +172,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <li>A/B test simple sur le ranking</li>
           <li>Support prioritaire</li>
         </ul>
-        <a href="#waitlist" class="btn btn-ghost">Démarrer l'essai gratuit</a>
+        <button type="button" class="btn btn-ghost checkout-btn" data-plan="scale">Démarrer l'essai gratuit</button>
       </div>
 
     </div>
@@ -289,25 +289,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </div>
     </div>
 
-    <p class="pricing-note">La documentation est en ligne — <a href="docs.html">consultez-la ici</a>. Pour un accès anticipé à l'API, <a href="#waitlist">rejoignez la liste d'attente</a> ci-dessous.</p>
-  </div>
-</section>
-
-<section class="soft" id="waitlist">
-  <div class="wrap" style="text-align:center;">
-    <div class="kicker">Bientôt disponible</div>
-    <h2>Le Search API est en cours de finalisation.</h2>
-    <p class="section-lede" style="margin-left:auto; margin-right:auto;">L'inscription en self-service n'est pas encore ouverte. Laissez-nous votre email pour être prévenu dès l'ouverture, ou décrivez votre besoin si vous voulez qu'on en discute avant.</p>
-    <form class="cta-form" id="heurix-waitlist-form" style="max-width:480px; margin:0 auto; text-align:left;">
-      <label for="wl-name">Nom</label>
-      <input id="wl-name" name="name" type="text" required>
-      <label for="wl-email">Email</label>
-      <input id="wl-email" name="email" type="email" required>
-      <label for="wl-site">Site e-commerce (URL)</label>
-      <input id="wl-site" name="site" type="url" placeholder="https://">
-      <button type="submit" class="btn" id="wl-submit-btn">Rejoindre la liste d'attente</button>
-      <div id="wl-form-feedback"></div>
-    </form>
+    <p class="pricing-note">La documentation est en ligne — <a href="docs.html">consultez-la ici</a>. L'inscription se fait directement ci-dessus, en quelques clics.</p>
   </div>
 </section>
 
@@ -434,44 +416,33 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   });
   if (document.getElementById('calc-visitors')) computeCalc();
 
-  const wlForm = document.getElementById('heurix-waitlist-form');
-  const wlFeedback = document.getElementById('wl-form-feedback');
-  const wlSubmitBtn = document.getElementById('wl-submit-btn');
+  const checkoutBtns = document.querySelectorAll('.checkout-btn');
+  checkoutBtns.forEach(function (btn) {
+    const originalText = btn.textContent;
+    btn.addEventListener('click', function () {
+      const plan = btn.getAttribute('data-plan');
+      checkoutBtns.forEach(function (b) { b.disabled = true; });
+      btn.textContent = "Redirection…";
 
-  wlForm.addEventListener('submit', async function(e){
-    e.preventDefault();
-    wlSubmitBtn.disabled = true;
-    wlSubmitBtn.textContent = "Envoi en cours…";
-
-    try {
-      const formData = new FormData(wlForm);
-      const payload = Object.fromEntries(formData.entries());
-      payload._subject = "Liste d'attente — Search API";
-
-      const res = await fetch("https://formsubmit.co/ajax/contact@heurix.fr", {
+      fetch("https://api.heurix.fr/v1/stripe/create-checkout-session", {
         method: "POST",
-        headers: { "Content-Type": "application/json", "Accept": "application/json" },
-        body: JSON.stringify(payload)
-      });
-
-      wlFeedback.style.display = 'block';
-      if (res.ok) {
-        wlFeedback.style.color = 'var(--green)';
-        wlFeedback.textContent = "Merci, vous serez prévenu dès l'ouverture.";
-        wlForm.reset();
-        if (window.dataLayer) window.dataLayer.push({ event: "waitlist_signup" });
-      } else {
-        wlFeedback.style.color = 'var(--red-muted)';
-        wlFeedback.textContent = "Une erreur est survenue — réessayez ou écrivez à contact@heurix.fr.";
-      }
-    } catch (err) {
-      wlFeedback.style.display = 'block';
-      wlFeedback.style.color = 'var(--red-muted)';
-      wlFeedback.textContent = "Une erreur est survenue — réessayez ou écrivez à contact@heurix.fr.";
-    } finally {
-      wlSubmitBtn.disabled = false;
-      wlSubmitBtn.textContent = "Rejoindre la liste d'attente";
-    }
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ plan: plan }),
+      })
+        .then(function (r) {
+          if (!r.ok) throw new Error("HTTP " + r.status);
+          return r.json();
+        })
+        .then(function (data) {
+          if (window.dataLayer) window.dataLayer.push({ event: "checkout_started", plan: plan });
+          window.location.href = data.checkout_url;
+        })
+        .catch(function () {
+          checkoutBtns.forEach(function (b) { b.disabled = false; });
+          btn.textContent = originalText;
+          alert("Une erreur est survenue — réessayez, ou écrivez à contact@heurix.fr si ça persiste.");
+        });
+    });
   });
 </script>
 
