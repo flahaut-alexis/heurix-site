@@ -269,6 +269,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </table></div>
       <h3>Response</h3>
       <p><code class="docs-inline-code">total</code> (match count), <code class="docs-inline-code">hits</code> — each hit contains the full <code class="docs-inline-code">product</code> as indexed, its <code class="docs-inline-code">score</code>, <code class="docs-inline-code">in_stock</code>, and <code class="docs-inline-code">matched</code>: a readable list of why it matched (terms found, typos corrected, shared annotations) — useful for understanding and tuning relevance. If <code class="docs-inline-code">facets</code> was requested, an additional <code class="docs-inline-code">facets</code> field lists the counts per group.</p>
+      <h3>Zero-result fallback</h3>
+      <p>A search that finds nothing (<code class="docs-inline-code">total: 0</code>) on a catalog containing at least one product marked <code class="docs-inline-code">featured: true</code> at indexing time returns up to 6 of these products in <code class="docs-inline-code">hits</code>, with <code class="docs-inline-code">fallback: true</code> — to offer a way forward instead of a blank page. <code class="docs-inline-code">total</code> stays <code class="docs-inline-code">0</code>: these aren't real search results, so present them distinctly on your end (e.g. "No results for '…' — our picks" rather than blending them with real results). Without any <code class="docs-inline-code">featured</code> product in the catalog, <code class="docs-inline-code">hits</code> stays empty and <code class="docs-inline-code">fallback</code> is <code class="docs-inline-code">false</code>, as before.</p>
     </section>
 
     <section id="facettes" class="docs-section">
@@ -310,7 +312,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <section id="ep-items" class="docs-section">
       <div class="docs-endpoint"><span class="docs-method docs-method-post">POST</span><code>/v1/index/{catalog}/items</code></div>
       <h2>Indexing</h2>
-      <p>Adds or updates products in batch (upsert on <code class="docs-inline-code">id</code>). The catalog is created automatically if it doesn't exist.</p>
+      <p>Adds or updates products in batch (upsert on <code class="docs-inline-code">id</code>). The catalog is created automatically if it doesn't exist. Optional <code class="docs-inline-code">featured</code> field (boolean): marks a product as a candidate for the fallback shown when a search finds nothing — see <a href="#ep-search">Search, zero-result fallback</a>.</p>
       <h3>Request body</h3>
       <div class="table-scroll"><table class="docs-params">
         <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>

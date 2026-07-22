@@ -12,7 +12,7 @@
     fmt: { PO: "Pocket", BR: "Paperback", GF: "Hardcover", IL: "Illustrated", AU: "Audiobook" },
     ed: { std: "", ann: "annotated edition", col: "collector", bil: "bilingual", vo: "original language", gc: "large print" },
     empty: "Type a search — typos are welcome.",
-    results: function (n, ms, size) { return "<strong>" + n + " result" + (n > 1 ? "s" : "") + "</strong> · " + ms + " ms · embedded Heurix engine, demo catalog (" + size.toLocaleString("en-GB") + " references)"; },
+    results: function (n, ms, size) { return "<strong>" + n + " result" + (n > 1 ? "s" : "") + "</strong> · <span class=\"play-speed\">⚡ " + ms + " ms</span> · embedded Heurix engine, demo catalog (" + size.toLocaleString("en-GB") + " references)"; },
     none: function (ms) { return "No results · " + ms + " ms"; },
     stock: function (s) { return s > 0 ? (s <= 3 ? s + " left" : "in stock") : "out of stock"; },
     prisms: "Prisms:",
@@ -444,9 +444,11 @@
           (groups[g] = groups[g] || []).push([a, counts[a], lbl]);
         });
         var chipsHtml = [];
+        var groupLabels = { GENRE: "Genre", FORMAT: "Format", PAYS: "Origin", ERA: "Era", LONG: "Length" };
         ["GENRE", "FORMAT", "PAYS", "ERA", "LONG"].forEach(function (g) {
           if (!groups[g]) return;
           groups[g].sort(function (a, b) { return b[1] - a[1]; });
+          chipsHtml.push('<span class="play-prism-group">' + (groupLabels[g] || g) + "</span>");
           groups[g].slice(0, g === "ERA" ? 2 : 3).forEach(function (item) {
             var on = active[item[0]] ? " play-prism-on" : "";
             chipsHtml.push('<button type="button" class="play-prism' + on + '" data-ann="' + item[0] + '">' + esc(item[2]) + ' <span class="play-prism-n">' + item[1] + "</span></button>");
