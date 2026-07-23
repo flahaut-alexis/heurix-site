@@ -137,6 +137,38 @@
     document.getElementById("stat-zero-rate").textContent = L.zeroRate(summary.zero_result_rate);
     document.getElementById("stat-errors").textContent = summary.total_errors.toLocaleString("fr-FR");
     document.getElementById("stat-usage").textContent = usage.requests.toLocaleString("fr-FR");
+    var emailEl = document.getElementById("account-email");
+    emailEl.textContent = usage.account_email ? "Connecté en tant que " + usage.account_email : "";
+  }
+
+  var keyDisplayWired = false;
+  function renderApiKey(key) {
+    var valueEl = document.getElementById("account-key-value");
+    var toggleBtn = document.getElementById("account-key-toggle");
+    var copyBtn = document.getElementById("account-key-copy");
+    var copiedMsg = document.getElementById("account-key-copied");
+    var masked = "•".repeat(Math.min(key.length, 34));
+    var shown = false;
+
+    valueEl.textContent = masked;
+
+    if (!keyDisplayWired) {
+      keyDisplayWired = true;
+      toggleBtn.addEventListener("click", function () {
+        shown = !shown;
+        valueEl.textContent = shown ? valueEl.dataset.full : valueEl.dataset.masked;
+        toggleBtn.setAttribute("aria-label", shown ? "Masquer la clé" : "Afficher la clé");
+      });
+      copyBtn.addEventListener("click", function () {
+        navigator.clipboard.writeText(valueEl.dataset.full).then(function () {
+          copiedMsg.hidden = false;
+          setTimeout(function () { copiedMsg.hidden = true; }, 2000);
+        }).catch(function () {});
+      });
+    }
+    valueEl.dataset.full = key;
+    valueEl.dataset.masked = masked;
+    shown = false;
   }
 
   function renderChart(daily) {
@@ -238,6 +270,7 @@
 
       dashLoading.hidden = true;
       dashContent.hidden = false;
+      renderApiKey(key);
       loadCatalogs(key);
     }).catch(function () {
       dashLoading.hidden = true;
