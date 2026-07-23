@@ -558,10 +558,331 @@
     renderCard: outillageRenderCard
   };
 
+
+  /* =====================================================================
+     VERTICALE : HIGH-TECH & ÉLECTRONIQUE (nouvelle)
+     ===================================================================== */
+  var HIGHTECH_LABELS = {
+    FAM_CASQUE: "Headphones", FAM_ECOUTEUR: "Earbuds", FAM_CHARGEUR: "Chargers", FAM_CABLE: "Cables", FAM_ENCEINTE: "Speakers",
+    CONN_BT: "Bluetooth", CONN_FILAIRE: "Wired", CONN_USBC: "USB-C",
+    ANC_OUI: "Noise cancelling",
+    COUL_NOIR: "Black", COUL_BLANC: "White", COUL_BLEU: "Blue", COUL_ROSE: "Pink",
+    PUISSANCE_18W: "18W", PUISSANCE_20W: "20W", PUISSANCE_30W: "30W", PUISSANCE_45W: "45W", PUISSANCE_65W: "65W", PUISSANCE_100W: "100W",
+    AUTONOMIE_6H: "6h", AUTONOMIE_10H: "10h", AUTONOMIE_20H: "20h", AUTONOMIE_30H: "30h",
+    LONG_1M: "1m", LONG_2M: "2m", LONG_3M: "3m"
+  };
+  var HIGHTECH_LEVEL1 = [
+    [/\bbluetooth\b|\bbt\b|\bsans.?fil\b|\bwireless\b/g, "CONN_BT"],
+    [/\bfilaire\b|\bwired\b|\bjack\b/g, "CONN_FILAIRE"],
+    [/\busb.?c\b|\btype.?c\b/g, "CONN_USBC"],
+    [/\breduction\s?de\s?bruit\b|\banc\b|\bnoise.?cancel/g, "ANC_OUI"],
+    [/\b(18|20|30|45|65|100)\s?w\b/g, "PUISSANCE_$1W"],
+    [/\b(6|10|20|30)\s?h(?:eures?)?\b/g, "AUTONOMIE_$1H"],
+    [/\b(1|2|3)\s?m(?:etres?)?\b(?!ah)/g, "LONG_$1M"],
+    [/\bnoir\b|\bblack\b/g, "COUL_NOIR"],
+    [/\bblanc\b|\bwhite\b/g, "COUL_BLANC"],
+    [/\bbleu\b|\bblue\b/g, "COUL_BLEU"],
+    [/\brose\b|\bpink\b/g, "COUL_ROSE"],
+    [/\bcasques?\b|\bheadphones?\b/g, "FAM_CASQUE"],
+    [/\becouteurs?\b|\bearbuds?\b/g, "FAM_ECOUTEUR"],
+    [/\bchargeurs?\b|\bchargers?\b/g, "FAM_CHARGEUR"],
+    [/\bcables?\b|\bcords?\b/g, "FAM_CABLE"],
+    [/\benceintes?\b|\bspeakers?\b/g, "FAM_ENCEINTE"]
+  ];
+  var HIGHTECH_LEVEL2 = [];
+  var HIGHTECH_SYN_GROUPS = [["casque", "headphone"], ["ecouteurs", "earbuds"], ["bluetooth", "sans fil"]];
+  var HIGHTECH_COULEURS = [["noir", "Black"], ["blanc", "White"], ["bleu", "Blue"], ["rose", "Pink"]];
+
+  function hightechBuildProducts() {
+    var products = [], termIndex = {}, annIndex = {}, vocabByLen = {};
+    var seq = 3000;
+    function addTerm(t, pid, w, isSku) {
+      (termIndex[t] = termIndex[t] || {})[pid] = (termIndex[t][pid] || 0) + w;
+      if (!isSku) (vocabByLen[t.length] = vocabByLen[t.length] || {})[t] = true;
+    }
+    function push(p, refText, nameText) {
+      var pid = products.length;
+      products.push(p);
+      tokenize(p.id).forEach(function (t) { addTerm(t, pid, LIVRES_FIELD_W.ref, true); });
+      tokenize(refText).forEach(function (t) { addTerm(t, pid, LIVRES_FIELD_W.ref, false); });
+      tokenize(nameText).forEach(function (t) { addTerm(t, pid, LIVRES_FIELD_W.name, false); });
+      p.anns.forEach(function (a) { (annIndex[a] = annIndex[a] || []).push(pid); });
+    }
+
+    // Casques + ecouteurs (bluetooth/filaire x ANC x couleur x autonomie)
+    [["casque", "Headphones", "FAM_CASQUE"], ["ecouteur", "Earbuds", "FAM_ECOUTEUR"]].forEach(function (fam) {
+      [true, false].forEach(function (bt) {
+        [true, false].forEach(function (anc) {
+          HIGHTECH_COULEURS.forEach(function (coul, ci) {
+            [6, 10, 20, 30].forEach(function (auto, ai) {
+              var rand = rng(ci * 13 + ai * 7 + (bt ? 1 : 0) * 3 + (anc ? 1 : 0) * 5 + 11 + fam[2].length);
+              if (rand() > 0.5) return;
+              var ref = (bt ? "Bluetooth" : "Wired") + (anc ? " ANC" : "") + " - " + coul[1] + " - " + auto + "h autonomie";
+              var anns = [bt ? "CONN_BT" : "CONN_FILAIRE", fam[2], "COUL_" + coul[0].toUpperCase(), "AUTONOMIE_" + auto + "H"];
+              if (anc) anns.push("ANC_OUI");
+              var price = Math.round((15 + rand() * 80) * 100) / 100;
+              var p = { id: "HRX-" + (seq++), ref: ref, name: fam[1], desc: ref, anns: anns, price: price, stock: Math.floor(rand() * 100), family: fam[0] };
+              push(p, ref, fam[1]);
+            });
+          });
+        });
+      });
+    });
+
+    // Chargeurs (puissance x connecteur x couleur)
+    [18, 20, 30, 45, 65, 100].forEach(function (w, wi) {
+      HIGHTECH_COULEURS.forEach(function (coul, ci) {
+        var rand = rng(wi * 17 + ci * 11 + 23);
+        if (rand() > 0.6) return;
+        var ref = w + "W - USB-C - " + coul[1];
+        var anns = ["PUISSANCE_" + w + "W", "CONN_USBC", "COUL_" + coul[0].toUpperCase(), "FAM_CHARGEUR"];
+        var price = Math.round((8 + w * 0.35 + rand() * 8) * 100) / 100;
+        push({ id: "HRX-" + (seq++), ref: ref, name: "Wall charger", desc: ref, anns: anns, price: price, stock: Math.floor(rand() * 150) + 10, family: "chargeur" }, ref, "Wall charger");
+      });
+    });
+
+    // Cables (longueur x connecteur x couleur)
+    [1, 2, 3].forEach(function (len, li) {
+      HIGHTECH_COULEURS.forEach(function (coul, ci) {
+        var rand = rng(li * 19 + ci * 7 + 31);
+        if (rand() > 0.65) return;
+        var ref = "USB-C - " + len + "m - " + coul[1];
+        var anns = ["CONN_USBC", "LONG_" + len + "M", "COUL_" + coul[0].toUpperCase(), "FAM_CABLE"];
+        var price = Math.round((4 + len * 2 + rand() * 4) * 100) / 100;
+        push({ id: "HRX-" + (seq++), ref: ref, name: "Charging cable", desc: ref, anns: anns, price: price, stock: Math.floor(rand() * 300) + 20, family: "cable" }, ref, "Charging cable");
+      });
+    });
+
+    // Enceintes (bluetooth x autonomie x couleur)
+    HIGHTECH_COULEURS.forEach(function (coul, ci) {
+      [6, 10, 20, 30].forEach(function (auto, ai) {
+        var rand = rng(ci * 29 + ai * 13 + 41);
+        if (rand() > 0.55) return;
+        var ref = "Bluetooth - " + coul[1] + " - " + auto + "h autonomie";
+        var anns = ["CONN_BT", "COUL_" + coul[0].toUpperCase(), "AUTONOMIE_" + auto + "H", "FAM_ENCEINTE"];
+        var price = Math.round((25 + rand() * 90) * 100) / 100;
+        push({ id: "HRX-" + (seq++), ref: ref, name: "Portable speaker", desc: ref, anns: anns, price: price, stock: Math.floor(rand() * 60) + 5, family: "enceinte" }, ref, "Portable speaker");
+      });
+    });
+
+    return { products: products, termIndex: termIndex, annIndex: annIndex, vocabByLen: vocabByLen, ANN_W: 5 };
+  }
+
+  var HIGHTECH_ICON = {
+    casque: '<path d="M18 34a14 14 0 0128 0v14" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round"/><rect x="12" y="32" width="9" height="16" rx="4" fill="#fff"/><rect x="43" y="32" width="9" height="16" rx="4" fill="#fff"/>',
+    ecouteur: '<circle cx="24" cy="26" r="8" fill="#fff"/><circle cx="42" cy="30" r="8" fill="#fff"/><path d="M24 34v6a4 4 0 004 4" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round"/>',
+    chargeur: '<rect x="20" y="14" width="24" height="36" rx="5" fill="#fff"/><rect x="27" y="21" width="10" height="7" rx="1.5" fill="hsl(228,60%,55%)"/><line x1="32" y1="34" x2="32" y2="42" stroke="hsl(228,60%,55%)" stroke-width="3" stroke-linecap="round"/>',
+    cable: '<path d="M14 20 Q32 14 32 32 Q32 50 50 44" fill="none" stroke="#fff" stroke-width="3.6" stroke-linecap="round"/><rect x="9" y="15" width="10" height="10" rx="2.5" fill="#fff"/><rect x="45" y="39" width="10" height="10" rx="2.5" fill="#fff"/>',
+    enceinte: '<rect x="18" y="10" width="28" height="44" rx="7" fill="#fff"/><circle cx="32" cy="24" r="6" fill="hsl(228,60%,55%)"/><circle cx="32" cy="42" r="9" fill="hsl(228,60%,55%)"/>'
+  };
+  function hightechThumb(p) {
+    var hue = 228;
+    return '<svg viewBox="0 0 64 64" width="54" height="80" aria-hidden="true">' +
+      '<rect width="64" height="64" rx="8" fill="hsl(' + hue + ',70%,60%)"/>' +
+      '<rect width="64" height="64" rx="8" fill="hsl(' + (hue + 25) + ',60%,45%)" opacity="0.35"/>' +
+      (HIGHTECH_ICON[p.family] || HIGHTECH_ICON.casque) +
+      '</svg>';
+  }
+  function hightechRenderCard(h) {
+    var p = h.p;
+    var whyChips = h.why.filter(function (w, i, arr) { return arr.indexOf(w) === i; })
+      .slice(0, 3).map(function (w) {
+        if (w[0] === "#") return '<span class="play-why play-why-ann">' + esc(shortLabel(w.slice(1), HIGHTECH_LABELS)) + "</span>";
+        return '<span class="play-why">' + esc(w) + "</span>";
+      }).join("");
+    return '<div class="play-card' + (p.stock === 0 ? " play-card-out" : "") + '">' +
+      '<div class="play-thumb play-thumb-icon">' + hightechThumb(p) + "</div>" +
+      '<div class="play-body"><div class="play-name">' + esc(p.name) + "</div>" +
+      '<div class="play-ref mono">' + esc(p.id) + " · " + esc(p.ref) + "</div>" +
+      '<div class="play-tags">' + whyChips + "</div></div>" +
+      '<div class="play-side"><span class="play-price">' + p.price.toFixed(2).replace(".", ",") + " €</span>" +
+      '<span class="play-stock">' + (p.stock > 0 ? (p.stock <= 3 ? p.stock + " left" : "in stock") : "out of stock") + "</span></div>" +
+      "</div>";
+  }
+
+  var HIGHTECH = {
+    key: "hightech", emoji: "💻", label: "Tech & Electronics",
+    LEVEL1: HIGHTECH_LEVEL1, LEVEL2: HIGHTECH_LEVEL2, PRISM_LABELS: HIGHTECH_LABELS,
+    SYN_GROUPS: HIGHTECH_SYN_GROUPS,
+    groupOrder: ["FAM", "CONN", "COUL", "AUTONOMIE"],
+    groupLabels: { FAM: "Family", CONN: "Connectivity", COUL: "Color", AUTONOMIE: "Battery life" },
+    samples: [["noise cancelling bluetooth headphones", "noise canceling bluetoth headphones"], ["65w usb-c charger", "65w usb-c charger"], ["white wireless earbuds", "white wireless earbuds"], ["bluetooth speaker 20h", "bluetooth speaker 20h"]],
+    intro: "noise cancelling blueto",
+    placeholder: "Search a product (e.g. bluetooth headphones)…",
+    buildProducts: hightechBuildProducts,
+    renderCard: hightechRenderCard
+  };
+
+  /* =====================================================================
+     VERTICALE : MODE & PRÊT-À-PORTER (nouvelle)
+     ===================================================================== */
+  var MODE_LABELS = {
+    FAM_TSHIRT: "T-shirts", FAM_PULL: "Sweaters", FAM_JEAN: "Jeans", FAM_ROBE: "Dresses", FAM_VESTE: "Jackets",
+    TAILLE_XS: "XS", TAILLE_S: "S", TAILLE_M: "M", TAILLE_L: "L", TAILLE_XL: "XL", TAILLE_XXL: "XXL",
+    MAT_COTON: "Cotton", MAT_LAINE: "Wool", MAT_SOIE: "Silk", MAT_LIN: "Linen",
+    COUPE_SLIM: "Slim", COUPE_REGULAR: "Regular", COUPE_OVERSIZE: "Oversize",
+    SAISON_ETE: "Summer", SAISON_HIVER: "Winter", MOTIF_FLEURI: "Floral",
+    COUL_NOIR: "Black", COUL_BLANC: "White", COUL_BLEU: "Blue", COUL_ROSE: "Pink"
+  };
+  var MODE_LEVEL1 = [
+    [/\bw(28|29|30|31|32|33|34|36)\b/g, "TAILW_$1"],
+    [/\bl(28|30|32|34)\b/g, "TAILL_$1"],
+    [/\b(xs|s|m|l|xl|xxl)\b/g, "TAILLE_$1"],
+    [/\bcoton\b|\bcotton\b/g, "MAT_COTON"],
+    [/\blaine\b|\bwool\b/g, "MAT_LAINE"],
+    [/\bsoie\b|\bsilk\b/g, "MAT_SOIE"],
+    [/\blin\b|\blinen\b/g, "MAT_LIN"],
+    [/\bslim\b/g, "COUPE_SLIM"],
+    [/\bregular\b|\bdroit\b/g, "COUPE_REGULAR"],
+    [/\boversize\b|\bample\b/g, "COUPE_OVERSIZE"],
+    [/\bete\b|\bsummer\b/g, "SAISON_ETE"],
+    [/\bhiver\b|\bwinter\b/g, "SAISON_HIVER"],
+    [/\bfleurie?s?\b|\bfloral\b/g, "MOTIF_FLEURI"],
+    [/\bnoir\b|\bblack\b/g, "COUL_NOIR"],
+    [/\bblanc\b|\bwhite\b/g, "COUL_BLANC"],
+    [/\bbleu\b|\bblue\b/g, "COUL_BLEU"],
+    [/\brose\b|\bpink\b/g, "COUL_ROSE"],
+    [/\bt.?shirts?\b/g, "FAM_TSHIRT"],
+    [/\bpulls?\b|\bsweaters?\b/g, "FAM_PULL"],
+    [/\bjeans?\b/g, "FAM_JEAN"],
+    [/\brobes?\b|\bdress(?:es)?\b/g, "FAM_ROBE"],
+    [/\bvestes?\b|\bjackets?\b/g, "FAM_VESTE"]
+  ];
+  var MODE_LEVEL2 = [];
+  var MODE_SYN_GROUPS = [["pull", "sweater"], ["jean", "denim"]];
+  var MODE_COULEURS = [["noir", "Black"], ["blanc", "White"], ["bleu", "Blue"], ["rose", "Pink"]];
+  var MODE_TAILLES = ["XS", "S", "M", "L", "XL", "XXL"];
+
+  function modeBuildProducts() {
+    var products = [], termIndex = {}, annIndex = {}, vocabByLen = {};
+    var seq = 4000;
+    function addTerm(t, pid, w, isSku) {
+      (termIndex[t] = termIndex[t] || {})[pid] = (termIndex[t][pid] || 0) + w;
+      if (!isSku) (vocabByLen[t.length] = vocabByLen[t.length] || {})[t] = true;
+    }
+    function push(p, refText, nameText) {
+      var pid = products.length;
+      products.push(p);
+      tokenize(p.id).forEach(function (t) { addTerm(t, pid, LIVRES_FIELD_W.ref, true); });
+      tokenize(refText).forEach(function (t) { addTerm(t, pid, LIVRES_FIELD_W.ref, false); });
+      tokenize(nameText).forEach(function (t) { addTerm(t, pid, LIVRES_FIELD_W.name, false); });
+      p.anns.forEach(function (a) { (annIndex[a] = annIndex[a] || []).push(pid); });
+    }
+
+    // T-shirts, pulls (taille x matiere x coupe x couleur)
+    [["tshirt", "T-shirt", "FAM_TSHIRT", ["MAT_COTON", "MAT_LIN"]], ["pull", "Sweater", "FAM_PULL", ["MAT_LAINE", "MAT_COTON"]]].forEach(function (fam) {
+      MODE_TAILLES.forEach(function (taille, ti) {
+        fam[3].forEach(function (matAnn, mi) {
+          var matLabel = { MAT_COTON: "Cotton", MAT_LIN: "Linen", MAT_LAINE: "Wool" }[matAnn];
+          [["regular", "COUPE_REGULAR"], ["oversize", "COUPE_OVERSIZE"]].forEach(function (coupe, coi) {
+            MODE_COULEURS.forEach(function (coul, ci) {
+              var rand = rng(ti * 17 + mi * 23 + ci * 11 + coi * 37 + fam[2].length);
+              if (rand() > 0.45) return;
+              var ref = "Size " + taille + " - " + matLabel + " - " + coupe[0] + " - " + coul[1];
+              var anns = ["TAILLE_" + taille, matAnn, coupe[1], "COUL_" + coul[0].toUpperCase(), fam[2]];
+              var price = Math.round((12 + rand() * 45) * 100) / 100;
+              push({ id: "HRX-" + (seq++), ref: ref, name: fam[1], desc: ref, anns: anns, price: price, stock: Math.floor(rand() * 200) + 10, family: fam[0] }, ref, fam[1]);
+            });
+          });
+        });
+      });
+    });
+
+    // Jeans (taille W x L x coupe)
+    [28, 29, 30, 31, 32, 33, 34, 36].forEach(function (w, wi) {
+      [30, 32, 34].forEach(function (l, li) {
+        [["slim", "COUPE_SLIM"], ["regular", "COUPE_REGULAR"]].forEach(function (coupe, ci) {
+          var rand = rng(wi * 13 + li * 19 + ci * 7 + 51);
+          if (rand() > 0.85) return;
+          var ref = "W" + w + " L" + l + " - " + coupe[0];
+          var anns = ["TAILW_" + w, "TAILL_" + l, coupe[1], "FAM_JEAN", "MAT_COTON"];
+          var price = Math.round((35 + rand() * 50) * 100) / 100;
+          push({ id: "HRX-" + (seq++), ref: ref, name: "Jeans", desc: ref, anns: anns, price: price, stock: Math.floor(rand() * 80) + 5, family: "jean" }, ref, "Jeans");
+        });
+      });
+    });
+
+    // Robes (taille x matiere x motif/saison)
+    MODE_TAILLES.forEach(function (taille, ti) {
+      [["MAT_SOIE", "Silk", "SAISON_ETE"], ["MAT_COTON", "Cotton", "SAISON_ETE"], ["MAT_LAINE", "Wool", "SAISON_HIVER"]].forEach(function (matSet, mi) {
+        [true, false].forEach(function (fleuri) {
+          var rand = rng(ti * 11 + mi * 29 + (fleuri ? 1 : 0) * 7 + 61);
+          if (rand() > 0.4) return;
+          var ref = "Size " + taille + " - " + matSet[1] + (fleuri ? ", floral" : "");
+          var anns = ["TAILLE_" + taille, matSet[0], matSet[2], "FAM_ROBE"];
+          if (fleuri) anns.push("MOTIF_FLEURI");
+          var price = Math.round((30 + rand() * 90) * 100) / 100;
+          push({ id: "HRX-" + (seq++), ref: ref, name: "Dress" + (fleuri ? ", floral" : ""), desc: ref, anns: anns, price: price, stock: Math.floor(rand() * 60) + 3, family: "robe" }, ref, "Dress");
+        });
+      });
+    });
+
+    // Vestes (taille x saison x couleur)
+    MODE_TAILLES.forEach(function (taille, ti) {
+      [["SAISON_ETE", "light"], ["SAISON_HIVER", "warm"]].forEach(function (saison, si) {
+        MODE_COULEURS.forEach(function (coul, ci) {
+          var rand = rng(ti * 7 + si * 31 + ci * 13 + 71);
+          if (rand() > 0.45) return;
+          var ref = "Size " + taille + " - " + coul[1] + " - " + saison[1];
+          var anns = ["TAILLE_" + taille, saison[0], "COUL_" + coul[0].toUpperCase(), "FAM_VESTE"];
+          var price = Math.round((45 + rand() * 90) * 100) / 100;
+          push({ id: "HRX-" + (seq++), ref: ref, name: "Jacket, " + saison[1], desc: ref, anns: anns, price: price, stock: Math.floor(rand() * 50) + 3, family: "veste" }, ref, "Jacket, " + saison[1]);
+        });
+      });
+    });
+
+    return { products: products, termIndex: termIndex, annIndex: annIndex, vocabByLen: vocabByLen, ANN_W: 5 };
+  }
+
+  var MODE_ICON = {
+    tshirt: '<path d="M20 16 L14 24 L20 30 V54 H44 V30 L50 24 L44 16 Q32 22 20 16 Z" fill="#fff"/>',
+    pull: '<path d="M18 18 L14 26 L20 30 V54 H44 V30 L50 26 L46 18 Q32 26 18 18 Z" fill="#fff"/>',
+    jean: '<path d="M22 10 H42 L44 54 H33 L32 30 L31 54 H20 Z" fill="#fff"/>',
+    robe: '<path d="M26 10 H38 L40 22 L48 54 H16 L24 22 Z" fill="#fff"/>',
+    veste: '<path d="M18 18 L12 26 L18 32 V54 H46 V32 L52 26 L46 18 Q32 24 18 18 Z" fill="#fff"/><line x1="32" y1="26" x2="32" y2="54" stroke="hsl(228,60%,55%)" stroke-width="2"/>'
+  };
+  function modeThumb(p) {
+    var hue = { tshirt: 210, pull: 224, jean: 220, robe: 234, veste: 216 }[p.family] || 224;
+    return '<svg viewBox="0 0 64 64" width="54" height="80" aria-hidden="true">' +
+      '<rect width="64" height="64" rx="8" fill="hsl(' + hue + ',68%,62%)"/>' +
+      '<rect width="64" height="64" rx="8" fill="hsl(' + (hue + 20) + ',58%,46%)" opacity="0.35"/>' +
+      (MODE_ICON[p.family] || MODE_ICON.tshirt) +
+      '</svg>';
+  }
+  function modeRenderCard(h) {
+    var p = h.p;
+    var whyChips = h.why.filter(function (w, i, arr) { return arr.indexOf(w) === i; })
+      .slice(0, 3).map(function (w) {
+        if (w[0] === "#") return '<span class="play-why play-why-ann">' + esc(shortLabel(w.slice(1), MODE_LABELS)) + "</span>";
+        return '<span class="play-why">' + esc(w) + "</span>";
+      }).join("");
+    return '<div class="play-card' + (p.stock === 0 ? " play-card-out" : "") + '">' +
+      '<div class="play-thumb play-thumb-icon">' + modeThumb(p) + "</div>" +
+      '<div class="play-body"><div class="play-name">' + esc(p.name) + "</div>" +
+      '<div class="play-ref mono">' + esc(p.id) + " · " + esc(p.ref) + "</div>" +
+      '<div class="play-tags">' + whyChips + "</div></div>" +
+      '<div class="play-side"><span class="play-price">' + p.price.toFixed(2).replace(".", ",") + " €</span>" +
+      '<span class="play-stock">' + (p.stock > 0 ? (p.stock <= 3 ? p.stock + " left" : "in stock") : "out of stock") + "</span></div>" +
+      "</div>";
+  }
+
+  var MODE = {
+    key: "mode", emoji: "👗", label: "Fashion & Apparel",
+    LEVEL1: MODE_LEVEL1, LEVEL2: MODE_LEVEL2, PRISM_LABELS: MODE_LABELS,
+    SYN_GROUPS: MODE_SYN_GROUPS,
+    groupOrder: ["FAM", "TAILLE", "MAT", "COUPE"],
+    groupLabels: { FAM: "Family", TAILLE: "Size", MAT: "Material", COUPE: "Fit" },
+    samples: [["floral silk summer dress", "floral silk summer dress"], ["jeans w32 l34 slim", "jeans w32 l34 slim"], ["oversize wool sweater", "oversize wool sweater"], ["black winter jacket", "black winter jacket"]],
+    intro: "floral silk summer dre",
+    placeholder: "Search an item (e.g. floral dress)…",
+    buildProducts: modeBuildProducts,
+    renderCard: modeRenderCard
+  };
+
   /* =====================================================================
      Moteur générique — commun aux deux verticales, paramétré par `active`
      ===================================================================== */
-  var VERTICALS = { livres: LIVRES, outillage: OUTILLAGE };
+  var VERTICALS = { livres: LIVRES, outillage: OUTILLAGE, hightech: HIGHTECH, mode: MODE };
   var active = LIVRES;
   var products, termIndex, annIndex, vocabByLen, ANN_W;
   var SYN = {};
