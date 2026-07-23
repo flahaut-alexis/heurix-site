@@ -16,7 +16,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="robots" content="noindex">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css?v=1784808144">
+<link rel="stylesheet" href="styles.css?v=1784814046">
 <link rel="canonical" href="https://heurix.fr/console.html">
 </head>
 <body>
@@ -220,9 +220,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               <li><strong>industrie</strong> — séries de roulements, étanchéité, courroies, joints toriques. Exemple : « 6205-2RS ».</li>
             </ul>
             <h3 class="console-help-h3">Créer une règle personnalisée</h3>
-            <p class="console-panel-note" style="margin:4px 0 14px;">Pas encore possible directement ici — vous choisissez aujourd'hui entre ces trois packs déjà construits, et vous complétez avec vos propres synonymes (ci-dessous). Un besoin de règles vraiment sur-mesure ? <a href="mailto:contact@heurix.fr">Écrivez-nous</a>, c'est faisable côté moteur.</p>
+            <p class="console-panel-note" style="margin:4px 0 14px;">Possible directement dans chaque carte catalogue, sans écrire de regex — deux formats au choix :</p>
+            <ul class="console-help-list">
+              <li><strong>Mot-clé → étiquette</strong> — plusieurs mots équivalents qui doivent tous déclencher la même étiquette. Exemple : « placo, cheville, molly, plaquo » → une seule étiquette commune.</li>
+              <li><strong>Préfixe + nombre → étiquette</strong> — un préfixe suivi d'un nombre, comme dans les packs existants. Exemple : « P » suivi d'un nombre reconnaît « P12 », « P25 »…</li>
+            </ul>
+            <p class="console-panel-note" style="margin:4px 0 14px;">Les cas plus complexes (deux nombres combinés, comme un diamètre × une longueur) ne sont pas encore couverts par ces deux formats. Un besoin de ce type ? <a href="mailto:contact@heurix.fr">Écrivez-nous</a>, c'est faisable côté moteur.</p>
             <h3 class="console-help-h3">Publier un changement</h3>
-            <p class="console-panel-note" style="margin:4px 0 0;">Il n'y a pas d'étape de publication séparée : changer de pack de règles ou modifier un synonyme prend effet <strong>immédiatement</strong> sur votre recherche en production, dès que vous cliquez sur « Enregistrer » ou « Ajouter un groupe ».</p>
+            <p class="console-panel-note" style="margin:4px 0 0;">Il n'y a pas d'étape de publication séparée : changer de pack de règles, modifier un synonyme, ou créer une règle personnalisée prend effet <strong>immédiatement</strong> sur votre recherche en production, dès que vous validez.</p>
           </div>
         </div>
 
@@ -311,7 +316,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<script src="console.js?v=1784807594"></script>
+<script src="console.js?v=1784814046"></script>
 <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 
 <script src="mobile-nav.js"></script>

@@ -484,6 +484,86 @@
       .catch(function () { groupsEl.innerHTML = ""; });
   }
 
+  function ruleDescription(rule) {
+    if (rule.rule_type === "keyword") {
+      return "Si le texte contient " + rule.keywords.map(function (k) { return "« " + esc(k) + " »"; }).join(", ") + " → " + esc(rule.tag);
+    }
+    return "Si « " + esc(rule.prefix) + " » est suivi d'un nombre (ex. " + esc(rule.prefix) + "8) → " + esc(rule.tag) + "<em>nombre</em>";
+  }
+
+  function customRulesListHtml(rules) {
+    if (!rules.length) return '<p class="catalog-rules-empty">Aucune règle personnalisée pour l\'instant.</p>';
+    return rules.map(function (r) {
+      return '<div class="catalog-rule-row" data-id="' + r.id + '">' +
+        '<div><strong>' + esc(r.label) + '</strong><span class="catalog-rule-desc">' + ruleDescription(r) + '</span></div>' +
+        '<button type="button" class="catalog-rule-remove" data-id="' + r.id + '" aria-label="Retirer cette règle">&times;</button>' +
+      '</div>';
+    }).join("");
+  }
+
+  function wireCustomRuleControls(cardEl, catalog, key) {
+    var catalogName = catalog.catalog;
+    var listEl = cardEl.querySelector(".catalog-rules-list");
+    var typeSelect = cardEl.querySelector(".catalog-rule-type");
+    var labelInput = cardEl.querySelector(".catalog-rule-label");
+    var keywordsInput = cardEl.querySelector(".catalog-rule-keywords");
+    var prefixInput = cardEl.querySelector(".catalog-rule-prefix");
+    var addBtn = cardEl.querySelector(".catalog-rule-add-btn");
+    var status = cardEl.querySelector(".catalog-rule-status");
+
+    function loadRules() {
+      apiFetch("/v1/index/" + encodeURIComponent(catalogName) + "/custom-rules", key)
+        .then(function (data) {
+          listEl.innerHTML = customRulesListHtml(data.rules);
+          listEl.querySelectorAll(".catalog-rule-remove").forEach(function (btn) {
+            btn.addEventListener("click", function () {
+              btn.disabled = true;
+              apiFetch("/v1/index/" + encodeURIComponent(catalogName) + "/custom-rules/" + btn.getAttribute("data-id"), key, { method: "DELETE" })
+                .then(function () {
+                  loadRules();
+                  return apiFetch("/v1/index/" + encodeURIComponent(catalogName) + "/stats", key);
+                })
+                .then(function (stats) { catalog.annotations = stats.annotations; updateCardMeta(cardEl, catalog); })
+                .catch(function () { btn.disabled = false; });
+            });
+          });
+        })
+        .catch(function () { listEl.innerHTML = ""; });
+    }
+
+    typeSelect.addEventListener("change", function () {
+      var isKeyword = typeSelect.value === "keyword";
+      keywordsInput.hidden = !isKeyword;
+      prefixInput.hidden = isKeyword;
+    });
+
+    addBtn.addEventListener("click", function () {
+      var body = { rule_type: typeSelect.value, label: labelInput.value.trim() };
+      if (typeSelect.value === "keyword") {
+        body.keywords = keywordsInput.value.split(",").map(function (t) { return t.trim(); }).filter(Boolean);
+      } else {
+        body.prefix = prefixInput.value.trim();
+      }
+      if (!body.label) { labelInput.focus(); return; }
+      addBtn.disabled = true; status.textContent = "Création…"; status.className = "catalog-rule-status";
+      apiFetch("/v1/index/" + encodeURIComponent(catalogName) + "/custom-rules", key, { method: "POST", body: body })
+        .then(function () {
+          status.textContent = "Règle créée — produits réindexés."; status.className = "catalog-rule-status ok";
+          labelInput.value = ""; keywordsInput.value = ""; prefixInput.value = "";
+          loadRules();
+          return apiFetch("/v1/index/" + encodeURIComponent(catalogName) + "/stats", key);
+        })
+        .then(function (stats) { catalog.annotations = stats.annotations; updateCardMeta(cardEl, catalog); })
+        .catch(function (err) {
+          status.textContent = (err && err.message) || "Échec de la création.";
+          status.className = "catalog-rule-status err";
+        })
+        .then(function () { addBtn.disabled = false; });
+    });
+
+    loadRules();
+  }
+
   function wireCatalogCard(cardEl, catalog, key) {
     var select = cardEl.querySelector(".catalog-rulepack-select");
     var saveBtn = cardEl.querySelector(".catalog-rulepack-save");
@@ -504,6 +584,7 @@
       }).then(function () { saveBtn.disabled = false; });
     });
     wireSynonymControls(cardEl, catalog, key);
+    wireCustomRuleControls(cardEl, catalog, key);
   }
 
   function catalogCardHtml(c) {
@@ -525,6 +606,21 @@
       '<div class="catalog-synonym-add">' +
         '<input type="text" placeholder="ex. vis, boulon, screw" class="catalog-synonym-input">' +
         '<button type="button" class="catalog-synonym-add-btn">Ajouter un groupe</button>' +
+      '</div>' +
+      '<div class="catalog-synonyms-label" style="margin-top:22px;">Règles personnalisées</div>' +
+      '<div class="catalog-rules-list"></div>' +
+      '<div class="catalog-rule-add">' +
+        '<div class="catalog-rule-add-row">' +
+          '<select class="catalog-rule-type">' +
+            '<option value="keyword">Mot-clé → étiquette</option>' +
+            '<option value="prefix_number">Préfixe + nombre → étiquette</option>' +
+          '</select>' +
+          '<input type="text" placeholder="Nom de la règle, ex. Cheville" class="catalog-rule-label">' +
+        '</div>' +
+        '<input type="text" placeholder="Mots équivalents, ex. placo, cheville, molly" class="catalog-rule-keywords">' +
+        '<input type="text" placeholder="Préfixe à reconnaître, ex. M (pour M8, M10…)" class="catalog-rule-prefix" hidden>' +
+        '<button type="button" class="catalog-rule-add-btn">Créer la règle</button>' +
+        '<span class="catalog-rule-status"></span>' +
       '</div>' +
     '</div>';
   }
