@@ -26,7 +26,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css?v=1784819296">
+<link rel="stylesheet" href="styles.css?v=1784822064">
 <link rel="canonical" href="https://heurix.fr/docs.html">
 <script type="application/ld+json">
 {
@@ -144,6 +144,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <a href="#ep-usage">Consommation</a>
       <a href="#ep-rulepacks">Packs de règles</a>
       <a href="#ep-custom-rules">Custom Rules</a>
+      <a href="#ep-events">Conversion &amp; ROI</a>
       <a href="#ep-health">Santé du service</a>
       <div class="docs-sidebar-group">Référence</div>
       <a href="#cascade">La cascade d'annotations</a>
@@ -377,6 +378,36 @@ curl -X POST https://api.heurix.fr/v1/index/moncatalogue/custom-rules \
   -H "Content-Type: application/json" \
   -d '{"rule_type": "prefix_number", "label": "Coloris RAL", "prefix": "RAL"}'</code></pre>
       <p>Gérable aussi bien par API que directement depuis la console, dans « Mon catalogue ».</p>
+    </section>
+
+    <section id="ep-events" class="docs-section">
+      <div class="docs-endpoint"><span class="docs-method docs-method-post">POST</span><code>/v1/events</code></div>
+      <h2>Conversion &amp; ROI</h2>
+      <p>Remonte les clics et achats de votre site vers Heurix, pour mesurer le taux de clic sur vos recherches et le chiffre d'affaires — voire la marge — qui en découle. Deux types d'événement : <code class="docs-inline-code">search_click</code> (un clic sur un résultat de recherche) et <code class="docs-inline-code">purchase</code> (un ou plusieurs produits achetés, avec montant et marge optionnelle par produit).</p>
+      <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/events \
+  -H "Authorization: Bearer VOTRE_CLE_API" \
+  -H "Content-Type: application/json" \
+  -d '{"event_type": "search_click", "catalog": "moncatalogue",
+       "query": "cheville placo", "product_id": "sku-123"}'
+
+curl -X POST https://api.heurix.fr/v1/events \
+  -H "Authorization: Bearer VOTRE_CLE_API" \
+  -H "Content-Type: application/json" \
+  -d '{"event_type": "purchase", "catalog": "moncatalogue",
+       "products": [{"id": "sku-123", "amount": 29.90, "margin": 8.50}]}'</code></pre>
+      <p>Cet endpoint est conçu pour être appelé <strong>depuis le navigateur du visiteur final</strong>, sur votre propre site — pas depuis heurix.fr — d'où un CORS ouvert à toutes origines. Deux façons de le poser :</p>
+      <ul>
+        <li><a href="downloads/heurix-conversion-events.tpl" download>Modèle de balise Google Tag Manager</a> (fichier <code class="docs-inline-code">.tpl</code>, à importer dans Modèles → Modèles de balises → Importer)</li>
+        <li><a href="downloads/heurix-conversion-snippet.html" download>Snippet JavaScript brut</a>, pour une intégration directe sans GTM</li>
+      </ul>
+      <p><strong>Ne consomme pas votre quota de requêtes</strong> — ce n'est pas un appel moteur, c'est une remontée de données.</p>
+      <p class="regex-reassure">⚠️ À savoir avant de lire vos chiffres : l'attribution recherche → achat n'est <strong>pas une garantie à 100 %</strong>. Heurix agrège les clics et achats reçus sur une même période et un même compte — ce n'est pas un suivi de session individuel qui prouverait qu'un achat précis découle d'un clic précis. La fiabilité du signal dépend entièrement de la qualité de votre implémentation : à quels moments exacts vous appelez le suivi, et avec quelles données.</p>
+
+      <div class="docs-endpoint" style="margin-top:22px;"><span class="docs-method docs-method-get">GET</span><code>/v1/analytics/conversion-summary</code></div>
+      <p>Taux de clic, chiffre d'affaires et marge attribués sur la période (<code class="docs-inline-code">?days=30</code> par défaut).</p>
+
+      <div class="docs-endpoint" style="margin-top:14px;"><span class="docs-method docs-method-get">GET</span><code>/v1/analytics/top-products</code></div>
+      <p>Produits les plus achetés, triés par volume ou par marge (<code class="docs-inline-code">?sort_by=volume</code> ou <code class="docs-inline-code">margin</code>).</p>
     </section>
 
     <section id="ep-health" class="docs-section">

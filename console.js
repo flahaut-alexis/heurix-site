@@ -291,7 +291,7 @@
     }).catch(function () {});
   }
 
-  var ALL_PANE_IDS = ["pane-overview", "pane-top-queries", "pane-zero-results", "pane-errors",
+  var ALL_PANE_IDS = ["pane-overview", "pane-top-queries", "pane-zero-results", "pane-errors", "pane-conversion",
     "pane-catalog-help", "pane-catalog-list", "pane-company", "pane-team", "pane-key"];
 
   function showPane(paneId) {
@@ -398,6 +398,36 @@
     });
   }
 
+  function eur(n) {
+    return n.toLocaleString("fr-FR", { style: "currency", currency: "EUR" });
+  }
+
+  var convSortWired = false;
+  function loadConversionData(key) {
+    var sortBy = document.getElementById("conv-sort-select").value;
+    Promise.all([
+      apiFetch("/v1/analytics/conversion-summary?days=" + periodSelect.value, key),
+      apiFetch("/v1/analytics/top-products?days=" + periodSelect.value + "&sort_by=" + sortBy + "&limit=10", key),
+    ]).then(function (results) {
+      var summary = results[0], products = results[1].products;
+      document.getElementById("conv-ctr").textContent = L.zeroRate(summary.click_through_rate);
+      document.getElementById("conv-revenue").textContent = eur(summary.total_revenue);
+      document.getElementById("conv-margin").textContent = summary.total_margin !== null ? eur(summary.total_margin) : "–";
+      document.getElementById("conv-products").textContent = summary.products_purchased.toLocaleString("fr-FR");
+      renderTable("top-products-table", "top-products-empty", products, function (p) {
+        return "<td class='mono'>" + esc(p.product_id) + "</td><td class='num'>" + p.volume +
+          "</td><td class='num'>" + eur(p.revenue) + "</td><td class='num'>" + (p.margin !== null ? eur(p.margin) : "–") + "</td>";
+      });
+    }).catch(function () {});
+
+    if (!convSortWired) {
+      convSortWired = true;
+      document.getElementById("conv-sort-select").addEventListener("change", function () {
+        if (activeKey) loadConversionData(activeKey);
+      });
+    }
+  }
+
   function loadDashboard(key, days) {
     dashLoading.hidden = false;
     dashContent.hidden = true;
@@ -430,6 +460,7 @@
       renderApiKey(key);
       loadCatalogs(key);
       loadAccountInfo();
+      loadConversionData(key);
     }).catch(function () {
       dashLoading.hidden = true;
       localStorage.removeItem(SESSION_STORAGE_KEY);

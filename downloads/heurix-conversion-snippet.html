@@ -1,0 +1,57 @@
+<!-- Heurix — suivi de conversion (clic + achat) -->
+<!-- Où le placer : juste avant </body>, sur toutes les pages où vous voulez suivre des clics ou des achats. -->
+<script>
+(function () {
+  var HEURIX_API_KEY = "hx_VOTRE_CLE_ICI";     // Console Heurix > Mes infos
+  var HEURIX_CATALOG = "votre-catalogue";       // Le nom exact de votre catalogue indexé
+
+  function heurixSend(eventType, payload) {
+    payload = payload || {};
+    payload.event_type = eventType;
+    payload.catalog = HEURIX_CATALOG;
+    // keepalive: la requête part même si la page se ferme juste après
+    // (cas typique d'un achat suivi d'une redirection vers la page de confirmation).
+    fetch("https://api.heurix.fr/v1/events", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Authorization": "Bearer " + HEURIX_API_KEY },
+      body: JSON.stringify(payload),
+      keepalive: true
+    }).catch(function () {
+      // Un échec d'envoi ne doit jamais bloquer la navigation du visiteur.
+    });
+  }
+
+  // Appelez ceci quand un visiteur clique sur un produit depuis vos résultats
+  // de recherche Heurix : heurixTrackClick("cheville placo", "sku-123")
+  window.heurixTrackClick = function (query, productId) {
+    heurixSend("search_click", { query: query, product_id: productId });
+  };
+
+  // Appelez ceci sur votre page de confirmation de commande, avec la liste
+  // des produits achetés. La marge est optionnelle produit par produit.
+  // heurixTrackPurchase([{id: "sku-123", amount: 29.90, margin: 8.50}, {id: "sku-456", amount: 15.00}])
+  window.heurixTrackPurchase = function (products) {
+    heurixSend("purchase", { products: products });
+  };
+})();
+</script>
+
+<!--
+Exemple d'utilisation concrète :
+
+1. Sur un clic de résultat de recherche (à brancher sur votre widget) :
+   document.querySelector(".resultat-produit").addEventListener("click", function (e) {
+     heurixTrackClick(dernièreRechercheTapée, e.currentTarget.dataset.productId);
+   });
+
+2. Sur votre page de confirmation de commande, une fois la commande connue :
+   heurixTrackPurchase([
+     { id: "sku-123", amount: 29.90, margin: 8.50 },
+     { id: "sku-456", amount: 15.00 }
+   ]);
+
+Limite à connaître : l'attribution recherche → achat dépend entièrement de
+la qualité de votre implémentation — à quel moment vous appelez ces deux
+fonctions, et avec quelles données. Heurix agrège les événements reçus sur
+la même période, ce n'est pas un suivi de session individuel garanti à 100%.
+-->
