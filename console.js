@@ -291,26 +291,41 @@
     }).catch(function () {});
   }
 
-  var CONSOLE_VIEWS = ["dashboard", "catalog", "account"];
-  function setConsoleView(view) {
-    CONSOLE_VIEWS.forEach(function (v) {
-      document.getElementById("view-" + v).hidden = v !== view;
+  var ALL_PANE_IDS = ["pane-overview", "pane-top-queries", "pane-zero-results", "pane-errors",
+    "pane-catalog-help", "pane-catalog-list", "pane-company", "pane-team", "pane-key"];
+
+  function showPane(paneId) {
+    ALL_PANE_IDS.forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) el.hidden = id !== paneId;
     });
-    document.querySelectorAll(".console-nav-item").forEach(function (btn) {
-      btn.classList.toggle("console-nav-on", btn.getAttribute("data-view") === view);
+    document.querySelectorAll(".console-sidebar-item").forEach(function (btn) {
+      btn.classList.toggle("console-sidebar-item-on", btn.getAttribute("data-pane") === paneId && !btn.hasAttribute("data-catalog"));
     });
   }
-  document.querySelectorAll(".console-nav-item").forEach(function (btn) {
-    btn.addEventListener("click", function () { setConsoleView(btn.getAttribute("data-view")); });
-  });
 
-  var catalogHelpToggle = document.getElementById("catalog-help-toggle");
-  var catalogHelpContent = document.getElementById("catalog-help-content");
-  catalogHelpToggle.setAttribute("aria-expanded", "false");
-  catalogHelpToggle.addEventListener("click", function () {
-    var expanded = catalogHelpToggle.getAttribute("aria-expanded") === "true";
-    catalogHelpToggle.setAttribute("aria-expanded", expanded ? "false" : "true");
-    catalogHelpContent.hidden = expanded;
+  function showCatalogCard(catalogName) {
+    document.querySelectorAll(".catalog-card").forEach(function (card) {
+      card.hidden = card.getAttribute("data-catalog-card") !== catalogName;
+    });
+    document.querySelectorAll(".console-sidebar-item[data-catalog]").forEach(function (btn) {
+      btn.classList.toggle("console-sidebar-item-on", btn.getAttribute("data-catalog") === catalogName);
+    });
+  }
+
+  document.getElementById("console-sidebar").addEventListener("click", function (e) {
+    var sectionBtn = e.target.closest(".console-sidebar-section");
+    if (sectionBtn) {
+      var expanded = sectionBtn.classList.toggle("console-sidebar-section-on");
+      sectionBtn.nextElementSibling.hidden = !expanded;
+      return;
+    }
+    var itemBtn = e.target.closest(".console-sidebar-item");
+    if (!itemBtn) return;
+    var paneId = itemBtn.getAttribute("data-pane");
+    if (paneId) showPane(paneId);
+    var catalogName = itemBtn.getAttribute("data-catalog");
+    if (catalogName) showCatalogCard(catalogName);
   });
 
   function renderChart(daily) {
@@ -591,7 +606,7 @@
     var options = AVAILABLE_RULEPACKS.map(function (rp) {
       return '<option value="' + esc(rp) + '"' + (rp === c.rulepack ? " selected" : "") + '>' + esc(rp) + '</option>';
     }).join("");
-    return '<div class="catalog-card">' +
+    return '<div class="catalog-card" data-catalog-card="' + esc(c.catalog) + '">' +
       '<div class="catalog-card-head"><span class="catalog-card-name">' + esc(c.catalog) + '</span></div>' +
       '<div class="catalog-card-meta">' + c.products + ' produit' + (c.products > 1 ? 's' : '') + ' · ' +
         c.annotations + ' annotations · ' + c.synonym_groups + ' groupe' + (c.synonym_groups > 1 ? 's' : '') + ' de synonymes</div>' +
@@ -642,6 +657,15 @@
       list.innerHTML = catalogs.map(catalogCardHtml).join("");
       var cardEls = list.querySelectorAll(".catalog-card");
       catalogs.forEach(function (c, i) { wireCatalogCard(cardEls[i], c, key); });
+
+      var sidebarItems = document.getElementById("sidebar-catalog-items");
+      sidebarItems.innerHTML = catalogs.map(function (c, i) {
+        return '<button type="button" class="console-sidebar-item' + (i === 0 ? ' console-sidebar-item-on' : '') +
+          '" data-pane="pane-catalog-list" data-catalog="' + esc(c.catalog) + '">' + esc(c.catalog) + '</button>';
+      }).join("");
+      // Un seul catalogue visible par defaut (le premier) -- coherent avec
+      // le principe general "un pave a la fois", pas juste pour l'aide.
+      cardEls.forEach(function (card, i) { card.hidden = i !== 0; });
     }).catch(function () {
       loading.hidden = true;
       empty.hidden = false;

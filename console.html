@@ -16,7 +16,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="robots" content="noindex">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css?v=1784814046">
+<link rel="stylesheet" href="styles.css?v=1784819296">
 <link rel="canonical" href="https://heurix.fr/console.html">
 </head>
 <body>
@@ -132,159 +132,209 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </div>
     </div>
 
-    <div class="console-nav">
-      <button type="button" class="console-nav-item console-nav-on" data-view="dashboard">Dashboard</button>
-      <button type="button" class="console-nav-item" data-view="catalog">Mon catalogue</button>
-      <button type="button" class="console-nav-item" data-view="account">Mes infos</button>
-    </div>
+    <div class="console-layout">
+      <nav class="console-sidebar" id="console-sidebar" aria-label="Navigation du tableau de bord">
 
-    <div id="dash-loading" class="console-loading">Chargement des données…</div>
-    <div id="dash-content" hidden>
-
-      <div id="view-dashboard" class="console-view">
-
-        <div class="console-stats">
-          <div class="console-stat">
-            <div class="icn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
-            <div class="console-stat-num" id="stat-searches">–</div>
-            <div class="console-stat-label">Recherches</div>
-          </div>
-          <div class="console-stat console-stat-warn">
-            <div class="icn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="13"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
-            <div class="console-stat-num" id="stat-zero-rate">–</div>
-            <div class="console-stat-label">Taux sans résultat</div>
-          </div>
-          <div class="console-stat">
-            <div class="icn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
-            <div class="console-stat-num" id="stat-errors">–</div>
-            <div class="console-stat-label">Erreurs</div>
-          </div>
-          <div class="console-stat">
-            <div class="icn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6z"/></svg></div>
-            <div class="console-stat-num" id="stat-usage">–</div>
-            <div class="console-stat-label">Requêtes ce mois-ci</div>
-          </div>
-        </div>
-
-        <div class="console-panel">
-          <h2>Volume de recherches</h2>
-          <div class="console-chart-wrap"><canvas id="searches-chart" height="90"></canvas></div>
-        </div>
-
-        <div class="console-grid-2">
-          <div class="console-panel">
-            <h2>Mots les plus recherchés</h2>
-            <div class="table-scroll"><table class="console-table" id="top-queries-table">
-              <thead><tr><th>Requête</th><th>Nb</th><th>Résultats (moy.)</th></tr></thead>
-              <tbody></tbody>
-            </table></div>
-            <p class="console-empty" id="top-queries-empty" hidden>Aucune recherche sur cette période.</p>
-          </div>
-
-          <div class="console-panel console-panel-warn">
-            <h2>Recherches sans résultat</h2>
-            <p class="console-panel-note">Ce que vos clients cherchent sans jamais rien trouver — des ventes potentiellement manquées. Chaque ligne est un candidat pour un synonyme ou une règle à ajouter.</p>
-            <div class="table-scroll"><table class="console-table" id="zero-results-table">
-              <thead><tr><th>Requête</th><th>Nb de fois</th></tr></thead>
-              <tbody></tbody>
-            </table></div>
-            <p class="console-empty" id="zero-results-empty" hidden>Aucune recherche sans résultat sur cette période — bon signe.</p>
-          </div>
-        </div>
-
-        <div class="console-panel">
-          <h2>Erreurs récentes</h2>
-          <div class="table-scroll"><table class="console-table" id="errors-table">
-            <thead><tr><th>Endpoint</th><th>Code</th><th>Message</th><th>Quand</th></tr></thead>
-            <tbody></tbody>
-          </table></div>
-          <p class="console-empty" id="errors-empty" hidden>Aucune erreur sur cette période.</p>
-        </div>
-
-      </div>
-
-      <div id="view-catalog" class="console-view" hidden>
-
-        <div class="console-panel">
-          <button type="button" id="catalog-help-toggle" class="console-help-toggle">
-            <span>Comment ça marche ?</span>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="catalog-help-chevron"><polyline points="6 9 12 15 18 9"/></svg>
+        <div class="console-sidebar-group">
+          <button type="button" class="console-sidebar-section console-sidebar-section-on" data-section="dashboard">
+            <span>Dashboard</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="console-sidebar-chevron"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
-          <div id="catalog-help-content" hidden>
-            <img src="img/cascade-annotations.svg?v=1784808273" alt="Schéma : la référence M8 x 20 - Inox A2 est reconnue par trois règles (diamètre, longueur, matière) qui se combinent en trois annotations" style="width:100%; max-width:640px; margin:16px 0;">
-            <h3 class="console-help-h3">Ce que fait un pack de règles</h3>
-            <p class="console-panel-note" style="margin:4px 0 14px;">Un pack de règles lit vos références produit et reconnaît automatiquement ce qu'elles contiennent — comme dans le schéma ci-dessus. Trois packs existent aujourd'hui :</p>
-            <ul class="console-help-list">
-              <li><strong>outillage</strong> — diamètres métriques (M8, M10…), longueurs, normes DIN/ISO, matières (inox, acier…). Exemple : « M8 x 20 - Inox A2 ».</li>
-              <li><strong>mode</strong> — tailles, coloris, matières (laine, coton, denim…), familles (pull, jean, chemise…), coupes. Exemple : « Pull col rond taille M laine bleu ».</li>
-              <li><strong>industrie</strong> — séries de roulements, étanchéité, courroies, joints toriques. Exemple : « 6205-2RS ».</li>
-            </ul>
-            <h3 class="console-help-h3">Créer une règle personnalisée</h3>
-            <p class="console-panel-note" style="margin:4px 0 14px;">Possible directement dans chaque carte catalogue, sans écrire de regex — deux formats au choix :</p>
-            <ul class="console-help-list">
-              <li><strong>Mot-clé → étiquette</strong> — plusieurs mots équivalents qui doivent tous déclencher la même étiquette. Exemple : « placo, cheville, molly, plaquo » → une seule étiquette commune.</li>
-              <li><strong>Préfixe + nombre → étiquette</strong> — un préfixe suivi d'un nombre, comme dans les packs existants. Exemple : « P » suivi d'un nombre reconnaît « P12 », « P25 »…</li>
-            </ul>
-            <p class="console-panel-note" style="margin:4px 0 14px;">Les cas plus complexes (deux nombres combinés, comme un diamètre × une longueur) ne sont pas encore couverts par ces deux formats. Un besoin de ce type ? <a href="mailto:contact@heurix.fr">Écrivez-nous</a>, c'est faisable côté moteur.</p>
-            <h3 class="console-help-h3">Publier un changement</h3>
-            <p class="console-panel-note" style="margin:4px 0 0;">Il n'y a pas d'étape de publication séparée : changer de pack de règles, modifier un synonyme, ou créer une règle personnalisée prend effet <strong>immédiatement</strong> sur votre recherche en production, dès que vous validez.</p>
+          <div class="console-sidebar-items" data-section-items="dashboard">
+            <button type="button" class="console-sidebar-item console-sidebar-item-on" data-pane="pane-overview">Vue d'ensemble</button>
+            <button type="button" class="console-sidebar-item" data-pane="pane-top-queries">Recherches populaires</button>
+            <button type="button" class="console-sidebar-item" data-pane="pane-zero-results">Sans résultat</button>
+            <button type="button" class="console-sidebar-item" data-pane="pane-errors">Erreurs</button>
           </div>
         </div>
 
-        <div class="console-panel">
-          <h2>Mon catalogue</h2>
-          <p class="console-panel-note">Le pack de règles actif par catalogue, et les synonymes métier — modifiables directement ici, sans passer par l'API.</p>
-          <div id="catalogs-loading" class="console-loading">Chargement…</div>
-          <div id="catalogs-list"></div>
-          <p class="console-empty" id="catalogs-empty" hidden>Aucun catalogue indexé pour l'instant — <a href="docs.html">consultez la documentation</a> pour indexer votre premier catalogue.</p>
-        </div>
-      </div>
-
-      <div id="view-account" class="console-view" hidden>
-
-        <div class="console-panel">
-          <h2>Entreprise</h2>
-          <form id="company-form" class="console-invite-form" style="flex-direction:column; align-items:stretch;">
-            <label for="company-raison-sociale" style="font-size:12.5px; font-weight:700; color:var(--ink-muted); margin-bottom:4px;">Raison sociale</label>
-            <input type="text" id="company-raison-sociale" required>
-            <label for="company-numero-tva" style="font-size:12.5px; font-weight:700; color:var(--ink-muted); margin:10px 0 4px;">N° de TVA <span class="console-field-optional">(optionnel)</span></label>
-            <input type="text" id="company-numero-tva" placeholder="FR12345678901">
-            <button type="submit" class="btn" id="company-save-btn" style="margin-top:14px; align-self:flex-start;" hidden>Enregistrer</button>
-          </form>
-          <p id="company-status" class="console-form-status" hidden></p>
-        </div>
-
-        <div class="console-panel">
-          <h2>Équipe</h2>
-          <p class="console-panel-note">Toutes les personnes de votre entreprise partagent l'accès aux mêmes catalogues et à la même clé API.</p>
-          <div class="table-scroll"><table class="console-table" id="team-table">
-            <thead><tr><th>Email</th><th>Rôle</th><th>Membre depuis</th><th></th></tr></thead>
-            <tbody></tbody>
-          </table></div>
-          <form id="invite-form" class="console-invite-form" hidden>
-            <input type="email" id="invite-email" placeholder="collegue@entreprise.fr" required>
-            <button type="submit" class="btn" id="invite-btn">Inviter</button>
-          </form>
-          <p id="invite-status" class="console-form-status" hidden></p>
-        </div>
-
-        <div class="console-panel">
-          <h2>Ma clé API</h2>
-          <p class="console-panel-note">À utiliser dans le header <code class="docs-inline-code">Authorization: Bearer &lt;clé&gt;</code> de vos appels. Ne la partagez pas, elle donne accès en écriture à votre catalogue.</p>
-          <div class="console-key-display">
-            <code id="account-key-value" class="console-key-value">••••••••••••••••••••••••••••••••</code>
-            <button type="button" id="account-key-toggle" class="console-key-btn" aria-label="Afficher la clé">
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-            </button>
-            <button type="button" id="account-key-copy" class="console-key-btn" aria-label="Copier la clé">
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-            </button>
-            <span id="account-key-copied" class="console-key-copied" hidden>Copiée !</span>
+        <div class="console-sidebar-group">
+          <button type="button" class="console-sidebar-section" data-section="catalog">
+            <span>Mon catalogue</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="console-sidebar-chevron"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="console-sidebar-items" data-section-items="catalog" hidden>
+            <button type="button" class="console-sidebar-item" data-pane="pane-catalog-help">Comment ça marche</button>
+            <div id="sidebar-catalog-items"></div>
           </div>
         </div>
 
-      </div>
+        <div class="console-sidebar-group">
+          <button type="button" class="console-sidebar-section" data-section="account">
+            <span>Mes infos</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="console-sidebar-chevron"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="console-sidebar-items" data-section-items="account" hidden>
+            <button type="button" class="console-sidebar-item" data-pane="pane-company">Entreprise</button>
+            <button type="button" class="console-sidebar-item" data-pane="pane-team">Équipe</button>
+            <button type="button" class="console-sidebar-item" data-pane="pane-key">Ma clé API</button>
+          </div>
+        </div>
 
+      </nav>
+
+      <div class="console-main">
+        <div id="dash-loading" class="console-loading">Chargement des données…</div>
+        <div id="dash-content" hidden>
+
+          <div id="pane-overview" class="console-pane">
+            <h2 class="console-pane-title">Vue d'ensemble</h2>
+            <div class="console-stats">
+              <div class="console-stat">
+                <div class="icn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+                <div class="console-stat-num" id="stat-searches">–</div>
+                <div class="console-stat-label">Recherches</div>
+              </div>
+              <div class="console-stat console-stat-warn">
+                <div class="icn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="13"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+                <div class="console-stat-num" id="stat-zero-rate">–</div>
+                <div class="console-stat-label">Taux sans résultat</div>
+              </div>
+              <div class="console-stat">
+                <div class="icn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+                <div class="console-stat-num" id="stat-errors">–</div>
+                <div class="console-stat-label">Erreurs</div>
+              </div>
+              <div class="console-stat">
+                <div class="icn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6z"/></svg></div>
+                <div class="console-stat-num" id="stat-usage">–</div>
+                <div class="console-stat-label">Requêtes ce mois-ci</div>
+              </div>
+            </div>
+            <div class="console-panel">
+              <h2>Volume de recherches</h2>
+              <div class="console-chart-wrap"><canvas id="searches-chart" height="90"></canvas></div>
+            </div>
+          </div>
+
+          <div id="pane-top-queries" class="console-pane" hidden>
+            <h2 class="console-pane-title">Recherches populaires</h2>
+            <div class="console-panel">
+              <div class="table-scroll"><table class="console-table" id="top-queries-table">
+                <thead><tr><th>Requête</th><th>Nb</th><th>Résultats (moy.)</th></tr></thead>
+                <tbody></tbody>
+              </table></div>
+              <p class="console-empty" id="top-queries-empty" hidden>Aucune recherche sur cette période.</p>
+            </div>
+          </div>
+
+          <div id="pane-zero-results" class="console-pane" hidden>
+            <h2 class="console-pane-title">Recherches sans résultat</h2>
+            <div class="console-panel console-panel-warn">
+              <p class="console-panel-note">Ce que vos clients cherchent sans jamais rien trouver — des ventes potentiellement manquées. Chaque ligne est un candidat pour un synonyme ou une règle à ajouter.</p>
+              <div class="table-scroll"><table class="console-table" id="zero-results-table">
+                <thead><tr><th>Requête</th><th>Nb de fois</th></tr></thead>
+                <tbody></tbody>
+              </table></div>
+              <p class="console-empty" id="zero-results-empty" hidden>Aucune recherche sans résultat sur cette période — bon signe.</p>
+            </div>
+          </div>
+
+          <div id="pane-errors" class="console-pane" hidden>
+            <h2 class="console-pane-title">Erreurs récentes</h2>
+            <div class="console-panel">
+              <div class="table-scroll"><table class="console-table" id="errors-table">
+                <thead><tr><th>Endpoint</th><th>Code</th><th>Message</th><th>Quand</th></tr></thead>
+                <tbody></tbody>
+              </table></div>
+              <p class="console-empty" id="errors-empty" hidden>Aucune erreur sur cette période.</p>
+            </div>
+          </div>
+
+          <div id="pane-catalog-help" class="console-pane" hidden>
+            <h2 class="console-pane-title">Comment ça marche</h2>
+            <div class="console-panel">
+              <img src="img/cascade-annotations.svg?v=1784808273" alt="Schéma : la référence M8 x 20 - Inox A2 est reconnue par trois règles (diamètre, longueur, matière) qui se combinent en trois annotations" style="width:100%; max-width:640px; margin:0 0 16px;">
+              <h3 class="console-help-h3" style="margin-top:0;">Ce que fait un pack de règles</h3>
+              <p class="console-panel-note" style="margin:4px 0 14px;">Un pack de règles lit vos références produit et reconnaît automatiquement ce qu'elles contiennent — comme dans le schéma ci-dessus. Six packs existent aujourd'hui, couvrant les secteurs les plus courants (outillage, mode, industrie, livres, électronique, vins &amp; spiritueux).</p>
+              <h3 class="console-help-h3">Créer une règle personnalisée</h3>
+              <p class="console-panel-note" style="margin:4px 0 14px;">Possible directement dans chaque carte catalogue, sans écrire de regex — deux formats au choix. Voici exactement quoi remplir :</p>
+
+              <div class="console-help-example">
+                <div class="console-help-example-title">Exemple — Mot-clé → étiquette</div>
+                <p class="console-help-example-context">Vos clients tapent « cheville », d'autres « molly » ou « placo » pour le même produit.</p>
+                <div class="console-help-example-fields">
+                  <div><span>Type</span><code>Mot-clé → étiquette</code></div>
+                  <div><span>Nom de la règle</span><code>Cheville</code></div>
+                  <div><span>Mots équivalents</span><code>cheville, molly, plaquo, placo</code></div>
+                </div>
+                <p class="console-help-example-result">→ Une recherche sur n'importe lequel de ces mots retrouve tous les produits contenant l'un des trois autres.</p>
+              </div>
+
+              <div class="console-help-example">
+                <div class="console-help-example-title">Exemple — Préfixe + nombre → étiquette</div>
+                <p class="console-help-example-context">Vos références utilisent un code standardisé, comme un coloris RAL.</p>
+                <div class="console-help-example-fields">
+                  <div><span>Type</span><code>Préfixe + nombre → étiquette</code></div>
+                  <div><span>Nom de la règle</span><code>Coloris RAL</code></div>
+                  <div><span>Préfixe à reconnaître</span><code>RAL</code></div>
+                </div>
+                <p class="console-help-example-result">→ « RAL 9010 » et « RAL9010 » (avec ou sans espace) sont désormais reconnus comme la même valeur.</p>
+              </div>
+
+              <p class="console-panel-note" style="margin:14px 0 0;">D'autres exemples classés par secteur (bricolage, mode, beauté, ameublement…) : <a href="blog/custom-rules-personnaliser-moteur-recherche.html">consultez l'article de blog dédié</a>.</p>
+              <p class="console-panel-note" style="margin:4px 0 14px;">Les cas plus complexes (deux nombres combinés, comme un diamètre × une longueur) ne sont pas encore couverts par ces deux formats. Un besoin de ce type ? <a href="mailto:contact@heurix.fr">Écrivez-nous</a>, c'est faisable côté moteur.</p>
+              <h3 class="console-help-h3">Publier un changement</h3>
+              <p class="console-panel-note" style="margin:4px 0 0;">Il n'y a pas d'étape de publication séparée : changer de pack de règles, modifier un synonyme, ou créer une règle personnalisée prend effet <strong>immédiatement</strong> sur votre recherche en production, dès que vous validez.</p>
+            </div>
+          </div>
+
+          <div id="pane-catalog-list" class="console-pane" hidden>
+            <h2 class="console-pane-title" id="catalog-pane-title">Mon catalogue</h2>
+            <div id="catalogs-loading" class="console-loading">Chargement…</div>
+            <div id="catalogs-list"></div>
+            <p class="console-empty" id="catalogs-empty" hidden>Aucun catalogue indexé pour l'instant — <a href="docs.html">consultez la documentation</a> pour indexer votre premier catalogue.</p>
+          </div>
+
+          <div id="pane-company" class="console-pane" hidden>
+            <h2 class="console-pane-title">Entreprise</h2>
+            <div class="console-panel">
+              <form id="company-form" class="console-invite-form" style="flex-direction:column; align-items:stretch;">
+                <label for="company-raison-sociale" style="font-size:12.5px; font-weight:700; color:var(--ink-muted); margin-bottom:4px;">Raison sociale</label>
+                <input type="text" id="company-raison-sociale" required>
+                <label for="company-numero-tva" style="font-size:12.5px; font-weight:700; color:var(--ink-muted); margin:10px 0 4px;">N° de TVA <span class="console-field-optional">(optionnel)</span></label>
+                <input type="text" id="company-numero-tva" placeholder="FR12345678901">
+                <button type="submit" class="btn" id="company-save-btn" style="margin-top:14px; align-self:flex-start;" hidden>Enregistrer</button>
+              </form>
+              <p id="company-status" class="console-form-status" hidden></p>
+            </div>
+          </div>
+
+          <div id="pane-team" class="console-pane" hidden>
+            <h2 class="console-pane-title">Équipe</h2>
+            <div class="console-panel">
+              <p class="console-panel-note">Toutes les personnes de votre entreprise partagent l'accès aux mêmes catalogues et à la même clé API.</p>
+              <div class="table-scroll"><table class="console-table" id="team-table">
+                <thead><tr><th>Email</th><th>Rôle</th><th>Membre depuis</th><th></th></tr></thead>
+                <tbody></tbody>
+              </table></div>
+              <form id="invite-form" class="console-invite-form" hidden>
+                <input type="email" id="invite-email" placeholder="collegue@entreprise.fr" required>
+                <button type="submit" class="btn" id="invite-btn">Inviter</button>
+              </form>
+              <p id="invite-status" class="console-form-status" hidden></p>
+            </div>
+          </div>
+
+          <div id="pane-key" class="console-pane" hidden>
+            <h2 class="console-pane-title">Ma clé API</h2>
+            <div class="console-panel">
+              <p class="console-panel-note">À utiliser dans le header <code class="docs-inline-code">Authorization: Bearer &lt;clé&gt;</code> de vos appels. Ne la partagez pas, elle donne accès en écriture à votre catalogue.</p>
+              <div class="console-key-display">
+                <code id="account-key-value" class="console-key-value">••••••••••••••••••••••••••••••••</code>
+                <button type="button" id="account-key-toggle" class="console-key-btn" aria-label="Afficher la clé">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                </button>
+                <button type="button" id="account-key-copy" class="console-key-btn" aria-label="Copier la clé">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                </button>
+                <span id="account-key-copied" class="console-key-copied" hidden>Copiée !</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -316,7 +366,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<script src="console.js?v=1784814046"></script>
+<script src="console.js?v=1784819296"></script>
 <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 
 <script src="mobile-nav.js"></script>

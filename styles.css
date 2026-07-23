@@ -648,6 +648,10 @@ h2{ font-size:clamp(26px,3.4vw,34px); font-weight:800; margin:0 0 18px; max-widt
 }
 .vertical-card h4{ font-size:15px; margin:0 0 8px; font-weight:700; }
 .vertical-card p{ margin:0; font-size:13px; color:var(--ink-muted); line-height:1.5; }
+.vertical-card-pack{
+  display:inline-block; font-size:11px; font-weight:700; color:var(--blue-deep);
+  background:var(--blue-tint); border-radius:100px; padding:3px 10px; margin-top:10px;
+}
 
 /* COPILOT SECTORIEL */
 .copilot{ margin-bottom:36px; }
@@ -1316,16 +1320,44 @@ h2{ font-size:clamp(26px,3.4vw,34px); font-weight:800; margin:0 0 18px; max-widt
 .console-dash-actions{ display:flex; align-items:center; gap:10px; }
 .console-account-email{ font-size:13px; color:var(--ink-muted); margin-right:4px; white-space:nowrap; }
 
-.console-nav{ display:flex; gap:4px; border-bottom:1.5px solid var(--line); margin-bottom:28px; }
-.console-nav-item{
-  font-family:'Plus Jakarta Sans', sans-serif; font-size:13.5px; font-weight:700;
-  color:var(--ink-muted); background:none; border:none; cursor:pointer;
-  padding:11px 6px; margin-bottom:-1.5px; border-bottom:2.5px solid transparent;
+.console-layout{ display:flex; align-items:flex-start; gap:32px; }
+
+.console-sidebar{
+  flex:0 0 220px; position:sticky; top:24px;
+  display:flex; flex-direction:column; gap:4px;
 }
-.console-nav-item:hover{ color:var(--ink); }
-.console-nav-on{ color:var(--blue-deep); border-bottom-color:var(--blue); }
-.console-view{ display:block; }
-.console-view[hidden]{ display:none; }
+.console-sidebar-group{ border-bottom:1px solid var(--line); padding-bottom:6px; margin-bottom:2px; }
+.console-sidebar-group:last-child{ border-bottom:none; }
+.console-sidebar-section{
+  display:flex; align-items:center; justify-content:space-between; width:100%;
+  font-family:'Plus Jakarta Sans', sans-serif; font-size:13.5px; font-weight:700; color:var(--ink);
+  background:none; border:none; cursor:pointer; padding:10px 8px; border-radius:8px;
+}
+.console-sidebar-section:hover{ background:var(--bg-soft); }
+.console-sidebar-section-on{ color:var(--blue-deep); }
+.console-sidebar-chevron{ color:var(--ink-muted); transition:transform .15s ease; flex-shrink:0; }
+.console-sidebar-section-on .console-sidebar-chevron{ transform:rotate(180deg); }
+.console-sidebar-items{ display:flex; flex-direction:column; gap:1px; padding:2px 0 8px; }
+.console-sidebar-items[hidden]{ display:none; }
+.console-sidebar-item{
+  display:block; width:100%; text-align:left; font-family:'Plus Jakarta Sans', sans-serif;
+  font-size:13px; color:var(--ink-muted); background:none; border:none; cursor:pointer;
+  padding:8px 8px 8px 20px; border-radius:8px; border-left:2px solid transparent;
+}
+.console-sidebar-item:hover{ background:var(--bg-soft); color:var(--ink); }
+.console-sidebar-item-on{ color:var(--blue-deep); font-weight:700; border-left-color:var(--blue); background:var(--blue-tint); }
+
+.console-main{ flex:1; min-width:0; }
+.console-pane{ display:block; }
+.console-pane[hidden]{ display:none; }
+.console-pane-title{ font-size:20px; margin:0 0 18px; }
+
+@media (max-width:900px){
+  .console-layout{ flex-direction:column; gap:20px; }
+  .console-sidebar{ position:static; flex:1 1 auto; width:100%; flex-direction:row; flex-wrap:wrap; gap:8px; }
+  .console-sidebar-group{ border-bottom:none; padding-bottom:0; flex:1 1 auto; min-width:140px; }
+  .console-sidebar-items{ padding-left:4px; }
+}
 
 .console-info-row{
   display:flex; align-items:center; justify-content:space-between;
@@ -1362,6 +1394,20 @@ h2{ font-size:clamp(26px,3.4vw,34px); font-weight:800; margin:0 0 18px; max-widt
 .console-help-list{ margin:0 0 14px; padding-left:20px; font-size:13px; color:var(--ink-muted); line-height:1.6; }
 .console-help-list li{ margin-bottom:6px; }
 .console-help-list strong{ color:var(--ink); font-family:'IBM Plex Mono', monospace; font-size:12.5px; }
+
+.console-help-example{
+  border:1px solid var(--line); border-radius:10px; padding:16px 18px; margin-bottom:12px;
+}
+.console-help-example-title{ font-size:13px; font-weight:700; color:var(--blue-deep); margin-bottom:4px; }
+.console-help-example-context{ font-size:12.5px; color:var(--ink-muted); margin:0 0 12px; }
+.console-help-example-fields{ display:flex; flex-direction:column; gap:6px; margin-bottom:10px; }
+.console-help-example-fields div{ display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; }
+.console-help-example-fields span{ font-size:11.5px; font-weight:700; color:var(--ink-muted); min-width:150px; flex-shrink:0; }
+.console-help-example-fields code{
+  font-family:'IBM Plex Mono', monospace; font-size:12.5px; color:var(--ink);
+  background:var(--bg-soft); border-radius:5px; padding:2px 8px;
+}
+.console-help-example-result{ font-size:12.5px; color:#0F7A3D; margin:0; line-height:1.5; }
 
 .console-key-display{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
 .console-key-value{

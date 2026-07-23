@@ -11,23 +11,23 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Indexez votre premier catalogue outillage en 5 minutes — Heurix</title>
-<meta name="description" content="Tutoriel pratique : indexez un petit catalogue de quincaillerie et lancez une vraie recherche avec faute de frappe, en 5 minutes, avec du vrai code à copier-coller.">
-<link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/tutoriel-catalogue-outillage-5-minutes.html">
+<title>Custom Rules : personnalisez votre moteur de recherche sans écrire une ligne de regex — Heurix</title>
+<meta name="description" content="Un pack de règles couvre l'essentiel de votre secteur, mais jamais tout à fait votre catalogue. Les Custom Rules comblent cet écart en quelques minutes, sans regex.">
+<link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/custom-rules-personnaliser-moteur-recherche.html">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Indexez votre premier catalogue outillage en 5 minutes — Heurix">
-<meta property="og:description" content="Tutoriel pratique : indexez un petit catalogue de quincaillerie et lancez une vraie recherche avec faute de frappe, en 5 minutes, avec du vrai code à copier-coller.">
+<meta property="og:title" content="Custom Rules : personnalisez votre moteur de recherche sans écrire une ligne de regex — Heurix">
+<meta property="og:description" content="Un pack de règles couvre l'essentiel de votre secteur, mais jamais tout à fait votre catalogue. Les Custom Rules comblent cet écart en quelques minutes, sans regex.">
 <meta property="og:image" content="https://heurix.fr/og-image.png">
-<meta property="og:url" content="https://heurix.fr/blog/tutoriel-catalogue-outillage-5-minutes.html">
+<meta property="og:url" content="https://heurix.fr/blog/custom-rules-personnaliser-moteur-recherche.html">
 <meta property="og:locale" content="fr_FR">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Indexez votre premier catalogue outillage en 5 minutes — Heurix">
-<meta name="twitter:description" content="Tutoriel pratique : indexez un petit catalogue de quincaillerie et lancez une vraie recherche avec faute de frappe, en 5 minutes, avec du vrai code à copier-coller.">
+<meta name="twitter:title" content="Custom Rules : personnalisez votre moteur de recherche sans écrire une ligne de regex — Heurix">
+<meta name="twitter:description" content="Un pack de règles couvre l'essentiel de votre secteur, mais jamais tout à fait votre catalogue. Les Custom Rules comblent cet écart en quelques minutes, sans regex.">
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="../favicon-32.png">
 <link rel="apple-touch-icon" href="../apple-touch-icon.png">
 <link rel="stylesheet" href="../styles.css?v=1784819296">
-<link rel="canonical" href="https://heurix.fr/blog/tutoriel-catalogue-outillage-5-minutes.html">
+<link rel="canonical" href="https://heurix.fr/blog/custom-rules-personnaliser-moteur-recherche.html">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -103,69 +103,38 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <article class="post">
   <div class="wrap post-wrap">
     <a href="../blog.html" class="back-link">← Tous les articles</a>
-    <div class="kicker">Tutoriel · Juillet 2026</div>
-    <h1>Indexez votre premier catalogue outillage en 5 minutes</h1>
-    <p class="post-lede">Deux appels API, un vrai résultat de recherche avec faute de frappe et format différent. Tout le code de cette page est testé — copiez-collez, adaptez à votre catalogue.</p>
+    <div class="kicker">Blog · Juillet 2026</div>
+    <h1>Custom Rules : personnalisez votre moteur de recherche sans écrire une ligne de regex</h1>
+    <p class="post-lede">Un pack de règles couvre l'essentiel d'un secteur. Il ne devinera jamais le mot exact que vos clients tapent pour désigner un produit de votre propre catalogue. C'est précisément ce que les Custom Rules viennent combler.</p>
 
     <div class="post-body">
-      <h2>Ce qu'il vous faut</h2>
-      <p>Une clé API (<a href="../pricing.html">essai gratuit 14 jours</a>, sans carte bancaire) et un terminal. C'est tout — pas de SDK à installer, le moteur répond en JSON brut sur des appels HTTP standards.</p>
+      <h2>Le problème que six packs de règles ne résolvent pas</h2>
+      <p>Heurix fournit aujourd'hui six packs de règles prêts à l'emploi — outillage, mode, industrie, livres, électronique, vins &amp; spiritueux. Chacun reconnaît automatiquement les motifs les plus courants de son secteur : un diamètre métrique, une taille composée, un millésime, une référence ISBN. Sur la majorité des catalogues, ça couvre l'essentiel dès l'indexation.</p>
+      <p>Mais aucun pack, aussi complet soit-il, ne peut deviner le vocabulaire propre à votre catalogue. Une cheville à frapper s'appelle « cheville » chez un fournisseur, « molly » chez un autre, « plaquo » dans certaines régions. Un coloris standardisé RAL n'a de sens que pour qui vend de la peinture ou du mobilier. Ce sont des détails que même un pack sectoriel bien conçu ne peut pas anticiper pour chaque client — parce qu'ils dépendent de votre fournisseur, de votre région, de vos habitudes de nommage internes.</p>
 
-      <h2>Étape 1 — Indexez 4 produits</h2>
-      <p>Un petit catalogue de quincaillerie, avec le pack de règles <code class="docs-inline-code">outillage</code> (celui qui comprend les diamètres, longueurs et matières dans une référence) :</p>
-      <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/index/quincaillerie/items \
-  -H "Authorization: Bearer VOTRE_CLE_API" \
-  -H "Content-Type: application/json" \
-  -d '{
-  "rulepack": "outillage",
-  "items": [
-    {"id": "V001", "name": "Vis à métaux tête hexagonale", "ref": "M8 x 20 - Inox A2", "stock": 120},
-    {"id": "V002", "name": "Vis à métaux tête hexagonale", "ref": "M8 x 30 - Inox A2", "stock": 45},
-    {"id": "R001", "name": "Roulement à billes étanche", "ref": "6205-2RS", "stock": 8},
-    {"id": "E001", "name": "Écrou hexagonal", "ref": "M8 - Zingué", "stock": 300}
-  ]
-}'</code></pre>
-      <p>Réponse :</p>
-      <pre class="docs-code"><code>{"indexed": 4, "catalog": {"catalog": "quincaillerie", "products": 4,
- "terms": 18, "annotations": 11, "rulepack": "outillage", "synonym_groups": 0}}</code></pre>
-      <p>11 annotations générées automatiquement à partir de 4 produits — c'est la cascade de règles qui vient de décomposer chaque référence (diamètre, longueur, matière) sans que vous ayez écrit la moindre regex.</p>
+      <h2>Deux formats, aucune regex à écrire</h2>
+      <p>Une Custom Rule s'ajoute par-dessus le pack de règles déjà actif sur un catalogue — elle ne le remplace pas, et elle ne touche jamais aux règles partagées avec les autres clients Heurix. Elle est propre à un seul catalogue. Deux formats couvrent la grande majorité des besoins réels :</p>
+      <p><strong>Mot-clé → étiquette.</strong> Plusieurs mots équivalents qui doivent tous pointer vers la même notion. « Cheville », « molly », « plaquo », « placo » deviennent interchangeables : un client qui tape n'importe lequel des quatre retrouve les produits contenant n'importe lequel des trois autres.</p>
+      <p><strong>Préfixe + nombre → étiquette.</strong> Un préfixe suivi d'un nombre, exactement comme le fait déjà en interne le pack outillage pour un diamètre métrique. Le préfixe « RAL » reconnaît aussi bien « RAL 9010 » que « RAL9010 » — avec ou sans espace, peu importe comment le fournisseur l'a écrit dans son fichier produit.</p>
 
-      <h2>Étape 2 — Cherchez, avec une faute et un format différent</h2>
-      <p>Le vrai test : pas la référence exacte telle qu'indexée, mais ce qu'un client tape réellement — une faute sur « vis », et « M8x20 » collé sans espaces ni tirets :</p>
-      <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/index/quincaillerie/search \
-  -H "Authorization: Bearer VOTRE_CLE_API" \
-  -H "Content-Type: application/json" \
-  -d '{"q": "vs m8x20 inox"}'</code></pre>
-      <p>Réponse (raccourcie) :</p>
-      <pre class="docs-code"><code>{
-  "total": 3,
-  "hits": [
-    {
-      "product": {"id": "V001", "ref": "M8 x 20 - Inox A2", "stock": 120},
-      "score": 43.5,
-      "matched": [
-        "terme 'inox' (depuis 'inox', x1.00)",
-        "annotation #LONG_20",
-        "annotation #DIAM_M8",
-        "annotation #VIS_M8X20",
-        "annotation #DIAM_M8_INOX",
-        "annotation #MAT_INOX"
-      ]
-    },
-    { "product": {"id": "V002", "ref": "M8 x 30 - Inox A2"}, "score": 28.5, ... },
-    { "product": {"id": "E001", "ref": "M8 - Zingué"}, "score": 7.5, ... }
-  ]
-}</code></pre>
+      <h2>Un exemple concret, du début à la fin</h2>
+      <p>Prenons un produit indexé sous le nom « Fixation placo autoperceuse ». Sans règle personnalisée, un client qui cherche « cheville » n'obtient aucun résultat — le mot n'apparaît nulle part dans la fiche produit. Après avoir créé une règle Mot-clé avec les termes <code class="docs-inline-code">placo, cheville, molly, plaquo</code>, la même recherche retrouve le produit immédiatement. La réponse de l'API l'explique d'ailleurs noir sur blanc dans le détail des résultats : le produit remonte via le terme « placo », reconnu comme synonyme de « cheville ».</p>
+      <p>Rien à publier séparément. Dès la création de la règle, tous les produits déjà indexés sont ré-analysés et le changement est actif en production.</p>
 
-      <h2>Ce qui vient de se passer</h2>
-      <p>« vs m8x20 inox » n'existe littéralement nulle part dans les données indexées — ni « vs » (faute sur « vis »), ni « m8x20 » sous cette forme exacte (la référence stockée est « M8 x 20 »). Le moteur a quand même trouvé et classé en premier le bon produit, et le champ <code class="docs-inline-code">matched</code> dit précisément pourquoi : il a reconnu un diamètre (<code class="docs-inline-code">DIAM_M8</code>), une longueur (<code class="docs-inline-code">LONG_20</code>), leur combinaison en tant que référence de vis (<code class="docs-inline-code">VIS_M8X20</code>), et la matière (<code class="docs-inline-code">MAT_INOX</code>) — quatre annotations qui pèsent bien plus dans le score que la simple correction orthographique de « vis ». C'est la différence entre un moteur qui tolère les fautes sur des mots, et un moteur qui comprend la structure d'une référence.</p>
+      <h2>Ça marche pour n'importe quel secteur</h2>
+      <p>Les deux formats ne sont pas spécifiques à la quincaillerie. Un site de cosmétique peut regrouper « bio », « biologique », « AB », « organic » sous une même notion. Un site de mobilier peut reconnaître un code de teinte au format lettre + nombre. Un site de mode peut unifier « stretch », « élasthanne », « spandex » et « lycra ». La logique reste identique — seul le vocabulaire change.</p>
 
-      <h2>Et avec votre vrai catalogue ?</h2>
-      <p>Remplacez le contenu du tableau <code class="docs-inline-code">items</code> par vos propres produits (5 000 par appel maximum, plusieurs appels pour un catalogue plus grand), gardez le pack <code class="docs-inline-code">outillage</code> s'il correspond à votre secteur — ou <code class="docs-inline-code">mode</code>, <code class="docs-inline-code">industrie</code> pour les deux autres packs fournis. La <a href="../docs.html">documentation complète</a> couvre les facettes, les synonymes métier et la recherche fédérée sur plusieurs catalogues.</p>
+      <blockquote>La question à se poser n'est pas « ai-je besoin d'un pack sur mesure » — c'est « existe-t-il un mot que mes clients tapent, que mon pack actuel ne reconnaît pas encore ». Si la réponse est oui, la réponse est probablement une Custom Rule, pas un chantier de plusieurs semaines.</blockquote>
+
+      <h2>Une limite, pour être honnête</h2>
+      <p>Les motifs qui combinent deux valeurs numériques différentes dans une seule étiquette — un diamètre <em>et</em> une longueur ensemble, comme « M8x20 » — dépassent ce que ces deux formats couvrent. Ce type de logique reste possible, mais nécessite un pack conçu sur mesure, disponible sur les plans Scale.</p>
+
+      <h2>Comment s'y mettre</h2>
+      <p>Depuis la console, onglet « Mon catalogue », chaque carte propose désormais une section Règles personnalisées : un formulaire pour choisir le format, nommer la règle, et l'activer. Aucune ligne de code, aucun redéploiement. Disponible sur tous les plans, y compris l'essai gratuit.</p>
     </div>
 
     <div class="post-footer-cta">
-      <p>Envie de tester avec votre propre catalogue ?</p>
+      <p>Envie de voir si votre catalogue a besoin d'une Custom Rule ?</p>
       <a href="../pricing.html" class="btn">Essayer le Search API gratuitement</a>
     </div>
   </div>
