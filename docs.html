@@ -146,6 +146,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <a href="#ep-rulepacks">Packs de règles</a>
       <a href="#ep-custom-rules">Custom Rules</a>
       <a href="#ep-events">Conversion &amp; ROI</a>
+      <a href="#ep-mcp">Serveur MCP</a>
       <a href="#ep-health">Santé du service</a>
       <div class="docs-sidebar-group">Référence</div>
       <a href="#cascade">La cascade d'annotations</a>
@@ -465,6 +466,17 @@ curl -X POST https://api.heurix.fr/v1/events \
 
       <div class="docs-endpoint" style="margin-top:14px;"><span class="docs-method docs-method-get">GET</span><code>/v1/analytics/top-products</code></div>
       <p>Produits les plus achetés, triés par volume ou par marge (<code class="docs-inline-code">?sort_by=volume</code> ou <code class="docs-inline-code">margin</code>).</p>
+    </section>
+
+    <section id="ep-mcp" class="docs-section">
+      <div class="docs-endpoint"><span class="docs-method docs-method-get">MCP</span><code>Serveur Heurix pour agents IA</code></div>
+      <h2>Interroger Heurix depuis Claude Desktop, Cursor, ou un agent interne</h2>
+      <p>Un serveur MCP (Model Context Protocol) qui expose la recherche et Browse comme des outils qu'un agent IA sait appeler nativement — un collaborateur peut demander <em>« est-ce que j'ai des vis M8 en stock ? »</em> en langage naturel, sans jamais toucher à l'API. Trois outils : <code class="docs-inline-code">heurix_search</code>, <code class="docs-inline-code">heurix_browse</code>, <code class="docs-inline-code">heurix_catalog_stats</code>.</p>
+      <p><strong>Prérequis</strong> : Python 3.10 ou plus, installé sur la machine où tourne l'agent (votre ordinateur, pas un serveur) — le serveur MCP se lance localement, à la demande, par Claude Desktop ou Cursor eux-mêmes.</p>
+      <p class="regex-reassure">🚀 <a href="../downloads/heurix-mcp-server.zip" download>Téléchargez le serveur MCP</a> — installation et configuration détaillées (Claude Desktop et Cursor) sur <a href="../blog/guide-serveur-mcp-heurix.html">le guide dédié</a>.</p>
+      <pre class="docs-code"><code>pip install -r requirements.txt
+HEURIX_API_KEY=hx_votre_cle python3 server.py</code></pre>
+      <p>La clé API vit uniquement dans la configuration locale du client MCP (un fichier JSON sur la machine de l'utilisateur), jamais transmise en clair dans un appel d'outil. Chaque appel consomme le quota normal de la clé utilisée — <code class="docs-inline-code">heurix_search</code> et <code class="docs-inline-code">heurix_browse</code> comptent comme n'importe quel appel de recherche ou de Browse, <code class="docs-inline-code">heurix_catalog_stats</code> non.</p>
     </section>
 
     <section id="ep-health" class="docs-section">

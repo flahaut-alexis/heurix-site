@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-PGLPLKDP');</script>
+<!-- End Google Tag Manager -->
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Connecter Heurix à Claude Desktop et Cursor avec le serveur MCP — Heurix</title>
+<meta name="description" content="Guide pas à pas : installez le serveur MCP Heurix et interrogez votre catalogue en langage naturel depuis Claude Desktop ou Cursor, sans écrire une ligne de code.">
+<link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/guide-serveur-mcp-heurix.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Connecter Heurix à Claude Desktop et Cursor avec le serveur MCP — Heurix">
+<meta property="og:description" content="Guide pas à pas : installez le serveur MCP Heurix et interrogez votre catalogue en langage naturel depuis Claude Desktop ou Cursor, sans écrire une ligne de code.">
+<meta property="og:image" content="https://heurix.fr/og-image.png">
+<meta property="og:url" content="https://heurix.fr/blog/guide-serveur-mcp-heurix.html">
+<meta property="og:locale" content="fr_FR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Connecter Heurix à Claude Desktop et Cursor avec le serveur MCP — Heurix">
+<meta name="twitter:description" content="Guide pas à pas : installez le serveur MCP Heurix et interrogez votre catalogue en langage naturel depuis Claude Desktop ou Cursor, sans écrire une ligne de code.">
+<meta name="twitter:image" content="https://heurix.fr/og-image.png">
+<link rel="icon" type="image/png" href="../favicon-32.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<link rel="stylesheet" href="../styles.css?v=1784845836">
+<link rel="canonical" href="https://heurix.fr/blog/guide-serveur-mcp-heurix.html">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Heurix",
+  "url": "https://heurix.fr",
+  "logo": "https://heurix.fr/logo.svg",
+  "image": "https://heurix.fr/og-image.png",
+  "description": "Moteur de recherche et search & discovery pour sites e-commerce, basé sur des expressions régulières, conçu en France.",
+  "email": "contact@heurix.fr",
+  "sameAs": ["https://www.linkedin.com/company/heurix-search/"],
+  "founder": {"@type": "Person", "name": "Alexis Flahaut"},
+  "areaServed": "FR"
+}
+</script>
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PGLPLKDP"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+<header>
+  <div class="header-top">
+    <nav class="header-top-inner">
+      <a href="../index.html" class="logo"><img src="../logo.svg" alt="Heurix"> <span class="wordmark">HEURIX</span></a>
+      <div class="header-search">
+        <button id="heurix-search-btn" class="search-trigger" aria-label="Heurix Search — rechercher sur le site" type="button">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <span class="search-trigger-text">Heurix Search</span>
+          <span class="search-trigger-kbd">Ctrl K</span>
+        </button>
+      </div>
+      <div class="header-utility">
+        <button type="button" id="mobile-nav-toggle" class="mobile-nav-toggle" aria-label="Menu" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+        <a href="../console.html" class="header-signin">Se connecter</a>
+        <a href="../en/blog.html" class="lang-switch">EN</a>
+        <a href="../pricing.html" class="btn">Découvrir le moteur</a>
+      </div>
+    </nav>
+  </div>
+  <div class="header-nav-row">
+    <nav class="header-nav-row-inner" aria-label="Navigation principale">
+      <div class="nav-links">
+        <a href="../index.html#probleme">Le problème</a>
+        <a href="../index.html#moteur">Le moteur</a>
+        <a href="../fonctionnalites.html">Fonctionnalités</a>
+        <a href="../integrations.html">Intégrations</a>
+        <a href="../docs.html">Documentation</a>
+        <a href="../index.html#tarifs">Simulateur ROI</a>
+        <a href="../blog.html">Blog</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<div id="heurix-search-modal" class="search-modal">
+  <div id="heurix-search-backdrop" class="search-backdrop" data-search-close></div>
+  <div class="search-panel">
+    <div class="search-panel-head">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input id="heurix-search-input" type="text" placeholder="Heurix Search..." autocomplete="off">
+      <button class="search-close" data-search-close type="button">Échap</button>
+    </div>
+    <p id="heurix-search-suggest-label" class="search-suggest-label" hidden>Derniers articles</p>
+    <div id="heurix-search-results" class="search-results"></div>
+    <p id="heurix-search-empty" class="search-empty" hidden>Aucun résultat pour cette recherche. Essayez un autre terme.</p>
+  </div>
+</div>
+
+<article class="post">
+  <div class="wrap post-wrap">
+    <a href="../blog.html" class="back-link">← Tous les articles</a>
+    <div class="kicker">Guide · Juillet 2026</div>
+    <h1>Connecter Heurix à Claude Desktop et Cursor avec le serveur MCP</h1>
+    <p class="post-lede">Posez une question en langage naturel sur votre catalogue directement dans Claude Desktop ou Cursor — pas d'appel API à écrire, l'agent fait le pont. Quinze minutes d'installation, testé de bout en bout avant publication.</p>
+
+    <div class="post-body">
+      <h2>Ce qu'il vous faut</h2>
+      <p>Python 3.10 ou plus sur la machine où tourne votre agent (votre ordinateur, pas un serveur — le serveur MCP se lance localement, à la demande), et une clé API Heurix.</p>
+
+      <h2>Étape 1 — Téléchargez et installez</h2>
+      <p><a href="../downloads/heurix-mcp-server.zip" download>Téléchargez le serveur MCP</a>, dézippez-le à un endroit stable (pas dans un dossier de téléchargements temporaire), puis installez les dépendances :</p>
+      <pre class="docs-code"><code>cd heurix-mcp-server
+pip3 install -r requirements.txt
+which python3</code></pre>
+      <p>Gardez le résultat de <code class="docs-inline-code">which python3</code> sous le coude — vous en aurez besoin à l'étape suivante, en chemin complet.</p>
+
+      <h2>Étape 2 — Configurez Claude Desktop</h2>
+      <p><strong>Réglages → Développeur → Modifier la configuration</strong> (crée le fichier s'il n'existe pas). Sur macOS, il se trouve à <code class="docs-inline-code">~/Library/Application Support/Claude/claude_desktop_config.json</code> ; sur Windows, <code class="docs-inline-code">%APPDATA%\Claude\claude_desktop_config.json</code>.</p>
+      <pre class="docs-code"><code>{
+  "mcpServers": {
+    "heurix": {
+      "command": "/usr/bin/python3",
+      "args": ["/chemin/complet/vers/heurix-mcp-server/server.py"],
+      "env": {
+        "HEURIX_API_KEY": "hx_votre_cle_api",
+        "HEURIX_API_BASE": "https://api.heurix.fr"
+      }
+    }
+  }
+}</code></pre>
+      <p><strong>Le chemin complet vers <code class="docs-inline-code">python3</code> n'est pas optionnel</strong> — Claude Desktop lance la configuration avec un PATH minimal, une commande courte qui fonctionne dans votre terminal peut échouer silencieusement ici. Même chose pour le chemin vers <code class="docs-inline-code">server.py</code> : complet, jamais relatif (pas de <code class="docs-inline-code">~</code>).</p>
+      <p>Redémarrez Claude Desktop entièrement (Cmd/Ctrl+Q, pas juste fermer la fenêtre).</p>
+
+      <h2>Et dans Cursor ?</h2>
+      <p>Même structure de configuration, dans <code class="docs-inline-code">.cursor/mcp.json</code> (à la racine d'un projet) ou <code class="docs-inline-code">~/.cursor/mcp.json</code> (global, tous projets). Ensuite : <strong>Réglages Cursor → Tools &amp; MCP</strong>, vérifiez que "Enable MCP Servers" est coché et que <code class="docs-inline-code">heurix</code> apparaît avec un statut connecté. En cas de souci, le panneau Output → MCP affiche les logs bruts du serveur — souvent plus parlant que l'interface elle-même.</p>
+
+      <h2>Étape 3 — Testez</h2>
+      <p>Dans une nouvelle conversation, sans rien préciser de plus qu'un nom de catalogue :</p>
+      <pre class="docs-code"><code>J'ai un catalogue Heurix qui s'appelle moncatalogue.
+Est-ce que j'ai des vis M8 en stock, et à quel prix ?</code></pre>
+      <p>Derrière l'échange, l'agent appelle <code class="docs-inline-code">heurix_search(catalog="moncatalogue", query="vis M8")</code>, qui relaie vers votre API Heurix exactement comme le ferait n'importe quel appel <code class="docs-inline-code">curl</code> — la réponse revient ensuite reformulée en langage naturel, avec vos vraies références et vos vrais prix.</p>
+
+      <h2>Les trois outils disponibles</h2>
+      <p><code class="docs-inline-code">heurix_search</code> (recherche par mot-clé, tolérante aux fautes de frappe), <code class="docs-inline-code">heurix_browse</code> (produits d'une catégorie, avec tri — stock, prix, popularité...), et <code class="docs-inline-code">heurix_catalog_stats</code> (liste les catalogues et catégories disponibles — utile en premier appel si l'agent ne connaît pas encore votre structure). Chaque appel de recherche ou de Browse consomme le quota normal de la clé utilisée, comme un appel direct à l'API.</p>
+
+      <h2>Sécurité</h2>
+      <p>Votre clé API vit uniquement dans le fichier de configuration local du client MCP, jamais transmise en clair dans un appel d'outil — le serveur la lit une fois au démarrage et l'utilise pour chaque appel vers l'API Heurix. Documentation complète des trois outils sur <a href="../docs.html#ep-mcp">la référence API</a>.</p>
+    </div>
+
+    <div class="post-footer-cta">
+      <p>Envie de tester avec votre propre catalogue ?</p>
+      <a href="../pricing.html" class="btn">Essayer le Search API gratuitement</a>
+    </div>
+  </div>
+</article>
+
+<footer>
+  <div class="wrap foot-grid">
+    <a href="../index.html" class="logo" style="font-size:15px;"><img src="../logo.svg" alt="Heurix" style="height:22px;width:22px;"> <span class="wordmark">HEURIX</span></a>
+    <div class="foot-links">
+      <a href="../blog.html">Blog</a>
+      <a href="../docs.html">Documentation API</a>
+      <a href="../fonctionnalites.html">Fonctionnalités</a>
+      <a href="../integrations.html">Intégrations</a>
+      <a href="../console.html">Console</a>
+      <a href="../about.html">À propos</a>
+      <a href="../index.html#faq">FAQ</a>
+      <a href="../cgv.html">CGV</a>
+      <a href="../mentions-legales.html">Mentions légales</a>
+      <a href="mailto:contact@heurix.fr">contact@heurix.fr</a>
+    </div>
+    <div class="foot-social">
+      <span class="foot-social-label">Réseaux sociaux</span>
+      <a href="https://www.linkedin.com/company/heurix-search/" target="_blank" rel="noopener" aria-label="LinkedIn" class="foot-social-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+      </a>
+    </div>
+    <div class="foot-legal">
+      Heurix — Entreprise individuelle (micro-entreprise). SIRET 107 681 900 00018. Conseil en systèmes et logiciels informatiques.<br>
+      © <span id="year">2026</span> Heurix. Tous droits réservés.
+    </div>
+  </div>
+</footer>
+
+<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+
+<script src="../search.js"></script>
+<script src="../mobile-nav.js"></script>
+<div id="pricing-nudge" class="pricing-nudge">
+  <button type="button" class="pricing-nudge-close" aria-label="Fermer">&times;</button>
+  <div class="pricing-nudge-kicker">Essai gratuit 14 jours</div>
+  <p>Testez le Search API sur votre catalogue, sans carte bancaire.</p>
+  <a href="../pricing.html" class="btn">Voir les tarifs</a>
+</div>
+<script src="../pricing-nudge.js"></script>
+</body>
+</html>
