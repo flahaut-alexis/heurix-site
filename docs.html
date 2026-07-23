@@ -143,6 +143,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <a href="#ep-stats">Statistiques</a>
       <a href="#ep-usage">Consommation</a>
       <a href="#ep-rulepacks">Packs de règles</a>
+      <a href="#ep-custom-rules">Custom Rules</a>
       <a href="#ep-health">Santé du service</a>
       <div class="docs-sidebar-group">Référence</div>
       <a href="#cascade">La cascade d'annotations</a>
@@ -359,6 +360,23 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div class="docs-endpoint"><span class="docs-method docs-method-get">GET</span><code>/v1/rulepacks</code></div>
       <h2>Packs de règles</h2>
       <p>Liste les packs disponibles sur votre instance, avec leur nombre de niveaux et de règles. Trois packs standards sont fournis : <code class="docs-inline-code">outillage</code> (visserie, normes DIN/ISO, matières), <code class="docs-inline-code">mode</code> (tailles, coloris, matières, familles), <code class="docs-inline-code">industrie</code> (roulements, références normalisées). Des packs sur mesure pour votre catalogue peuvent être conçus en mission <a href="index.html#tarifs">Simulateur ROI</a>.</p>
+    </section>
+
+    <section id="ep-custom-rules" class="docs-section">
+      <div class="docs-endpoint"><span class="docs-method docs-method-get">GET</span><span class="docs-method docs-method-post">POST</span><span class="docs-method docs-method-delete">DELETE</span><code>/v1/index/{catalog}/custom-rules</code></div>
+      <h2>Custom Rules</h2>
+      <p>Étend le pack de règles actif d'un catalogue, sans y toucher — une Custom Rule est propre à un seul catalogue, jamais partagée avec un autre compte. Deux gabarits, sans regex à écrire : <code class="docs-inline-code">keyword</code> (une liste de mots équivalents déclenche tous la même étiquette) et <code class="docs-inline-code">prefix_number</code> (un préfixe suivi d'un nombre devient une étiquette avec la valeur capturée, ex. <code class="docs-inline-code">RAL</code> reconnaît « RAL 9010 » et « RAL9010 »). Effet immédiat : tous les produits déjà indexés sont ré-annotés dès la création de la règle. Jusqu'à 30 règles personnalisées par catalogue.</p>
+      <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/index/moncatalogue/custom-rules \
+  -H "Authorization: Bearer VOTRE_CLE_API" \
+  -H "Content-Type: application/json" \
+  -d '{"rule_type": "keyword", "label": "Cheville",
+       "keywords": ["placo", "cheville", "molly", "plaquo"]}'
+
+curl -X POST https://api.heurix.fr/v1/index/moncatalogue/custom-rules \
+  -H "Authorization: Bearer VOTRE_CLE_API" \
+  -H "Content-Type: application/json" \
+  -d '{"rule_type": "prefix_number", "label": "Coloris RAL", "prefix": "RAL"}'</code></pre>
+      <p>Gérable aussi bien par API que directement depuis la console, dans « Mon catalogue ».</p>
     </section>
 
     <section id="ep-health" class="docs-section">
