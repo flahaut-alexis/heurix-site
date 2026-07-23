@@ -238,12 +238,130 @@
 
       dashLoading.hidden = true;
       dashContent.hidden = false;
+      loadCatalogs(key);
     }).catch(function () {
       dashLoading.hidden = true;
       localStorage.removeItem(SESSION_STORAGE_KEY);
       activeKey = null;
       setAuthMode("login");
       showLogin(L.loginErrorNetwork);
+    });
+  }
+
+  var AVAILABLE_RULEPACKS = [];
+
+  function synGroupChipsHtml(groups) {
+    return groups.map(function (g, i) {
+      return '<span class="catalog-synonym-group" data-idx="' + i + '">' + esc(g.join(", ")) +
+        '<button type="button" class="catalog-synonym-remove" data-idx="' + i + '" aria-label="Retirer ce groupe">&times;</button></span>';
+    }).join("");
+  }
+
+  function wireSynonymControls(cardEl, catalogName, key) {
+    var groupsEl = cardEl.querySelector(".catalog-synonym-groups");
+    var input = cardEl.querySelector(".catalog-synonym-input");
+    var addBtn = cardEl.querySelector(".catalog-synonym-add-btn");
+    var currentGroups = [];
+
+    function render() { groupsEl.innerHTML = synGroupChipsHtml(currentGroups); wireRemoveButtons(); }
+
+    function saveGroups(next) {
+      return apiFetch("/v1/index/" + encodeURIComponent(catalogName) + "/synonyms", key, {
+        method: "PUT", body: { groups: next },
+      }).then(function (data) { currentGroups = data.groups; render(); });
+    }
+
+    function wireRemoveButtons() {
+      cardEl.querySelectorAll(".catalog-synonym-remove").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          var idx = parseInt(btn.getAttribute("data-idx"), 10);
+          saveGroups(currentGroups.filter(function (_, i) { return i !== idx; })).catch(function () {});
+        });
+      });
+    }
+
+    addBtn.addEventListener("click", function () {
+      var terms = input.value.split(",").map(function (t) { return t.trim(); }).filter(Boolean);
+      if (terms.length < 2) { input.focus(); return; }
+      addBtn.disabled = true;
+      saveGroups(currentGroups.concat([terms]))
+        .then(function () { input.value = ""; })
+        .catch(function () {})
+        .then(function () { addBtn.disabled = false; });
+    });
+
+    apiFetch("/v1/index/" + encodeURIComponent(catalogName) + "/synonyms", key)
+      .then(function (data) { currentGroups = data.groups; render(); })
+      .catch(function () { groupsEl.innerHTML = ""; });
+  }
+
+  function wireCatalogCard(cardEl, catalog, key) {
+    var select = cardEl.querySelector(".catalog-rulepack-select");
+    var saveBtn = cardEl.querySelector(".catalog-rulepack-save");
+    var status = cardEl.querySelector(".catalog-rulepack-status");
+    saveBtn.addEventListener("click", function () {
+      if (select.value === catalog.rulepack) return;
+      saveBtn.disabled = true;
+      status.className = "catalog-rulepack-status"; status.textContent = "Réindexation…";
+      apiFetch("/v1/index/" + encodeURIComponent(catalog.catalog) + "/config", key, {
+        method: "PUT", body: { rulepack: select.value },
+      }).then(function (data) {
+        catalog.rulepack = data.rulepack;
+        status.className = "catalog-rulepack-status ok"; status.textContent = "Enregistré — produits réindexés.";
+        var meta = cardEl.querySelector(".catalog-card-meta");
+        meta.textContent = data.products + " produit" + (data.products > 1 ? "s" : "") + " · " +
+          data.annotations + " annotations · " + data.synonym_groups + " groupe" + (data.synonym_groups > 1 ? "s" : "") + " de synonymes";
+      }).catch(function () {
+        status.className = "catalog-rulepack-status err"; status.textContent = "Échec — réessayez.";
+      }).then(function () { saveBtn.disabled = false; });
+    });
+    wireSynonymControls(cardEl, catalog.catalog, key);
+  }
+
+  function catalogCardHtml(c) {
+    var options = AVAILABLE_RULEPACKS.map(function (rp) {
+      return '<option value="' + esc(rp) + '"' + (rp === c.rulepack ? " selected" : "") + '>' + esc(rp) + '</option>';
+    }).join("");
+    return '<div class="catalog-card">' +
+      '<div class="catalog-card-head"><span class="catalog-card-name">' + esc(c.catalog) + '</span></div>' +
+      '<div class="catalog-card-meta">' + c.products + ' produit' + (c.products > 1 ? 's' : '') + ' · ' +
+        c.annotations + ' annotations · ' + c.synonym_groups + ' groupe' + (c.synonym_groups > 1 ? 's' : '') + ' de synonymes</div>' +
+      '<div class="catalog-card-row">' +
+        '<label>Pack de règles</label>' +
+        '<select class="catalog-rulepack-select">' + options + '</select>' +
+        '<button type="button" class="catalog-rulepack-save">Enregistrer</button>' +
+        '<span class="catalog-rulepack-status"></span>' +
+      '</div>' +
+      '<div class="catalog-synonyms-label">Synonymes</div>' +
+      '<div class="catalog-synonym-groups"></div>' +
+      '<div class="catalog-synonym-add">' +
+        '<input type="text" placeholder="ex. vis, boulon, screw" class="catalog-synonym-input">' +
+        '<button type="button" class="catalog-synonym-add-btn">Ajouter un groupe</button>' +
+      '</div>' +
+    '</div>';
+  }
+
+  function loadCatalogs(key) {
+    var loading = document.getElementById("catalogs-loading");
+    var list = document.getElementById("catalogs-list");
+    var empty = document.getElementById("catalogs-empty");
+    loading.hidden = false; list.innerHTML = ""; empty.hidden = true;
+
+    Promise.all([
+      apiFetch("/v1/index/catalogs", key),
+      AVAILABLE_RULEPACKS.length ? Promise.resolve({ rulepacks: AVAILABLE_RULEPACKS.map(function (n) { return { name: n }; }) }) : apiFetch("/v1/rulepacks", key),
+    ]).then(function (results) {
+      var catalogs = results[0].catalogs;
+      AVAILABLE_RULEPACKS = results[1].rulepacks.map(function (r) { return r.name; });
+      loading.hidden = true;
+      if (!catalogs.length) { empty.hidden = false; return; }
+      list.innerHTML = catalogs.map(catalogCardHtml).join("");
+      var cardEls = list.querySelectorAll(".catalog-card");
+      catalogs.forEach(function (c, i) { wireCatalogCard(cardEls[i], c, key); });
+    }).catch(function () {
+      loading.hidden = true;
+      empty.hidden = false;
+      empty.textContent = "Impossible de charger vos catalogues pour le moment.";
     });
   }
 

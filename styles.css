@@ -1372,6 +1372,55 @@ h2{ font-size:clamp(26px,3.4vw,34px); font-weight:800; margin:0 0 18px; max-widt
 .console-table tr:last-child td{ border-bottom:none; }
 .console-empty{ font-size:13px; color:var(--ink-muted); padding:14px 0 0; text-align:center; }
 
+/* Chantier 3.1 : cartes catalogue (rulepack + synonymes) */
+.catalog-card{
+  border:1px solid var(--line); border-radius:12px; padding:20px 22px; margin-bottom:14px;
+}
+.catalog-card:last-child{ margin-bottom:0; }
+.catalog-card-head{ display:flex; align-items:baseline; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-bottom:4px; }
+.catalog-card-name{ font-family:'IBM Plex Mono', monospace; font-size:14.5px; font-weight:700; color:var(--ink); }
+.catalog-card-meta{ font-size:12.5px; color:var(--ink-muted); margin-bottom:16px; }
+.catalog-card-row{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:14px; }
+.catalog-card-row label{ font-size:12.5px; font-weight:700; color:var(--ink-muted); white-space:nowrap; }
+.catalog-rulepack-select{
+  font-family:'Plus Jakarta Sans', sans-serif; font-size:13.5px; color:var(--ink);
+  border:1.5px solid var(--line); border-radius:8px; padding:7px 10px; background:#fff;
+}
+.catalog-rulepack-save{
+  font-family:'Plus Jakarta Sans', sans-serif; font-size:13px; font-weight:700;
+  color:#fff; background:var(--blue); border:none; border-radius:8px; padding:7px 14px; cursor:pointer;
+}
+.catalog-rulepack-save:hover{ background:var(--blue-deep); }
+.catalog-rulepack-save:disabled{ opacity:0.5; cursor:default; }
+.catalog-rulepack-status{ font-size:12.5px; color:var(--ink-muted); }
+.catalog-rulepack-status.ok{ color:#0F7A3D; }
+.catalog-rulepack-status.err{ color:#C0392B; }
+
+.catalog-synonyms-label{ font-size:12.5px; font-weight:700; color:var(--ink-muted); margin-bottom:8px; }
+.catalog-synonym-groups{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px; }
+.catalog-synonym-group{
+  display:inline-flex; align-items:center; gap:6px;
+  background:var(--blue-tint); color:var(--blue-deep); font-size:12.5px; font-weight:600;
+  border-radius:100px; padding:5px 6px 5px 12px;
+}
+.catalog-synonym-remove{
+  display:flex; align-items:center; justify-content:center;
+  width:18px; height:18px; border-radius:50%; border:none; background:rgba(63,82,232,0.14);
+  color:var(--blue-deep); font-size:13px; line-height:1; cursor:pointer; padding:0;
+}
+.catalog-synonym-remove:hover{ background:var(--blue); color:#fff; }
+.catalog-synonym-add{ display:flex; gap:8px; }
+.catalog-synonym-add input{
+  flex:1; font-family:'Plus Jakarta Sans', sans-serif; font-size:13px;
+  border:1.5px solid var(--line); border-radius:8px; padding:8px 12px;
+}
+.catalog-synonym-add input:focus{ border-color:var(--blue); outline:none; }
+.catalog-synonym-add button{
+  font-family:'Plus Jakarta Sans', sans-serif; font-size:13px; font-weight:700;
+  color:var(--blue-deep); background:var(--blue-tint); border:none; border-radius:8px; padding:8px 16px; cursor:pointer; white-space:nowrap;
+}
+.catalog-synonym-add button:hover{ background:var(--blue); color:#fff; }
+
 .header-signin{
   font-size:13.5px; font-weight:600; color:var(--ink-muted); text-decoration:none;
   white-space:nowrap;
