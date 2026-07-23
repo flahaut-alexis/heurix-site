@@ -1415,6 +1415,7 @@ h2{ font-size:clamp(26px,3.4vw,34px); font-weight:800; margin:0 0 18px; max-widt
   content:""; width:7px; height:7px; border-radius:50%; background:#E0930C; flex-shrink:0;
 }
 .console-panel-note{ font-size:13px; color:var(--ink-muted); margin:-8px 0 16px; line-height:1.55; }
+.console-form-status{ font-size:13px; color:var(--ink-muted); margin:12px 0 0; line-height:1.55; }
 .console-chart-wrap{ position:relative; height:230px; }
 
 .console-grid-2{ display:grid; grid-template-columns:1fr 1fr; gap:20px; }

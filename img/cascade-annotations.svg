@@ -3,37 +3,37 @@
   <desc id="cascade-desc">La référence M8 x 20 - Inox A2 est reconnue par trois règles du pack outillage (diamètre, longueur, matière), qui se combinent en trois annotations exploitables pour la recherche.</desc>
   <defs>
     <marker id="cascade-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-      <path d="M2 1L8 5L2 9" fill="none" stroke="#5B5E76" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M2 1L8 5L2 9" fill="none" stroke="#5468FF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
     </marker>
   </defs>
 
-  <rect x="180" y="30" width="320" height="56" rx="8" fill="#F7F8FC" stroke="#B4B2A9" stroke-width="1"/>
+  <rect x="180" y="30" width="320" height="56" rx="8" fill="#EEF1FF" stroke="#5468FF" stroke-width="1.5"/>
   <text x="340" y="50" text-anchor="middle" dominant-baseline="central" font-family="'IBM Plex Mono',monospace" font-size="14" font-weight="700" fill="#12142B">« M8 x 20 - Inox A2 »</text>
   <text x="340" y="68" text-anchor="middle" dominant-baseline="central" font-family="'Plus Jakarta Sans',sans-serif" font-size="12" fill="#5B5E76">texte brut, tel qu'indexé</text>
 
-  <path d="M340 86 L340 110 L140 110 L140 138" fill="none" stroke="#5B5E76" stroke-width="1" marker-end="url(#cascade-arrow)"/>
-  <line x1="340" y1="86" x2="340" y2="138" stroke="#5B5E76" stroke-width="1" marker-end="url(#cascade-arrow)"/>
-  <path d="M340 86 L340 110 L540 110 L540 138" fill="none" stroke="#5B5E76" stroke-width="1" marker-end="url(#cascade-arrow)"/>
+  <path d="M340 86 L340 110 L140 110 L140 138" fill="none" stroke="#5468FF" stroke-width="1.5" marker-end="url(#cascade-arrow)"/>
+  <line x1="340" y1="86" x2="340" y2="138" stroke="#5468FF" stroke-width="1.5" marker-end="url(#cascade-arrow)"/>
+  <path d="M340 86 L340 110 L540 110 L540 138" fill="none" stroke="#5468FF" stroke-width="1.5" marker-end="url(#cascade-arrow)"/>
 
-  <rect x="50" y="140" width="180" height="56" rx="8" fill="#EEF1FF" stroke="#5468FF" stroke-width="1"/>
+  <rect x="50" y="140" width="180" height="56" rx="8" fill="#EEF1FF" stroke="#5468FF" stroke-width="1.5"/>
   <text x="140" y="160" text-anchor="middle" dominant-baseline="central" font-family="'Plus Jakarta Sans',sans-serif" font-size="14" font-weight="700" fill="#3F52E8">DIAM_M8</text>
   <text x="140" y="178" text-anchor="middle" dominant-baseline="central" font-family="'Plus Jakarta Sans',sans-serif" font-size="12" fill="#3F52E8">diamètre 8 mm</text>
 
-  <rect x="250" y="140" width="180" height="56" rx="8" fill="#EEF1FF" stroke="#5468FF" stroke-width="1"/>
+  <rect x="250" y="140" width="180" height="56" rx="8" fill="#EEF1FF" stroke="#5468FF" stroke-width="1.5"/>
   <text x="340" y="160" text-anchor="middle" dominant-baseline="central" font-family="'Plus Jakarta Sans',sans-serif" font-size="14" font-weight="700" fill="#3F52E8">LONG_20</text>
   <text x="340" y="178" text-anchor="middle" dominant-baseline="central" font-family="'Plus Jakarta Sans',sans-serif" font-size="12" fill="#3F52E8">longueur 20 mm</text>
 
-  <rect x="450" y="140" width="180" height="56" rx="8" fill="#EEF1FF" stroke="#5468FF" stroke-width="1"/>
+  <rect x="450" y="140" width="180" height="56" rx="8" fill="#EEF1FF" stroke="#5468FF" stroke-width="1.5"/>
   <text x="540" y="160" text-anchor="middle" dominant-baseline="central" font-family="'Plus Jakarta Sans',sans-serif" font-size="14" font-weight="700" fill="#3F52E8">MAT_INOX</text>
   <text x="540" y="178" text-anchor="middle" dominant-baseline="central" font-family="'Plus Jakarta Sans',sans-serif" font-size="12" fill="#3F52E8">matière inox</text>
 
-  <line x1="140" y1="196" x2="140" y2="220" stroke="#5B5E76" stroke-width="1"/>
-  <path d="M140 220 L340 220 L340 238" fill="none" stroke="#5B5E76" stroke-width="1" marker-end="url(#cascade-arrow)"/>
-  <line x1="340" y1="196" x2="340" y2="238" stroke="#5B5E76" stroke-width="1" marker-end="url(#cascade-arrow)"/>
-  <line x1="540" y1="196" x2="540" y2="220" stroke="#5B5E76" stroke-width="1"/>
-  <path d="M540 220 L340 220 L340 238" fill="none" stroke="#5B5E76" stroke-width="1"/>
+  <line x1="140" y1="196" x2="140" y2="220" stroke="#5468FF" stroke-width="1.5"/>
+  <path d="M140 220 L340 220 L340 238" fill="none" stroke="#5468FF" stroke-width="1.5" marker-end="url(#cascade-arrow)"/>
+  <line x1="340" y1="196" x2="340" y2="238" stroke="#5468FF" stroke-width="1.5" marker-end="url(#cascade-arrow)"/>
+  <line x1="540" y1="196" x2="540" y2="220" stroke="#5468FF" stroke-width="1.5"/>
+  <path d="M540 220 L340 220 L340 238" fill="none" stroke="#5468FF" stroke-width="1.5"/>
 
-  <rect x="180" y="240" width="320" height="56" rx="8" fill="#E9F8F1" stroke="#1FAA6B" stroke-width="1"/>
-  <text x="340" y="260" text-anchor="middle" dominant-baseline="central" font-family="'Plus Jakarta Sans',sans-serif" font-size="14" font-weight="700" fill="#0F7A3D">3 annotations combinées</text>
-  <text x="340" y="278" text-anchor="middle" dominant-baseline="central" font-family="'Plus Jakarta Sans',sans-serif" font-size="12" fill="#0F7A3D">retrouvable même mal écrit : « m8x20 inox »</text>
+  <rect x="180" y="240" width="320" height="56" rx="8" fill="#3F52E8" stroke="#3F52E8" stroke-width="1.5"/>
+  <text x="340" y="260" text-anchor="middle" dominant-baseline="central" font-family="'Plus Jakarta Sans',sans-serif" font-size="14" font-weight="700" fill="#FFFFFF">3 annotations combinées</text>
+  <text x="340" y="278" text-anchor="middle" dominant-baseline="central" font-family="'Plus Jakarta Sans',sans-serif" font-size="12" fill="#C7CFFF">retrouvable même mal écrit : « m8x20 inox »</text>
 </svg>
