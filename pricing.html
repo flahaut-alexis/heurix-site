@@ -26,7 +26,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css?v=1784834503">
+<link rel="stylesheet" href="styles.css?v=1784845836">
 <link rel="canonical" href="https://heurix.fr/pricing.html">
 <script type="application/ld+json">
 {
@@ -130,14 +130,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div class="price-tier-card">
         <div class="price-tier-name">Starter</div>
         <div class="price-tier-amount">19&nbsp;€<span class="price-tier-period">/mois</span></div>
-        <p class="price-tier-desc">Un catalogue, un besoin simple — le moteur complet, sans complexité de mise en route.</p>
+        <p class="price-tier-desc">Un catalogue, un besoin simple.</p>
         <ul class="price-tier-features">
-          <li>15 000 requêtes / mois incluses</li>
-          <li>Jusqu'à 8 000 produits indexés</li>
+          <li>15 000 requêtes / mois</li>
+          <li>Jusqu'à 8 000 produits</li>
           <li>1 catalogue</li>
-          <li>Cascade d'annotations &amp; regex sur les références techniques</li>
-          <li>Tolérance aux fautes, synonymes métier</li>
-          <li>Facettes de base</li>
+          <li>Cascade d'annotations &amp; regex</li>
+          <li>Tolérance aux fautes, synonymes</li>
           <li>Support par documentation</li>
         </ul>
         <button type="button" class="btn btn-ghost checkout-btn" data-plan="starter">Démarrer l'essai gratuit</button>
@@ -146,81 +145,47 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div class="price-tier-card price-tier-highlight">
         <div class="price-tier-badge">Le plus choisi</div>
         <div class="price-tier-name">Growth</div>
-        <div class="price-tier-amount">49&nbsp;€<span class="price-tier-period">/mois</span></div>
-        <p class="price-tier-desc">Pour un site en croissance, avec plusieurs catalogues à gérer.</p>
+        <div class="price-tier-amount"><span id="price-amount-growth">49</span>&nbsp;€<span class="price-tier-period">/mois</span></div>
+        <p class="price-tier-desc">Pour un site en croissance.</p>
         <ul class="price-tier-features">
-          <li>30 000 requêtes / mois incluses</li>
-          <li>Jusqu'à 25 000 produits indexés</li>
+          <li>30 000 requêtes / mois</li>
+          <li>Jusqu'à 25 000 produits</li>
           <li>3 catalogues</li>
-          <li>Tout Starter, plus :</li>
           <li>Facettes dynamiques, recherche fédérée</li>
           <li>Support par email</li>
         </ul>
+        <label class="browse-addon-toggle">
+          <input type="checkbox" class="browse-addon-checkbox" id="browse-toggle-growth"
+                 data-search-plan="growth" data-search-price="49" data-browse-price="67" data-browse-plan="growth">
+          <span>+ Browse &amp; Discovery <strong>-25%</strong> <span class="mono">67&nbsp;€</span></span>
+        </label>
         <button type="button" class="btn checkout-btn" data-plan="growth">Démarrer l'essai gratuit</button>
       </div>
 
       <div class="price-tier-card">
         <div class="price-tier-name">Scale</div>
-        <div class="price-tier-amount">139&nbsp;€<span class="price-tier-period">/mois</span></div>
-        <p class="price-tier-desc">Pour un catalogue volumineux et un trafic recherche important.</p>
+        <div class="price-tier-amount"><span id="price-amount-scale">139</span>&nbsp;€<span class="price-tier-period">/mois</span></div>
+        <p class="price-tier-desc">Catalogue volumineux, trafic important.</p>
         <ul class="price-tier-features">
-          <li>150 000 requêtes / mois incluses<br><span class="price-tier-overage">puis 0,80 € / 1 000 requêtes</span></li>
-          <li>Jusqu'à 100 000 produits indexés</li>
-          <li>Catalogues illimités</li>
-          <li>Tout Growth, plus :</li>
+          <li>150 000 requêtes / mois<br><span class="price-tier-overage">puis 0,80 € / 1 000</span></li>
+          <li>Jusqu'à 100 000 produits</li>
           <li>Catalogues illimités</li>
           <li>Support prioritaire</li>
         </ul>
+        <label class="browse-addon-toggle">
+          <input type="checkbox" class="browse-addon-checkbox" id="browse-toggle-scale"
+                 data-search-plan="scale" data-search-price="139" data-browse-price="67" data-browse-plan="growth">
+          <span>+ Browse &amp; Discovery <strong>-25%</strong> <span class="mono">67&nbsp;€</span></span>
+        </label>
         <button type="button" class="btn btn-ghost checkout-btn" data-plan="scale">Démarrer l'essai gratuit</button>
-      </div>
-
-    </div>
-
-    <p class="pricing-note">Tarifs HT. Facturation mensuelle, sans engagement de durée — vous changez ou arrêtez à tout moment. L'indexation de votre catalogue n'est jamais décomptée de votre quota de requêtes — mettez à jour vos stocks et vos prix aussi souvent que nécessaire. En souscrivant, vous acceptez nos <a href="cgv.html">CGV</a>.</p>
-  </div>
-</section>
-
-<section class="soft">
-  <div class="wrap">
-    <div class="kicker">Classer sans recherche</div>
-    <h2>Browse &amp; Discovery — un produit à part.</h2>
-    <p class="section-lede">Pour vos pages de catégorie, sans requête de recherche. Utilisable seul, ou en option sur un plan Search ci-dessus — moins cher dans ce cas.</p>
-
-    <div class="pricing-grid reveal">
-
-      <div class="price-tier-card">
-        <div class="price-tier-name">Browse Starter</div>
-        <div class="price-tier-amount">39&nbsp;€<span class="price-tier-period">/mois</span></div>
-        <p class="price-tier-desc">En autonome, sans avoir besoin du Search API.</p>
-        <ul class="price-tier-features">
-          <li>50 000 requêtes Browse / mois incluses<br><span class="price-tier-overage">puis dépassement facturé</span></li>
-          <li>Tri par stock, prix, marge, alphabétique</li>
-          <li>Facettes et filtres par attribut</li>
-          <li>Épingler / reléguer un produit</li>
-        </ul>
-        <a href="mailto:contact@heurix.fr?subject=Browse%20Starter" class="btn btn-ghost">Nous contacter</a>
-      </div>
-
-      <div class="price-tier-card price-tier-highlight">
-        <div class="price-tier-badge">Avec un plan Search : -25%</div>
-        <div class="price-tier-name">Browse Growth</div>
-        <div class="price-tier-amount">89&nbsp;€<span class="price-tier-period">/mois</span></div>
-        <p class="price-tier-desc">En autonome — <strong>67&nbsp;€/mois en option sur Growth ou Scale</strong> ci-dessus.</p>
-        <ul class="price-tier-features">
-          <li>150 000 requêtes Browse / mois incluses<br><span class="price-tier-overage">puis dépassement facturé</span></li>
-          <li>Tout Browse Starter, plus :</li>
-          <li>Popularité réelle (clics + achats, tracker Heurix)</li>
-          <li>Boost / relégation par attribut</li>
-        </ul>
-        <a href="mailto:contact@heurix.fr?subject=Browse%20Growth" class="btn">Nous contacter</a>
       </div>
 
       <div class="price-tier-card">
         <div class="price-tier-name">Enterprise / Custom</div>
         <div class="price-tier-amount">Sur devis</div>
-        <p class="price-tier-desc">Search, Browse, ou les deux, à grande échelle — SLA, support et volumes négociés.</p>
+        <p class="price-tier-desc">Search, Browse, ou les deux, à grande échelle.</p>
         <ul class="price-tier-features">
-          <li>Volumes de requêtes négociés (Search et/ou Browse)</li>
+          <li>Volumes négociés</li>
           <li>Catalogues et produits illimités</li>
           <li>SLA et support dédiés</li>
           <li>Hébergement dédié possible</li>
@@ -230,7 +195,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     </div>
 
-    <p class="pricing-note">Comme pour Search, le dépassement de quota Browse est toujours facturé au tarif indiqué, jamais de coupure. La remise de 25% s'applique automatiquement dès que Browse est ajouté à un compte déjà abonné à Growth ou Scale — <a href="mailto:contact@heurix.fr">contactez-nous</a> pour l'activer, l'auto-souscription en ligne arrive bientôt.</p>
+    <p class="pricing-note">Tarifs HT. Facturation mensuelle, sans engagement de durée — vous changez ou arrêtez à tout moment. L'indexation de votre catalogue n'est jamais décomptée de votre quota de requêtes. <strong>Browse &amp; Discovery</strong> a son propre quota, indépendant de la recherche — cochez l'option sur Growth ou Scale pour -25%, ou <a href="#browse-standalone">souscrivez-le seul, sans recherche</a>. En souscrivant, vous acceptez nos <a href="cgv.html">CGV</a>.</p>
+  </div>
+</section>
+
+<section class="soft" id="browse-standalone">
+  <div class="wrap">
+    <p class="pricing-note" style="text-align:center;">Besoin de Browse &amp; Discovery <strong>seul</strong>, sans moteur de recherche ? <button type="button" class="btn btn-ghost checkout-browse-btn" data-browse-plan="starter" style="margin:0 6px;">Browse Starter — 39&nbsp;€/mois</button> <button type="button" class="btn btn-ghost checkout-browse-btn" data-browse-plan="growth" style="margin:0 6px;">Browse Growth — 89&nbsp;€/mois</button></p>
   </div>
 </section>
 
@@ -533,24 +504,78 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     const originalText = btn.textContent;
     btn.addEventListener('click', function () {
       const plan = btn.getAttribute('data-plan');
+      // Case Browse cochee dans la meme carte (restructuration tarifaire,
+      // page revue le 24 juillet en carte unique) -> souscrite en meme
+      // temps que le plan Search, dans la meme session Stripe.
+      const card = btn.closest('.price-tier-card');
+      const toggle = card ? card.querySelector('.browse-addon-checkbox') : null;
+      const browsePlan = (toggle && toggle.checked) ? toggle.getAttribute('data-browse-plan') : null;
+
       checkoutBtns.forEach(function (b) { b.disabled = true; });
       btn.textContent = "Redirection…";
+
+      const payload = { plan: plan };
+      if (browsePlan) payload.browse_plan = browsePlan;
 
       fetch("https://api.heurix.fr/v1/stripe/create-checkout-session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ plan: plan }),
+        body: JSON.stringify(payload),
       })
         .then(function (r) {
           if (!r.ok) throw new Error("HTTP " + r.status);
           return r.json();
         })
         .then(function (data) {
-          if (window.dataLayer) window.dataLayer.push({ event: "checkout_started", plan: plan });
+          if (window.dataLayer) window.dataLayer.push({ event: "checkout_started", plan: plan, browse_plan: browsePlan });
           window.location.href = data.checkout_url;
         })
         .catch(function () {
           checkoutBtns.forEach(function (b) { b.disabled = false; });
+          btn.textContent = originalText;
+          alert("Une erreur est survenue — réessayez, ou écrivez à contact@heurix.fr si ça persiste.");
+        });
+    });
+  });
+
+  // Mise a jour du prix affiche en direct quand la case Browse est cochee/decochee.
+  document.querySelectorAll('.browse-addon-checkbox').forEach(function (checkbox) {
+    checkbox.addEventListener('change', function () {
+      const searchPlan = checkbox.getAttribute('data-search-plan');
+      const searchPrice = parseInt(checkbox.getAttribute('data-search-price'), 10);
+      const browsePrice = parseInt(checkbox.getAttribute('data-browse-price'), 10);
+      const amountEl = document.getElementById('price-amount-' + searchPlan);
+      if (amountEl) amountEl.textContent = checkbox.checked ? (searchPrice + browsePrice) : searchPrice;
+    });
+  });
+
+  // Browse en autonome (restructuration tarifaire, 24 juillet) — meme
+  // logique que ci-dessus, endpoint et parametre distincts. L'option a
+  // -25% sur un plan Search existant se souscrit depuis la console, pas
+  // ici : elle exige d'etre connecte pour identifier le bon client Stripe.
+  const checkoutBrowseBtns = document.querySelectorAll('.checkout-browse-btn');
+  checkoutBrowseBtns.forEach(function (btn) {
+    const originalText = btn.textContent;
+    btn.addEventListener('click', function () {
+      const browsePlan = btn.getAttribute('data-browse-plan');
+      checkoutBrowseBtns.forEach(function (b) { b.disabled = true; });
+      btn.textContent = "Redirection…";
+
+      fetch("https://api.heurix.fr/v1/stripe/create-browse-checkout-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ browse_plan: browsePlan }),
+      })
+        .then(function (r) {
+          if (!r.ok) throw new Error("HTTP " + r.status);
+          return r.json();
+        })
+        .then(function (data) {
+          if (window.dataLayer) window.dataLayer.push({ event: "browse_checkout_started", browse_plan: browsePlan });
+          window.location.href = data.checkout_url;
+        })
+        .catch(function () {
+          checkoutBrowseBtns.forEach(function (b) { b.disabled = false; });
           btn.textContent = originalText;
           alert("Une erreur est survenue — réessayez, ou écrivez à contact@heurix.fr si ça persiste.");
         });
