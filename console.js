@@ -6,11 +6,11 @@
   "use strict";
 
   var API_BASE = "https://api.heurix.fr";
-  var STORAGE_KEY = "heurix_console_key";
+  var SESSION_STORAGE_KEY = "heurix_console_session";
 
   var L = {
     loading: "Chargement des données…",
-    loginErrorInvalid: "Clé invalide ou serveur injoignable. Vérifiez la clé et réessayez.",
+    loginErrorInvalid: "Email ou mot de passe incorrect.",
     loginErrorNetwork: "Impossible de joindre api.heurix.fr. Le service est peut-être temporairement indisponible.",
     zeroRate: function (n) { return Math.round(n * 100) + " %"; },
     dashTitle: function (label) { return label ? "Bonjour, " + label : "Tableau de bord"; },
@@ -25,30 +25,88 @@
 
   function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;"); }
 
-  function apiFetch(path, key) {
-    return fetch(API_BASE + path, { headers: { Authorization: "Bearer " + key } })
-      .then(function (r) {
+  function apiFetch(path, token, options) {
+    options = options || {};
+    var headers = { Authorization: "Bearer " + token };
+    if (options.body) headers["Content-Type"] = "application/json";
+    return fetch(API_BASE + path, {
+      method: options.method || "GET",
+      headers: headers,
+      body: options.body ? JSON.stringify(options.body) : undefined,
+    }).then(function (r) {
+      return r.json().catch(function () { return {}; }).then(function (data) {
         if (!r.ok) {
-          var err = new Error("HTTP " + r.status);
+          var err = new Error(data.detail || ("HTTP " + r.status));
           err.status = r.status;
           throw err;
         }
-        return r.json();
+        return data;
       });
+    });
+  }
+
+  function apiPost(path, body) {
+    return fetch(API_BASE + path, {
+      method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body),
+    }).then(function (r) {
+      return r.json().catch(function () { return {}; }).then(function (data) {
+        if (!r.ok) {
+          var err = new Error(data.detail || ("HTTP " + r.status));
+          err.status = r.status;
+          throw err;
+        }
+        return data;
+      });
+    });
   }
 
   var loginScreen = document.getElementById("login-screen");
   var dashboard = document.getElementById("dashboard");
+
   var loginForm = document.getElementById("login-form");
+  var loginEmail = document.getElementById("login-email");
+  var loginPassword = document.getElementById("login-password");
   var loginError = document.getElementById("login-error");
   var loginBtn = document.getElementById("login-btn");
-  var apiKeyInput = document.getElementById("api-key");
-  var toggleKeyBtn = document.getElementById("toggle-key-visibility");
+
+  var signupForm = document.getElementById("signup-form");
+  var signupEmail = document.getElementById("signup-email");
+  var signupPassword = document.getElementById("signup-password");
+  var signupError = document.getElementById("signup-error");
+  var signupBtn = document.getElementById("signup-btn");
+
+  var resetRequestForm = document.getElementById("reset-request-form");
+  var resetEmail = document.getElementById("reset-email");
+  var resetRequestBtn = document.getElementById("reset-request-btn");
+  var resetRequestMsg = document.getElementById("reset-request-msg");
+
+  var resetConfirmForm = document.getElementById("reset-confirm-form");
+  var resetNewPassword = document.getElementById("reset-new-password");
+  var resetConfirmBtn = document.getElementById("reset-confirm-btn");
+  var resetConfirmError = document.getElementById("reset-confirm-error");
+
+  var showSignupLink = document.getElementById("show-signup");
+  var showResetLink = document.getElementById("show-reset");
+  var showLoginLink = document.getElementById("show-login");
+  var authLinks = document.getElementById("auth-links");
+  var authBack = document.getElementById("auth-back");
+
   var logoutBtn = document.getElementById("logout-btn");
   var periodSelect = document.getElementById("period-select");
   var dashLoading = document.getElementById("dash-loading");
   var dashContent = document.getElementById("dash-content");
   var chart = null;
+
+  var AUTH_FORMS = [loginForm, signupForm, resetRequestForm, resetConfirmForm];
+  function setAuthMode(mode) {
+    AUTH_FORMS.forEach(function (f) { f.hidden = true; });
+    loginError.hidden = true; signupError.hidden = true; resetConfirmError.hidden = true;
+    resetRequestMsg.hidden = true;
+    if (mode === "login") { loginForm.hidden = false; authLinks.hidden = false; authBack.hidden = true; }
+    if (mode === "signup") { signupForm.hidden = false; authLinks.hidden = false; authBack.hidden = true; }
+    if (mode === "reset-request") { resetRequestForm.hidden = false; authLinks.hidden = true; authBack.hidden = false; }
+    if (mode === "reset-confirm") { resetConfirmForm.hidden = false; authLinks.hidden = true; authBack.hidden = true; }
+  }
 
   function showLogin(message) {
     dashboard.hidden = true;
@@ -172,62 +230,160 @@
       dashContent.hidden = false;
     }).catch(function () {
       dashLoading.hidden = true;
+      localStorage.removeItem(SESSION_STORAGE_KEY);
+      activeKey = null;
+      setAuthMode("login");
       showLogin(L.loginErrorNetwork);
-      sessionStorage.removeItem(STORAGE_KEY);
     });
   }
 
-  function tryLogin(key) {
+  var activeKey = null;
+
+  function startSession(sessionToken, key) {
+    localStorage.setItem(SESSION_STORAGE_KEY, sessionToken);
+    activeKey = key;
+    showDashboard();
+    loadDashboard(key, periodSelect.value);
+    dashboard.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  function endSession() {
+    var token = localStorage.getItem(SESSION_STORAGE_KEY);
+    localStorage.removeItem(SESSION_STORAGE_KEY);
+    activeKey = null;
+    if (token) {
+      fetch(API_BASE + "/v1/auth/logout", { method: "POST", headers: { Authorization: "Bearer " + token } }).catch(function () {});
+    }
+    setAuthMode("login");
+    loginForm.reset();
+    showLogin();
+  }
+
+  // ---------------- Connexion ----------------
+  loginForm.addEventListener("submit", function (e) {
+    e.preventDefault();
     loginBtn.disabled = true;
     loginBtn.textContent = "Connexion…";
     loginError.hidden = true;
-    apiFetch("/v1/usage", key)
-      .then(function () {
-        sessionStorage.setItem(STORAGE_KEY, key);
-        showDashboard();
-        loadDashboard(key, periodSelect.value);
-        dashboard.scrollIntoView({ behavior: "smooth", block: "start" });
+    apiPost("/v1/auth/login", { email: loginEmail.value.trim(), password: loginPassword.value })
+      .then(function (data) {
+        if (!data.keys || !data.keys.length) {
+          showLogin("Ce compte n'a pas encore de clé API associée. Contactez le support.");
+          return;
+        }
+        startSession(data.session_token, data.keys[0].key);
       })
       .catch(function (err) {
-        var reason = err && err.status
-          ? "Le serveur a répondu " + err.status + "."
-          : "Aucune réponse du serveur (réseau).";
-        showLogin(reason + " Clé envoyée (" + key.length + " caractères) : \u201c" + key + "\u201d");
+        var reason = err && err.status === 401 ? L.loginErrorInvalid : L.loginErrorNetwork;
+        loginError.textContent = reason;
+        loginError.hidden = false;
       })
       .then(function () {
         loginBtn.disabled = false;
         loginBtn.textContent = "Se connecter";
       });
-  }
+  });
 
-  loginForm.addEventListener("submit", function (e) {
+  // ---------------- Création de compte ----------------
+  signupForm.addEventListener("submit", function (e) {
     e.preventDefault();
-    var key = apiKeyInput.value.replace(/\s+/g, "");  // retire tout espace invisible, pas seulement en debut/fin
-    if (key) tryLogin(key);
+    signupBtn.disabled = true;
+    signupBtn.textContent = "Création…";
+    signupError.hidden = true;
+    apiPost("/v1/auth/signup", { email: signupEmail.value.trim(), password: signupPassword.value })
+      .then(function (data) {
+        startSession(data.session_token, data.key);
+      })
+      .catch(function (err) {
+        signupError.textContent = (err && err.message) || L.loginErrorNetwork;
+        signupError.hidden = false;
+      })
+      .then(function () {
+        signupBtn.disabled = false;
+        signupBtn.textContent = "Créer mon compte";
+      });
   });
 
-  toggleKeyBtn.addEventListener("click", function () {
-    var showing = apiKeyInput.type === "text";
-    apiKeyInput.type = showing ? "password" : "text";
-    toggleKeyBtn.setAttribute("aria-label", showing ? "Afficher la clé" : "Masquer la clé");
+  // ---------------- Mot de passe oublié ----------------
+  resetRequestForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+    resetRequestBtn.disabled = true;
+    resetRequestBtn.textContent = "Envoi…";
+    apiPost("/v1/auth/request-password-reset", { email: resetEmail.value.trim() })
+      .then(function () {
+        resetRequestMsg.textContent = "Si un compte existe avec cet email, un lien de réinitialisation vient d'être envoyé.";
+        resetRequestMsg.hidden = false;
+        resetRequestForm.reset();
+      })
+      .catch(function () {
+        resetRequestMsg.textContent = L.loginErrorNetwork;
+        resetRequestMsg.hidden = false;
+      })
+      .then(function () {
+        resetRequestBtn.disabled = false;
+        resetRequestBtn.textContent = "Envoyer le lien";
+      });
   });
 
-  logoutBtn.addEventListener("click", function () {
-    sessionStorage.removeItem(STORAGE_KEY);
-    apiKeyInput.value = "";
-    showLogin();
+  // ---------------- Nouveau mot de passe (lien reçu par email) ----------------
+  var resetTokenFromUrl = new URLSearchParams(window.location.search).get("reset");
+
+  resetConfirmForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+    resetConfirmBtn.disabled = true;
+    resetConfirmBtn.textContent = "Réinitialisation…";
+    resetConfirmError.hidden = true;
+    apiPost("/v1/auth/confirm-password-reset", { token: resetTokenFromUrl, password: resetNewPassword.value })
+      .then(function () {
+        history.replaceState(null, "", window.location.pathname);  // retire ?reset=... de l'URL
+        setAuthMode("login");
+        loginError.textContent = "Mot de passe mis à jour — vous pouvez vous connecter.";
+        loginError.hidden = false;
+      })
+      .catch(function (err) {
+        resetConfirmError.textContent = (err && err.message) || L.loginErrorNetwork;
+        resetConfirmError.hidden = false;
+      })
+      .then(function () {
+        resetConfirmBtn.disabled = false;
+        resetConfirmBtn.textContent = "Réinitialiser mon mot de passe";
+      });
   });
+
+  // ---------------- Bascule entre les modes ----------------
+  showSignupLink.addEventListener("click", function (e) { e.preventDefault(); setAuthMode("signup"); });
+  showResetLink.addEventListener("click", function (e) { e.preventDefault(); setAuthMode("reset-request"); });
+  showLoginLink.addEventListener("click", function (e) { e.preventDefault(); setAuthMode("login"); });
+
+  logoutBtn.addEventListener("click", endSession);
 
   periodSelect.addEventListener("change", function () {
-    var key = sessionStorage.getItem(STORAGE_KEY);
-    if (key) loadDashboard(key, periodSelect.value);
+    if (activeKey) loadDashboard(activeKey, periodSelect.value);
   });
 
-  // Reprise de session : si une clé est déjà en mémoire pour cet onglet,
-  // on saute directement au tableau de bord.
-  var existingKey = sessionStorage.getItem(STORAGE_KEY);
-  if (existingKey) {
-    showDashboard();
-    loadDashboard(existingKey, periodSelect.value);
+  // ---------------- Point d'entrée ----------------
+  if (resetTokenFromUrl) {
+    // Un lien de réinitialisation prime sur toute session existante.
+    setAuthMode("reset-confirm");
+    showLogin();
+  } else {
+    var existingSession = localStorage.getItem(SESSION_STORAGE_KEY);
+    if (existingSession) {
+      apiFetch("/v1/auth/me", existingSession)
+        .then(function (data) {
+          if (!data.keys || !data.keys.length) { throw new Error("no_key"); }
+          activeKey = data.keys[0].key;
+          showDashboard();
+          loadDashboard(activeKey, periodSelect.value);
+        })
+        .catch(function () {
+          localStorage.removeItem(SESSION_STORAGE_KEY);
+          setAuthMode("login");
+          showLogin();
+        });
+    } else {
+      setAuthMode("login");
+    }
   }
 })();
+

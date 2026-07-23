@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 64" fill="none">
+  <defs>
+    <linearGradient id="heurix-icon-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6B7FFF" />
+      <stop offset="100%" stop-color="#3F52E8" />
+    </linearGradient>
+  </defs>
+
+  <!-- Faisceau entrant, lumière blanche, depuis la gauche -->
+  <path d="M0 30 L18 30 L18 34 L0 34 Z" fill="#DADFE8" />
+
+  <!-- Faisceau sortant, décomposé en bandes de couleur distinctes — spectre réel,
+       pas un dégradé bleu — légèrement évasées, comme sur la pochette -->
+  <g>
+    <path d="M34 22 L94 6  L94 13 L34 27 Z" fill="#EC4B3F" />
+    <path d="M34 25 L94 14 L94 21 L34 29 Z" fill="#F0883E" />
+    <path d="M34 28 L94 22 L94 29 L34 31 Z" fill="#F2C94C" />
+    <path d="M34 31 L94 30 L94 37 L34 33 Z" fill="#4CAF50" />
+    <path d="M34 33 L94 38 L94 45 L34 35 Z" fill="#4A90D9" />
+    <path d="M34 35 L94 46 L94 53 L34 37 Z" fill="#8E5FBF" />
+  </g>
+
+  <!-- Lentille de la loupe, pleine, par-dessus les faisceaux -->
+  <circle cx="24" cy="32" r="15" fill="#FFFFFF" stroke="url(#heurix-icon-grad)" stroke-width="5" />
+
+  <!-- Manche -->
+  <line x1="33" y1="43" x2="48" y2="58" stroke="url(#heurix-icon-grad)" stroke-width="6" stroke-linecap="round" />
+</svg>
