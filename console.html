@@ -16,7 +16,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="robots" content="noindex">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css?v=1784824690">
+<link rel="stylesheet" href="styles.css?v=1784826774">
 <link rel="canonical" href="https://heurix.fr/console.html">
 </head>
 <body>
@@ -246,7 +246,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <div id="pane-conversion" class="console-pane" hidden>
             <h2 class="console-pane-title">Conversion &amp; ROI</h2>
             <div class="console-panel console-panel-warn">
-              <p class="console-panel-note" style="margin:0;">Ces chiffres dépendent de la balise que <strong>vous</strong> installez sur votre site (GTM ou snippet JS) — Heurix ne les mesure pas seul. Ils sont agrégés sur la période, pas un suivi de session individuel : un achat compté ici est corrélé dans le temps avec vos recherches, pas garanti causé par un clic précis. <a href="docs.html#ep-events">Comment poser la balise →</a></p>
+              <p class="console-panel-note" style="margin:0;">Ces chiffres dépendent de la balise que <strong>vous</strong> installez sur votre site — Heurix ne les mesure pas seul. « CA total » est agrégé sur la période (corrélation, pas une preuve). « CA réellement attribué » ne compte que les achats où le <strong>même visiteur</strong> a cliqué depuis une recherche dans les 24h précédentes — plus précis, mais nécessite le <a href="docs.html#ep-events">Heurix Tracker</a>.</p>
             </div>
 
             <div class="console-stats">
@@ -258,12 +258,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               <div class="console-stat">
                 <div class="icn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
                 <div class="console-stat-num" id="conv-revenue">–</div>
-                <div class="console-stat-label">CA attribué</div>
+                <div class="console-stat-label">CA total (période)</div>
               </div>
               <div class="console-stat">
-                <div class="icn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H7"/></svg></div>
-                <div class="console-stat-num" id="conv-margin">–</div>
-                <div class="console-stat-label">Marge attribuée</div>
+                <div class="icn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><circle cx="12" cy="12" r="10"/></svg></div>
+                <div class="console-stat-num" id="conv-attributed">–</div>
+                <div class="console-stat-label" id="conv-attributed-label">CA réellement attribué</div>
               </div>
               <div class="console-stat">
                 <div class="icn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></div>
@@ -432,7 +432,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<script src="console.js?v=1784824690"></script>
+<script src="console.js?v=1784826774"></script>
 <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 
 <script src="mobile-nav.js"></script>

@@ -11,7 +11,7 @@ ___INFO___
 {
   "type": "TAG",
   "id": "cvt_heurix_events",
-  "version": 1,
+  "version": 2,
   "securityGroups": [],
   "displayName": "Heurix - Événement de conversion",
   "categories": ["ANALYTICS", "ECOMMERCE"],
@@ -110,6 +110,13 @@ ___TEMPLATE_PARAMETERS___
         "type": "EQUALS"
       }
     ]
+  },
+  {
+    "type": "TEXT",
+    "name": "visitorId",
+    "displayName": "Identifiant visiteur (optionnel, recommandé)",
+    "simpleValueType": true,
+    "help": "Permet à Heurix de relier un clic à un achat ultérieur du même visiteur, plutôt qu'une simple corrélation agrégée. Si vous avez installé heurix-tracker.js sur votre site, créez une variable GTM de type « Variable JavaScript » pointant vers heurixVisitorId, puis référencez-la ici (ex. {{JS - Heurix Visitor ID}}). Laissez vide si vous n'utilisez pas le tracker — tout continue de fonctionner, juste avec une attribution moins précise."
   }
 ]
 
@@ -138,6 +145,10 @@ if (data.eventType === 'search_click') {
     return;
   }
   body.products = products;
+}
+
+if (data.visitorId) {
+  body.visitor_id = data.visitorId;
 }
 
 sendHttpRequest(
@@ -232,6 +243,8 @@ scenarios: []
 ___NOTES___
 
 Créé le 24 juillet 2026 pour le chantier "Conversion & ROI" de Heurix.
+Mis à jour le même jour (chantier "Tracker Heurix") pour le champ
+"Identifiant visiteur".
 
 Comment l'utiliser :
 1. Dans GTM, Modèles > Modèles de balises > Nouveau > (menu ⋮) > Importer,
@@ -244,7 +257,17 @@ Comment l'utiliser :
    couche de données ecommerce).
 5. Publiez le conteneur.
 
-Limite à connaître : l'attribution recherche → achat dépend entièrement
-de la qualité de votre implémentation (quels déclencheurs, quelles
-variables vous branchez). Heurix agrège les événements reçus sur la
-même période, ce n'est pas un suivi de session individuel garanti à 100%.
+Pour une attribution précise (recommandé) : installez d'abord
+heurix-tracker.js sur votre site (une fois, site-wide — voir sa propre
+documentation), créez une variable GTM de type "Variable JavaScript"
+pointant vers heurixVisitorId, puis référencez cette variable dans le
+champ "Identifiant visiteur" de chaque balise créée à partir de ce
+modèle. Sans ce champ rempli, tout continue de fonctionner normalement
+— seule la précision de l'attribution en dépend (agrégée sur la période
+plutôt que liée à un visiteur précis). Voir "attributed_revenue" dans
+/v1/analytics/conversion-summary pour la différence concrète que ça fait.
+
+Limite à connaître, même avec l'identifiant visiteur : la qualité du
+signal dépend toujours de votre implémentation (quels déclencheurs,
+quelles variables vous branchez). Ce n'est pas un suivi garanti à 100%,
+seulement bien plus précis qu'une simple corrélation temporelle.

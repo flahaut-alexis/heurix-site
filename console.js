@@ -438,8 +438,18 @@
       var summary = results[0], products = results[1].products;
       document.getElementById("conv-ctr").textContent = L.zeroRate(summary.click_through_rate);
       document.getElementById("conv-revenue").textContent = eur(summary.total_revenue);
-      document.getElementById("conv-margin").textContent = summary.total_margin !== null ? eur(summary.total_margin) : "–";
       document.getElementById("conv-products").textContent = summary.products_purchased.toLocaleString("fr-FR");
+
+      var attributedEl = document.getElementById("conv-attributed");
+      var attributedLabel = document.getElementById("conv-attributed-label");
+      if (summary.attributed_revenue === null) {
+        attributedEl.textContent = "–";
+        attributedLabel.textContent = "CA réellement attribué (tracker non installé)";
+      } else {
+        attributedEl.textContent = eur(summary.attributed_revenue);
+        attributedLabel.textContent = "CA réellement attribué";
+      }
+
       renderTable("top-products-table", "top-products-empty", products, function (p) {
         return "<td class='mono'>" + esc(p.product_id) + "</td><td class='num'>" + p.volume +
           "</td><td class='num'>" + eur(p.revenue) + "</td><td class='num'>" + (p.margin !== null ? eur(p.margin) : "–") + "</td>";

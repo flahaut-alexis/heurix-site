@@ -1,5 +1,14 @@
 <!-- Heurix — suivi de conversion (clic + achat) -->
 <!-- Où le placer : juste avant </body>, sur toutes les pages où vous voulez suivre des clics ou des achats. -->
+<!--
+  Nouveau : heurix-tracker.js fait tout ce que fait ce snippet, en ajoutant
+  un identifiant visiteur persistant qui permet à Heurix de relier un clic
+  à un achat ultérieur du même visiteur (attribution nettement plus
+  précise que la simple corrélation temporelle). Les mêmes fonctions
+  heurixTrackClick/heurixTrackPurchase y existent, votre code n'a rien à
+  changer. Recommandé sauf besoin spécifique de ne poser aucun
+  identifiant persistant côté client — dans ce cas, gardez ce snippet.
+-->
 <script>
 (function () {
   var HEURIX_API_KEY = "hx_VOTRE_CLE_ICI";     // Console Heurix > Mes infos
