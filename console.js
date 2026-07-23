@@ -60,6 +60,8 @@
     });
   }
 
+  var authTitle = document.getElementById("auth-title");
+  var authLede = document.getElementById("auth-lede");
   var loginScreen = document.getElementById("login-screen");
   var dashboard = document.getElementById("dashboard");
 
@@ -98,6 +100,12 @@
   var chart = null;
 
   var AUTH_FORMS = [loginForm, signupForm, resetRequestForm, resetConfirmForm];
+  var AUTH_COPY = {
+    "login": ["Votre tableau de bord.", "Mots les plus recherchés, recherches sans résultat, erreurs récentes, consommation — connectez-vous pour les consulter."],
+    "signup": ["Créer votre compte.", "Un email, un mot de passe — votre clé API est générée immédiatement et envoyée par email."],
+    "reset-request": ["Mot de passe oublié ?", "Indiquez votre email, on vous envoie un lien pour en choisir un nouveau."],
+    "reset-confirm": ["Nouveau mot de passe.", "Choisissez un nouveau mot de passe pour votre compte."]
+  };
   function setAuthMode(mode) {
     AUTH_FORMS.forEach(function (f) { f.hidden = true; });
     loginError.hidden = true; signupError.hidden = true; resetConfirmError.hidden = true;
@@ -106,6 +114,8 @@
     if (mode === "signup") { signupForm.hidden = false; authLinks.hidden = false; authBack.hidden = true; }
     if (mode === "reset-request") { resetRequestForm.hidden = false; authLinks.hidden = true; authBack.hidden = false; }
     if (mode === "reset-confirm") { resetConfirmForm.hidden = false; authLinks.hidden = true; authBack.hidden = true; }
+    var copy = AUTH_COPY[mode];
+    if (copy) { authTitle.textContent = copy[0]; authLede.textContent = copy[1]; }
   }
 
   function showLogin(message) {
