@@ -26,7 +26,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css?v=1784826774">
+<link rel="stylesheet" href="styles.css?v=1784834503">
 <link rel="canonical" href="https://heurix.fr/fonctionnalites.html">
 <script type="application/ld+json">
 {
@@ -204,13 +204,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <section class="feat-group">
     <div class="feat-group-title">Classer sans recherche : Browse &amp; Discovery</div>
-    <p class="section-lede" style="margin-bottom:28px;">Une page de catégorie ou de rayon n'a pas de requête à traiter — juste des produits à bien classer. Un moteur distinct de la recherche, qui réutilise vos annotations existantes comme catégories.</p>
+    <p class="section-lede" style="margin-bottom:28px;">Une page de catégorie ou de rayon n'a pas de requête à traiter — juste des produits à bien classer. Un moteur distinct de la recherche, sur vos propres catégories.</p>
     <div class="feat-grid-2 reveal">
 
       <div class="feat-card feat-card-highlight">
         <h3>Classement configurable</h3>
-        <p>Remplacez un tri statique « date d'ajout » ou « prix croissant » par un classement qui tient compte du stock disponible, de la fraîcheur du produit, ou de l'ordre alphabétique. La catégorie est une annotation que votre pack de règles reconnaît déjà (ex. <code class="docs-inline-code">DIAM_M8</code>, <code class="docs-inline-code">FAM_VIS</code>) — rien de nouveau à fournir à l'indexation.</p>
-        <pre class="docs-code"><code>GET /v1/browse/moncatalogue/FAM_VIS?sort=recent</code></pre>
+        <p>Remplacez un tri statique par un classement qui tient compte du stock, du prix, de la marge, de la fraîcheur ou de la popularité réelle (clics et achats remontés par le tracker). La catégorie est un champ que <strong>vous</strong> fournissez à l'indexation — <code class="docs-inline-code">categories</code> ou <code class="docs-inline-code">category</code> — au même titre que le nom ou le stock, pas une notion que Heurix devine ou impose.</p>
+        <pre class="docs-code"><code>GET /v1/browse/moncatalogue/perceuses-visseuses?sort=price_asc</code></pre>
         <a href="docs.html#ep-browse">Endpoint Browse &amp; Discovery →</a>
       </div>
 

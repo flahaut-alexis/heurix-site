@@ -16,7 +16,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="robots" content="noindex">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css?v=1784826774">
+<link rel="stylesheet" href="styles.css?v=1784834503">
 <link rel="canonical" href="https://heurix.fr/console.html">
 </head>
 <body>
@@ -146,6 +146,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <button type="button" class="console-sidebar-item" data-pane="pane-zero-results">Sans résultat</button>
             <button type="button" class="console-sidebar-item" data-pane="pane-errors">Erreurs</button>
             <button type="button" class="console-sidebar-item" data-pane="pane-conversion">Conversion &amp; ROI</button>
+            <button type="button" class="console-sidebar-item" data-pane="pane-browse">Browse &amp; Discovery</button>
           </div>
         </div>
 
@@ -285,6 +286,88 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <tbody></tbody>
               </table></div>
               <p class="console-empty" id="top-products-empty" hidden>Aucun achat remonté sur cette période — vérifiez que la balise est bien installée.</p>
+            </div>
+          </div>
+
+          <div id="pane-browse" class="console-pane" hidden>
+            <h2 class="console-pane-title">Browse &amp; Discovery</h2>
+            <div class="console-panel">
+              <p class="console-panel-note" style="margin:0 0 14px;">Classez vos produits dans une page de catégorie de votre site, sans recherche — <a href="docs.html#ep-browse">documentation complète</a>. Choisissez un catalogue puis une catégorie pour commencer.</p>
+              <div class="catalog-card-row">
+                <label style="font-size:12.5px; font-weight:700; color:var(--ink-muted);">Catalogue</label>
+                <select id="browse-catalog-select"><option value="">— Choisir —</option></select>
+                <label style="font-size:12.5px; font-weight:700; color:var(--ink-muted);">Catégorie</label>
+                <select id="browse-category-select" disabled><option value="">— Choisir un catalogue d'abord —</option></select>
+              </div>
+              <p class="console-empty" id="browse-no-categories" hidden>Aucune catégorie détectée sur ce catalogue — indexez vos produits avec un champ <code class="docs-inline-code">categories</code> ou <code class="docs-inline-code">category</code> pour en voir apparaître ici.</p>
+            </div>
+
+            <div id="browse-content" hidden>
+              <div class="console-panel">
+                <div class="catalog-card-row" style="margin-bottom:14px;">
+                  <h2 style="margin:0; flex:1;">Aperçu du classement</h2>
+                  <select id="browse-sort-select">
+                    <option value="stock">Stock disponible</option>
+                    <option value="recent">Plus récent</option>
+                    <option value="alphabetical">Alphabétique</option>
+                    <option value="price_asc">Prix croissant</option>
+                    <option value="price_desc">Prix décroissant</option>
+                    <option value="margin">Marge</option>
+                    <option value="popular">Popularité (clics + achats)</option>
+                  </select>
+                </div>
+                <div class="table-scroll"><table class="console-table" id="browse-preview-table">
+                  <thead><tr><th>Produit</th><th>Stock</th><th>Statut</th></tr></thead>
+                  <tbody></tbody>
+                </table></div>
+                <p class="console-empty" id="browse-preview-empty" hidden>Aucun produit dans cette catégorie.</p>
+              </div>
+
+              <div class="console-panel">
+                <h2>Priorités par produit</h2>
+                <p class="console-panel-note">Épinglez un produit à une position exacte, ou reléguez-le en fin de liste — quel que soit le tri choisi ci-dessus.</p>
+                <div class="table-scroll"><table class="console-table" id="browse-overrides-table">
+                  <thead><tr><th>Produit</th><th>Action</th><th>Position</th><th></th></tr></thead>
+                  <tbody></tbody>
+                </table></div>
+                <p class="console-empty" id="browse-overrides-empty" hidden>Aucune priorité posée sur cette catégorie.</p>
+                <form id="browse-override-form" class="catalog-rule-add">
+                  <div class="catalog-rule-add-row">
+                    <input type="text" placeholder="Identifiant du produit" id="browse-override-product-id" required>
+                    <select id="browse-override-action">
+                      <option value="pin">Épingler (pin)</option>
+                      <option value="bury">Reléguer (bury)</option>
+                    </select>
+                  </div>
+                  <input type="number" min="1" max="100" placeholder="Position (1 = premier épinglé)" id="browse-override-position">
+                  <button type="submit" class="catalog-rule-add-btn">Ajouter la priorité</button>
+                  <span class="catalog-rule-status" id="browse-override-status"></span>
+                </form>
+              </div>
+
+              <div class="console-panel">
+                <h2>Boost / relégation par attribut</h2>
+                <p class="console-panel-note">Mettez en avant — ou reléguez — tous les produits partageant un attribut (une marque, une couleur…), sans les cibler un par un. Une relégation par produit garde toujours la priorité sur un boost par attribut.</p>
+                <div class="table-scroll"><table class="console-table" id="browse-attribute-rules-table">
+                  <thead><tr><th>Attribut</th><th>Valeur</th><th>Action</th><th></th></tr></thead>
+                  <tbody></tbody>
+                </table></div>
+                <p class="console-empty" id="browse-attribute-rules-empty" hidden>Aucune règle d'attribut posée sur cette catégorie.</p>
+                <form id="browse-attribute-rule-form" class="catalog-rule-add">
+                  <div class="catalog-rule-add-row">
+                    <input type="text" placeholder="Champ, ex. brand" id="browse-attribute-field" list="browse-known-fields" required>
+                    <input type="text" placeholder="Valeur, ex. Makita" id="browse-attribute-value" list="browse-known-values" required>
+                  </div>
+                  <datalist id="browse-known-fields"></datalist>
+                  <datalist id="browse-known-values"></datalist>
+                  <select id="browse-attribute-action" style="margin-top:8px;">
+                    <option value="boost">Booster (boost)</option>
+                    <option value="bury">Reléguer (bury)</option>
+                  </select>
+                  <button type="submit" class="catalog-rule-add-btn">Ajouter la règle</button>
+                  <span class="catalog-rule-status" id="browse-attribute-rule-status"></span>
+                </form>
+              </div>
             </div>
           </div>
 
@@ -432,7 +515,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<script src="console.js?v=1784826774"></script>
+<script src="console.js?v=1784834503"></script>
 <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 
 <script src="mobile-nav.js"></script>

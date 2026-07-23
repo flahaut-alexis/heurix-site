@@ -34,14 +34,15 @@ const HEURIX_SEARCH_INDEX = [
   { title: "Combien coûte un moteur de recherche e-commerce en 2026 ?", excerpt: "Les modèles de facturation comparés, et comment estimer votre propre volume.", path: "blog/cout-moteur-recherche-ecommerce.html" },
   { title: "Indexez votre premier catalogue outillage en 5 minutes", excerpt: "Tutoriel pratique, deux appels API testés : indexation puis une vraie recherche avec faute de frappe.", path: "blog/tutoriel-catalogue-outillage-5-minutes.html" },
   { title: "Custom Rules : personnalisez votre moteur de recherche sans écrire une ligne de regex", excerpt: "Un pack de règles couvre l'essentiel d'un secteur. Voici comment combler ce qui reste propre à votre catalogue.", path: "blog/custom-rules-personnaliser-moteur-recherche.html" },
-  { title: "Heurix vs Algolia, Typesense, Sensefuel, Doofinder : quel moteur pour quel besoin ?", excerpt: "Comparatif factuel entre cinq approches du search e-commerce, sans faire passer un couteau suisse pour un mauvais choix partout.", path: "blog/heurix-vs-algolia-typesense-sensefuel-doofinder.html" }
+  { title: "Heurix vs Algolia, Typesense, Sensefuel, Doofinder : quel moteur pour quel besoin ?", excerpt: "Comparatif factuel entre cinq approches du search e-commerce, sans faire passer un couteau suisse pour un mauvais choix partout.", path: "blog/heurix-vs-algolia-typesense-sensefuel-doofinder.html" },
+  { title: "Construire une page de catégorie avec Browse & Discovery", excerpt: "Guide pas à pas : catégories à l'indexation, snippet prêt à l'emploi, tri par prix, marge ou popularité réelle.", path: "blog/guide-page-categorie-browse.html" }
 ];
 
 // Derniers articles du blog — affichés par défaut, avant toute frappe.
 const HEURIX_LATEST_ARTICLES = [
+  "blog/guide-page-categorie-browse.html",
   "blog/heurix-vs-algolia-typesense-sensefuel-doofinder.html",
-  "blog/custom-rules-personnaliser-moteur-recherche.html",
-  "blog/tutoriel-catalogue-outillage-5-minutes.html"
+  "blog/custom-rules-personnaliser-moteur-recherche.html"
 ].map((p) => HEURIX_SEARCH_INDEX.find((item) => item.path === p)).filter(Boolean);
 
 (function () {

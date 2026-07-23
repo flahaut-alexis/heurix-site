@@ -26,7 +26,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css?v=1784826774">
+<link rel="stylesheet" href="styles.css?v=1784834503">
 <link rel="canonical" href="https://heurix.fr/docs.html">
 <script type="application/ld+json">
 {
@@ -296,29 +296,56 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <section id="ep-browse" class="docs-section">
       <div class="docs-endpoint"><span class="docs-method docs-method-get">GET</span><code>/v1/browse/{catalog}/{category}</code></div>
       <h2>Browse &amp; Discovery</h2>
-      <p>Classe <strong>tous</strong> les produits d'une catégorie sans requête — pour une page de listing (catégorie, rayon), pas une barre de recherche. Remplace un tri statique « prix croissant » ou « date d'ajout » par un classement configurable, enrichi par vos propres priorités manuelles.</p>
-      <p><strong><code class="docs-inline-code">{category}</code> est une valeur d'annotation existante</strong> — pas un nouveau champ à fournir à l'indexation. Si votre catalogue est indexé avec le pack <code class="docs-inline-code">outillage</code>, <code class="docs-inline-code">DIAM_M8</code> ou <code class="docs-inline-code">FAM_VIS</code> sont déjà des catégories valides, exactement les mêmes annotations que celles utilisées comme <code class="docs-inline-code">filters</code> en recherche (voir <a href="#facettes">Facettes et filtres</a>). Consultez <code class="docs-inline-code">GET /v1/index/{catalog}/stats</code> ou l'onglet Catalogue de la console pour voir les annotations réellement présentes dans vos données.</p>
-      <pre class="docs-code"><code>curl "https://api.heurix.fr/v1/browse/moncatalogue/DIAM_M8?sort=stock&limit=20" \
+      <p>Classe <strong>tous</strong> les produits d'une catégorie sans requête — pour une page de listing (catégorie, rayon), pas une barre de recherche. Remplace un tri statique par un classement configurable, enrichi par vos propres priorités manuelles.</p>
+      <p><strong><code class="docs-inline-code">{category}</code> est un champ que vous fournissez à l'indexation</strong> — exactement comme <code class="docs-inline-code">name</code> ou <code class="docs-inline-code">stock</code>, jamais dérivé d'un pack de règles. Ajoutez <code class="docs-inline-code">categories</code> (une liste — un produit peut appartenir à plusieurs catégories à la fois, utile pour lister aussi bien la catégorie que ses ancêtres) ou <code class="docs-inline-code">category</code> (une valeur unique) à vos produits :</p>
+      <p class="regex-reassure">🚀 Pas envie d'écrire l'appel fetch vous-même ? <a href="downloads/heurix-browse-widget.js" download>Téléchargez le snippet prêt à l'emploi</a> — un guide pas à pas avec exemple complet est disponible sur <a href="blog/guide-page-categorie-browse.html">le blog</a>.</p>
+      <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/index/moncatalogue/items \
+  -H "Authorization: Bearer VOTRE_CLE_API" \
+  -H "Content-Type: application/json" \
+  -d '{"items": [{"id": "sku-123", "name": "Perceuse GDX 18V-285",
+       "categories": ["outillage-electroportatif", "perceuses-visseuses"],
+       "price": 139.90, "margin": 28.50, "stock": 8}]}'
+
+curl "https://api.heurix.fr/v1/browse/moncatalogue/perceuses-visseuses?sort=price_asc" \
   -H "Authorization: Bearer VOTRE_CLE_API"</code></pre>
       <div class="table-scroll"><table class="docs-params">
         <thead><tr><th>Paramètre</th><th>Type</th><th>Description</th></tr></thead>
         <tbody>
-          <tr><td><code class="docs-inline-code">sort</code></td><td>string</td><td><code class="docs-inline-code">stock</code> (défaut, en stock d'abord) · <code class="docs-inline-code">recent</code> (plus récemment ajoutés d'abord) · <code class="docs-inline-code">alphabetical</code></td></tr>
+          <tr><td><code class="docs-inline-code">sort</code></td><td>string</td><td><code class="docs-inline-code">stock</code> (défaut) · <code class="docs-inline-code">recent</code> · <code class="docs-inline-code">alphabetical</code> · <code class="docs-inline-code">price_asc</code> / <code class="docs-inline-code">price_desc</code> (lit le champ <code class="docs-inline-code">price</code>) · <code class="docs-inline-code">margin</code> (lit le champ <code class="docs-inline-code">margin</code>, la plus forte d'abord) · <code class="docs-inline-code">popular</code> (voir ci-dessous)</td></tr>
+          <tr><td><code class="docs-inline-code">filters</code></td><td>string</td><td><code class="docs-inline-code">"champ:valeur,champ2:valeur2"</code> (ET logique) — affine sur n'importe quel attribut libre du produit (marque, couleur…), en plus de la catégorie. Tout champ texte non réservé devient automatiquement filtrable dès l'indexation, sans configuration.</td></tr>
+          <tr><td><code class="docs-inline-code">facets</code></td><td>string</td><td><code class="docs-inline-code">"champ,champ2"</code> — renvoie un décompte par valeur pour chaque champ demandé, disjonctif (filtrer sur une valeur d'un champ ne fait pas disparaître les autres valeurs de ce même champ du décompte, comme côté recherche).</td></tr>
           <tr><td><code class="docs-inline-code">limit</code> / <code class="docs-inline-code">offset</code></td><td>int</td><td>Pagination, comme pour la recherche.</td></tr>
         </tbody>
       </table></div>
+      <pre class="docs-code"><code>curl "https://api.heurix.fr/v1/browse/moncatalogue/perceuses-visseuses?filters=brand:Makita&facets=brand,color" \
+  -H "Authorization: Bearer VOTRE_CLE_API"</code></pre>
+      <p>Un produit sans le champ demandé (pas de <code class="docs-inline-code">price</code> pour un tri <code class="docs-inline-code">price_asc</code>, par exemple) n'est jamais exclu ni ne fait planter l'appel — il se retrouve simplement en fin de liste, quel que soit le sens du tri.</p>
       <p>Consomme le quota de requêtes, comme un appel de recherche — c'est un appel moteur au même titre.</p>
 
+      <h3>Tri par popularité (clics + achats)</h3>
+      <p><code class="docs-inline-code">sort=popular</code> s'appuie sur les événements réellement remontés par le <a href="#ep-events">Heurix Tracker</a> — un achat compte pour 5, un clic sur un résultat de recherche pour 1. Un produit très cliqué mais jamais encore acheté reste donc visible dans le classement plutôt que totalement absent tant qu'aucune vente n'est remontée. Sans aucune donnée de tracking, tous les produits reviennent simplement dans l'ordre par défaut — l'appel ne plante jamais.</p>
+
       <h3>Merchandising manuel : épingler ou reléguer un produit</h3>
-      <p>Indépendant du tri naturel : un produit épinglé (<code class="docs-inline-code">pin</code>) apparaît à la position choisie en tête de liste quel que soit son stock ou son ancienneté ; un produit relégué (<code class="docs-inline-code">bury</code>) passe systématiquement en fin de liste. Utile pour mettre en avant une nouveauté ou masquer discrètement un produit en fin de vie sans le désindexer.</p>
-      <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/browse/moncatalogue/DIAM_M8/overrides \
+      <p>Indépendant du tri naturel : un produit épinglé (<code class="docs-inline-code">pin</code>) apparaît à la position choisie en tête de liste quel que soit son stock, son prix ou sa popularité ; un produit relégué (<code class="docs-inline-code">bury</code>) passe systématiquement en fin de liste. Utile pour mettre en avant une nouveauté ou masquer discrètement un produit en fin de vie sans le désindexer.</p>
+      <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/browse/moncatalogue/perceuses-visseuses/overrides \
   -H "Authorization: Bearer VOTRE_CLE_API" \
   -H "Content-Type: application/json" \
   -d '{"product_id": "sku-123", "action": "pin", "position": 1}'
 
-curl -X DELETE https://api.heurix.fr/v1/browse/moncatalogue/DIAM_M8/overrides/sku-123 \
+curl -X DELETE https://api.heurix.fr/v1/browse/moncatalogue/perceuses-visseuses/overrides/sku-123 \
   -H "Authorization: Bearer VOTRE_CLE_API"</code></pre>
-      <p>Ne consomme pas le quota — c'est une action de configuration, pas une requête. Une priorité posée sur un produit qui sort ensuite de la catégorie (changement de pack de règles, par exemple) devient simplement sans effet, pas une erreur.</p>
+      <p>Ne consomme pas le quota — c'est une action de configuration, pas une requête. Une priorité posée sur un produit qui sort ensuite de la catégorie devient simplement sans effet, pas une erreur.</p>
+
+      <h3>Boost ou relégation par attribut</h3>
+      <p>Même principe que le merchandising manuel, mais pour <strong>tous</strong> les produits partageant un attribut plutôt qu'un par un — « boostez toute la marque Makita » plutôt qu'épingler chaque référence individuellement. Un boost ou une relégation par attribut positionne les produits concernés comme un groupe, trié entre eux selon le <code class="docs-inline-code">sort</code> choisi ; ce n'est pas une position fixe (voir <code class="docs-inline-code">pin</code> ci-dessus pour ça).</p>
+      <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/browse/moncatalogue/perceuses-visseuses/attribute-rules \
+  -H "Authorization: Bearer VOTRE_CLE_API" \
+  -H "Content-Type: application/json" \
+  -d '{"field": "brand", "value": "Makita", "action": "boost"}'
+
+curl -X DELETE "https://api.heurix.fr/v1/browse/moncatalogue/perceuses-visseuses/attribute-rules?field=brand&value=Makita" \
+  -H "Authorization: Bearer VOTRE_CLE_API"</code></pre>
+      <p><strong>Ordre de priorité en cas de conflit</strong>, du plus fort au plus faible : épinglé (par produit) &gt; relégué (par produit ou par attribut) &gt; boosté (par attribut) &gt; tri naturel. Une relégation, qu'elle soit posée par produit ou par attribut, l'emporte toujours sur un boost — un produit explicitement caché ne doit jamais être resurfacé par une règle de boost plus large qui le concernerait par ailleurs.</p>
     </section>
 
     <section id="ep-federated" class="docs-section">

@@ -26,7 +26,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css?v=1784826774">
+<link rel="stylesheet" href="styles.css?v=1784834503">
 <link rel="canonical" href="https://heurix.fr/pricing.html">
 <script type="application/ld+json">
 {
@@ -168,8 +168,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <li>Jusqu'à 100 000 produits indexés</li>
           <li>Catalogues illimités</li>
           <li>Tout Growth, plus :</li>
-          <li>Règles de merchandising avancées</li>
-          <li>A/B test simple sur le ranking</li>
+          <li>Catalogues illimités</li>
           <li>Support prioritaire</li>
         </ul>
         <button type="button" class="btn btn-ghost checkout-btn" data-plan="scale">Démarrer l'essai gratuit</button>
@@ -177,7 +176,61 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     </div>
 
-    <p class="pricing-note">Tarifs HT. Facturation mensuelle, sans engagement de durée — vous changez ou arrêtez à tout moment. L'indexation de votre catalogue n'est jamais décomptée de votre quota de requêtes — mettez à jour vos stocks et vos prix aussi souvent que nécessaire. Besoin d'un volume plus important ou d'un hébergement dédié ? <a href="index.html#contact">Contactez-nous</a>, on regarde ensemble. En souscrivant, vous acceptez nos <a href="cgv.html">CGV</a>.</p>
+    <p class="pricing-note">Tarifs HT. Facturation mensuelle, sans engagement de durée — vous changez ou arrêtez à tout moment. L'indexation de votre catalogue n'est jamais décomptée de votre quota de requêtes — mettez à jour vos stocks et vos prix aussi souvent que nécessaire. En souscrivant, vous acceptez nos <a href="cgv.html">CGV</a>.</p>
+  </div>
+</section>
+
+<section class="soft">
+  <div class="wrap">
+    <div class="kicker">Classer sans recherche</div>
+    <h2>Browse &amp; Discovery — un produit à part.</h2>
+    <p class="section-lede">Pour vos pages de catégorie, sans requête de recherche. Utilisable seul, ou en option sur un plan Search ci-dessus — moins cher dans ce cas.</p>
+
+    <div class="pricing-grid reveal">
+
+      <div class="price-tier-card">
+        <div class="price-tier-name">Browse Starter</div>
+        <div class="price-tier-amount">39&nbsp;€<span class="price-tier-period">/mois</span></div>
+        <p class="price-tier-desc">En autonome, sans avoir besoin du Search API.</p>
+        <ul class="price-tier-features">
+          <li>50 000 requêtes Browse / mois incluses<br><span class="price-tier-overage">puis dépassement facturé</span></li>
+          <li>Tri par stock, prix, marge, alphabétique</li>
+          <li>Facettes et filtres par attribut</li>
+          <li>Épingler / reléguer un produit</li>
+        </ul>
+        <a href="mailto:contact@heurix.fr?subject=Browse%20Starter" class="btn btn-ghost">Nous contacter</a>
+      </div>
+
+      <div class="price-tier-card price-tier-highlight">
+        <div class="price-tier-badge">Avec un plan Search : -25%</div>
+        <div class="price-tier-name">Browse Growth</div>
+        <div class="price-tier-amount">89&nbsp;€<span class="price-tier-period">/mois</span></div>
+        <p class="price-tier-desc">En autonome — <strong>67&nbsp;€/mois en option sur Growth ou Scale</strong> ci-dessus.</p>
+        <ul class="price-tier-features">
+          <li>150 000 requêtes Browse / mois incluses<br><span class="price-tier-overage">puis dépassement facturé</span></li>
+          <li>Tout Browse Starter, plus :</li>
+          <li>Popularité réelle (clics + achats, tracker Heurix)</li>
+          <li>Boost / relégation par attribut</li>
+        </ul>
+        <a href="mailto:contact@heurix.fr?subject=Browse%20Growth" class="btn">Nous contacter</a>
+      </div>
+
+      <div class="price-tier-card">
+        <div class="price-tier-name">Enterprise / Custom</div>
+        <div class="price-tier-amount">Sur devis</div>
+        <p class="price-tier-desc">Search, Browse, ou les deux, à grande échelle — SLA, support et volumes négociés.</p>
+        <ul class="price-tier-features">
+          <li>Volumes de requêtes négociés (Search et/ou Browse)</li>
+          <li>Catalogues et produits illimités</li>
+          <li>SLA et support dédiés</li>
+          <li>Hébergement dédié possible</li>
+        </ul>
+        <a href="mailto:contact@heurix.fr?subject=Demande%20Enterprise" class="btn btn-ghost">Nous contacter</a>
+      </div>
+
+    </div>
+
+    <p class="pricing-note">Comme pour Search, le dépassement de quota Browse est toujours facturé au tarif indiqué, jamais de coupure. La remise de 25% s'applique automatiquement dès que Browse est ajouté à un compte déjà abonné à Growth ou Scale — <a href="mailto:contact@heurix.fr">contactez-nous</a> pour l'activer, l'auto-souscription en ligne arrive bientôt.</p>
   </div>
 </section>
 
@@ -215,6 +268,24 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <input type="range" id="calc-per-user" min="1" max="6" step="1" value="2">
           <div class="roi-range-hint"><span>1</span><span class="roi-range-mid">Reformulations, fautes de frappe incluses</span><span>6</span></div>
         </div>
+
+        <div class="roi-field roi-slider">
+          <div class="roi-slider-head">
+            <label for="calc-browse-rate">Part des visiteurs qui naviguent par catégorie</label>
+            <span id="calc-browse-rate-val" class="roi-slider-badge mono">55%</span>
+          </div>
+          <input type="range" id="calc-browse-rate" min="5" max="90" step="5" value="55">
+          <div class="roi-range-hint"><span>5%</span><span class="roi-range-mid">Souvent plus élevé que la recherche — menu, rayons</span><span>90%</span></div>
+        </div>
+
+        <div class="roi-field roi-slider">
+          <div class="roi-slider-head">
+            <label for="calc-browse-pages">Pages catégorie vues par visiteur qui navigue</label>
+            <span id="calc-browse-pages-val" class="roi-slider-badge mono">3</span>
+          </div>
+          <input type="range" id="calc-browse-pages" min="1" max="10" step="1" value="3">
+          <div class="roi-range-hint"><span>1</span><span class="roi-range-mid">Sous-catégories, pagination, tri incluses</span><span>10</span></div>
+        </div>
       </div>
 
       <div class="calc-results">
@@ -223,10 +294,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="calc-results-num" id="calc-out-requests">10 000</div>
         <div class="calc-results-label">requêtes de recherche / mois</div>
         <div class="calc-recommend" id="calc-out-recommend">
-          <span class="calc-recommend-label">Palier recommandé</span>
+          <span class="calc-recommend-label">Palier Search recommandé</span>
           <span class="calc-recommend-plan" id="calc-out-plan">Growth — 49 €/mois</span>
         </div>
-        <p class="calc-results-note">Cette estimation ne compte que les recherches — l'indexation de votre catalogue s'ajoute à part (voir le détail de comptage dans la <a href="docs.html#comptage">documentation</a>).</p>
+        <div class="calc-recommend" id="calc-out-browse-recommend" style="margin-top:10px;">
+          <span class="calc-recommend-label">+ <span id="calc-out-browse-requests">0</span> requêtes Browse / mois</span>
+          <span class="calc-recommend-plan" id="calc-out-browse-plan">Palier Browse recommandé</span>
+        </div>
+        <p class="calc-results-note">Le trafic Browse est distinct du trafic de recherche — comptabilisé et facturé à part, avec -25% si vous prenez déjà un plan Search ci-dessus. Détail du comptage dans la <a href="docs.html#comptage">documentation</a>.</p>
       </div>
     </div>
   </div>
@@ -241,6 +316,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <tr><td>Recherche</td><td>Chaque recherche tapée par un visiteur compte pour une requête (le moteur répond dès la 3<sup>e</sup> lettre par défaut, comme la plupart des moteurs modernes)</td></tr>
       <tr><td>Indexation</td><td>Indexer un lot de 1 000 produits compte pour 10 requêtes</td></tr>
       <tr><td>Appels API</td><td>Chaque appel à l'API de gestion ou de recherche compte pour une requête</td></tr>
+      <tr><td>Browse &amp; Discovery</td><td>Chaque appel à une page de catégorie compte pour une requête Browse — sur un compteur séparé de celui de la recherche, uniquement si vous êtes abonné à Browse</td></tr>
       <tr><td>Dépassement</td><td>Au-delà du volume inclus dans votre forfait, le surplus est facturé au tarif indiqué sur votre plan — jamais de coupure brutale du service</td></tr>
     </table>
   </div>
@@ -334,6 +410,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
       </details>
 
+      <details class="faq-item">
+        <summary>Browse & Discovery est-il inclus dans mon plan Search ?</summary>
+        <div class="faq-answer">
+          <p>Non, c'est un produit à part avec son propre quota — vous pouvez le prendre en autonome (sans plan Search) ou en option sur Growth/Scale, avec 25% de remise dans ce second cas. Les deux quotas ne se marchent jamais dessus : votre volume de recherche n'est jamais affecté par votre trafic de navigation par catégorie, et inversement.</p>
+        </div>
+      </details>
+
     </div>
   </div>
 </section>
@@ -390,6 +473,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     { name: 'Growth', price: 49, limit: 30000 },
     { name: 'Scale', price: 139, limit: 150000 },
   ];
+  const BROWSE_TIERS = [
+    { name: 'Browse Starter', priceStandalone: 39, priceAddon: 29, limit: 50000 },
+    { name: 'Browse Growth', priceStandalone: 89, priceAddon: 67, limit: 150000 },
+  ];
   function computeCalc() {
     const visitors = parseInt(document.getElementById('calc-visitors').value, 10);
     const rate = parseInt(document.getElementById('calc-rate').value, 10);
@@ -409,8 +496,33 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     const beyond = requests > TIERS[TIERS.length - 1].limit;
     document.getElementById('calc-out-plan').textContent =
       (beyond ? 'Scale + dépassement facturé' : recommended.name + ' — ' + recommended.price + ' €/mois');
+
+    // Trafic Browse : distinct du trafic de recherche (chantier Browse &
+    // Discovery, restructuration tarifaire du 24 juillet) — un visiteur
+    // qui navigue par catégorie ne "cherche" pas, mais consomme quand
+    // même du quota, sur un compteur séparé.
+    const browseRateEl = document.getElementById('calc-browse-rate');
+    const browsePagesEl = document.getElementById('calc-browse-pages');
+    if (browseRateEl && browsePagesEl) {
+      const browseRate = parseInt(browseRateEl.value, 10);
+      const browsePages = parseInt(browsePagesEl.value, 10);
+      document.getElementById('calc-browse-rate-val').textContent = browseRate + '%';
+      document.getElementById('calc-browse-pages-val').textContent = browsePages;
+
+      const browseRequests = Math.round(visitors * (browseRate / 100) * browsePages);
+      document.getElementById('calc-out-browse-requests').textContent = browseRequests.toLocaleString('fr-FR');
+
+      let browseTier = BROWSE_TIERS[BROWSE_TIERS.length - 1];
+      for (const tier of BROWSE_TIERS) {
+        if (browseRequests <= tier.limit) { browseTier = tier; break; }
+      }
+      const browseBeyond = browseRequests > BROWSE_TIERS[BROWSE_TIERS.length - 1].limit;
+      document.getElementById('calc-out-browse-plan').textContent = browseTier.name + ' — ' +
+        browseTier.priceAddon + ' €/mois en option sur un plan Search (' + browseTier.priceStandalone + ' € en autonome)' +
+        (browseBeyond ? ', + dépassement facturé' : '');
+    }
   }
-  ['calc-visitors', 'calc-rate', 'calc-per-user'].forEach(id => {
+  ['calc-visitors', 'calc-rate', 'calc-per-user', 'calc-browse-rate', 'calc-browse-pages'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.addEventListener('input', computeCalc);
   });

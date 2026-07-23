@@ -11,23 +11,23 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Indexez votre premier catalogue outillage en 5 minutes — Heurix</title>
-<meta name="description" content="Tutoriel pratique : indexez un petit catalogue de quincaillerie et lancez une vraie recherche avec faute de frappe, en 5 minutes, avec du vrai code à copier-coller.">
-<link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/tutoriel-catalogue-outillage-5-minutes.html">
+<title>Construire une page de catégorie avec Browse & Discovery — Heurix</title>
+<meta name="description" content="Guide pas à pas : indexez vos produits avec des catégories, puis affichez une page de catégorie triée dynamiquement sur votre site, avec le snippet prêt à l'emploi.">
+<link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/guide-page-categorie-browse.html">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Indexez votre premier catalogue outillage en 5 minutes — Heurix">
-<meta property="og:description" content="Tutoriel pratique : indexez un petit catalogue de quincaillerie et lancez une vraie recherche avec faute de frappe, en 5 minutes, avec du vrai code à copier-coller.">
+<meta property="og:title" content="Construire une page de catégorie avec Browse & Discovery — Heurix">
+<meta property="og:description" content="Guide pas à pas : indexez vos produits avec des catégories, puis affichez une page de catégorie triée dynamiquement sur votre site, avec le snippet prêt à l'emploi.">
 <meta property="og:image" content="https://heurix.fr/og-image.png">
-<meta property="og:url" content="https://heurix.fr/blog/tutoriel-catalogue-outillage-5-minutes.html">
+<meta property="og:url" content="https://heurix.fr/blog/guide-page-categorie-browse.html">
 <meta property="og:locale" content="fr_FR">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Indexez votre premier catalogue outillage en 5 minutes — Heurix">
-<meta name="twitter:description" content="Tutoriel pratique : indexez un petit catalogue de quincaillerie et lancez une vraie recherche avec faute de frappe, en 5 minutes, avec du vrai code à copier-coller.">
+<meta name="twitter:title" content="Construire une page de catégorie avec Browse & Discovery — Heurix">
+<meta name="twitter:description" content="Guide pas à pas : indexez vos produits avec des catégories, puis affichez une page de catégorie triée dynamiquement sur votre site, avec le snippet prêt à l'emploi.">
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="../favicon-32.png">
 <link rel="apple-touch-icon" href="../apple-touch-icon.png">
 <link rel="stylesheet" href="../styles.css?v=1784834503">
-<link rel="canonical" href="https://heurix.fr/blog/tutoriel-catalogue-outillage-5-minutes.html">
+<link rel="canonical" href="https://heurix.fr/blog/guide-page-categorie-browse.html">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -103,65 +103,76 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <article class="post">
   <div class="wrap post-wrap">
     <a href="../blog.html" class="back-link">← Tous les articles</a>
-    <div class="kicker">Tutoriel · Juillet 2026</div>
-    <h1>Indexez votre premier catalogue outillage en 5 minutes</h1>
-    <p class="post-lede">Deux appels API, un vrai résultat de recherche avec faute de frappe et format différent. Tout le code de cette page est testé — copiez-collez, adaptez à votre catalogue.</p>
+    <div class="kicker">Guide · Juillet 2026</div>
+    <h1>Construire une page de catégorie avec Browse &amp; Discovery</h1>
+    <p class="post-lede">Une page de catégorie n'a pas de requête à traiter — juste des produits à bien classer. Ce guide indexe un petit catalogue avec de vraies catégories, puis affiche une page triée dynamiquement, avec le snippet fourni.</p>
 
     <div class="post-body">
       <h2>Ce qu'il vous faut</h2>
-      <p>Une clé API (<a href="../pricing.html">essai gratuit 14 jours</a>, sans carte bancaire) et un terminal. C'est tout — pas de SDK à installer, le moteur répond en JSON brut sur des appels HTTP standards.</p>
+      <p>Une clé API (<a href="../pricing.html">essai gratuit 14 jours</a>, sans carte bancaire) et une page HTML où injecter les résultats. Pas de SDK à installer.</p>
 
-      <h2>Étape 1 — Indexez 4 produits</h2>
-      <p>Un petit catalogue de quincaillerie, avec le pack de règles <code class="docs-inline-code">outillage</code> (celui qui comprend les diamètres, longueurs et matières dans une référence) :</p>
-      <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/index/quincaillerie/items \
+      <h2>Étape 1 — Indexez avec des catégories</h2>
+      <p><code class="docs-inline-code">categories</code> (ou <code class="docs-inline-code">category</code> au singulier) est un champ que <strong>vous</strong> fournissez, exactement comme <code class="docs-inline-code">name</code> ou <code class="docs-inline-code">stock</code> — reprenez la taxonomie que vous avez déjà sur votre site, pas besoin de la redéfinir pour Heurix. Ajoutez aussi <code class="docs-inline-code">price</code> si vous voulez trier par prix :</p>
+      <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/index/monsite/items \
   -H "Authorization: Bearer VOTRE_CLE_API" \
   -H "Content-Type: application/json" \
   -d '{
-  "rulepack": "outillage",
   "items": [
-    {"id": "V001", "name": "Vis à métaux tête hexagonale", "ref": "M8 x 20 - Inox A2", "stock": 120},
-    {"id": "V002", "name": "Vis à métaux tête hexagonale", "ref": "M8 x 30 - Inox A2", "stock": 45},
-    {"id": "R001", "name": "Roulement à billes étanche", "ref": "6205-2RS", "stock": 8},
-    {"id": "E001", "name": "Écrou hexagonal", "ref": "M8 - Zingué", "stock": 300}
+    {"id": "sku-1", "name": "Perceuse GDX 18V-285 BOSCH",
+     "categories": ["outillage-electroportatif", "perceuses-visseuses"],
+     "brand": "Bosch", "price": 139.90, "stock": 8},
+    {"id": "sku-2", "name": "Perceuse HP457D MAKITA",
+     "categories": ["outillage-electroportatif", "perceuses-visseuses"],
+     "brand": "Makita", "price": 99.90, "stock": 3}
   ]
 }'</code></pre>
-      <p>Réponse :</p>
-      <pre class="docs-code"><code>{"indexed": 4, "catalog": {"catalog": "quincaillerie", "products": 4,
- "terms": 18, "annotations": 11, "rulepack": "outillage", "synonym_groups": 0}}</code></pre>
-      <p>11 annotations générées automatiquement à partir de 4 produits — c'est la cascade de règles qui vient de décomposer chaque référence (diamètre, longueur, matière) sans que vous ayez écrit la moindre regex.</p>
+      <p>Deux niveaux dans <code class="docs-inline-code">categories</code> : la catégorie principale ET la sous-catégorie, dans la même liste. Un produit ainsi indexé apparaît aussi bien dans une page « Outillage électroportatif » que dans une page « Perceuses &amp; visseuses » plus précise — chaque valeur de la liste est une page de catégorie potentielle.</p>
 
-      <h2>Étape 2 — Cherchez, avec une faute et un format différent</h2>
-      <p>Le vrai test : pas la référence exacte telle qu'indexée, mais ce qu'un client tape réellement — une faute sur « vis », et « M8x20 » collé sans espaces ni tirets :</p>
-      <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/index/quincaillerie/search \
-  -H "Authorization: Bearer VOTRE_CLE_API" \
-  -H "Content-Type: application/json" \
-  -d '{"q": "vs m8x20 inox"}'</code></pre>
-      <p>Réponse (raccourcie) :</p>
-      <pre class="docs-code"><code>{
-  "total": 3,
-  "hits": [
-    {
-      "product": {"id": "V001", "ref": "M8 x 20 - Inox A2", "stock": 120},
-      "score": 43.5,
-      "matched": [
-        "terme 'inox' (depuis 'inox', x1.00)",
-        "annotation #LONG_20",
-        "annotation #DIAM_M8",
-        "annotation #VIS_M8X20",
-        "annotation #DIAM_M8_INOX",
-        "annotation #MAT_INOX"
-      ]
-    },
-    { "product": {"id": "V002", "ref": "M8 x 30 - Inox A2"}, "score": 28.5, ... },
-    { "product": {"id": "E001", "ref": "M8 - Zingué"}, "score": 7.5, ... }
-  ]
-}</code></pre>
+      <h2>Étape 2 — Vérifiez ce qui a été détecté</h2>
+      <p>Avant de coder quoi que ce soit côté site, confirmez ce que Heurix a compris de votre catalogue :</p>
+      <pre class="docs-code"><code>curl https://api.heurix.fr/v1/index/monsite/browse-categories \
+  -H "Authorization: Bearer VOTRE_CLE_API"</code></pre>
+      <pre class="docs-code"><code>{"categories": [
+  {"category": "outillage-electroportatif", "products": 2},
+  {"category": "perceuses-visseuses", "products": 2}
+]}</code></pre>
+      <p>Ces mêmes catégories sont aussi visibles et gérables depuis <a href="../console.html">votre console</a>, onglet Dashboard → Browse &amp; Discovery.</p>
 
-      <h2>Ce qui vient de se passer</h2>
-      <p>« vs m8x20 inox » n'existe littéralement nulle part dans les données indexées — ni « vs » (faute sur « vis »), ni « m8x20 » sous cette forme exacte (la référence stockée est « M8 x 20 »). Le moteur a quand même trouvé et classé en premier le bon produit, et le champ <code class="docs-inline-code">matched</code> dit précisément pourquoi : il a reconnu un diamètre (<code class="docs-inline-code">DIAM_M8</code>), une longueur (<code class="docs-inline-code">LONG_20</code>), leur combinaison en tant que référence de vis (<code class="docs-inline-code">VIS_M8X20</code>), et la matière (<code class="docs-inline-code">MAT_INOX</code>) — quatre annotations qui pèsent bien plus dans le score que la simple correction orthographique de « vis ». C'est la différence entre un moteur qui tolère les fautes sur des mots, et un moteur qui comprend la structure d'une référence.</p>
+      <h2>Étape 3 — Affichez la page, avec le snippet fourni</h2>
+      <p>Téléchargez <a href="../downloads/heurix-browse-widget.js" download>heurix-browse-widget.js</a>, renseignez votre clé et votre catalogue en tête de fichier, puis incluez-le sur votre page de catégorie :</p>
+      <pre class="docs-code"><code>&lt;div id="ma-page-categorie"&gt;&lt;/div&gt;
+&lt;script src="heurix-browse-widget.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+  Heurix.browse({
+    catalog: "monsite",
+    category: "perceuses-visseuses",
+    sort: "price_asc",
+    containerId: "ma-page-categorie"
+  });
+&lt;/script&gt;</code></pre>
+      <p>Par défaut, chaque produit s'affiche dans un <code class="docs-inline-code">&lt;div class="heurix-product"&gt;</code> simple, à styler avec votre propre CSS. Pour un contrôle total du HTML généré (grille de cartes, boutons, badges promo…), fournissez votre propre fonction de rendu :</p>
+      <pre class="docs-code"><code>Heurix.browse({
+  catalog: "monsite",
+  category: "perceuses-visseuses",
+  containerId: "ma-page-categorie",
+  renderItem: function (hit) {
+    return '&lt;div class="ma-carte-produit"&gt;' +
+      '&lt;h3&gt;' + hit.product.name + '&lt;/h3&gt;' +
+      '&lt;span&gt;' + hit.product.price + ' €&lt;/span&gt;' +
+      (hit.in_stock ? '' : '&lt;span class="rupture"&gt;Rupture&lt;/span&gt;') +
+    '&lt;/div&gt;';
+  }
+});</code></pre>
 
-      <h2>Et avec votre vrai catalogue ?</h2>
-      <p>Remplacez le contenu du tableau <code class="docs-inline-code">items</code> par vos propres produits (5 000 par appel maximum, plusieurs appels pour un catalogue plus grand), gardez le pack <code class="docs-inline-code">outillage</code> s'il correspond à votre secteur — ou <code class="docs-inline-code">mode</code>, <code class="docs-inline-code">industrie</code> pour les deux autres packs fournis. La <a href="../docs.html">documentation complète</a> couvre les facettes, les synonymes métier et la recherche fédérée sur plusieurs catalogues.</p>
+      <h2>Aller plus loin : trier, filtrer, mettre en avant</h2>
+      <p>Un sélecteur de tri se branche en rappelant simplement <code class="docs-inline-code">Heurix.browse()</code> avec un <code class="docs-inline-code">sort</code> différent au changement de valeur — <code class="docs-inline-code">stock</code>, <code class="docs-inline-code">recent</code>, <code class="docs-inline-code">alphabetical</code>, <code class="docs-inline-code">price_asc</code>/<code class="docs-inline-code">price_desc</code>, <code class="docs-inline-code">margin</code>, ou <code class="docs-inline-code">popular</code> (clics et achats réels, si vous avez posé le <a href="../docs.html#ep-events">tracker de conversion</a>).</p>
+      <p>Pour affiner à l'intérieur d'une catégorie (par marque, par couleur…), passez un objet <code class="docs-inline-code">filters</code> — n'importe quel champ produit non réservé devient automatiquement filtrable, sans configuration :</p>
+      <pre class="docs-code"><code>Heurix.browse({
+  catalog: "monsite", category: "perceuses-visseuses",
+  filters: { brand: "Makita" },
+  containerId: "ma-page-categorie"
+});</code></pre>
+      <p>Et pour mettre en avant toute une marque ou une gamme sans éditer produit par produit, une règle de boost par attribut se pose une fois depuis la console (ou l'API) — voir <a href="../docs.html#ep-browse">la documentation complète</a> pour le détail des endpoints d'épinglage et de boost.</p>
     </div>
 
     <div class="post-footer-cta">

@@ -292,7 +292,7 @@
   }
 
   var ALL_PANE_IDS = ["pane-overview", "pane-top-queries", "pane-zero-results", "pane-errors", "pane-conversion",
-    "pane-catalog-help", "pane-catalog-list", "pane-company", "pane-team", "pane-key", "pane-feedback"];
+    "pane-browse", "pane-catalog-help", "pane-catalog-list", "pane-company", "pane-team", "pane-key", "pane-feedback"];
 
   function showPane(paneId) {
     ALL_PANE_IDS.forEach(function (id) {
@@ -464,6 +464,182 @@
     }
   }
 
+  // ---------------- Browse & Discovery ----------------
+  var browseCatalogsLoaded = false;
+  var browseCurrentCatalog = "";
+  var browseCurrentCategory = "";
+  var browseAttributesCache = [];
+  var browseFormsWired = false;
+
+  function loadBrowseCatalogs(key) {
+    if (browseCatalogsLoaded) return;
+    browseCatalogsLoaded = true;
+    apiFetch("/v1/index/catalogs", key).then(function (data) {
+      var select = document.getElementById("browse-catalog-select");
+      data.catalogs.forEach(function (c) {
+        var opt = document.createElement("option");
+        opt.value = c.catalog; opt.textContent = c.catalog;
+        select.appendChild(opt);
+      });
+    }).catch(function () {});
+  }
+
+  function onBrowseCatalogChange(key) {
+    var catalog = document.getElementById("browse-catalog-select").value;
+    browseCurrentCatalog = catalog; browseCurrentCategory = "";
+    var categorySelect = document.getElementById("browse-category-select");
+    document.getElementById("browse-content").hidden = true;
+    document.getElementById("browse-no-categories").hidden = true;
+    if (!catalog) {
+      categorySelect.disabled = true;
+      categorySelect.innerHTML = '<option value="">— Choisir un catalogue d\'abord —</option>';
+      return;
+    }
+    categorySelect.disabled = false;
+    categorySelect.innerHTML = '<option value="">Chargement…</option>';
+    Promise.all([
+      apiFetch("/v1/index/" + encodeURIComponent(catalog) + "/browse-categories", key),
+      apiFetch("/v1/index/" + encodeURIComponent(catalog) + "/browse-attributes", key),
+    ]).then(function (results) {
+      var categories = results[0].categories;
+      browseAttributesCache = results[1].attributes;
+      if (!categories.length) {
+        categorySelect.innerHTML = '<option value="">— Aucune catégorie —</option>';
+        document.getElementById("browse-no-categories").hidden = false;
+        return;
+      }
+      categorySelect.innerHTML = '<option value="">— Choisir —</option>' + categories.map(function (c) {
+        return "<option value='" + esc(c.category) + "'>" + esc(c.category) + " (" + c.products + ")</option>";
+      }).join("");
+      document.getElementById("browse-known-fields").innerHTML = browseAttributesCache.map(function (a) {
+        return "<option value='" + esc(a.field) + "'>";
+      }).join("");
+    }).catch(function () {
+      categorySelect.innerHTML = '<option value="">— Erreur de chargement —</option>';
+    });
+  }
+
+  function onBrowseFieldInput() {
+    var field = document.getElementById("browse-attribute-field").value.trim();
+    var entry = browseAttributesCache.filter(function (a) { return a.field === field; })[0];
+    document.getElementById("browse-known-values").innerHTML = entry
+      ? entry.values.map(function (v) { return "<option value='" + esc(v.value) + "'>"; }).join("")
+      : "";
+  }
+
+  function onBrowseCategoryChange(key) {
+    browseCurrentCategory = document.getElementById("browse-category-select").value;
+    var content = document.getElementById("browse-content");
+    if (!browseCurrentCategory) { content.hidden = true; return; }
+    content.hidden = false;
+    refreshBrowseAll(key);
+  }
+
+  function refreshBrowseAll(key) {
+    refreshBrowsePreview(key);
+    refreshBrowseOverrides(key);
+    refreshBrowseAttributeRules(key);
+  }
+
+  function refreshBrowsePreview(key) {
+    var sort = document.getElementById("browse-sort-select").value;
+    var url = "/v1/browse/" + encodeURIComponent(browseCurrentCatalog) + "/" + encodeURIComponent(browseCurrentCategory) + "?sort=" + sort;
+    apiFetch(url, key).then(function (data) {
+      renderTable("browse-preview-table", "browse-preview-empty", data.hits, function (h) {
+        var status = h.pinned ? "Épinglé" : h.boosted ? "Boosté" : h.buried ? "Relégué" : "—";
+        return "<td class='mono'>" + esc(h.product.id) + "</td><td class='num'>" +
+          (h.product.stock !== undefined ? h.product.stock : "–") + "</td><td>" + status + "</td>";
+      });
+    }).catch(function () {});
+  }
+
+  function refreshBrowseOverrides(key) {
+    var url = "/v1/browse/" + encodeURIComponent(browseCurrentCatalog) + "/" + encodeURIComponent(browseCurrentCategory) + "/overrides";
+    apiFetch(url, key).then(function (data) {
+      renderTable("browse-overrides-table", "browse-overrides-empty", data.overrides, function (o) {
+        return "<td class='mono'>" + esc(o.product_id) + "</td><td>" + (o.action === "pin" ? "Épingler" : "Reléguer") +
+          "</td><td>" + (o.position || "–") + "</td><td><button type='button' class='catalog-rule-remove' data-remove-override='" +
+          esc(o.product_id) + "' aria-label='Retirer'>&times;</button></td>";
+      });
+    }).catch(function () {});
+  }
+
+  function refreshBrowseAttributeRules(key) {
+    var url = "/v1/browse/" + encodeURIComponent(browseCurrentCatalog) + "/" + encodeURIComponent(browseCurrentCategory) + "/attribute-rules";
+    apiFetch(url, key).then(function (data) {
+      renderTable("browse-attribute-rules-table", "browse-attribute-rules-empty", data.rules, function (r) {
+        return "<td class='mono'>" + esc(r.field) + "</td><td class='mono'>" + esc(r.value) + "</td><td>" +
+          (r.action === "boost" ? "Booster" : "Reléguer") + "</td><td><button type='button' class='catalog-rule-remove' " +
+          "data-remove-attribute-field='" + esc(r.field) + "' data-remove-attribute-value='" + esc(r.value) + "' aria-label='Retirer'>&times;</button></td>";
+      });
+    }).catch(function () {});
+  }
+
+  function wireBrowseForms(key) {
+    if (browseFormsWired) return;
+    browseFormsWired = true;
+
+    document.getElementById("browse-catalog-select").addEventListener("change", function () { onBrowseCatalogChange(key); });
+    document.getElementById("browse-category-select").addEventListener("change", function () { onBrowseCategoryChange(key); });
+    document.getElementById("browse-sort-select").addEventListener("change", function () { refreshBrowsePreview(key); });
+    document.getElementById("browse-attribute-field").addEventListener("input", onBrowseFieldInput);
+
+    document.getElementById("browse-override-form").addEventListener("submit", function (e) {
+      e.preventDefault();
+      var status = document.getElementById("browse-override-status");
+      var productId = document.getElementById("browse-override-product-id").value.trim();
+      var action = document.getElementById("browse-override-action").value;
+      var positionInput = document.getElementById("browse-override-position").value;
+      if (!productId) return;
+      var body = { product_id: productId, action: action };
+      if (positionInput) body.position = parseInt(positionInput, 10);
+      var url = "/v1/browse/" + encodeURIComponent(browseCurrentCatalog) + "/" + encodeURIComponent(browseCurrentCategory) + "/overrides";
+      apiFetch(url, key, { method: "POST", body: body }).then(function () {
+        status.textContent = "Ajoutée."; status.className = "catalog-rule-status ok";
+        document.getElementById("browse-override-product-id").value = "";
+        document.getElementById("browse-override-position").value = "";
+        refreshBrowseOverrides(key); refreshBrowsePreview(key);
+      }).catch(function (err) {
+        status.textContent = (err && err.message) || "Échec."; status.className = "catalog-rule-status err";
+      });
+    });
+
+    document.getElementById("browse-overrides-table").querySelector("tbody").addEventListener("click", function (e) {
+      var btn = e.target.closest("[data-remove-override]");
+      if (!btn) return;
+      var pid = btn.getAttribute("data-remove-override");
+      var url = "/v1/browse/" + encodeURIComponent(browseCurrentCatalog) + "/" + encodeURIComponent(browseCurrentCategory) + "/overrides/" + encodeURIComponent(pid);
+      apiFetch(url, key, { method: "DELETE" }).then(function () { refreshBrowseOverrides(key); refreshBrowsePreview(key); }).catch(function () {});
+    });
+
+    document.getElementById("browse-attribute-rule-form").addEventListener("submit", function (e) {
+      e.preventDefault();
+      var status = document.getElementById("browse-attribute-rule-status");
+      var field = document.getElementById("browse-attribute-field").value.trim();
+      var value = document.getElementById("browse-attribute-value").value.trim();
+      var action = document.getElementById("browse-attribute-action").value;
+      if (!field || !value) return;
+      var url = "/v1/browse/" + encodeURIComponent(browseCurrentCatalog) + "/" + encodeURIComponent(browseCurrentCategory) + "/attribute-rules";
+      apiFetch(url, key, { method: "POST", body: { field: field, value: value, action: action } }).then(function () {
+        status.textContent = "Ajoutée."; status.className = "catalog-rule-status ok";
+        document.getElementById("browse-attribute-field").value = "";
+        document.getElementById("browse-attribute-value").value = "";
+        refreshBrowseAttributeRules(key); refreshBrowsePreview(key);
+      }).catch(function (err) {
+        status.textContent = (err && err.message) || "Échec."; status.className = "catalog-rule-status err";
+      });
+    });
+
+    document.getElementById("browse-attribute-rules-table").querySelector("tbody").addEventListener("click", function (e) {
+      var btn = e.target.closest("[data-remove-attribute-field]");
+      if (!btn) return;
+      var field = btn.getAttribute("data-remove-attribute-field"), value = btn.getAttribute("data-remove-attribute-value");
+      var url = "/v1/browse/" + encodeURIComponent(browseCurrentCatalog) + "/" + encodeURIComponent(browseCurrentCategory) +
+        "/attribute-rules?field=" + encodeURIComponent(field) + "&value=" + encodeURIComponent(value);
+      apiFetch(url, key, { method: "DELETE" }).then(function () { refreshBrowseAttributeRules(key); refreshBrowsePreview(key); }).catch(function () {});
+    });
+  }
+
   function loadDashboard(key, days) {
     dashLoading.hidden = false;
     dashContent.hidden = true;
@@ -497,6 +673,8 @@
       loadCatalogs(key);
       loadAccountInfo();
       loadConversionData(key);
+      loadBrowseCatalogs(key);
+      wireBrowseForms(key);
     }).catch(function () {
       dashLoading.hidden = true;
       localStorage.removeItem(SESSION_STORAGE_KEY);
