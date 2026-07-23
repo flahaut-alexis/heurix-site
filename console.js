@@ -292,7 +292,7 @@
   }
 
   var ALL_PANE_IDS = ["pane-overview", "pane-top-queries", "pane-zero-results", "pane-errors", "pane-conversion",
-    "pane-catalog-help", "pane-catalog-list", "pane-company", "pane-team", "pane-key"];
+    "pane-catalog-help", "pane-catalog-list", "pane-company", "pane-team", "pane-key", "pane-feedback"];
 
   function showPane(paneId) {
     ALL_PANE_IDS.forEach(function (id) {
@@ -326,6 +326,32 @@
     if (paneId) showPane(paneId);
     var catalogName = itemBtn.getAttribute("data-catalog");
     if (catalogName) showCatalogCard(catalogName);
+  });
+
+  document.getElementById("feedback-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var status = document.getElementById("feedback-status");
+    var btn = document.getElementById("feedback-submit-btn");
+    var messageInput = document.getElementById("feedback-message");
+    var message = messageInput.value.trim();
+    if (!message) { messageInput.focus(); return; }
+    btn.disabled = true; btn.textContent = "Envoi…";
+    status.hidden = true;
+    apiFetch("/v1/feedback", localStorage.getItem(SESSION_STORAGE_KEY), {
+      method: "POST",
+      body: { category: document.getElementById("feedback-category").value, message: message },
+    }).then(function () {
+      status.textContent = "Message envoyé — une réponse vous revient directement par email.";
+      status.className = "console-form-status ok";
+      status.hidden = false;
+      messageInput.value = "";
+    }).catch(function (err) {
+      status.textContent = (err && err.message) || "Échec de l'envoi — réessayez, ou écrivez directement à contact@heurix.fr.";
+      status.className = "console-form-status err";
+      status.hidden = false;
+    }).then(function () {
+      btn.disabled = false; btn.textContent = "Envoyer";
+    });
   });
 
   function renderChart(daily) {

@@ -16,7 +16,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="robots" content="noindex">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css?v=1784822064">
+<link rel="stylesheet" href="styles.css?v=1784824690">
 <link rel="canonical" href="https://heurix.fr/console.html">
 </head>
 <body>
@@ -45,7 +45,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <a href="index.html#moteur">Le moteur</a>
       <a href="fonctionnalites.html">Fonctionnalités</a>
       <a href="integrations.html">Intégrations</a>
-      <a href="index.html#moteur">Search API</a>
+      <a href="docs.html">Documentation</a>
       <a href="docs.html">Documentation</a>
     </div>
     </nav>
@@ -169,6 +169,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <button type="button" class="console-sidebar-item" data-pane="pane-company">Entreprise</button>
             <button type="button" class="console-sidebar-item" data-pane="pane-team">Équipe</button>
             <button type="button" class="console-sidebar-item" data-pane="pane-key">Ma clé API</button>
+            <button type="button" class="console-sidebar-item" data-pane="pane-feedback">Suggérer une amélioration</button>
           </div>
         </div>
 
@@ -379,6 +380,25 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             </div>
           </div>
 
+          <div id="pane-feedback" class="console-pane" hidden>
+            <h2 class="console-pane-title">Suggérer une amélioration</h2>
+            <div class="console-panel">
+              <p class="console-panel-note">Une fonctionnalité qui vous manque, un bug à signaler, ou simplement une question — ça part directement dans notre boîte mail, et une réponse directe vous revient à votre adresse.</p>
+              <form id="feedback-form" class="console-invite-form" style="flex-direction:column; align-items:stretch;">
+                <label for="feedback-category" style="font-size:12.5px; font-weight:700; color:var(--ink-muted); margin-bottom:4px;">Type de demande</label>
+                <select id="feedback-category">
+                  <option value="feature">Suggestion de fonctionnalité</option>
+                  <option value="bug">Signalement de bug</option>
+                  <option value="other">Autre demande</option>
+                </select>
+                <label for="feedback-message" style="font-size:12.5px; font-weight:700; color:var(--ink-muted); margin:14px 0 4px;">Votre message</label>
+                <textarea id="feedback-message" rows="6" placeholder="Décrivez votre besoin ou le problème rencontré, avec autant de détail que possible…" maxlength="5000" required style="font-family:'Plus Jakarta Sans', sans-serif; font-size:14px; padding:10px 12px; border:1.5px solid var(--line); border-radius:8px; resize:vertical;"></textarea>
+                <button type="submit" class="btn" id="feedback-submit-btn" style="margin-top:14px; align-self:flex-start;">Envoyer</button>
+              </form>
+              <p id="feedback-status" class="console-form-status" hidden></p>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
@@ -412,7 +432,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<script src="console.js?v=1784822064"></script>
+<script src="console.js?v=1784824690"></script>
 <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 
 <script src="mobile-nav.js"></script>
