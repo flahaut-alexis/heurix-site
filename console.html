@@ -16,7 +16,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="robots" content="noindex">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css?v=1784800567">
+<link rel="stylesheet" href="styles.css?v=1784804958">
 <link rel="canonical" href="https://heurix.fr/console.html">
 </head>
 <body>
@@ -69,12 +69,24 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </form>
 
     <form id="signup-form" class="console-login-form" autocomplete="on" hidden>
+      <label for="signup-raison-sociale">Raison sociale</label>
+      <input type="text" id="signup-raison-sociale" placeholder="Nom de votre entreprise" autocomplete="organization" required>
       <label for="signup-email">Email</label>
       <input type="email" id="signup-email" placeholder="vous@exemple.fr" autocomplete="email" required>
       <label for="signup-password">Mot de passe</label>
       <input type="password" id="signup-password" placeholder="10 caractères minimum" autocomplete="new-password" required minlength="10">
+      <label for="signup-tva">N° de TVA intracommunautaire <span class="console-field-optional">(optionnel)</span></label>
+      <input type="text" id="signup-tva" placeholder="FR12345678901" autocomplete="off">
       <button type="submit" class="btn" id="signup-btn">Créer mon compte</button>
       <p id="signup-error" class="console-login-error" hidden></p>
+    </form>
+
+    <form id="accept-invite-form" class="console-login-form" autocomplete="on" hidden>
+      <p id="accept-invite-intro" class="console-login-note" style="margin-top:0;"></p>
+      <label for="accept-invite-password">Choisissez votre mot de passe</label>
+      <input type="password" id="accept-invite-password" placeholder="10 caractères minimum" autocomplete="new-password" required minlength="10">
+      <button type="submit" class="btn" id="accept-invite-btn">Rejoindre l'équipe</button>
+      <p id="accept-invite-error" class="console-login-error" hidden></p>
     </form>
 
     <form id="reset-request-form" class="console-login-form" autocomplete="on" hidden>
@@ -120,89 +132,124 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </div>
     </div>
 
+    <div class="console-nav">
+      <button type="button" class="console-nav-item console-nav-on" data-view="dashboard">Dashboard</button>
+      <button type="button" class="console-nav-item" data-view="catalog">Mon catalogue</button>
+      <button type="button" class="console-nav-item" data-view="account">Mes infos</button>
+    </div>
+
     <div id="dash-loading" class="console-loading">Chargement des données…</div>
     <div id="dash-content" hidden>
 
-      <div class="console-panel">
-        <h2>Ma clé API</h2>
-        <p class="console-panel-note">À utiliser dans le header <code class="docs-inline-code">Authorization: Bearer &lt;clé&gt;</code> de vos appels. Ne la partagez pas, elle donne accès en écriture à votre catalogue.</p>
-        <div class="console-key-display">
-          <code id="account-key-value" class="console-key-value">••••••••••••••••••••••••••••••••</code>
-          <button type="button" id="account-key-toggle" class="console-key-btn" aria-label="Afficher la clé">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          </button>
-          <button type="button" id="account-key-copy" class="console-key-btn" aria-label="Copier la clé">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-          </button>
-          <span id="account-key-copied" class="console-key-copied" hidden>Copiée !</span>
-        </div>
-      </div>
+      <div id="view-dashboard" class="console-view">
 
+        <div class="console-stats">
+          <div class="console-stat">
+            <div class="icn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+            <div class="console-stat-num" id="stat-searches">–</div>
+            <div class="console-stat-label">Recherches</div>
+          </div>
+          <div class="console-stat console-stat-warn">
+            <div class="icn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="13"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+            <div class="console-stat-num" id="stat-zero-rate">–</div>
+            <div class="console-stat-label">Taux sans résultat</div>
+          </div>
+          <div class="console-stat">
+            <div class="icn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+            <div class="console-stat-num" id="stat-errors">–</div>
+            <div class="console-stat-label">Erreurs</div>
+          </div>
+          <div class="console-stat">
+            <div class="icn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6z"/></svg></div>
+            <div class="console-stat-num" id="stat-usage">–</div>
+            <div class="console-stat-label">Requêtes ce mois-ci</div>
+          </div>
+        </div>
 
-      <div class="console-stats">
-        <div class="console-stat">
-          <div class="icn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
-          <div class="console-stat-num" id="stat-searches">–</div>
-          <div class="console-stat-label">Recherches</div>
-        </div>
-        <div class="console-stat console-stat-warn">
-          <div class="icn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="13"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
-          <div class="console-stat-num" id="stat-zero-rate">–</div>
-          <div class="console-stat-label">Taux sans résultat</div>
-        </div>
-        <div class="console-stat">
-          <div class="icn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
-          <div class="console-stat-num" id="stat-errors">–</div>
-          <div class="console-stat-label">Erreurs</div>
-        </div>
-        <div class="console-stat">
-          <div class="icn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6z"/></svg></div>
-          <div class="console-stat-num" id="stat-usage">–</div>
-          <div class="console-stat-label">Requêtes ce mois-ci</div>
-        </div>
-      </div>
-
-      <div class="console-panel">
-        <h2>Volume de recherches</h2>
-        <div class="console-chart-wrap"><canvas id="searches-chart" height="90"></canvas></div>
-      </div>
-
-      <div class="console-grid-2">
         <div class="console-panel">
-          <h2>Mots les plus recherchés</h2>
-          <div class="table-scroll"><table class="console-table" id="top-queries-table">
-            <thead><tr><th>Requête</th><th>Nb</th><th>Résultats (moy.)</th></tr></thead>
-            <tbody></tbody>
-          </table></div>
-          <p class="console-empty" id="top-queries-empty" hidden>Aucune recherche sur cette période.</p>
+          <h2>Volume de recherches</h2>
+          <div class="console-chart-wrap"><canvas id="searches-chart" height="90"></canvas></div>
         </div>
 
-        <div class="console-panel console-panel-warn">
-          <h2>Recherches sans résultat</h2>
-          <p class="console-panel-note">Ce que vos clients cherchent sans jamais rien trouver — des ventes potentiellement manquées. Chaque ligne est un candidat pour un synonyme ou une règle à ajouter.</p>
-          <div class="table-scroll"><table class="console-table" id="zero-results-table">
-            <thead><tr><th>Requête</th><th>Nb de fois</th></tr></thead>
+        <div class="console-grid-2">
+          <div class="console-panel">
+            <h2>Mots les plus recherchés</h2>
+            <div class="table-scroll"><table class="console-table" id="top-queries-table">
+              <thead><tr><th>Requête</th><th>Nb</th><th>Résultats (moy.)</th></tr></thead>
+              <tbody></tbody>
+            </table></div>
+            <p class="console-empty" id="top-queries-empty" hidden>Aucune recherche sur cette période.</p>
+          </div>
+
+          <div class="console-panel console-panel-warn">
+            <h2>Recherches sans résultat</h2>
+            <p class="console-panel-note">Ce que vos clients cherchent sans jamais rien trouver — des ventes potentiellement manquées. Chaque ligne est un candidat pour un synonyme ou une règle à ajouter.</p>
+            <div class="table-scroll"><table class="console-table" id="zero-results-table">
+              <thead><tr><th>Requête</th><th>Nb de fois</th></tr></thead>
+              <tbody></tbody>
+            </table></div>
+            <p class="console-empty" id="zero-results-empty" hidden>Aucune recherche sans résultat sur cette période — bon signe.</p>
+          </div>
+        </div>
+
+        <div class="console-panel">
+          <h2>Erreurs récentes</h2>
+          <div class="table-scroll"><table class="console-table" id="errors-table">
+            <thead><tr><th>Endpoint</th><th>Code</th><th>Message</th><th>Quand</th></tr></thead>
             <tbody></tbody>
           </table></div>
-          <p class="console-empty" id="zero-results-empty" hidden>Aucune recherche sans résultat sur cette période — bon signe.</p>
+          <p class="console-empty" id="errors-empty" hidden>Aucune erreur sur cette période.</p>
+        </div>
+
+      </div>
+
+      <div id="view-catalog" class="console-view" hidden>
+        <div class="console-panel">
+          <h2>Mon catalogue</h2>
+          <p class="console-panel-note">Le pack de règles actif par catalogue, et les synonymes métier — modifiables directement ici, sans passer par l'API.</p>
+          <div id="catalogs-loading" class="console-loading">Chargement…</div>
+          <div id="catalogs-list"></div>
+          <p class="console-empty" id="catalogs-empty" hidden>Aucun catalogue indexé pour l'instant — <a href="docs.html">consultez la documentation</a> pour indexer votre premier catalogue.</p>
         </div>
       </div>
 
-      <div class="console-panel">
-        <h2>Erreurs récentes</h2>
-        <div class="table-scroll"><table class="console-table" id="errors-table">
-          <thead><tr><th>Endpoint</th><th>Code</th><th>Message</th><th>Quand</th></tr></thead>
-          <tbody></tbody>
-        </table></div>
-        <p class="console-empty" id="errors-empty" hidden>Aucune erreur sur cette période.</p>
-      </div>
+      <div id="view-account" class="console-view" hidden>
 
-      <div class="console-panel">
-        <h2>Mon catalogue</h2>
-        <p class="console-panel-note">Le pack de règles actif par catalogue, et les synonymes métier — modifiables directement ici, sans passer par l'API.</p>
-        <div id="catalogs-loading" class="console-loading">Chargement…</div>
-        <div id="catalogs-list"></div>
-        <p class="console-empty" id="catalogs-empty" hidden>Aucun catalogue indexé pour l'instant — <a href="docs.html">consultez la documentation</a> pour indexer votre premier catalogue.</p>
+        <div class="console-panel">
+          <h2>Entreprise</h2>
+          <div class="console-info-row"><span class="console-info-label">Raison sociale</span><span id="account-raison-sociale" class="console-info-value">–</span></div>
+          <div class="console-info-row"><span class="console-info-label">N° de TVA</span><span id="account-numero-tva" class="console-info-value">–</span></div>
+        </div>
+
+        <div class="console-panel">
+          <h2>Équipe</h2>
+          <p class="console-panel-note">Toutes les personnes de votre entreprise partagent l'accès aux mêmes catalogues et à la même clé API.</p>
+          <div class="table-scroll"><table class="console-table" id="team-table">
+            <thead><tr><th>Email</th><th>Rôle</th><th>Membre depuis</th></tr></thead>
+            <tbody></tbody>
+          </table></div>
+          <form id="invite-form" class="console-invite-form" hidden>
+            <input type="email" id="invite-email" placeholder="collegue@entreprise.fr" required>
+            <button type="submit" class="btn" id="invite-btn">Inviter</button>
+          </form>
+          <p id="invite-status" class="console-panel-note" hidden></p>
+        </div>
+
+        <div class="console-panel">
+          <h2>Ma clé API</h2>
+          <p class="console-panel-note">À utiliser dans le header <code class="docs-inline-code">Authorization: Bearer &lt;clé&gt;</code> de vos appels. Ne la partagez pas, elle donne accès en écriture à votre catalogue.</p>
+          <div class="console-key-display">
+            <code id="account-key-value" class="console-key-value">••••••••••••••••••••••••••••••••</code>
+            <button type="button" id="account-key-toggle" class="console-key-btn" aria-label="Afficher la clé">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+            <button type="button" id="account-key-copy" class="console-key-btn" aria-label="Copier la clé">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            </button>
+            <span id="account-key-copied" class="console-key-copied" hidden>Copiée !</span>
+          </div>
+        </div>
+
       </div>
 
     </div>
@@ -236,7 +283,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<script src="console.js?v=1784800567"></script>
+<script src="console.js?v=1784804958"></script>
 <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 
 <script src="mobile-nav.js"></script>

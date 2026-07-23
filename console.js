@@ -72,10 +72,19 @@
   var loginBtn = document.getElementById("login-btn");
 
   var signupForm = document.getElementById("signup-form");
+  var signupRaisonSociale = document.getElementById("signup-raison-sociale");
   var signupEmail = document.getElementById("signup-email");
   var signupPassword = document.getElementById("signup-password");
+  var signupTva = document.getElementById("signup-tva");
   var signupError = document.getElementById("signup-error");
   var signupBtn = document.getElementById("signup-btn");
+
+  var acceptInviteForm = document.getElementById("accept-invite-form");
+  var acceptInviteIntro = document.getElementById("accept-invite-intro");
+  var acceptInvitePassword = document.getElementById("accept-invite-password");
+  var acceptInviteError = document.getElementById("accept-invite-error");
+  var acceptInviteBtn = document.getElementById("accept-invite-btn");
+
 
   var resetRequestForm = document.getElementById("reset-request-form");
   var resetEmail = document.getElementById("reset-email");
@@ -99,24 +108,27 @@
   var dashContent = document.getElementById("dash-content");
   var chart = null;
 
-  var AUTH_FORMS = [loginForm, signupForm, resetRequestForm, resetConfirmForm];
+  var AUTH_FORMS = [loginForm, signupForm, resetRequestForm, resetConfirmForm, acceptInviteForm];
   var AUTH_COPY = {
     "login": ["Votre tableau de bord.", "Mots les plus recherchés, recherches sans résultat, erreurs récentes, consommation — connectez-vous pour les consulter."],
-    "signup": ["Créer votre compte.", "Un email, un mot de passe — votre clé API est générée immédiatement et envoyée par email."],
+    "signup": ["Créer votre compte.", "Une entreprise, un email, un mot de passe — votre clé API est générée immédiatement et envoyée par email."],
     "reset-request": ["Mot de passe oublié ?", "Indiquez votre email, on vous envoie un lien pour en choisir un nouveau."],
-    "reset-confirm": ["Nouveau mot de passe.", "Choisissez un nouveau mot de passe pour votre compte."]
+    "reset-confirm": ["Nouveau mot de passe.", "Choisissez un nouveau mot de passe pour votre compte."],
+    "accept-invite": ["Rejoindre votre équipe.", "Dernière étape : choisissez votre mot de passe."]
   };
   function setAuthMode(mode) {
     AUTH_FORMS.forEach(function (f) { f.hidden = true; });
     loginError.hidden = true; signupError.hidden = true; resetConfirmError.hidden = true;
-    resetRequestMsg.hidden = true;
+    resetRequestMsg.hidden = true; acceptInviteError.hidden = true;
     if (mode === "login") { loginForm.hidden = false; authLinks.hidden = false; authBack.hidden = true; }
     if (mode === "signup") { signupForm.hidden = false; authLinks.hidden = false; authBack.hidden = true; }
     if (mode === "reset-request") { resetRequestForm.hidden = false; authLinks.hidden = true; authBack.hidden = false; }
     if (mode === "reset-confirm") { resetConfirmForm.hidden = false; authLinks.hidden = true; authBack.hidden = true; }
+    if (mode === "accept-invite") { acceptInviteForm.hidden = false; authLinks.hidden = true; authBack.hidden = true; }
     var copy = AUTH_COPY[mode];
     if (copy) { authTitle.textContent = copy[0]; authLede.textContent = copy[1]; }
   }
+
 
   function showLogin(message) {
     dashboard.hidden = true;
@@ -170,6 +182,65 @@
     valueEl.dataset.masked = masked;
     shown = false;
   }
+
+  var inviteFormWired = false;
+  function renderTeam(teammates) {
+    var tbody = document.querySelector("#team-table tbody");
+    tbody.innerHTML = teammates.map(function (t) {
+      var roleLabel = t.role === "admin" ? "Administrateur" : "Membre";
+      return "<tr><td>" + esc(t.email) + "</td><td>" + roleLabel + "</td><td>" + L.when(t.created_at) + "</td></tr>";
+    }).join("");
+  }
+
+  function loadAccountInfo() {
+    var sessionToken = localStorage.getItem(SESSION_STORAGE_KEY);
+    if (!sessionToken) return;
+    apiFetch("/v1/auth/me", sessionToken).then(function (data) {
+      var company = data.company || {};
+      document.getElementById("account-raison-sociale").textContent = company.raison_sociale || "–";
+      document.getElementById("account-numero-tva").textContent = company.numero_tva || "Non renseigné";
+      renderTeam(data.teammates || []);
+
+      var inviteForm = document.getElementById("invite-form");
+      var inviteStatus = document.getElementById("invite-status");
+      inviteForm.hidden = data.role !== "admin";
+
+      if (!inviteFormWired) {
+        inviteFormWired = true;
+        inviteForm.addEventListener("submit", function (e) {
+          e.preventDefault();
+          var emailInput = document.getElementById("invite-email");
+          var btn = document.getElementById("invite-btn");
+          btn.disabled = true; btn.textContent = "Envoi…";
+          inviteStatus.hidden = true;
+          apiFetch("/v1/auth/invite", sessionToken, { method: "POST", body: { email: emailInput.value.trim() } })
+            .then(function (r) {
+              inviteStatus.textContent = "Invitation envoyée à " + r.invited + ".";
+              inviteStatus.hidden = false;
+              emailInput.value = "";
+            })
+            .catch(function (err) {
+              inviteStatus.textContent = (err && err.message) || "Échec de l'envoi.";
+              inviteStatus.hidden = false;
+            })
+            .then(function () { btn.disabled = false; btn.textContent = "Inviter"; });
+        });
+      }
+    }).catch(function () {});
+  }
+
+  var CONSOLE_VIEWS = ["dashboard", "catalog", "account"];
+  function setConsoleView(view) {
+    CONSOLE_VIEWS.forEach(function (v) {
+      document.getElementById("view-" + v).hidden = v !== view;
+    });
+    document.querySelectorAll(".console-nav-item").forEach(function (btn) {
+      btn.classList.toggle("console-nav-on", btn.getAttribute("data-view") === view);
+    });
+  }
+  document.querySelectorAll(".console-nav-item").forEach(function (btn) {
+    btn.addEventListener("click", function () { setConsoleView(btn.getAttribute("data-view")); });
+  });
 
   function renderChart(daily) {
     var canvas = document.getElementById("searches-chart");
@@ -272,6 +343,7 @@
       dashContent.hidden = false;
       renderApiKey(key);
       loadCatalogs(key);
+      loadAccountInfo();
     }).catch(function () {
       dashLoading.hidden = true;
       localStorage.removeItem(SESSION_STORAGE_KEY);
@@ -451,7 +523,11 @@
     signupBtn.disabled = true;
     signupBtn.textContent = "Création…";
     signupError.hidden = true;
-    apiPost("/v1/auth/signup", { email: signupEmail.value.trim(), password: signupPassword.value })
+    apiPost("/v1/auth/signup", {
+      email: signupEmail.value.trim(), password: signupPassword.value,
+      raison_sociale: signupRaisonSociale.value.trim(),
+      numero_tva: signupTva.value.trim() || null,
+    })
       .then(function (data) {
         startSession(data.session_token, data.key);
       })
@@ -462,6 +538,29 @@
       .then(function () {
         signupBtn.disabled = false;
         signupBtn.textContent = "Créer mon compte";
+      });
+  });
+
+  // ---------------- Acceptation d'une invitation d'équipe ----------------
+  var inviteTokenFromUrl = new URLSearchParams(window.location.search).get("invite");
+
+  acceptInviteForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+    acceptInviteBtn.disabled = true;
+    acceptInviteBtn.textContent = "Connexion…";
+    acceptInviteError.hidden = true;
+    apiPost("/v1/auth/accept-invite", { token: inviteTokenFromUrl, password: acceptInvitePassword.value })
+      .then(function (data) {
+        history.replaceState(null, "", window.location.pathname);
+        startSession(data.session_token, data.keys[0].key);
+      })
+      .catch(function (err) {
+        acceptInviteError.textContent = (err && err.message) || L.loginErrorNetwork;
+        acceptInviteError.hidden = false;
+      })
+      .then(function () {
+        acceptInviteBtn.disabled = false;
+        acceptInviteBtn.textContent = "Rejoindre l'équipe";
       });
   });
 
@@ -523,7 +622,22 @@
   });
 
   // ---------------- Point d'entrée ----------------
-  if (resetTokenFromUrl) {
+  if (inviteTokenFromUrl) {
+    // Une invitation prime aussi — quelqu'un qui clique un lien d'équipe
+    // ne doit jamais retomber sur un vieux formulaire de connexion.
+    setAuthMode("accept-invite");
+    fetch(API_BASE + "/v1/auth/invite/" + encodeURIComponent(inviteTokenFromUrl))
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        acceptInviteIntro.textContent = data.raison_sociale
+          ? "Vous rejoignez l'équipe de " + data.raison_sociale + " (" + data.email + ")."
+          : "Invitation pour " + data.email + ".";
+      })
+      .catch(function () {
+        acceptInviteIntro.textContent = "Ce lien d'invitation semble invalide ou expiré.";
+      });
+    showLogin();
+  } else if (resetTokenFromUrl) {
     // Un lien de réinitialisation prime sur toute session existante.
     setAuthMode("reset-confirm");
     showLogin();
