@@ -184,11 +184,22 @@
   }
 
   var inviteFormWired = false;
-  function renderTeam(teammates) {
+  var companyFormWired = false;
+
+  function renderTeam(teammates, myEmail, isAdmin) {
     var tbody = document.querySelector("#team-table tbody");
     tbody.innerHTML = teammates.map(function (t) {
       var roleLabel = t.role === "admin" ? "Administrateur" : "Membre";
-      return "<tr><td>" + esc(t.email) + "</td><td>" + roleLabel + "</td><td>" + L.when(t.created_at) + "</td></tr>";
+      var actions = "";
+      if (isAdmin && t.email !== myEmail) {
+        var toggleLabel = t.role === "admin" ? "Rétrograder" : "Promouvoir admin";
+        var toggleRole = t.role === "admin" ? "member" : "admin";
+        actions = '<div class="console-team-actions">' +
+          '<button type="button" class="console-team-action" data-action="role" data-id="' + t.id + '" data-role="' + toggleRole + '">' + toggleLabel + '</button>' +
+          '<button type="button" class="console-team-action console-team-action-danger" data-action="remove" data-id="' + t.id + '" data-email="' + esc(t.email) + '">Retirer</button>' +
+          '</div>';
+      }
+      return "<tr><td>" + esc(t.email) + "</td><td>" + roleLabel + "</td><td>" + L.when(t.created_at) + "</td><td>" + actions + "</td></tr>";
     }).join("");
   }
 
@@ -197,13 +208,21 @@
     if (!sessionToken) return;
     apiFetch("/v1/auth/me", sessionToken).then(function (data) {
       var company = data.company || {};
-      document.getElementById("account-raison-sociale").textContent = company.raison_sociale || "–";
-      document.getElementById("account-numero-tva").textContent = company.numero_tva || "Non renseigné";
-      renderTeam(data.teammates || []);
+      var isAdmin = data.role === "admin";
+
+      var raisonInput = document.getElementById("company-raison-sociale");
+      var tvaInput = document.getElementById("company-numero-tva");
+      var companySaveBtn = document.getElementById("company-save-btn");
+      raisonInput.value = company.raison_sociale || "";
+      tvaInput.value = company.numero_tva || "";
+      raisonInput.disabled = !isAdmin; tvaInput.disabled = !isAdmin;
+      companySaveBtn.hidden = !isAdmin;
+
+      renderTeam(data.teammates || [], data.email, isAdmin);
 
       var inviteForm = document.getElementById("invite-form");
       var inviteStatus = document.getElementById("invite-status");
-      inviteForm.hidden = data.role !== "admin";
+      inviteForm.hidden = !isAdmin;
 
       if (!inviteFormWired) {
         inviteFormWired = true;
@@ -213,7 +232,7 @@
           var btn = document.getElementById("invite-btn");
           btn.disabled = true; btn.textContent = "Envoi…";
           inviteStatus.hidden = true;
-          apiFetch("/v1/auth/invite", sessionToken, { method: "POST", body: { email: emailInput.value.trim() } })
+          apiFetch("/v1/auth/invite", localStorage.getItem(SESSION_STORAGE_KEY), { method: "POST", body: { email: emailInput.value.trim() } })
             .then(function (r) {
               inviteStatus.textContent = "Invitation envoyée à " + r.invited + ".";
               inviteStatus.hidden = false;
@@ -224,6 +243,49 @@
               inviteStatus.hidden = false;
             })
             .then(function () { btn.disabled = false; btn.textContent = "Inviter"; });
+        });
+      }
+
+      if (!companyFormWired) {
+        companyFormWired = true;
+        document.getElementById("company-form").addEventListener("submit", function (e) {
+          e.preventDefault();
+          var status = document.getElementById("company-status");
+          companySaveBtn.disabled = true; companySaveBtn.textContent = "Enregistrement…";
+          status.hidden = true;
+          apiFetch("/v1/auth/company", localStorage.getItem(SESSION_STORAGE_KEY), {
+            method: "PUT", body: { raison_sociale: raisonInput.value.trim(), numero_tva: tvaInput.value.trim() || null },
+          }).then(function () {
+            status.textContent = "Informations enregistrées.";
+            status.hidden = false;
+          }).catch(function (err) {
+            status.textContent = (err && err.message) || "Échec de l'enregistrement.";
+            status.hidden = false;
+          }).then(function () {
+            companySaveBtn.disabled = false; companySaveBtn.textContent = "Enregistrer";
+          });
+        });
+
+        // Delegation : les lignes d'equipe sont regenerees a chaque chargement,
+        // un seul listener sur le tbody suffit plutot que d'en reattacher un par ligne.
+        document.querySelector("#team-table tbody").addEventListener("click", function (e) {
+          var btn = e.target.closest(".console-team-action");
+          if (!btn) return;
+          var token = localStorage.getItem(SESSION_STORAGE_KEY);
+          var userId = btn.getAttribute("data-id");
+          if (btn.getAttribute("data-action") === "role") {
+            btn.disabled = true;
+            apiFetch("/v1/auth/team/" + userId + "/role", token, { method: "PUT", body: { role: btn.getAttribute("data-role") } })
+              .then(function () { loadAccountInfo(); })
+              .catch(function () { btn.disabled = false; });
+          } else if (btn.getAttribute("data-action") === "remove") {
+            var email = btn.getAttribute("data-email");
+            if (!window.confirm("Retirer " + email + " de l'équipe ? Cette personne perdra immédiatement l'accès.")) return;
+            btn.disabled = true;
+            apiFetch("/v1/auth/team/" + userId, token, { method: "DELETE" })
+              .then(function () { loadAccountInfo(); })
+              .catch(function () { btn.disabled = false; });
+          }
         });
       }
     }).catch(function () {});
@@ -240,6 +302,15 @@
   }
   document.querySelectorAll(".console-nav-item").forEach(function (btn) {
     btn.addEventListener("click", function () { setConsoleView(btn.getAttribute("data-view")); });
+  });
+
+  var catalogHelpToggle = document.getElementById("catalog-help-toggle");
+  var catalogHelpContent = document.getElementById("catalog-help-content");
+  catalogHelpToggle.setAttribute("aria-expanded", "false");
+  catalogHelpToggle.addEventListener("click", function () {
+    var expanded = catalogHelpToggle.getAttribute("aria-expanded") === "true";
+    catalogHelpToggle.setAttribute("aria-expanded", expanded ? "false" : "true");
+    catalogHelpContent.hidden = expanded;
   });
 
   function renderChart(daily) {
@@ -362,7 +433,14 @@
     }).join("");
   }
 
-  function wireSynonymControls(cardEl, catalogName, key) {
+  function updateCardMeta(cardEl, catalog) {
+    var meta = cardEl.querySelector(".catalog-card-meta");
+    meta.textContent = catalog.products + " produit" + (catalog.products > 1 ? "s" : "") + " · " +
+      catalog.annotations + " annotations · " + catalog.synonym_groups + " groupe" + (catalog.synonym_groups > 1 ? "s" : "") + " de synonymes";
+  }
+
+  function wireSynonymControls(cardEl, catalog, key) {
+    var catalogName = catalog.catalog;
     var groupsEl = cardEl.querySelector(".catalog-synonym-groups");
     var input = cardEl.querySelector(".catalog-synonym-input");
     var addBtn = cardEl.querySelector(".catalog-synonym-add-btn");
@@ -373,7 +451,12 @@
     function saveGroups(next) {
       return apiFetch("/v1/index/" + encodeURIComponent(catalogName) + "/synonyms", key, {
         method: "PUT", body: { groups: next },
-      }).then(function (data) { currentGroups = data.groups; render(); });
+      }).then(function (data) {
+        currentGroups = data.groups;
+        catalog.synonym_groups = data.groups.length;
+        updateCardMeta(cardEl, catalog);
+        render();
+      });
     }
 
     function wireRemoveButtons() {
@@ -393,6 +476,7 @@
         .then(function () { input.value = ""; })
         .catch(function () {})
         .then(function () { addBtn.disabled = false; });
+
     });
 
     apiFetch("/v1/index/" + encodeURIComponent(catalogName) + "/synonyms", key)
@@ -412,15 +496,14 @@
         method: "PUT", body: { rulepack: select.value },
       }).then(function (data) {
         catalog.rulepack = data.rulepack;
+        catalog.products = data.products; catalog.annotations = data.annotations; catalog.synonym_groups = data.synonym_groups;
         status.className = "catalog-rulepack-status ok"; status.textContent = "Enregistré — produits réindexés.";
-        var meta = cardEl.querySelector(".catalog-card-meta");
-        meta.textContent = data.products + " produit" + (data.products > 1 ? "s" : "") + " · " +
-          data.annotations + " annotations · " + data.synonym_groups + " groupe" + (data.synonym_groups > 1 ? "s" : "") + " de synonymes";
+        updateCardMeta(cardEl, catalog);
       }).catch(function () {
         status.className = "catalog-rulepack-status err"; status.textContent = "Échec — réessayez.";
       }).then(function () { saveBtn.disabled = false; });
     });
-    wireSynonymControls(cardEl, catalog.catalog, key);
+    wireSynonymControls(cardEl, catalog, key);
   }
 
   function catalogCardHtml(c) {

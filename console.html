@@ -16,7 +16,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="robots" content="noindex">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css?v=1784804958">
+<link rel="stylesheet" href="styles.css?v=1784807594">
 <link rel="canonical" href="https://heurix.fr/console.html">
 </head>
 <body>
@@ -204,6 +204,28 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </div>
 
       <div id="view-catalog" class="console-view" hidden>
+
+        <div class="console-panel">
+          <button type="button" id="catalog-help-toggle" class="console-help-toggle">
+            <span>Comment ça marche ?</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="catalog-help-chevron"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div id="catalog-help-content" hidden>
+            <img src="img/cascade-annotations.svg" alt="Schéma : la référence M8 x 20 - Inox A2 est reconnue par trois règles (diamètre, longueur, matière) qui se combinent en trois annotations" style="width:100%; max-width:640px; margin:16px 0;">
+            <h3 class="console-help-h3">Ce que fait un pack de règles</h3>
+            <p class="console-panel-note" style="margin:4px 0 14px;">Un pack de règles lit vos références produit et reconnaît automatiquement ce qu'elles contiennent — comme dans le schéma ci-dessus. Trois packs existent aujourd'hui :</p>
+            <ul class="console-help-list">
+              <li><strong>outillage</strong> — diamètres métriques (M8, M10…), longueurs, normes DIN/ISO, matières (inox, acier…). Exemple : « M8 x 20 - Inox A2 ».</li>
+              <li><strong>mode</strong> — tailles, coloris, matières (laine, coton, denim…), familles (pull, jean, chemise…), coupes. Exemple : « Pull col rond taille M laine bleu ».</li>
+              <li><strong>industrie</strong> — séries de roulements, étanchéité, courroies, joints toriques. Exemple : « 6205-2RS ».</li>
+            </ul>
+            <h3 class="console-help-h3">Créer une règle personnalisée</h3>
+            <p class="console-panel-note" style="margin:4px 0 14px;">Pas encore possible directement ici — vous choisissez aujourd'hui entre ces trois packs déjà construits, et vous complétez avec vos propres synonymes (ci-dessous). Un besoin de règles vraiment sur-mesure ? <a href="mailto:contact@heurix.fr">Écrivez-nous</a>, c'est faisable côté moteur.</p>
+            <h3 class="console-help-h3">Publier un changement</h3>
+            <p class="console-panel-note" style="margin:4px 0 0;">Il n'y a pas d'étape de publication séparée : changer de pack de règles ou modifier un synonyme prend effet <strong>immédiatement</strong> sur votre recherche en production, dès que vous cliquez sur « Enregistrer » ou « Ajouter un groupe ».</p>
+          </div>
+        </div>
+
         <div class="console-panel">
           <h2>Mon catalogue</h2>
           <p class="console-panel-note">Le pack de règles actif par catalogue, et les synonymes métier — modifiables directement ici, sans passer par l'API.</p>
@@ -217,15 +239,21 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
         <div class="console-panel">
           <h2>Entreprise</h2>
-          <div class="console-info-row"><span class="console-info-label">Raison sociale</span><span id="account-raison-sociale" class="console-info-value">–</span></div>
-          <div class="console-info-row"><span class="console-info-label">N° de TVA</span><span id="account-numero-tva" class="console-info-value">–</span></div>
+          <form id="company-form" class="console-invite-form" style="flex-direction:column; align-items:stretch;">
+            <label for="company-raison-sociale" style="font-size:12.5px; font-weight:700; color:var(--ink-muted); margin-bottom:4px;">Raison sociale</label>
+            <input type="text" id="company-raison-sociale" required>
+            <label for="company-numero-tva" style="font-size:12.5px; font-weight:700; color:var(--ink-muted); margin:10px 0 4px;">N° de TVA <span class="console-field-optional">(optionnel)</span></label>
+            <input type="text" id="company-numero-tva" placeholder="FR12345678901">
+            <button type="submit" class="btn" id="company-save-btn" style="margin-top:14px; align-self:flex-start;" hidden>Enregistrer</button>
+          </form>
+          <p id="company-status" class="console-panel-note" hidden></p>
         </div>
 
         <div class="console-panel">
           <h2>Équipe</h2>
           <p class="console-panel-note">Toutes les personnes de votre entreprise partagent l'accès aux mêmes catalogues et à la même clé API.</p>
           <div class="table-scroll"><table class="console-table" id="team-table">
-            <thead><tr><th>Email</th><th>Rôle</th><th>Membre depuis</th></tr></thead>
+            <thead><tr><th>Email</th><th>Rôle</th><th>Membre depuis</th><th></th></tr></thead>
             <tbody></tbody>
           </table></div>
           <form id="invite-form" class="console-invite-form" hidden>
@@ -283,7 +311,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<script src="console.js?v=1784804958"></script>
+<script src="console.js?v=1784807594"></script>
 <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 
 <script src="mobile-nav.js"></script>
