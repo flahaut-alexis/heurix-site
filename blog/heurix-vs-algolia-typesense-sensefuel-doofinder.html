@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-PGLPLKDP');</script>
+<!-- End Google Tag Manager -->
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Heurix vs Algolia, Typesense, Sensefuel, Doofinder : quel moteur pour quel besoin ? — Heurix</title>
+<meta name="description" content="Comparatif factuel entre cinq approches du search e-commerce — API généraliste, plug-and-play merchandising, et moteur spécialisé catalogues techniques.">
+<link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/heurix-vs-algolia-typesense-sensefuel-doofinder.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Heurix vs Algolia, Typesense, Sensefuel, Doofinder : quel moteur pour quel besoin ? — Heurix">
+<meta property="og:description" content="Comparatif factuel entre cinq approches du search e-commerce — API généraliste, plug-and-play merchandising, et moteur spécialisé catalogues techniques.">
+<meta property="og:image" content="https://heurix.fr/og-image.png">
+<meta property="og:url" content="https://heurix.fr/blog/heurix-vs-algolia-typesense-sensefuel-doofinder.html">
+<meta property="og:locale" content="fr_FR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Heurix vs Algolia, Typesense, Sensefuel, Doofinder : quel moteur pour quel besoin ? — Heurix">
+<meta name="twitter:description" content="Comparatif factuel entre cinq approches du search e-commerce — API généraliste, plug-and-play merchandising, et moteur spécialisé catalogues techniques.">
+<meta name="twitter:image" content="https://heurix.fr/og-image.png">
+<link rel="icon" type="image/png" href="../favicon-32.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<link rel="stylesheet" href="../styles.css?v=1784819296">
+<link rel="canonical" href="https://heurix.fr/blog/heurix-vs-algolia-typesense-sensefuel-doofinder.html">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Heurix",
+  "url": "https://heurix.fr",
+  "logo": "https://heurix.fr/logo.svg",
+  "image": "https://heurix.fr/og-image.png",
+  "description": "Moteur de recherche et search & discovery pour sites e-commerce, basé sur des expressions régulières, conçu en France.",
+  "email": "contact@heurix.fr",
+  "sameAs": ["https://www.linkedin.com/company/heurix-search/"],
+  "founder": {"@type": "Person", "name": "Alexis Flahaut"},
+  "areaServed": "FR"
+}
+</script>
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PGLPLKDP"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+<header>
+  <div class="header-top">
+    <nav class="header-top-inner">
+      <a href="../index.html" class="logo"><img src="../logo.svg" alt="Heurix"> <span class="wordmark">HEURIX</span></a>
+      <div class="header-search">
+        <button id="heurix-search-btn" class="search-trigger" aria-label="Heurix Search — rechercher sur le site" type="button">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <span class="search-trigger-text">Heurix Search</span>
+          <span class="search-trigger-kbd">Ctrl K</span>
+        </button>
+      </div>
+      <div class="header-utility">
+        <button type="button" id="mobile-nav-toggle" class="mobile-nav-toggle" aria-label="Menu" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+        <a href="../console.html" class="header-signin">Se connecter</a>
+        <a href="../en/blog.html" class="lang-switch">EN</a>
+        <a href="../pricing.html" class="btn">Découvrir le moteur</a>
+      </div>
+    </nav>
+  </div>
+  <div class="header-nav-row">
+    <nav class="header-nav-row-inner" aria-label="Navigation principale">
+      <div class="nav-links">
+        <a href="../index.html#probleme">Le problème</a>
+        <a href="../index.html#moteur">Le moteur</a>
+        <a href="../fonctionnalites.html">Fonctionnalités</a>
+        <a href="../integrations.html">Intégrations</a>
+        <a href="../index.html#moteur">Search API</a>
+        <a href="../index.html#tarifs">Simulateur ROI</a>
+        <a href="../blog.html">Blog</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<div id="heurix-search-modal" class="search-modal">
+  <div id="heurix-search-backdrop" class="search-backdrop" data-search-close></div>
+  <div class="search-panel">
+    <div class="search-panel-head">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input id="heurix-search-input" type="text" placeholder="Heurix Search..." autocomplete="off">
+      <button class="search-close" data-search-close type="button">Échap</button>
+    </div>
+    <p id="heurix-search-suggest-label" class="search-suggest-label" hidden>Derniers articles</p>
+    <div id="heurix-search-results" class="search-results"></div>
+    <p id="heurix-search-empty" class="search-empty" hidden>Aucun résultat pour cette recherche. Essayez un autre terme.</p>
+  </div>
+</div>
+
+<article class="post">
+  <div class="wrap post-wrap">
+    <a href="../blog.html" class="back-link">← Tous les articles</a>
+    <div class="kicker">Blog · Juillet 2026</div>
+    <h1>Heurix vs Algolia, Typesense, Sensefuel, Doofinder : quel moteur pour quel besoin ?</h1>
+    <p class="post-lede">Cinq outils, cinq approches différentes du même problème apparent — trouver le bon produit vite. Voici où chacun excelle, factuellement, sans chercher à faire passer un couteau suisse pour un mauvais choix partout.</p>
+
+    <div class="post-body">
+      <h2>Trois familles d'outils, pas une seule catégorie</h2>
+      <p>Ranger ces cinq solutions dans une seule case fausserait la comparaison. Elles répondent à des besoins différents :</p>
+      <p><strong>Les API généralistes</strong> (Algolia, Typesense) fournissent une infrastructure de recherche brute, rapide, à configurer. Elles ne savent rien de votre secteur au départ — c'est à vous d'écrire les règles de pertinence, les synonymes, les facettes.</p>
+      <p><strong>Les solutions plug-and-play</strong> (Doofinder, et dans une moindre mesure Sensefuel) s'installent via un script ou un module, sans développeur, et proposent un tableau de bord pour piloter le merchandising — mise en avant de produits, bannières, résultats personnalisés.</p>
+      <p><strong>Les moteurs spécialisés</strong> comme Heurix se concentrent sur un problème plus étroit : comprendre la <em>structure</em> d'une référence produit (diamètre, taille, millésime, ISBN) plutôt que de traiter le texte comme une suite de mots à comparer.</p>
+
+      <h2>Algolia</h2>
+      <p>Le nom le plus reconnu du secteur, avec une infrastructure éprouvée à grande échelle et un écosystème d'intégrations très large. Le plan gratuit « Build » couvre les petits projets (10 000 requêtes et 1 million d'enregistrements par mois) ; au-delà, la facturation à l'usage du plan « Grow » tourne autour de 0,50 $ pour 1 000 requêtes et 0,40 $ pour 1 000 enregistrements, avec un tarif nettement plus élevé pour les fonctionnalités IA du plan « Grow Plus ». Les plans « Premium » et « Elevate » passent en contrat annuel à tarif négocié. Algolia excelle en recherche généraliste rapide ; comprendre qu'une référence contient un diamètre et une longueur reste un travail de configuration à faire soi-même, règle par règle.</p>
+
+      <h2>Typesense</h2>
+      <p>L'alternative open source la plus citée face à Algolia : moteur auto-hébergeable gratuitement, avec un code source ouvert et une communauté active. Typesense Cloud, la version hébergée, facture à l'heure selon les ressources réservées (RAM, CPU, stockage) plutôt qu'un tarif fixe par palier — les estimations circulant en ligne varient donc largement selon la configuration retenue, ce qui reflète un modèle de tarification par infrastructure plutôt qu'un vrai désaccord entre sources. Un bon choix pour une équipe technique qui veut garder la main sur son hébergement ; la compréhension des références reste, comme chez Algolia, à construire soi-même.</p>
+
+      <h2>Sensefuel</h2>
+      <p>Éditeur français positionné sur la personnalisation et le merchandising e-commerce : tableaux de bord dédiés aux équipes e-merchandising, mise en avant de marges ou de produits à écouler, et une couche d'IA orientée compréhension du langage naturel des requêtes. Les tarifs annoncés démarrent à 250 € par mois. Sensefuel vise explicitement les équipes marketing/merchandising plus que les développeurs — une différence de posture assumée face à une offre API comme Heurix ou Algolia.</p>
+
+      <h2>Doofinder</h2>
+      <p>La solution la plus simple à déployer du lot : un script à installer, sans développeur, opérationnel en quelques minutes. Revendique plus de 10 000 boutiques clientes, principalement sur Shopify et les CMS e-commerce grand public. Les tarifs démarrent à 35 € par mois pour les petits catalogues et augmentent avec le nombre de produits indexés. Une fonctionnalité notable, « Custom results », permet d'associer manuellement des termes de recherche à des produits — une réponse pragmatique, mais manuelle, au problème que Heurix résout par reconnaissance automatique de structure.</p>
+
+      <blockquote>Aucune de ces solutions n'est mauvaise dans l'absolu — la question est de savoir si votre catalogue a besoin d'une infrastructure généraliste à configurer, d'un outil de merchandising clé en main, ou d'une compréhension fine de références techniques dès l'indexation.</blockquote>
+
+      <h2>Où se situe Heurix</h2>
+      <p>Heurix ne cherche à concurrencer aucune de ces quatre solutions sur leur propre terrain. C'est une API, comme Algolia et Typesense — pas un module plug-and-play avec tableau de bord marketing. Mais contrairement à elles, la compréhension de la structure d'une référence (diamètre, longueur, matière, millésime, ISBN) est <em>incluse</em> dès l'indexation, via des packs de règles par secteur, plutôt qu'à construire requête par requête. Et à la différence de Sensefuel ou Doofinder, l'hébergement reste en France, avec une tarification simple à partir de 19 €/mois, sans négociation commerciale.</p>
+      <p>Un besoin de merchandising visuel poussé (bannières, recommandations personnalisées à grande échelle) reste mieux couvert par Sensefuel ou Doofinder aujourd'hui. Un besoin de recherche généraliste sur du contenu non structuré reste le terrain d'Algolia ou Typesense. Le terrain de Heurix, c'est le catalogue où chaque référence porte une information précise que le client tape rarement de la même façon deux fois.</p>
+
+      <h2>Comment trancher</h2>
+      <p>Une question simple avant de choisir : est-ce que vos références produit contiennent des codes, dimensions ou identifiants structurés (M8x20, DIN 933, ISBN, millésime) que vos clients tapent sous des formats variables ? Si oui, c'est exactement le problème que Heurix a été construit pour résoudre — <a href="../pricing.html">testable gratuitement pendant 14 jours</a>, sans engagement.</p>
+    </div>
+
+    <div class="post-footer-cta">
+      <p>Envie de voir comment le moteur traite vos propres références ?</p>
+      <a href="../pricing.html" class="btn">Essayer le Search API gratuitement</a>
+    </div>
+  </div>
+</article>
+
+<footer>
+  <div class="wrap foot-grid">
+    <a href="../index.html" class="logo" style="font-size:15px;"><img src="../logo.svg" alt="Heurix" style="height:22px;width:22px;"> <span class="wordmark">HEURIX</span></a>
+    <div class="foot-links">
+      <a href="../blog.html">Blog</a>
+      <a href="../docs.html">Documentation API</a>
+      <a href="../fonctionnalites.html">Fonctionnalités</a>
+      <a href="../integrations.html">Intégrations</a>
+      <a href="../console.html">Console</a>
+      <a href="../about.html">À propos</a>
+      <a href="../index.html#faq">FAQ</a>
+      <a href="../cgv.html">CGV</a>
+      <a href="../mentions-legales.html">Mentions légales</a>
+      <a href="mailto:contact@heurix.fr">contact@heurix.fr</a>
+    </div>
+    <div class="foot-social">
+      <span class="foot-social-label">Réseaux sociaux</span>
+      <a href="https://www.linkedin.com/company/heurix-search/" target="_blank" rel="noopener" aria-label="LinkedIn" class="foot-social-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+      </a>
+    </div>
+    <div class="foot-legal">
+      Heurix — Entreprise individuelle (micro-entreprise). SIRET 107 681 900 00018. Conseil en systèmes et logiciels informatiques.<br>
+      © <span id="year">2026</span> Heurix. Tous droits réservés.
+    </div>
+  </div>
+</footer>
+
+<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+
+<script src="../search.js"></script>
+<script src="../mobile-nav.js"></script>
+<div id="pricing-nudge" class="pricing-nudge">
+  <button type="button" class="pricing-nudge-close" aria-label="Fermer">&times;</button>
+  <div class="pricing-nudge-kicker">Essai gratuit 14 jours</div>
+  <p>Testez le Search API sur votre catalogue, sans carte bancaire.</p>
+  <a href="../pricing.html" class="btn">Voir les tarifs</a>
+</div>
+<script src="../pricing-nudge.js"></script>
+</body>
+</html>
