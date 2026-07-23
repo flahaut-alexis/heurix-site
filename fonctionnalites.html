@@ -199,9 +199,24 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <a href="docs.html#ep-federated">Endpoint recherche fédérée →</a>
       </div>
 
+    </div>
+  </section>
+
+  <section class="feat-group">
+    <div class="feat-group-title">Classer sans recherche : Browse &amp; Discovery</div>
+    <p class="section-lede" style="margin-bottom:28px;">Une page de catégorie ou de rayon n'a pas de requête à traiter — juste des produits à bien classer. Un moteur distinct de la recherche, qui réutilise vos annotations existantes comme catégories.</p>
+    <div class="feat-grid-2 reveal">
+
+      <div class="feat-card feat-card-highlight">
+        <h3>Classement configurable</h3>
+        <p>Remplacez un tri statique « date d'ajout » ou « prix croissant » par un classement qui tient compte du stock disponible, de la fraîcheur du produit, ou de l'ordre alphabétique. La catégorie est une annotation que votre pack de règles reconnaît déjà (ex. <code class="docs-inline-code">DIAM_M8</code>, <code class="docs-inline-code">FAM_VIS</code>) — rien de nouveau à fournir à l'indexation.</p>
+        <pre class="docs-code"><code>GET /v1/browse/moncatalogue/FAM_VIS?sort=recent</code></pre>
+        <a href="docs.html#ep-browse">Endpoint Browse &amp; Discovery →</a>
+      </div>
+
       <div class="feat-card">
-        <h3>Mode parcours (sans requête)</h3>
-        <p>Une recherche à requête vide devient un parcours pur du catalogue — combinée aux facettes, elle sert à construire une page de catégorie filtrable, sans qu'un visiteur ait besoin de taper quoi que ce soit.</p>
+        <h3>Merchandising manuel</h3>
+        <p>Épinglez un produit en tête d'une catégorie pour une mise en avant ponctuelle, ou reléguez-en un discrètement en fin de liste — sans toucher au code, sans désindexer. Le classement naturel reprend automatiquement sa place dès que la priorité est retirée.</p>
       </div>
 
     </div>

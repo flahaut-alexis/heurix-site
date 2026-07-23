@@ -136,6 +136,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div class="docs-sidebar-group">Endpoints</div>
       <a href="#ep-search">Recherche</a>
       <a href="#facettes">Facettes et filtres</a>
+      <a href="#ep-browse">Browse &amp; Discovery</a>
       <a href="#ep-federated">Recherche fédérée</a>
       <a href="#ep-items">Indexation</a>
       <a href="#ep-delete">Suppression</a>
@@ -290,6 +291,34 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   }
 }</code></pre>
       <p><strong>Le décompte est disjonctif au sein d'un même groupe</strong> : filtrer sur <code class="docs-inline-code">PAYS_SE</code> ne fait pas disparaître <code class="docs-inline-code">PAYS_FR</code> du décompte — c'est ce qui permet d'afficher « France (34) » comme option alternative même une fois la Suède sélectionnée, exactement comme un filtre de boutique en ligne classique. Entre deux groupes différents, en revanche, les filtres restent cumulatifs (ET logique).</p>
+    </section>
+
+    <section id="ep-browse" class="docs-section">
+      <div class="docs-endpoint"><span class="docs-method docs-method-get">GET</span><code>/v1/browse/{catalog}/{category}</code></div>
+      <h2>Browse &amp; Discovery</h2>
+      <p>Classe <strong>tous</strong> les produits d'une catégorie sans requête — pour une page de listing (catégorie, rayon), pas une barre de recherche. Remplace un tri statique « prix croissant » ou « date d'ajout » par un classement configurable, enrichi par vos propres priorités manuelles.</p>
+      <p><strong><code class="docs-inline-code">{category}</code> est une valeur d'annotation existante</strong> — pas un nouveau champ à fournir à l'indexation. Si votre catalogue est indexé avec le pack <code class="docs-inline-code">outillage</code>, <code class="docs-inline-code">DIAM_M8</code> ou <code class="docs-inline-code">FAM_VIS</code> sont déjà des catégories valides, exactement les mêmes annotations que celles utilisées comme <code class="docs-inline-code">filters</code> en recherche (voir <a href="#facettes">Facettes et filtres</a>). Consultez <code class="docs-inline-code">GET /v1/index/{catalog}/stats</code> ou l'onglet Catalogue de la console pour voir les annotations réellement présentes dans vos données.</p>
+      <pre class="docs-code"><code>curl "https://api.heurix.fr/v1/browse/moncatalogue/DIAM_M8?sort=stock&limit=20" \
+  -H "Authorization: Bearer VOTRE_CLE_API"</code></pre>
+      <div class="table-scroll"><table class="docs-params">
+        <thead><tr><th>Paramètre</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code class="docs-inline-code">sort</code></td><td>string</td><td><code class="docs-inline-code">stock</code> (défaut, en stock d'abord) · <code class="docs-inline-code">recent</code> (plus récemment ajoutés d'abord) · <code class="docs-inline-code">alphabetical</code></td></tr>
+          <tr><td><code class="docs-inline-code">limit</code> / <code class="docs-inline-code">offset</code></td><td>int</td><td>Pagination, comme pour la recherche.</td></tr>
+        </tbody>
+      </table></div>
+      <p>Consomme le quota de requêtes, comme un appel de recherche — c'est un appel moteur au même titre.</p>
+
+      <h3>Merchandising manuel : épingler ou reléguer un produit</h3>
+      <p>Indépendant du tri naturel : un produit épinglé (<code class="docs-inline-code">pin</code>) apparaît à la position choisie en tête de liste quel que soit son stock ou son ancienneté ; un produit relégué (<code class="docs-inline-code">bury</code>) passe systématiquement en fin de liste. Utile pour mettre en avant une nouveauté ou masquer discrètement un produit en fin de vie sans le désindexer.</p>
+      <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/browse/moncatalogue/DIAM_M8/overrides \
+  -H "Authorization: Bearer VOTRE_CLE_API" \
+  -H "Content-Type: application/json" \
+  -d '{"product_id": "sku-123", "action": "pin", "position": 1}'
+
+curl -X DELETE https://api.heurix.fr/v1/browse/moncatalogue/DIAM_M8/overrides/sku-123 \
+  -H "Authorization: Bearer VOTRE_CLE_API"</code></pre>
+      <p>Ne consomme pas le quota — c'est une action de configuration, pas une requête. Une priorité posée sur un produit qui sort ensuite de la catégorie (changement de pack de règles, par exemple) devient simplement sans effet, pas une erreur.</p>
     </section>
 
     <section id="ep-federated" class="docs-section">
