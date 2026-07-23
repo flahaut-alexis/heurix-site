@@ -1283,6 +1283,7 @@ h2{ font-size:clamp(26px,3.4vw,34px); font-weight:800; margin:0 0 18px; max-widt
 .console-login h1{ margin:14px 0 10px; }
 .console-login .lede{ margin-bottom:28px; }
 .console-login-form{ display:flex; flex-direction:column; gap:10px; }
+.console-login-form[hidden]{ display:none; }
 .console-login-form label{ font-size:12.5px; font-weight:700; color:var(--ink-muted); }
 .console-login-form input{
   font-family:'IBM Plex Mono', monospace; font-size:16px;
