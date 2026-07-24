@@ -102,7 +102,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </div>
 
 <article class="post">
-  <div class="wrap post-wrap">
+  <div class="wrap docs-layout" style="max-width:940px;">
+    <aside class="docs-sidebar">
+      <nav aria-label="Sommaire du guide">
+        <a href="#etape-1">Étape 1 — Souscrivez</a>
+        <a href="#etape-2">Étape 2 — Indexez votre catalogue</a>
+        <a href="#etape-3">Étape 3 — Confirmez la recherche</a>
+        <a href="#modules-optionnels">Trois modules optionnels</a>
+        <a href="#module-tracker">Heurix Tracker</a>
+        <a href="#module-frontend">Intégration front-end</a>
+        <a href="#module-mcp">Serveur MCP</a>
+        <a href="#et-ensuite">Et ensuite</a>
+      </nav>
+    </aside>
+    <div>
     <a href="../blog.html" class="back-link">← Tous les articles</a>
     <div class="kicker">Guide · Juillet 2026</div>
     <h1>Guide de mise en route — de la souscription à l'installation complète</h1>
@@ -111,11 +124,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="post-body">
       <img src="../img/prisme-mise-en-route.svg?v=1784918437" alt="Schéma en pyramide à quatre niveaux : à la base, les fondations obligatoires (souscription, clé API, premier catalogue) ; au-dessus, trois modules optionnels empilés — Heurix Tracker, intégration front-end, serveur MCP" style="width:100%; max-width:560px; margin:8px 0 28px;">
 
-      <h2>Étape 1 — Souscrivez</h2>
+      <h2 id="etape-1">Étape 1 — Souscrivez</h2>
       <p>Choisissez un plan sur <a href="../pricing.html">la page tarifs</a> — l'essai de 14 jours ne demande pas de carte bancaire. À la fin de la souscription, votre clé API (<code class="docs-inline-code">hx_...</code>) est immédiatement disponible dans <a href="../console.html">votre console</a>, section « Mes infos ».</p>
       <p><em>[Capture d'écran à ajouter : la clé API affichée dans la console, section Mes infos]</em></p>
 
-      <h2>Étape 2 — Indexez votre premier catalogue</h2>
+      <h2 id="etape-2">Étape 2 — Indexez votre premier catalogue</h2>
       <p>Un seul appel suffit — le catalogue se crée automatiquement au premier import, pas de configuration préalable :</p>
       <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/index/moncatalogue/items \
   -H "Authorization: Bearer VOTRE_CLE_API" \
@@ -127,7 +140,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 }'</code></pre>
       <p>Précisez <code class="docs-inline-code">"rulepack": "outillage"</code> dans le corps de la requête si votre secteur correspond à l'un des <a href="../docs.html#ep-rulepacks">six packs de règles pré-configurés</a> — sinon, le moteur indexe quand même, avec une reconnaissance de structure plus limitée tant qu'aucun pack ou <a href="../docs.html#ep-custom-rules">Custom Rule</a> n'est actif.</p>
 
-      <h2>Étape 3 — Confirmez que la recherche fonctionne</h2>
+      <h2 id="etape-3">Étape 3 — Confirmez que la recherche fonctionne</h2>
       <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/index/moncatalogue/search \
   -H "Authorization: Bearer VOTRE_CLE_API" \
   -H "Content-Type: application/json" \
@@ -135,10 +148,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <p>Une réponse avec votre produit dans <code class="docs-inline-code">hits</code> confirme que tout fonctionne. À ce stade, la recherche est pleinement opérationnelle — tout ce qui suit est optionnel.</p>
       <p><em>[Capture d'écran à ajouter : le tableau de bord "Vue d'ensemble" de la console une fois le premier catalogue indexé]</em></p>
 
-      <h2>À partir d'ici, trois modules indépendants</h2>
+      <h2 id="modules-optionnels">À partir d'ici, trois modules indépendants</h2>
       <p>Chacun répond à un besoin différent. Activez ce qui vous concerne, ignorez le reste — rien n'est requis pour les deux autres, et rien n'est requis pour que la recherche elle-même continue de fonctionner.</p>
 
-      <h3>Module optionnel — Heurix Tracker (Conversion &amp; ROI)</h3>
+      <h3 id="module-tracker">Module optionnel — Heurix Tracker (Conversion &amp; ROI)</h3>
       <p>Pour savoir quelles recherches génèrent réellement des ventes, pas seulement des clics. Téléchargez <a href="../downloads/heurix-tracker.js" download>heurix-tracker.js</a>, éditez les deux variables en tête de fichier avec votre clé et votre catalogue :</p>
       <pre class="docs-code"><code>var HEURIX_API_KEY = "VOTRE_CLE_API";
 var HEURIX_CATALOG = "moncatalogue";</code></pre>
@@ -147,7 +160,7 @@ var HEURIX_CATALOG = "moncatalogue";</code></pre>
       <p>Appelez ensuite <code class="docs-inline-code">Heurix.trackClick(query, productId)</code> sur un clic depuis vos résultats de recherche, et <code class="docs-inline-code">Heurix.trackPurchase([{id, amount, margin}])</code> à la confirmation d'une commande — détail complet dans <a href="../docs.html#ep-events">la documentation Conversion &amp; ROI</a>.</p>
       <p><em>[Capture d'écran à ajouter : le pavé Conversion &amp; ROI de la console avec de premières données]</em></p>
 
-      <h3>Module optionnel — Intégration front-end</h3>
+      <h3 id="module-frontend">Module optionnel — Intégration front-end</h3>
       <p>Deux façons d'afficher une recherche sur votre site, selon votre situation :</p>
 
       <p><strong>Vous partez de zéro, pas de recherche existante</strong> — <a href="../downloads/heurix-search.js" download>heurix-search.js</a>, un script autonome qui affiche une barre de recherche complète (saisie, résultats, facettes) en trois lignes :</p>
@@ -165,16 +178,17 @@ const results = await client.search("perceuse bosch");</code></pre>
       <p>Détail complet des deux options : <a href="../docs.html#ep-search-widget">heurix-search.js</a> et <a href="../docs.html#ep-search">la référence API</a> pour construire votre propre appel.</p>
       <p><em>[Capture d'écran à ajouter : heurix-search.js en action sur une page de test, résultats affichés]</em></p>
 
-      <h3>Module optionnel — Serveur MCP (agents IA)</h3>
+      <h3 id="module-mcp">Module optionnel — Serveur MCP (agents IA)</h3>
       <p>Pour qu'un agent IA (Claude Desktop, Cursor, un agent interne) interroge votre catalogue en langage naturel, sans jamais appeler l'API lui-même. Guide complet, installation pas à pas incluse : <a href="guide-serveur-mcp-heurix.html">Connecter Heurix à Claude Desktop et Cursor</a>.</p>
 
-      <h2>Et ensuite</h2>
+      <h2 id="et-ensuite">Et ensuite</h2>
       <p>Une fois ces bases posées, la <a href="../docs.html">documentation complète</a> couvre le reste — synonymes, facettes, Browse &amp; Discovery, priorités de requête. Rien de tout ça n'est nécessaire pour démarrer, mais tout est disponible dès que vous en avez besoin.</p>
     </div>
 
     <div class="post-footer-cta">
       <p>Prêt à commencer ?</p>
       <a href="../pricing.html" class="btn">Essayer le Search API gratuitement</a>
+    </div>
     </div>
   </div>
 </article>
