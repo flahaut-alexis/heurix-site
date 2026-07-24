@@ -152,6 +152,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <a href="#ep-custom-rules">Custom Rules</a>
       <a href="#ep-events">Conversion &amp; ROI</a>
       <a href="#ep-mcp">Serveur MCP</a>
+      <a href="#client-js">Client JS / TypeScript</a>
       <a href="#ep-health">Santé du service</a>
       <div class="docs-sidebar-group">Référence</div>
       <a href="#cascade">La cascade d'annotations</a>
@@ -501,7 +502,24 @@ curl -X POST https://api.heurix.fr/v1/events \
 HEURIX_API_KEY=hx_votre_cle python3 server.py</code></pre>
       <p>La clé API vit uniquement dans la configuration locale du client MCP (un fichier JSON sur la machine de l'utilisateur), jamais transmise en clair dans un appel d'outil. Chaque appel consomme le quota normal de la clé utilisée — <code class="docs-inline-code">heurix_search</code> et <code class="docs-inline-code">heurix_browse</code> comptent comme n'importe quel appel de recherche ou de Browse, <code class="docs-inline-code">heurix_catalog_stats</code> non.</p>
     </section>
+    
+<section id="client-js" class="docs-section">
+  <h2>Client JS / TypeScript officiel</h2>
+  <p>Une bibliothèque légère qui enveloppe le Search API — recherche, Browse &amp; Discovery, indexation, synonymes — avec des types TypeScript complets et zéro dépendance runtime (utilise <code class="docs-inline-code">fetch</code> natif). Recommandée si vous intégrez Heurix depuis un backend Node.js ou un frontend qui appelle votre propre serveur (jamais l'API directement depuis le navigateur, voir <a href="#limites">Limites</a>).</p>
+  <pre class="docs-code"><code>npm install @heurix-site/client</code></pre>
+  <pre class="docs-code"><code>import { HeurixClient } from "@heurix-site/client";
 
+const client = new HeurixClient({
+  apiKey: "hx_votre_cle_api",
+  catalog: "moncatalogue",
+});
+
+const results = await client.search("m8x20 inox");
+console.log(results.hits);</code></pre>
+  <p>Couvre <code class="docs-inline-code">search()</code>, <code class="docs-inline-code">browse()</code>, <code class="docs-inline-code">indexItems()</code>, <code class="docs-inline-code">getSynonyms()</code> / <code class="docs-inline-code">setSynonyms()</code>, avec une <code class="docs-inline-code">HeurixApiError</code> typée pour la gestion d'erreurs. Compatible Node.js 18+ et tout navigateur moderne, ESM et CommonJS fournis tous les deux.</p>
+  <p><a href="https://github.com/flahaut-alexis/heurix-client" target="_blank" rel="noopener">Code source et documentation complète sur GitHub</a> — exemple d'intégration React inclus.</p>
+</section>
+    
     <section id="ep-health" class="docs-section">
       <div class="docs-endpoint"><span class="docs-method docs-method-get">GET</span><code>/health</code></div>
       <h2>Santé du service</h2>
