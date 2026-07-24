@@ -496,6 +496,14 @@ curl -X POST https://api.heurix.fr/v1/events \
 
       <div class="docs-endpoint" style="margin-top:14px;"><span class="docs-method docs-method-get">GET</span><code>/v1/analytics/top-products</code></div>
       <p>Produits les plus achetés, triés par volume ou par marge (<code class="docs-inline-code">?sort_by=volume</code> ou <code class="docs-inline-code">margin</code>).</p>
+
+      <div class="docs-endpoint" style="margin-top:14px;"><span class="docs-method docs-method-get">GET</span><code>/v1/analytics/related-products/{catalog}/{product_id}</code></div>
+      <p>Produits fréquemment achetés dans le même panier que <code class="docs-inline-code">{product_id}</code> — une co-occurrence comptée, pas du machine learning. Utile pour une section « souvent acheté avec » sur une fiche produit.</p>
+      <pre class="docs-code"><code>{"product_id": "sku-123", "related": [
+  {"product_id": "sku-456", "co_purchases": 12},
+  {"product_id": "sku-789", "co_purchases": 4}
+]}</code></pre>
+      <p>Liste vide si moins de 5 achats sont enregistrés pour ce produit précis — pas assez de signal pour être fiable, jamais une erreur. Nécessite le <a href="#ep-events">Heurix Tracker</a> pour un résultat pertinent sur un site à trafic élevé : sans identifiant visiteur, deux achats de clients différents survenus presque au même instant peuvent, rarement, être confondus avec un seul panier.</p>
     </section>
 
     <section id="ep-mcp" class="docs-section">
