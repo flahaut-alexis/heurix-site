@@ -36,14 +36,15 @@ const HEURIX_SEARCH_INDEX = [
   { title: "Custom Rules : personnalisez votre moteur de recherche sans écrire une ligne de regex", excerpt: "Un pack de règles couvre l'essentiel d'un secteur. Voici comment combler ce qui reste propre à votre catalogue.", path: "blog/custom-rules-personnaliser-moteur-recherche.html" },
   { title: "Heurix vs Algolia, Typesense, Sensefuel, Doofinder : quel moteur pour quel besoin ?", excerpt: "Comparatif factuel entre cinq approches du search e-commerce, sans faire passer un couteau suisse pour un mauvais choix partout.", path: "blog/heurix-vs-algolia-typesense-sensefuel-doofinder.html" },
   { title: "Construire une page de catégorie avec Browse & Discovery", excerpt: "Guide pas à pas : catégories à l'indexation, snippet prêt à l'emploi, tri par prix, marge ou popularité réelle.", path: "blog/guide-page-categorie-browse.html" },
+  { title: "Guide de mise en route — de la souscription à l'installation complète", excerpt: "Le parcours complet : premier catalogue, Heurix Tracker, intégration front-end, serveur MCP.", path: "blog/guide-mise-en-route.html" },
   { title: "Connecter Heurix à Claude Desktop et Cursor avec le serveur MCP", excerpt: "Guide pas à pas : interrogez votre catalogue en langage naturel depuis un agent IA, sans écrire de code.", path: "blog/guide-serveur-mcp-heurix.html" }
 ];
 
 // Derniers articles du blog — affichés par défaut, avant toute frappe.
 const HEURIX_LATEST_ARTICLES = [
+  "blog/guide-mise-en-route.html",
   "blog/guide-serveur-mcp-heurix.html",
-  "blog/guide-page-categorie-browse.html",
-  "blog/heurix-vs-algolia-typesense-sensefuel-doofinder.html"
+  "blog/guide-page-categorie-browse.html"
 ].map((p) => HEURIX_SEARCH_INDEX.find((item) => item.path === p)).filter(Boolean);
 
 (function () {
