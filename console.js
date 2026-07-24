@@ -328,6 +328,25 @@
     if (catalogName) showCatalogCard(catalogName);
   });
 
+  // Liens de renvoi generiques depuis le contenu d'un pave vers un autre
+  // (ex. l'etat de premier lancement de "Vue d'ensemble" vers "Comment ca
+  // marche") -- deplie aussi la section parente dans la barre laterale,
+  // pas seulement le contenu, pour que l'utilisateur voie ou il atterrit.
+  document.addEventListener("click", function (e) {
+    var link = e.target.closest("[data-goto-pane]");
+    if (!link) return;
+    e.preventDefault();
+    var paneId = link.getAttribute("data-goto-pane");
+    showPane(paneId);
+    var sidebarBtn = document.querySelector('.console-sidebar-item[data-pane="' + paneId + '"]');
+    var section = sidebarBtn && sidebarBtn.closest(".console-sidebar-items");
+    if (section && section.hasAttribute("hidden")) {
+      section.hidden = false;
+      var sectionBtn = section.previousElementSibling;
+      if (sectionBtn) sectionBtn.classList.add("console-sidebar-section-on");
+    }
+  });
+
   document.getElementById("feedback-form").addEventListener("submit", function (e) {
     e.preventDefault();
     var status = document.getElementById("feedback-status");
@@ -886,6 +905,18 @@
   function loadDashboard(key, days) {
     dashLoading.hidden = false;
     dashContent.hidden = true;
+
+    apiFetch("/v1/index/catalogs", key).then(function (data) {
+      var hasCatalogs = data.catalogs && data.catalogs.length > 0;
+      document.getElementById("overview-empty-state").hidden = hasCatalogs;
+      document.getElementById("overview-stats-content").hidden = !hasCatalogs;
+    }).catch(function () {
+      // En cas d'echec de cet appel precis, ne bloque pas le reste du
+      // dashboard -- on affiche le contenu normal par defaut plutot que
+      // de laisser l'ecran vide sur une erreur secondaire.
+      document.getElementById("overview-empty-state").hidden = true;
+      document.getElementById("overview-stats-content").hidden = false;
+    });
 
     Promise.all([
       apiFetch("/v1/analytics/summary?days=" + days, key),

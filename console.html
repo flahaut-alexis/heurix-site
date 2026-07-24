@@ -16,7 +16,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="robots" content="noindex">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css?v=1784880357">
+<link rel="stylesheet" href="styles.css?v=1784909648">
 <link rel="canonical" href="https://heurix.fr/console.html">
 </head>
 <body>
@@ -214,31 +214,44 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
           <div id="pane-overview" class="console-pane">
             <h2 class="console-pane-title">Vue d'ensemble</h2>
-            <div class="console-stats">
-              <div class="console-stat">
-                <div class="icn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
-                <div class="console-stat-num" id="stat-searches">–</div>
-                <div class="console-stat-label">Recherches</div>
-              </div>
-              <div class="console-stat console-stat-warn">
-                <div class="icn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="13"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
-                <div class="console-stat-num" id="stat-zero-rate">–</div>
-                <div class="console-stat-label">Taux sans résultat</div>
-              </div>
-              <div class="console-stat">
-                <div class="icn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
-                <div class="console-stat-num" id="stat-errors">–</div>
-                <div class="console-stat-label">Erreurs</div>
-              </div>
-              <div class="console-stat">
-                <div class="icn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6z"/></svg></div>
-                <div class="console-stat-num" id="stat-usage">–</div>
-                <div class="console-stat-label">Requêtes ce mois-ci</div>
-              </div>
+
+            <div id="overview-empty-state" class="console-panel" hidden>
+              <h2>Bienvenue — indexez votre premier catalogue pour commencer</h2>
+              <p class="console-panel-note">Aucun catalogue trouvé sur cette clé pour l'instant. Les statistiques ci-dessous (recherches, taux sans résultat, erreurs) n'auront de sens qu'une fois de vrais produits indexés — pas la peine d'attendre pour vous lancer, un premier appel suffit :</p>
+              <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/index/moncatalogue/items \
+  -H "Authorization: Bearer VOTRE_CLE_API" \
+  -H "Content-Type: application/json" \
+  -d '{"items": [{"id": "sku-1", "name": "Mon premier produit", "stock": 10}]}'</code></pre>
+              <p class="console-panel-note" style="margin-bottom:0;">Le catalogue <code class="docs-inline-code">moncatalogue</code> se crée automatiquement au premier appel — pas de configuration préalable requise. Envie d'un guide pas à pas plutôt qu'une commande isolée ? <a href="javascript:void(0)" data-goto-pane="pane-catalog-help">Voir « Comment ça marche »</a>.</p>
             </div>
-            <div class="console-panel">
-              <h2>Volume de recherches</h2>
-              <div class="console-chart-wrap"><canvas id="searches-chart" height="90"></canvas></div>
+
+            <div id="overview-stats-content">
+              <div class="console-stats">
+                <div class="console-stat">
+                  <div class="icn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+                  <div class="console-stat-num" id="stat-searches">–</div>
+                  <div class="console-stat-label">Recherches</div>
+                </div>
+                <div class="console-stat console-stat-warn">
+                  <div class="icn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="13"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+                  <div class="console-stat-num" id="stat-zero-rate">–</div>
+                  <div class="console-stat-label">Taux sans résultat</div>
+                </div>
+                <div class="console-stat">
+                  <div class="icn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+                  <div class="console-stat-num" id="stat-errors">–</div>
+                  <div class="console-stat-label">Erreurs</div>
+                </div>
+                <div class="console-stat">
+                  <div class="icn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6z"/></svg></div>
+                  <div class="console-stat-num" id="stat-usage">–</div>
+                  <div class="console-stat-label">Requêtes ce mois-ci</div>
+                </div>
+              </div>
+              <div class="console-panel">
+                <h2>Volume de recherches</h2>
+                <div class="console-chart-wrap"><canvas id="searches-chart" height="90"></canvas></div>
+              </div>
             </div>
           </div>
 
@@ -643,7 +656,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<script src="console.js?v=1784880357"></script>
+<script src="console.js?v=1784909648"></script>
 <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 
 <script src="mobile-nav.js"></script>
