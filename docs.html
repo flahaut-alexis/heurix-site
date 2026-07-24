@@ -153,6 +153,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <a href="#ep-events">Conversion &amp; ROI</a>
       <a href="#ep-top-products">Top produits</a>
       <a href="#ep-related-products">Produits liés</a>
+      <a href="#ep-search-widget">Barre de recherche prête à l'emploi</a>
       <a href="#ep-mcp">Serveur MCP</a>
       <a href="#ep-health">Santé du service</a>
       <div class="docs-sidebar-group">Référence</div>
@@ -505,6 +506,56 @@ curl -X POST https://api.heurix.fr/v1/events \
   {"product_id": "sku-789", "co_purchases": 4}
 ]}</code></pre>
       <p>Liste vide si moins de 5 achats sont enregistrés pour ce produit précis — pas assez de signal pour être fiable, jamais une erreur. Nécessite le <a href="#ep-events">Heurix Tracker</a> pour un résultat pertinent sur un site à trafic élevé : sans identifiant visiteur, deux achats de clients différents survenus presque au même instant peuvent, rarement, être confondus avec un seul panier.</p>
+    </section>
+
+    <section id="ep-search-widget" class="docs-section">
+      <div class="docs-endpoint"><span class="docs-method docs-method-get">JS</span><code>heurix-search.js</code></div>
+      <h2>Barre de recherche prête à l'emploi</h2>
+      <p>Pas envie de coder l'appel <code class="docs-inline-code">fetch</code>, le rendu des résultats et la gestion des facettes vous-même ? Une bibliothèque JavaScript autonome (zéro dépendance) affiche une barre de recherche complète — saisie, résultats en direct, facettes cliquables, navigation clavier — connectée à votre catalogue en quelques lignes.</p>
+      <p class="regex-reassure">🚀 <a href="downloads/heurix-search.js" download>Téléchargez heurix-search.js</a> — un seul fichier, à poser où vous voulez sur votre site.</p>
+
+      <h3>Intégration minimale</h3>
+      <pre class="docs-code"><code>&lt;div id="ma-recherche"&gt;&lt;/div&gt;
+&lt;script src="heurix-search.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+  Heurix.searchBox({
+    apiKey: "VOTRE_CLE_API",
+    catalog: "moncatalogue",
+    containerId: "ma-recherche"
+  });
+&lt;/script&gt;</code></pre>
+      <p>C'est suffisant pour une barre de recherche fonctionnelle — saisie avec anti-rebond intégré, résultats affichés dès 2 caractères, tolérance aux fautes de frappe (gérée côté moteur, rien à faire ici), secours automatique sur zéro résultat si votre catalogue a des produits <code class="docs-inline-code">featured</code>.</p>
+
+      <h3>Options de configuration</h3>
+      <div class="table-scroll"><table class="docs-params">
+        <tr><th>Option</th><th>Type</th><th>Description</th></tr>
+        <tr><td><code class="docs-inline-code">apiKey</code>, <code class="docs-inline-code">catalog</code>, <code class="docs-inline-code">containerId</code></td><td>string</td><td>Seules options obligatoires.</td></tr>
+        <tr><td><code class="docs-inline-code">facets</code></td><td>string[]</td><td>Champs à proposer en filtres cliquables (ex. <code class="docs-inline-code">["brand", "color"]</code>). Absent par défaut — aucune facette affichée tant que vous ne les listez pas explicitement.</td></tr>
+        <tr><td><code class="docs-inline-code">accentColor</code></td><td>string</td><td>Une couleur d'accent (ex. <code class="docs-inline-code">"#2952E3"</code>) pour le focus et les filtres actifs — personnalisation minimale par design, pas une refonte CSS complète.</td></tr>
+        <tr><td><code class="docs-inline-code">placeholder</code></td><td>string</td><td>Texte du champ de recherche. Défaut : « Rechercher… ».</td></tr>
+        <tr><td><code class="docs-inline-code">minChars</code></td><td>number</td><td>Nombre de caractères avant de déclencher une recherche. Défaut : 2.</td></tr>
+        <tr><td><code class="docs-inline-code">debounceMs</code></td><td>number</td><td>Délai d'anti-rebond en millisecondes. Défaut : 200.</td></tr>
+        <tr><td><code class="docs-inline-code">limit</code></td><td>number</td><td>Nombre maximal de résultats affichés. Défaut : 8.</td></tr>
+        <tr><td><code class="docs-inline-code">renderItem</code></td><td>function(hit)</td><td>Personnalise le HTML de chaque résultat. Reçoit un hit complet (voir <a href="#ep-search">la référence de recherche</a>) ; par défaut affiche nom, référence, prix et rupture de stock.</td></tr>
+        <tr><td><code class="docs-inline-code">resultHref</code></td><td>function(hit) → string</td><td>Si fourni, chaque résultat devient un lien <code class="docs-inline-code">&lt;a&gt;</code> vers l'URL renvoyée (ex. la fiche produit), plutôt qu'un simple élément cliquable.</td></tr>
+        <tr><td><code class="docs-inline-code">onSelect</code></td><td>function(hit)</td><td>Appelé au clic ou à la validation clavier (Entrée) sur un résultat — utile si vous gérez la navigation vous-même plutôt que via <code class="docs-inline-code">resultHref</code>.</td></tr>
+        <tr><td><code class="docs-inline-code">baseUrl</code></td><td>string</td><td>Défaut : <code class="docs-inline-code">https://api.heurix.fr</code>. À ne changer que pour un environnement de test.</td></tr>
+      </table></div>
+
+      <h3>Exemple complet, avec facettes et lien produit</h3>
+      <pre class="docs-code"><code>Heurix.searchBox({
+  apiKey: "hx_votre_cle",
+  catalog: "moncatalogue",
+  containerId: "ma-recherche",
+  facets: ["brand"],
+  accentColor: "#C0392B",
+  resultHref: function (hit) {
+    return "/produits/" + hit.product.id;
+  }
+});</code></pre>
+
+      <p>Chaque recherche via ce widget consomme le quota normal de la clé utilisée, exactement comme un appel <code class="docs-inline-code">fetch</code> direct au <a href="#ep-search">point d'entrée de recherche</a> — ce n'est qu'une façade, pas un nouveau mécanisme de facturation.</p>
+      <p><strong>Le style visuel fourni reste volontairement minimal</strong> — fonctionnel et lisible, pensé pour être facilement personnalisé (chaque élément a une classe CSS préfixée <code class="docs-inline-code">hx-</code>) plutôt que pour correspondre à une charte graphique précise dès cette version.</p>
     </section>
 
     <section id="ep-mcp" class="docs-section">
