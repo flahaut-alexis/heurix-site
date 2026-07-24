@@ -86,6 +86,22 @@
     document.head.appendChild(styleEl);
   }
 
+
+  // Portees depuis l'implementation orpheline a la racine (chantier I3,
+  // audit technique) : les facettes renvoyees par le moteur sont des
+  // annotations brutes ("DIAM_M8" dans le groupe "DIAM"). Les afficher
+  // telles quelles est illisible pour un acheteur -- on montre "M8".
+  function humanizeGroup(code) {
+    return code.charAt(0).toUpperCase() + code.slice(1).toLowerCase();
+  }
+  function humanizeValue(annotation, group) {
+    var rest = annotation.slice(group.length + 1); // retire "GROUPE_" du debut
+    if (!rest) return annotation;
+    return rest.split("_").map(function (w) {
+      return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
+    }).join(" ");
+  }
+
   function defaultRenderItem(hit) {
     var p = hit.product;
     var stockKnown = typeof hit.in_stock === "boolean";
@@ -215,10 +231,14 @@
         var values = facets[field];
         if (!values) return;
         Object.keys(values).forEach(function (value) {
-          var token = field + ":" + value;
-          var active = activeFilters.indexOf(token) !== -1;
+          // Le filtre envoye a l'API doit etre l'annotation BRUTE ("DIAM_M8").
+          // La version precedente envoyait "DIAM:DIAM_M8", qui ne
+          // correspondait a aucune annotation cote moteur : cliquer une
+          // facette vidait les resultats. Corrige au chantier I3.
+          var active = activeFilters.indexOf(value) !== -1;
           html += '<button type="button" class="hx-search-facet-chip' + (active ? " hx-active" : "") +
-            '" data-filter="' + esc(token) + '">' + esc(value) + " (" + values[value] + ")</button>";
+            '" data-filter="' + esc(value) + '" title="' + esc(humanizeGroup(field)) + '">' +
+            esc(humanizeValue(value, field)) + " (" + values[value] + ")</button>";
         });
       });
       return html + "</div>";
