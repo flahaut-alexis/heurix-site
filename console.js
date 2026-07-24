@@ -1030,9 +1030,14 @@
   function customRulesListHtml(rules) {
     if (!rules.length) return '<p class="catalog-rules-empty">Aucune règle personnalisée pour l\'instant.</p>';
     return rules.map(function (r) {
+      var kw = (r.keywords || []).join(", ");
       return '<div class="catalog-rule-row" data-id="' + r.id + '">' +
         '<div><strong>' + esc(r.label) + '</strong><span class="catalog-rule-desc">' + ruleDescription(r) + '</span></div>' +
+        '<div style="white-space:nowrap;">' +
+        '<button type="button" class="catalog-rule-remove" data-edit-rule="1" data-id="' + r.id + '" data-rule-type="' + esc(r.rule_type) + '" data-label="' + esc(r.label) + '" data-keywords="' + esc(kw) + '" data-prefix="' + esc(r.prefix || "") + '" aria-label="Modifier" title="Modifier" style="margin-right:6px;">&#9998;</button>' +
+        '<button type="button" class="catalog-rule-remove" data-duplicate-rule="1" data-rule-type="' + esc(r.rule_type) + '" data-label="' + esc(r.label) + '" data-keywords="' + esc(kw) + '" data-prefix="' + esc(r.prefix || "") + '" aria-label="Dupliquer" title="Dupliquer" style="margin-right:6px;">&#10697;</button>' +
         '<button type="button" class="catalog-rule-remove" data-id="' + r.id + '" aria-label="Retirer cette règle">&times;</button>' +
+        '</div>' +
       '</div>';
     }).join("");
   }
@@ -1045,13 +1050,53 @@
     var keywordsInput = cardEl.querySelector(".catalog-rule-keywords");
     var prefixInput = cardEl.querySelector(".catalog-rule-prefix");
     var addBtn = cardEl.querySelector(".catalog-rule-add-btn");
+    var cancelBtn = cardEl.querySelector(".catalog-rule-cancel-edit-btn");
+    var formTitle = cardEl.querySelector(".catalog-rule-form-title");
     var status = cardEl.querySelector(".catalog-rule-status");
+    var editingRuleId = null; // id en cours de modification, null = ajout ou duplication
+
+    function resetForm() {
+      editingRuleId = null;
+      typeSelect.value = "keyword";
+      keywordsInput.hidden = false; prefixInput.hidden = true;
+      labelInput.value = ""; keywordsInput.value = ""; prefixInput.value = "";
+      formTitle.textContent = "Ajouter une règle";
+      addBtn.textContent = "Créer la règle";
+      cancelBtn.hidden = true;
+      status.textContent = "";
+    }
+
+    function fillForm(d) {
+      typeSelect.value = d.ruleType;
+      keywordsInput.hidden = d.ruleType !== "keyword";
+      prefixInput.hidden = d.ruleType === "keyword";
+      labelInput.value = d.label;
+      keywordsInput.value = d.keywords || "";
+      prefixInput.value = d.prefix || "";
+    }
 
     function loadRules() {
       apiFetch("/v1/index/" + encodeURIComponent(catalogName) + "/custom-rules", key)
         .then(function (data) {
           listEl.innerHTML = customRulesListHtml(data.rules);
-          listEl.querySelectorAll(".catalog-rule-remove").forEach(function (btn) {
+
+          listEl.querySelectorAll("[data-edit-rule], [data-duplicate-rule]").forEach(function (btn) {
+            btn.addEventListener("click", function () {
+              var isEdit = btn.hasAttribute("data-edit-rule");
+              editingRuleId = isEdit ? btn.getAttribute("data-id") : null;
+              fillForm({
+                ruleType: btn.getAttribute("data-rule-type"), label: btn.getAttribute("data-label"),
+                keywords: btn.getAttribute("data-keywords"), prefix: btn.getAttribute("data-prefix"),
+              });
+              formTitle.textContent = isEdit ? "Modifier la règle" : "Dupliquer — modifiez au moins un champ";
+              addBtn.textContent = isEdit ? "Enregistrer les modifications" : "Créer cette règle";
+              cancelBtn.hidden = false;
+              labelInput.scrollIntoView({ behavior: "smooth", block: "center" });
+              if (!isEdit) { labelInput.focus(); labelInput.select(); }
+            });
+          });
+
+          listEl.querySelectorAll(".catalog-rule-remove[data-id]:not([data-edit-rule])").forEach(function (btn) {
             btn.addEventListener("click", function () {
               btn.disabled = true;
               apiFetch("/v1/index/" + encodeURIComponent(catalogName) + "/custom-rules/" + btn.getAttribute("data-id"), key, { method: "DELETE" })
@@ -1073,6 +1118,8 @@
       prefixInput.hidden = isKeyword;
     });
 
+    cancelBtn.addEventListener("click", resetForm);
+
     addBtn.addEventListener("click", function () {
       var body = { rule_type: typeSelect.value, label: labelInput.value.trim() };
       if (typeSelect.value === "keyword") {
@@ -1081,17 +1128,27 @@
         body.prefix = prefixInput.value.trim();
       }
       if (!body.label) { labelInput.focus(); return; }
-      addBtn.disabled = true; status.textContent = "Création…"; status.className = "catalog-rule-status";
-      apiFetch("/v1/index/" + encodeURIComponent(catalogName) + "/custom-rules", key, { method: "POST", body: body })
-        .then(function () {
-          status.textContent = "Règle créée — produits réindexés."; status.className = "catalog-rule-status ok";
-          labelInput.value = ""; keywordsInput.value = ""; prefixInput.value = "";
-          loadRules();
-          return apiFetch("/v1/index/" + encodeURIComponent(catalogName) + "/stats", key);
-        })
-        .then(function (stats) { catalog.annotations = stats.annotations; updateCardMeta(cardEl, catalog); })
+      addBtn.disabled = true; status.textContent = "Enregistrement…"; status.className = "catalog-rule-status";
+
+      // Pas d'endpoint de mise a jour cote moteur (GET/POST/DELETE
+      // uniquement) -- une modification retire l'ancienne regle avant de
+      // creer la nouvelle. Une duplication (editingRuleId=null) ne
+      // touche jamais a la regle d'origine.
+      var createNew = function () {
+        return apiFetch("/v1/index/" + encodeURIComponent(catalogName) + "/custom-rules", key, { method: "POST", body: body });
+      };
+      var chain = editingRuleId
+        ? apiFetch("/v1/index/" + encodeURIComponent(catalogName) + "/custom-rules/" + editingRuleId, key, { method: "DELETE" }).then(createNew)
+        : createNew();
+
+      chain.then(function () {
+        status.textContent = "Enregistrée."; status.className = "catalog-rule-status ok";
+        resetForm();
+        loadRules();
+        return apiFetch("/v1/index/" + encodeURIComponent(catalogName) + "/stats", key);
+      }).then(function (stats) { catalog.annotations = stats.annotations; updateCardMeta(cardEl, catalog); })
         .catch(function (err) {
-          status.textContent = (err && err.message) || "Échec de la création.";
+          status.textContent = (err && err.message) || "Échec de l'enregistrement.";
           status.className = "catalog-rule-status err";
         })
         .then(function () { addBtn.disabled = false; });
@@ -1145,6 +1202,7 @@
       '</div>' +
       '<div class="catalog-synonyms-label" style="margin-top:22px;">Règles personnalisées</div>' +
       '<div class="catalog-rules-list"></div>' +
+      '<div class="catalog-synonyms-label catalog-rule-form-title" style="margin-top:14px; font-size:12.5px;">Ajouter une règle</div>' +
       '<div class="catalog-rule-add">' +
         '<div class="catalog-rule-add-row">' +
           '<select class="catalog-rule-type">' +
@@ -1156,6 +1214,7 @@
         '<input type="text" placeholder="Mots équivalents, ex. placo, cheville, molly" class="catalog-rule-keywords">' +
         '<input type="text" placeholder="Préfixe à reconnaître, ex. M (pour M8, M10…)" class="catalog-rule-prefix" hidden>' +
         '<button type="button" class="catalog-rule-add-btn">Créer la règle</button>' +
+        '<button type="button" class="btn btn-ghost catalog-rule-cancel-edit-btn" hidden style="margin-left:8px;">Annuler la modification</button>' +
         '<span class="catalog-rule-status"></span>' +
       '</div>' +
     '</div>';

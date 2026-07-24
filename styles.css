@@ -596,7 +596,7 @@ h2{ font-size:clamp(26px,3.4vw,34px); font-weight:800; margin:0 0 18px; max-widt
 
 /* REGEX BLOCK */
 .regex-block{
-  margin-top:56px; display:grid; grid-template-columns:1.05fr 0.95fr; gap:44px; align-items:center;
+  margin-top:20px; display:grid; grid-template-columns:1.05fr 0.95fr; gap:44px; align-items:center;
 }
 @media (max-width:800px){ .regex-block{ grid-template-columns:1fr; } }
 .regex-copy h3{ font-size:19px; margin:0 0 14px; font-weight:700; }
