@@ -171,9 +171,9 @@ var HEURIX_CATALOG = "moncatalogue";</code></pre>
   Heurix.searchBox({ apiKey: "VOTRE_CLE_PUBLIQUE", catalog: "moncatalogue", containerId: "ma-recherche" });
 &lt;/script&gt;</code></pre>
 
-      <p><strong>Vous avez déjà une interface, ou une stack JS/TS établie</strong> — <a href="https://www.npmjs.com/package/@heurix/client">@heurix/client</a>, un client léger pour construire votre propre interface :</p>
-      <pre class="docs-code"><code>npm install @heurix/client</code></pre>
-      <pre class="docs-code"><code>import { HeurixClient } from "@heurix/client";
+      <p><strong>Vous avez déjà une interface, ou une stack JS/TS établie</strong> — <a href="https://www.npmjs.com/package/heurix-client">heurix-client</a>, un client léger pour construire votre propre interface :</p>
+      <pre class="docs-code"><code>npm install heurix-client</code></pre>
+      <pre class="docs-code"><code>import { HeurixClient } from "heurix-client";
 const client = new HeurixClient({ apiKey: "VOTRE_CLE_API", catalog: "moncatalogue" });
 const results = await client.search("perceuse bosch");</code></pre>
       <p>Détail complet des deux options : <a href="../docs.html#ep-search-widget">heurix-search.js</a> et <a href="../docs.html#ep-search">la référence API</a> pour construire votre propre appel.</p>
