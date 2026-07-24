@@ -33,12 +33,21 @@ tests JS s'appuient sur ce contrat plutôt que sur des suppositions.
 
 ### Régénérer le contrat
 
-Après toute modification de l'API du moteur :
+**Pas nécessaire pour lancer les tests** — le contrat généré
+(`engine-contract.json`) est versionné, `npm test` fonctionne seul.
+
+Uniquement après une modification de l'API du moteur, et il faut alors
+indiquer où se trouve son code source :
 
 ```bash
-npm run fixtures
+HEURIX_ENGINE_PATH=/chemin/vers/heurix-engine npm run fixtures
 npm test
 ```
+
+Le script cherche aussi tout seul dans `~/heurix-engine`,
+`~/Documents/GitHub/heurix-engine`, `~/Downloads/heurix-engine` et
+`/opt/heurix-engine` — la variable n'est utile que si votre copie est
+ailleurs.
 
 Un test qui tombe après régénération est le signal recherché : le
 widget et le moteur ne sont plus d'accord. C'est exactement ce qui

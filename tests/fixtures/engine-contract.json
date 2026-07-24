@@ -50,18 +50,18 @@
     "fallback": false,
     "facets": {
       "DIAM": {
-        "DIAM_M8": 2,
-        "DIAM_M8_INOX": 2
+        "DIAM_M8_INOX": 2,
+        "DIAM_M8": 2
       }
     }
   },
   "contrat_filtres": {
-    "DIAM_M8": {
+    "DIAM_M8_INOX": {
       "groupe_facette": "DIAM",
       "resultats_avec_valeur_brute": 2,
       "resultats_avec_prefixe_groupe": 0
     },
-    "DIAM_M8_INOX": {
+    "DIAM_M8": {
       "groupe_facette": "DIAM",
       "resultats_avec_valeur_brute": 2,
       "resultats_avec_prefixe_groupe": 0

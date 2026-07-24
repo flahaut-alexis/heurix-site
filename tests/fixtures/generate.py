@@ -20,9 +20,37 @@ import os
 import sys
 import tempfile
 
-ENGINE = os.path.expanduser("~/heurix-engine")
-if not os.path.isdir(ENGINE):
-    ENGINE = "/home/claude/heurix-engine"
+# Emplacement du code source du moteur. Ce script n'est PAS necessaire
+# pour lancer les tests -- le contrat genere (engine-contract.json) est
+# versionne. Il ne sert qu'a le REgenerer apres un changement d'API.
+CANDIDATS = [
+    os.environ.get("HEURIX_ENGINE_PATH", ""),
+    os.path.expanduser("~/heurix-engine"),
+    os.path.expanduser("~/Documents/GitHub/heurix-engine"),
+    os.path.expanduser("~/Downloads/heurix-engine"),
+    "/opt/heurix-engine",
+    "/home/claude/heurix-engine",
+]
+ENGINE = next(
+    (c for c in CANDIDATS if c and os.path.isdir(os.path.join(c, "heurix"))), None
+)
+if ENGINE is None:
+    print("Code source du moteur introuvable.", file=sys.stderr)
+    print("", file=sys.stderr)
+    print("Ce script n'est pas necessaire pour lancer les tests : le contrat", file=sys.stderr)
+    print("deja genere (tests/fixtures/engine-contract.json) est versionne.", file=sys.stderr)
+    print("Lancez simplement `npm test`.", file=sys.stderr)
+    print("", file=sys.stderr)
+    print("Pour REgenerer le contrat apres un changement d'API du moteur,", file=sys.stderr)
+    print("indiquez ou se trouve le code source :", file=sys.stderr)
+    print("  HEURIX_ENGINE_PATH=/chemin/vers/heurix-engine npm run fixtures", file=sys.stderr)
+    print("", file=sys.stderr)
+    print("Emplacements essayes :", file=sys.stderr)
+    for c in CANDIDATS:
+        if c:
+            print(f"  - {c}", file=sys.stderr)
+    sys.exit(1)
+
 sys.path.insert(0, ENGINE)
 
 from heurix.index import Store  # noqa: E402

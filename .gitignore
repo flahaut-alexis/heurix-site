@@ -1,1 +1,13 @@
+# Dependances de la suite de tests (chantier P7) -- 42 Mo, jamais commitees.
+# Le site lui-meme reste 100% statique : rien de tout ceci n'est publie
+# par GitHub Pages, c'est de l'outillage de developpement uniquement.
+node_modules/
+
+# Rapports de couverture
+coverage/
+
+# CLAUDE.md -- contexte projet local, jamais versionne
 CLAUDE.md
+
+# macOS
+.DS_Store
