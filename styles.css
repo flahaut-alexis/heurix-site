@@ -521,10 +521,11 @@ h2{ font-size:clamp(26px,3.4vw,34px); font-weight:800; margin:0 0 18px; max-widt
 @media (max-width:760px){ .engine{ grid-template-columns:1fr; } }
 .index-card{
   background:var(--ink); color:#fff;
-  border-radius:14px; padding:24px;
+  border-radius:14px; padding:16px;
   font-family:'IBM Plex Mono', monospace; font-size:13px;
+  align-self:start;
 }
-.index-card .line{ display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.1); }
+.index-card .line{ display:flex; justify-content:space-between; padding:4px 0; border-bottom:1px solid rgba(255,255,255,0.1); }
 .index-card .line:last-child{ border-bottom:none; }
 .index-card .k{ color:rgba(255,255,255,0.55); }
 .index-card .v{ color:#8FE3BC; }
