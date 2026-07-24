@@ -306,7 +306,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="line"><span class="k">benchmark_index</span><span class="v">10 000 refs</span></div>
         <div class="line"><span class="k">median_query_time</span><span class="v">≈ 10 ms</span></div>
         <div class="line"><span class="k">typo_tolerance</span><span class="v">2/mot · 1/référence</span></div>
-        <div class="line"><span class="k">rulepacks</span><span class="v">6 secteurs, extensibles</span></div>
+        <div class="line"><span class="k">rulepacks</span><span class="v">7 secteurs, extensibles</span></div>
         <div class="line"><span class="k">custom_rules</span><span class="v">en libre-service, sans regex</span></div>
         <div class="line"><span class="k">annotations</span><span class="v">cascade 2 niveaux</span></div>
         <div class="line"><span class="k">ranking</span><span class="v">pertinence &gt; stock</span></div>
@@ -320,7 +320,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <h3>Un avantage concurrentiel concret : comprendre les références, pas seulement les mots</h3>
         <p>La plupart des moteurs — y compris des solutions reconnues comme Algolia ou Elasticsearch mal configurées — traitent une référence produit comme n'importe quel autre mot. Deux formats différents pour la même référence (<code>M8x20</code> et <code>M8 x 20</code>) sont alors vus comme deux choses distinctes. Sur un catalogue technique, c'est là que se joue une bonne partie des ventes perdues — pas sur le design du site, sur la capacité du moteur à comprendre ce que tape réellement l'acheteur.</p>
         <p>Heurix configure des règles d'expressions régulières (regex) sur mesure pour votre catalogue : elles reconnaissent la <em>structure</em> d'une référence — famille, dimension, variante — plutôt que de comparer des caractères un par un. Un acheteur qui tape une référence partielle ou mal formatée retrouve quand même le bon produit. C'est un travail de compréhension fine du catalogue, encodé une fois pour toutes dans les packs de règles du moteur, parce qu'il demande de comprendre à la fois votre catalogue et la façon dont vos clients cherchent réellement.</p>
-        <p class="regex-reassure">⚡ Pas besoin d'écrire vous-même la moindre regex. Nos packs de règles — outillage, mode, industrie, livres, électronique, vins &amp; spiritueux — sont pré-configurés et s'activent au choix du secteur, à l'indexation. Un terme spécifique à votre catalogue nous échappe encore ? Ajoutez votre propre <strong>Custom Rule</strong> depuis la console, en décrivant simplement ce qu'elle doit reconnaître.</p>
+        <p class="regex-reassure">⚡ Pas besoin d'écrire vous-même la moindre regex. Nos packs de règles — outillage, mode, industrie, livres, électronique, vins &amp; spiritueux, finance &amp; compta — sont pré-configurés et s'activent au choix du secteur, à l'indexation. Un terme spécifique à votre catalogue nous échappe encore ? Ajoutez votre propre <strong>Custom Rule</strong> depuis la console, en décrivant simplement ce qu'elle doit reconnaître.</p>
       </div>
       <div class="demo-video">
         <video autoplay muted loop playsinline poster="heurix-demo-poster.jpg" aria-label="Démonstration : recherche d'une vis M8x20 avec un moteur natif, puis avec Heurix">
@@ -345,7 +345,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     <div class="verticals reveal">
       <h3>Les secteurs où cette approche change le plus de choses</h3>
-      <p class="section-lede" style="margin-bottom:28px;">Plus un catalogue ou une base de contenu est volumineux, plus le gain d'une recherche bien réglée est important — parce que la recherche native décroche exactement là où le besoin de précision est le plus fin. Six de ces secteurs ont déjà un pack de règles dédié, prêt à l'emploi ; les autres se couvrent avec des <strong>Custom Rules</strong> en quelques minutes, sans écrire de regex.</p>
+      <p class="section-lede" style="margin-bottom:28px;">Plus un catalogue ou une base de contenu est volumineux, plus le gain d'une recherche bien réglée est important — parce que la recherche native décroche exactement là où le besoin de précision est le plus fin. Sept de ces secteurs ont déjà un pack de règles dédié, prêt à l'emploi ; les autres se couvrent avec des <strong>Custom Rules</strong> en quelques minutes, sans écrire de regex.</p>
       <div class="vertical-grid">
         <div class="vertical-card">
           <div class="icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.38 3.46 16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.47a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.47a2 2 0 00-1.34-2.23z"/></svg></div>
