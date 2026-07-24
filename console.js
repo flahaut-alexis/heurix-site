@@ -291,7 +291,7 @@
     }).catch(function () {});
   }
 
-  var ALL_PANE_IDS = ["pane-overview", "pane-top-queries", "pane-zero-results", "pane-errors", "pane-conversion",
+  var ALL_PANE_IDS = ["pane-overview", "pane-guides", "pane-top-queries", "pane-zero-results", "pane-errors", "pane-search-overrides", "pane-conversion",
     "pane-browse", "pane-catalog-help", "pane-catalog-list", "pane-company", "pane-team", "pane-key", "pane-feedback"];
 
   function showPane(paneId) {
@@ -471,6 +471,169 @@
   var browseAttributesCache = [];
   var browseFormsWired = false;
 
+  // ---------------- Search : priorites de requete ----------------
+  var soCatalogsLoaded = false;
+  var soCurrentCatalog = "";
+  var soEditingKey = null; // {query, product_id} si en cours de modification, sinon null (ajout ou duplication)
+  var soFormWired = false;
+
+  function loadSearchOverridesCatalogs(key) {
+    if (soCatalogsLoaded) return;
+    soCatalogsLoaded = true;
+    apiFetch("/v1/index/catalogs", key).then(function (data) {
+      var select = document.getElementById("so-catalog-select");
+      data.catalogs.forEach(function (c) {
+        var opt = document.createElement("option");
+        opt.value = c.catalog; opt.textContent = c.catalog;
+        select.appendChild(opt);
+      });
+    }).catch(function () {});
+  }
+
+  function resetSoForm() {
+    soEditingKey = null;
+    document.getElementById("so-query").value = "";
+    document.getElementById("so-product-id").value = "";
+    document.getElementById("so-action").value = "pin";
+    document.getElementById("so-position").hidden = false;
+    document.getElementById("so-position").value = "";
+    document.getElementById("so-form-title").textContent = "Ajouter une priorité";
+    document.getElementById("so-submit-btn").textContent = "Ajouter la priorité";
+    document.getElementById("so-cancel-edit-btn").hidden = true;
+    document.getElementById("so-status").textContent = "";
+  }
+
+  function fillSoForm(o) {
+    document.getElementById("so-query").value = o.query;
+    document.getElementById("so-product-id").value = o.productId;
+    document.getElementById("so-action").value = o.action;
+    document.getElementById("so-position").hidden = o.action !== "pin";
+    document.getElementById("so-position").value = o.position || "";
+  }
+
+  function soRowHtml(o) {
+    var actionLabel = o.action === "pin" ? "Épingler" : "Reléguer";
+    return "<td class='mono'>" + esc(o.query) + "</td>" +
+      "<td class='mono'>" + esc(o.product_id) + "</td>" +
+      "<td>" + actionLabel + "</td>" +
+      "<td>" + (o.position || "–") + "</td>" +
+      "<td style='white-space:nowrap;'>" +
+        "<button type='button' class='catalog-rule-remove' data-so-edit='1' data-query='" + esc(o.query) + "' data-product-id='" + esc(o.product_id) + "' data-action='" + esc(o.action) + "' data-position='" + (o.position || "") + "' aria-label='Modifier' title='Modifier' style='margin-right:6px;'>&#9998;</button>" +
+        "<button type='button' class='catalog-rule-remove' data-so-duplicate='1' data-query='" + esc(o.query) + "' data-product-id='" + esc(o.product_id) + "' data-action='" + esc(o.action) + "' data-position='" + (o.position || "") + "' aria-label='Dupliquer' title='Dupliquer comme nouvelle règle' style='margin-right:6px;'>&#10697;</button>" +
+        "<button type='button' class='catalog-rule-remove' data-so-delete='1' data-query='" + esc(o.query) + "' data-product-id='" + esc(o.product_id) + "' aria-label='Supprimer'>&times;</button>" +
+      "</td>";
+  }
+
+  function refreshSoTable(key) {
+    apiFetch("/v1/index/" + encodeURIComponent(soCurrentCatalog) + "/search-overrides", key)
+      .then(function (data) { renderTable("so-table", "so-empty", data.overrides, soRowHtml); })
+      .catch(function () {});
+  }
+
+  function onSoCatalogChange(key) {
+    soCurrentCatalog = document.getElementById("so-catalog-select").value;
+    var content = document.getElementById("so-content");
+    if (!soCurrentCatalog) { content.hidden = true; return; }
+    content.hidden = false;
+    resetSoForm();
+    refreshSoTable(key);
+  }
+
+  function wireSearchOverridesPane(key) {
+    if (soFormWired) return;
+    soFormWired = true;
+
+    document.getElementById("so-catalog-select").addEventListener("change", function () { onSoCatalogChange(key); });
+    document.getElementById("so-action").addEventListener("change", function (e) {
+      document.getElementById("so-position").hidden = e.target.value !== "pin";
+    });
+    document.getElementById("so-cancel-edit-btn").addEventListener("click", resetSoForm);
+
+    document.getElementById("so-form").addEventListener("submit", function (e) {
+      e.preventDefault();
+      var status = document.getElementById("so-status");
+      var query = document.getElementById("so-query").value.trim();
+      var productId = document.getElementById("so-product-id").value.trim();
+      var action = document.getElementById("so-action").value;
+      if (!query || !productId) return;
+      var body = { query: query, product_id: productId, action: action };
+      if (action === "pin") {
+        var pos = parseInt(document.getElementById("so-position").value, 10);
+        if (!pos) { document.getElementById("so-position").focus(); return; }
+        body.position = pos;
+      }
+
+      var submitBtn = document.getElementById("so-submit-btn");
+      submitBtn.disabled = true;
+      status.textContent = "Enregistrement…"; status.className = "catalog-rule-status";
+
+      var createOrUpdate = function () {
+        return apiFetch("/v1/index/" + encodeURIComponent(soCurrentCatalog) + "/search-overrides", key, { method: "POST", body: body });
+      };
+
+      // Modification ou l'utilisateur a change la requete/le produit : l'ancienne
+      // cle n'existe plus sous ce nom, il faut la retirer avant de creer la nouvelle
+      // (sinon deux regles distinctes coexistent au lieu d'une seule modifiee).
+      var needsCleanupFirst = soEditingKey && (soEditingKey.query !== query || soEditingKey.productId !== productId);
+      var chain = needsCleanupFirst
+        ? apiFetch("/v1/index/" + encodeURIComponent(soCurrentCatalog) + "/search-overrides" +
+            "?query=" + encodeURIComponent(soEditingKey.query) + "&product_id=" + encodeURIComponent(soEditingKey.productId),
+            key, { method: "DELETE" }).then(createOrUpdate)
+        : createOrUpdate();
+
+      chain
+        .then(function () {
+          status.textContent = "Enregistré."; status.className = "catalog-rule-status ok";
+          resetSoForm();
+          refreshSoTable(key);
+        })
+        .catch(function (err) {
+          status.textContent = (err && err.message) || "Échec de l'enregistrement.";
+          status.className = "catalog-rule-status err";
+        })
+        .then(function () { submitBtn.disabled = false; });
+    });
+
+    document.querySelector("#so-table tbody").addEventListener("click", function (e) {
+      var editBtn = e.target.closest("[data-so-edit]");
+      var dupBtn = e.target.closest("[data-so-duplicate]");
+      var delBtn = e.target.closest("[data-so-delete]");
+
+      if (editBtn) {
+        soEditingKey = { query: editBtn.getAttribute("data-query"), productId: editBtn.getAttribute("data-product-id") };
+        fillSoForm({
+          query: editBtn.getAttribute("data-query"), productId: editBtn.getAttribute("data-product-id"),
+          action: editBtn.getAttribute("data-action"), position: editBtn.getAttribute("data-position"),
+        });
+        document.getElementById("so-form-title").textContent = "Modifier la priorité";
+        document.getElementById("so-submit-btn").textContent = "Enregistrer les modifications";
+        document.getElementById("so-cancel-edit-btn").hidden = false;
+        document.getElementById("so-query").scrollIntoView({ behavior: "smooth", block: "center" });
+        return;
+      }
+      if (dupBtn) {
+        soEditingKey = null; // duplication : cree une NOUVELLE regle, ne remplace pas l'originale
+        fillSoForm({
+          query: dupBtn.getAttribute("data-query"), productId: dupBtn.getAttribute("data-product-id"),
+          action: dupBtn.getAttribute("data-action"), position: dupBtn.getAttribute("data-position"),
+        });
+        document.getElementById("so-form-title").textContent = "Dupliquer une priorité — modifiez au moins un champ";
+        document.getElementById("so-submit-btn").textContent = "Créer cette priorité";
+        document.getElementById("so-cancel-edit-btn").hidden = false;
+        document.getElementById("so-query").focus();
+        document.getElementById("so-query").select();
+        return;
+      }
+      if (delBtn) {
+        delBtn.disabled = true;
+        var url = "/v1/index/" + encodeURIComponent(soCurrentCatalog) + "/search-overrides" +
+          "?query=" + encodeURIComponent(delBtn.getAttribute("data-query")) +
+          "&product_id=" + encodeURIComponent(delBtn.getAttribute("data-product-id"));
+        apiFetch(url, key, { method: "DELETE" }).then(function () { refreshSoTable(key); }).catch(function () { delBtn.disabled = false; });
+      }
+    });
+  }
+
   function loadBrowseCatalogs(key) {
     if (browseCatalogsLoaded) return;
     browseCatalogsLoaded = true;
@@ -532,6 +695,8 @@
     var content = document.getElementById("browse-content");
     if (!browseCurrentCategory) { content.hidden = true; return; }
     content.hidden = false;
+    resetBrowseOverrideForm();
+    resetAttributeRuleForm();
     refreshBrowseAll(key);
   }
 
@@ -553,13 +718,18 @@
     }).catch(function () {});
   }
 
+  var boEditingProductId = null; // produit en cours de modification (priorites par produit), null = ajout/duplication
+  var barEditingKey = null; // {field, value} en cours de modification (regles par attribut), null = ajout/duplication
+
   function refreshBrowseOverrides(key) {
     var url = "/v1/browse/" + encodeURIComponent(browseCurrentCatalog) + "/" + encodeURIComponent(browseCurrentCategory) + "/overrides";
     apiFetch(url, key).then(function (data) {
       renderTable("browse-overrides-table", "browse-overrides-empty", data.overrides, function (o) {
         return "<td class='mono'>" + esc(o.product_id) + "</td><td>" + (o.action === "pin" ? "Épingler" : "Reléguer") +
-          "</td><td>" + (o.position || "–") + "</td><td><button type='button' class='catalog-rule-remove' data-remove-override='" +
-          esc(o.product_id) + "' aria-label='Retirer'>&times;</button></td>";
+          "</td><td>" + (o.position || "–") + "</td><td style='white-space:nowrap;'>" +
+          "<button type='button' class='catalog-rule-remove' data-edit-override='1' data-product-id='" + esc(o.product_id) + "' data-action='" + esc(o.action) + "' data-position='" + (o.position || "") + "' aria-label='Modifier' title='Modifier' style='margin-right:6px;'>&#9998;</button>" +
+          "<button type='button' class='catalog-rule-remove' data-duplicate-override='1' data-product-id='" + esc(o.product_id) + "' data-action='" + esc(o.action) + "' data-position='" + (o.position || "") + "' aria-label='Dupliquer' title='Dupliquer' style='margin-right:6px;'>&#10697;</button>" +
+          "<button type='button' class='catalog-rule-remove' data-remove-override='" + esc(o.product_id) + "' aria-label='Retirer'>&times;</button></td>";
       });
     }).catch(function () {});
   }
@@ -569,10 +739,33 @@
     apiFetch(url, key).then(function (data) {
       renderTable("browse-attribute-rules-table", "browse-attribute-rules-empty", data.rules, function (r) {
         return "<td class='mono'>" + esc(r.field) + "</td><td class='mono'>" + esc(r.value) + "</td><td>" +
-          (r.action === "boost" ? "Booster" : "Reléguer") + "</td><td><button type='button' class='catalog-rule-remove' " +
+          (r.action === "boost" ? "Booster" : "Reléguer") + "</td><td style='white-space:nowrap;'>" +
+          "<button type='button' class='catalog-rule-remove' data-edit-attribute='1' data-field='" + esc(r.field) + "' data-value='" + esc(r.value) + "' data-action='" + esc(r.action) + "' aria-label='Modifier' title='Modifier' style='margin-right:6px;'>&#9998;</button>" +
+          "<button type='button' class='catalog-rule-remove' data-duplicate-attribute='1' data-field='" + esc(r.field) + "' data-value='" + esc(r.value) + "' data-action='" + esc(r.action) + "' aria-label='Dupliquer' title='Dupliquer' style='margin-right:6px;'>&#10697;</button>" +
+          "<button type='button' class='catalog-rule-remove' " +
           "data-remove-attribute-field='" + esc(r.field) + "' data-remove-attribute-value='" + esc(r.value) + "' aria-label='Retirer'>&times;</button></td>";
       });
     }).catch(function () {});
+  }
+
+  function resetBrowseOverrideForm() {
+    boEditingProductId = null;
+    document.getElementById("browse-override-product-id").value = "";
+    document.getElementById("browse-override-action").value = "pin";
+    document.getElementById("browse-override-position").value = "";
+    document.getElementById("bo-form-title").textContent = "Ajouter une priorité";
+    document.getElementById("bo-submit-btn").textContent = "Ajouter la priorité";
+    document.getElementById("bo-cancel-edit-btn").hidden = true;
+  }
+
+  function resetAttributeRuleForm() {
+    barEditingKey = null;
+    document.getElementById("browse-attribute-field").value = "";
+    document.getElementById("browse-attribute-value").value = "";
+    document.getElementById("browse-attribute-action").value = "boost";
+    document.getElementById("bar-form-title").textContent = "Ajouter une règle";
+    document.getElementById("bar-submit-btn").textContent = "Ajouter la règle";
+    document.getElementById("bar-cancel-edit-btn").hidden = true;
   }
 
   function wireBrowseForms(key) {
@@ -583,6 +776,8 @@
     document.getElementById("browse-category-select").addEventListener("change", function () { onBrowseCategoryChange(key); });
     document.getElementById("browse-sort-select").addEventListener("change", function () { refreshBrowsePreview(key); });
     document.getElementById("browse-attribute-field").addEventListener("input", onBrowseFieldInput);
+    document.getElementById("bo-cancel-edit-btn").addEventListener("click", resetBrowseOverrideForm);
+    document.getElementById("bar-cancel-edit-btn").addEventListener("click", resetAttributeRuleForm);
 
     document.getElementById("browse-override-form").addEventListener("submit", function (e) {
       e.preventDefault();
@@ -593,11 +788,19 @@
       if (!productId) return;
       var body = { product_id: productId, action: action };
       if (positionInput) body.position = parseInt(positionInput, 10);
-      var url = "/v1/browse/" + encodeURIComponent(browseCurrentCatalog) + "/" + encodeURIComponent(browseCurrentCategory) + "/overrides";
-      apiFetch(url, key, { method: "POST", body: body }).then(function () {
-        status.textContent = "Ajoutée."; status.className = "catalog-rule-status ok";
-        document.getElementById("browse-override-product-id").value = "";
-        document.getElementById("browse-override-position").value = "";
+      var base = "/v1/browse/" + encodeURIComponent(browseCurrentCatalog) + "/" + encodeURIComponent(browseCurrentCategory) + "/overrides";
+
+      // Modification en changeant l'identifiant produit : l'ancienne cle n'existe
+      // plus sous ce nom, il faut la retirer avant de creer la nouvelle.
+      var needsCleanup = boEditingProductId && boEditingProductId !== productId;
+      var chain = needsCleanup
+        ? apiFetch(base + "/" + encodeURIComponent(boEditingProductId), key, { method: "DELETE" })
+            .then(function () { return apiFetch(base, key, { method: "POST", body: body }); })
+        : apiFetch(base, key, { method: "POST", body: body });
+
+      chain.then(function () {
+        status.textContent = "Enregistrée."; status.className = "catalog-rule-status ok";
+        resetBrowseOverrideForm();
         refreshBrowseOverrides(key); refreshBrowsePreview(key);
       }).catch(function (err) {
         status.textContent = (err && err.message) || "Échec."; status.className = "catalog-rule-status err";
@@ -605,11 +808,28 @@
     });
 
     document.getElementById("browse-overrides-table").querySelector("tbody").addEventListener("click", function (e) {
-      var btn = e.target.closest("[data-remove-override]");
-      if (!btn) return;
-      var pid = btn.getAttribute("data-remove-override");
-      var url = "/v1/browse/" + encodeURIComponent(browseCurrentCatalog) + "/" + encodeURIComponent(browseCurrentCategory) + "/overrides/" + encodeURIComponent(pid);
-      apiFetch(url, key, { method: "DELETE" }).then(function () { refreshBrowseOverrides(key); refreshBrowsePreview(key); }).catch(function () {});
+      var editBtn = e.target.closest("[data-edit-override]");
+      var dupBtn = e.target.closest("[data-duplicate-override]");
+      var delBtn = e.target.closest("[data-remove-override]");
+
+      if (editBtn || dupBtn) {
+        var src = editBtn || dupBtn;
+        boEditingProductId = editBtn ? src.getAttribute("data-product-id") : null;
+        document.getElementById("browse-override-product-id").value = src.getAttribute("data-product-id");
+        document.getElementById("browse-override-action").value = src.getAttribute("data-action");
+        document.getElementById("browse-override-position").value = src.getAttribute("data-position") || "";
+        document.getElementById("bo-form-title").textContent = editBtn ? "Modifier la priorité" : "Dupliquer — modifiez au moins un champ";
+        document.getElementById("bo-submit-btn").textContent = editBtn ? "Enregistrer les modifications" : "Créer cette priorité";
+        document.getElementById("bo-cancel-edit-btn").hidden = false;
+        document.getElementById("browse-override-product-id").scrollIntoView({ behavior: "smooth", block: "center" });
+        if (dupBtn) { document.getElementById("browse-override-product-id").focus(); document.getElementById("browse-override-product-id").select(); }
+        return;
+      }
+      if (delBtn) {
+        var pid = delBtn.getAttribute("data-remove-override");
+        var url = "/v1/browse/" + encodeURIComponent(browseCurrentCatalog) + "/" + encodeURIComponent(browseCurrentCategory) + "/overrides/" + encodeURIComponent(pid);
+        apiFetch(url, key, { method: "DELETE" }).then(function () { refreshBrowseOverrides(key); refreshBrowsePreview(key); }).catch(function () {});
+      }
     });
 
     document.getElementById("browse-attribute-rule-form").addEventListener("submit", function (e) {
@@ -619,11 +839,17 @@
       var value = document.getElementById("browse-attribute-value").value.trim();
       var action = document.getElementById("browse-attribute-action").value;
       if (!field || !value) return;
-      var url = "/v1/browse/" + encodeURIComponent(browseCurrentCatalog) + "/" + encodeURIComponent(browseCurrentCategory) + "/attribute-rules";
-      apiFetch(url, key, { method: "POST", body: { field: field, value: value, action: action } }).then(function () {
-        status.textContent = "Ajoutée."; status.className = "catalog-rule-status ok";
-        document.getElementById("browse-attribute-field").value = "";
-        document.getElementById("browse-attribute-value").value = "";
+      var base = "/v1/browse/" + encodeURIComponent(browseCurrentCatalog) + "/" + encodeURIComponent(browseCurrentCategory) + "/attribute-rules";
+
+      var needsCleanup = barEditingKey && (barEditingKey.field !== field || barEditingKey.value !== value);
+      var chain = needsCleanup
+        ? apiFetch(base + "?field=" + encodeURIComponent(barEditingKey.field) + "&value=" + encodeURIComponent(barEditingKey.value), key, { method: "DELETE" })
+            .then(function () { return apiFetch(base, key, { method: "POST", body: { field: field, value: value, action: action } }); })
+        : apiFetch(base, key, { method: "POST", body: { field: field, value: value, action: action } });
+
+      chain.then(function () {
+        status.textContent = "Enregistrée."; status.className = "catalog-rule-status ok";
+        resetAttributeRuleForm();
         refreshBrowseAttributeRules(key); refreshBrowsePreview(key);
       }).catch(function (err) {
         status.textContent = (err && err.message) || "Échec."; status.className = "catalog-rule-status err";
@@ -631,12 +857,29 @@
     });
 
     document.getElementById("browse-attribute-rules-table").querySelector("tbody").addEventListener("click", function (e) {
-      var btn = e.target.closest("[data-remove-attribute-field]");
-      if (!btn) return;
-      var field = btn.getAttribute("data-remove-attribute-field"), value = btn.getAttribute("data-remove-attribute-value");
-      var url = "/v1/browse/" + encodeURIComponent(browseCurrentCatalog) + "/" + encodeURIComponent(browseCurrentCategory) +
-        "/attribute-rules?field=" + encodeURIComponent(field) + "&value=" + encodeURIComponent(value);
-      apiFetch(url, key, { method: "DELETE" }).then(function () { refreshBrowseAttributeRules(key); refreshBrowsePreview(key); }).catch(function () {});
+      var editBtn = e.target.closest("[data-edit-attribute]");
+      var dupBtn = e.target.closest("[data-duplicate-attribute]");
+      var delBtn = e.target.closest("[data-remove-attribute-field]");
+
+      if (editBtn || dupBtn) {
+        var src = editBtn || dupBtn;
+        barEditingKey = editBtn ? { field: src.getAttribute("data-field"), value: src.getAttribute("data-value") } : null;
+        document.getElementById("browse-attribute-field").value = src.getAttribute("data-field");
+        document.getElementById("browse-attribute-value").value = src.getAttribute("data-value");
+        document.getElementById("browse-attribute-action").value = src.getAttribute("data-action");
+        document.getElementById("bar-form-title").textContent = editBtn ? "Modifier la règle" : "Dupliquer — modifiez au moins un champ";
+        document.getElementById("bar-submit-btn").textContent = editBtn ? "Enregistrer les modifications" : "Créer cette règle";
+        document.getElementById("bar-cancel-edit-btn").hidden = false;
+        document.getElementById("browse-attribute-field").scrollIntoView({ behavior: "smooth", block: "center" });
+        if (dupBtn) { document.getElementById("browse-attribute-field").focus(); document.getElementById("browse-attribute-field").select(); }
+        return;
+      }
+      if (delBtn) {
+        var field = delBtn.getAttribute("data-remove-attribute-field"), value = delBtn.getAttribute("data-remove-attribute-value");
+        var url = "/v1/browse/" + encodeURIComponent(browseCurrentCatalog) + "/" + encodeURIComponent(browseCurrentCategory) +
+          "/attribute-rules?field=" + encodeURIComponent(field) + "&value=" + encodeURIComponent(value);
+        apiFetch(url, key, { method: "DELETE" }).then(function () { refreshBrowseAttributeRules(key); refreshBrowsePreview(key); }).catch(function () {});
+      }
     });
   }
 
@@ -675,6 +918,8 @@
       loadConversionData(key);
       loadBrowseCatalogs(key);
       wireBrowseForms(key);
+      loadSearchOverridesCatalogs(key);
+      wireSearchOverridesPane(key);
     }).catch(function () {
       dashLoading.hidden = true;
       localStorage.removeItem(SESSION_STORAGE_KEY);
@@ -761,17 +1006,6 @@
     }).join("");
   }
 
-  function searchOverridesListHtml(overrides) {
-    if (!overrides.length) return '<p class="catalog-rules-empty">Aucune priorité de requête pour l\'instant.</p>';
-    return overrides.map(function (o) {
-      var actionLabel = o.action === "pin" ? ("Épingler (position " + o.position + ")") : "Reléguer";
-      return '<div class="catalog-rule-row">' +
-        '<div><strong>"' + esc(o.query) + '"</strong><span class="catalog-rule-desc">' + esc(o.product_id) + " — " + actionLabel + '</span></div>' +
-        '<button type="button" class="catalog-rule-remove" data-query="' + esc(o.query) + '" data-product-id="' + esc(o.product_id) + '" aria-label="Retirer cette priorité">&times;</button>' +
-      '</div>';
-    }).join("");
-  }
-
   function wireCustomRuleControls(cardEl, catalog, key) {
     var catalogName = catalog.catalog;
     var listEl = cardEl.querySelector(".catalog-rules-list");
@@ -835,68 +1069,6 @@
     loadRules();
   }
 
-  function wireSearchOverrideControls(cardEl, catalog, key) {
-    var catalogName = catalog.catalog;
-    var listEl = cardEl.querySelector(".catalog-search-overrides-list");
-    var queryInput = cardEl.querySelector(".catalog-search-override-query");
-    var productIdInput = cardEl.querySelector(".catalog-search-override-product-id");
-    var actionSelect = cardEl.querySelector(".catalog-search-override-action");
-    var positionInput = cardEl.querySelector(".catalog-search-override-position");
-    var addBtn = cardEl.querySelector(".catalog-search-override-add-btn");
-    var status = cardEl.querySelector(".catalog-search-override-status");
-
-    function loadOverrides() {
-      apiFetch("/v1/index/" + encodeURIComponent(catalogName) + "/search-overrides", key)
-        .then(function (data) {
-          listEl.innerHTML = searchOverridesListHtml(data.overrides);
-          listEl.querySelectorAll(".catalog-rule-remove").forEach(function (btn) {
-            btn.addEventListener("click", function () {
-              btn.disabled = true;
-              var url = "/v1/index/" + encodeURIComponent(catalogName) + "/search-overrides" +
-                "?query=" + encodeURIComponent(btn.getAttribute("data-query")) +
-                "&product_id=" + encodeURIComponent(btn.getAttribute("data-product-id"));
-              apiFetch(url, key, { method: "DELETE" })
-                .then(loadOverrides)
-                .catch(function () { btn.disabled = false; });
-            });
-          });
-        })
-        .catch(function () { listEl.innerHTML = ""; });
-    }
-
-    actionSelect.addEventListener("change", function () {
-      positionInput.hidden = actionSelect.value !== "pin";
-    });
-
-    addBtn.addEventListener("click", function () {
-      var body = {
-        query: queryInput.value.trim(),
-        product_id: productIdInput.value.trim(),
-        action: actionSelect.value,
-      };
-      if (!body.query || !body.product_id) { (body.query ? productIdInput : queryInput).focus(); return; }
-      if (body.action === "pin") {
-        var pos = parseInt(positionInput.value, 10);
-        if (!pos) { positionInput.focus(); return; }
-        body.position = pos;
-      }
-      addBtn.disabled = true; status.textContent = "Ajout…"; status.className = "catalog-rule-status catalog-search-override-status";
-      apiFetch("/v1/index/" + encodeURIComponent(catalogName) + "/search-overrides", key, { method: "POST", body: body })
-        .then(function () {
-          status.textContent = "Priorité ajoutée."; status.className = "catalog-rule-status catalog-search-override-status ok";
-          queryInput.value = ""; productIdInput.value = ""; positionInput.value = "";
-          loadOverrides();
-        })
-        .catch(function (err) {
-          status.textContent = (err && err.message) || "Échec de l'ajout.";
-          status.className = "catalog-rule-status catalog-search-override-status err";
-        })
-        .then(function () { addBtn.disabled = false; });
-    });
-
-    loadOverrides();
-  }
-
   function wireCatalogCard(cardEl, catalog, key) {
     var select = cardEl.querySelector(".catalog-rulepack-select");
     var saveBtn = cardEl.querySelector(".catalog-rulepack-save");
@@ -918,7 +1090,6 @@
     });
     wireSynonymControls(cardEl, catalog, key);
     wireCustomRuleControls(cardEl, catalog, key);
-    wireSearchOverrideControls(cardEl, catalog, key);
   }
 
   function catalogCardHtml(c) {
@@ -955,24 +1126,6 @@
         '<input type="text" placeholder="Préfixe à reconnaître, ex. M (pour M8, M10…)" class="catalog-rule-prefix" hidden>' +
         '<button type="button" class="catalog-rule-add-btn">Créer la règle</button>' +
         '<span class="catalog-rule-status"></span>' +
-      '</div>' +
-      '<div class="catalog-synonyms-label" style="margin-top:22px;">Priorités sur une requête de recherche</div>' +
-      '<p class="console-panel-note" style="margin:2px 0 10px;">Épinglez ou reléguez un produit quand une recherche contient un mot précis (ex. "promo") — indépendant des catégories Browse.</p>' +
-      '<div class="catalog-search-overrides-list"></div>' +
-      '<div class="catalog-rule-add">' +
-        '<div class="catalog-rule-add-row">' +
-          '<input type="text" placeholder="Requête déclenchante, ex. promo" class="catalog-search-override-query">' +
-          '<input type="text" placeholder="Identifiant du produit" class="catalog-search-override-product-id">' +
-        '</div>' +
-        '<div class="catalog-rule-add-row">' +
-          '<select class="catalog-search-override-action">' +
-            '<option value="pin">Épingler (pin)</option>' +
-            '<option value="bury">Reléguer (bury)</option>' +
-          '</select>' +
-          '<input type="number" min="1" max="100" placeholder="Position (pin uniquement)" class="catalog-search-override-position">' +
-        '</div>' +
-        '<button type="button" class="catalog-rule-add-btn catalog-search-override-add-btn">Ajouter la priorité</button>' +
-        '<span class="catalog-rule-status catalog-search-override-status"></span>' +
       '</div>' +
     '</div>';
   }

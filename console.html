@@ -16,7 +16,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="robots" content="noindex">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css?v=1784857017">
+<link rel="stylesheet" href="styles.css?v=1784880357">
 <link rel="canonical" href="https://heurix.fr/console.html">
 </head>
 <body>
@@ -136,17 +136,49 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <nav class="console-sidebar" id="console-sidebar" aria-label="Navigation du tableau de bord">
 
         <div class="console-sidebar-group">
-          <button type="button" class="console-sidebar-section console-sidebar-section-on" data-section="dashboard">
-            <span>Dashboard</span>
+          <button type="button" class="console-sidebar-item console-sidebar-item-on console-sidebar-item-top" data-pane="pane-overview">Vue d'ensemble</button>
+        </div>
+
+        <div class="console-sidebar-group">
+          <button type="button" class="console-sidebar-section" data-section="guides">
+            <span>Guides</span>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="console-sidebar-chevron"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
-          <div class="console-sidebar-items" data-section-items="dashboard">
-            <button type="button" class="console-sidebar-item console-sidebar-item-on" data-pane="pane-overview">Vue d'ensemble</button>
+          <div class="console-sidebar-items" data-section-items="guides" hidden>
+            <button type="button" class="console-sidebar-item" data-pane="pane-guides">Tous les guides</button>
+          </div>
+        </div>
+
+        <div class="console-sidebar-group">
+          <button type="button" class="console-sidebar-section" data-section="search">
+            <span>Search</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="console-sidebar-chevron"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="console-sidebar-items" data-section-items="search" hidden>
             <button type="button" class="console-sidebar-item" data-pane="pane-top-queries">Recherches populaires</button>
             <button type="button" class="console-sidebar-item" data-pane="pane-zero-results">Sans résultat</button>
             <button type="button" class="console-sidebar-item" data-pane="pane-errors">Erreurs</button>
-            <button type="button" class="console-sidebar-item" data-pane="pane-conversion">Conversion &amp; ROI</button>
-            <button type="button" class="console-sidebar-item" data-pane="pane-browse">Browse &amp; Discovery</button>
+            <button type="button" class="console-sidebar-item" data-pane="pane-search-overrides">Priorités de requête</button>
+          </div>
+        </div>
+
+        <div class="console-sidebar-group">
+          <button type="button" class="console-sidebar-section" data-section="browse">
+            <span>Browse &amp; Discovery</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="console-sidebar-chevron"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="console-sidebar-items" data-section-items="browse" hidden>
+            <button type="button" class="console-sidebar-item" data-pane="pane-browse">Classement &amp; aperçu</button>
+          </div>
+        </div>
+
+        <div class="console-sidebar-group">
+          <button type="button" class="console-sidebar-section" data-section="conversion">
+            <span>Conversion &amp; ROI</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="console-sidebar-chevron"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="console-sidebar-items" data-section-items="conversion" hidden>
+            <button type="button" class="console-sidebar-item" data-pane="pane-conversion">Vue d'ensemble</button>
           </div>
         </div>
 
@@ -244,6 +276,49 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             </div>
           </div>
 
+          <div id="pane-search-overrides" class="console-pane" hidden>
+            <h2 class="console-pane-title">Priorités de requête</h2>
+            <div class="console-panel">
+              <p class="console-panel-note" style="margin:0 0 14px;">Épinglez ou reléguez un produit quand une recherche contient un mot précis (ex. "promo") — indépendant de Browse &amp; Discovery, qui classe des <strong>catégories</strong>, pas des requêtes de recherche. <a href="docs.html#ep-search-overrides">Documentation complète</a>.</p>
+              <div class="catalog-card-row">
+                <label style="font-size:12.5px; font-weight:700; color:var(--ink-muted);">Catalogue</label>
+                <select id="so-catalog-select"><option value="">— Choisir —</option></select>
+              </div>
+            </div>
+
+            <div id="so-content" hidden>
+              <div class="console-panel">
+                <h2>Règles en place</h2>
+                <p class="console-panel-note">Ordre d'application, toujours le même : <strong>épinglé</strong> (position exacte) puis <strong>naturel</strong> puis <strong>relégué</strong> — jamais l'inverse.</p>
+                <div class="table-scroll"><table class="console-table" id="so-table">
+                  <thead><tr><th>Déclencheur</th><th>Produit</th><th>Action</th><th>Position</th><th></th></tr></thead>
+                  <tbody></tbody>
+                </table></div>
+                <p class="console-empty" id="so-empty" hidden>Aucune priorité posée sur ce catalogue.</p>
+              </div>
+
+              <div class="console-panel">
+                <h2 id="so-form-title">Ajouter une priorité</h2>
+                <form id="so-form" class="catalog-rule-add">
+                  <div class="catalog-rule-add-row">
+                    <input type="text" placeholder="Requête déclenchante, ex. promo" id="so-query" required>
+                    <input type="text" placeholder="Identifiant du produit" id="so-product-id" required>
+                  </div>
+                  <div class="catalog-rule-add-row">
+                    <select id="so-action">
+                      <option value="pin">Épingler (pin)</option>
+                      <option value="bury">Reléguer (bury)</option>
+                    </select>
+                    <input type="number" min="1" max="100" placeholder="Position (pin uniquement)" id="so-position">
+                  </div>
+                  <button type="submit" class="catalog-rule-add-btn" id="so-submit-btn">Ajouter la priorité</button>
+                  <button type="button" class="btn btn-ghost" id="so-cancel-edit-btn" hidden style="margin-left:8px;">Annuler la modification</button>
+                  <span class="catalog-rule-status" id="so-status"></span>
+                </form>
+              </div>
+            </div>
+          </div>
+
           <div id="pane-conversion" class="console-pane" hidden>
             <h2 class="console-pane-title">Conversion &amp; ROI</h2>
             <div class="console-panel console-panel-warn">
@@ -291,6 +366,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
           <div id="pane-browse" class="console-pane" hidden>
             <h2 class="console-pane-title">Browse &amp; Discovery</h2>
+            <div class="console-panel console-panel-warn">
+              <p class="console-panel-note" style="margin:0;"><strong>Ordre d'application, toujours le même</strong> : épinglé (produit, position exacte) → relégué (produit ou attribut) → boosté (attribut) → naturel. Une relégation gagne toujours sur un boost — un produit explicitement caché ne remonte jamais via une règle d'attribut plus large.</p>
+            </div>
             <div class="console-panel">
               <p class="console-panel-note" style="margin:0 0 14px;">Classez vos produits dans une page de catégorie de votre site, sans recherche — <a href="docs.html#ep-browse">documentation complète</a>. Choisissez un catalogue puis une catégorie pour commencer.</p>
               <div class="catalog-card-row">
@@ -331,6 +409,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                   <tbody></tbody>
                 </table></div>
                 <p class="console-empty" id="browse-overrides-empty" hidden>Aucune priorité posée sur cette catégorie.</p>
+                <h2 id="bo-form-title" style="margin-top:18px;">Ajouter une priorité</h2>
                 <form id="browse-override-form" class="catalog-rule-add">
                   <div class="catalog-rule-add-row">
                     <input type="text" placeholder="Identifiant du produit" id="browse-override-product-id" required>
@@ -340,7 +419,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     </select>
                   </div>
                   <input type="number" min="1" max="100" placeholder="Position (1 = premier épinglé)" id="browse-override-position">
-                  <button type="submit" class="catalog-rule-add-btn">Ajouter la priorité</button>
+                  <button type="submit" class="catalog-rule-add-btn" id="bo-submit-btn">Ajouter la priorité</button>
+                  <button type="button" class="btn btn-ghost" id="bo-cancel-edit-btn" hidden style="margin-left:8px;">Annuler la modification</button>
                   <span class="catalog-rule-status" id="browse-override-status"></span>
                 </form>
               </div>
@@ -353,6 +433,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                   <tbody></tbody>
                 </table></div>
                 <p class="console-empty" id="browse-attribute-rules-empty" hidden>Aucune règle d'attribut posée sur cette catégorie.</p>
+                <h2 id="bar-form-title" style="margin-top:18px;">Ajouter une règle</h2>
                 <form id="browse-attribute-rule-form" class="catalog-rule-add">
                   <div class="catalog-rule-add-row">
                     <input type="text" placeholder="Champ, ex. brand" id="browse-attribute-field" list="browse-known-fields" required>
@@ -364,10 +445,57 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     <option value="boost">Booster (boost)</option>
                     <option value="bury">Reléguer (bury)</option>
                   </select>
-                  <button type="submit" class="catalog-rule-add-btn">Ajouter la règle</button>
+                  <button type="submit" class="catalog-rule-add-btn" id="bar-submit-btn">Ajouter la règle</button>
+                  <button type="button" class="btn btn-ghost" id="bar-cancel-edit-btn" hidden style="margin-left:8px;">Annuler la modification</button>
                   <span class="catalog-rule-status" id="browse-attribute-rule-status"></span>
                 </form>
               </div>
+            </div>
+          </div>
+
+          <div id="pane-guides" class="console-pane" hidden>
+            <h2 class="console-pane-title">Guides</h2>
+            <p class="console-panel-note" style="margin-bottom:22px;">Tous les articles et guides Heurix, sans quitter la console. Ouverts dans un nouvel onglet pour garder votre session ici.</p>
+
+            <div class="console-panel">
+              <h2>Démarrage</h2>
+              <ul class="console-guides-list">
+                <li><a href="blog/tutoriel-catalogue-outillage-5-minutes.html" target="_blank" rel="noopener">Indexez votre premier catalogue en 5 minutes</a></li>
+                <li><a href="blog/guide-page-categorie-browse.html" target="_blank" rel="noopener">Construire une page de catégorie avec Browse &amp; Discovery</a></li>
+                <li><a href="blog/guide-serveur-mcp-heurix.html" target="_blank" rel="noopener">Connecter Heurix à Claude Desktop et Cursor (serveur MCP)</a></li>
+              </ul>
+            </div>
+
+            <div class="console-panel">
+              <h2>Configurer la recherche</h2>
+              <ul class="console-guides-list">
+                <li><a href="blog/custom-rules-personnaliser-moteur-recherche.html" target="_blank" rel="noopener">Custom Rules : personnaliser sans écrire de regex</a></li>
+                <li><a href="blog/synonymes-jargon-industriel.html" target="_blank" rel="noopener">Synonymes et jargon industriel</a></li>
+                <li><a href="blog/facettes-b2b-multi-attributs.html" target="_blank" rel="noopener">Structurer des facettes pour des produits multi-attributs</a></li>
+                <li><a href="blog/recherche-reference-sku-b2b.html" target="_blank" rel="noopener">Configurer la recherche par référence (SKU, DIN, ISO)</a></li>
+                <li><a href="blog/glossaire-search-ecommerce.html" target="_blank" rel="noopener">Glossaire du search e-commerce, sans jargon</a></li>
+              </ul>
+            </div>
+
+            <div class="console-panel">
+              <h2>Pourquoi Heurix, comparatifs</h2>
+              <ul class="console-guides-list">
+                <li><a href="blog/heurix-vs-algolia-typesense-sensefuel-doofinder.html" target="_blank" rel="noopener">Heurix vs Algolia, Typesense, Sensefuel, Doofinder</a></li>
+                <li><a href="blog/alternative-algolia-catalogue-technique.html" target="_blank" rel="noopener">Quelle alternative pour un catalogue technique ?</a></li>
+                <li><a href="blog/moteur-natif-ne-suffit-pas.html" target="_blank" rel="noopener">Pourquoi le moteur natif de votre plateforme ne suffit pas</a></li>
+                <li><a href="blog/limites-moteurs-natifs-gros-catalogue.html" target="_blank" rel="noopener">Les limites des moteurs natifs au-delà de 10 000 références</a></li>
+              </ul>
+            </div>
+
+            <div class="console-panel">
+              <h2>Impact business</h2>
+              <ul class="console-guides-list">
+                <li><a href="blog/5-signes-recherche-vous-coute-des-ventes.html" target="_blank" rel="noopener">5 signes que votre recherche vous coûte des ventes</a></li>
+                <li><a href="blog/cout-moteur-recherche-ecommerce.html" target="_blank" rel="noopener">Combien coûte un moteur de recherche e-commerce en 2026 ?</a></li>
+                <li><a href="blog/impact-ebitda-recherche-interne.html" target="_blank" rel="noopener">L'impact réel sur l'EBITDA d'un e-commerce B2B</a></li>
+                <li><a href="blog/recherches-sans-resultat-tableau-bord.html" target="_blank" rel="noopener">Le tableau de bord "sans résultat" que la plupart des sites n'ont pas</a></li>
+                <li><a href="blog/recherche-blog-faq-contenu.html" target="_blank" rel="noopener">Votre blog et votre FAQ méritent aussi une bonne recherche</a></li>
+              </ul>
             </div>
           </div>
 
@@ -515,7 +643,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<script src="console.js?v=1784857017"></script>
+<script src="console.js?v=1784880357"></script>
 <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 
 <script src="mobile-nav.js"></script>

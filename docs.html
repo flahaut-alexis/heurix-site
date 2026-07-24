@@ -26,7 +26,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css?v=1784857017">
+<link rel="stylesheet" href="styles.css?v=1784880357">
 <link rel="canonical" href="https://heurix.fr/docs.html">
 <script type="application/ld+json">
 {
@@ -139,6 +139,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <a href="#produits">Structure des produits</a>
       <div class="docs-sidebar-group">Endpoints</div>
       <a href="#ep-search">Recherche</a>
+      <a href="#ep-search-overrides">Priorités de requête</a>
       <a href="#facettes">Facettes et filtres</a>
       <a href="#ep-browse">Browse &amp; Discovery</a>
       <a href="#ep-federated">Recherche fédérée</a>
@@ -279,6 +280,24 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <p><code class="docs-inline-code">total</code> (nombre de correspondances), <code class="docs-inline-code">hits</code> — chaque hit contient le <code class="docs-inline-code">product</code> complet tel qu'indexé, son <code class="docs-inline-code">score</code>, <code class="docs-inline-code">in_stock</code>, et <code class="docs-inline-code">matched</code> : la liste lisible des raisons de la correspondance (termes trouvés, fautes corrigées, annotations partagées) — utile pour comprendre et régler la pertinence. Si <code class="docs-inline-code">facets</code> a été demandé, un champ <code class="docs-inline-code">facets</code> supplémentaire liste les décomptes par groupe.</p>
       <h3>Secours sur zéro résultat</h3>
       <p>Une recherche qui ne trouve rien (<code class="docs-inline-code">total: 0</code>) sur un catalogue contenant au moins un produit marqué <code class="docs-inline-code">featured: true</code> à l'indexation renvoie jusqu'à 6 de ces produits dans <code class="docs-inline-code">hits</code>, avec <code class="docs-inline-code">fallback: true</code> — pour proposer une porte de sortie plutôt qu'une page vide. <code class="docs-inline-code">total</code> reste à <code class="docs-inline-code">0</code> : ce ne sont pas de vrais résultats de recherche, à vous de les présenter distinctement côté front (ex. « Aucun résultat pour "…" — nos incontournables » plutôt que de les mélanger à de vrais résultats). Sans produit <code class="docs-inline-code">featured</code> dans le catalogue, <code class="docs-inline-code">hits</code> reste vide et <code class="docs-inline-code">fallback</code> vaut <code class="docs-inline-code">false</code>, comme avant.</p>
+    </section>
+
+    <section id="ep-search-overrides" class="docs-section">
+      <div class="docs-endpoint"><span class="docs-method docs-method-post">POST</span><code>/v1/index/{catalog}/search-overrides</code></div>
+      <h2>Priorités de requête</h2>
+      <p>Épinglez ou reléguez un produit quand une recherche contient un mot précis — « si la recherche contient <em>promo</em>, tel produit apparaît en premier ». Indépendant de <a href="#ep-browse">Browse &amp; Discovery</a>, qui classe des catégories de navigation, pas des requêtes de recherche.</p>
+      <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/index/moncatalogue/search-overrides \
+  -H "Authorization: Bearer VOTRE_CLE_API" \
+  -H "Content-Type: application/json" \
+  -d '{"query": "promo", "product_id": "sku-123", "action": "pin", "position": 1}'</code></pre>
+      <p><strong>Déclenchement par sous-séquence contiguë</strong>, pas seulement une correspondance exacte : une règle posée sur <code class="docs-inline-code">"promo"</code> se déclenche pour <code class="docs-inline-code">"vis promo"</code> ou <code class="docs-inline-code">"grosse promo inox"</code>, mais pas pour <code class="docs-inline-code">"promotionnel"</code> (mot différent une fois normalisé). Un <code class="docs-inline-code">pin</code> peut faire apparaître un produit qui ne matche pas textuellement la requête — c'est le point de cette fonctionnalité, pas un bug.</p>
+      <div class="table-scroll"><table class="docs-params">
+        <tr><th>Champ</th><th>Type</th><th>Description</th></tr>
+        <tr><td><code class="docs-inline-code">query</code></td><td>string</td><td>Le déclencheur, normalisé comme le reste du moteur (accents, casse) avant comparaison.</td></tr>
+        <tr><td><code class="docs-inline-code">product_id</code></td><td>string</td><td>Le produit concerné.</td></tr>
+        <tr><td><code class="docs-inline-code">action</code></td><td>string</td><td><code class="docs-inline-code">pin</code> (position exacte, requiert <code class="docs-inline-code">position</code>) ou <code class="docs-inline-code">bury</code> (fin de liste, ne s'applique qu'à un produit déjà présent naturellement).</td></tr>
+      </table></div>
+      <p><code class="docs-inline-code">GET /v1/index/{catalog}/search-overrides</code> liste toutes les règles du catalogue (ou celles d'une requête précise avec <code class="docs-inline-code">?query=...</code>) ; <code class="docs-inline-code">DELETE /v1/index/{catalog}/search-overrides?query=...&amp;product_id=...</code> en retire une. Aucun de ces trois appels ne consomme le quota — ce sont des actions de configuration, pas des requêtes de recherche.</p>
     </section>
 
     <section id="facettes" class="docs-section">
