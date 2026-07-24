@@ -26,7 +26,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css?v=1784845836">
+<link rel="stylesheet" href="styles.css?v=1784857017">
 <link rel="canonical" href="https://heurix.fr/docs.html">
 <script type="application/ld+json">
 {
@@ -125,6 +125,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <div class="wrap docs-layout">
 
   <aside class="docs-sidebar">
+    <div class="docs-page-search">
+      <input type="text" id="docs-page-search-input" placeholder="Rechercher dans la doc…" autocomplete="off">
+      <div id="docs-page-search-results" class="docs-page-search-results" hidden></div>
+    </div>
     <nav aria-label="Sommaire de la documentation">
       <div class="docs-sidebar-group">Prise en main</div>
       <a href="#introduction">Introduction</a>
@@ -582,6 +586,68 @@ VIS_M8X20  ────────── correspondance ──────  VIS
     }, { rootMargin: '-20% 0px -70% 0px' });
     sections.forEach(s => io.observe(s));
   }
+
+  // Recherche dans la page (chantier demandé le 24 juillet) -- filtre
+  // uniquement le contenu de CETTE page, pas une recherche site-wide
+  // comme la modale Ctrl+K du reste du site. Index construit depuis les
+  // vraies sections (h2, déjà pourvues d'un id d'ancre), pas une liste
+  // maintenue à la main -- un nouvel endpoint documenté apparaît dans la
+  // recherche automatiquement, sans y penser.
+  (function () {
+    function esc(s) {
+      return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    }
+
+    var docsIndex = [];
+    document.querySelectorAll(".docs-section, section[id]").forEach(function (section) {
+      var heading = section.querySelector("h2");
+      if (!heading || !section.id) return;
+      docsIndex.push({
+        id: section.id,
+        title: heading.textContent.trim(),
+        text: section.textContent.trim().toLowerCase(),
+      });
+    });
+
+    var input = document.getElementById("docs-page-search-input");
+    var resultsEl = document.getElementById("docs-page-search-results");
+    if (!input || !resultsEl) return;
+
+    function render(matches, query) {
+      if (!matches.length) {
+        resultsEl.innerHTML = '<div class="docs-page-search-empty">Aucun résultat pour « ' + esc(query) + ' ».</div>';
+        return;
+      }
+      resultsEl.innerHTML = matches.map(function (m) {
+        return '<a href="#' + esc(m.id) + '" class="docs-page-search-result">' + esc(m.title) + "</a>";
+      }).join("");
+    }
+
+    input.addEventListener("input", function () {
+      var q = input.value.trim().toLowerCase();
+      if (!q) { resultsEl.hidden = true; resultsEl.innerHTML = ""; return; }
+      var matches = docsIndex.filter(function (item) {
+        return item.title.toLowerCase().indexOf(q) !== -1 || item.text.indexOf(q) !== -1;
+      });
+      render(matches, input.value.trim());
+      resultsEl.hidden = false;
+    });
+
+    input.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") { resultsEl.hidden = true; input.blur(); }
+    });
+
+    resultsEl.addEventListener("click", function (e) {
+      if (e.target.closest("a")) {
+        resultsEl.hidden = true;
+        input.value = "";
+      }
+    });
+
+    document.addEventListener("click", function (e) {
+      if (!e.target.closest(".docs-page-search")) resultsEl.hidden = true;
+    });
+  })();
 </script>
 
 <script src="mobile-nav.js"></script>

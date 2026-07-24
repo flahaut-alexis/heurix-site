@@ -761,6 +761,17 @@
     }).join("");
   }
 
+  function searchOverridesListHtml(overrides) {
+    if (!overrides.length) return '<p class="catalog-rules-empty">Aucune priorité de requête pour l\'instant.</p>';
+    return overrides.map(function (o) {
+      var actionLabel = o.action === "pin" ? ("Épingler (position " + o.position + ")") : "Reléguer";
+      return '<div class="catalog-rule-row">' +
+        '<div><strong>"' + esc(o.query) + '"</strong><span class="catalog-rule-desc">' + esc(o.product_id) + " — " + actionLabel + '</span></div>' +
+        '<button type="button" class="catalog-rule-remove" data-query="' + esc(o.query) + '" data-product-id="' + esc(o.product_id) + '" aria-label="Retirer cette priorité">&times;</button>' +
+      '</div>';
+    }).join("");
+  }
+
   function wireCustomRuleControls(cardEl, catalog, key) {
     var catalogName = catalog.catalog;
     var listEl = cardEl.querySelector(".catalog-rules-list");
@@ -824,6 +835,68 @@
     loadRules();
   }
 
+  function wireSearchOverrideControls(cardEl, catalog, key) {
+    var catalogName = catalog.catalog;
+    var listEl = cardEl.querySelector(".catalog-search-overrides-list");
+    var queryInput = cardEl.querySelector(".catalog-search-override-query");
+    var productIdInput = cardEl.querySelector(".catalog-search-override-product-id");
+    var actionSelect = cardEl.querySelector(".catalog-search-override-action");
+    var positionInput = cardEl.querySelector(".catalog-search-override-position");
+    var addBtn = cardEl.querySelector(".catalog-search-override-add-btn");
+    var status = cardEl.querySelector(".catalog-search-override-status");
+
+    function loadOverrides() {
+      apiFetch("/v1/index/" + encodeURIComponent(catalogName) + "/search-overrides", key)
+        .then(function (data) {
+          listEl.innerHTML = searchOverridesListHtml(data.overrides);
+          listEl.querySelectorAll(".catalog-rule-remove").forEach(function (btn) {
+            btn.addEventListener("click", function () {
+              btn.disabled = true;
+              var url = "/v1/index/" + encodeURIComponent(catalogName) + "/search-overrides" +
+                "?query=" + encodeURIComponent(btn.getAttribute("data-query")) +
+                "&product_id=" + encodeURIComponent(btn.getAttribute("data-product-id"));
+              apiFetch(url, key, { method: "DELETE" })
+                .then(loadOverrides)
+                .catch(function () { btn.disabled = false; });
+            });
+          });
+        })
+        .catch(function () { listEl.innerHTML = ""; });
+    }
+
+    actionSelect.addEventListener("change", function () {
+      positionInput.hidden = actionSelect.value !== "pin";
+    });
+
+    addBtn.addEventListener("click", function () {
+      var body = {
+        query: queryInput.value.trim(),
+        product_id: productIdInput.value.trim(),
+        action: actionSelect.value,
+      };
+      if (!body.query || !body.product_id) { (body.query ? productIdInput : queryInput).focus(); return; }
+      if (body.action === "pin") {
+        var pos = parseInt(positionInput.value, 10);
+        if (!pos) { positionInput.focus(); return; }
+        body.position = pos;
+      }
+      addBtn.disabled = true; status.textContent = "Ajout…"; status.className = "catalog-rule-status catalog-search-override-status";
+      apiFetch("/v1/index/" + encodeURIComponent(catalogName) + "/search-overrides", key, { method: "POST", body: body })
+        .then(function () {
+          status.textContent = "Priorité ajoutée."; status.className = "catalog-rule-status catalog-search-override-status ok";
+          queryInput.value = ""; productIdInput.value = ""; positionInput.value = "";
+          loadOverrides();
+        })
+        .catch(function (err) {
+          status.textContent = (err && err.message) || "Échec de l'ajout.";
+          status.className = "catalog-rule-status catalog-search-override-status err";
+        })
+        .then(function () { addBtn.disabled = false; });
+    });
+
+    loadOverrides();
+  }
+
   function wireCatalogCard(cardEl, catalog, key) {
     var select = cardEl.querySelector(".catalog-rulepack-select");
     var saveBtn = cardEl.querySelector(".catalog-rulepack-save");
@@ -845,6 +918,7 @@
     });
     wireSynonymControls(cardEl, catalog, key);
     wireCustomRuleControls(cardEl, catalog, key);
+    wireSearchOverrideControls(cardEl, catalog, key);
   }
 
   function catalogCardHtml(c) {
@@ -881,6 +955,24 @@
         '<input type="text" placeholder="Préfixe à reconnaître, ex. M (pour M8, M10…)" class="catalog-rule-prefix" hidden>' +
         '<button type="button" class="catalog-rule-add-btn">Créer la règle</button>' +
         '<span class="catalog-rule-status"></span>' +
+      '</div>' +
+      '<div class="catalog-synonyms-label" style="margin-top:22px;">Priorités sur une requête de recherche</div>' +
+      '<p class="console-panel-note" style="margin:2px 0 10px;">Épinglez ou reléguez un produit quand une recherche contient un mot précis (ex. "promo") — indépendant des catégories Browse.</p>' +
+      '<div class="catalog-search-overrides-list"></div>' +
+      '<div class="catalog-rule-add">' +
+        '<div class="catalog-rule-add-row">' +
+          '<input type="text" placeholder="Requête déclenchante, ex. promo" class="catalog-search-override-query">' +
+          '<input type="text" placeholder="Identifiant du produit" class="catalog-search-override-product-id">' +
+        '</div>' +
+        '<div class="catalog-rule-add-row">' +
+          '<select class="catalog-search-override-action">' +
+            '<option value="pin">Épingler (pin)</option>' +
+            '<option value="bury">Reléguer (bury)</option>' +
+          '</select>' +
+          '<input type="number" min="1" max="100" placeholder="Position (pin uniquement)" class="catalog-search-override-position">' +
+        '</div>' +
+        '<button type="button" class="catalog-rule-add-btn catalog-search-override-add-btn">Ajouter la priorité</button>' +
+        '<span class="catalog-rule-status catalog-search-override-status"></span>' +
       '</div>' +
     '</div>';
   }
