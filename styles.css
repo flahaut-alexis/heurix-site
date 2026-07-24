@@ -846,8 +846,8 @@ h2{ font-size:clamp(26px,3.4vw,34px); font-weight:800; margin:0 0 18px; max-widt
 .post-lede{ font-size:18px; color:var(--ink-muted); margin-bottom:36px; }
 .post-body{ font-size:16.5px; line-height:1.75; color:var(--ink); }
 .post-body p{ margin:0 0 22px; }
-.post-body h2{ font-size:23px; margin:40px 0 16px; max-width:none; }
-.post-body h3{ font-size:18px; margin:32px 0 12px; font-weight:700; }
+.post-body h2{ font-size:23px; margin:40px 0 16px; max-width:none; color:var(--blue-deep); }
+.post-body h3{ font-size:18px; margin:32px 0 12px; font-weight:700; color:var(--blue-deep); }
 .post-body ul, .post-body ol{ margin:0 0 22px; padding-left:22px; }
 .post-body li{ margin-bottom:8px; }
 .post-body strong{ color:var(--ink); }
@@ -893,7 +893,7 @@ h2{ font-size:clamp(26px,3.4vw,34px); font-weight:800; margin:0 0 18px; max-widt
 
 /* PRICING PAGE */
 .pricing-hero{
-  padding:72px 0 56px; text-align:center;
+  padding:56px 0 28px; text-align:center;
   background:
     radial-gradient(ellipse 900px 480px at 50% -10%, var(--blue-tint) 0%, rgba(238,241,255,0) 65%),
     linear-gradient(180deg, #F4F6FF 0%, #FFFFFF 78%);

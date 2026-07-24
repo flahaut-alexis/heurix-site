@@ -1,65 +1,32 @@
-<svg viewBox="0 0 680 420" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="setup-prism-title setup-prism-desc">
-  <title id="setup-prism-title">Le parcours de mise en route Heurix, du premier import aux modules optionnels</title>
-  <desc id="setup-prism-desc">Trois étapes séquentielles — souscription, clé API, premier catalogue indexé — traversent le compte Heurix configuré et se décomposent en trois modules indépendants et optionnels : le Heurix Tracker, l'intégration front-end, et le serveur MCP pour les agents IA.</desc>
+<svg viewBox="0 0 620 420" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="setup-pyramid-title setup-pyramid-desc">
+  <title id="setup-pyramid-title">Le parcours de mise en route Heurix, en pyramide</title>
+  <desc id="setup-pyramid-desc">Une pyramide en quatre niveaux : à la base, les fondations obligatoires (souscription, clé API, premier catalogue indexé) ; au-dessus, trois modules optionnels empilés — Heurix Tracker, intégration front-end, serveur MCP.</desc>
 
-  <text x="30" y="72" font-family="'Plus Jakarta Sans',sans-serif" font-size="14" font-weight="700" fill="#12142B">1. Souscription</text>
-  <text x="30" y="90" font-family="'Plus Jakarta Sans',sans-serif" font-size="12" fill="#888780">choix du plan, clé API reçue</text>
+  <!-- Face laterale (biseau) pour l'effet 3D, calculee comme un decalage
+       constant du bord droit de la pyramide -->
+  <polygon points="280,50 480,380 498,390 298,60" fill="#C7CBE8" opacity="0.65"/>
 
-  <text x="30" y="150" font-family="'Plus Jakarta Sans',sans-serif" font-size="14" font-weight="700" fill="#12142B">2. Premier catalogue</text>
-  <text x="30" y="168" font-family="'Plus Jakarta Sans',sans-serif" font-size="12" fill="#888780">indexé via l'API</text>
+  <!-- Bande 1 (bas, la plus large) : Fondations -->
+  <polygon points="130,297.5 430,297.5 480,380 80,380" fill="#EEF0F6" stroke="#5B5E76" stroke-width="1.5"/>
+  <text x="280" y="330" text-anchor="middle" font-family="'Plus Jakarta Sans',sans-serif" font-size="15" font-weight="700" fill="#12142B">1. Fondations</text>
+  <text x="280" y="349" text-anchor="middle" font-family="'Plus Jakarta Sans',sans-serif" font-size="11.5" fill="#5B5E76">Souscription · clé API · premier catalogue</text>
+  <text x="280" y="365" text-anchor="middle" font-family="'Plus Jakarta Sans',sans-serif" font-size="11" font-weight="700" fill="#5B5E76">obligatoire</text>
 
-  <text x="30" y="228" font-family="'Plus Jakarta Sans',sans-serif" font-size="14" font-weight="700" fill="#12142B">3. Recherche active</text>
-  <text x="30" y="246" font-family="'Plus Jakarta Sans',sans-serif" font-size="12" fill="#888780">le moteur répond déjà</text>
+  <!-- Bande 2 : Heurix Tracker (vert) -->
+  <polygon points="180,215 380,215 430,297.5 130,297.5" fill="#E1F5EE" stroke="#1D9E75" stroke-width="1.5"/>
+  <text x="280" y="248" text-anchor="middle" font-family="'Plus Jakarta Sans',sans-serif" font-size="14.5" font-weight="700" fill="#085041">2. Heurix Tracker</text>
+  <text x="280" y="265" text-anchor="middle" font-family="'Plus Jakarta Sans',sans-serif" font-size="11" fill="#5B5E76">Conversion &amp; ROI</text>
+  <text x="280" y="280" text-anchor="middle" font-family="'Plus Jakarta Sans',sans-serif" font-size="10.5" font-weight="700" fill="#1D9E75">optionnel</text>
 
-  <g stroke="#5B5E76" stroke-width="1.4" stroke-linecap="round" opacity="0.55">
-    <line x1="30" y1="130" x2="222" y2="178"/>
-    <line x1="30" y1="182" x2="228" y2="192"/>
-    <line x1="30" y1="210" x2="234" y2="204"/>
-    <line x1="30" y1="238" x2="236" y2="210"/>
-    <line x1="30" y1="265" x2="234" y2="216"/>
-    <line x1="30" y1="292" x2="228" y2="228"/>
-  </g>
+  <!-- Bande 3 : Integration front (bleu) -->
+  <polygon points="230,132.5 330,132.5 380,215 180,215" fill="#EEF1FF" stroke="#3F52E8" stroke-width="1.5"/>
+  <text x="280" y="167" text-anchor="middle" font-family="'Plus Jakarta Sans',sans-serif" font-size="13.5" font-weight="700" fill="#0C447C">3. Intégration front</text>
+  <text x="280" y="183" text-anchor="middle" font-family="'Plus Jakarta Sans',sans-serif" font-size="10.5" font-weight="700" fill="#3F52E8">optionnel</text>
 
-  <g>
-    <circle cx="300" cy="210" r="54" fill="#EEF1FF" stroke="#3F52E8" stroke-width="3"/>
-    <line x1="339" y1="249" x2="378" y2="288" stroke="#3F52E8" stroke-width="11" stroke-linecap="round"/>
-  </g>
-  <text x="300" y="214" text-anchor="middle" font-family="'Plus Jakarta Sans',sans-serif" font-size="11.5" font-weight="700" fill="#0C447C">Compte</text>
-  <text x="300" y="228" text-anchor="middle" font-family="'Plus Jakarta Sans',sans-serif" font-size="11.5" font-weight="700" fill="#0C447C">configuré</text>
+  <!-- Bande 4 (haut, la plus etroite) : MCP (ambre) -->
+  <polygon points="280,50 330,132.5 230,132.5" fill="#FAEEDA" stroke="#BA7517" stroke-width="1.5"/>
+  <text x="280" y="103" text-anchor="middle" font-family="'Plus Jakarta Sans',sans-serif" font-size="12.5" font-weight="700" fill="#633806">4. MCP</text>
+  <text x="280" y="118" text-anchor="middle" font-family="'Plus Jakarta Sans',sans-serif" font-size="9.5" font-weight="700" fill="#BA7517">option.</text>
 
-  <path d="M348 178 L470 100" fill="none" stroke="#1D9E75" stroke-width="2.5" stroke-linecap="round" opacity="0.85"/>
-  <path d="M352 210 L470 210" fill="none" stroke="#3F52E8" stroke-width="2.5" stroke-linecap="round" opacity="0.85"/>
-  <path d="M348 242 L470 320" fill="none" stroke="#BA7517" stroke-width="2.5" stroke-linecap="round" opacity="0.85"/>
-
-  <!-- Module 1 : Heurix Tracker (vert) — trois barres ascendantes -->
-  <g>
-    <circle cx="500" cy="100" r="26" fill="#E1F5EE" stroke="#1D9E75" stroke-width="1.5"/>
-    <rect x="491" y="98" width="4" height="10" fill="#085041"/>
-    <rect x="498" y="93" width="4" height="15" fill="#085041"/>
-    <rect x="505" y="88" width="4" height="20" fill="#085041"/>
-  </g>
-  <text x="536" y="94" font-family="'Plus Jakarta Sans',sans-serif" font-size="15" font-weight="700" fill="#085041">Heurix Tracker</text>
-  <text x="536" y="112" font-family="'Plus Jakarta Sans',sans-serif" font-size="12" fill="#5B5E76">Conversion &amp; ROI — optionnel</text>
-
-  <!-- Module 2 : integration front (bleu) — chevrons de code -->
-  <g>
-    <circle cx="500" cy="210" r="26" fill="#EEF1FF" stroke="#3F52E8" stroke-width="1.5"/>
-    <path d="M494 202 L488 210 L494 218" fill="none" stroke="#0C447C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M506 202 L512 210 L506 218" fill="none" stroke="#0C447C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-  </g>
-  <text x="536" y="204" font-family="'Plus Jakarta Sans',sans-serif" font-size="15" font-weight="700" fill="#0C447C">Intégration front</text>
-  <text x="536" y="222" font-family="'Plus Jakarta Sans',sans-serif" font-size="12" fill="#5B5E76">client JS ou widget — optionnel</text>
-
-  <!-- Module 3 : MCP (ambre) — deux noeuds connectes -->
-  <g>
-    <circle cx="500" cy="320" r="26" fill="#FAEEDA" stroke="#BA7517" stroke-width="1.5"/>
-    <circle cx="492" cy="315" r="4" fill="none" stroke="#633806" stroke-width="2"/>
-    <circle cx="508" cy="325" r="4" fill="none" stroke="#633806" stroke-width="2"/>
-    <line x1="495" y1="318" x2="505" y2="322" stroke="#633806" stroke-width="1.6"/>
-  </g>
-  <text x="536" y="314" font-family="'Plus Jakarta Sans',sans-serif" font-size="15" font-weight="700" fill="#633806">Serveur MCP</text>
-  <text x="536" y="332" font-family="'Plus Jakarta Sans',sans-serif" font-size="12" fill="#5B5E76">agents IA — optionnel</text>
-
-  <text x="300" y="386" text-anchor="middle" font-family="'Plus Jakarta Sans',sans-serif" font-size="13" font-weight="700" fill="#12142B">Trois modules indépendants, à activer selon vos besoins</text>
-  <text x="300" y="404" text-anchor="middle" font-family="'Plus Jakarta Sans',sans-serif" font-size="12" fill="#5B5E76">aucun n'est requis pour que la recherche fonctionne</text>
+  <text x="280" y="404" text-anchor="middle" font-family="'Plus Jakarta Sans',sans-serif" font-size="12.5" fill="#5B5E76">Une seule base obligatoire, trois extensions indépendantes au choix</text>
 </svg>
