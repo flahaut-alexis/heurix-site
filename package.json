@@ -1,0 +1,16 @@
+{
+  "name": "heurix-site-tests",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Suite de tests pour les widgets Heurix distribues aux clients",
+  "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "fixtures": "python3 tests/fixtures/generate.py"
+  },
+  "devDependencies": {
+    "vitest": "^3.0.0",
+    "jsdom": "^26.0.0"
+  }
+}

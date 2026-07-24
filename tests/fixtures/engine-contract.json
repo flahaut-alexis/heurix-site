@@ -1,0 +1,178 @@
+{
+  "search_avec_facettes": {
+    "query": "vis",
+    "tokens": [
+      "vis"
+    ],
+    "total": 2,
+    "offset": 0,
+    "limit": 10,
+    "hits": [
+      {
+        "product": {
+          "id": "V001",
+          "name": "Vis à métaux tête hexagonale",
+          "ref": "M8 x 20 - Inox A2",
+          "stock": 120,
+          "price": 5.9,
+          "categories": [
+            "visserie"
+          ],
+          "brand": "Facom"
+        },
+        "score": 16.0,
+        "in_stock": true,
+        "matched": [
+          "terme 'vis' (depuis 'vis', x1.00)",
+          "annotation #FAM_VIS"
+        ]
+      },
+      {
+        "product": {
+          "id": "V002",
+          "name": "Vis à métaux tête hexagonale",
+          "ref": "M8 x 30 - Inox A2",
+          "stock": 0,
+          "price": 7.9,
+          "categories": [
+            "visserie"
+          ],
+          "brand": "Facom"
+        },
+        "score": 16.0,
+        "in_stock": false,
+        "matched": [
+          "terme 'vis' (depuis 'vis', x1.00)",
+          "annotation #FAM_VIS"
+        ]
+      }
+    ],
+    "fallback": false,
+    "facets": {
+      "DIAM": {
+        "DIAM_M8": 2,
+        "DIAM_M8_INOX": 2
+      }
+    }
+  },
+  "contrat_filtres": {
+    "DIAM_M8": {
+      "groupe_facette": "DIAM",
+      "resultats_avec_valeur_brute": 2,
+      "resultats_avec_prefixe_groupe": 0
+    },
+    "DIAM_M8_INOX": {
+      "groupe_facette": "DIAM",
+      "resultats_avec_valeur_brute": 2,
+      "resultats_avec_prefixe_groupe": 0
+    }
+  },
+  "format_filtre_attendu": "valeur_brute",
+  "search_zero_resultat": {
+    "query": "xyzabc-introuvable",
+    "tokens": [
+      "xyzabc-introuvable"
+    ],
+    "total": 0,
+    "offset": 0,
+    "limit": 10,
+    "hits": [],
+    "fallback": false
+  },
+  "search_prefixe": {
+    "query": "hex",
+    "tokens": [
+      "hex"
+    ],
+    "total": 3,
+    "offset": 0,
+    "limit": 10,
+    "hits": [
+      {
+        "product": {
+          "id": "E001",
+          "name": "Écrou hexagonal",
+          "ref": "M8 - Zingué",
+          "stock": 300,
+          "price": 0.4,
+          "categories": [
+            "visserie"
+          ],
+          "brand": "Legallais"
+        },
+        "score": 11.32,
+        "in_stock": true,
+        "matched": [
+          "terme 'hexagonal' (depuis 'hex', x0.22)",
+          "annotation #TETE_HEX"
+        ]
+      },
+      {
+        "product": {
+          "id": "V001",
+          "name": "Vis à métaux tête hexagonale",
+          "ref": "M8 x 20 - Inox A2",
+          "stock": 120,
+          "price": 5.9,
+          "categories": [
+            "visserie"
+          ],
+          "brand": "Facom"
+        },
+        "score": 11.32,
+        "in_stock": true,
+        "matched": [
+          "terme 'hexagonale' (depuis 'hex', x0.22)",
+          "annotation #TETE_HEX"
+        ]
+      },
+      {
+        "product": {
+          "id": "V002",
+          "name": "Vis à métaux tête hexagonale",
+          "ref": "M8 x 30 - Inox A2",
+          "stock": 0,
+          "price": 7.9,
+          "categories": [
+            "visserie"
+          ],
+          "brand": "Facom"
+        },
+        "score": 11.32,
+        "in_stock": false,
+        "matched": [
+          "terme 'hexagonale' (depuis 'hex', x0.22)",
+          "annotation #TETE_HEX"
+        ]
+      }
+    ],
+    "fallback": false
+  },
+  "forme_du_hit": {
+    "cles_racine": [
+      "in_stock",
+      "matched",
+      "product",
+      "score"
+    ],
+    "cles_produit": [
+      "brand",
+      "categories",
+      "id",
+      "name",
+      "price",
+      "ref",
+      "stock"
+    ]
+  },
+  "cles_reponse_recherche": [
+    "facets",
+    "fallback",
+    "hits",
+    "limit",
+    "offset",
+    "query",
+    "tokens",
+    "total"
+  ]
+}
