@@ -26,7 +26,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="../favicon-32.png">
 <link rel="apple-touch-icon" href="../apple-touch-icon.png">
-<link rel="stylesheet" href="../styles.css?v=1784918639">
+<link rel="stylesheet" href="../styles.css?v=1784923037">
 <link rel="canonical" href="https://heurix.fr/blog/guide-mise-en-route.html">
 <script type="application/ld+json">
 {
@@ -149,11 +149,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <p><em>[Capture d'écran à ajouter : le tableau de bord "Vue d'ensemble" de la console une fois le premier catalogue indexé]</em></p>
 
       <h2 id="modules-optionnels">À partir d'ici, trois modules indépendants</h2>
+      <p class="regex-reassure">🔑 <strong>Deux des trois modules tournent dans le navigateur</strong> (Tracker et intégration front-end). Générez d'abord une <strong>clé publique</strong> depuis votre console (Mes infos → Ma clé API) : elle commence par <code class="docs-inline-code">hxp_</code> et ne peut que chercher, parcourir et remonter des événements. Votre clé serveur (<code class="docs-inline-code">hx_</code>) ne doit jamais apparaître dans une page web — elle donne accès à votre facturation. <a href="../docs.html#authentification">Détail des deux types de clés</a>.</p>
       <p>Chacun répond à un besoin différent. Activez ce qui vous concerne, ignorez le reste — rien n'est requis pour les deux autres, et rien n'est requis pour que la recherche elle-même continue de fonctionner.</p>
 
       <h3 id="module-tracker">Module optionnel — Heurix Tracker (Conversion &amp; ROI)</h3>
       <p>Pour savoir quelles recherches génèrent réellement des ventes, pas seulement des clics. Téléchargez <a href="../downloads/heurix-tracker.js" download>heurix-tracker.js</a>, éditez les deux variables en tête de fichier avec votre clé et votre catalogue :</p>
-      <pre class="docs-code"><code>var HEURIX_API_KEY = "VOTRE_CLE_API";
+      <pre class="docs-code"><code>var HEURIX_API_KEY = "VOTRE_CLE_PUBLIQUE";  // hxp_, pas hx_
 var HEURIX_CATALOG = "moncatalogue";</code></pre>
       <p>Puis posez le script une seule fois, site-wide :</p>
       <pre class="docs-code"><code>&lt;script src="heurix-tracker.js"&gt;&lt;/script&gt;</code></pre>
@@ -167,7 +168,7 @@ var HEURIX_CATALOG = "moncatalogue";</code></pre>
       <pre class="docs-code"><code>&lt;div id="ma-recherche"&gt;&lt;/div&gt;
 &lt;script src="heurix-search.js"&gt;&lt;/script&gt;
 &lt;script&gt;
-  Heurix.searchBox({ apiKey: "VOTRE_CLE_API", catalog: "moncatalogue", containerId: "ma-recherche" });
+  Heurix.searchBox({ apiKey: "VOTRE_CLE_PUBLIQUE", catalog: "moncatalogue", containerId: "ma-recherche" });
 &lt;/script&gt;</code></pre>
 
       <p><strong>Vous avez déjà une interface, ou une stack JS/TS établie</strong> — <a href="https://www.npmjs.com/package/@heurix/client">@heurix/client</a>, un client léger pour construire votre propre interface :</p>

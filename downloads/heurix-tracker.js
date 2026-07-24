@@ -16,9 +16,23 @@
  * continuent de fonctionner sans aucune modification de votre code.
  */
 (function () {
-  var HEURIX_API_KEY = "hx_VOTRE_CLE_ICI";     // Console Heurix > Mes infos
+  var HEURIX_API_KEY = "hxp_VOTRE_CLE_PUBLIQUE";  // Cle PUBLIQUE (hxp_), jamais une cle serveur
   var HEURIX_CATALOG = "votre-catalogue";       // Le nom exact de votre catalogue indexé
   var STORAGE_KEY = "heurix_visitor_id";
+
+  // Chantier securite C1 : garde-fou a l'execution. Une cle serveur (hx_)
+  // dans le navigateur est lisible par n'importe quel visiteur, et ouvre
+  // l'indexation, le merchandising et le portail de facturation Stripe.
+  // Seule une cle publique (hxp_) a une portee limitee a la lecture.
+  function heurixWarnIfServerKey(k) {
+    if (typeof k === "string" && k.indexOf("hxp_") !== 0 && k.indexOf("hx_") === 0) {
+      var msg = "[Heurix] ATTENTION : vous utilisez une cle SERVEUR (hx_) cote navigateur. " +
+        "Elle est lisible par tous vos visiteurs et donne acces a votre facturation. " +
+        "Generez une cle publique (hxp_) depuis votre console Heurix : Mes infos > Cles API.";
+      if (typeof console !== "undefined" && console.warn) console.warn(msg);
+    }
+  }
+  heurixWarnIfServerKey(HEURIX_API_KEY);
 
   function generateId() {
     if (window.crypto && typeof window.crypto.randomUUID === "function") {

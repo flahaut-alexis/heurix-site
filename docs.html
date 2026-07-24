@@ -26,7 +26,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css?v=1784918639">
+<link rel="stylesheet" href="styles.css?v=1784923037">
 <link rel="canonical" href="https://heurix.fr/docs.html">
 <script type="application/ld+json">
 {
@@ -213,8 +213,38 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <section id="authentification" class="docs-section">
       <h2>Authentification</h2>
       <p>Chaque appel doit porter votre clé API dans l'en-tête <code class="docs-inline-code">Authorization</code> :</p>
-      <pre class="docs-code"><code>Authorization: Bearer hx_votre_cle_api</code></pre>
-      <p>Une clé manquante ou mal formée renvoie <code class="docs-inline-code">401</code> ; une clé invalide renvoie <code class="docs-inline-code">403</code>. Gardez votre clé côté serveur — ne l'exposez jamais dans le code JavaScript public de votre site. Si votre clé fuite, contactez-nous pour rotation immédiate.</p>
+      <pre class="docs-code"><code>Authorization: Bearer VOTRE_CLE</code></pre>
+      <p>Une clé manquante ou mal formée renvoie <code class="docs-inline-code">401</code> ; une clé invalide ou hors de sa portée renvoie <code class="docs-inline-code">403</code>.</p>
+
+      <h3>Deux types de clés</h3>
+      <p>Le choix n'est pas cosmétique : il détermine ce qu'un tiers peut faire s'il met la main sur votre clé.</p>
+      <div class="table-scroll"><table class="docs-params">
+        <tr><th>Type</th><th>Préfixe</th><th>Portée</th><th>Où l'utiliser</th></tr>
+        <tr>
+          <td><strong>Clé serveur</strong></td>
+          <td><code class="docs-inline-code">hx_</code></td>
+          <td>Accès complet : indexation, merchandising, statistiques, facturation</td>
+          <td><strong>Côté serveur uniquement.</strong> Jamais dans une page web.</td>
+        </tr>
+        <tr>
+          <td><strong>Clé publique</strong></td>
+          <td><code class="docs-inline-code">hxp_</code></td>
+          <td>Recherche, parcours de catalogue, événements de conversion — rien d'autre</td>
+          <td>Navigateur, applications mobiles, tout contexte où la clé est visible</td>
+        </tr>
+      </table></div>
+
+      <p>Une clé publique appelant un endpoint hors de sa portée reçoit un <code class="docs-inline-code">403</code> explicite. Elle partage le quota de la clé serveur qui l'a générée — en créer plusieurs n'augmente donc pas vos plafonds.</p>
+
+      <h3>Générer une clé publique</h3>
+      <p>Depuis <a href="console.html">votre console</a> (Mes infos → Ma clé API), ou par API avec votre clé serveur :</p>
+      <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/keys/public \
+  -H "Authorization: Bearer VOTRE_CLE_SERVEUR" \
+  -H "Content-Type: application/json" \
+  -d '{"allowed_origins": "monsite.fr,www.monsite.fr"}'</code></pre>
+      <p><code class="docs-inline-code">allowed_origins</code> est optionnel mais recommandé : la clé n'est alors acceptée que depuis les domaines listés, ce qui la rend inutilisable si quelqu'un la recopie sur un autre site. <code class="docs-inline-code">GET /v1/keys/public</code> les liste, <code class="docs-inline-code">DELETE /v1/keys/public/{clé}</code> en révoque une.</p>
+
+      <p class="regex-reassure">⚠️ <strong>Les clés existantes restent des clés serveur</strong> et continuent de fonctionner à l'identique — rien ne casse. Mais si vous en avez posé une dans le JavaScript de votre site (barre de recherche, tracker, widget Browse), remplacez-la par une clé publique : en l'état, n'importe quel visiteur peut la lire et accéder à votre facturation.</p>
     </section>
 
     <section id="comptage" class="docs-section">
@@ -518,12 +548,14 @@ curl -X POST https://api.heurix.fr/v1/events \
       <p>Pas envie de coder l'appel <code class="docs-inline-code">fetch</code>, le rendu des résultats et la gestion des facettes vous-même ? Une bibliothèque JavaScript autonome (zéro dépendance) affiche une barre de recherche complète — saisie, résultats en direct, facettes cliquables, navigation clavier — connectée à votre catalogue en quelques lignes.</p>
       <p class="regex-reassure">🚀 <a href="downloads/heurix-search.js" download>Téléchargez heurix-search.js</a> — un seul fichier, à poser où vous voulez sur votre site.</p>
 
+      <p class="regex-reassure">🔑 Utilisez une <a href="#authentification">clé publique</a> (<code class="docs-inline-code">hxp_</code>) — ce script tourne dans le navigateur du visiteur, où la clé est lisible par tous. Une clé serveur donnerait accès à votre facturation.</p>
+
       <h3>Intégration minimale</h3>
       <pre class="docs-code"><code>&lt;div id="ma-recherche"&gt;&lt;/div&gt;
 &lt;script src="heurix-search.js"&gt;&lt;/script&gt;
 &lt;script&gt;
   Heurix.searchBox({
-    apiKey: "VOTRE_CLE_API",
+    apiKey: "VOTRE_CLE_PUBLIQUE",
     catalog: "moncatalogue",
     containerId: "ma-recherche"
   });
@@ -548,7 +580,7 @@ curl -X POST https://api.heurix.fr/v1/events \
 
       <h3>Exemple complet, avec facettes et lien produit</h3>
       <pre class="docs-code"><code>Heurix.searchBox({
-  apiKey: "hx_votre_cle",
+  apiKey: "hxp_votre_cle_publique",
   catalog: "moncatalogue",
   containerId: "ma-recherche",
   facets: ["brand"],

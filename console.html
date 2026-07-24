@@ -16,7 +16,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="robots" content="noindex">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css?v=1784918639">
+<link rel="stylesheet" href="styles.css?v=1784923037">
 <link rel="canonical" href="https://heurix.fr/console.html">
 </head>
 <body>
@@ -605,6 +605,28 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <span id="account-key-copied" class="console-key-copied" hidden>Copiée !</span>
               </div>
             </div>
+
+            <div class="console-panel console-panel-warn">
+              <h2>Ne posez jamais cette clé dans une page web</h2>
+              <p class="console-panel-note">La clé ci-dessus est une <strong>clé serveur</strong>. Elle autorise l'indexation, le merchandising et l'accès à votre facturation — placée dans le JavaScript d'une page, elle devient lisible par n'importe quel visiteur.</p>
+              <p class="console-panel-note" style="margin-bottom:0;">Pour la barre de recherche, le tracker ou le widget Browse, générez une <strong>clé publique</strong> ci-dessous : elle ne peut que chercher, parcourir votre catalogue et remonter des événements de conversion. Rien d'autre.</p>
+            </div>
+
+            <div class="console-panel">
+              <h2>Clés publiques (navigateur)</h2>
+              <p class="console-panel-note">À utiliser dans <code class="docs-inline-code">heurix-search.js</code>, <code class="docs-inline-code">heurix-tracker.js</code> et <code class="docs-inline-code">heurix-browse-widget.js</code>. Elles partagent le quota de votre clé serveur — en générer plusieurs n'augmente pas vos plafonds.</p>
+              <div class="table-scroll"><table class="console-table" id="public-keys-table">
+                <thead><tr><th>Clé</th><th>Domaines autorisés</th><th></th></tr></thead>
+                <tbody></tbody>
+              </table></div>
+              <p class="console-empty" id="public-keys-empty" hidden>Aucune clé publique pour l'instant.</p>
+              <h2 style="margin-top:18px;">Générer une clé publique</h2>
+              <form id="public-key-form" class="catalog-rule-add">
+                <input type="text" id="public-key-origins" placeholder="Domaines autorisés, ex. monsite.fr,www.monsite.fr (optionnel mais recommandé)">
+                <button type="submit" class="catalog-rule-add-btn">Générer la clé</button>
+                <span class="catalog-rule-status" id="public-key-status"></span>
+              </form>
+            </div>
           </div>
 
           <div id="pane-feedback" class="console-pane" hidden>
@@ -659,7 +681,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<script src="console.js?v=1784911480"></script>
+<script src="console.js?v=1784923037"></script>
 <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 
 <script src="mobile-nav.js"></script>

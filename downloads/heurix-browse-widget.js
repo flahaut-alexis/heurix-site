@@ -11,7 +11,20 @@
  * https://heurix.fr/blog/guide-page-categorie-browse.html
  */
 (function () {
-  var HEURIX_API_KEY = "hx_VOTRE_CLE_ICI"; // Console Heurix > Mes infos
+  // Chantier securite C1 : garde-fou a l'execution. Une cle serveur (hx_)
+  // dans le navigateur est lisible par n'importe quel visiteur, et ouvre
+  // l'indexation, le merchandising et le portail de facturation Stripe.
+  // Seule une cle publique (hxp_) a une portee limitee a la lecture.
+  function heurixWarnIfServerKey(k) {
+    if (typeof k === "string" && k.indexOf("hxp_") !== 0 && k.indexOf("hx_") === 0) {
+      var msg = "[Heurix] ATTENTION : vous utilisez une cle SERVEUR (hx_) cote navigateur. " +
+        "Elle est lisible par tous vos visiteurs et donne acces a votre facturation. " +
+        "Generez une cle publique (hxp_) depuis votre console Heurix : Mes infos > Cles API.";
+      if (typeof console !== "undefined" && console.warn) console.warn(msg);
+    }
+  }
+
+  var HEURIX_API_KEY = "hxp_VOTRE_CLE_PUBLIQUE"; // Cle PUBLIQUE (hxp_), jamais une cle serveur
   var HEURIX_CATALOG = "votre-catalogue";   // Le nom exact de votre catalogue indexé
 
   function defaultRenderItem(hit) {
@@ -49,6 +62,7 @@
   window.Heurix.browse = function (options) {
     options = options || {};
     var apiKey = options.apiKey || HEURIX_API_KEY;
+    heurixWarnIfServerKey(apiKey);
     return fetch(buildUrl(options), {
       headers: { "Authorization": "Bearer " + apiKey }
     }).then(function (res) {

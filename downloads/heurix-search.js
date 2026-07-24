@@ -15,7 +15,7 @@
  *   <script src="heurix-search.js"></script>
  *   <script>
  *     Heurix.searchBox({
- *       apiKey: "hx_votre_cle",
+ *       apiKey: "hxp_votre_cle_publique",   // cle PUBLIQUE, jamais hx_
  *       catalog: "moncatalogue",
  *       containerId: "ma-recherche"
  *     });
@@ -38,6 +38,20 @@
   var DEFAULT_MIN_CHARS = 2;
   var DEFAULT_LIMIT = 8;
   var STYLE_INJECTED = false;
+
+
+  // Chantier securite C1 : garde-fou a l'execution. Une cle serveur (hx_)
+  // dans le navigateur est lisible par n'importe quel visiteur, et ouvre
+  // l'indexation, le merchandising et le portail de facturation Stripe.
+  // Seule une cle publique (hxp_) a une portee limitee a la lecture.
+  function heurixWarnIfServerKey(k) {
+    if (typeof k === "string" && k.indexOf("hxp_") !== 0 && k.indexOf("hx_") === 0) {
+      var msg = "[Heurix] ATTENTION : vous utilisez une cle SERVEUR (hx_) cote navigateur. " +
+        "Elle est lisible par tous vos visiteurs et donne acces a votre facturation. " +
+        "Generez une cle publique (hxp_) depuis votre console Heurix : Mes infos > Cles API.";
+      if (typeof console !== "undefined" && console.warn) console.warn(msg);
+    }
+  }
 
   function esc(s) {
     return String(s == null ? "" : s)
@@ -87,6 +101,7 @@
 
   function searchBox(config) {
     if (!config || !config.apiKey) throw new Error("Heurix.searchBox: 'apiKey' est requis.");
+    heurixWarnIfServerKey(config.apiKey);
     if (!config.catalog) throw new Error("Heurix.searchBox: 'catalog' est requis.");
     if (!config.containerId) throw new Error("Heurix.searchBox: 'containerId' est requis.");
     var container = document.getElementById(config.containerId);

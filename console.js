@@ -154,6 +154,54 @@
   }
 
   var keyDisplayWired = false;
+  // ---------------- Cles publiques (chantier securite C1) ----------------
+  var publicKeysWired = false;
+
+  function refreshPublicKeys(key) {
+    apiFetch("/v1/keys/public", key)
+      .then(function (data) {
+        renderTable("public-keys-table", "public-keys-empty", data.keys, function (k) {
+          return "<td class='mono' style='word-break:break-all;'>" + esc(k.key) + "</td>" +
+            "<td>" + (k.allowed_origins ? esc(k.allowed_origins) : "<span style='color:var(--ink-muted);'>tous</span>") + "</td>" +
+            "<td><button type='button' class='catalog-rule-remove' data-revoke-key='" + esc(k.key) + "' aria-label='Révoquer'>&times;</button></td>";
+        });
+      })
+      .catch(function () {});
+  }
+
+  function wirePublicKeys(key) {
+    if (publicKeysWired) return;
+    publicKeysWired = true;
+
+    document.getElementById("public-key-form").addEventListener("submit", function (e) {
+      e.preventDefault();
+      var status = document.getElementById("public-key-status");
+      var origins = document.getElementById("public-key-origins").value.trim();
+      status.textContent = "Génération…"; status.className = "catalog-rule-status";
+      apiFetch("/v1/keys/public", key, { method: "POST", body: { allowed_origins: origins || null } })
+        .then(function () {
+          status.textContent = "Clé publique générée."; status.className = "catalog-rule-status ok";
+          document.getElementById("public-key-origins").value = "";
+          refreshPublicKeys(key);
+        })
+        .catch(function (err) {
+          status.textContent = (err && err.message) || "Échec de la génération.";
+          status.className = "catalog-rule-status err";
+        });
+    });
+
+    document.querySelector("#public-keys-table tbody").addEventListener("click", function (e) {
+      var btn = e.target.closest("[data-revoke-key]");
+      if (!btn) return;
+      btn.disabled = true;
+      apiFetch("/v1/keys/public/" + encodeURIComponent(btn.getAttribute("data-revoke-key")), key, { method: "DELETE" })
+        .then(function () { refreshPublicKeys(key); })
+        .catch(function () { btn.disabled = false; });
+    });
+
+    refreshPublicKeys(key);
+  }
+
   function renderApiKey(key) {
     var valueEl = document.getElementById("account-key-value");
     var toggleBtn = document.getElementById("account-key-toggle");
@@ -951,6 +999,7 @@
       wireBrowseForms(key);
       loadSearchOverridesCatalogs(key);
       wireSearchOverridesPane(key);
+      wirePublicKeys(key);
     }).catch(function () {
       dashLoading.hidden = true;
       localStorage.removeItem(SESSION_STORAGE_KEY);
