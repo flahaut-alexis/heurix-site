@@ -2132,3 +2132,36 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
   font-size:11px; color:var(--ink-muted); line-height:1.45;
 }
 .so-grid-caption{ font-size:12.5px; color:var(--ink-muted); margin:14px 0 0; }
+
+/* Actions de fiche : discretes au repos, visibles au survol -- pour ne pas
+   transformer la grille en tableau de boutons. Toujours visibles sur les
+   fiches deja affectees par une regle : leurs actions sont l information
+   principale. */
+.so-card-actions{
+  position:absolute; bottom:10px; right:10px; display:flex; gap:4px;
+  opacity:0; transition:opacity .12s ease;
+}
+.so-card:hover .so-card-actions,
+.so-card:focus-within .so-card-actions,
+.so-card-ruled .so-card-actions,
+.so-card-simulated .so-card-actions{ opacity:1; }
+.so-card-actions button{
+  width:26px; height:26px; display:flex; align-items:center; justify-content:center;
+  font-family:inherit; font-size:12px; line-height:1; cursor:pointer;
+  background:#fff; color:var(--ink-muted);
+  border:1px solid var(--line); border-radius:7px; padding:0;
+  transition:all .12s ease;
+}
+.so-card-actions button:hover{ border-color:var(--blue); color:var(--blue-deep); background:var(--blue-tint); }
+.so-card-actions button:focus-visible{
+  outline:none; border-color:var(--blue);
+  box-shadow:0 0 0 3px color-mix(in srgb, var(--blue) 18%, transparent);
+}
+.so-card[draggable="true"]{ cursor:grab; }
+.so-card-dragging{ opacity:.45; }
+.so-card-dragover{ border-color:var(--blue); border-style:dashed; }
+/* Message d invite quand aucune requete n est saisie */
+.so-caption-warn{
+  color:var(--ink); background:#FFFBF3; border:1px solid #F0DDB8;
+  border-radius:8px; padding:10px 14px;
+}

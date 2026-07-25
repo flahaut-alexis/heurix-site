@@ -777,13 +777,32 @@
             ? "<div class='so-card-why'>" + esc(h.matched.slice(0, 2).join(" · ")) + "</div>"
             : (q && h.pinned ? "<div class='so-card-why'>Injecté par une règle</div>" : "");
 
-          return "<div class='" + classes + "'>" +
+          // Actions de la fiche. Le glisser-deposer n'est PAS le seul moyen
+          // de reordonner : chaque fiche epinglee porte aussi monter et
+          // descendre. Non negociable -- le glisser-deposer est inutilisable
+          // au clavier et fragile au doigt, et le merchandising doit rester
+          // accessible.
+          var pid = esc(p.id);
+          var actions = "<div class='so-card-actions'>";
+          if (h.pinned) {
+            actions += "<button type='button' data-so-act='up' data-pid='" + pid + "' title='Monter' aria-label='Monter ce produit'>&#9650;</button>" +
+                       "<button type='button' data-so-act='down' data-pid='" + pid + "' title='Descendre' aria-label='Descendre ce produit'>&#9660;</button>" +
+                       "<button type='button' data-so-act='retirer' data-pid='" + pid + "' title='Retirer l épinglage' aria-label='Retirer épinglage'>&times;</button>";
+          } else if (h.buried) {
+            actions += "<button type='button' data-so-act='retirer' data-pid='" + pid + "' title='Retirer la relégation' aria-label='Retirer relégation'>&times;</button>";
+          } else {
+            actions += "<button type='button' data-so-act='pin' data-pid='" + pid + "' title='Épingler' aria-label='Épingler ce produit'>&#128204;</button>" +
+                       "<button type='button' data-so-act='bury' data-pid='" + pid + "' title='Reléguer' aria-label='Reléguer ce produit'>&#8595;</button>";
+          }
+          actions += "</div>";
+
+          return "<div class='" + classes + "'" + (h.pinned ? " draggable='true' data-pid='" + pid + "'" : "") + ">" +
             (q ? "<span class='so-card-rank'>" + (i + 1) + "</span>" : "") +
             badge +
             "<div class='so-card-name'>" + esc(p.name || p.id) + "</div>" +
             "<div class='so-card-ref'>" + esc(p.ref || p.id) + "</div>" +
             "<div class='so-card-foot'>" + prix + stock + "</div>" +
-            pourquoi +
+            pourquoi + actions +
             "</div>";
         }).join("");
 
@@ -902,9 +921,180 @@
     });
   }
 
+  // ---------------- Manipulation directe depuis la grille ----------------
+  //
+  // Chaque fiche porte ses actions : epingler, releguer, retirer, deplacer.
+  // AUCUNE n'enregistre quoi que ce soit -- toutes alimentent le brouillon,
+  // qui part en simulation. C'est ce qui distingue cette commodite d'un
+  // raccourci dangereux : sans cela, un clic enverrait la regle au trafic
+  // reel du marchand.
+
+  function soRequeteCourante() {
+    var champ = document.getElementById("so-preview-query");
+    return champ ? champ.value.trim() : "";
+  }
+
+  // Amorce le brouillon depuis les regles DEJA ENREGISTREES avant toute
+  // mutation. Sans cela, la premiere action sur une fiche produirait un
+  // brouillon ne contenant qu'elle -- et l'application effacerait les
+  // regles existantes, puisque la simulation remplace l'ensemble.
+  function soAvecBrouillon(key, suite) {
+    if (soDraft) return suite();
+    apiFetch("/v1/index/" + encodeURIComponent(soCurrentCatalog) + "/search-overrides", key)
+      .then(function (data) {
+        soDraft = (data.overrides || []).map(function (o) {
+          var r = { query: o.query, product_id: o.product_id, action: o.action };
+          if (o.position) r.position = o.position;
+          return r;
+        });
+        suite();
+      })
+      .catch(function () { soDraft = []; suite(); });
+  }
+
+  function soTrouver(q, pid) {
+    if (!soDraft) return -1;
+    for (var i = 0; i < soDraft.length; i++) {
+      if (soDraft[i].query === q && soDraft[i].product_id === pid) return i;
+    }
+    return -1;
+  }
+
+  function soEpingles(q) {
+    return soDraft
+      .filter(function (r) { return r.query === q && r.action === "pin"; })
+      .sort(function (a, b) { return (a.position || 999) - (b.position || 999); });
+  }
+
+  // Renumerote les positions de 1 a N : sans cela, des suppressions
+  // successives laisseraient des trous (1, 3, 7) que le moteur interprete
+  // bien mais qui rendent l'ecran incomprehensible.
+  function soRenumeroter(q) {
+    soEpingles(q).forEach(function (r, i) { r.position = i + 1; });
+  }
+
+  function soAction(key, action, pid) {
+    var q = soRequeteCourante();
+    if (!q) return;  // garde-fou : voir soVerifierRequete
+
+    soAvecBrouillon(key, function () {
+      var i = soTrouver(q, pid);
+      if (action === "retirer") {
+        if (i !== -1) soDraft.splice(i, 1);
+      } else if (i !== -1) {
+        soDraft[i].action = action;
+        if (action === "bury") delete soDraft[i].position;
+      } else {
+        var regle = { query: q, product_id: pid, action: action };
+        if (action === "pin") regle.position = soEpingles(q).length + 1;
+        soDraft.push(regle);
+      }
+      soRenumeroter(q);
+      refreshSoPreview(key);
+    });
+  }
+
+  function soDeplacer(key, pid, sens) {
+    var q = soRequeteCourante();
+    if (!q || !soDraft) return;
+    var liste = soEpingles(q);
+    var idx = liste.findIndex(function (r) { return r.product_id === pid; });
+    var cible = idx + sens;
+    if (idx === -1 || cible < 0 || cible >= liste.length) return;
+    var tmp = liste[idx].position;
+    liste[idx].position = liste[cible].position;
+    liste[cible].position = tmp;
+    refreshSoPreview(key);
+  }
+
+  // Message d'invite quand aucune requete n'est saisie : une priorite se
+  // declenche SUR une requete, il n'y a donc rien a epingler depuis la vue
+  // catalogue. On explique plutot que de creer une regle sans declencheur.
+  function soVerifierRequete() {
+    var legende = document.getElementById("so-preview-caption");
+    if (legende && !soRequeteCourante()) {
+      legende.innerHTML = "<strong>Saisissez d'abord une requête</strong> pour épingler ou reléguer : " +
+        "une priorité se déclenche sur une recherche précise, elle n'existe pas en dehors d'une requête.";
+      legende.classList.add("so-caption-warn");
+      setTimeout(function () { legende.classList.remove("so-caption-warn"); }, 2600);
+      return false;
+    }
+    return true;
+  }
+
+  // Glisser-deposer, EN COMPLEMENT des boutons monter/descendre -- jamais a
+  // leur place. Seules les fiches epinglees sont deplacables : reordonner
+  // n'a de sens que pour elles, les autres suivent le classement naturel.
+  function wireSoDragDrop(key) {
+    var grille = document.getElementById("so-preview-grid");
+    if (!grille) return;
+    var depuis = null;
+
+    grille.addEventListener("dragstart", function (e) {
+      var carte = e.target.closest(".so-card[draggable='true']");
+      if (!carte) return;
+      depuis = carte.getAttribute("data-pid");
+      carte.classList.add("so-card-dragging");
+      if (e.dataTransfer) e.dataTransfer.effectAllowed = "move";
+    });
+    grille.addEventListener("dragend", function () {
+      depuis = null;
+      grille.querySelectorAll(".so-card-dragging, .so-card-dragover").forEach(function (el) {
+        el.classList.remove("so-card-dragging", "so-card-dragover");
+      });
+    });
+    grille.addEventListener("dragover", function (e) {
+      var carte = e.target.closest(".so-card[draggable='true']");
+      if (!depuis || !carte) return;
+      e.preventDefault();
+      carte.classList.add("so-card-dragover");
+    });
+    grille.addEventListener("dragleave", function (e) {
+      var carte = e.target.closest(".so-card");
+      if (carte) carte.classList.remove("so-card-dragover");
+    });
+    grille.addEventListener("drop", function (e) {
+      var carte = e.target.closest(".so-card[draggable='true']");
+      if (!depuis || !carte) return;
+      e.preventDefault();
+      var vers = carte.getAttribute("data-pid");
+      if (vers === depuis) return;
+      var q = soRequeteCourante();
+      if (!q || !soDraft) return;
+      // Reinsertion a la position de la cible, puis renumerotation --
+      // plutot qu'un simple echange, qui donnerait un resultat surprenant
+      // sur un deplacement de plusieurs rangs.
+      var liste = soEpingles(q);
+      var iDepuis = liste.findIndex(function (r) { return r.product_id === depuis; });
+      var iVers = liste.findIndex(function (r) { return r.product_id === vers; });
+      if (iDepuis === -1 || iVers === -1) return;
+      var deplacee = liste.splice(iDepuis, 1)[0];
+      liste.splice(iVers, 0, deplacee);
+      liste.forEach(function (r, i) { r.position = i + 1; });
+      refreshSoPreview(key);
+    });
+  }
+
+  function wireSoGridActions(key) {
+    wireSoDragDrop(key);
+    var grille = document.getElementById("so-preview-grid");
+    if (!grille) return;
+    grille.addEventListener("click", function (e) {
+      var btn = e.target.closest("[data-so-act]");
+      if (!btn) return;
+      if (!soVerifierRequete()) return;
+      var act = btn.getAttribute("data-so-act");
+      var pid = btn.getAttribute("data-pid");
+      if (act === "up") soDeplacer(key, pid, -1);
+      else if (act === "down") soDeplacer(key, pid, 1);
+      else soAction(key, act, pid);
+    });
+  }
+
   function wireSearchOverridesPane(key) {
     wireSoPreview(key);
     wireSoDraft(key);
+    wireSoGridActions(key);
     if (soFormWired) return;
     soFormWired = true;
 
