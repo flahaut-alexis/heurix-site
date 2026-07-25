@@ -424,7 +424,7 @@
   }
 
   var ALL_PANE_IDS = ["pane-overview", "pane-guides", "pane-top-queries", "pane-zero-results", "pane-errors", "pane-search-overrides", "pane-category-views",
-    "pane-browse", "pane-catalog-help", "pane-catalog-list", "pane-company", "pane-team", "pane-key", "pane-feedback"];
+    "pane-browse", "pane-catalog-help", "pane-catalog-list", "pane-billing", "pane-company", "pane-team", "pane-key", "pane-feedback"];
 
   // Un element peut exister dans le document sans etre visible : un de ses
   // parents suffit a le masquer. Ce piege s'est presente TROIS fois sur cette
@@ -573,6 +573,85 @@
     }
   }
 
+  // ---------------- Mon abonnement ----------------
+  //
+  // Toutes les donnees viennent de /v1/usage, qui les expose deja : plan,
+  // quota consomme, limites, essai. Rien a construire cote moteur -- il
+  // manquait seulement un ecran pour les lire.
+  //
+  // Les factures passent par le portail Stripe existant plutot que d'etre
+  // reconstruites ici : c'est lui qui fait foi, et le dupliquer creerait
+  // deux verites sur la meme donnee.
+  var PLAN_LIBELLES = {
+    trial: "Essai gratuit", starter: "Starter", growth: "Growth", scale: "Scale",
+  };
+
+  function renderBilling(key) {
+    var grille = document.getElementById("billing-grid");
+    var essai = document.getElementById("billing-trial");
+    if (!grille) return;
+
+    apiFetch("/v1/usage", key).then(function (d) {
+      var plan = d.plan || (d.limit_status && d.limit_status.plan) || "—";
+      var lignes = [
+        ["Formule", "<strong style='font-size:16px;'>" + esc(PLAN_LIBELLES[plan] || plan) + "</strong>"],
+        ["Requêtes ce mois-ci", d.requests + (d.limit ? " / " + d.limit : "")],
+      ];
+      if (d.catalogs_used !== undefined) {
+        lignes.push(["Catalogues", d.catalogs_used + (d.catalogs_limit ? " / " + d.catalogs_limit : "")]);
+      }
+      if (d.products_limit) lignes.push(["Produits par catalogue", "jusqu'à " + d.products_limit]);
+      if (d.browse_plan && d.browse_plan !== "none") {
+        lignes.push(["Browse & Discovery", esc(PLAN_LIBELLES[d.browse_plan] || d.browse_plan)]);
+      }
+
+      grille.innerHTML = lignes.map(function (l) {
+        return "<div class='billing-row'><span class='billing-label'>" + l[0] +
+          "</span><span class='billing-value'>" + l[1] + "</span></div>";
+      }).join("");
+
+      if (essai) {
+        if (d.trial_expired) {
+          essai.hidden = false;
+          essai.innerHTML = "<strong>Votre essai est terminé.</strong> Choisissez une formule pour continuer à utiliser Heurix.";
+        } else if (d.trial_days_left !== undefined && d.trial_days_left !== null) {
+          essai.hidden = false;
+          essai.textContent = "Il vous reste " + d.trial_days_left + " jour" +
+            (d.trial_days_left > 1 ? "s" : "") + " d'essai.";
+        } else {
+          essai.hidden = true;
+        }
+      }
+    }).catch(function () {
+      grille.innerHTML = "<p class='console-panel-note'>Impossible de charger votre abonnement.</p>";
+    });
+  }
+
+  function wireBilling(key) {
+    var bouton = document.getElementById("billing-portal");
+    var statut = document.getElementById("billing-status");
+    if (!bouton) return;
+    bouton.addEventListener("click", function () {
+      bouton.disabled = true;
+      if (statut) { statut.className = "catalog-rule-status"; statut.textContent = "Ouverture du portail…"; }
+      apiFetch("/v1/stripe/create-portal-session", key, { method: "POST", body: {} })
+        .then(function (d) {
+          if (d.url) window.location.href = d.url;
+          else throw new Error("Portail indisponible.");
+        })
+        .catch(function (err) {
+          if (statut) {
+            statut.className = "catalog-rule-status err";
+            // Un compte encore en essai n'a pas de client Stripe : le dire
+            // plutot que d'afficher une erreur technique.
+            statut.textContent = (err && err.message) ||
+              "Aucun abonnement actif : le portail devient disponible après souscription.";
+          }
+        })
+        .then(function () { bouton.disabled = false; });
+    });
+  }
+
   function showPane(paneId) {
     ALL_PANE_IDS.forEach(function (id) {
       var el = document.getElementById(id);
@@ -587,6 +666,7 @@
     // Le catalogue etant global, ouvrir un ecran suffit a le charger : plus
     // besoin de resaisir le catalogue a chaque fois.
     if (typeof appliquerCatalogueOuverture === "function") appliquerCatalogueOuverture(paneId);
+    if (paneId === "pane-billing" && cleCourante) renderBilling(cleCourante);
     // Remonte en haut du nouvel ecran. Sans cela, un utilisateur descendu
     // dans un pave long arrive sur le suivant deja defile, et ne voit pas
     // ce qu'il vient d'ouvrir -- on doit remonter a la main pour comprendre
@@ -2241,6 +2321,7 @@
       wireTutoEditeur(["so-tuto", "br-tuto"]);
       cleCourante = key;
       wireGlobalCatalog(key);
+      wireBilling(key);
       wireCustomRulesPane(key);
     }).catch(function () {
       dashLoading.hidden = true;

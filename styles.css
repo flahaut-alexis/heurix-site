@@ -2341,3 +2341,14 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 }
 .sandbox-banner[hidden]{ display:none; }
 .sandbox-banner strong{ color:#0F7A3D; }
+
+/* Recapitulatif d abonnement : deux colonnes, libelle a gauche, valeur a
+   droite -- se lit comme une facture, ce qui est l attendu sur cet ecran. */
+.billing-grid{ display:flex; flex-direction:column; gap:0; }
+.billing-row{
+  display:flex; justify-content:space-between; align-items:baseline; gap:16px;
+  padding:12px 0; border-bottom:1px solid var(--line);
+}
+.billing-row:last-child{ border-bottom:none; }
+.billing-label{ font-size:13.5px; color:var(--ink-muted); }
+.billing-value{ font-size:14px; font-weight:600; color:var(--ink); text-align:right; }

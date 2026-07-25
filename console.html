@@ -16,7 +16,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="robots" content="noindex">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css?v=1785014067">
+<link rel="stylesheet" href="styles.css?v=1785014651">
 <link rel="canonical" href="https://heurix.fr/console.html">
 </head>
 <body>
@@ -73,6 +73,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div class="nav-drop console-org-drop" hidden>
         <button type="button" class="nav-drop-btn" id="console-org-btn" aria-expanded="false" aria-haspopup="true">Mon compte</button>
         <div class="nav-drop-panel">
+          <button type="button" data-goto-pane="pane-billing">Mon abonnement</button>
           <button type="button" data-goto-pane="pane-company">Entreprise</button>
           <button type="button" data-goto-pane="pane-team">Membres</button>
           <button type="button" data-goto-pane="pane-key">Clé API</button>
@@ -700,6 +701,22 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <p class="console-empty" id="catalogs-empty" hidden>Aucun catalogue indexé pour l'instant — <a href="docs.html">consultez la documentation</a> pour indexer votre premier catalogue.</p>
           </div>
 
+          <div id="pane-billing" class="console-pane" hidden>
+            <h2 class="console-pane-title">Mon abonnement</h2>
+            <div class="console-panel">
+              <div class="billing-grid" id="billing-grid">
+                <p class="console-panel-note">Chargement…</p>
+              </div>
+              <p class="console-panel-note" id="billing-trial" hidden></p>
+              <div style="margin-top:18px; display:flex; gap:10px; flex-wrap:wrap;">
+                <button type="button" class="btn" id="billing-portal">Mes factures et mon moyen de paiement</button>
+                <a href="pricing.html" target="_blank" rel="noopener" class="btn btn-ghost">Comparer les offres</a>
+              </div>
+              <p class="console-panel-note" style="margin-top:10px;">Le portail de facturation est hébergé par Stripe : vous y retrouvez vos factures, votre moyen de paiement et pouvez résilier à tout moment.</p>
+              <p class="catalog-rule-status" id="billing-status"></p>
+            </div>
+          </div>
+
           <div id="pane-company" class="console-pane" hidden>
             <h2 class="console-pane-title">Entreprise</h2>
             <div class="console-panel">
@@ -822,7 +839,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="console-select.js?v=1784983392"></script>
-<script src="console.js?v=1785014067"></script>
+<script src="console.js?v=1785014651"></script>
 <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 
 <script src="nav-dropdown.js"></script>
