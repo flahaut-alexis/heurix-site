@@ -698,6 +698,11 @@
     });
   }
 
+  // Expose pour la visite guidee, qui doit pouvoir amener l'utilisateur sur
+  // l'ecran des regles avant de commencer -- sinon les trois quarts de ses
+  // etapes pointeraient dans le vide.
+  window.heurixShowPane = function (id) { showPane(id); };
+
   function showPane(paneId) {
     ALL_PANE_IDS.forEach(function (id) {
       var el = document.getElementById(id);

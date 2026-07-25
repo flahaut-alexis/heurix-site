@@ -16,7 +16,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="robots" content="noindex">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css?v=1785018496">
+<link rel="stylesheet" href="styles.css?v=1785019954">
 <link rel="canonical" href="https://heurix.fr/console.html">
 </head>
 <body>
@@ -393,7 +393,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     <li><strong>Glissez une carte épinglée sur l'autre</strong> pour les intervertir — ou utilisez les flèches <span class="so-tuto-ico">▲▼</span>, équivalentes et utilisables au clavier.</li>
                     <li>Cliquez <strong>Appliquer</strong> pour enregistrer.</li>
                   </ol>
-                  <p class="so-tuto-note">Déplacer un produit fige aussi les positions au-dessus de lui : plusieurs règles apparaissent donc d'un seul clic. Rien n'est enregistré tant que vous n'avez pas cliqué sur Appliquer.</p>
+                  <p class="so-tuto-note"><button type="button" class="so-tuto-lien" data-visite-demarrer>Faire la visite guidée</button> — ou lisez ci-dessous.<br>Déplacer un produit fige aussi les positions au-dessus de lui : plusieurs règles apparaissent donc d'un seul clic. Rien n'est enregistré tant que vous n'avez pas cliqué sur Appliquer.</p>
                 </div>
                 <div class="so-facets" id="so-facets" hidden></div>
                 <p class="so-facet-warn" id="so-facet-warn" hidden>Filtre actif : les flèches sont désactivées. Elles figent les positions de la liste <strong>affichée</strong> — sur une liste filtrée, les règles produites n'auraient plus de sens une fois le filtre retiré. L'épinglage, lui, reste possible.</p>
@@ -608,6 +608,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <div id="pane-guides" class="console-pane" hidden>
             <h2 class="console-pane-title">Guides</h2>
             <p class="console-panel-note" style="margin-bottom:22px;">Tous les articles et guides Heurix, sans quitter la console. Ouverts dans un nouvel onglet pour garder votre session ici.</p>
+
+            <div class="console-panel" style="border-color:var(--blue); background:var(--blue-tint);">
+              <h2>Visite guidée de l'éditeur de règles</h2>
+              <p class="console-panel-note">Sept étapes sur vos propres données, dans la console. Rien n'est enregistré pendant la visite : vous pouvez tout essayer.</p>
+              <button type="button" class="btn" data-visite-demarrer>Démarrer la visite</button>
+            </div>
 
             <div class="console-panel">
               <h2>Démarrage</h2>
@@ -842,7 +848,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="console-select.js?v=1784983392"></script>
-<script src="console.js?v=1785018101"></script>
+<script src="visite-editeur.js?v=1785019954"></script>
+<script src="console.js?v=1785019954"></script>
 <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 
 <script src="nav-dropdown.js"></script>

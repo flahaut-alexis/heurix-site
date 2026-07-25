@@ -2406,3 +2406,68 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
    plutot qu un echec apres clic. */
 .browse-addon-disabled{ opacity:.5; cursor:not-allowed; }
 .browse-addon-disabled input{ cursor:not-allowed; }
+
+/* ------------------------------------------------------------------ */
+/* Visite guidée de l éditeur visuel                                   */
+/* ------------------------------------------------------------------ */
+.visite-voile{
+  position:fixed; inset:0; z-index:200;
+  background:rgba(18,20,43,0.45);
+  animation:visite-apparait .2s ease;
+}
+@keyframes visite-apparait{ from{ opacity:0 } to{ opacity:1 } }
+
+/* L element vise reste AU-DESSUS du voile et garde ses interactions :
+   la visite doit laisser agir, pas seulement montrer. */
+.visite-cible{
+  position:relative; z-index:201;
+  outline:3px solid var(--blue); outline-offset:4px; border-radius:10px;
+  box-shadow:0 0 0 9999px rgba(18,20,43,0.45);
+}
+
+.visite-bulle{
+  position:fixed; z-index:202; width:min(360px, calc(100vw - 32px));
+  background:#fff; border-radius:14px; padding:18px 20px;
+  box-shadow:0 18px 48px rgba(18,20,43,0.28);
+  transition:top .2s ease, left .2s ease;
+}
+.visite-compteur{
+  font-size:11px; font-weight:800; letter-spacing:.05em; text-transform:uppercase;
+  color:var(--blue-deep); margin-bottom:7px;
+}
+.visite-titre{ margin:0 0 7px; font-size:15.5px; font-weight:800; color:var(--ink); }
+.visite-texte{ margin:0; font-size:13.5px; line-height:1.55; color:var(--ink-muted); }
+.visite-texte strong{ color:var(--ink); }
+.visite-attente{
+  margin:10px 0 0; padding:8px 12px; border-radius:8px;
+  background:#FFFBF3; border:1px solid #F0DDB8;
+  font-size:12.5px; color:var(--ink);
+}
+.visite-actions{ display:flex; gap:8px; align-items:center; margin-top:16px; }
+.visite-actions button{
+  font-family:inherit; font-size:13px; font-weight:600; cursor:pointer;
+  padding:8px 15px; border-radius:100px;
+  border:1px solid var(--line); background:#fff; color:var(--ink);
+}
+.visite-actions button:hover{ border-color:#C9CDDD; }
+.visite-actions .visite-principal{
+  background:var(--blue); border-color:var(--blue); color:#fff; font-weight:700;
+}
+.visite-actions .visite-principal:hover{ background:var(--blue-deep); }
+.visite-actions .visite-quitter{ margin-left:auto; border:none; color:var(--ink-muted); }
+.visite-actions .visite-quitter:hover{ color:var(--ink); background:var(--bg-soft); }
+
+/* Mot de fin : sans lui, la disparition de la bulle ressemble a un bug. */
+.visite-fin{
+  position:fixed; bottom:24px; left:50%; transform:translateX(-50%); z-index:202;
+  background:var(--ink); color:#fff; padding:12px 20px; border-radius:100px;
+  font-size:13.5px; box-shadow:0 12px 30px rgba(18,20,43,0.3);
+}
+.visite-fin strong{ color:#fff; }
+
+.so-tuto-lien{
+  font-family:inherit; font-size:inherit; font-weight:700; cursor:pointer;
+  background:none; border:none; padding:0; color:var(--blue-deep);
+  text-decoration:underline; text-underline-offset:2px;
+}
+.so-tuto-lien:hover{ color:var(--blue); }
