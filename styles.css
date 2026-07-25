@@ -90,8 +90,8 @@ header{
   .logo{ font-size:17px; }
 }
 
-.header-search{ flex:1; display:flex; justify-content:center; min-width:0; }
-.header-search .search-trigger{ width:100%; max-width:460px; justify-content:flex-start; }
+.header-search{ margin-left:auto; display:flex; justify-content:flex-end; min-width:0; }
+.header-search .search-trigger{ width:100%; max-width:300px; justify-content:flex-start; }
 
 .header-utility{ display:flex; align-items:center; gap:14px; flex-shrink:0; }
 
@@ -1720,4 +1720,33 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
   .nav-drop{ width:100%; }
   .nav-drop-btn{ width:100%; justify-content:space-between; padding:10px 0; }
   .nav-drop-panel{ position:static; box-shadow:none; border:none; padding:0 0 8px 12px; min-width:0; }
+}
+
+/* Bandeau unique (chantier navigation) : logo, menu, recherche poussee a
+   droite, puis utilitaires -- au lieu des deux lignes precedentes.
+   La barre etant plus chargee, l'espacement du menu est resserre et la
+   largeur de la recherche reduite. */
+.header-top-inner{ gap:20px; }
+.nav-links{ gap:18px; }
+@media (max-width:1200px){
+  .nav-links{ gap:14px; font-size:13px; }
+  .header-search .search-trigger{ max-width:220px; }
+}
+/* En dessous de 1080px la barre ne tient plus sur une ligne : le menu passe
+   sous le bouton hamburger, comme avant, mais desormais porte par
+   .nav-links puisque le second bandeau n'existe plus. */
+@media (max-width:1080px){
+  .nav-links{
+    display:none; position:absolute; top:100%; left:0; right:0; z-index:70;
+    flex-direction:column; gap:0; align-items:stretch;
+    background:#fff; border-top:1px solid var(--line);
+    box-shadow:0 12px 28px rgba(18,20,43,0.12); padding:14px 24px 20px;
+  }
+  .nav-links.mobile-open{ display:flex; }
+  .header-top{ position:relative; }
+  .nav-links > a{ padding:11px 0; border-bottom:1px solid var(--line); font-size:15px; }
+  .nav-drop{ border-bottom:1px solid var(--line); }
+  .nav-drop-btn{ width:100%; justify-content:space-between; padding:11px 0; font-size:15px; }
+  .nav-drop-panel{ position:static; box-shadow:none; border:none; padding:0 0 10px 14px; min-width:0; }
+  .header-search{ display:none; }
 }

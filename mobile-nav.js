@@ -1,8 +1,10 @@
-// Heurix — bascule du menu mobile (icône hamburger)
+// Heurix — bascule du menu mobile (icône hamburger).
+// Cible .nav-links depuis la fusion des deux bandeaux en un seul :
+// .header-nav-row n existe plus.
 (function () {
   "use strict";
   var btn = document.getElementById("mobile-nav-toggle");
-  var navRow = document.querySelector(".header-nav-row");
+  var navRow = document.querySelector(".nav-links");
   if (!btn || !navRow) return;
 
   function close() {
@@ -24,6 +26,6 @@
 
   // Ferme le menu si l'écran repasse en largeur desktop (rotation, redimensionnement)
   window.addEventListener("resize", function () {
-    if (window.innerWidth > 760) close();
+    if (window.innerWidth > 1080) close();
   });
 })();
