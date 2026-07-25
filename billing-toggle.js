@@ -30,7 +30,13 @@
       if (montant) montant.textContent = periode === "annual" ? t.annuelParMois : t.mensuel;
       if (note) {
         note.hidden = periode !== "annual";
-        note.textContent = "soit " + t.annuelTotal.toLocaleString("fr-FR") + " € facturés par an";
+        // Le total annuel est mis en avant autant que l'equivalent mensuel :
+        // afficher « 44 € » seul a deja prete a confusion, l'economie
+        // realisee n'etant pas lisible.
+        var economie = t.mensuel * 12 - t.annuelTotal;
+        note.innerHTML = "<strong>" + t.annuelTotal.toLocaleString("fr-FR") +
+          " €</strong> facturés une fois par an — <strong>" +
+          economie.toLocaleString("fr-FR") + " € économisés</strong>";
       }
     });
     toggle.querySelectorAll(".billing-toggle-opt").forEach(function (b) {

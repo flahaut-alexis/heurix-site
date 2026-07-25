@@ -610,6 +610,12 @@
           "</span><span class='billing-value'>" + l[1] + "</span></div>";
       }).join("");
 
+      // Le changement de formule ne concerne QUE les abonnes : un compte en
+      // essai n'a pas d'abonnement Stripe a modifier, il doit d'abord
+      // souscrire. Afficher le bouton lui donnerait une impasse.
+      var blocUpgrade = document.getElementById("billing-upgrade");
+      if (blocUpgrade) blocUpgrade.hidden = (plan === "trial" || plan === "—");
+
       if (essai) {
         if (d.trial_expired) {
           essai.hidden = false;
@@ -627,28 +633,41 @@
     });
   }
 
+  function ouvrirPortail(key, bouton, statut, messageEchec) {
+    bouton.disabled = true;
+    if (statut) { statut.className = "catalog-rule-status"; statut.textContent = "Ouverture du portail…"; }
+    apiFetch("/v1/stripe/create-portal-session", key, { method: "POST", body: {} })
+      .then(function (d) {
+        if (d.portal_url) window.location.href = d.portal_url;
+        else throw new Error(messageEchec);
+      })
+      .catch(function (err) {
+        if (statut) {
+          statut.className = "catalog-rule-status err";
+          statut.textContent = (err && err.message) || messageEchec;
+        }
+      })
+      .then(function () { bouton.disabled = false; });
+  }
+
   function wireBilling(key) {
+    var statutU = document.getElementById("billing-status");
+    var changer = document.getElementById("billing-change-plan");
+    if (changer) changer.addEventListener("click", function () {
+      // On passe par le portail Stripe plutot que par un nouveau paiement :
+      // creer une seconde session de paiement pour un client deja abonne
+      // creerait un SECOND abonnement, donc une double facturation. Le
+      // portail, lui, MODIFIE l'abonnement existant avec prorata.
+      ouvrirPortail(key, changer, statutU,
+        "Aucun abonnement actif : souscrivez d'abord une formule depuis la page des tarifs.");
+    });
+
     var bouton = document.getElementById("billing-portal");
     var statut = document.getElementById("billing-status");
     if (!bouton) return;
     bouton.addEventListener("click", function () {
-      bouton.disabled = true;
-      if (statut) { statut.className = "catalog-rule-status"; statut.textContent = "Ouverture du portail…"; }
-      apiFetch("/v1/stripe/create-portal-session", key, { method: "POST", body: {} })
-        .then(function (d) {
-          if (d.url) window.location.href = d.url;
-          else throw new Error("Portail indisponible.");
-        })
-        .catch(function (err) {
-          if (statut) {
-            statut.className = "catalog-rule-status err";
-            // Un compte encore en essai n'a pas de client Stripe : le dire
-            // plutot que d'afficher une erreur technique.
-            statut.textContent = (err && err.message) ||
-              "Aucun abonnement actif : le portail devient disponible après souscription.";
-          }
-        })
-        .then(function () { bouton.disabled = false; });
+      ouvrirPortail(key, bouton, statut,
+        "Aucun abonnement actif : le portail devient disponible après souscription.");
     });
   }
 

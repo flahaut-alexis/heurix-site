@@ -2383,3 +2383,17 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 .billing-annual-note[hidden]{ display:none; }
 /* La reglette est centree au-dessus de la grille */
 .pricing-grid{ clear:both; }
+
+/* Mention annuelle : meme poids visuel que le montant, sinon le lecteur ne
+   retient que l equivalent mensuel et croit la remise mal appliquee. */
+.billing-annual-note{ font-size:13px; }
+.billing-annual-note strong{ color:#0F7A3D; font-weight:800; }
+
+/* Bloc de changement de formule : masque pour un compte en essai, qui n a
+   pas d abonnement Stripe a modifier. */
+.billing-upgrade{
+  margin-top:20px; padding:16px 18px;
+  background:var(--blue-tint); border:1px solid #C9D2FB; border-radius:11px;
+}
+.billing-upgrade[hidden]{ display:none; }
+.billing-upgrade p:first-child{ margin:0; font-size:14px; }
