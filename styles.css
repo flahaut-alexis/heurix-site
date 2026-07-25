@@ -2471,3 +2471,13 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
   text-decoration:underline; text-underline-offset:2px;
 }
 .so-tuto-lien:hover{ color:var(--blue); }
+
+/* Bouton de visite guidee : meme gabarit que « Guides », mais teinte --
+   celui-ci LANCE une action, l autre navigue. Les distinguer evite de
+   cliquer l un pour l autre. */
+.console-topbar-visite{
+  background:var(--blue-tint); border-color:#C9D2FB; color:var(--blue-deep);
+  font-weight:700;
+}
+.console-topbar-visite:hover{ background:var(--blue); border-color:var(--blue); color:#fff; }
+@media (max-width:1000px){ .console-topbar-visite span{ display:none; } }
