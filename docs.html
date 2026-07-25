@@ -26,7 +26,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css?v=1784972423">
+<link rel="stylesheet" href="styles.css?v=1784973690">
 <link rel="canonical" href="https://heurix.fr/docs.html">
 <script type="application/ld+json">
 {
@@ -172,6 +172,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <a href="#ep-custom-rules">Custom Rules</a>
       <a href="#ep-events">Conversion &amp; ROI</a>
       <a href="#ep-top-products">Top produits</a>
+      <a href="#ep-category-views">Vues par catégorie</a>
       <a href="#ep-related-products">Produits liés</a>
       <a href="#ep-search-widget">Barre de recherche prête à l'emploi</a>
       <a href="#ep-mcp">Serveur MCP</a>
@@ -566,6 +567,20 @@ curl -X POST https://api.heurix.fr/v1/events \
 
       <div id="ep-top-products" class="docs-endpoint" style="margin-top:14px;"><span class="docs-method docs-method-get">GET</span><code>/v1/analytics/top-products</code></div>
       <p>Produits les plus achetés, triés par volume ou par marge (<code class="docs-inline-code">?sort_by=volume</code> ou <code class="docs-inline-code">margin</code>).</p>
+
+      <h3>Vues de page de catégorie</h3>
+      <p>Le tracker peut remonter les produits affichés sur une page de catégorie, ce qui permet de repérer ceux qui sont beaucoup montrés et peu cliqués — la population que l'épinglage et la relégation servent justement à corriger.</p>
+      <pre class="docs-code"><code>Heurix.trackCategoryView("visserie", ["sku-1", "sku-2", "sku-3"]);</code></pre>
+      <p><strong>Un seul appel par page vue</strong>, portant la liste des produits affichés — pas un appel par produit. Le moteur enregistre ensuite une impression par produit, ce qui rend l'agrégation possible en une requête. À savoir sur le volume : une page affichant 24 produits génère 24 lignes, purgées automatiquement au-delà de la période de rétention. La liste est plafonnée à 50 identifiants.</p>
+      <div id="ep-category-views" class="docs-endpoint" style="margin-top:14px;"><span class="docs-method docs-method-get">GET</span><code>/v1/analytics/category-views/{catalog}</code></div>
+      <p>Renvoie les catégories triées par nombre d'impressions, et dans chacune les produits les plus vus avec leur nombre de clics depuis la recherche. Ne consomme pas votre quota.</p>
+      <pre class="docs-code"><code>{"catalog": "moncatalogue", "categories": [
+  {"category": "visserie", "total_views": 512, "products": [
+     {"product_id": "sku-1", "views": 180, "search_clicks": 12},
+     {"product_id": "sku-2", "views": 175, "search_clicks": 0}
+  ]}
+]}</code></pre>
+      <p><strong>Renvoie une liste vide</strong> tant que le tracker ne remonte pas cet événement — c'est le cas de toute intégration antérieure à cette fonctionnalité. Rien ne casse, l'écran reste simplement vide.</p>
 
       <div id="ep-related-products" class="docs-endpoint" style="margin-top:14px;"><span class="docs-method docs-method-get">GET</span><code>/v1/analytics/related-products/{catalog}/{product_id}</code></div>
       <p>Produits fréquemment achetés dans le même panier que <code class="docs-inline-code">{product_id}</code> — une co-occurrence comptée, pas du machine learning. Utile pour une section « souvent acheté avec » sur une fiche produit.</p>

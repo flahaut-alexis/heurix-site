@@ -87,6 +87,18 @@
     // Heurix.trackPurchase([{id: "sku-123", amount: 29.90, margin: 8.50}])
     trackPurchase: function (products) {
       send("purchase", { products: products });
+    },
+
+    // Vue d'une page de categorie (chantier console). UN appel par page
+    // vue, portant la liste des identifiants produits affiches -- pas un
+    // appel par produit. Le moteur enregistre ensuite une impression par
+    // produit, ce qui permet le classement "produits les plus vus" par
+    // categorie, croise avec les clics depuis la recherche.
+    //
+    // Exemple : Heurix.trackCategoryView("visserie", ["sku-1","sku-2"])
+    trackCategoryView: function (category, productIds) {
+      if (!category || !productIds || !productIds.length) return;
+      send("category_view", { category: category, product_ids: productIds });
     }
   };
 
@@ -95,6 +107,7 @@
   // rien à changer.
   window.heurixTrackClick = window.Heurix.trackClick;
   window.heurixTrackPurchase = window.Heurix.trackPurchase;
+  window.heurixTrackCategoryView = window.Heurix.trackCategoryView;
 
   // Variable à plat, pratique pour la lire depuis une balise GTM via
   // copyFromWindow('heurixVisitorId') — plus fiable qu'un chemin imbriqué
