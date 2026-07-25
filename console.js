@@ -424,6 +424,18 @@
   var ALL_PANE_IDS = ["pane-overview", "pane-guides", "pane-top-queries", "pane-zero-results", "pane-errors", "pane-search-overrides", "pane-category-views",
     "pane-browse", "pane-catalog-help", "pane-catalog-list", "pane-company", "pane-team", "pane-key", "pane-feedback"];
 
+  // Un element peut exister dans le document sans etre visible : un de ses
+  // parents suffit a le masquer. Ce piege s'est presente TROIS fois sur cette
+  // page -- selecteurs inaccessibles, animation jouee a vide -- d'ou cette
+  // verification systematique avant tout declenchement visuel.
+  function estVisible(el) {
+    if (!el) return false;
+    for (var n = el; n && n !== document.body; n = n.parentElement) {
+      if (n.hidden) return false;
+    }
+    return true;
+  }
+
   function showPane(paneId) {
     ALL_PANE_IDS.forEach(function (id) {
       var el = document.getElementById(id);
@@ -436,7 +448,7 @@
     // celui-ci s'execute a la connexion, alors que le pave est encore
     // masque -- l'animation se terminait sans que personne ne la voie.
     if (paneId === "pane-search-overrides" && typeof soAnimerPlaceholder === "function") {
-      soAnimerPlaceholder();
+      soAnimerPlaceholder();  // ne fera rien si la barre est encore masquee
     }
     // Remonte en haut du nouvel ecran. Sans cela, un utilisateur descendu
     // dans un pave long arrive sur le suivant deja defile, et ne voit pas
@@ -787,7 +799,13 @@
     // vue stable et lisible pour se reperer avant de tester quoi que ce soit.
     var champLimite = document.getElementById("so-preview-limit");
     var limite = champLimite ? parseInt(champLimite.value, 10) : 12;
-    var corpsRequete = { q: q, limit: limite, facets: ["brand", "categories"], filters: soFiltres };
+    var horsStock = document.getElementById("so-in-stock");
+    var corpsRequete = {
+      q: q, limit: limite, facets: ["brand", "categories"], filters: soFiltres,
+      // Part AUSSI en simulation : sinon l'apercu simule montrerait autre
+      // chose que ce que verra le visiteur.
+      in_stock_only: !!(horsStock && horsStock.checked),
+    };
     if (soDraft) corpsRequete.simulate_overrides = soDraft;
 
     apiFetch("/v1/index/" + encodeURIComponent(soCurrentCatalog) + "/search", key,
@@ -918,6 +936,7 @@
     var content = document.getElementById("so-content");
     if (!soCurrentCatalog) { content.hidden = true; return; }
     content.hidden = false;
+    soAnimerPlaceholder();  // la barre devient visible maintenant
     resetSoForm();
     soDraft = null;
     refreshSoTable(key);
@@ -937,7 +956,11 @@
   var soTypeTimer = null;
   function soAnimerPlaceholder() {
     var champ = document.getElementById("so-preview-query");
-    if (!champ || champ.dataset.anime) return;
+    // La barre vit dans so-content, masque tant qu'aucun catalogue n'est
+    // choisi. Sans ce controle, l'animation se deroulait a vide des
+    // l'ouverture du panneau, et le garde-fou « une seule fois » l'empechait
+    // ensuite de rejouer quand la barre apparaissait enfin.
+    if (!champ || champ.dataset.anime || !estVisible(champ)) return;
     champ.dataset.anime = "1";
     var texte = "Tapez une requête comme le ferait un visiteur…";
     var i = 0;
@@ -962,6 +985,8 @@
   }
 
   function wireSoPreview(key) {
+    var stock = document.getElementById("so-in-stock");
+    if (stock) stock.addEventListener("change", function () { refreshSoPreview(key); });
     var limite = document.getElementById("so-preview-limit");
     if (limite) limite.addEventListener("change", function () { refreshSoPreview(key); });
     var champ = document.getElementById("so-preview-query");
@@ -1360,6 +1385,7 @@
       '<div class="catalog-synonym-add">' +
         '<input type="text" placeholder="ex. vis, boulon, screw" class="catalog-synonym-input">' +
         '<button type="button" class="catalog-synonym-add-btn">Ajouter un groupe</button>' +
+        '<span class="catalog-synonym-status catalog-rule-status"></span>' +
       '</div>' +
       '<div class="catalog-synonyms-label" style="margin-top:22px;">Règles personnalisées</div>' +
       '<div class="catalog-rules-list"></div>' +
@@ -2121,6 +2147,12 @@
 
   function updateCardMeta(cardEl, catalog) {
     var meta = cardEl.querySelector(".catalog-card-meta");
+    // Cet element n'existe que dans une carte catalogue. Depuis que les
+    // synonymes vivent aussi sous Personnalisation, la fonction est appelee
+    // avec un conteneur qui n'en a pas : sans cette garde, l'exception
+    // interrompait saveGroups AVANT render(), et l'ajout n'apparaissait
+    // qu'apres rechargement de la page alors qu'il etait bien enregistre.
+    if (!meta) return;
     meta.textContent = catalog.products + " produit" + (catalog.products > 1 ? "s" : "") + " · " +
       catalog.annotations + " annotations · " + catalog.synonym_groups + " groupe" + (catalog.synonym_groups > 1 ? "s" : "") + " de synonymes";
   }
@@ -2154,12 +2186,33 @@
       });
     }
 
+    var synStatus = cardEl.querySelector(".catalog-synonym-status");
+
     addBtn.addEventListener("click", function () {
       var terms = input.value.split(",").map(function (t) { return t.trim(); }).filter(Boolean);
-      if (terms.length < 2) { input.focus(); return; }
+      // Un groupe rapproche des mots ENTRE EUX : il en faut au moins deux.
+      // L'ancienne version se contentait de refocaliser le champ, sans un
+      // mot -- l'utilisateur cliquait et « rien ne se passait ».
+      if (terms.length < 2) {
+        if (synStatus) {
+          synStatus.className = "catalog-rule-status err";
+          synStatus.textContent = terms.length === 1
+            ? "Un synonyme relie des mots entre eux : ajoutez-en au moins un second, séparé par une virgule (ex. vis, boulon)."
+            : "Saisissez au moins deux mots séparés par une virgule.";
+        }
+        input.focus();
+        return;
+      }
+      if (synStatus) { synStatus.className = "catalog-rule-status"; synStatus.textContent = ""; }
       addBtn.disabled = true;
       saveGroups(currentGroups.concat([terms]))
-        .then(function () { input.value = ""; })
+        .then(function () {
+          input.value = "";
+          if (synStatus) {
+            synStatus.className = "catalog-rule-status ok";
+            synStatus.textContent = "Groupe ajouté.";
+          }
+        })
         .catch(function () {})
         .then(function () { addBtn.disabled = false; });
 

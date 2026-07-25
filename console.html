@@ -16,7 +16,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="robots" content="noindex">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css?v=1785009147">
+<link rel="stylesheet" href="styles.css?v=1785010491">
 <link rel="canonical" href="https://heurix.fr/console.html">
 </head>
 <body>
@@ -162,6 +162,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <option value="30" selected>30 derniers jours</option>
           <option value="90">90 derniers jours</option>
         </select>
+        <button type="button" class="console-topbar-guides" data-goto-pane="pane-guides">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          <span>Guides</span>
+        </button>
         <button id="logout-btn" class="btn btn-ghost" type="button">Se déconnecter</button>
       </div>
     </div>
@@ -208,16 +212,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <button type="button" class="console-sidebar-item" data-pane="pane-search-overrides">Gestion des règles</button>
             <div class="console-sidebar-sublabel">Ranking</div>
             <button type="button" class="console-sidebar-item" data-pane="pane-browse">Classement &amp; merchandising</button>
-          </div>
-        </div>
-
-        <div class="console-sidebar-group">
-          <button type="button" class="console-sidebar-section" data-section="guides">
-            <span>Guides</span>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="console-sidebar-chevron"><polyline points="6 9 12 15 18 9"/></svg>
-          </button>
-          <div class="console-sidebar-items" data-section-items="guides" hidden>
-            <button type="button" class="console-sidebar-item" data-pane="pane-guides">Tous les guides</button>
           </div>
         </div>
 </nav>
@@ -374,6 +368,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                   </svg>
                   <input type="text" id="so-preview-query" placeholder="Tapez une requête comme le ferait un visiteur…" aria-label="Requête à tester">
                 </div>
+                <label class="br-stock-toggle" for="so-in-stock">
+                  <input type="checkbox" id="so-in-stock">
+                  <span>Masquer les produits en rupture</span>
+                </label>
                 <div class="console-field-row">
                   <div class="console-field" style="max-width:170px;">
                     <label for="so-preview-limit">Produits affichés</label>
@@ -826,7 +824,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="console-select.js?v=1784983392"></script>
-<script src="console.js?v=1785009147"></script>
+<script src="console.js?v=1785010491"></script>
 <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 
 <script src="nav-dropdown.js"></script>

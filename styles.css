@@ -2303,3 +2303,17 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
   text-decoration:underline; text-underline-offset:2px;
 }
 .catalog-goto-rules:hover{ color:var(--blue); }
+
+/* Bouton Guides dans la barre du haut : les guides ne sont pas un espace de
+   travail, ils n avaient rien a faire dans la meme liste que les catalogues
+   et l analytique. */
+.console-topbar-guides{
+  display:inline-flex; align-items:center; gap:7px;
+  font-family:inherit; font-size:13px; font-weight:600; cursor:pointer;
+  background:#fff; color:var(--ink-muted);
+  border:1px solid var(--line); border-radius:9px; padding:8px 14px;
+  transition:all .12s ease;
+}
+.console-topbar-guides:hover{ border-color:var(--blue); color:var(--blue-deep); }
+.console-topbar-guides svg{ flex-shrink:0; }
+@media (max-width:760px){ .console-topbar-guides span{ display:none; } }
