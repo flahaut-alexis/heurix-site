@@ -43,12 +43,14 @@ const HEURIX_SEARCH_INDEX = [
   { title: "Vins & spiritueux", excerpt: "Millésime, format de bouteille et mode de culture isolés comme attributs, pas comme du texte.", path: "solutions/vins.html" },
   { title: "Finance & comptabilité", excerpt: "SIRET, SIREN, IBAN et TVA reconnus à leur structure, quelle que soit la mise en forme.", path: "solutions/finance.html" },
   { title: "Construire une page de catégorie avec Browse & Discovery", excerpt: "Guide pas à pas : catégories à l'indexation, snippet prêt à l'emploi, tri par prix, marge ou popularité réelle.", path: "blog/guide-page-categorie-browse.html" },
+  { title: "Pourquoi la recherche vectorielle échoue sur les catalogues techniques", excerpt: "La similarité sémantique est un atout sur du langage naturel et un défaut sur des références structurées. Démonstration sur de vrais cas.", path: "blog/recherche-vectorielle-catalogues-techniques.html" },
   { title: "Guide de mise en route — de la souscription à l'installation complète", excerpt: "Le parcours complet : premier catalogue, Heurix Tracker, intégration front-end, serveur MCP.", path: "blog/guide-mise-en-route.html" },
   { title: "Connecter Heurix à Claude Desktop et Cursor avec le serveur MCP", excerpt: "Guide pas à pas : interrogez votre catalogue en langage naturel depuis un agent IA, sans écrire de code.", path: "blog/guide-serveur-mcp-heurix.html" }
 ];
 
 // Derniers articles du blog — affichés par défaut, avant toute frappe.
 const HEURIX_LATEST_ARTICLES = [
+  "blog/recherche-vectorielle-catalogues-techniques.html",
   "blog/guide-mise-en-route.html",
   "blog/guide-serveur-mcp-heurix.html",
   "blog/guide-page-categorie-browse.html"

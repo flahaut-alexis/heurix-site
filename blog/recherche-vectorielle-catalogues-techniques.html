@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-PGLPLKDP');</script>
+<!-- End Google Tag Manager -->
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pourquoi la recherche vectorielle échoue sur les catalogues techniques — Heurix</title>
+<meta name="description" content="La similarité sémantique est un atout sur du langage naturel et un défaut sur des références structurées. Démonstration sur de vrais cas : visserie, roulements, ISBN, millésimes.">
+<link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/recherche-vectorielle-catalogues-techniques.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Pourquoi la recherche vectorielle échoue sur les catalogues techniques — Heurix">
+<meta property="og:description" content="La similarité sémantique est un atout sur du langage naturel et un défaut sur des références structurées. Démonstration sur de vrais cas : visserie, roulements, ISBN, millésimes.">
+<meta property="og:image" content="https://heurix.fr/og-image.png">
+<meta property="og:url" content="https://heurix.fr/blog/recherche-vectorielle-catalogues-techniques.html">
+<meta property="og:locale" content="fr_FR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Pourquoi la recherche vectorielle échoue sur les catalogues techniques — Heurix">
+<meta name="twitter:description" content="La similarité sémantique est un atout sur du langage naturel et un défaut sur des références structurées. Démonstration sur de vrais cas : visserie, roulements, ISBN, millésimes.">
+<meta name="twitter:image" content="https://heurix.fr/og-image.png">
+<link rel="icon" type="image/png" href="../favicon-32.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<link rel="stylesheet" href="../styles.css?v=1784985918">
+<link rel="canonical" href="https://heurix.fr/blog/recherche-vectorielle-catalogues-techniques.html">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Heurix",
+  "url": "https://heurix.fr",
+  "logo": "https://heurix.fr/logo.svg?v=1784985918",
+  "image": "https://heurix.fr/og-image.png",
+  "description": "Moteur de recherche et search & discovery pour sites e-commerce, basé sur des expressions régulières, conçu en France.",
+  "email": "contact@heurix.fr",
+  "sameAs": ["https://www.linkedin.com/company/heurix-search/"],
+  "founder": {"@type": "Person", "name": "Alexis Flahaut"},
+  "areaServed": "FR"
+}
+</script>
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PGLPLKDP"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+<header>
+  <div class="header-top">
+    <nav class="header-top-inner">
+      <a href="../index.html" class="logo"><img src="../logo.svg?v=1784985918" alt="Heurix"> <span class="wordmark">Heurix</span></a>
+      <div class="nav-links">
+        <div class="nav-drop">
+          <button type="button" class="nav-drop-btn" aria-expanded="false" aria-haspopup="true">Produit</button>
+          <div class="nav-drop-panel">
+            <a href="../index.html#probleme">Le problème</a>
+            <a href="../index.html#mission">Notre mission</a>
+            <a href="../index.html#moteur">Le moteur</a>
+            <a href="../fonctionnalites.html">Fonctionnalités</a>
+            <a href="../index.html#tarifs">Simulateur ROI</a>
+          </div>
+        </div>
+        <div class="nav-drop">
+          <button type="button" class="nav-drop-btn" aria-expanded="false" aria-haspopup="true">Solutions</button>
+          <div class="nav-drop-panel">
+          <a href="../solutions/outillage.html">Quincaillerie & outillage</a>
+          <a href="../solutions/industrie.html">Pièces détachées & industrie</a>
+          <a href="../solutions/mode.html">Mode & retail</a>
+          <a href="../solutions/electronique.html">Électronique & high-tech</a>
+          <a href="../solutions/livres.html">Librairie & édition</a>
+          <a href="../solutions/vins.html">Vins & spiritueux</a>
+          <a href="../solutions/finance.html">Finance & comptabilité</a>
+          </div>
+        </div>
+        <div class="nav-drop">
+          <button type="button" class="nav-drop-btn" aria-expanded="false" aria-haspopup="true">Developers</button>
+          <div class="nav-drop-panel">
+            <a href="../docs.html">Documentation</a>
+            <a href="../integrations.html">Intégrations</a>
+            <a href="../blog/guide-mise-en-route.html">Guide de mise en route</a>
+          </div>
+        </div>
+        <a href="../blog.html">Blog</a>
+      </div>
+      <div class="header-search">
+        <button id="heurix-search-btn" class="search-trigger" aria-label="Heurix Search — rechercher sur le site" type="button">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <span class="search-trigger-text">Heurix Search</span>
+          <span class="search-trigger-kbd">Ctrl K</span>
+        </button>
+      </div>
+      <div class="header-utility">
+        <button type="button" id="mobile-nav-toggle" class="mobile-nav-toggle" aria-label="Menu" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+        <a href="../console.html" class="header-signin">Se connecter</a>
+        <a href="../en/blog.html" class="lang-switch">EN</a>
+        <a href="../pricing.html" class="btn">Découvrir le moteur</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<div id="heurix-search-modal" class="search-modal">
+  <div id="heurix-search-backdrop" class="search-backdrop" data-search-close></div>
+  <div class="search-panel">
+    <div class="search-panel-head">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input id="heurix-search-input" type="text" placeholder="Heurix Search..." autocomplete="off">
+      <button class="search-close" data-search-close type="button">Échap</button>
+    </div>
+    <p id="heurix-search-suggest-label" class="search-suggest-label" hidden>Derniers articles</p>
+    <div id="heurix-search-results" class="search-results"></div>
+    <p id="heurix-search-empty" class="search-empty" hidden>Aucun résultat pour cette recherche. Essayez un autre terme.</p>
+  </div>
+</div>
+
+<article class="post">
+  <div class="wrap post-wrap">
+    <a href="../blog.html" class="back-link">← Tous les articles</a>
+    <div class="kicker">Analyse · Juillet 2026</div>
+    <h1>Pourquoi la recherche vectorielle échoue sur les catalogues techniques</h1>
+    <p class="post-lede">La similarité sémantique est une avancée réelle. Elle est aussi le mauvais outil quand vos références encodent des dimensions, des normes et des identifiants — et voici précisément pourquoi.</p>
+
+    <div class="post-body">
+      <h2>Ce que fait un moteur vectoriel, et pourquoi c'est brillant</h2>
+      <p>Un moteur vectoriel transforme chaque texte en une suite de nombres — un point dans un espace à plusieurs centaines de dimensions. Deux textes de sens proche se retrouvent proches dans cet espace. C'est ce qui permet à une recherche de « chaussures pour courir » de trouver des « baskets de running », sans qu'aucun synonyme n'ait été déclaré.</p>
+      <p>Sur du langage naturel, c'est une avancée considérable. Sur un catalogue de mode, de mobilier ou de contenu éditorial, la similarité sémantique répond exactement au besoin : l'acheteur décrit ce qu'il veut avec ses mots, le moteur comprend l'intention.</p>
+      <p><strong>Le problème n'est donc pas la technique. C'est son adéquation à un type de catalogue précis.</strong></p>
+
+      <h2>Le cœur du problème : une distance qui ne mesure pas la bonne chose</h2>
+      <p>Prenons deux références de visserie, telles qu'elles existent dans n'importe quel catalogue de quincaillerie :</p>
+      <div class="table-scroll"><table class="docs-params">
+        <tr><th>Référence</th><th>Distance sémantique</th><th>Distance commerciale</th></tr>
+        <tr><td class="mono">M8 x 20 - Inox A2 - DIN 933</td><td rowspan="2" style="vertical-align:middle;">Quasi nulle — les deux textes sont presque identiques</td><td rowspan="2" style="vertical-align:middle;"><strong>Totale</strong> — ce sont deux produits incompatibles</td></tr>
+        <tr><td class="mono">M8 x 25 - Inox A2 - DIN 933</td></tr>
+      </table></div>
+      <p>Un moteur vectoriel n'est pas incapable de distinguer ces deux chaînes : « 20 » et « 25 » sont bien deux jetons différents. Le problème est ailleurs, et il est plus fondamental : <strong>la distance qu'il calcule ne corrèle pas avec la distance qui compte</strong>. Sur ces deux références, la différence de sens est infime alors que la différence d'usage est absolue. Une vis trop longue de 5 mm traverse la pièce.</p>
+      <p>C'est cette décorrélation qui produit les symptômes que connaissent les distributeurs techniques : des résultats « proches » mais faux, une confiance dégradée dans la recherche, et des retours de marchandise dont personne ne fait le lien avec le moteur.</p>
+
+      <h2>Trois autres cas où l'écart se creuse</h2>
+
+      <h3>Le suffixe qui change tout</h3>
+      <p>Dans les pièces détachées, l'information décisive est souvent le suffixe. Un roulement <span class="mono">6204-2RS</span> et un <span class="mono">6204-ZZ</span> portent le même numéro et diffèrent par leur étanchéité : joints caoutchouc contre flasques tôle. Deux caractères d'écart dans le texte, deux pièces non interchangeables sur une machine en production.</p>
+
+      <h3>L'identifiant qui a plusieurs écritures</h3>
+      <p>Un ISBN se présente indifféremment sous la forme <span class="mono">978-2-07-041311-9</span> ou <span class="mono">9782070413119</span>. Ce sont deux écritures du même identifiant, et un acheteur utilisera l'une ou l'autre selon sa source. Un moteur qui traite ces chaînes comme du texte les considère comme différentes — alors qu'il s'agit du même livre.</p>
+      <p>Inversement, deux éditions d'un même titre portent le même nom, le même auteur, la même couverture parfois — et deux ISBN distincts. Sémantiquement, elles sont interchangeables. Commercialement, ce sont deux produits, deux prix, deux disponibilités.</p>
+
+      <h3>Le nombre qui n'est pas une quantité</h3>
+      <p>Sur un vin, <span class="mono">2015</span> est un millésime, pas une quantité ni un prix. Un moteur généraliste le traite comme un nombre parmi d'autres — et une recherche de « magnum 2015 » remonte alors tout ce qui contient « 2015 » quelque part, y compris une référence interne ou un prix à 20,15 €.</p>
+
+      <h2>L'approche inverse : reconnaître la structure</h2>
+      <p>Heurix ne calcule pas de distance sémantique. Il reconnaît la <strong>structure</strong> d'une référence, par une cascade de règles, et en extrait des attributs exploitables. Sur les deux vis du début :</p>
+      <div class="table-scroll"><table class="docs-params">
+        <tr><th>Référence</th><th>Ce que le moteur en extrait</th></tr>
+        <tr><td class="mono">M8 x 20 - Inox A2 - DIN 933</td><td><code class="docs-inline-code">DIAM_M8</code> <code class="docs-inline-code">LONG_20</code> <code class="docs-inline-code">MAT_INOX</code> <code class="docs-inline-code">NORME_DIN933</code></td></tr>
+        <tr><td class="mono">M8 x 25 - Inox A2 - DIN 933</td><td><code class="docs-inline-code">DIAM_M8</code> <code class="docs-inline-code">LONG_25</code> <code class="docs-inline-code">MAT_INOX</code> <code class="docs-inline-code">NORME_DIN933</code></td></tr>
+      </table></div>
+      <p>Les deux références partagent leur diamètre, leur matière et leur norme. Elles diffèrent sur la longueur, isolée comme un attribut à part entière — donc filtrable, comparable, et jamais confondue. Le moteur ne se trompe pas sur ce point parce qu'il ne l'estime pas : il le lit.</p>
+      <p>Une conséquence utile : chaque résultat peut <strong>expliquer pourquoi il sort</strong>. Correspondance exacte, faute de frappe tolérée, annotation reconnue. Un classement vectoriel, lui, est difficilement explicable — la proximité dans un espace à 768 dimensions ne se raconte pas.</p>
+
+      <h2>Comment savoir de quel côté vous êtes</h2>
+      <p>La question n'est pas de savoir quelle technique est supérieure, mais laquelle correspond à votre catalogue. Quelques indices concrets :</p>
+      <div class="table-scroll"><table class="docs-params">
+        <tr><th>La similarité sémantique convient si…</th><th>La reconnaissance de structure convient si…</th></tr>
+        <tr>
+          <td>Vos clients décrivent un besoin avec leurs mots<br>Vos produits se distinguent par le style, l'usage, l'ambiance<br>Une réponse « approchante » est satisfaisante</td>
+          <td>Vos clients tapent une référence ou un identifiant<br>Vos produits se distinguent par des dimensions, des normes, des suffixes<br>Une réponse approchante est une <strong>erreur de commande</strong></td>
+        </tr>
+      </table></div>
+      <p>Beaucoup de catalogues relèvent des deux, selon la page et selon le visiteur. L'erreur n'est pas de choisir une technique, c'est de croire qu'une seule suffit.</p>
+
+      <h2>Un test que vous pouvez faire aujourd'hui, sur votre propre moteur</h2>
+      <p>Sans changer d'outil, sans appeler personne :</p>
+      <ol>
+        <li>Prenez deux références qui ne diffèrent que par une dimension — deux longueurs, deux diamètres, deux suffixes.</li>
+        <li>Cherchez la première dans votre moteur actuel.</li>
+        <li>Regardez si la seconde apparaît, et à quel rang.</li>
+      </ol>
+      <p>Si elle remonte juste après, votre moteur mesure une ressemblance de texte, pas une différence de produit. Refaites l'exercice avec un identifiant écrit dans deux formats, avec et sans ponctuation — l'écart est souvent plus parlant encore.</p>
+
+      <h2>Pour aller plus loin</h2>
+      <p>Les <a href="../index.html#moteur">principes du moteur</a> sont détaillés sur la page d'accueil, et chaque secteur a sa page dédiée : <a href="../solutions/outillage.html">quincaillerie et outillage</a>, <a href="../solutions/industrie.html">pièces détachées</a>, <a href="../solutions/livres.html">librairie</a>, <a href="../solutions/vins.html">vins et spiritueux</a>.</p>
+    </div>
+
+    <div class="post-footer-cta">
+      <p>Faites le test sur votre propre catalogue</p>
+      <a href="../pricing.html" class="btn">Essayer gratuitement — 14 jours</a>
+    </div>
+  </div>
+</article>
+
+<footer>
+  <div class="wrap foot-grid">
+    <a href="../index.html" class="logo" style="font-size:15px;"><img src="../logo.svg?v=1784985918" alt="Heurix" style="height:22px;width:22px;"> <span class="wordmark">Heurix</span></a>
+    <div class="foot-links">
+      <a href="../blog.html">Blog</a>
+      <a href="../docs.html">Documentation API</a>
+      <a href="../fonctionnalites.html">Fonctionnalités</a>
+      <a href="../integrations.html">Intégrations</a>
+      <a href="../console.html">Console</a>
+      <a href="../about.html">À propos</a>
+      <a href="../index.html#faq">FAQ</a>
+      <a href="../cgv.html">CGV</a>
+      <a href="../mentions-legales.html">Mentions légales</a>
+      <a href="mailto:contact@heurix.fr">contact@heurix.fr</a>
+    </div>
+    <div class="foot-social">
+      <span class="foot-social-label">Réseaux sociaux</span>
+      <a href="https://www.linkedin.com/company/heurix-search/" target="_blank" rel="noopener" aria-label="LinkedIn" class="foot-social-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+      </a>
+    </div>
+    <div class="foot-legal">
+      Heurix — Entreprise individuelle (micro-entreprise). SIRET 107 681 900 00018. Conseil en systèmes et logiciels informatiques.<br>
+      © <span id="year">2026</span> Heurix. Tous droits réservés.
+    </div>
+  </div>
+</footer>
+
+<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+
+<script src="../search.js"></script>
+<script src="../nav-dropdown.js"></script>
+<script src="../mobile-nav.js?v=1784970606"></script>
+<div id="pricing-nudge" class="pricing-nudge">
+  <button type="button" class="pricing-nudge-close" aria-label="Fermer">&times;</button>
+  <div class="pricing-nudge-kicker">Essai gratuit 14 jours</div>
+  <p>Testez le Search API sur votre catalogue, sans carte bancaire.</p>
+  <a href="../pricing.html" class="btn">Voir les tarifs</a>
+</div>
+<script src="../pricing-nudge.js"></script>
+</body>
+</html>
