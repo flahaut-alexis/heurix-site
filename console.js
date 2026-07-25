@@ -722,10 +722,50 @@
   // Ordre des produits tel qu'AFFICHE au dernier rendu. C'est sur lui que
   // portent « monter » et « descendre » -- pas sur le seul bloc epingle.
   var soOrdreAffiche = [];
+  // Facettes actives dans l'apercu. Elles servent a VERIFIER qu'une regle
+  // survit a un filtrage visiteur -- pas a editer : voir le garde-fou dans
+  // le rendu des fiches.
+  var soFiltres = [];
 
   function soSimuBar(actif) {
     var bar = document.getElementById("so-simu-bar");
     if (bar) bar.hidden = !actif;
+  }
+
+  function soRenderFacettes(facets, key) {
+    var zone = document.getElementById("so-facets");
+    var avert = document.getElementById("so-facet-warn");
+    if (!zone) return;
+    var groupes = Object.keys(facets).filter(function (g) {
+      return Object.keys(facets[g] || {}).length > 1;
+    });
+    if (!groupes.length) {
+      zone.hidden = true;
+      if (avert) avert.hidden = true;
+      return;
+    }
+    zone.hidden = false;
+    if (avert) avert.hidden = soFiltres.length === 0;
+
+    zone.innerHTML = groupes.map(function (g) {
+      var valeurs = facets[g];
+      return "<span class='so-facet-group'>" + esc(g) + "</span>" +
+        Object.keys(valeurs).slice(0, 8).map(function (v) {
+          var jeton = g + ":" + v;
+          var actif = soFiltres.indexOf(jeton) !== -1;
+          return "<button type='button' class='so-facet-chip" + (actif ? " on" : "") +
+            "' data-facet='" + esc(jeton) + "'>" + esc(v) + " (" + valeurs[v] + ")</button>";
+        }).join("");
+    }).join("");
+
+    zone.querySelectorAll("[data-facet]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var jeton = btn.getAttribute("data-facet");
+        var i = soFiltres.indexOf(jeton);
+        if (i === -1) soFiltres.push(jeton); else soFiltres.splice(i, 1);
+        refreshSoPreview(key);
+      });
+    });
   }
 
   function refreshSoPreview(key) {
@@ -741,7 +781,7 @@
     // vue stable et lisible pour se reperer avant de tester quoi que ce soit.
     var champLimite = document.getElementById("so-preview-limit");
     var limite = champLimite ? parseInt(champLimite.value, 10) : 12;
-    var corpsRequete = { q: q, limit: limite };
+    var corpsRequete = { q: q, limit: limite, facets: ["brand", "categories"], filters: soFiltres };
     if (soDraft) corpsRequete.simulate_overrides = soDraft;
 
     apiFetch("/v1/index/" + encodeURIComponent(soCurrentCatalog) + "/search", key,
@@ -765,6 +805,7 @@
         }
 
         soOrdreAffiche = hits.map(function (h) { return h.product.id; });
+        soRenderFacettes(data.facets || {}, key);
         grille.innerHTML = hits.map(function (h, i) {
           var p = h.product;
           var regle = h.pinned || h.buried;
@@ -808,8 +849,14 @@
           // Les trois actions sont disponibles sur TOUS les produits, epingles
           // ou non : monter ou descendre un produit non epingle materialise
           // l'ordre au-dessus de lui (voir soDeplacer).
-          actions += "<button type='button' data-so-act='up' data-pid='" + pid + "' title='Monter d une place' aria-label='Monter " + esc(p.name || p.id) + "'>" + ICONE.up + "</button>" +
-                     "<button type='button' data-so-act='down' data-pid='" + pid + "' title='Descendre d une place' aria-label='Descendre " + esc(p.name || p.id) + "'>" + ICONE.down + "</button>";
+          // GARDE-FOU : les fleches figent les positions de l'ordre AFFICHE.
+          // Sur une liste filtree par facette, elles produiraient des regles
+          // qui ne veulent plus rien dire une fois le filtre retire. On les
+          // desactive plutot que de fabriquer des regles trompeuses.
+          // L'epinglage, lui, garde le meme sens filtre ou non.
+          var bloque = soFiltres.length ? " disabled" : "";
+          actions += "<button type='button'" + bloque + " data-so-act='up' data-pid='" + pid + "' title='Monter d une place' aria-label='Monter " + esc(p.name || p.id) + "'>" + ICONE.up + "</button>" +
+                     "<button type='button'" + bloque + " data-so-act='down' data-pid='" + pid + "' title='Descendre d une place' aria-label='Descendre " + esc(p.name || p.id) + "'>" + ICONE.down + "</button>";
           if (h.pinned) {
             actions += "<button type='button' data-so-act='retirer' data-pid='" + pid + "' title='Retirer l épinglage' aria-label='Retirer l épinglage de " + esc(p.name || p.id) + "'>" + ICONE.off + "</button>";
           } else {
@@ -1217,6 +1264,39 @@
       if (act === "up") soDeplacer(key, pid, -1);
       else if (act === "down") soDeplacer(key, pid, 1);
       else soAction(key, act, pid);
+    });
+  }
+
+  // ---------------- Aide au premier usage des editeurs de regles ----------------
+  //
+  // Affichee une seule fois par navigateur, et consideree comme comprise des
+  // que l'utilisateur AGIT sur une fiche -- pas seulement s'il ferme la
+  // bulle. Quelqu'un qui a deja epingle un produit n'a plus besoin qu'on lui
+  // explique comment faire.
+  //
+  // Le meme gabarit sert aux deux editeurs (Search et Ranking) : leur
+  // fonctionnement est identique, un seul indicateur « vu » suffit.
+  function wireTutoEditeur(ids) {
+    var vu = localStorage.getItem("heurix_tuto_editeur_vu") === "1";
+    var boites = ids.map(function (id) { return document.getElementById(id); }).filter(Boolean);
+    if (!boites.length) return;
+
+    function marquerVu() {
+      localStorage.setItem("heurix_tuto_editeur_vu", "1");
+      boites.forEach(function (b) { b.hidden = true; });
+    }
+    if (!vu) boites.forEach(function (b) { b.hidden = false; });
+
+    boites.forEach(function (b) {
+      var fermer = b.querySelector(".so-tuto-close");
+      if (fermer) fermer.addEventListener("click", marquerVu);
+    });
+    // Agir vaut comprehension : un clic sur une action de fiche suffit.
+    ["so-preview-grid", "br-grid"].forEach(function (id) {
+      var g = document.getElementById(id);
+      if (g) g.addEventListener("click", function (e) {
+        if (e.target.closest("[data-so-act], [data-br-act]")) marquerVu();
+      });
     });
   }
 
@@ -1842,6 +1922,7 @@
       wireSearchOverridesPane(key);
       wirePublicKeys(key);
       wireCategoryViews(key);
+      wireTutoEditeur(["so-tuto", "br-tuto"]);
     }).catch(function () {
       dashLoading.hidden = true;
       localStorage.removeItem(SESSION_STORAGE_KEY);

@@ -16,7 +16,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="robots" content="noindex">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css?v=1785004933">
+<link rel="stylesheet" href="styles.css?v=1785006327">
 <link rel="canonical" href="https://heurix.fr/console.html">
 </head>
 <body>
@@ -364,11 +364,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <h2>Aperçu des résultats</h2>
                 <p class="console-panel-note">Tapez une requête pour voir le classement réel, et <strong>pourquoi</strong> chaque produit sort. Les flèches déplacent un produit d'une place, l'épingle le met en tête.</p>
                 <p class="console-panel-note" style="margin-top:-8px;">À savoir : déplacer un produit fige aussi les positions au-dessus de lui — plusieurs règles apparaissent donc d'un seul clic, c'est normal. Rien n'est enregistré avant « Appliquer ».</p>
+                <div class="so-searchbar">
+                  <svg class="so-searchbar-icon" width="20" height="20" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+                    <g stroke="currentColor" stroke-linecap="round">
+                      <circle cx="27" cy="27" r="17" stroke-width="6"/>
+                      <path d="M19 21h16M19 27h16M19 33h16" stroke-width="4"/>
+                      <path d="M40 40 L54 54" stroke-width="7"/>
+                    </g>
+                  </svg>
+                  <input type="text" id="so-preview-query" placeholder="Tapez une requête comme le ferait un visiteur…" aria-label="Requête à tester">
+                </div>
                 <div class="console-field-row">
-                  <div class="console-field" style="flex:1; min-width:260px;">
-                    <label for="so-preview-query">Requête à tester</label>
-                    <input type="text" id="so-preview-query" placeholder="ex. vis inox, promo, m8x20">
-                  </div>
                   <div class="console-field" style="max-width:170px;">
                     <label for="so-preview-limit">Produits affichés</label>
                     <select id="so-preview-limit">
@@ -379,6 +385,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     </select>
                   </div>
                 </div>
+                <div class="so-tuto" id="so-tuto" hidden>
+                  <button type="button" class="so-tuto-close" aria-label="Fermer">&times;</button>
+                  <p class="so-tuto-titre">Comment réordonner deux produits</p>
+                  <ol class="so-tuto-etapes">
+                    <li>Cliquez <span class="so-tuto-ico">📌</span> sur un produit pour le mettre en tête.</li>
+                    <li>Faites de même sur un second produit.</li>
+                    <li><strong>Glissez une carte épinglée sur l'autre</strong> pour les intervertir — ou utilisez les flèches <span class="so-tuto-ico">▲▼</span>, équivalentes et utilisables au clavier.</li>
+                    <li>Cliquez <strong>Appliquer</strong> pour enregistrer.</li>
+                  </ol>
+                  <p class="so-tuto-note">Déplacer un produit fige aussi les positions au-dessus de lui : plusieurs règles apparaissent donc d'un seul clic. Rien n'est enregistré tant que vous n'avez pas cliqué sur Appliquer.</p>
+                </div>
+                <div class="so-facets" id="so-facets" hidden></div>
+                <p class="so-facet-warn" id="so-facet-warn" hidden>Filtre actif : les flèches sont désactivées. Elles figent les positions de la liste <strong>affichée</strong> — sur une liste filtrée, les règles produites n'auraient plus de sens une fois le filtre retiré. L'épinglage, lui, reste possible.</p>
                 <div class="so-grid" id="so-preview-grid"></div>
                 <p class="so-grid-caption" id="so-preview-caption"></p>
                 <p class="console-empty" id="so-preview-empty" hidden>Aucun résultat pour cette requête.</p>
@@ -402,7 +421,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
               
 
-              <div class="console-panel">
+              <details class="br-attrs">
+                <summary>Ajouter une priorité à la main — pour un produit absent des résultats</summary>
+                <div style="padding-top:12px;">
                 <h2 id="so-form-title">Ajouter une priorité</h2>
                 <form id="so-form" class="catalog-rule-add">
                   <div class="catalog-rule-add-row">
@@ -421,6 +442,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                   <span class="catalog-rule-status" id="so-status"></span>
                 </form>
               </div>
+              </details>
             </div>
           </div>
 
@@ -502,6 +524,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 </div>
                 <div id="browse-results" hidden>
                 <p class="console-panel-note">Les flèches déplacent un produit d'une place dans cette catégorie, l'épingle le met en tête. Déplacer fige aussi les positions au-dessus — plusieurs règles apparaissent donc d'un seul clic. Rien n'est enregistré avant « Appliquer ».</p>
+                <div class="so-tuto" id="br-tuto" hidden>
+                  <button type="button" class="so-tuto-close" aria-label="Fermer">&times;</button>
+                  <p class="so-tuto-titre">Comment réordonner deux produits</p>
+                  <ol class="so-tuto-etapes">
+                    <li>Cliquez <span class="so-tuto-ico">📌</span> sur un produit pour le mettre en tête.</li>
+                    <li>Faites de même sur un second produit.</li>
+                    <li><strong>Glissez une carte épinglée sur l'autre</strong> pour les intervertir — ou utilisez les flèches <span class="so-tuto-ico">▲▼</span>, équivalentes et utilisables au clavier.</li>
+                    <li>Cliquez <strong>Appliquer</strong> pour enregistrer.</li>
+                  </ol>
+                  <p class="so-tuto-note">Déplacer un produit fige aussi les positions au-dessus de lui : plusieurs règles apparaissent donc d'un seul clic. Rien n'est enregistré tant que vous n'avez pas cliqué sur Appliquer.</p>
+                </div>
                 <div class="so-grid" id="br-grid"></div>
                 <p class="so-grid-caption" id="br-caption"></p>
                 <div class="so-simu-bar" id="br-simu-bar" hidden>
@@ -781,7 +814,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="console-select.js?v=1784983392"></script>
-<script src="console.js?v=1785004933"></script>
+<script src="console.js?v=1785006327"></script>
 <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 
 <script src="nav-dropdown.js"></script>

@@ -2210,3 +2210,73 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
   font-size:13px; color:var(--ink); margin-bottom:14px;
 }
 .br-stock-toggle input{ width:16px; height:16px; accent-color:var(--blue); cursor:pointer; }
+
+/* Barre « Requete a tester » : elle doit AVOIR L AIR d une barre de
+   recherche visiteur, pas d un champ de formulaire -- c est ce qu on y
+   simule. Pleine largeur du bloc, loupe Heurix en tete. */
+.so-searchbar{
+  position:relative; display:flex; align-items:center;
+  margin:4px 0 14px; width:100%;
+}
+.so-searchbar-icon{
+  position:absolute; left:16px; color:var(--blue); pointer-events:none;
+  flex-shrink:0;
+}
+.so-searchbar input{
+  width:100%; box-sizing:border-box;
+  font-family:inherit; font-size:15.5px; color:var(--ink);
+  background:#fff; border:1px solid var(--line); border-radius:12px;
+  padding:14px 18px 14px 48px;
+  transition:border-color .12s ease, box-shadow .12s ease;
+}
+.so-searchbar input::placeholder{ color:#9B9EAF; }
+.so-searchbar input:hover{ border-color:#C9CDDD; }
+.so-searchbar input:focus{
+  outline:none; border-color:var(--blue);
+  box-shadow:0 0 0 4px color-mix(in srgb, var(--blue) 14%, transparent);
+}
+
+/* Facettes de l apercu : puces cliquables, comme en verrait un visiteur. */
+.so-facets{ display:flex; flex-wrap:wrap; gap:7px; margin:0 0 12px; }
+.so-facets[hidden]{ display:none; }
+.so-facet-group{ font-size:11px; font-weight:800; letter-spacing:.04em; text-transform:uppercase; color:var(--ink-muted); align-self:center; margin-right:2px; }
+.so-facet-chip{
+  font-family:inherit; font-size:12.5px; font-weight:600; cursor:pointer;
+  padding:5px 12px; border-radius:100px;
+  border:1px solid var(--line); background:#fff; color:var(--ink);
+  transition:all .12s ease;
+}
+.so-facet-chip:hover{ border-color:var(--blue); color:var(--blue-deep); }
+.so-facet-chip.on{ background:var(--blue); border-color:var(--blue); color:#fff; }
+/* Avertissement du garde-fou : les fleches figent l ordre AFFICHE, donc
+   une liste filtree produirait des regles trompeuses une fois le filtre
+   retire. Ton ambre, comme la simulation -- meme registre : « attention,
+   ce que vous voyez n est pas l etat normal ». */
+.so-facet-warn{
+  margin:0 0 12px; padding:10px 14px; border-radius:9px;
+  background:#FFFBF3; border:1px solid #F0DDB8;
+  font-size:12.5px; line-height:1.5; color:var(--ink);
+}
+.so-facet-warn[hidden]{ display:none; }
+.so-card-actions button[disabled]{ opacity:.35; cursor:not-allowed; }
+.so-card-actions button[disabled]:hover{ background:#fff; border-color:#D5DAF5; color:var(--blue-deep); }
+
+/* Aide au premier usage des editeurs. Compacte volontairement : elle ne doit
+   pas repousser les resultats hors du premier ecran, ce qui a deja ete
+   corrige deux fois sur cette page. */
+.so-tuto{
+  position:relative; margin:0 0 14px; padding:14px 40px 14px 16px;
+  background:var(--blue-tint); border:1px solid #C9D2FB; border-radius:11px;
+}
+.so-tuto[hidden]{ display:none; }
+.so-tuto-titre{ margin:0 0 8px; font-size:13.5px; font-weight:800; color:var(--blue-deep); }
+.so-tuto-etapes{ margin:0; padding-left:18px; font-size:12.5px; line-height:1.6; color:var(--ink); }
+.so-tuto-etapes li{ margin-bottom:2px; }
+.so-tuto-ico{ font-size:11px; }
+.so-tuto-note{ margin:9px 0 0; font-size:11.5px; line-height:1.5; color:var(--ink-muted); }
+.so-tuto-close{
+  position:absolute; top:9px; right:10px; width:24px; height:24px;
+  font-family:inherit; font-size:16px; line-height:1; cursor:pointer;
+  background:none; border:none; color:var(--blue-deep); border-radius:6px;
+}
+.so-tuto-close:hover{ background:#fff; }
