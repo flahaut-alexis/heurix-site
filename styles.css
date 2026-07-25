@@ -90,7 +90,7 @@ header{
   .logo{ font-size:17px; }
 }
 
-.header-search{ margin-left:auto; display:flex; justify-content:flex-end; min-width:0; }
+.header-search{ display:flex; justify-content:flex-end; min-width:0; }
 .header-search .search-trigger{ width:100%; max-width:300px; justify-content:flex-start; }
 
 .header-utility{ display:flex; align-items:center; gap:14px; flex-shrink:0; }
@@ -1749,4 +1749,30 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
   .nav-drop-btn{ width:100%; justify-content:space-between; padding:11px 0; font-size:15px; }
   .nav-drop-panel{ position:static; box-shadow:none; border:none; padding:0 0 10px 14px; min-width:0; }
   .header-search{ display:none; }
+}
+
+/* Centrage du menu entre le logo et la recherche, et alignement vertical.
+   
+   Deux marges auto (gauche ET droite) sur .nav-links : l'espace libre de la
+   barre se repartit a parts egales de chaque cote, ce qui centre le menu
+   entre le logo et la recherche. C'est pour cela que .header-search n'a
+   plus de margin-left:auto -- deux elements avec marge auto se
+   partageraient l'espace en trois, et le menu ne serait plus centre.
+   
+   Alignement : le lien « Blog » est un <a> alors que les autres entrees
+   sont des <button>. Sans harmonisation, deux tailles de police (13,5 vs
+   14px) et un rembourrage vertical d'un cote seulement -- le lien
+   paraissait decale vers le haut. */
+.header-top-inner > .nav-links{ margin-left:auto; margin-right:auto; align-items:center; }
+.nav-links > a{
+  font-size:14px; font-weight:600; padding:6px 2px;
+  display:inline-flex; align-items:center; color:var(--ink-muted);
+}
+.nav-links > a:hover{ color:var(--blue-deep); }
+
+@media (max-width:1080px){
+  /* Le menu deplie occupe toute la largeur : les marges auto du mode
+     bureau doivent etre neutralisees, sinon il reste centre et etroit. */
+  .header-top-inner > .nav-links{ margin-left:0; margin-right:0; align-items:stretch; }
+  .nav-links > a{ padding:11px 0; font-size:15px; }
 }
