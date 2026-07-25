@@ -709,6 +709,16 @@
   // le moteur -- c'est elle qui rend l'ecran utile : elle explique le
   // classement au lieu de le constater.
   var soPreviewTimer = null;
+  // Brouillon en cours : null = aucun, sinon la liste COMPLETE des priorites
+  // telles qu'elles seraient apres application. Le moteur remplace l'ensemble
+  // persiste par cette liste, il ne fusionne pas -- c'est ce qui permet de
+  // previsualiser aussi une suppression.
+  var soDraft = null;
+
+  function soSimuBar(actif) {
+    var bar = document.getElementById("so-simu-bar");
+    if (bar) bar.hidden = !actif;
+  }
 
   function refreshSoPreview(key) {
     var champ = document.getElementById("so-preview-query");
@@ -726,8 +736,11 @@
     }
     hint.hidden = true;
 
+    var corpsRequete = { q: q, limit: 20 };
+    if (soDraft) corpsRequete.simulate_overrides = soDraft;
+
     apiFetch("/v1/index/" + encodeURIComponent(soCurrentCatalog) + "/search", key,
-             { method: "POST", body: { q: q, limit: 20 } })
+             { method: "POST", body: corpsRequete })
       .then(function (data) {
         var hits = data.hits || [];
         if (!hits.length) {
@@ -736,6 +749,7 @@
           return;
         }
         vide.hidden = true;
+        soSimuBar(!!data.simulated);
         corps.innerHTML = hits.map(function (h, i) {
           // Les etiquettes viennent du moteur (champs pinned / buried), pas
           // d'une deduction cote client : la logique de declenchement d'une
@@ -747,7 +761,10 @@
           var raisons = (h.matched || []).length
             ? h.matched.map(function (m) { return "<span class='so-why'>" + esc(m) + "</span>"; }).join(" ")
             : "<span style='color:var(--ink-muted);'>injecté par une priorité</span>";
-          return "<tr" + (h.pinned || h.buried ? " class='so-row-ruled'" : "") + ">" +
+          var classe = (h.pinned || h.buried)
+            ? (data.simulated ? " class='so-row-simulated'" : " class='so-row-ruled'")
+            : "";
+          return "<tr" + classe + ">" +
             "<td class='num'>" + (i + 1) + "</td>" +
             "<td>" + produitCell(h.product.id, h.product.name, h.product.price) + "</td>" +
             "<td class='num'>" + (h.score !== undefined ? h.score : "–") + "</td>" +
@@ -765,6 +782,9 @@
     apiFetch("/v1/index/" + encodeURIComponent(soCurrentCatalog) + "/search-overrides", key)
       .then(function (data) {
         renderTable("so-table", "so-empty", data.overrides, soRowHtml);
+        // La table des regles est rechargee apres tout enregistrement : le
+        // brouillon n'a plus lieu d'etre, l'apercu repasse sur le reel.
+        soDraft = null;
         // Un seul point de branchement : la table des regles est
         // rafraichie apres tout ajout, modification ou suppression, donc
         // l'apercu suit automatiquement.
@@ -791,8 +811,77 @@
     });
   }
 
+  // ---------------- Brouillon : simulation avant enregistrement ----------------
+  //
+  // Le formulaire alimente un BROUILLON plutot que d'enregistrer directement.
+  // Le brouillon est la liste complete des priorites telles qu'elles seraient
+  // apres application : les regles deja enregistrees, plus (ou moins) celle en
+  // cours d'edition. Le moteur remplace l'ensemble persiste par cette liste
+  // pour l'appel de simulation -- sans rien ecrire.
+  function soLireFormulaire() {
+    var q = document.getElementById("so-query").value.trim();
+    var pid = document.getElementById("so-product-id").value.trim();
+    if (!q || !pid) return null;
+    var action = document.getElementById("so-action").value;
+    var pos = document.getElementById("so-position").value;
+    var regle = { query: q, product_id: pid, action: action };
+    if (action === "pin" && pos) regle.position = parseInt(pos, 10);
+    return regle;
+  }
+
+  function soConstruireBrouillon(key) {
+    var enCours = soLireFormulaire();
+    if (!enCours) { soDraft = null; refreshSoPreview(key); return; }
+
+    apiFetch("/v1/index/" + encodeURIComponent(soCurrentCatalog) + "/search-overrides", key)
+      .then(function (data) {
+        var existantes = (data.overrides || []).map(function (o) {
+          return { query: o.query, product_id: o.product_id, action: o.action, position: o.position || undefined };
+        });
+        // Si on modifie une regle existante, l'ancienne version sort du
+        // brouillon -- sinon les deux coexisteraient dans l'apercu alors
+        // qu'une seule subsistera apres application.
+        var cle = soEditingKey;
+        existantes = existantes.filter(function (o) {
+          if (cle && o.query === cle.query && o.product_id === cle.productId) return false;
+          return !(o.query === enCours.query && o.product_id === enCours.product_id);
+        });
+        soDraft = existantes.concat([enCours]);
+        refreshSoPreview(key);
+      })
+      .catch(function () { soDraft = null; });
+  }
+
+  function wireSoDraft(key) {
+    ["so-query", "so-product-id", "so-position"].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) el.addEventListener("input", function () {
+        clearTimeout(soPreviewTimer);
+        soPreviewTimer = setTimeout(function () { soConstruireBrouillon(key); }, 300);
+      });
+    });
+    var act = document.getElementById("so-action");
+    if (act) act.addEventListener("change", function () { soConstruireBrouillon(key); });
+
+    var appliquer = document.getElementById("so-simu-apply");
+    if (appliquer) appliquer.addEventListener("click", function () {
+      // « Appliquer » soumet le formulaire existant : c'est lui qui porte
+      // deja la logique d'enregistrement, de modification et de nettoyage.
+      var form = document.getElementById("so-form");
+      if (form) form.requestSubmit ? form.requestSubmit() : form.dispatchEvent(new Event("submit", { cancelable: true }));
+    });
+
+    var abandonner = document.getElementById("so-simu-discard");
+    if (abandonner) abandonner.addEventListener("click", function () {
+      soDraft = null;
+      resetSoForm();
+      refreshSoPreview(key);
+    });
+  }
+
   function wireSearchOverridesPane(key) {
     wireSoPreview(key);
+    wireSoDraft(key);
     if (soFormWired) return;
     soFormWired = true;
 

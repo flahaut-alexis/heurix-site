@@ -16,7 +16,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="robots" content="noindex">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css?v=1784978215">
+<link rel="stylesheet" href="styles.css?v=1784981056">
 <link rel="canonical" href="https://heurix.fr/console.html">
 </head>
 <body>
@@ -361,16 +361,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
             <div id="so-content" hidden>
               <div class="console-panel">
-                <h2>Règles en place</h2>
-                <p class="console-panel-note">Ordre d'application, toujours le même : <strong>épinglé</strong> (position exacte) puis <strong>naturel</strong> puis <strong>relégué</strong> — jamais l'inverse.</p>
-                <div class="table-scroll"><table class="console-table" id="so-table">
-                  <thead><tr><th>Déclencheur</th><th>Produit</th><th>Action</th><th>Position</th><th></th></tr></thead>
-                  <tbody></tbody>
-                </table></div>
-                <p class="console-empty" id="so-empty" hidden>Aucune priorité posée sur ce catalogue.</p>
-              </div>
-
-              <div class="console-panel">
                 <h2>Aperçu des résultats</h2>
                 <p class="console-panel-note">Tapez une requête pour voir le classement réel, et <strong>pourquoi</strong> chaque produit sort. L'aperçu se met à jour après chaque modification de priorité.</p>
                 <div class="console-field" style="max-width:100%;">
@@ -383,7 +373,25 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 </table></div>
                 <p class="console-empty" id="so-preview-empty" hidden>Aucun résultat pour cette requête.</p>
                 <p class="console-empty" id="so-preview-hint">Saisissez une requête ci-dessus pour lancer l'aperçu.</p>
+                <div class="so-simu-bar" id="so-simu-bar" hidden>
+                  <span class="so-simu-tag">Simulation</span>
+                  <span id="so-simu-text">Ces résultats intègrent votre brouillon. Rien n'est encore enregistré — vos visiteurs voient toujours le classement actuel.</span>
+                  <button type="button" class="catalog-rule-add-btn" id="so-simu-apply">Appliquer</button>
+                  <button type="button" class="btn btn-ghost" id="so-simu-discard">Abandonner</button>
+                </div>
               </div>
+
+              <div class="console-panel">
+                <h2>Règles en place</h2>
+                <p class="console-panel-note">Ordre d'application, toujours le même : <strong>épinglé</strong> (position exacte) puis <strong>naturel</strong> puis <strong>relégué</strong> — jamais l'inverse.</p>
+                <div class="table-scroll"><table class="console-table" id="so-table">
+                  <thead><tr><th>Déclencheur</th><th>Produit</th><th>Action</th><th>Position</th><th></th></tr></thead>
+                  <tbody></tbody>
+                </table></div>
+                <p class="console-empty" id="so-empty" hidden>Aucune priorité posée sur ce catalogue.</p>
+              </div>
+
+              
 
               <div class="console-panel">
                 <h2 id="so-form-title">Ajouter une priorité</h2>
@@ -723,7 +731,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="console-select.js?v=1784977224"></script>
-<script src="console.js?v=1784979595"></script>
+<script src="console.js?v=1784981056"></script>
 <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 
 <script src="nav-dropdown.js"></script>

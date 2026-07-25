@@ -26,7 +26,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css?v=1784978215">
+<link rel="stylesheet" href="styles.css?v=1784981056">
 <link rel="canonical" href="https://heurix.fr/docs.html">
 <script type="application/ld+json">
 {
@@ -332,6 +332,24 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </table></div>
       <h3>Réponse</h3>
       <p><code class="docs-inline-code">total</code> (nombre de correspondances), <code class="docs-inline-code">hits</code> — chaque hit contient le <code class="docs-inline-code">product</code> complet tel qu'indexé, son <code class="docs-inline-code">score</code>, <code class="docs-inline-code">in_stock</code>, et <code class="docs-inline-code">matched</code> : la liste lisible des raisons de la correspondance (termes trouvés, fautes corrigées, annotations partagées) — utile pour comprendre et régler la pertinence. Si <code class="docs-inline-code">facets</code> a été demandé, un champ <code class="docs-inline-code">facets</code> supplémentaire liste les décomptes par groupe.</p>
+      <h3>Simulation de règles</h3>
+      <p>Tester une priorité de requête obligeait à l'enregistrer — donc à l'appliquer immédiatement à vos visiteurs. Le champ <code class="docs-inline-code">simulate_overrides</code> permet de voir l'effet <strong>sans rien écrire</strong> :</p>
+      <pre class="docs-code"><code>{
+  "q": "vis",
+  "simulate_overrides": [
+    {"query": "vis", "product_id": "PER-BOSCH-18V", "action": "pin", "position": 1}
+  ]
+}</code></pre>
+      <p>La réponse porte <code class="docs-inline-code">"simulated": true</code>, et les résultats sont classés comme si ces règles étaient actives.</p>
+      <p><strong>La liste remplace l'ensemble de vos priorités enregistrées pour cet appel — elle ne s'y ajoute pas.</strong> C'est ce qui permet de prévisualiser aussi bien un ajout qu'une modification ou une suppression : il suffit d'envoyer l'état voulu complet. Une liste vide prévisualise donc « sans aucune règle ».</p>
+      <div class="table-scroll"><table class="docs-params">
+        <tr><th>Garantie</th><th>Comportement</th></tr>
+        <tr><td>Écriture en base</td><td>Aucune. Vos priorités enregistrées sont inchangées.</td></tr>
+        <tr><td>Quota</td><td><strong>Non consommé.</strong> Ce sont vos tests sur votre catalogue, pas des recherches de vos clients.</td></tr>
+        <tr><td>Statistiques de recherche</td><td><strong>Non journalisé.</strong> Vos essais ne polluent pas vos propres analyses.</td></tr>
+        <tr><td>Clé requise</td><td>Clé <strong>serveur</strong> uniquement. Une clé publique reçoit un <code class="docs-inline-code">403</code> — c'est un outil d'administration, pas du trafic visiteur.</td></tr>
+      </table></div>
+
       <h3>Contraintes de prix en langage naturel</h3>
       <p>Une contrainte de prix formulée en français est reconnue dans la requête et convertie en filtre — « vis inox <strong>moins de 5 €</strong> » filtre sur le prix au lieu de chercher les mots « moins » et « euros » dans votre catalogue.</p>
       <pre class="docs-code"><code>{"query": "vis inox", "total": 3, "hits": [...],
