@@ -432,6 +432,11 @@
     document.querySelectorAll(".console-sidebar-item").forEach(function (btn) {
       btn.classList.toggle("console-sidebar-item-on", btn.getAttribute("data-pane") === paneId && !btn.hasAttribute("data-catalog"));
     });
+    // Remonte en haut du nouvel ecran. Sans cela, un utilisateur descendu
+    // dans un pave long arrive sur le suivant deja defile, et ne voit pas
+    // ce qu'il vient d'ouvrir -- on doit remonter a la main pour comprendre
+    // ou l'on est.
+    window.scrollTo({ top: 0, behavior: "instant" });
   }
 
   function showCatalogCard(catalogName) {
@@ -722,61 +727,77 @@
 
   function refreshSoPreview(key) {
     var champ = document.getElementById("so-preview-query");
-    var hint = document.getElementById("so-preview-hint");
     var vide = document.getElementById("so-preview-empty");
-    var corps = document.querySelector("#so-preview-table tbody");
+    var grille = document.getElementById("so-preview-grid");
+    var legende = document.getElementById("so-preview-caption");
     if (!champ || !soCurrentCatalog) return;
 
     var q = champ.value.trim();
-    if (!q) {
-      corps.innerHTML = "";
-      vide.hidden = true;
-      hint.hidden = false;
-      return;
-    }
-    hint.hidden = true;
-
-    var corpsRequete = { q: q, limit: 20 };
+    // Requete vide = vue du catalogue. Le moteur accepte q="" (mode
+    // parcours) et renvoie tout ; on trie alors par nom, ce qui donne une
+    // vue stable et lisible pour se reperer avant de tester quoi que ce soit.
+    var corpsRequete = { q: q, limit: 12 };
     if (soDraft) corpsRequete.simulate_overrides = soDraft;
 
     apiFetch("/v1/index/" + encodeURIComponent(soCurrentCatalog) + "/search", key,
              { method: "POST", body: corpsRequete })
       .then(function (data) {
-        var hits = data.hits || [];
+        var hits = (data.hits || []).slice();
         if (!hits.length) {
-          corps.innerHTML = "";
+          grille.innerHTML = "";
+          legende.textContent = "";
           vide.hidden = false;
+          soSimuBar(!!data.simulated);
           return;
         }
         vide.hidden = true;
         soSimuBar(!!data.simulated);
-        corps.innerHTML = hits.map(function (h, i) {
-          // Les etiquettes viennent du moteur (champs pinned / buried), pas
-          // d'une deduction cote client : la logique de declenchement d'une
-          // priorite est cote serveur, la reimplementer ici divergerait.
-          var statut = h.pinned
-            ? "<span class='so-tag so-tag-pin'>Épinglé</span>"
-            : h.buried ? "<span class='so-tag so-tag-bury'>Relégué</span>"
-            : "<span style='color:var(--ink-muted);'>—</span>";
-          var raisons = (h.matched || []).length
-            ? h.matched.map(function (m) { return "<span class='so-why'>" + esc(m) + "</span>"; }).join(" ")
-            : "<span style='color:var(--ink-muted);'>injecté par une priorité</span>";
-          var classe = (h.pinned || h.buried)
-            ? (data.simulated ? " class='so-row-simulated'" : " class='so-row-ruled'")
-            : "";
-          return "<tr" + classe + ">" +
-            "<td class='num'>" + (i + 1) + "</td>" +
-            "<td>" + produitCell(h.product.id, h.product.name, h.product.price) + "</td>" +
-            "<td class='num'>" + (h.score !== undefined ? h.score : "–") + "</td>" +
-            "<td>" + statut + "</td>" +
-            "<td>" + raisons + "</td></tr>";
+
+        if (!q) {
+          hits.sort(function (a, b) {
+            return String(a.product.name || a.product.id).localeCompare(String(b.product.name || b.product.id), "fr");
+          });
+        }
+
+        grille.innerHTML = hits.map(function (h, i) {
+          var p = h.product;
+          var regle = h.pinned || h.buried;
+          var classes = "so-card" + (regle ? (data.simulated ? " so-card-simulated" : " so-card-ruled") : "");
+          var badge = h.pinned ? "<span class='so-card-badge so-card-badge-pin'>Épinglé</span>"
+            : h.buried ? "<span class='so-card-badge so-card-badge-bury'>Relégué</span>" : "";
+          var enRupture = p.stock === 0;
+          var stock = p.stock === undefined ? "" :
+            "<span class='so-card-stock" + (enRupture ? " rupture" : "") + "'>" +
+            (enRupture ? "Rupture" : p.stock + " en stock") + "</span>";
+          var prix = (p.price !== undefined && p.price !== null)
+            ? "<span class='so-card-price'>" + Number(p.price).toFixed(2).replace(".", ",") + " €</span>" : "";
+          // La raison n'a de sens que sur une recherche : en vue catalogue,
+          // il n'y a pas de requete a expliquer.
+          var pourquoi = (q && (h.matched || []).length)
+            ? "<div class='so-card-why'>" + esc(h.matched.slice(0, 2).join(" · ")) + "</div>"
+            : (q && h.pinned ? "<div class='so-card-why'>Injecté par une règle</div>" : "");
+
+          return "<div class='" + classes + "'>" +
+            (q ? "<span class='so-card-rank'>" + (i + 1) + "</span>" : "") +
+            badge +
+            "<div class='so-card-name'>" + esc(p.name || p.id) + "</div>" +
+            "<div class='so-card-ref'>" + esc(p.ref || p.id) + "</div>" +
+            "<div class='so-card-foot'>" + prix + stock + "</div>" +
+            pourquoi +
+            "</div>";
         }).join("");
+
+        legende.textContent = q
+          ? hits.length + " résultat" + (hits.length > 1 ? "s" : "") + " sur " + data.total + " pour « " + q + " »"
+          : "Aperçu du catalogue, par ordre alphabétique — tapez une requête pour voir le classement.";
       })
       .catch(function () {
-        corps.innerHTML = "";
+        grille.innerHTML = "";
+        legende.textContent = "";
         vide.hidden = false;
       });
   }
+
 
   function refreshSoTable(key) {
     apiFetch("/v1/index/" + encodeURIComponent(soCurrentCatalog) + "/search-overrides", key)
@@ -799,7 +820,9 @@
     if (!soCurrentCatalog) { content.hidden = true; return; }
     content.hidden = false;
     resetSoForm();
+    soDraft = null;
     refreshSoTable(key);
+    refreshSoPreview(key);  // vue catalogue immediate, pas d'ecran vide
   }
 
   function wireSoPreview(key) {

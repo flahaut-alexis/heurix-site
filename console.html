@@ -16,7 +16,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="robots" content="noindex">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css?v=1784981056">
+<link rel="stylesheet" href="styles.css?v=1784981923">
 <link rel="canonical" href="https://heurix.fr/console.html">
 </head>
 <body>
@@ -205,7 +205,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           </button>
           <div class="console-sidebar-items" data-section-items="perso" hidden>
             <div class="console-sidebar-sublabel">Search</div>
-            <button type="button" class="console-sidebar-item" data-pane="pane-search-overrides">Priorités de requête</button>
+            <button type="button" class="console-sidebar-item" data-pane="pane-search-overrides">Gestion des règles</button>
             <div class="console-sidebar-sublabel">Ranking</div>
             <button type="button" class="console-sidebar-item" data-pane="pane-browse">Classement &amp; merchandising</button>
           </div>
@@ -350,7 +350,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           </div>
 
           <div id="pane-search-overrides" class="console-pane" hidden>
-            <h2 class="console-pane-title">Priorités de requête</h2>
+            <h2 class="console-pane-title">Gestion des règles</h2>
             <div class="console-panel">
               <p class="console-panel-note" style="margin:0 0 14px;">Épinglez ou reléguez un produit quand une recherche contient un mot précis (ex. "promo") — indépendant de Browse &amp; Discovery, qui classe des <strong>catégories</strong>, pas des requêtes de recherche. <a href="docs.html#ep-search-overrides">Documentation complète</a>.</p>
               <div class="catalog-card-row">
@@ -367,12 +367,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                   <label for="so-preview-query">Requête à tester</label>
                   <input type="text" id="so-preview-query" placeholder="ex. vis inox, promo, m8x20">
                 </div>
-                <div class="table-scroll"><table class="console-table" id="so-preview-table">
-                  <thead><tr><th style="width:44px;">Rang</th><th>Produit</th><th style="width:70px;">Score</th><th>Statut</th><th>Pourquoi ce résultat sort</th></tr></thead>
-                  <tbody></tbody>
-                </table></div>
+                <div class="so-grid" id="so-preview-grid"></div>
+                <p class="so-grid-caption" id="so-preview-caption"></p>
                 <p class="console-empty" id="so-preview-empty" hidden>Aucun résultat pour cette requête.</p>
-                <p class="console-empty" id="so-preview-hint">Saisissez une requête ci-dessus pour lancer l'aperçu.</p>
                 <div class="so-simu-bar" id="so-simu-bar" hidden>
                   <span class="so-simu-tag">Simulation</span>
                   <span id="so-simu-text">Ces résultats intègrent votre brouillon. Rien n'est encore enregistré — vos visiteurs voient toujours le classement actuel.</span>
@@ -731,7 +728,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="console-select.js?v=1784977224"></script>
-<script src="console.js?v=1784981056"></script>
+<script src="console.js?v=1784981923"></script>
 <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 
 <script src="nav-dropdown.js"></script>
