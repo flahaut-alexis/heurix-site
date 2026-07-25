@@ -227,9 +227,9 @@
               // Le ratio clics/vues est l'information utile : c'est lui qui
               // designe les produits a epingler ou a releguer.
               var ratio = p.views ? Math.round((p.search_clicks / p.views) * 100) : 0;
-              return "<tr><td class='mono'>" + esc(p.product_id) + "</td>" +
-                "<td>" + p.views + "</td><td>" + p.search_clicks + "</td>" +
-                "<td>" + ratio + " %</td></tr>";
+              return "<tr><td>" + produitCell(p.product_id, p.name, p.price) + "</td>" +
+                "<td class='num'>" + p.views + "</td><td class='num'>" + p.search_clicks + "</td>" +
+                "<td class='num'>" + ratio + " %</td></tr>";
             }).join("");
             return "<h2 style='margin-top:22px;'>" + esc(cat.category) +
               " <span style='font-weight:400; color:var(--ink-muted); font-size:13px;'>— " +
@@ -684,6 +684,23 @@
       "</td>";
   }
 
+  // Presentation d'un produit dans les tableaux de la console. Un
+  // identifiant nu ("VIS-M8-020-A2") ne dit rien a un marchand : le nom
+  // passe en premier, l'identifiant devient une precision secondaire.
+  // Repli sur l'identifiant seul si le nom est absent -- produit supprime
+  // depuis, ou catalogue indexe sans champ `name`.
+  function produitCell(id, nom, prix) {
+    var html = nom
+      ? "<strong style='font-size:13px;'>" + esc(nom) + "</strong>" +
+        "<span class='mono' style='display:block; font-size:11.5px; color:var(--ink-muted); margin-top:2px;'>" + esc(id) + "</span>"
+      : "<span class='mono'>" + esc(id) + "</span>";
+    if (prix !== undefined && prix !== null) {
+      html += "<span style='display:block; font-size:12px; font-weight:700; color:var(--blue-deep); margin-top:3px;'>" +
+        Number(prix).toFixed(2).replace(".", ",") + " €</span>";
+    }
+    return html;
+  }
+
   // ---------------- Apercu des resultats (Priorites de requete) ----------------
   //
   // Symetrique de refreshBrowsePreview : on appelle le VRAI endpoint de
@@ -732,7 +749,7 @@
             : "<span style='color:var(--ink-muted);'>injecté par une priorité</span>";
           return "<tr" + (h.pinned || h.buried ? " class='so-row-ruled'" : "") + ">" +
             "<td class='num'>" + (i + 1) + "</td>" +
-            "<td class='mono'>" + esc(h.product.id) + "</td>" +
+            "<td>" + produitCell(h.product.id, h.product.name, h.product.price) + "</td>" +
             "<td class='num'>" + (h.score !== undefined ? h.score : "–") + "</td>" +
             "<td>" + statut + "</td>" +
             "<td>" + raisons + "</td></tr>";
@@ -948,7 +965,7 @@
     apiFetch(url, key).then(function (data) {
       renderTable("browse-preview-table", "browse-preview-empty", data.hits, function (h) {
         var status = h.pinned ? "Épinglé" : h.boosted ? "Boosté" : h.buried ? "Relégué" : "—";
-        return "<td class='mono'>" + esc(h.product.id) + "</td><td class='num'>" +
+        return "<td>" + produitCell(h.product.id, h.product.name, h.product.price) + "</td><td class='num'>" +
           (h.product.stock !== undefined ? h.product.stock : "–") + "</td><td>" + status + "</td>";
       });
     }).catch(function () {});
