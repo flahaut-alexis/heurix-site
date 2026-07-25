@@ -26,7 +26,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="../favicon-32.png">
 <link rel="apple-touch-icon" href="../apple-touch-icon.png">
-<link rel="stylesheet" href="../styles.css?v=1784925676">
+<link rel="stylesheet" href="../styles.css?v=1784969786">
 <link rel="canonical" href="https://heurix.fr/blog/tutoriel-catalogue-outillage-5-minutes.html">
 <script type="application/ld+json">
 {
@@ -74,14 +74,37 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <div class="header-nav-row">
     <nav class="header-nav-row-inner" aria-label="Navigation principale">
       <div class="nav-links">
-        <a href="../index.html#probleme">Le problème</a>
-        <a href="../index.html#moteur">Le moteur</a>
-        <a href="../fonctionnalites.html">Fonctionnalités</a>
-        <a href="../integrations.html">Intégrations</a>
-        <a href="../docs.html">Documentation</a>
-        <a href="../index.html#tarifs">Simulateur ROI</a>
+        <div class="nav-drop">
+          <button type="button" class="nav-drop-btn" aria-expanded="false" aria-haspopup="true">Produit</button>
+          <div class="nav-drop-panel">
+            <a href="../index.html#probleme">Le problème</a>
+            <a href="../index.html#mission">Notre mission</a>
+            <a href="../index.html#moteur">Le moteur</a>
+            <a href="../fonctionnalites.html">Fonctionnalités</a>
+            <a href="../index.html#tarifs">Simulateur ROI</a>
+          </div>
+        </div>
+        <div class="nav-drop">
+          <button type="button" class="nav-drop-btn" aria-expanded="false" aria-haspopup="true">Solutions</button>
+          <div class="nav-drop-panel">
+          <a href="../solutions/outillage.html">Quincaillerie & outillage</a>
+          <a href="../solutions/industrie.html">Pièces détachées & industrie</a>
+          <a href="../solutions/mode.html">Mode & retail</a>
+          <a href="../solutions/electronique.html">Électronique & high-tech</a>
+          <a href="../solutions/livres.html">Librairie & édition</a>
+          <a href="../solutions/vins.html">Vins & spiritueux</a>
+          <a href="../solutions/finance.html">Finance & comptabilité</a>
+          </div>
+        </div>
+        <div class="nav-drop">
+          <button type="button" class="nav-drop-btn" aria-expanded="false" aria-haspopup="true">Developers</button>
+          <div class="nav-drop-panel">
+            <a href="../docs.html">Documentation</a>
+            <a href="../integrations.html">Intégrations</a>
+            <a href="../blog/guide-mise-en-route.html">Guide de mise en route</a>
+          </div>
+        </div>
         <a href="../blog.html">Blog</a>
-        <a href="guide-mise-en-route.html">Guide de mise en route</a>
       </div>
     </nav>
   </div>
@@ -203,6 +226,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 
 <script src="../search.js"></script>
+<script src="../nav-dropdown.js"></script>
 <script src="../mobile-nav.js"></script>
 <div id="pricing-nudge" class="pricing-nudge">
   <button type="button" class="pricing-nudge-close" aria-label="Fermer">&times;</button>

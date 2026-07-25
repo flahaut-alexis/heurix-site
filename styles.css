@@ -1692,3 +1692,32 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
   *{ animation-duration:0.01ms !important; transition-duration:0.01ms !important; }
   .reveal{ opacity:1; transform:none; }
 }
+
+/* Menu deroulant (chantier navigation) -- une seule ligne, sous-menus
+   groupes. Ouverture au CLIC, pas au survol : un survol ne se produit pas
+   au doigt, et un menu qui s'ouvre en passant dessus est penible a la
+   souris comme au clavier. */
+.nav-drop{ position:relative; }
+.nav-drop-btn{
+  font-family:inherit; font-size:14px; font-weight:600; color:var(--ink-muted);
+  background:none; border:none; cursor:pointer; padding:6px 2px;
+  display:inline-flex; align-items:center; gap:5px;
+}
+.nav-drop-btn::after{ content:""; width:5px; height:5px; border-right:1.5px solid currentColor; border-bottom:1.5px solid currentColor; transform:rotate(45deg) translateY(-1px); transition:transform .15s ease; }
+.nav-drop-btn[aria-expanded="true"]::after{ transform:rotate(225deg) translateY(-2px); }
+.nav-drop-btn:hover,.nav-drop-btn[aria-expanded="true"]{ color:var(--blue-deep); }
+.nav-drop-panel{
+  display:none; position:absolute; top:calc(100% + 10px); left:-14px; z-index:80;
+  min-width:238px; background:#fff; border:1px solid var(--line); border-radius:10px;
+  box-shadow:0 12px 30px rgba(18,20,43,0.13); padding:6px;
+}
+.nav-drop-panel.open{ display:block; }
+.nav-drop-panel a{ display:block; padding:9px 12px; border-radius:7px; font-size:13.5px; font-weight:500; color:var(--ink); white-space:nowrap; }
+.nav-drop-panel a:hover{ background:var(--blue-tint); color:var(--blue-deep); }
+/* Sur mobile, la barre laterale existante prend le relais : les sous-menus
+   s empilent au lieu de flotter, sinon ils sortiraient de l ecran. */
+@media (max-width:900px){
+  .nav-drop{ width:100%; }
+  .nav-drop-btn{ width:100%; justify-content:space-between; padding:10px 0; }
+  .nav-drop-panel{ position:static; box-shadow:none; border:none; padding:0 0 8px 12px; min-width:0; }
+}
