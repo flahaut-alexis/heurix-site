@@ -2174,3 +2174,13 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 .so-card-actions button:hover{ background:var(--blue); border-color:var(--blue); color:#fff; }
 .so-card-actions button svg{ display:block; }
 .so-card-badge-pin{ background:var(--blue); color:#fff; }
+
+/* Compteur de regles actives : la liste « Regles en place » se trouve sous
+   un apercu de 12 fiches ou plus, donc hors du champ visible. Un compteur
+   dans son titre signale qu il y a quelque chose a y voir. */
+.so-count{
+  font-size:11.5px; font-weight:700; margin-left:8px;
+  background:var(--blue-tint); color:var(--blue-deep);
+  padding:3px 9px; border-radius:100px; vertical-align:middle;
+}
+.so-count[hidden]{ display:none; }

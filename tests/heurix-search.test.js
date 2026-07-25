@@ -213,3 +213,48 @@ describe("heurix-search.js — securite (chantier C1)", () => {
     expect(alertes.length).toBe(0);
   });
 });
+
+describe("heurix-search.js — filtre de prix sans résultat (6.6bis)", () => {
+  const REPONSE_PRIX_VIDE = {
+    query: "vis inox", total: 0, hits: [], fallback: false,
+    price_filter: { min: null, max: 5.0 },
+  };
+
+  it("explique la cause au lieu d'un « aucun résultat » sec", async () => {
+    const ctx = chargerWidget({ reponses: { search: REPONSE_PRIX_VIDE } });
+    await taper(ctx, "vis inox moins de 5 €");
+    const texte = ctx.document.querySelector(".hx-search-panel").textContent;
+    expect(texte).toContain("5");
+    expect(texte).toMatch(/moins de/i);
+  });
+
+  it("propose de relancer sans la contrainte de prix", async () => {
+    const ctx = chargerWidget({ reponses: { search: REPONSE_PRIX_VIDE } });
+    await taper(ctx, "vis inox moins de 5 €");
+    const bouton = ctx.document.querySelector(".hx-search-clearfilter");
+    expect(bouton, "le bouton de relance doit être présent").toBeTruthy();
+    expect(bouton.textContent).toMatch(/sans la contrainte/i);
+  });
+
+  it("la relance repart de la requête NETTOYÉE, sans la contrainte", async () => {
+    // Le moteur renvoie déjà `query` débarrassée du fragment de prix, donc
+    // la relance n'a pas à re-parser quoi que ce soit côté client.
+    const ctx = chargerWidget({ reponses: { search: REPONSE_PRIX_VIDE } });
+    await taper(ctx, "vis inox moins de 5 €");
+    ctx.document.querySelector(".hx-search-clearfilter")
+       .dispatchEvent(new ctx.window.MouseEvent("click", { bubbles: true }));
+    await attendre();
+    expect(ctx.document.querySelector(".hx-search-input").value).toBe("vis inox");
+    const dernier = ctx.appels[ctx.appels.length - 1];
+    expect(dernier.corps.q).toBe("vis inox");
+  });
+
+  it("un zéro-résultat SANS contrainte de prix garde le message simple", async () => {
+    const ctx = chargerWidget({
+      reponses: { search: { query: "xyzabc", total: 0, hits: [], fallback: false } },
+    });
+    await taper(ctx, "xyzabc");
+    expect(ctx.document.querySelector(".hx-search-clearfilter")).toBeNull();
+    expect(ctx.document.querySelector(".hx-search-state").textContent).toContain("Aucun résultat");
+  });
+});

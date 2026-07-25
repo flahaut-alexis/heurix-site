@@ -16,7 +16,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="robots" content="noindex">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css?v=1784985918">
+<link rel="stylesheet" href="styles.css?v=1784991597">
 <link rel="canonical" href="https://heurix.fr/console.html">
 </head>
 <body>
@@ -362,10 +362,22 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <div id="so-content" hidden>
               <div class="console-panel">
                 <h2>Aperçu des résultats</h2>
-                <p class="console-panel-note">Tapez une requête pour voir le classement réel, et <strong>pourquoi</strong> chaque produit sort. L'aperçu se met à jour après chaque modification de priorité.</p>
-                <div class="console-field" style="max-width:100%;">
-                  <label for="so-preview-query">Requête à tester</label>
-                  <input type="text" id="so-preview-query" placeholder="ex. vis inox, promo, m8x20">
+                <p class="console-panel-note">Tapez une requête pour voir le classement réel, et <strong>pourquoi</strong> chaque produit sort. Les flèches déplacent un produit d'une place, l'épingle le met en tête.</p>
+                <p class="console-panel-note" style="margin-top:-8px;">À savoir : déplacer un produit fige aussi les positions au-dessus de lui — plusieurs règles apparaissent donc d'un seul clic, c'est normal. Rien n'est enregistré avant « Appliquer ».</p>
+                <div class="console-field-row">
+                  <div class="console-field" style="flex:1; min-width:260px;">
+                    <label for="so-preview-query">Requête à tester</label>
+                    <input type="text" id="so-preview-query" placeholder="ex. vis inox, promo, m8x20">
+                  </div>
+                  <div class="console-field" style="max-width:170px;">
+                    <label for="so-preview-limit">Produits affichés</label>
+                    <select id="so-preview-limit">
+                      <option value="12">12</option>
+                      <option value="24">24</option>
+                      <option value="48">48</option>
+                      <option value="96">96</option>
+                    </select>
+                  </div>
                 </div>
                 <div class="so-grid" id="so-preview-grid"></div>
                 <p class="so-grid-caption" id="so-preview-caption"></p>
@@ -379,7 +391,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               </div>
 
               <div class="console-panel">
-                <h2>Règles en place</h2>
+                <h2>Règles en place <span class="so-count" id="so-count" hidden></span></h2>
                 <p class="console-panel-note">Ordre d'application, toujours le même : <strong>épinglé</strong> (position exacte) puis <strong>naturel</strong> puis <strong>relégué</strong> — jamais l'inverse.</p>
                 <div class="table-scroll"><table class="console-table" id="so-table">
                   <thead><tr><th>Déclencheur</th><th>Produit</th><th>Action</th><th>Position</th><th></th></tr></thead>
@@ -444,10 +456,30 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     <option value="popular">Popularité (clics + achats)</option>
                   </select>
                 </div>
-                <div class="table-scroll"><table class="console-table" id="browse-preview-table">
+                <div class="console-field" style="max-width:170px; margin-bottom:14px;">
+                  <label for="browse-preview-limit">Produits affichés</label>
+                  <select id="browse-preview-limit">
+                    <option value="20">20</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                  </select>
+                </div>
+                <p class="console-panel-note">Les flèches déplacent un produit d'une place dans cette catégorie, l'épingle le met en tête. Déplacer fige aussi les positions au-dessus — plusieurs règles apparaissent donc d'un seul clic. Rien n'est enregistré avant « Appliquer ».</p>
+                <div class="so-grid" id="br-grid"></div>
+                <p class="so-grid-caption" id="br-caption"></p>
+                <div class="so-simu-bar" id="br-simu-bar" hidden>
+                  <span class="so-simu-tag">Simulation</span>
+                  <span>Ce classement intègre votre brouillon. Rien n'est encore enregistré — vos visiteurs voient toujours l'ordre actuel.</span>
+                  <button type="button" class="catalog-rule-add-btn" id="br-simu-apply">Appliquer</button>
+                  <button type="button" class="btn btn-ghost" id="br-simu-discard">Abandonner</button>
+                </div>
+                <details style="margin-top:16px;">
+                  <summary style="cursor:pointer; font-size:13px; color:var(--ink-muted); font-weight:600;">Voir le tableau détaillé</summary>
+                <div class="table-scroll" style="margin-top:10px;"><table class="console-table" id="browse-preview-table">
                   <thead><tr><th>Produit</th><th>Stock</th><th>Statut</th></tr></thead>
                   <tbody></tbody>
                 </table></div>
+                </details>
                 <p class="console-empty" id="browse-preview-empty" hidden>Aucun produit dans cette catégorie.</p>
               </div>
 
@@ -729,7 +761,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="console-select.js?v=1784983392"></script>
-<script src="console.js?v=1784987417"></script>
+<script src="console.js?v=1784991597"></script>
 <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 
 <script src="nav-dropdown.js"></script>

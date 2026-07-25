@@ -719,6 +719,9 @@
   // persiste par cette liste, il ne fusionne pas -- c'est ce qui permet de
   // previsualiser aussi une suppression.
   var soDraft = null;
+  // Ordre des produits tel qu'AFFICHE au dernier rendu. C'est sur lui que
+  // portent « monter » et « descendre » -- pas sur le seul bloc epingle.
+  var soOrdreAffiche = [];
 
   function soSimuBar(actif) {
     var bar = document.getElementById("so-simu-bar");
@@ -736,7 +739,9 @@
     // Requete vide = vue du catalogue. Le moteur accepte q="" (mode
     // parcours) et renvoie tout ; on trie alors par nom, ce qui donne une
     // vue stable et lisible pour se reperer avant de tester quoi que ce soit.
-    var corpsRequete = { q: q, limit: 12 };
+    var champLimite = document.getElementById("so-preview-limit");
+    var limite = champLimite ? parseInt(champLimite.value, 10) : 12;
+    var corpsRequete = { q: q, limit: limite };
     if (soDraft) corpsRequete.simulate_overrides = soDraft;
 
     apiFetch("/v1/index/" + encodeURIComponent(soCurrentCatalog) + "/search", key,
@@ -759,6 +764,7 @@
           });
         }
 
+        soOrdreAffiche = hits.map(function (h) { return h.product.id; });
         grille.innerHTML = hits.map(function (h, i) {
           var p = h.product;
           var regle = h.pinned || h.buried;
@@ -799,12 +805,15 @@
           // l'epingle donc, et « Descendre » sur le dernier epingle le rend
           // au classement naturel -- jamais en dessous, comme demande.
           var actions = "<div class='so-card-actions'>";
+          // Les trois actions sont disponibles sur TOUS les produits, epingles
+          // ou non : monter ou descendre un produit non epingle materialise
+          // l'ordre au-dessus de lui (voir soDeplacer).
+          actions += "<button type='button' data-so-act='up' data-pid='" + pid + "' title='Monter d une place' aria-label='Monter " + esc(p.name || p.id) + "'>" + ICONE.up + "</button>" +
+                     "<button type='button' data-so-act='down' data-pid='" + pid + "' title='Descendre d une place' aria-label='Descendre " + esc(p.name || p.id) + "'>" + ICONE.down + "</button>";
           if (h.pinned) {
-            actions += "<button type='button' data-so-act='up' data-pid='" + pid + "' title='Monter d une position' aria-label='Monter " + esc(p.name || p.id) + "'>" + ICONE.up + "</button>" +
-                       "<button type='button' data-so-act='down' data-pid='" + pid + "' title='Descendre d une position' aria-label='Descendre " + esc(p.name || p.id) + "'>" + ICONE.down + "</button>" +
-                       "<button type='button' data-so-act='retirer' data-pid='" + pid + "' title='Retirer l épinglage' aria-label='Retirer l épinglage de " + esc(p.name || p.id) + "'>" + ICONE.off + "</button>";
+            actions += "<button type='button' data-so-act='retirer' data-pid='" + pid + "' title='Retirer l épinglage' aria-label='Retirer l épinglage de " + esc(p.name || p.id) + "'>" + ICONE.off + "</button>";
           } else {
-            actions += "<button type='button' data-so-act='pin' data-pid='" + pid + "' title='Épingler en tête' aria-label='Épingler " + esc(p.name || p.id) + "'>" + ICONE.pin + "</button>";
+            actions += "<button type='button' data-so-act='pin' data-pid='" + pid + "' title='Mettre en tête' aria-label='Mettre " + esc(p.name || p.id) + " en tête'>" + ICONE.pin + "</button>";
           }
           actions += "</div>";
 
@@ -834,6 +843,12 @@
     apiFetch("/v1/index/" + encodeURIComponent(soCurrentCatalog) + "/search-overrides", key)
       .then(function (data) {
         renderTable("so-table", "so-empty", data.overrides, soRowHtml);
+        var compteur = document.getElementById("so-count");
+        if (compteur) {
+          var n = (data.overrides || []).length;
+          compteur.hidden = n === 0;
+          compteur.textContent = n + (n > 1 ? " règles actives" : " règle active");
+        }
         // La table des regles est rechargee apres tout enregistrement : le
         // brouillon n'a plus lieu d'etre, l'apercu repasse sur le reel.
         soDraft = null;
@@ -857,6 +872,8 @@
   }
 
   function wireSoPreview(key) {
+    var limite = document.getElementById("so-preview-limit");
+    if (limite) limite.addEventListener("change", function () { refreshSoPreview(key); });
     var champ = document.getElementById("so-preview-query");
     if (!champ) return;
     champ.addEventListener("input", function () {
@@ -1058,7 +1075,13 @@
         if (action === "bury") delete soDraft[i].position;
       } else {
         var regle = { query: q, product_id: pid, action: action };
-        if (action === "pin") regle.position = soEpingles(q).length + 1;
+        if (action === "pin") {
+          // « Epingler » signifie tete de gondole : position 1, les autres
+          // epingles descendent d'un rang. C'est l'usage attendu -- on
+          // epingle pour mettre en avant, pas pour ranger en queue.
+          soEpingles(q).forEach(function (r) { r.position = (r.position || 1) + 1; });
+          regle.position = 1;
+        }
         soDraft.push(regle);
       }
       soRenumeroter(q);
@@ -1066,34 +1089,51 @@
     });
   }
 
+  // Deplace un produit d'UNE place dans l'ordre affiche, epingle ou non.
+  //
+  // CONTRAINTE DU MODELE, rendue visible plutot que masquee : le moteur
+  // place les epingles en bloc compacte en tete, la position ordonnant les
+  // epingles ENTRE EUX -- ce n'est pas un rang absolu. Epingler un produit
+  // « en position 3 » le fait donc remonter en tete si rien d'autre n'est
+  // epingle.
+  //
+  // Pour qu'un deplacement d'une place produise exactement le resultat
+  // attendu, il faut donc FIGER l'ordre au-dessus du produit deplace. C'est
+  // ce que fait cette fonction : elle materialise en epinglages les
+  // positions de rang 1 jusqu'au produit concerne. Plusieurs regles
+  // apparaissent alors dans le brouillon -- c'est normal, et visible avant
+  // enregistrement.
   function soDeplacer(key, pid, sens) {
     var q = soRequeteCourante();
-    if (!q) return;
+    if (!q || !soOrdreAffiche.length) return;
 
-    // « Monter » sur un produit NON epingle l'epingle en fin de bloc : c'est
-    // le seul moyen de le sortir du classement naturel, le moteur n'ayant
-    // pas de notion de position hors du bloc epingle.
-    if (!soDraft || soTrouver(q, pid) === -1) {
-      if (sens < 0) return soAction(key, "pin", pid);
-      return;  // descendre un produit non epingle n'a pas de sens
-    }
+    var ordre = soOrdreAffiche.slice();
+    var i = ordre.indexOf(pid);
+    var cible = i + sens;
+    if (i === -1 || cible < 0 || cible >= ordre.length) return;
 
-    var liste = soEpingles(q);
-    var idx = liste.findIndex(function (r) { return r.product_id === pid; });
-    if (idx === -1) return;
+    // Permutation dans l'ordre voulu
+    ordre[i] = ordre[cible];
+    ordre[cible] = pid;
 
-    // Descendre le DERNIER epingle le rend au classement naturel plutot que
-    // de ne rien faire -- et jamais en dessous : « down » ne place jamais un
-    // produit sous ceux qui n'ont pas ete promus.
-    if (sens > 0 && idx === liste.length - 1) {
-      return soAction(key, "retirer", pid);
-    }
-    var cible = idx + sens;
-    if (cible < 0 || cible >= liste.length) return;
-    var tmp = liste[idx].position;
-    liste[idx].position = liste[cible].position;
-    liste[cible].position = tmp;
-    refreshSoPreview(key);
+    soAvecBrouillon(key, function () {
+      // On conserve les relegations : elles ne concernent pas le classement
+      // de tete, et les ecraser serait une perte silencieuse.
+      var relegations = soDraft.filter(function (r) {
+        return r.query === q && r.action === "bury";
+      });
+      var autresRequetes = soDraft.filter(function (r) { return r.query !== q; });
+
+      // Fige les positions jusqu'au produit deplace inclus. Au-dela, le
+      // classement naturel reprend -- inutile d'epingler tout le catalogue.
+      var jusqua = Math.max(i, cible);
+      var epingles = ordre.slice(0, jusqua + 1).map(function (id, rang) {
+        return { query: q, product_id: id, action: "pin", position: rang + 1 };
+      });
+
+      soDraft = autresRequetes.concat(epingles, relegations);
+      refreshSoPreview(key);
+    });
   }
 
   // Message d'invite quand aucune requete n'est saisie : une priorite se
@@ -1350,10 +1390,211 @@
     refreshBrowseAttributeRules(key);
   }
 
+  // ---------------- Editeur visuel du classement de categorie ----------------
+  //
+  // Meme modele que cote Search : les actions alimentent un BROUILLON, envoye
+  // en simulation a chaque modification. Rien n'est ecrit avant « Appliquer ».
+  // Le moteur expose pour cela POST /v1/browse/{cat}/{categorie}/simulate,
+  // avec les memes garanties (aucune ecriture, pas de quota Browse consomme,
+  // cle serveur exigee).
+  var brDraft = null;
+  var brOrdreAffiche = [];
+
+  function brSimuBar(actif) {
+    var bar = document.getElementById("br-simu-bar");
+    if (bar) bar.hidden = !actif;
+  }
+
+  function brRenderGrille(hits, simule) {
+    var grille = document.getElementById("br-grid");
+    var legende = document.getElementById("br-caption");
+    if (!grille) return;
+    brOrdreAffiche = hits.map(function (h) { return h.product.id; });
+
+    grille.innerHTML = hits.map(function (h, i) {
+      var p = h.product;
+      var pid = esc(p.id);
+      var regle = h.pinned || h.buried || h.boosted;
+      var classes = "so-card" + (regle ? (simule ? " so-card-simulated" : " so-card-ruled") : "");
+      var badge = h.pinned ? "<span class='so-card-badge so-card-badge-pin'>Épinglé · " + (i + 1) + "</span>"
+        : h.boosted ? "<span class='so-card-badge so-card-badge-pin'>Boosté</span>"
+        : h.buried ? "<span class='so-card-badge so-card-badge-bury'>Relégué</span>" : "";
+      var enRupture = p.stock === 0;
+      var stock = p.stock === undefined ? "" :
+        "<span class='so-card-stock" + (enRupture ? " rupture" : "") + "'>" +
+        (enRupture ? "Rupture" : p.stock + " en stock") + "</span>";
+      var prix = (p.price !== undefined && p.price !== null)
+        ? "<span class='so-card-price'>" + Number(p.price).toFixed(2).replace(".", ",") + " €</span>" : "";
+
+      var actions = "<div class='so-card-actions'>" +
+        "<button type='button' data-br-act='up' data-pid='" + pid + "' title='Monter d une place' aria-label='Monter " + esc(p.name || p.id) + "'>&#9650;</button>" +
+        "<button type='button' data-br-act='down' data-pid='" + pid + "' title='Descendre d une place' aria-label='Descendre " + esc(p.name || p.id) + "'>&#9660;</button>" +
+        (h.pinned
+          ? "<button type='button' data-br-act='retirer' data-pid='" + pid + "' title='Retirer l épinglage' aria-label='Retirer épinglage'>&times;</button>"
+          : "<button type='button' data-br-act='pin' data-pid='" + pid + "' title='Mettre en tête' aria-label='Mettre en tête'>&#128204;</button>") +
+        "</div>";
+
+      return "<div class='" + classes + "'>" +
+        "<span class='so-card-rank'>" + (i + 1) + "</span>" + badge +
+        "<div class='so-card-name'>" + esc(p.name || p.id) + "</div>" +
+        "<div class='so-card-ref'>" + esc(p.ref || p.id) + "</div>" +
+        "<div class='so-card-foot'>" + prix + stock + "</div>" + actions + "</div>";
+    }).join("");
+
+    if (legende) {
+      legende.textContent = hits.length + " produit" + (hits.length > 1 ? "s" : "") +
+        " dans « " + browseCurrentCategory + " »" + (simule ? " — classement simulé" : "");
+    }
+    brSimuBar(!!simule);
+  }
+
+  // Amorce le brouillon depuis les regles enregistrees : sans cela, la
+  // premiere action produirait un brouillon ne contenant qu'elle, et
+  // « Appliquer » effacerait tout le reste -- la simulation remplacant
+  // l'ensemble. Meme piege que cote Search.
+  function brAvecBrouillon(key, suite) {
+    if (brDraft) return suite();
+    var url = "/v1/browse/" + encodeURIComponent(browseCurrentCatalog) + "/" +
+              encodeURIComponent(browseCurrentCategory) + "/overrides";
+    apiFetch(url, key)
+      .then(function (data) {
+        brDraft = (data.overrides || []).map(function (o) {
+          var r = { product_id: o.product_id, action: o.action };
+          if (o.position) r.position = o.position;
+          return r;
+        });
+        suite();
+      })
+      .catch(function () { brDraft = []; suite(); });
+  }
+
+  function brEpingles() {
+    return (brDraft || [])
+      .filter(function (r) { return r.action === "pin"; })
+      .sort(function (a, b) { return (a.position || 999) - (b.position || 999); });
+  }
+
+  function brAction(key, action, pid) {
+    brAvecBrouillon(key, function () {
+      var i = -1;
+      for (var k = 0; k < brDraft.length; k++) {
+        if (brDraft[k].product_id === pid) { i = k; break; }
+      }
+      if (action === "retirer") {
+        if (i !== -1) brDraft.splice(i, 1);
+      } else if (i !== -1) {
+        brDraft[i].action = action;
+        if (action !== "pin") delete brDraft[i].position;
+      } else {
+        var regle = { product_id: pid, action: action };
+        if (action === "pin") {
+          brEpingles().forEach(function (r) { r.position = (r.position || 1) + 1; });
+          regle.position = 1;
+        }
+        brDraft.push(regle);
+      }
+      brEpingles().forEach(function (r, n) { r.position = n + 1; });
+      brSimuler(key);
+    });
+  }
+
+  function brDeplacer(key, pid, sens) {
+    if (!brOrdreAffiche.length) return;
+    var ordre = brOrdreAffiche.slice();
+    var i = ordre.indexOf(pid), cible = i + sens;
+    if (i === -1 || cible < 0 || cible >= ordre.length) return;
+    ordre[i] = ordre[cible]; ordre[cible] = pid;
+
+    brAvecBrouillon(key, function () {
+      var relegations = brDraft.filter(function (r) { return r.action === "bury"; });
+      var jusqua = Math.max(i, cible);
+      var epingles = ordre.slice(0, jusqua + 1).map(function (id, rang) {
+        return { product_id: id, action: "pin", position: rang + 1 };
+      });
+      brDraft = epingles.concat(relegations);
+      brSimuler(key);
+    });
+  }
+
+  function brSimuler(key) {
+    if (!browseCurrentCatalog || !browseCurrentCategory) return;
+    var champLim = document.getElementById("browse-preview-limit");
+    var lim = champLim ? parseInt(champLim.value, 10) : 20;
+    var sort = document.getElementById("browse-sort-select").value;
+    var url = "/v1/browse/" + encodeURIComponent(browseCurrentCatalog) + "/" +
+              encodeURIComponent(browseCurrentCategory) + "/simulate";
+    apiFetch(url, key, { method: "POST", body: {
+      overrides: brDraft || [], sort: sort, limit: lim, offset: 0, filters: "", facets: "",
+    }}).then(function (data) {
+      brRenderGrille(data.hits || [], true);
+    }).catch(function () {});
+  }
+
+  function brAppliquerBrouillon(key) {
+    if (!brDraft) return;
+    var base = "/v1/browse/" + encodeURIComponent(browseCurrentCatalog) + "/" +
+               encodeURIComponent(browseCurrentCategory) + "/overrides";
+    var bouton = document.getElementById("br-simu-apply");
+    if (bouton) bouton.disabled = true;
+
+    apiFetch(base, key)
+      .then(function (data) {
+        var existantes = data.overrides || [];
+        var voulus = {};
+        (brDraft || []).forEach(function (r) { voulus[r.product_id] = r; });
+        var suppressions = existantes
+          .filter(function (o) { return !voulus[o.product_id]; })
+          .map(function (o) {
+            return apiFetch(base + "/" + encodeURIComponent(o.product_id), key, { method: "DELETE" });
+          });
+        return Promise.all(suppressions);
+      })
+      .then(function () {
+        return (brDraft || []).reduce(function (chaine, r) {
+          return chaine.then(function () {
+            var corps = { product_id: r.product_id, action: r.action };
+            if (r.action === "pin" && r.position) corps.position = r.position;
+            return apiFetch(base, key, { method: "POST", body: corps });
+          });
+        }, Promise.resolve());
+      })
+      .then(function () {
+        brDraft = null;
+        refreshBrowseOverrides(key);
+        refreshBrowsePreview(key);
+      })
+      .catch(function () {})
+      .then(function () { if (bouton) bouton.disabled = false; });
+  }
+
+  function wireBrowseEditeur(key) {
+    var grille = document.getElementById("br-grid");
+    if (grille) grille.addEventListener("click", function (e) {
+      var btn = e.target.closest("[data-br-act]");
+      if (!btn) return;
+      var act = btn.getAttribute("data-br-act");
+      var pid = btn.getAttribute("data-pid");
+      if (act === "up") brDeplacer(key, pid, -1);
+      else if (act === "down") brDeplacer(key, pid, 1);
+      else brAction(key, act, pid);
+    });
+    var appliquer = document.getElementById("br-simu-apply");
+    if (appliquer) appliquer.addEventListener("click", function () { brAppliquerBrouillon(key); });
+    var abandonner = document.getElementById("br-simu-discard");
+    if (abandonner) abandonner.addEventListener("click", function () {
+      brDraft = null;
+      refreshBrowsePreview(key);
+    });
+  }
+
   function refreshBrowsePreview(key) {
     var sort = document.getElementById("browse-sort-select").value;
-    var url = "/v1/browse/" + encodeURIComponent(browseCurrentCatalog) + "/" + encodeURIComponent(browseCurrentCategory) + "?sort=" + sort;
+    var champLim = document.getElementById("browse-preview-limit");
+    var lim = champLim ? parseInt(champLim.value, 10) : 20;
+    var url = "/v1/browse/" + encodeURIComponent(browseCurrentCatalog) + "/" + encodeURIComponent(browseCurrentCategory) + "?sort=" + sort + "&limit=" + lim;
     apiFetch(url, key).then(function (data) {
+      brDraft = null;
+      brRenderGrille(data.hits || [], false);
       renderTable("browse-preview-table", "browse-preview-empty", data.hits, function (h) {
         var status = h.pinned ? "Épinglé" : h.boosted ? "Boosté" : h.buried ? "Relégué" : "—";
         return "<td>" + produitCell(h.product.id, h.product.name, h.product.price) + "</td><td class='num'>" +
@@ -1418,6 +1659,9 @@
 
     document.getElementById("browse-catalog-select").addEventListener("change", function () { onBrowseCatalogChange(key); });
     document.getElementById("browse-category-select").addEventListener("change", function () { onBrowseCategoryChange(key); });
+    wireBrowseEditeur(key);
+    var browseLim = document.getElementById("browse-preview-limit");
+    if (browseLim) browseLim.addEventListener("change", function () { refreshBrowsePreview(key); });
     document.getElementById("browse-sort-select").addEventListener("change", function () { refreshBrowsePreview(key); });
     document.getElementById("browse-attribute-field").addEventListener("input", onBrowseFieldInput);
     document.getElementById("bo-cancel-edit-btn").addEventListener("click", resetBrowseOverrideForm);

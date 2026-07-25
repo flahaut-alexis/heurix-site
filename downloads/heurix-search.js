@@ -53,6 +53,10 @@
     }
   }
 
+  function fmtPrix(v) {
+    return Number(v).toFixed(2).replace(".", ",").replace(/,00$/, "") + " €";
+  }
+
   function esc(s) {
     return String(s == null ? "" : s)
       .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -78,6 +82,7 @@
       ".hx-search-hit-meta{font-size:13px;color:#7B7E93;white-space:nowrap;flex-shrink:0;}",
       ".hx-search-hit-oos{color:#C0392B;}",
       ".hx-search-state{padding:16px 14px;font-size:13.5px;color:#7B7E93;text-align:center;}",
+      ".hx-search-clearfilter{font:inherit;font-size:13px;font-weight:600;cursor:pointer;background:var(--hx-accent);color:#fff;border:none;padding:8px 16px;border-radius:100px;}",
       ".hx-search-fallback-label{padding:8px 14px 2px;font-size:11.5px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:#9B9EAF;}",
     ].join("\n");
     var styleEl = document.createElement("style");
@@ -190,6 +195,36 @@
       activeIndex = -1;
 
       if (!currentHits.length) {
+        // Chantier 6.6bis : un zero-resultat cause par une contrainte de prix
+        // merite une explication et une porte de sortie. Sans cela, un
+        // acheteur qui tape « moins de 5 € » sur un catalogue dont les
+        // produits n'ont pas de prix renseigne obtient un ecran vide, sans
+        // comprendre pourquoi -- techniquement correct, mais decourageant.
+        //
+        // `data.query` contient deja la requete NETTOYEE de la contrainte
+        // (le moteur la retire avant de tokeniser), donc relancer sans le
+        // filtre est immediat : il suffit de reecrire le champ avec elle.
+        if (data.price_filter) {
+          var pf = data.price_filter;
+          var borne = pf.max !== null && pf.min !== null
+            ? "entre " + fmtPrix(pf.min) + " et " + fmtPrix(pf.max)
+            : pf.max !== null ? "à moins de " + fmtPrix(pf.max)
+            : "à plus de " + fmtPrix(pf.min);
+          panel.innerHTML =
+            '<div class="hx-search-state">' +
+            "<p style=\"margin:0 0 10px;\">Aucun produit " + esc(borne) +
+            (data.query ? ' pour « ' + esc(data.query) + " »" : "") + ".</p>" +
+            '<button type="button" class="hx-search-clearfilter">' +
+            "Chercher sans la contrainte de prix</button></div>";
+          openPanel();
+          var relance = panel.querySelector(".hx-search-clearfilter");
+          if (relance) relance.addEventListener("click", function () {
+            input.value = data.query || "";
+            input.focus();
+            runSearch(input.value.trim());
+          });
+          return;
+        }
         setState("Aucun résultat" + (data.query ? ' pour « ' + esc(data.query) + " »" : "") + ".");
         return;
       }

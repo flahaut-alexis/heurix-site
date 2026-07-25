@@ -26,7 +26,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css?v=1784985918">
+<link rel="stylesheet" href="styles.css?v=1784991597">
 <link rel="canonical" href="https://heurix.fr/docs.html">
 <script type="application/ld+json">
 {
@@ -332,6 +332,24 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </table></div>
       <h3>Réponse</h3>
       <p><code class="docs-inline-code">total</code> (nombre de correspondances), <code class="docs-inline-code">hits</code> — chaque hit contient le <code class="docs-inline-code">product</code> complet tel qu'indexé, son <code class="docs-inline-code">score</code>, <code class="docs-inline-code">in_stock</code>, et <code class="docs-inline-code">matched</code> : la liste lisible des raisons de la correspondance (termes trouvés, fautes corrigées, annotations partagées) — utile pour comprendre et régler la pertinence. Si <code class="docs-inline-code">facets</code> a été demandé, un champ <code class="docs-inline-code">facets</code> supplémentaire liste les décomptes par groupe.</p>
+      <h3>Simulation de règles côté Browse</h3>
+      <div class="docs-endpoint"><span class="docs-method docs-method-post">POST</span><code>/v1/browse/{catalog}/{category}/simulate</code></div>
+      <p>Pendant du champ <code class="docs-inline-code">simulate_overrides</code> de la recherche, pour le merchandising de catégorie. Prévisualise un classement avec des règles <strong>non enregistrées</strong> :</p>
+      <pre class="docs-code"><code>{
+  "overrides": [{"product_id": "PER-BOSCH-18V", "action": "pin", "position": 1}],
+  "sort": "stock",
+  "limit": 20
+}</code></pre>
+      <p>Endpoint dédié en <code class="docs-inline-code">POST</code> plutôt qu'un paramètre sur le <code class="docs-inline-code">GET</code> existant : une liste de règles provisoires dépasse vite la longueur raisonnable d'une URL, et cela laisse le chemin de lecture normal totalement intact.</p>
+      <div class="table-scroll"><table class="docs-params">
+        <tr><th>Garantie</th><th>Comportement</th></tr>
+        <tr><td>Écriture en base</td><td>Aucune. Vos règles enregistrées sont inchangées.</td></tr>
+        <tr><td>Quota Browse</td><td><strong>Non consommé.</strong> Ce sont vos tests, pas du trafic client.</td></tr>
+        <tr><td>Clé requise</td><td>Clé <strong>serveur</strong>. Une clé publique reçoit un <code class="docs-inline-code">403</code>.</td></tr>
+        <tr><td>Règles par attribut</td><td>Celles <strong>enregistrées</strong> continuent de s'appliquer — la simulation porte sur le merchandising par produit, pas sur la configuration du catalogue.</td></tr>
+      </table></div>
+      <p><code class="docs-inline-code">overrides</code> <strong>remplace</strong> l'ensemble persisté pour cet appel. Une liste vide prévisualise donc « sans aucune règle », ce qui permet de voir l'effet d'une suppression avant de la faire.</p>
+
       <h3>Simulation de règles</h3>
       <p>Tester une priorité de requête obligeait à l'enregistrer — donc à l'appliquer immédiatement à vos visiteurs. Le champ <code class="docs-inline-code">simulate_overrides</code> permet de voir l'effet <strong>sans rien écrire</strong> :</p>
       <pre class="docs-code"><code>{
