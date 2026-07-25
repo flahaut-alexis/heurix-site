@@ -1961,3 +1961,58 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 .catalog-rule-status{ font-size:12.5px; }
 .catalog-rule-status.ok{ color:#0F7A3D; font-weight:600; }
 .catalog-rule-status.err{ color:#C0392B; font-weight:600; }
+
+/* Listes deroulantes de la console, au look du menu du site.
+   Le <select> natif reste dans le document et porte la valeur ; il est
+   masque visuellement mais reste atteignable par les technologies
+   d assistance. Voir console-select.js pour le raisonnement. */
+.csel{ position:relative; display:inline-block; max-width:100%; }
+.csel-native{
+  position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+  overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0;
+}
+.csel-btn{
+  font-family:inherit; font-size:13.5px; font-weight:500; color:var(--ink);
+  background:#fff; cursor:pointer; text-align:left;
+  border:1px solid var(--line); border-radius:9px;
+  padding:9px 34px 9px 13px; min-width:190px; max-width:100%;
+  position:relative;
+  transition:border-color .12s ease, box-shadow .12s ease;
+}
+.csel-btn::after{
+  content:""; position:absolute; right:13px; top:50%;
+  width:6px; height:6px; margin-top:-4px;
+  border-right:1.6px solid var(--ink-muted); border-bottom:1.6px solid var(--ink-muted);
+  transform:rotate(45deg); transition:transform .15s ease;
+}
+.csel-btn[aria-expanded="true"]::after{ transform:rotate(225deg); margin-top:-2px; }
+.csel-btn:hover{ border-color:#C9CDDD; }
+.csel-btn[aria-expanded="true"]{ border-color:var(--blue); }
+.csel-btn:focus-visible{
+  outline:none; border-color:var(--blue);
+  box-shadow:0 0 0 3px color-mix(in srgb, var(--blue) 16%, transparent);
+}
+.csel-btn:disabled{ background:var(--bg-soft); color:var(--ink-muted); cursor:not-allowed; }
+
+/* Le panneau : meme grammaire que le menu deroulant du site --
+   fond blanc, coins arrondis, ombre portee, survol bleu. */
+.csel-panel{
+  display:none; position:absolute; top:calc(100% + 6px); left:0; z-index:85;
+  min-width:100%; max-height:280px; overflow-y:auto;
+  background:#fff; border:1px solid var(--line); border-radius:10px;
+  box-shadow:0 12px 30px rgba(18,20,43,0.14); padding:6px;
+}
+.csel-panel.open{ display:block; }
+.csel-opt{
+  display:block; width:100%; text-align:left; white-space:nowrap;
+  font-family:inherit; font-size:13.5px; font-weight:500; color:var(--ink);
+  background:none; border:none; cursor:pointer;
+  padding:9px 12px; border-radius:7px;
+}
+.csel-opt:hover{ background:var(--blue-tint); color:var(--blue-deep); }
+.csel-opt.on{ background:var(--blue); color:#fff; font-weight:600; }
+.csel-opt.on:hover{ background:var(--blue-deep); color:#fff; }
+
+/* Le selecteur de periode partage le meme style, mais plus compact : il vit
+   dans la barre d outils, pas dans un pave. */
+.console-toolbar .csel-btn{ min-width:150px; padding:8px 32px 8px 12px; font-size:13px; }
