@@ -16,7 +16,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="robots" content="noindex">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css?v=1784991597">
+<link rel="stylesheet" href="styles.css?v=1785002683">
 <link rel="canonical" href="https://heurix.fr/console.html">
 </head>
 <body>
@@ -429,18 +429,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <div id="pane-browse" class="console-pane" hidden>
             <h2 class="console-pane-title">Browse &amp; Discovery</h2>
             <div class="console-panel console-panel-warn">
-              <p class="console-panel-note" style="margin:0;"><strong>Ordre d'application, toujours le même</strong> : épinglé (produit, position exacte) → relégué (produit ou attribut) → boosté (attribut) → naturel. Une relégation gagne toujours sur un boost — un produit explicitement caché ne remonte jamais via une règle d'attribut plus large.</p>
+              <details class="br-attrs"><summary>Dans quel ordre les règles s'appliquent</summary><p class="console-panel-note" style="margin:10px 0 0;"><strong>Toujours le même ordre</strong> : épinglé (produit, position exacte) → relégué (produit ou attribut) → boosté (attribut) → naturel. Une relégation gagne toujours sur un boost — un produit explicitement caché ne remonte jamais via une règle d'attribut plus large.</p></details>
             </div>
-            <div class="console-panel">
-              <p class="console-panel-note" style="margin:0 0 14px;">Classez vos produits dans une page de catégorie de votre site, sans recherche — <a href="docs.html#ep-browse">documentation complète</a>. Choisissez un catalogue puis une catégorie pour commencer.</p>
-              <div class="catalog-card-row">
-                <label style="font-size:12.5px; font-weight:700; color:var(--ink-muted);">Catalogue</label>
-                <select id="browse-catalog-select"><option value="">— Choisir —</option></select>
-                <label style="font-size:12.5px; font-weight:700; color:var(--ink-muted);">Catégorie</label>
-                <select id="browse-category-select" disabled><option value="">— Choisir un catalogue d'abord —</option></select>
-              </div>
-              <p class="console-empty" id="browse-no-categories" hidden>Aucune catégorie détectée sur ce catalogue — indexez vos produits avec un champ <code class="docs-inline-code">categories</code> ou <code class="docs-inline-code">category</code> pour en voir apparaître ici.</p>
-            </div>
+            
 
             <div id="browse-content" hidden>
               <div class="console-panel">
@@ -456,58 +447,22 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     <option value="popular">Popularité (clics + achats)</option>
                   </select>
                 </div>
-                <div class="console-field" style="max-width:170px; margin-bottom:14px;">
-                  <label for="browse-preview-limit">Produits affichés</label>
-                  <select id="browse-preview-limit">
-                    <option value="20">20</option>
-                    <option value="50">50</option>
-                    <option value="100">100</option>
-                  </select>
-                </div>
-                <p class="console-panel-note">Les flèches déplacent un produit d'une place dans cette catégorie, l'épingle le met en tête. Déplacer fige aussi les positions au-dessus — plusieurs règles apparaissent donc d'un seul clic. Rien n'est enregistré avant « Appliquer ».</p>
-                <div class="so-grid" id="br-grid"></div>
-                <p class="so-grid-caption" id="br-caption"></p>
-                <div class="so-simu-bar" id="br-simu-bar" hidden>
-                  <span class="so-simu-tag">Simulation</span>
-                  <span>Ce classement intègre votre brouillon. Rien n'est encore enregistré — vos visiteurs voient toujours l'ordre actuel.</span>
-                  <button type="button" class="catalog-rule-add-btn" id="br-simu-apply">Appliquer</button>
-                  <button type="button" class="btn btn-ghost" id="br-simu-discard">Abandonner</button>
-                </div>
-                <details style="margin-top:16px;">
-                  <summary style="cursor:pointer; font-size:13px; color:var(--ink-muted); font-weight:600;">Voir le tableau détaillé</summary>
-                <div class="table-scroll" style="margin-top:10px;"><table class="console-table" id="browse-preview-table">
-                  <thead><tr><th>Produit</th><th>Stock</th><th>Statut</th></tr></thead>
-                  <tbody></tbody>
-                </table></div>
-                </details>
-                <p class="console-empty" id="browse-preview-empty" hidden>Aucun produit dans cette catégorie.</p>
-              </div>
+                <div class="br-toolbar">
 
-              <div class="console-panel">
-                <h2>Priorités par produit</h2>
-                <p class="console-panel-note">Épinglez un produit à une position exacte, ou reléguez-le en fin de liste — quel que soit le tri choisi ci-dessus.</p>
-                <div class="table-scroll"><table class="console-table" id="browse-overrides-table">
-                  <thead><tr><th>Produit</th><th>Action</th><th>Position</th><th></th></tr></thead>
-                  <tbody></tbody>
-                </table></div>
-                <p class="console-empty" id="browse-overrides-empty" hidden>Aucune priorité posée sur cette catégorie.</p>
-                <h2 id="bo-form-title" style="margin-top:18px;">Ajouter une priorité</h2>
-                <form id="browse-override-form" class="catalog-rule-add">
-                  <div class="catalog-rule-add-row">
-                    <input type="text" placeholder="Identifiant du produit" id="browse-override-product-id" required>
-                    <select id="browse-override-action">
-                      <option value="pin">Épingler (pin)</option>
-                      <option value="bury">Reléguer (bury)</option>
-                    </select>
-                  </div>
-                  <input type="number" min="1" max="100" placeholder="Position (1 = premier épinglé)" id="browse-override-position">
-                  <button type="submit" class="catalog-rule-add-btn" id="bo-submit-btn">Ajouter la priorité</button>
-                  <button type="button" class="btn btn-ghost" id="bo-cancel-edit-btn" hidden style="margin-left:8px;">Annuler la modification</button>
-                  <span class="catalog-rule-status" id="browse-override-status"></span>
-                </form>
+              <p class="console-panel-note" style="margin:0 0 14px;">Classez vos produits dans une page de catégorie de votre site, sans recherche — <a href="docs.html#ep-browse">documentation complète</a>. Choisissez un catalogue puis une catégorie pour commencer.</p>
+              <div class="catalog-card-row">
+                <label style="font-size:12.5px; font-weight:700; color:var(--ink-muted);">Catalogue</label>
+                <select id="browse-catalog-select"><option value="">— Choisir —</option></select>
+                <label style="font-size:12.5px; font-weight:700; color:var(--ink-muted);">Catégorie</label>
+                <select id="browse-category-select" disabled><option value="">— Choisir un catalogue d'abord —</option></select>
               </div>
+              <p class="console-empty" id="browse-no-categories" hidden>Aucune catégorie détectée sur ce catalogue — indexez vos produits avec un champ <code class="docs-inline-code">categories</code> ou <code class="docs-inline-code">category</code> pour en voir apparaître ici.</p>
+            
+                </div>
 
-              <div class="console-panel">
+                <details class="br-attrs">
+                  <summary>Boost et relégation par attribut</summary>
+                  <div style="padding-top:12px;">
                 <h2>Boost / relégation par attribut</h2>
                 <p class="console-panel-note">Mettez en avant — ou reléguez — tous les produits partageant un attribut (une marque, une couleur…), sans les cibler un par un. Une relégation par produit garde toujours la priorité sur un boost par attribut.</p>
                 <div class="table-scroll"><table class="console-table" id="browse-attribute-rules-table">
@@ -532,6 +487,68 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                   <span class="catalog-rule-status" id="browse-attribute-rule-status"></span>
                 </form>
               </div>
+                </details>
+                <label class="br-stock-toggle" for="browse-in-stock">
+                  <input type="checkbox" id="browse-in-stock">
+                  <span>Masquer les produits en rupture</span>
+                </label>
+                <div class="console-field" style="max-width:170px; margin-bottom:14px;">
+                  <label for="browse-preview-limit">Produits affichés</label>
+                  <select id="browse-preview-limit">
+                    <option value="20">20</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                  </select>
+                </div>
+                <p class="console-panel-note">Les flèches déplacent un produit d'une place dans cette catégorie, l'épingle le met en tête. Déplacer fige aussi les positions au-dessus — plusieurs règles apparaissent donc d'un seul clic. Rien n'est enregistré avant « Appliquer ».</p>
+                <div class="so-grid" id="br-grid"></div>
+                <p class="so-grid-caption" id="br-caption"></p>
+                <div class="so-simu-bar" id="br-simu-bar" hidden>
+                  <span class="so-simu-tag">Simulation</span>
+                  <span>Ce classement intègre votre brouillon. Rien n'est encore enregistré — vos visiteurs voient toujours l'ordre actuel.</span>
+                  <button type="button" class="catalog-rule-add-btn" id="br-simu-apply">Appliquer</button>
+                  <button type="button" class="btn btn-ghost" id="br-simu-discard">Abandonner</button>
+                </div>
+                <details class="br-attrs" style="margin-top:18px;">
+                  <summary>Priorités par produit (liste détaillée)</summary>
+                  <div style="padding-top:12px;">
+                <h2>Priorités par produit</h2>
+                <p class="console-panel-note">Épinglez un produit à une position exacte, ou reléguez-le en fin de liste — quel que soit le tri choisi ci-dessus.</p>
+                <div class="table-scroll"><table class="console-table" id="browse-overrides-table">
+                  <thead><tr><th>Produit</th><th>Action</th><th>Position</th><th></th></tr></thead>
+                  <tbody></tbody>
+                </table></div>
+                <p class="console-empty" id="browse-overrides-empty" hidden>Aucune priorité posée sur cette catégorie.</p>
+                <h2 id="bo-form-title" style="margin-top:18px;">Ajouter une priorité</h2>
+                <form id="browse-override-form" class="catalog-rule-add">
+                  <div class="catalog-rule-add-row">
+                    <input type="text" placeholder="Identifiant du produit" id="browse-override-product-id" required>
+                    <select id="browse-override-action">
+                      <option value="pin">Épingler (pin)</option>
+                      <option value="bury">Reléguer (bury)</option>
+                    </select>
+                  </div>
+                  <input type="number" min="1" max="100" placeholder="Position (1 = premier épinglé)" id="browse-override-position">
+                  <button type="submit" class="catalog-rule-add-btn" id="bo-submit-btn">Ajouter la priorité</button>
+                  <button type="button" class="btn btn-ghost" id="bo-cancel-edit-btn" hidden style="margin-left:8px;">Annuler la modification</button>
+                  <span class="catalog-rule-status" id="browse-override-status"></span>
+                </form>
+              </div>
+                </details>
+
+                <details style="margin-top:16px;">
+                  <summary style="cursor:pointer; font-size:13px; color:var(--ink-muted); font-weight:600;">Voir le tableau détaillé</summary>
+                <div class="table-scroll" style="margin-top:10px;"><table class="console-table" id="browse-preview-table">
+                  <thead><tr><th>Produit</th><th>Stock</th><th>Statut</th></tr></thead>
+                  <tbody></tbody>
+                </table></div>
+                </details>
+                <p class="console-empty" id="browse-preview-empty" hidden>Aucun produit dans cette catégorie.</p>
+              </div>
+
+              
+
+              
             </div>
           </div>
 
@@ -761,7 +778,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="console-select.js?v=1784983392"></script>
-<script src="console.js?v=1784991597"></script>
+<script src="console.js?v=1785002683"></script>
 <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 
 <script src="nav-dropdown.js"></script>

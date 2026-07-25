@@ -2184,3 +2184,29 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
   padding:3px 9px; border-radius:100px; vertical-align:middle;
 }
 .so-count[hidden]{ display:none; }
+
+/* Barre d outils du pave Browse : catalogue, categorie et tri sur une seule
+   ligne, dans le panneau d apercu. Ils occupaient auparavant un panneau
+   separe qui repoussait les resultats hors du premier ecran. */
+.br-toolbar{ display:flex; gap:14px; flex-wrap:wrap; align-items:flex-end; margin:14px 0 18px; }
+.br-toolbar .console-field{ margin-bottom:0; }
+/* Depliants : ce qui est utile mais rarement consulte -- ordre d application,
+   listes detaillees, regles par attribut -- au lieu d occuper le haut de page. */
+.br-attrs{ margin:0 0 14px; border:1px solid var(--line); border-radius:10px; padding:10px 14px; background:#fff; }
+.br-attrs > summary{
+  cursor:pointer; font-size:13px; font-weight:700; color:var(--blue-deep);
+  list-style:none; display:flex; align-items:center; gap:7px;
+}
+.br-attrs > summary::before{
+  content:""; width:6px; height:6px; flex-shrink:0;
+  border-right:1.6px solid currentColor; border-bottom:1.6px solid currentColor;
+  transform:rotate(-45deg); transition:transform .15s ease;
+}
+.br-attrs[open] > summary::before{ transform:rotate(45deg); }
+.br-attrs > summary::-webkit-details-marker{ display:none; }
+/* Interrupteur de stock, aligne avec les autres champs de la barre */
+.br-stock-toggle{
+  display:inline-flex; align-items:center; gap:8px; cursor:pointer;
+  font-size:13px; color:var(--ink); margin-bottom:14px;
+}
+.br-stock-toggle input{ width:16px; height:16px; accent-color:var(--blue); cursor:pointer; }

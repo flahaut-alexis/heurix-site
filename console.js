@@ -1525,6 +1525,9 @@
               encodeURIComponent(browseCurrentCategory) + "/simulate";
     apiFetch(url, key, { method: "POST", body: {
       overrides: brDraft || [], sort: sort, limit: lim, offset: 0, filters: "", facets: "",
+      // L'apercu simule doit montrer EXACTEMENT ce que verra le visiteur,
+      // filtre de stock compris -- sinon il previsualise autre chose.
+      in_stock_only: !!(document.getElementById("browse-in-stock") || {}).checked,
     }}).then(function (data) {
       brRenderGrille(data.hits || [], true);
     }).catch(function () {});
@@ -1591,7 +1594,10 @@
     var sort = document.getElementById("browse-sort-select").value;
     var champLim = document.getElementById("browse-preview-limit");
     var lim = champLim ? parseInt(champLim.value, 10) : 20;
-    var url = "/v1/browse/" + encodeURIComponent(browseCurrentCatalog) + "/" + encodeURIComponent(browseCurrentCategory) + "?sort=" + sort + "&limit=" + lim;
+    var horsStock = document.getElementById("browse-in-stock");
+    var url = "/v1/browse/" + encodeURIComponent(browseCurrentCatalog) + "/" + encodeURIComponent(browseCurrentCategory) +
+              "?sort=" + sort + "&limit=" + lim +
+              (horsStock && horsStock.checked ? "&in_stock_only=true" : "");
     apiFetch(url, key).then(function (data) {
       brDraft = null;
       brRenderGrille(data.hits || [], false);
@@ -1662,6 +1668,10 @@
     wireBrowseEditeur(key);
     var browseLim = document.getElementById("browse-preview-limit");
     if (browseLim) browseLim.addEventListener("change", function () { refreshBrowsePreview(key); });
+    var brStock = document.getElementById("browse-in-stock");
+    if (brStock) brStock.addEventListener("change", function () {
+      if (brDraft) brSimuler(key); else refreshBrowsePreview(key);
+    });
     document.getElementById("browse-sort-select").addEventListener("change", function () { refreshBrowsePreview(key); });
     document.getElementById("browse-attribute-field").addEventListener("input", onBrowseFieldInput);
     document.getElementById("bo-cancel-edit-btn").addEventListener("click", resetBrowseOverrideForm);
