@@ -312,6 +312,21 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </table></div>
       <h3>Réponse</h3>
       <p><code class="docs-inline-code">total</code> (nombre de correspondances), <code class="docs-inline-code">hits</code> — chaque hit contient le <code class="docs-inline-code">product</code> complet tel qu'indexé, son <code class="docs-inline-code">score</code>, <code class="docs-inline-code">in_stock</code>, et <code class="docs-inline-code">matched</code> : la liste lisible des raisons de la correspondance (termes trouvés, fautes corrigées, annotations partagées) — utile pour comprendre et régler la pertinence. Si <code class="docs-inline-code">facets</code> a été demandé, un champ <code class="docs-inline-code">facets</code> supplémentaire liste les décomptes par groupe.</p>
+      <h3>Contraintes de prix en langage naturel</h3>
+      <p>Une contrainte de prix formulée en français est reconnue dans la requête et convertie en filtre — « vis inox <strong>moins de 5 €</strong> » filtre sur le prix au lieu de chercher les mots « moins » et « euros » dans votre catalogue.</p>
+      <pre class="docs-code"><code>{"query": "vis inox", "total": 3, "hits": [...],
+ "price_filter": {"min": null, "max": 5.0}}</code></pre>
+      <p>La requête renvoyée est <strong>débarrassée du fragment consommé</strong> (« vis inox », et non « vis inox moins de 5 € ») : les mots de la contrainte ne pèsent pas sur le score de pertinence. Le champ <code class="docs-inline-code">price_filter</code> n'apparaît que si une contrainte a été détectée — utile pour l'afficher à l'acheteur et lui permettre de la retirer.</p>
+      <p><strong>Formulations reconnues</strong> — liste volontairement courte et documentée plutôt qu'exhaustive :</p>
+      <div class="table-scroll"><table class="docs-params">
+        <tr><th>Effet</th><th>Tournures</th></tr>
+        <tr><td>Prix maximum</td><td><code class="docs-inline-code">moins de X</code>, <code class="docs-inline-code">inférieur à X</code>, <code class="docs-inline-code">sous X €</code>, <code class="docs-inline-code">en dessous de X</code>, <code class="docs-inline-code">jusqu'à X €</code>, <code class="docs-inline-code">max X €</code></td></tr>
+        <tr><td>Prix minimum</td><td><code class="docs-inline-code">plus de X</code>, <code class="docs-inline-code">supérieur à X</code>, <code class="docs-inline-code">au-dessus de X</code>, <code class="docs-inline-code">à partir de X €</code>, <code class="docs-inline-code">min X €</code></td></tr>
+        <tr><td>Intervalle</td><td><code class="docs-inline-code">entre X et Y €</code></td></tr>
+      </table></div>
+      <p>Le symbole <code class="docs-inline-code">€</code> et le mot « euros » sont optionnels sur la plupart des tournures. La virgule décimale française est acceptée (<code class="docs-inline-code">3,50</code> comme <code class="docs-inline-code">3.50</code>).</p>
+      <p><strong>Un produit sans champ <code class="docs-inline-code">price</code> est exclu</strong> dès qu'une contrainte est active : on ne peut pas affirmer qu'il la respecte, et le faire remonter serait trompeur. Il reste trouvable par une recherche sans contrainte de prix.</p>
+
       <h3>Recherche en train d'être tapée</h3>
       <p>Un mot de 3 caractères ou plus qui correspond au <strong>début</strong> d'un mot du vocabulaire remonte aussi des résultats — pas seulement une correspondance exacte ou une faute de frappe complète. Taper « per » retrouve déjà « perceuse », sans attendre le mot entier. Un résultat trouvé par ce biais compte toujours moins qu'une correspondance exacte ou une faute de frappe classique : dès que la requête est complète, le classement se réajuste vers les résultats les plus pertinents. En dessous de 3 caractères, aucune correspondance par préfixe n'est tentée — trop de mots du vocabulaire partageraient un début de 1 ou 2 lettres par pur hasard.</p>
 
