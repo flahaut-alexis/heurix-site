@@ -26,7 +26,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="../favicon-32.png">
 <link rel="apple-touch-icon" href="../apple-touch-icon.png">
-<link rel="stylesheet" href="../styles.css?v=1784971028">
+<link rel="stylesheet" href="../styles.css?v=1784971433">
 <link rel="canonical" href="https://heurix.fr/blog/guide-mise-en-route.html">
 <script type="application/ld+json">
 {
@@ -167,10 +167,42 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <p>Une réponse avec votre produit dans <code class="docs-inline-code">hits</code> confirme que tout fonctionne. À ce stade, la recherche est pleinement opérationnelle — tout ce qui suit est optionnel.</p>
       <p><em>[Capture d'écran à ajouter : le tableau de bord "Vue d'ensemble" de la console une fois le premier catalogue indexé]</em></p>
 
+      <div class="guide-quiz" id="guide-quiz">
+        <h2 style="margin-top:0;">Construisez votre parcours</h2>
+        <p class="console-panel-note">Trois questions pour ne garder que ce qui vous concerne. Les étapes 1 à 3 ci-dessus sont obligatoires dans tous les cas.</p>
+
+        <div class="guide-quiz-q">
+          <p><strong>Souhaitez-vous mesurer les ventes générées par la recherche ?</strong></p>
+          <div class="guide-quiz-opts" data-question="tracker">
+            <button type="button" data-value="oui">Oui</button>
+            <button type="button" data-value="non">Non</button>
+          </div>
+        </div>
+
+        <div class="guide-quiz-q">
+          <p><strong>Vos équipes doivent-elles interroger le catalogue via un agent IA ?</strong></p>
+          <div class="guide-quiz-opts" data-question="mcp">
+            <button type="button" data-value="oui">Oui</button>
+            <button type="button" data-value="non">Non</button>
+          </div>
+        </div>
+
+        <div class="guide-quiz-q">
+          <p><strong>Disposez-vous déjà d'une interface de recherche sur votre site ?</strong></p>
+          <div class="guide-quiz-opts" data-question="frontend">
+            <button type="button" data-value="non">Non, je part de zéro</button>
+            <button type="button" data-value="oui">Oui, j'ai déjà une interface</button>
+          </div>
+        </div>
+
+        <p class="guide-quiz-recap" id="guide-quiz-recap" hidden></p>
+        <button type="button" class="btn btn-ghost" id="guide-quiz-tout">Voir tout le guide</button>
+      </div>
       <h2 id="modules-optionnels">À partir d'ici, trois modules indépendants</h2>
       <p class="regex-reassure">🔑 <strong>Deux des trois modules tournent dans le navigateur</strong> (Tracker et intégration front-end). Générez d'abord une <strong>clé publique</strong> depuis votre console (Mes infos → Ma clé API) : elle commence par <code class="docs-inline-code">hxp_</code> et ne peut que chercher, parcourir et remonter des événements. Votre clé serveur (<code class="docs-inline-code">hx_</code>) ne doit jamais apparaître dans une page web — elle donne accès à votre facturation. <a href="../docs.html#authentification">Détail des deux types de clés</a>.</p>
       <p>Chacun répond à un besoin différent. Activez ce qui vous concerne, ignorez le reste — rien n'est requis pour les deux autres, et rien n'est requis pour que la recherche elle-même continue de fonctionner.</p>
 
+      <div class="guide-module" data-module="tracker">
       <h3 id="module-tracker">Module optionnel — Heurix Tracker (Conversion &amp; ROI)</h3>
       <p>Pour savoir quelles recherches génèrent réellement des ventes, pas seulement des clics. Téléchargez <a href="../downloads/heurix-tracker.js" download>heurix-tracker.js</a>, éditez les deux variables en tête de fichier avec votre clé et votre catalogue :</p>
       <pre class="docs-code"><code>var HEURIX_API_KEY = "VOTRE_CLE_PUBLIQUE";  // hxp_, pas hx_
@@ -180,9 +212,12 @@ var HEURIX_CATALOG = "moncatalogue";</code></pre>
       <p>Appelez ensuite <code class="docs-inline-code">Heurix.trackClick(query, productId)</code> sur un clic depuis vos résultats de recherche, et <code class="docs-inline-code">Heurix.trackPurchase([{id, amount, margin}])</code> à la confirmation d'une commande — détail complet dans <a href="../docs.html#ep-events">la documentation Conversion &amp; ROI</a>.</p>
       <p><em>[Capture d'écran à ajouter : le pavé Conversion &amp; ROI de la console avec de premières données]</em></p>
 
+      </div>
+      <div class="guide-module" data-module="frontend">
       <h3 id="module-frontend">Module optionnel — Intégration front-end</h3>
       <p>Deux façons d'afficher une recherche sur votre site, selon votre situation :</p>
 
+      <div data-frontend="non">
       <p><strong>Vous partez de zéro, pas de recherche existante</strong> — <a href="../downloads/heurix-search.js" download>heurix-search.js</a>, un script autonome qui affiche une barre de recherche complète (saisie, résultats, facettes) en trois lignes :</p>
       <pre class="docs-code"><code>&lt;div id="ma-recherche"&gt;&lt;/div&gt;
 &lt;script src="heurix-search.js"&gt;&lt;/script&gt;
@@ -190,17 +225,23 @@ var HEURIX_CATALOG = "moncatalogue";</code></pre>
   Heurix.searchBox({ apiKey: "VOTRE_CLE_PUBLIQUE", catalog: "moncatalogue", containerId: "ma-recherche" });
 &lt;/script&gt;</code></pre>
 
+      </div>
+      <div data-frontend="oui">
       <p><strong>Vous avez déjà une interface, ou une stack JS/TS établie</strong> — <a href="https://www.npmjs.com/package/heurix-client">heurix-client</a>, un client léger pour construire votre propre interface :</p>
       <pre class="docs-code"><code>npm install heurix-client</code></pre>
       <pre class="docs-code"><code>import { HeurixClient } from "heurix-client";
 const client = new HeurixClient({ apiKey: "VOTRE_CLE_API", catalog: "moncatalogue" });
 const results = await client.search("perceuse bosch");</code></pre>
+      </div>
       <p>Détail complet des deux options : <a href="../docs.html#ep-search-widget">heurix-search.js</a> et <a href="../docs.html#ep-search">la référence API</a> pour construire votre propre appel.</p>
       <p><em>[Capture d'écran à ajouter : heurix-search.js en action sur une page de test, résultats affichés]</em></p>
 
+      </div>
+      <div class="guide-module" data-module="mcp">
       <h3 id="module-mcp">Module optionnel — Serveur MCP (agents IA)</h3>
       <p>Pour qu'un agent IA (Claude Desktop, Cursor, un agent interne) interroge votre catalogue en langage naturel, sans jamais appeler l'API lui-même. Guide complet, installation pas à pas incluse : <a href="guide-serveur-mcp-heurix.html">Connecter Heurix à Claude Desktop et Cursor</a>.</p>
 
+      </div>
       <h2 id="et-ensuite">Et ensuite</h2>
       <p>Une fois ces bases posées, la <a href="../docs.html">documentation complète</a> couvre le reste — synonymes, facettes, Browse &amp; Discovery, priorités de requête. Rien de tout ça n'est nécessaire pour démarrer, mais tout est disponible dès que vous en avez besoin.</p>
     </div>
@@ -252,6 +293,7 @@ const results = await client.search("perceuse bosch");</code></pre>
   <p>Testez le Search API sur votre catalogue, sans carte bancaire.</p>
   <a href="../pricing.html" class="btn">Voir les tarifs</a>
 </div>
+<script src="../guide-quiz.js"></script>
 <script src="../pricing-nudge.js"></script>
 </body>
 </html>
