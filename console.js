@@ -610,11 +610,32 @@
           "</span><span class='billing-value'>" + l[1] + "</span></div>";
       }).join("");
 
-      // Le changement de formule ne concerne QUE les abonnes : un compte en
-      // essai n'a pas d'abonnement Stripe a modifier, il doit d'abord
-      // souscrire. Afficher le bouton lui donnerait une impasse.
+      // Le bloc est TOUJOURS visible, avec un libelle adapte.
+      //
+      // Premiere version fautive : je le masquais pour les comptes en essai.
+      // Resultat, la fonctionnalite disparaissait sans un mot -- impossible
+      // pour l'utilisateur de savoir si elle n'existe pas, si elle est
+      // cassee, ou s'il ne remplit pas une condition. Masquer une
+      // fonctionnalite en silence est toujours pire que l'afficher avec son
+      // explication.
       var blocUpgrade = document.getElementById("billing-upgrade");
-      if (blocUpgrade) blocUpgrade.hidden = (plan === "trial" || plan === "—");
+      var titreUpgrade = document.getElementById("billing-upgrade-title");
+      var texteUpgrade = document.getElementById("billing-upgrade-text");
+      var boutonUpgrade = document.getElementById("billing-change-plan");
+      var enEssai = (plan === "trial" || plan === "—");
+      if (blocUpgrade) {
+        blocUpgrade.hidden = false;
+        if (titreUpgrade) titreUpgrade.textContent = enEssai ? "Souscrire une formule" : "Changer de formule";
+        if (texteUpgrade) {
+          texteUpgrade.textContent = enEssai
+            ? "Vous êtes en période d'essai : choisissez une formule pour continuer après son terme. Aucun abonnement n'est encore actif sur votre compte."
+            : "Le changement se fait depuis le portail de facturation : Stripe calcule le prorata et ajuste votre abonnement en cours. Vous n'êtes pas facturé deux fois, et il n'y a pas de nouvelle période d'essai.";
+        }
+        if (boutonUpgrade) {
+          boutonUpgrade.textContent = enEssai ? "Voir les formules" : "Changer de formule";
+          boutonUpgrade.setAttribute("data-mode", enEssai ? "souscrire" : "changer");
+        }
+      }
 
       if (essai) {
         if (d.trial_expired) {
@@ -654,6 +675,12 @@
     var statutU = document.getElementById("billing-status");
     var changer = document.getElementById("billing-change-plan");
     if (changer) changer.addEventListener("click", function () {
+      // Un compte en essai n'a pas d'abonnement Stripe : l'envoyer au portail
+      // serait une impasse, on l'oriente vers les tarifs.
+      if (changer.getAttribute("data-mode") === "souscrire") {
+        window.open("pricing.html", "_blank", "noopener");
+        return;
+      }
       // On passe par le portail Stripe plutot que par un nouveau paiement :
       // creer une seconde session de paiement pour un client deja abonne
       // creerait un SECOND abonnement, donc une double facturation. Le
