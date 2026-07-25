@@ -16,7 +16,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="robots" content="noindex">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css?v=1784973690">
+<link rel="stylesheet" href="styles.css?v=1784974397">
 <link rel="canonical" href="https://heurix.fr/console.html">
 </head>
 <body>
@@ -66,6 +66,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <button type="button" id="mobile-nav-toggle" class="mobile-nav-toggle" aria-label="Menu" aria-expanded="false">
         <span></span><span></span><span></span>
       </button>
+      <div class="nav-drop console-org-drop">
+        <button type="button" class="nav-drop-btn" id="console-org-btn" aria-expanded="false" aria-haspopup="true">Mon compte</button>
+        <div class="nav-drop-panel">
+          <button type="button" data-goto-pane="pane-company">Entreprise</button>
+          <button type="button" data-goto-pane="pane-team">Membres</button>
+          <button type="button" data-goto-pane="pane-key">Clé API</button>
+          <button type="button" data-goto-pane="pane-feedback">Suggérer une amélioration</button>
+        </div>
+      </div>
       <a href="en/console.html" class="lang-switch">EN</a>
       <a href="docs.html" class="btn btn-ghost">Documentation</a>
       </div>
@@ -215,16 +224,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
 
         <div class="console-sidebar-group">
-          <button type="button" class="console-sidebar-section" data-section="account">
-            <span>Mes infos</span>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="console-sidebar-chevron"><polyline points="6 9 12 15 18 9"/></svg>
-          </button>
-          <div class="console-sidebar-items" data-section-items="account" hidden>
-            <button type="button" class="console-sidebar-item" data-pane="pane-company">Entreprise</button>
-            <button type="button" class="console-sidebar-item" data-pane="pane-team">Équipe</button>
-            <button type="button" class="console-sidebar-item" data-pane="pane-key">Ma clé API</button>
-            <button type="button" class="console-sidebar-item" data-pane="pane-feedback">Suggérer une amélioration</button>
-          </div>
+
         </div>
 
       </nav>
@@ -700,7 +700,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<script src="console.js?v=1784923037"></script>
+<script src="console.js?v=1784974397"></script>
 <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 
 <script src="nav-dropdown.js"></script>

@@ -1809,3 +1809,15 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 /* Etat masque : visuel uniquement, le contenu reste dans le document */
 .guide-module.masque{ display:none; }
 .guide-module [data-frontend].masque{ display:none; }
+
+/* Menu entreprise de la console : les entrees sont des <button> (elles
+   basculent un panneau, elles ne naviguent pas), la ou le menu du site
+   utilise des <a>. Meme apparence, meme comportement. */
+.console-org-drop .nav-drop-panel button{
+  display:block; width:100%; text-align:left;
+  font-family:inherit; font-size:13.5px; font-weight:500;
+  padding:9px 12px; border-radius:7px; border:none; background:none;
+  color:var(--ink); cursor:pointer; white-space:nowrap;
+}
+.console-org-drop .nav-drop-panel button:hover{ background:var(--blue-tint); color:var(--blue-deep); }
+.console-org-drop .nav-drop-panel{ left:auto; right:-14px; }

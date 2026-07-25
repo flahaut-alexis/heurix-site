@@ -262,6 +262,13 @@
       var tvaInput = document.getElementById("company-numero-tva");
       var companySaveBtn = document.getElementById("company-save-btn");
       raisonInput.value = company.raison_sociale || "";
+
+      // Libelle du menu en haut a droite : la raison sociale de
+      // l'entreprise connectee. Un compte fraichement cree ne l'a pas
+      // encore renseignee -- on garde alors un intitule neutre plutot
+      // qu'un menu vide ou un placeholder technique.
+      var orgBtn = document.getElementById("console-org-btn");
+      if (orgBtn) orgBtn.textContent = company.raison_sociale || "Mon compte";
       tvaInput.value = company.numero_tva || "";
       raisonInput.disabled = !isAdmin; tvaInput.disabled = !isAdmin;
       companySaveBtn.hidden = !isAdmin;
@@ -386,6 +393,17 @@
     e.preventDefault();
     var paneId = link.getAttribute("data-goto-pane");
     showPane(paneId);
+
+    // Si le lien vient d'un menu deroulant (celui de l'entreprise en haut
+    // a droite), on le referme : nav-dropdown.js ne ferme que sur un clic
+    // A L'EXTERIEUR du menu, or ici le clic est dedans.
+    var drop = link.closest(".nav-drop");
+    if (drop) {
+      var btn = drop.querySelector(".nav-drop-btn");
+      var panel = drop.querySelector(".nav-drop-panel");
+      if (btn) btn.setAttribute("aria-expanded", "false");
+      if (panel) panel.classList.remove("open");
+    }
     var sidebarBtn = document.querySelector('.console-sidebar-item[data-pane="' + paneId + '"]');
     var section = sidebarBtn && sidebarBtn.closest(".console-sidebar-items");
     if (section && section.hasAttribute("hidden")) {
