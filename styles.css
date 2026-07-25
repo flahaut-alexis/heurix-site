@@ -2330,3 +2330,14 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
   background-color:var(--bg-soft); color:var(--ink-muted);
   border-color:var(--line); font-weight:500;
 }
+
+/* Bandeau du bac a sable : vert plutot qu ambre -- l ambre signale deja une
+   simulation non enregistree, et confondre les deux registres serait
+   trompeur. Ici rien n est provisoire, on travaille simplement ailleurs. */
+.sandbox-banner{
+  margin:0 0 18px; padding:11px 16px; border-radius:10px;
+  background:#EAF7EF; border:1px solid #BFE3CD; color:#15613A;
+  font-size:13px; line-height:1.5;
+}
+.sandbox-banner[hidden]{ display:none; }
+.sandbox-banner strong{ color:#0F7A3D; }

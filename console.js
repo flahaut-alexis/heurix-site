@@ -459,8 +459,22 @@
   // catalogues, un filtre y serait trompeur.
   var catalogueActif = "";
   var catalogueListe = [];
+  var catalogueSandbox = {};
 
   function catalogueCourant() { return catalogueActif; }
+
+  function rechargerCatalogues(key) {
+    var select = document.getElementById("global-catalog");
+    if (!select) return;
+    apiFetch("/v1/index/catalogs", key).then(function (data) {
+      catalogueSandbox = {};
+      (data.catalogs || []).forEach(function (c) { catalogueSandbox[c.catalog] = !!c.sandbox; });
+      Array.prototype.forEach.call(select.options, function (opt) {
+        opt.textContent = opt.value + (catalogueSandbox[opt.value] ? " — bac à sable" : "");
+      });
+      majBandeauSandbox();
+    }).catch(function () {});
+  }
 
   function wireGlobalCatalog(key) {
     var select = document.getElementById("global-catalog");
@@ -468,6 +482,8 @@
 
     apiFetch("/v1/index/catalogs", key).then(function (data) {
       catalogueListe = (data.catalogs || []).map(function (c) { return c.catalog; });
+      catalogueSandbox = {};
+      (data.catalogs || []).forEach(function (c) { catalogueSandbox[c.catalog] = !!c.sandbox; });
 
       if (!catalogueListe.length) {
         // Compte neuf : rien a choisir. On le dit plutot que d'afficher une
@@ -478,7 +494,11 @@
       }
       select.disabled = false;
       select.innerHTML = catalogueListe.map(function (n) {
-        return "<option value='" + esc(n) + "'>" + esc(n) + "</option>";
+        // Le bac a sable est signale dans le libelle : sans cela, rien ne
+        // distinguerait un catalogue non facture d'un catalogue reel, et on
+        // risquerait de tester sur la production en croyant l'inverse.
+        return "<option value='" + esc(n) + "'>" + esc(n) +
+          (catalogueSandbox[n] ? " — bac à sable" : "") + "</option>";
       }).join("");
 
       // La grande majorite des comptes n'a qu'un catalogue : on le
@@ -517,7 +537,13 @@
     }
   }
 
+  function majBandeauSandbox() {
+    var bandeau = document.getElementById("sandbox-banner");
+    if (bandeau) bandeau.hidden = !catalogueSandbox[catalogueActif];
+  }
+
   function appliquerCatalogue(key) {
+    majBandeauSandbox();
     soCurrentCatalog = catalogueActif;
     browseCurrentCatalog = catalogueActif;
     browseCurrentCategory = "";
@@ -2448,6 +2474,36 @@
   }
 
   function wireCatalogCard(cardEl, catalog, key) {
+    // Bascule bac a sable. Les deux refus possibles (plan insuffisant,
+    // plafond atteint) viennent du moteur avec leur message : on les affiche
+    // tels quels plutot que de dupliquer la regle cote client, ou elle
+    // divergerait.
+    var sandboxToggle = cardEl.querySelector(".catalog-sandbox-toggle");
+    var sandboxStatus = cardEl.querySelector(".catalog-sandbox-status");
+    if (sandboxToggle) sandboxToggle.addEventListener("change", function () {
+      var voulu = sandboxToggle.checked;
+      sandboxToggle.disabled = true;
+      if (sandboxStatus) { sandboxStatus.className = "catalog-rule-status"; sandboxStatus.textContent = "…"; }
+      apiFetch("/v1/index/" + encodeURIComponent(catalog.catalog) + "/sandbox", key, {
+        method: "PUT", body: { sandbox: voulu },
+      }).then(function () {
+        catalog.sandbox = voulu;
+        if (sandboxStatus) {
+          sandboxStatus.className = "catalog-rule-status ok";
+          sandboxStatus.textContent = voulu ? "Bac à sable activé." : "Catalogue redevenu facturé.";
+        }
+        // Le selecteur global doit refleter le changement immediatement.
+        if (typeof rechargerCatalogues === "function") rechargerCatalogues(key);
+      }).catch(function (err) {
+        sandboxToggle.checked = !voulu;  // on remet l'etat reel
+        if (sandboxStatus) {
+          sandboxStatus.className = "catalog-rule-status err";
+          sandboxStatus.textContent = (err && err.message) || "Impossible de modifier ce réglage.";
+        }
+      }).then(function () { sandboxToggle.disabled = false; });
+    });
+
+
     var select = cardEl.querySelector(".catalog-rulepack-select");
     var saveBtn = cardEl.querySelector(".catalog-rulepack-save");
     var status = cardEl.querySelector(".catalog-rulepack-status");
@@ -2493,6 +2549,13 @@
       // chercher dans la fiche d'un catalogue. On laisse ici un renvoi
       // plutot qu'un doublon -- deux formulaires edifiant la meme donnee
       // finissent toujours par diverger.
+      '<div class="catalog-card-row" style="margin-top:16px;">' +
+        '<label class="br-stock-toggle" style="margin:0;">' +
+          '<input type="checkbox" class="catalog-sandbox-toggle"' + (c.sandbox ? ' checked' : '') + '>' +
+          '<span>Bac à sable — ne pas facturer ce catalogue</span>' +
+        '</label>' +
+        '<span class="catalog-sandbox-status catalog-rule-status"></span>' +
+      '</div>' +
       '<div class="catalog-synonyms-label" style="margin-top:22px;">Synonymes et règles personnalisées</div>' +
       '<p class="console-panel-note" style="margin:6px 0 0;">Gérés depuis <button type="button" class="catalog-goto-rules" data-goto-pane="pane-search-overrides">Personnalisation → Gestion des règles</button>.</p>' +
     '</div>';
