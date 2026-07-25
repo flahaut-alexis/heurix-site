@@ -684,9 +684,75 @@
       "</td>";
   }
 
+  // ---------------- Apercu des resultats (Priorites de requete) ----------------
+  //
+  // Symetrique de refreshBrowsePreview : on appelle le VRAI endpoint de
+  // recherche, donc ce qui s'affiche est exactement ce que verrait un
+  // visiteur. La colonne « pourquoi » vient du champ `matched` renvoye par
+  // le moteur -- c'est elle qui rend l'ecran utile : elle explique le
+  // classement au lieu de le constater.
+  var soPreviewTimer = null;
+
+  function refreshSoPreview(key) {
+    var champ = document.getElementById("so-preview-query");
+    var hint = document.getElementById("so-preview-hint");
+    var vide = document.getElementById("so-preview-empty");
+    var corps = document.querySelector("#so-preview-table tbody");
+    if (!champ || !soCurrentCatalog) return;
+
+    var q = champ.value.trim();
+    if (!q) {
+      corps.innerHTML = "";
+      vide.hidden = true;
+      hint.hidden = false;
+      return;
+    }
+    hint.hidden = true;
+
+    apiFetch("/v1/index/" + encodeURIComponent(soCurrentCatalog) + "/search", key,
+             { method: "POST", body: { q: q, limit: 20 } })
+      .then(function (data) {
+        var hits = data.hits || [];
+        if (!hits.length) {
+          corps.innerHTML = "";
+          vide.hidden = false;
+          return;
+        }
+        vide.hidden = true;
+        corps.innerHTML = hits.map(function (h, i) {
+          // Les etiquettes viennent du moteur (champs pinned / buried), pas
+          // d'une deduction cote client : la logique de declenchement d'une
+          // priorite est cote serveur, la reimplementer ici divergerait.
+          var statut = h.pinned
+            ? "<span class='so-tag so-tag-pin'>Épinglé</span>"
+            : h.buried ? "<span class='so-tag so-tag-bury'>Relégué</span>"
+            : "<span style='color:var(--ink-muted);'>—</span>";
+          var raisons = (h.matched || []).length
+            ? h.matched.map(function (m) { return "<span class='so-why'>" + esc(m) + "</span>"; }).join(" ")
+            : "<span style='color:var(--ink-muted);'>injecté par une priorité</span>";
+          return "<tr" + (h.pinned || h.buried ? " class='so-row-ruled'" : "") + ">" +
+            "<td class='num'>" + (i + 1) + "</td>" +
+            "<td class='mono'>" + esc(h.product.id) + "</td>" +
+            "<td class='num'>" + (h.score !== undefined ? h.score : "–") + "</td>" +
+            "<td>" + statut + "</td>" +
+            "<td>" + raisons + "</td></tr>";
+        }).join("");
+      })
+      .catch(function () {
+        corps.innerHTML = "";
+        vide.hidden = false;
+      });
+  }
+
   function refreshSoTable(key) {
     apiFetch("/v1/index/" + encodeURIComponent(soCurrentCatalog) + "/search-overrides", key)
-      .then(function (data) { renderTable("so-table", "so-empty", data.overrides, soRowHtml); })
+      .then(function (data) {
+        renderTable("so-table", "so-empty", data.overrides, soRowHtml);
+        // Un seul point de branchement : la table des regles est
+        // rafraichie apres tout ajout, modification ou suppression, donc
+        // l'apercu suit automatiquement.
+        refreshSoPreview(key);
+      })
       .catch(function () {});
   }
 
@@ -699,7 +765,17 @@
     refreshSoTable(key);
   }
 
+  function wireSoPreview(key) {
+    var champ = document.getElementById("so-preview-query");
+    if (!champ) return;
+    champ.addEventListener("input", function () {
+      clearTimeout(soPreviewTimer);
+      soPreviewTimer = setTimeout(function () { refreshSoPreview(key); }, 250);
+    });
+  }
+
   function wireSearchOverridesPane(key) {
+    wireSoPreview(key);
     if (soFormWired) return;
     soFormWired = true;
 
