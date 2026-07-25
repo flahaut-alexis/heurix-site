@@ -202,6 +202,62 @@
     refreshPublicKeys(key);
   }
 
+  // ---------------- Produits les plus vus (Analytics > Ranking) ----------------
+  function wireCategoryViews(key) {
+    var select = document.getElementById("cv-catalog");
+    var contenu = document.getElementById("cv-content");
+    var vide = document.getElementById("cv-empty");
+    if (!select) return;
+
+    function charger() {
+      var catalogue = select.value;
+      if (!catalogue) return;
+      contenu.innerHTML = "<p class='console-panel-note'>Chargement…</p>";
+      vide.hidden = true;
+      apiFetch("/v1/analytics/category-views/" + encodeURIComponent(catalogue), key)
+        .then(function (data) {
+          var cats = data.categories || [];
+          if (!cats.length) {
+            contenu.innerHTML = "";
+            vide.hidden = false;
+            return;
+          }
+          contenu.innerHTML = cats.map(function (cat) {
+            var lignes = cat.products.map(function (p) {
+              // Le ratio clics/vues est l'information utile : c'est lui qui
+              // designe les produits a epingler ou a releguer.
+              var ratio = p.views ? Math.round((p.search_clicks / p.views) * 100) : 0;
+              return "<tr><td class='mono'>" + esc(p.product_id) + "</td>" +
+                "<td>" + p.views + "</td><td>" + p.search_clicks + "</td>" +
+                "<td>" + ratio + " %</td></tr>";
+            }).join("");
+            return "<h2 style='margin-top:22px;'>" + esc(cat.category) +
+              " <span style='font-weight:400; color:var(--ink-muted); font-size:13px;'>— " +
+              cat.total_views + " impressions</span></h2>" +
+              "<div class='table-scroll'><table class='console-table'>" +
+              "<thead><tr><th>Produit</th><th>Vues</th><th>Clics recherche</th><th>Ratio</th></tr></thead>" +
+              "<tbody>" + lignes + "</tbody></table></div>";
+          }).join("");
+        })
+        .catch(function () {
+          contenu.innerHTML = "";
+          vide.hidden = false;
+        });
+    }
+
+    // Les catalogues sont deja connus ailleurs dans la console : on
+    // reutilise la meme source plutot que de refaire un appel.
+    apiFetch("/v1/index/catalogs", key).then(function (data) {
+      var noms = (data.catalogs || []).map(function (c) { return c.catalog; });
+      select.innerHTML = noms.map(function (n) {
+        return "<option value='" + esc(n) + "'>" + esc(n) + "</option>";
+      }).join("");
+      if (noms.length) charger();
+    }).catch(function () {});
+
+    select.addEventListener("change", charger);
+  }
+
   function renderApiKey(key) {
     var valueEl = document.getElementById("account-key-value");
     var toggleBtn = document.getElementById("account-key-toggle");
@@ -269,6 +325,25 @@
       // qu'un menu vide ou un placeholder technique.
       var orgBtn = document.getElementById("console-org-btn");
       if (orgBtn) orgBtn.textContent = company.raison_sociale || "Mon compte";
+
+      // Aide ponctuelle : « Mes infos » etait auparavant dans la barre
+      // laterale. Un utilisateur habitue la chercherait au mauvais endroit,
+      // d'ou ce rappel affiche UNE SEULE FOIS par navigateur.
+      var hint = document.getElementById("console-org-hint");
+      var hintOk = document.getElementById("console-org-hint-ok");
+      if (hint && hintOk && !localStorage.getItem("heurix_org_hint_vu")) {
+        hint.hidden = false;
+        hintOk.addEventListener("click", function () {
+          hint.hidden = true;
+          localStorage.setItem("heurix_org_hint_vu", "1");
+        });
+        // Ouvrir le menu vaut aussi pour « compris » : l'utilisateur a
+        // manifestement trouve.
+        if (orgBtn) orgBtn.addEventListener("click", function () {
+          hint.hidden = true;
+          localStorage.setItem("heurix_org_hint_vu", "1");
+        }, { once: true });
+      }
       tvaInput.value = company.numero_tva || "";
       raisonInput.disabled = !isAdmin; tvaInput.disabled = !isAdmin;
       companySaveBtn.hidden = !isAdmin;
@@ -346,7 +421,7 @@
     }).catch(function () {});
   }
 
-  var ALL_PANE_IDS = ["pane-overview", "pane-guides", "pane-top-queries", "pane-zero-results", "pane-errors", "pane-search-overrides", "pane-conversion",
+  var ALL_PANE_IDS = ["pane-overview", "pane-guides", "pane-top-queries", "pane-zero-results", "pane-errors", "pane-search-overrides", "pane-category-views",
     "pane-browse", "pane-catalog-help", "pane-catalog-list", "pane-company", "pane-team", "pane-key", "pane-feedback"];
 
   function showPane(paneId) {
@@ -1018,6 +1093,7 @@
       loadSearchOverridesCatalogs(key);
       wireSearchOverridesPane(key);
       wirePublicKeys(key);
+      wireCategoryViews(key);
     }).catch(function () {
       dashLoading.hidden = true;
       localStorage.removeItem(SESSION_STORAGE_KEY);

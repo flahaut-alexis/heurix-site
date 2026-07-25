@@ -16,7 +16,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="robots" content="noindex">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css?v=1784974397">
+<link rel="stylesheet" href="styles.css?v=1784974882">
 <link rel="canonical" href="https://heurix.fr/console.html">
 </head>
 <body>
@@ -66,6 +66,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <button type="button" id="mobile-nav-toggle" class="mobile-nav-toggle" aria-label="Menu" aria-expanded="false">
         <span></span><span></span><span></span>
       </button>
+      <div class="console-org-hint" id="console-org-hint" hidden>
+        <p><strong>« Mes infos » a déménagé.</strong> Entreprise, membres et clé API sont maintenant regroupés ici, sous le nom de votre société.</p>
+        <button type="button" id="console-org-hint-ok">J'ai compris</button>
+      </div>
       <div class="nav-drop console-org-drop">
         <button type="button" class="nav-drop-btn" id="console-org-btn" aria-expanded="false" aria-haspopup="true">Mon compte</button>
         <div class="nav-drop-panel">
@@ -164,9 +168,47 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     <div class="console-layout">
       <nav class="console-sidebar" id="console-sidebar" aria-label="Navigation du tableau de bord">
+        <div class="console-sidebar-group">
+          <button type="button" class="console-sidebar-item console-sidebar-item-on console-sidebar-item-top" data-pane="pane-overview">Dashboard</button>
+        </div>
 
         <div class="console-sidebar-group">
-          <button type="button" class="console-sidebar-item console-sidebar-item-on console-sidebar-item-top" data-pane="pane-overview">Vue d'ensemble</button>
+          <button type="button" class="console-sidebar-section" data-section="catalog">
+            <span>Mes catalogues</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="console-sidebar-chevron"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="console-sidebar-items" data-section-items="catalog" hidden>
+            <button type="button" class="console-sidebar-item" data-pane="pane-catalog-help">Comment ça marche</button>
+            <div id="sidebar-catalog-items"></div>
+          </div>
+        </div>
+
+        <div class="console-sidebar-group">
+          <button type="button" class="console-sidebar-section" data-section="analytics">
+            <span>Analytics</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="console-sidebar-chevron"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="console-sidebar-items" data-section-items="analytics" hidden>
+            <div class="console-sidebar-sublabel">Search</div>
+            <button type="button" class="console-sidebar-item" data-pane="pane-top-queries">Recherches populaires</button>
+            <button type="button" class="console-sidebar-item" data-pane="pane-zero-results">Sans résultat</button>
+            <button type="button" class="console-sidebar-item" data-pane="pane-errors">Erreurs</button>
+            <div class="console-sidebar-sublabel">Ranking</div>
+            <button type="button" class="console-sidebar-item" data-pane="pane-category-views">Produits les plus vus</button>
+          </div>
+        </div>
+
+        <div class="console-sidebar-group">
+          <button type="button" class="console-sidebar-section" data-section="perso">
+            <span>Personnalisation</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="console-sidebar-chevron"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="console-sidebar-items" data-section-items="perso" hidden>
+            <div class="console-sidebar-sublabel">Search</div>
+            <button type="button" class="console-sidebar-item" data-pane="pane-search-overrides">Priorités de requête</button>
+            <div class="console-sidebar-sublabel">Ranking</div>
+            <button type="button" class="console-sidebar-item" data-pane="pane-browse">Classement &amp; merchandising</button>
+          </div>
         </div>
 
         <div class="console-sidebar-group">
@@ -178,56 +220,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <button type="button" class="console-sidebar-item" data-pane="pane-guides">Tous les guides</button>
           </div>
         </div>
-
-        <div class="console-sidebar-group">
-          <button type="button" class="console-sidebar-section" data-section="search">
-            <span>Search</span>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="console-sidebar-chevron"><polyline points="6 9 12 15 18 9"/></svg>
-          </button>
-          <div class="console-sidebar-items" data-section-items="search" hidden>
-            <button type="button" class="console-sidebar-item" data-pane="pane-top-queries">Recherches populaires</button>
-            <button type="button" class="console-sidebar-item" data-pane="pane-zero-results">Sans résultat</button>
-            <button type="button" class="console-sidebar-item" data-pane="pane-errors">Erreurs</button>
-            <button type="button" class="console-sidebar-item" data-pane="pane-search-overrides">Priorités de requête</button>
-          </div>
-        </div>
-
-        <div class="console-sidebar-group">
-          <button type="button" class="console-sidebar-section" data-section="browse">
-            <span>Browse &amp; Discovery</span>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="console-sidebar-chevron"><polyline points="6 9 12 15 18 9"/></svg>
-          </button>
-          <div class="console-sidebar-items" data-section-items="browse" hidden>
-            <button type="button" class="console-sidebar-item" data-pane="pane-browse">Classement &amp; aperçu</button>
-          </div>
-        </div>
-
-        <div class="console-sidebar-group">
-          <button type="button" class="console-sidebar-section" data-section="conversion">
-            <span>Conversion &amp; ROI</span>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="console-sidebar-chevron"><polyline points="6 9 12 15 18 9"/></svg>
-          </button>
-          <div class="console-sidebar-items" data-section-items="conversion" hidden>
-            <button type="button" class="console-sidebar-item" data-pane="pane-conversion">Vue d'ensemble</button>
-          </div>
-        </div>
-
-        <div class="console-sidebar-group">
-          <button type="button" class="console-sidebar-section" data-section="catalog">
-            <span>Mon catalogue</span>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="console-sidebar-chevron"><polyline points="6 9 12 15 18 9"/></svg>
-          </button>
-          <div class="console-sidebar-items" data-section-items="catalog" hidden>
-            <button type="button" class="console-sidebar-item" data-pane="pane-catalog-help">Comment ça marche</button>
-            <div id="sidebar-catalog-items"></div>
-          </div>
-        </div>
-
-        <div class="console-sidebar-group">
-
-        </div>
-
-      </nav>
+</nav>
 
       <div class="console-main">
         <div id="dash-loading" class="console-loading">Chargement des données…</div>
@@ -274,6 +267,52 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <div class="console-chart-wrap"><canvas id="searches-chart" height="90"></canvas></div>
               </div>
             </div>
+          
+
+            <h2 class="console-pane-title" style="margin-top:34px;">Conversion &amp; ROI</h2>
+
+            <div class="console-panel console-panel-warn">
+              <p class="console-panel-note" style="margin:0;">Ces chiffres dépendent de la balise que <strong>vous</strong> installez sur votre site — Heurix ne les mesure pas seul. « CA total » est agrégé sur la période (corrélation, pas une preuve). « CA réellement attribué » ne compte que les achats où le <strong>même visiteur</strong> a cliqué depuis une recherche dans les 24h précédentes — plus précis, mais nécessite le <a href="docs.html#ep-events">Heurix Tracker</a>.</p>
+            </div>
+
+            <div class="console-stats">
+              <div class="console-stat">
+                <div class="icn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
+                <div class="console-stat-num" id="conv-ctr">–</div>
+                <div class="console-stat-label">Taux de clic sur les recherches</div>
+              </div>
+              <div class="console-stat">
+                <div class="icn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+                <div class="console-stat-num" id="conv-revenue">–</div>
+                <div class="console-stat-label">CA total (période)</div>
+              </div>
+              <div class="console-stat">
+                <div class="icn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><circle cx="12" cy="12" r="10"/></svg></div>
+                <div class="console-stat-num" id="conv-attributed">–</div>
+                <div class="console-stat-label" id="conv-attributed-label">CA réellement attribué</div>
+              </div>
+              <div class="console-stat">
+                <div class="icn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></div>
+                <div class="console-stat-num" id="conv-products">–</div>
+                <div class="console-stat-label">Produits achetés</div>
+              </div>
+            </div>
+
+            <div class="console-panel">
+              <div class="catalog-card-row" style="margin-bottom:14px;">
+                <h2 style="margin:0; flex:1;">Top produits</h2>
+                <select id="conv-sort-select" class="catalog-rulepack-select">
+                  <option value="volume">Par volume</option>
+                  <option value="margin">Par marge</option>
+                </select>
+              </div>
+              <div class="table-scroll"><table class="console-table" id="top-products-table">
+                <thead><tr><th>Produit</th><th>Volume</th><th>CA</th><th>Marge</th></tr></thead>
+                <tbody></tbody>
+              </table></div>
+              <p class="console-empty" id="top-products-empty" hidden>Aucun achat remonté sur cette période — vérifiez que la balise est bien installée.</p>
+            </div>
+          
           </div>
 
           <div id="pane-top-queries" class="console-pane" hidden>
@@ -353,50 +392,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             </div>
           </div>
 
-          <div id="pane-conversion" class="console-pane" hidden>
-            <h2 class="console-pane-title">Conversion &amp; ROI</h2>
-            <div class="console-panel console-panel-warn">
-              <p class="console-panel-note" style="margin:0;">Ces chiffres dépendent de la balise que <strong>vous</strong> installez sur votre site — Heurix ne les mesure pas seul. « CA total » est agrégé sur la période (corrélation, pas une preuve). « CA réellement attribué » ne compte que les achats où le <strong>même visiteur</strong> a cliqué depuis une recherche dans les 24h précédentes — plus précis, mais nécessite le <a href="docs.html#ep-events">Heurix Tracker</a>.</p>
-            </div>
-
-            <div class="console-stats">
-              <div class="console-stat">
-                <div class="icn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
-                <div class="console-stat-num" id="conv-ctr">–</div>
-                <div class="console-stat-label">Taux de clic sur les recherches</div>
-              </div>
-              <div class="console-stat">
-                <div class="icn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
-                <div class="console-stat-num" id="conv-revenue">–</div>
-                <div class="console-stat-label">CA total (période)</div>
-              </div>
-              <div class="console-stat">
-                <div class="icn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><circle cx="12" cy="12" r="10"/></svg></div>
-                <div class="console-stat-num" id="conv-attributed">–</div>
-                <div class="console-stat-label" id="conv-attributed-label">CA réellement attribué</div>
-              </div>
-              <div class="console-stat">
-                <div class="icn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></div>
-                <div class="console-stat-num" id="conv-products">–</div>
-                <div class="console-stat-label">Produits achetés</div>
-              </div>
-            </div>
-
-            <div class="console-panel">
-              <div class="catalog-card-row" style="margin-bottom:14px;">
-                <h2 style="margin:0; flex:1;">Top produits</h2>
-                <select id="conv-sort-select" class="catalog-rulepack-select">
-                  <option value="volume">Par volume</option>
-                  <option value="margin">Par marge</option>
-                </select>
-              </div>
-              <div class="table-scroll"><table class="console-table" id="top-products-table">
-                <thead><tr><th>Produit</th><th>Volume</th><th>CA</th><th>Marge</th></tr></thead>
-                <tbody></tbody>
-              </table></div>
-              <p class="console-empty" id="top-products-empty" hidden>Aucun achat remonté sur cette période — vérifiez que la balise est bien installée.</p>
-            </div>
-          </div>
+          
 
           <div id="pane-browse" class="console-pane" hidden>
             <h2 class="console-pane-title">Browse &amp; Discovery</h2>
@@ -484,6 +480,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                   <span class="catalog-rule-status" id="browse-attribute-rule-status"></span>
                 </form>
               </div>
+            </div>
+          </div>
+
+          <div id="pane-category-views" class="console-pane" hidden>
+            <h2 class="console-pane-title">Produits les plus vus</h2>
+            <div class="console-panel">
+              <p class="console-panel-note">Produits affichés sur vos pages de catégorie, croisés avec leurs clics depuis la recherche. Un produit beaucoup montré et peu cliqué est un candidat à la relégation ; l'inverse, à l'épinglage.</p>
+              <label for="cv-catalog" style="font-size:12.5px; font-weight:700; color:var(--ink-muted);">Catalogue</label>
+              <select id="cv-catalog" style="margin:6px 0 16px;"></select>
+              <div id="cv-content"></div>
+              <p class="console-empty" id="cv-empty" hidden>Aucune vue de page de catégorie remontée. Cette donnée nécessite l'appel <code class="docs-inline-code">Heurix.trackCategoryView()</code> depuis vos pages de catégorie — voir <a href="docs.html#ep-category-views">la documentation</a>.</p>
             </div>
           </div>
 
@@ -700,7 +707,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<script src="console.js?v=1784974397"></script>
+<script src="console.js?v=1784974882"></script>
 <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 
 <script src="nav-dropdown.js"></script>
