@@ -436,6 +436,115 @@
     return true;
   }
 
+  // Icones des actions de fiche, partagees par les deux editeurs. Definies
+  // une fois hors des boucles de rendu : elles etaient reconstruites a chaque
+  // produit, et divergeaient entre Search et Ranking.
+  var ICONES_FICHE = {
+    pin: "<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round'><path d='M12 17v5'/><path d='M9 10.8V4h6v6.8l2 3.2H7z'/></svg>",
+    up: "<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.2' stroke-linecap='round'><path d='M12 19V5'/><path d='M5 12l7-7 7 7'/></svg>",
+    down: "<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.2' stroke-linecap='round'><path d='M12 5v14'/><path d='M19 12l-7 7-7-7'/></svg>",
+    off: "<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.2' stroke-linecap='round'><path d='M18 6L6 18M6 6l12 12'/></svg>",
+  };
+
+  // ---------------- Catalogue actif, choix GLOBAL ----------------
+  //
+  // Auparavant, chaque ecran avait son propre selecteur : on resaisissait le
+  // meme catalogue dans Analytics, Gestion des regles, Classement et
+  // Synonymes. Travail repete, et surtout source d'erreur -- rien
+  // n'indiquait qu'on regardait deux catalogues differents d'un onglet a
+  // l'autre.
+  //
+  // Le choix est desormais unique, porte par la barre du haut, et tous les
+  // ecrans le lisent. Le Dashboard reste global : il agrege tous les
+  // catalogues, un filtre y serait trompeur.
+  var catalogueActif = "";
+  var catalogueListe = [];
+
+  function catalogueCourant() { return catalogueActif; }
+
+  function wireGlobalCatalog(key) {
+    var select = document.getElementById("global-catalog");
+    if (!select) return;
+
+    apiFetch("/v1/index/catalogs", key).then(function (data) {
+      catalogueListe = (data.catalogs || []).map(function (c) { return c.catalog; });
+
+      if (!catalogueListe.length) {
+        // Compte neuf : rien a choisir. On le dit plutot que d'afficher une
+        // liste vide, qui laisserait croire a une panne.
+        select.innerHTML = '<option value="">Aucun catalogue</option>';
+        select.disabled = true;
+        return;
+      }
+      select.disabled = false;
+      select.innerHTML = catalogueListe.map(function (n) {
+        return "<option value='" + esc(n) + "'>" + esc(n) + "</option>";
+      }).join("");
+
+      // La grande majorite des comptes n'a qu'un catalogue : on le
+      // selectionne d'office plutot que d'imposer un choix sans alternative.
+      var memoire = localStorage.getItem("heurix_catalogue_actif");
+      catalogueActif = (memoire && catalogueListe.indexOf(memoire) !== -1)
+        ? memoire : catalogueListe[0];
+      select.value = catalogueActif;
+      appliquerCatalogue(key);
+    }).catch(function () {});
+
+    select.addEventListener("change", function () {
+      catalogueActif = select.value;
+      localStorage.setItem("heurix_catalogue_actif", catalogueActif);
+      appliquerCatalogue(key);
+    });
+  }
+
+  // Propage le choix aux ecrans et rafraichit CELUI QUI EST OUVERT : changer
+  // de catalogue sans rafraichir laisserait les donnees du precedent a
+  // l'ecran, ce qui serait pire que l'ancien systeme.
+  // Appelee a l'OUVERTURE d'un ecran. La cle n'est pas disponible dans
+  // showPane, on la memorise au cablage.
+  var cleCourante = null;
+  function appliquerCatalogueOuverture(paneId) {
+    if (!cleCourante || !catalogueActif) return;
+    if (paneId === "pane-search-overrides") {
+      var contenu = document.getElementById("so-content");
+      if (contenu) contenu.hidden = false;
+      soAnimerPlaceholder();
+      refreshSoTable(cleCourante);
+      refreshSoPreview(cleCourante);
+      chargerSynonymesEtRegles(cleCourante);
+    } else if (paneId === "pane-browse") {
+      onBrowseCatalogChange(cleCourante);
+    }
+  }
+
+  function appliquerCatalogue(key) {
+    soCurrentCatalog = catalogueActif;
+    browseCurrentCatalog = catalogueActif;
+    browseCurrentCategory = "";
+    soDraft = null;
+    brDraft = null;
+
+    var ouvert = ALL_PANE_IDS.filter(function (id) {
+      var el = document.getElementById(id);
+      return el && !el.hidden;
+    })[0];
+
+    if (ouvert === "pane-search-overrides") {
+      var contenu = document.getElementById("so-content");
+      if (contenu) contenu.hidden = !catalogueActif;
+      if (catalogueActif) {
+        soAnimerPlaceholder();
+        refreshSoTable(key);
+        refreshSoPreview(key);
+        chargerSynonymesEtRegles(key);
+      }
+    } else if (ouvert === "pane-browse") {
+      onBrowseCatalogChange(key);
+    } else if (ouvert === "pane-category-views") {
+      wireCategoryViews(key);
+    }
+  }
+
   function showPane(paneId) {
     ALL_PANE_IDS.forEach(function (id) {
       var el = document.getElementById(id);
@@ -447,9 +556,9 @@
     // L'effet de frappe part a l'OUVERTURE du panneau, pas au cablage :
     // celui-ci s'execute a la connexion, alors que le pave est encore
     // masque -- l'animation se terminait sans que personne ne la voie.
-    if (paneId === "pane-search-overrides" && typeof soAnimerPlaceholder === "function") {
-      soAnimerPlaceholder();  // ne fera rien si la barre est encore masquee
-    }
+    // Le catalogue etant global, ouvrir un ecran suffit a le charger : plus
+    // besoin de resaisir le catalogue a chaque fois.
+    if (typeof appliquerCatalogueOuverture === "function") appliquerCatalogueOuverture(paneId);
     // Remonte en haut du nouvel ecran. Sans cela, un utilisateur descendu
     // dans un pave long arrive sur le suivant deja defile, et ne voit pas
     // ce qu'il vient d'ouvrir -- on doit remonter a la main pour comprendre
@@ -663,14 +772,8 @@
   function loadSearchOverridesCatalogs(key) {
     if (soCatalogsLoaded) return;
     soCatalogsLoaded = true;
-    apiFetch("/v1/index/catalogs", key).then(function (data) {
-      var select = document.getElementById("so-catalog-select");
-      data.catalogs.forEach(function (c) {
-        var opt = document.createElement("option");
-        opt.value = c.catalog; opt.textContent = c.catalog;
-        select.appendChild(opt);
-      });
-    }).catch(function () {});
+    // Chargement retire : la liste des catalogues est desormais peuplee une
+    // seule fois par wireGlobalCatalog, pour toute la console.
   }
 
   function resetSoForm() {
@@ -858,12 +961,7 @@
           // au clavier et fragile au doigt, et le merchandising doit rester
           // accessible.
           var pid = esc(p.id);
-          var ICONE = {
-            pin: "<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round'><path d='M12 17v5'/><path d='M9 10.8V4h6v6.8l2 3.2H7z'/></svg>",
-            up: "<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.2' stroke-linecap='round'><path d='M12 19V5'/><path d='M5 12l7-7 7 7'/></svg>",
-            down: "<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.2' stroke-linecap='round'><path d='M12 5v14'/><path d='M19 12l-7 7-7-7'/></svg>",
-            off: "<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.2' stroke-linecap='round'><path d='M18 6L6 18M6 6l12 12'/></svg>",
-          };
+          var ICONE = ICONES_FICHE;
           // Un produit ne peut etre deplace qu'une fois EPINGLE : le moteur
           // place les epingles en bloc ordonne en tete, le reste suit le
           // classement naturel. « Monter » sur un produit non epingle
@@ -932,7 +1030,9 @@
   }
 
   function onSoCatalogChange(key) {
-    soCurrentCatalog = document.getElementById("so-catalog-select").value;
+    // Le catalogue vient desormais du choix global, plus d'un selecteur de
+    // pave (chantier « catalogue global »).
+    soCurrentCatalog = catalogueCourant();
     var content = document.getElementById("so-content");
     if (!soCurrentCatalog) { content.hidden = true; return; }
     content.hidden = false;
@@ -1407,41 +1507,31 @@
   }
 
   function wireCustomRulesPane(key) {
-    var select = document.getElementById("cr-catalog-select");
+    // Plus de selecteur local : le catalogue vient du choix global.
+    chargerSynonymesEtRegles(key);
+  }
+
+  function chargerSynonymesEtRegles(key) {
     var host = document.getElementById("cr-host");
     var invite = document.getElementById("cr-hint");
-    if (!select || !host) return;
-
-    function charger() {
-      var catalogue = select.value;
-      if (!catalogue) {
-        host.innerHTML = "";
-        if (invite) invite.hidden = false;
-        return;
-      }
-      if (invite) invite.hidden = true;
-      // On reconstruit a chaque changement : le cablage attache ses
-      // ecouteurs aux elements, les recreer evite qu'ils pointent vers le
-      // catalogue precedent.
-      host.innerHTML = crMarkup();
-      // Les deux fonctions lisent `catalog.catalog` : elles attendent un
-      // OBJET, pas une chaine. Leur passer le nom nu laissait catalogName
-      // indefini -- les appels partaient vers /v1/index/undefined/... et
-      // echouaient en silence, d'ou des synonymes qui ne se passaient rien.
-      var objetCatalogue = { catalog: catalogue };
-      wireSynonymControls(host, objetCatalogue, key);
-      wireCustomRuleControls(host, objetCatalogue, key);
+    if (!host) return;
+    var catalogue = catalogueCourant();
+    if (!catalogue) {
+      host.innerHTML = "";
+      if (invite) invite.hidden = false;
+      return;
     }
-
-    apiFetch("/v1/index/catalogs", key).then(function (data) {
-      var noms = (data.catalogs || []).map(function (c) { return c.catalog; });
-      select.innerHTML = '<option value="">— Choisir —</option>' +
-        noms.map(function (n) { return "<option value='" + esc(n) + "'>" + esc(n) + "</option>"; }).join("");
-      if (noms.length === 1) { select.value = noms[0]; charger(); }
-    }).catch(function () {});
-
-    select.addEventListener("change", charger);
+    if (invite) invite.hidden = true;
+    // On reconstruit a chaque changement de catalogue : le cablage attache
+    // ses ecouteurs aux elements, les recreer evite qu'ils pointent vers le
+    // catalogue precedent.
+    host.innerHTML = crMarkup();
+    // Les deux fonctions lisent `catalog.catalog` : elles attendent un objet.
+    var objetCatalogue = { catalog: catalogue };
+    wireSynonymControls(host, objetCatalogue, key);
+    wireCustomRuleControls(host, objetCatalogue, key);
   }
+
 
   function wireSearchOverridesPane(key) {
     wireSoPreview(key);
@@ -1450,7 +1540,6 @@
     if (soFormWired) return;
     soFormWired = true;
 
-    document.getElementById("so-catalog-select").addEventListener("change", function () { onSoCatalogChange(key); });
     document.getElementById("so-action").addEventListener("change", function (e) {
       document.getElementById("so-position").hidden = e.target.value !== "pin";
     });
@@ -1544,18 +1633,12 @@
   function loadBrowseCatalogs(key) {
     if (browseCatalogsLoaded) return;
     browseCatalogsLoaded = true;
-    apiFetch("/v1/index/catalogs", key).then(function (data) {
-      var select = document.getElementById("browse-catalog-select");
-      data.catalogs.forEach(function (c) {
-        var opt = document.createElement("option");
-        opt.value = c.catalog; opt.textContent = c.catalog;
-        select.appendChild(opt);
-      });
-    }).catch(function () {});
+    // Chargement retire : la liste des catalogues est desormais peuplee une
+    // seule fois par wireGlobalCatalog, pour toute la console.
   }
 
   function onBrowseCatalogChange(key) {
-    var catalog = document.getElementById("browse-catalog-select").value;
+    var catalog = catalogueCourant();
     browseCurrentCatalog = catalog; browseCurrentCategory = "";
     var categorySelect = document.getElementById("browse-category-select");
     // On masque les RESULTATS, pas le panneau : les selecteurs de catalogue
@@ -1659,12 +1742,15 @@
       var prix = (p.price !== undefined && p.price !== null)
         ? "<span class='so-card-price'>" + Number(p.price).toFixed(2).replace(".", ",") + " €</span>" : "";
 
+      // Memes icones SVG que cote Search : la premiere version utilisait des
+      // caracteres Unicode (📌 ▲ ▼), qui dependent de la police du systeme et
+      // ne sont pas aux couleurs de la marque.
       var actions = "<div class='so-card-actions'>" +
-        "<button type='button' data-br-act='up' data-pid='" + pid + "' title='Monter d une place' aria-label='Monter " + esc(p.name || p.id) + "'>&#9650;</button>" +
-        "<button type='button' data-br-act='down' data-pid='" + pid + "' title='Descendre d une place' aria-label='Descendre " + esc(p.name || p.id) + "'>&#9660;</button>" +
+        "<button type='button' data-br-act='up' data-pid='" + pid + "' title='Monter d une place' aria-label='Monter " + esc(p.name || p.id) + "'>" + ICONES_FICHE.up + "</button>" +
+        "<button type='button' data-br-act='down' data-pid='" + pid + "' title='Descendre d une place' aria-label='Descendre " + esc(p.name || p.id) + "'>" + ICONES_FICHE.down + "</button>" +
         (h.pinned
-          ? "<button type='button' data-br-act='retirer' data-pid='" + pid + "' title='Retirer l épinglage' aria-label='Retirer épinglage'>&times;</button>"
-          : "<button type='button' data-br-act='pin' data-pid='" + pid + "' title='Mettre en tête' aria-label='Mettre en tête'>&#128204;</button>") +
+          ? "<button type='button' data-br-act='retirer' data-pid='" + pid + "' title='Retirer l épinglage' aria-label='Retirer épinglage'>" + ICONES_FICHE.off + "</button>"
+          : "<button type='button' data-br-act='pin' data-pid='" + pid + "' title='Mettre en tête' aria-label='Mettre en tête'>" + ICONES_FICHE.pin + "</button>") +
         "</div>";
 
       return "<div class='" + classes + "'" + (h.pinned ? " draggable='true' data-pid='" + pid + "'" : "") + ">" +
@@ -1956,7 +2042,6 @@
     if (browseFormsWired) return;
     browseFormsWired = true;
 
-    document.getElementById("browse-catalog-select").addEventListener("change", function () { onBrowseCatalogChange(key); });
     document.getElementById("browse-category-select").addEventListener("change", function () { onBrowseCategoryChange(key); });
     wireBrowseEditeur(key);
     var browseLim = document.getElementById("browse-preview-limit");
@@ -2126,6 +2211,8 @@
       wirePublicKeys(key);
       wireCategoryViews(key);
       wireTutoEditeur(["so-tuto", "br-tuto"]);
+      cleCourante = key;
+      wireGlobalCatalog(key);
       wireCustomRulesPane(key);
     }).catch(function () {
       dashLoading.hidden = true;

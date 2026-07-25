@@ -2317,3 +2317,16 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 .console-topbar-guides:hover{ border-color:var(--blue); color:var(--blue-deep); }
 .console-topbar-guides svg{ flex-shrink:0; }
 @media (max-width:760px){ .console-topbar-guides span{ display:none; } }
+
+/* Selecteur de catalogue global, dans la barre du haut. Meme allure que le
+   selecteur de periode -- ce sont deux filtres de contexte, ils doivent se
+   lire comme tels -- mais teinte pour signaler qu il porte sur TOUTE la
+   console, pas seulement l ecran courant. */
+.console-global-catalog{
+  font-weight:700; color:var(--blue-deep);
+  background-color:var(--blue-tint); border-color:#C9D2FB;
+}
+.console-global-catalog:disabled{
+  background-color:var(--bg-soft); color:var(--ink-muted);
+  border-color:var(--line); font-weight:500;
+}

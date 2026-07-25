@@ -16,7 +16,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="robots" content="noindex">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css?v=1785010491">
+<link rel="stylesheet" href="styles.css?v=1785012352">
 <link rel="canonical" href="https://heurix.fr/console.html">
 </head>
 <body>
@@ -156,6 +156,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <h1 id="dash-title">Tableau de bord</h1>
       </div>
       <div class="console-dash-actions">
+        <select id="global-catalog" class="console-period console-global-catalog" aria-label="Catalogue actif"></select>
         <span class="console-account-email" id="account-email"></span>
         <select id="period-select" class="console-period">
           <option value="7">7 derniers jours</option>
@@ -347,10 +348,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <h2 class="console-pane-title">Gestion des règles</h2>
             <div class="console-panel">
               <p class="console-panel-note" style="margin:0 0 14px;">Épinglez ou reléguez un produit quand une recherche contient un mot précis (ex. "promo") — indépendant de Browse &amp; Discovery, qui classe des <strong>catégories</strong>, pas des requêtes de recherche. <a href="docs.html#ep-search-overrides">Documentation complète</a>.</p>
-              <div class="catalog-card-row">
-                <label style="font-size:12.5px; font-weight:700; color:var(--ink-muted);">Catalogue</label>
-                <select id="so-catalog-select"><option value="">— Choisir —</option></select>
-              </div>
+
             </div>
 
             <div id="so-content" hidden>
@@ -368,20 +366,21 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                   </svg>
                   <input type="text" id="so-preview-query" placeholder="Tapez une requête comme le ferait un visiteur…" aria-label="Requête à tester">
                 </div>
+                <div class="console-field" style="max-width:170px;">
+                  <label for="so-preview-limit">Produits affichés</label>
+                  <select id="so-preview-limit">
+                    <option value="12">12</option>
+                    <option value="24">24</option>
+                    <option value="48">48</option>
+                    <option value="96">96</option>
+                  </select>
+                </div>
                 <label class="br-stock-toggle" for="so-in-stock">
                   <input type="checkbox" id="so-in-stock">
                   <span>Masquer les produits en rupture</span>
                 </label>
                 <div class="console-field-row">
-                  <div class="console-field" style="max-width:170px;">
-                    <label for="so-preview-limit">Produits affichés</label>
-                    <select id="so-preview-limit">
-                      <option value="12">12</option>
-                      <option value="24">24</option>
-                      <option value="48">48</option>
-                      <option value="96">96</option>
-                    </select>
-                  </div>
+                  
                 </div>
                 <div class="so-tuto" id="so-tuto" hidden>
                   <button type="button" class="so-tuto-close" aria-label="Fermer">&times;</button>
@@ -422,10 +421,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               <div class="console-panel">
                 <h2>Synonymes et règles personnalisées</h2>
                 <p class="console-panel-note">Les synonymes rapprochent les mots que vos clients emploient de ceux de votre catalogue. Les règles personnalisées apprennent au moteur un terme propre à votre métier, sans écrire de regex.</p>
-                <div class="console-field" style="max-width:280px;">
-                  <label for="cr-catalog-select">Catalogue</label>
-                  <select id="cr-catalog-select"></select>
-                </div>
+                
                 <div id="cr-host"></div>
                 <p class="console-empty" id="cr-hint">Choisissez un catalogue pour gérer ses synonymes et ses règles.</p>
               </div>
@@ -482,8 +478,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
               <p class="console-panel-note" style="margin:0 0 14px;">Classez vos produits dans une page de catégorie de votre site, sans recherche — <a href="docs.html#ep-browse">documentation complète</a>. Choisissez un catalogue puis une catégorie pour commencer.</p>
               <div class="catalog-card-row">
-                <label style="font-size:12.5px; font-weight:700; color:var(--ink-muted);">Catalogue</label>
-                <select id="browse-catalog-select"><option value="">— Choisir —</option></select>
+                
                 <label style="font-size:12.5px; font-weight:700; color:var(--ink-muted);">Catégorie</label>
                 <select id="browse-category-select" disabled><option value="">— Choisir un catalogue d'abord —</option></select>
               </div>
@@ -824,7 +819,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="console-select.js?v=1784983392"></script>
-<script src="console.js?v=1785010491"></script>
+<script src="console.js?v=1785012352"></script>
 <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 
 <script src="nav-dropdown.js"></script>
