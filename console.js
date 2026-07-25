@@ -1335,7 +1335,11 @@
     var catalog = document.getElementById("browse-catalog-select").value;
     browseCurrentCatalog = catalog; browseCurrentCategory = "";
     var categorySelect = document.getElementById("browse-category-select");
-    document.getElementById("browse-content").hidden = true;
+    // On masque les RESULTATS, pas le panneau : les selecteurs de catalogue
+    // et de categorie y vivent desormais, les cacher rendrait impossible de
+    // choisir quoi que ce soit.
+    document.getElementById("browse-results").hidden = true;
+    document.getElementById("browse-hint").hidden = false;
     document.getElementById("browse-no-categories").hidden = true;
     if (!catalog) {
       categorySelect.disabled = true;
@@ -1376,9 +1380,15 @@
 
   function onBrowseCategoryChange(key) {
     browseCurrentCategory = document.getElementById("browse-category-select").value;
-    var content = document.getElementById("browse-content");
-    if (!browseCurrentCategory) { content.hidden = true; return; }
-    content.hidden = false;
+    var resultats = document.getElementById("browse-results");
+    var invite = document.getElementById("browse-hint");
+    if (!browseCurrentCategory) {
+      resultats.hidden = true;
+      if (invite) invite.hidden = false;
+      return;
+    }
+    resultats.hidden = false;
+    if (invite) invite.hidden = true;
     resetBrowseOverrideForm();
     resetAttributeRuleForm();
     refreshBrowseAll(key);

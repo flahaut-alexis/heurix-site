@@ -16,7 +16,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="robots" content="noindex">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css?v=1785002683">
+<link rel="stylesheet" href="styles.css?v=1785004933">
 <link rel="canonical" href="https://heurix.fr/console.html">
 </head>
 <body>
@@ -433,7 +433,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             </div>
             
 
-            <div id="browse-content" hidden>
+            <div id="browse-content">
               <div class="console-panel">
                 <div class="catalog-card-row" style="margin-bottom:14px;">
                   <h2 style="margin:0; flex:1;">Aperçu du classement</h2>
@@ -500,6 +500,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     <option value="100">100</option>
                   </select>
                 </div>
+                <div id="browse-results" hidden>
                 <p class="console-panel-note">Les flèches déplacent un produit d'une place dans cette catégorie, l'épingle le met en tête. Déplacer fige aussi les positions au-dessus — plusieurs règles apparaissent donc d'un seul clic. Rien n'est enregistré avant « Appliquer ».</p>
                 <div class="so-grid" id="br-grid"></div>
                 <p class="so-grid-caption" id="br-caption"></p>
@@ -544,6 +545,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 </table></div>
                 </details>
                 <p class="console-empty" id="browse-preview-empty" hidden>Aucun produit dans cette catégorie.</p>
+                </div>
+                <p class="console-empty" id="browse-hint">Choisissez un catalogue puis une catégorie pour voir le classement.</p>
               </div>
 
               
@@ -778,7 +781,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="console-select.js?v=1784983392"></script>
-<script src="console.js?v=1785002683"></script>
+<script src="console.js?v=1785004933"></script>
 <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 
 <script src="nav-dropdown.js"></script>
