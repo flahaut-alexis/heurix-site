@@ -763,7 +763,11 @@
           var p = h.product;
           var regle = h.pinned || h.buried;
           var classes = "so-card" + (regle ? (data.simulated ? " so-card-simulated" : " so-card-ruled") : "");
-          var badge = h.pinned ? "<span class='so-card-badge so-card-badge-pin'>Épinglé</span>"
+          // « Relégué » reste possible via le formulaire, mais n'est plus
+          // une action de fiche : un produit relegue partant en fin de
+          // liste, il sortait des 12 fiches affichees et semblait supprime.
+          var badge = h.pinned
+            ? "<span class='so-card-badge so-card-badge-pin'>Épinglé · " + (i + 1) + "</span>"
             : h.buried ? "<span class='so-card-badge so-card-badge-bury'>Relégué</span>" : "";
           var enRupture = p.stock === 0;
           var stock = p.stock === undefined ? "" :
@@ -783,16 +787,24 @@
           // au clavier et fragile au doigt, et le merchandising doit rester
           // accessible.
           var pid = esc(p.id);
+          var ICONE = {
+            pin: "<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round'><path d='M12 17v5'/><path d='M9 10.8V4h6v6.8l2 3.2H7z'/></svg>",
+            up: "<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.2' stroke-linecap='round'><path d='M12 19V5'/><path d='M5 12l7-7 7 7'/></svg>",
+            down: "<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.2' stroke-linecap='round'><path d='M12 5v14'/><path d='M19 12l-7 7-7-7'/></svg>",
+            off: "<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.2' stroke-linecap='round'><path d='M18 6L6 18M6 6l12 12'/></svg>",
+          };
+          // Un produit ne peut etre deplace qu'une fois EPINGLE : le moteur
+          // place les epingles en bloc ordonne en tete, le reste suit le
+          // classement naturel. « Monter » sur un produit non epingle
+          // l'epingle donc, et « Descendre » sur le dernier epingle le rend
+          // au classement naturel -- jamais en dessous, comme demande.
           var actions = "<div class='so-card-actions'>";
           if (h.pinned) {
-            actions += "<button type='button' data-so-act='up' data-pid='" + pid + "' title='Monter' aria-label='Monter ce produit'>&#9650;</button>" +
-                       "<button type='button' data-so-act='down' data-pid='" + pid + "' title='Descendre' aria-label='Descendre ce produit'>&#9660;</button>" +
-                       "<button type='button' data-so-act='retirer' data-pid='" + pid + "' title='Retirer l épinglage' aria-label='Retirer épinglage'>&times;</button>";
-          } else if (h.buried) {
-            actions += "<button type='button' data-so-act='retirer' data-pid='" + pid + "' title='Retirer la relégation' aria-label='Retirer relégation'>&times;</button>";
+            actions += "<button type='button' data-so-act='up' data-pid='" + pid + "' title='Monter d une position' aria-label='Monter " + esc(p.name || p.id) + "'>" + ICONE.up + "</button>" +
+                       "<button type='button' data-so-act='down' data-pid='" + pid + "' title='Descendre d une position' aria-label='Descendre " + esc(p.name || p.id) + "'>" + ICONE.down + "</button>" +
+                       "<button type='button' data-so-act='retirer' data-pid='" + pid + "' title='Retirer l épinglage' aria-label='Retirer l épinglage de " + esc(p.name || p.id) + "'>" + ICONE.off + "</button>";
           } else {
-            actions += "<button type='button' data-so-act='pin' data-pid='" + pid + "' title='Épingler' aria-label='Épingler ce produit'>&#128204;</button>" +
-                       "<button type='button' data-so-act='bury' data-pid='" + pid + "' title='Reléguer' aria-label='Reléguer ce produit'>&#8595;</button>";
+            actions += "<button type='button' data-so-act='pin' data-pid='" + pid + "' title='Épingler en tête' aria-label='Épingler " + esc(p.name || p.id) + "'>" + ICONE.pin + "</button>";
           }
           actions += "</div>";
 
@@ -894,6 +906,71 @@
       .catch(function () { soDraft = null; });
   }
 
+  // Enregistre le BROUILLON, pas le formulaire.
+  //
+  // Premiere version fautive : « Appliquer » soumettait le formulaire, qui
+  // ne connait rien au brouillon. Deux consequences -- ses champs etant
+  // vides apres une manipulation par fiches, le navigateur renvoyait vers
+  // le champ obligatoire (d'ou le saut vers le bas de page), et surtout un
+  // brouillon de plusieurs regles n'aurait de toute facon pas pu passer par
+  // un formulaire qui n'en porte qu'une.
+  //
+  // Methode : on remplace l'ensemble persiste par le brouillon. On supprime
+  // donc ce qui n'y est plus, puis on cree ou met a jour le reste. C'est
+  // exactement la semantique de la simulation, ce qui garantit que
+  // l'enregistrement produit bien ce que l'apercu montrait.
+  function soAppliquerBrouillon(key) {
+    if (!soDraft) return;
+    var base = "/v1/index/" + encodeURIComponent(soCurrentCatalog) + "/search-overrides";
+    var statut = document.getElementById("so-status");
+    var bouton = document.getElementById("so-simu-apply");
+    if (bouton) bouton.disabled = true;
+    if (statut) { statut.textContent = "Enregistrement…"; statut.className = "catalog-rule-status"; }
+
+    apiFetch(base, key)
+      .then(function (data) {
+        var existantes = data.overrides || [];
+        var voulues = soDraft.slice();
+        var cle = function (o) { return o.query + "\u0000" + o.product_id; };
+        var voulueParCle = {};
+        voulues.forEach(function (r) { voulueParCle[cle(r)] = r; });
+
+        // 1. Supprimer celles absentes du brouillon
+        var suppressions = existantes
+          .filter(function (o) { return !voulueParCle[cle(o)]; })
+          .map(function (o) {
+            return apiFetch(base + "?query=" + encodeURIComponent(o.query) +
+                            "&product_id=" + encodeURIComponent(o.product_id),
+                            key, { method: "DELETE" });
+          });
+        return Promise.all(suppressions).then(function () { return voulues; });
+      })
+      .then(function (voulues) {
+        // 2. Creer ou mettre a jour. L'endpoint POST fait un upsert sur la
+        // paire (requete, produit), donc pas besoin de distinguer les deux.
+        return voulues.reduce(function (chaine, r) {
+          return chaine.then(function () {
+            var corps = { query: r.query, product_id: r.product_id, action: r.action };
+            if (r.action === "pin" && r.position) corps.position = r.position;
+            return apiFetch(base, key, { method: "POST", body: corps });
+          });
+        }, Promise.resolve());
+      })
+      .then(function () {
+        soDraft = null;
+        if (statut) { statut.textContent = "Règles appliquées."; statut.className = "catalog-rule-status ok"; }
+        resetSoForm();
+        refreshSoTable(key);  // recharge la table ET l'apercu, brouillon vide
+      })
+      .catch(function (err) {
+        if (statut) {
+          statut.textContent = (err && err.message) || "Échec de l'enregistrement.";
+          statut.className = "catalog-rule-status err";
+        }
+      })
+      .then(function () { if (bouton) bouton.disabled = false; });
+  }
+
   function wireSoDraft(key) {
     ["so-query", "so-product-id", "so-position"].forEach(function (id) {
       var el = document.getElementById(id);
@@ -906,12 +983,7 @@
     if (act) act.addEventListener("change", function () { soConstruireBrouillon(key); });
 
     var appliquer = document.getElementById("so-simu-apply");
-    if (appliquer) appliquer.addEventListener("click", function () {
-      // « Appliquer » soumet le formulaire existant : c'est lui qui porte
-      // deja la logique d'enregistrement, de modification et de nettoyage.
-      var form = document.getElementById("so-form");
-      if (form) form.requestSubmit ? form.requestSubmit() : form.dispatchEvent(new Event("submit", { cancelable: true }));
-    });
+    if (appliquer) appliquer.addEventListener("click", function () { soAppliquerBrouillon(key); });
 
     var abandonner = document.getElementById("so-simu-discard");
     if (abandonner) abandonner.addEventListener("click", function () {
@@ -996,11 +1068,28 @@
 
   function soDeplacer(key, pid, sens) {
     var q = soRequeteCourante();
-    if (!q || !soDraft) return;
+    if (!q) return;
+
+    // « Monter » sur un produit NON epingle l'epingle en fin de bloc : c'est
+    // le seul moyen de le sortir du classement naturel, le moteur n'ayant
+    // pas de notion de position hors du bloc epingle.
+    if (!soDraft || soTrouver(q, pid) === -1) {
+      if (sens < 0) return soAction(key, "pin", pid);
+      return;  // descendre un produit non epingle n'a pas de sens
+    }
+
     var liste = soEpingles(q);
     var idx = liste.findIndex(function (r) { return r.product_id === pid; });
+    if (idx === -1) return;
+
+    // Descendre le DERNIER epingle le rend au classement naturel plutot que
+    // de ne rien faire -- et jamais en dessous : « down » ne place jamais un
+    // produit sous ceux qui n'ont pas ete promus.
+    if (sens > 0 && idx === liste.length - 1) {
+      return soAction(key, "retirer", pid);
+    }
     var cible = idx + sens;
-    if (idx === -1 || cible < 0 || cible >= liste.length) return;
+    if (cible < 0 || cible >= liste.length) return;
     var tmp = liste[idx].position;
     liste[idx].position = liste[cible].position;
     liste[cible].position = tmp;

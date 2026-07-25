@@ -140,8 +140,10 @@ header{
 }
 .logo img{ height:28px; width:28px; display:block; }
 .wordmark{
+  /* SemiBold (600), poids recommande par la charte -- l'ExtraBold (800)
+     precedent alourdissait le nom a cote d'un logo en trait fin. */
   font-family:'Plus Jakarta Sans', sans-serif;
-  font-weight:800;
+  font-weight:600;
   font-size:1.15em;
   letter-spacing:-0.02em;
   line-height:1;
@@ -2165,3 +2167,10 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
   color:var(--ink); background:#FFFBF3; border:1px solid #F0DDB8;
   border-radius:8px; padding:10px 14px;
 }
+
+/* Icones d action en bleu Heurix, pas en gris : ce sont des actions de
+   merchandising, elles doivent se voir. */
+.so-card-actions button{ color:var(--blue-deep); border-color:#D5DAF5; }
+.so-card-actions button:hover{ background:var(--blue); border-color:var(--blue); color:#fff; }
+.so-card-actions button svg{ display:block; }
+.so-card-badge-pin{ background:var(--blue); color:#fff; }
