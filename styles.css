@@ -2401,3 +2401,8 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 }
 .billing-upgrade[hidden]{ display:none; }
 .billing-upgrade p:first-child{ margin:0; font-size:14px; }
+
+/* Case Browse desactivee en facturation annuelle : grisee et explicite,
+   plutot qu un echec apres clic. */
+.browse-addon-disabled{ opacity:.5; cursor:not-allowed; }
+.browse-addon-disabled input{ cursor:not-allowed; }

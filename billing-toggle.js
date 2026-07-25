@@ -21,6 +21,7 @@
   var toggle = document.getElementById("billing-toggle");
   if (!toggle) return;
   var periode = "monthly";
+  var browseAnnuelDispo = false;
 
   function appliquer() {
     Object.keys(TARIFS).forEach(function (plan) {
@@ -47,6 +48,26 @@
     document.querySelectorAll(".checkout-btn").forEach(function (b) {
       b.setAttribute("data-billing-period", periode);
     });
+
+    // Stripe REFUSE de melanger des periodicites dans une meme session. Si
+    // les prix Browse annuels ne sont pas configures, on desactive la case
+    // EN AMONT plutot que de laisser l'acheteur cliquer et recevoir une
+    // erreur -- une case grisee avec son explication vaut mieux qu'un echec
+    // apres coup.
+    var bloquerBrowse = periode === "annual" && !browseAnnuelDispo;
+    document.querySelectorAll(".browse-addon-checkbox").forEach(function (ch) {
+      var etiquette = ch.closest("label") || ch.parentElement;
+      if (bloquerBrowse) {
+        ch.checked = false;
+        ch.disabled = true;
+        if (etiquette) etiquette.setAttribute("title",
+          "L'option Browse n'est pas encore disponible en facturation annuelle. Vous pourrez l'ajouter depuis votre console après souscription.");
+        if (etiquette) etiquette.classList.add("browse-addon-disabled");
+      } else {
+        ch.disabled = false;
+        if (etiquette) { etiquette.removeAttribute("title"); etiquette.classList.remove("browse-addon-disabled"); }
+      }
+    });
   }
 
   toggle.querySelectorAll(".billing-toggle-opt").forEach(function (btn) {
@@ -60,6 +81,7 @@
   fetch(API + "/v1/stripe/billing-options")
     .then(function (r) { return r.json(); })
     .then(function (d) {
+      browseAnnuelDispo = !!(d && d.annual_browse_available);
       if (d && d.annual_available) {
         toggle.hidden = false;
         appliquer();
