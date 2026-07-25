@@ -123,9 +123,29 @@
     select.addEventListener("change", majLibelle);
     majLibelle();
 
-    // Premier remplissage souvent asynchrone : on rafraichit le libelle une
-    // fois la file d'attente videe, sans observateur.
-    setTimeout(majLibelle, 0);
+    // OBSERVATEUR DE MUTATIONS -- indispensable, et son absence etait un
+    // bug reel : plusieurs listes de la console sont desactivees au depart
+    // puis reactivees par programme (le selecteur de categories l'est
+    // jusqu'au choix d'un catalogue). Or modifier `.disabled` ou remplacer
+    // les <option> n'emet AUCUN evenement : le bouton de la surcouche
+    // restait desactive indefiniment, rendant la liste inutilisable.
+    //
+    // On surveille donc l'attribut disabled et le remplacement des options.
+    // Le panneau, lui, est deja reconstruit a chaque ouverture, il n'a pas
+    // besoin d'etre synchronise ici.
+    // MutationObserver est pris sur la fenetre du document, pas sur le
+    // scope global -- meme raison que pour le constructeur Event plus haut :
+    // dans un environnement ou ce script est evalue depuis Node, le global
+    // n'en possede pas, et un simple `typeof MutationObserver` aurait
+    // silencieusement desactive l'observateur.
+    var W = (select.ownerDocument && select.ownerDocument.defaultView) || window;
+    if (W.MutationObserver) {
+      new W.MutationObserver(majLibelle).observe(select, {
+        attributes: true,
+        attributeFilter: ["disabled"],
+        childList: true,
+      });
+    }
   }
 
   function balayer() {
