@@ -2352,3 +2352,34 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 .billing-row:last-child{ border-bottom:none; }
 .billing-label{ font-size:13.5px; color:var(--ink-muted); }
 .billing-value{ font-size:14px; font-weight:600; color:var(--ink); text-align:right; }
+
+/* Reglette mensuel / annuel de la page de tarifs. Masquee par defaut : elle
+   n apparait que si les prix annuels sont configures cote Stripe. */
+/* Centrage : la reglette est un element en ligne, il lui faut un conteneur
+   qui la centre -- une marge auto seule ne suffit pas sur un inline-flex. */
+.billing-toggle-wrap{ text-align:center; }
+.billing-toggle{
+  display:inline-flex; gap:4px; margin:0 auto 30px; padding:4px;
+  background:var(--bg-soft); border:1px solid var(--line); border-radius:100px;
+}
+.billing-toggle[hidden]{ display:none; }
+.billing-toggle-opt{
+  display:inline-flex; align-items:center; gap:7px;
+  font-family:inherit; font-size:14px; font-weight:600; cursor:pointer;
+  padding:9px 20px; border-radius:100px; border:none;
+  background:transparent; color:var(--ink-muted);
+  transition:all .15s ease;
+}
+.billing-toggle-opt:hover{ color:var(--ink); }
+.billing-toggle-opt.on{ background:#fff; color:var(--blue-deep); box-shadow:0 1px 4px rgba(18,20,43,0.1); }
+.billing-toggle-save{
+  font-size:11.5px; font-weight:800; letter-spacing:.02em;
+  background:#0F7A3D; color:#fff; padding:2px 8px; border-radius:100px;
+}
+/* Mention du total annuel sous le montant mensuel equivalent */
+.billing-annual-note{
+  margin:-6px 0 10px; font-size:12.5px; font-weight:600; color:#0F7A3D;
+}
+.billing-annual-note[hidden]{ display:none; }
+/* La reglette est centree au-dessus de la grille */
+.pricing-grid{ clear:both; }

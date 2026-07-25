@@ -1,0 +1,63 @@
+// Bascule mensuel / annuel sur la page de tarifs.
+//
+// Deux principes :
+//  - La bascule ne s'affiche QUE si les trois prix annuels sont configures
+//    cote Stripe (endpoint /v1/stripe/billing-options). Proposer un tarif
+//    annuel qui echouerait au paiement serait pire que de ne pas le
+//    proposer : l'acheteur le decouvrirait au moment de payer.
+//  - On affiche l'EQUIVALENT MENSUEL, pas le total annuel, avec la mention
+//    « facture X € par an ». C'est ce qui permet de comparer les formules
+//    entre elles ; un total annuel force le lecteur a diviser de tete.
+(function () {
+  "use strict";
+  var API = window.HEURIX_API_BASE || "https://api.heurix.fr";
+
+  var TARIFS = {
+    starter: { mensuel: 19, annuelParMois: 17, annuelTotal: 205 },
+    growth:  { mensuel: 49, annuelParMois: 44, annuelTotal: 529 },
+    scale:   { mensuel: 139, annuelParMois: 125, annuelTotal: 1501 },
+  };
+
+  var toggle = document.getElementById("billing-toggle");
+  if (!toggle) return;
+  var periode = "monthly";
+
+  function appliquer() {
+    Object.keys(TARIFS).forEach(function (plan) {
+      var montant = document.getElementById("price-amount-" + plan);
+      var note = document.getElementById("annual-note-" + plan);
+      var t = TARIFS[plan];
+      if (montant) montant.textContent = periode === "annual" ? t.annuelParMois : t.mensuel;
+      if (note) {
+        note.hidden = periode !== "annual";
+        note.textContent = "soit " + t.annuelTotal.toLocaleString("fr-FR") + " € facturés par an";
+      }
+    });
+    toggle.querySelectorAll(".billing-toggle-opt").forEach(function (b) {
+      b.classList.toggle("on", b.getAttribute("data-period") === periode);
+    });
+    // Les boutons de souscription portent la periode : c'est elle que
+    // l'endpoint de paiement attend.
+    document.querySelectorAll(".checkout-btn").forEach(function (b) {
+      b.setAttribute("data-billing-period", periode);
+    });
+  }
+
+  toggle.querySelectorAll(".billing-toggle-opt").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      periode = btn.getAttribute("data-period");
+      appliquer();
+    });
+  });
+
+  // On n'affiche la bascule qu'apres confirmation que l'annuel est vendable.
+  fetch(API + "/v1/stripe/billing-options")
+    .then(function (r) { return r.json(); })
+    .then(function (d) {
+      if (d && d.annual_available) {
+        toggle.hidden = false;
+        appliquer();
+      }
+    })
+    .catch(function () { /* bascule laissee masquee : le mensuel fonctionne */ });
+})();
