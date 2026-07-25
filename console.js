@@ -918,7 +918,45 @@
     refreshSoPreview(key);  // vue catalogue immediate, pas d'ecran vide
   }
 
+  // Effet de frappe sur le placeholder de la barre de test.
+  //
+  // But : faire comprendre d'un coup d'oeil qu'on simule une barre de
+  // recherche VISITEUR, pas qu'on remplit un champ de formulaire. Le texte
+  // s'ecrit une seule fois a l'ouverture du pave, puis reste fixe -- une
+  // animation en boucle serait distrayante sur un ecran de travail.
+  //
+  // L'attribut aria-label porte le libelle stable pour les lecteurs
+  // d'ecran : le placeholder anime ne doit pas etre leur source
+  // d'information.
+  var soTypeTimer = null;
+  function soAnimerPlaceholder() {
+    var champ = document.getElementById("so-preview-query");
+    if (!champ || champ.dataset.anime) return;
+    champ.dataset.anime = "1";
+    var texte = "Tapez une requête comme le ferait un visiteur…";
+    var i = 0;
+    champ.placeholder = "";
+    champ.parentElement.classList.add("tape");
+
+    function frappe() {
+      // Si l'utilisateur commence a taper, on s'efface immediatement :
+      // l'animation ne doit jamais gener la saisie.
+      if (document.activeElement === champ && champ.value) return arreter();
+      champ.placeholder = texte.slice(0, ++i);
+      if (i < texte.length) soTypeTimer = setTimeout(frappe, 28);
+      else arreter();
+    }
+    function arreter() {
+      clearTimeout(soTypeTimer);
+      champ.placeholder = texte;
+      champ.parentElement.classList.remove("tape");
+    }
+    soTypeTimer = setTimeout(frappe, 300);
+    champ.addEventListener("focus", arreter, { once: true });
+  }
+
   function wireSoPreview(key) {
+    soAnimerPlaceholder();
     var limite = document.getElementById("so-preview-limit");
     if (limite) limite.addEventListener("change", function () { refreshSoPreview(key); });
     var champ = document.getElementById("so-preview-query");
@@ -1298,6 +1336,75 @@
         if (e.target.closest("[data-so-act], [data-br-act]")) marquerVu();
       });
     });
+  }
+
+  // ---------------- Synonymes et Custom Rules, sous Personnalisation ----------------
+  //
+  // Ils vivaient dans la carte de chaque catalogue, sous « Mes catalogues » --
+  // un endroit ou personne ne pense a chercher quand il veut personnaliser sa
+  // recherche. Deplaces ici, PAS dupliques.
+  //
+  // Le cablage n'est pas reecrit : wireSynonymControls et
+  // wireCustomRuleControls prennent un element et un nom de catalogue. On
+  // reconstruit donc le meme balisage (memes classes) dans un conteneur, et
+  // on leur passe. Toute evolution du cablage profite aux deux endroits sans
+  // duplication de logique.
+  function crMarkup() {
+    return '<div class="catalog-synonyms-label">Synonymes</div>' +
+      '<div class="catalog-synonym-groups"></div>' +
+      '<div class="catalog-synonym-add">' +
+        '<input type="text" placeholder="ex. vis, boulon, screw" class="catalog-synonym-input">' +
+        '<button type="button" class="catalog-synonym-add-btn">Ajouter un groupe</button>' +
+      '</div>' +
+      '<div class="catalog-synonyms-label" style="margin-top:22px;">Règles personnalisées</div>' +
+      '<div class="catalog-rules-list"></div>' +
+      '<div class="catalog-synonyms-label catalog-rule-form-title" style="margin-top:14px; font-size:12.5px;">Ajouter une règle</div>' +
+      '<div class="catalog-rule-add">' +
+        '<div class="catalog-rule-add-row">' +
+          '<select class="catalog-rule-type">' +
+            '<option value="keyword">Mot-clé → étiquette</option>' +
+            '<option value="prefix_number">Préfixe + nombre → étiquette</option>' +
+          '</select>' +
+          '<input type="text" placeholder="Nom de la règle, ex. Cheville" class="catalog-rule-label">' +
+        '</div>' +
+        '<input type="text" placeholder="Mots équivalents, ex. placo, cheville, molly" class="catalog-rule-keywords">' +
+        '<input type="text" placeholder="Préfixe à reconnaître, ex. M (pour M8, M10…)" class="catalog-rule-prefix" hidden>' +
+        '<button type="button" class="catalog-rule-add-btn">Créer la règle</button>' +
+        '<button type="button" class="btn btn-ghost catalog-rule-cancel-edit-btn" hidden style="margin-left:8px;">Annuler la modification</button>' +
+        '<span class="catalog-rule-status"></span>' +
+      '</div>';
+  }
+
+  function wireCustomRulesPane(key) {
+    var select = document.getElementById("cr-catalog-select");
+    var host = document.getElementById("cr-host");
+    var invite = document.getElementById("cr-hint");
+    if (!select || !host) return;
+
+    function charger() {
+      var catalogue = select.value;
+      if (!catalogue) {
+        host.innerHTML = "";
+        if (invite) invite.hidden = false;
+        return;
+      }
+      if (invite) invite.hidden = true;
+      // On reconstruit a chaque changement : le cablage attache ses
+      // ecouteurs aux elements, les recreer evite qu'ils pointent vers le
+      // catalogue precedent.
+      host.innerHTML = crMarkup();
+      wireSynonymControls(host, catalogue, key);
+      wireCustomRuleControls(host, catalogue, key);
+    }
+
+    apiFetch("/v1/index/catalogs", key).then(function (data) {
+      var noms = (data.catalogs || []).map(function (c) { return c.catalog; });
+      select.innerHTML = '<option value="">— Choisir —</option>' +
+        noms.map(function (n) { return "<option value='" + esc(n) + "'>" + esc(n) + "</option>"; }).join("");
+      if (noms.length === 1) { select.value = noms[0]; charger(); }
+    }).catch(function () {});
+
+    select.addEventListener("change", charger);
   }
 
   function wireSearchOverridesPane(key) {
@@ -1923,6 +2030,7 @@
       wirePublicKeys(key);
       wireCategoryViews(key);
       wireTutoEditeur(["so-tuto", "br-tuto"]);
+      wireCustomRulesPane(key);
     }).catch(function () {
       dashLoading.hidden = true;
       localStorage.removeItem(SESSION_STORAGE_KEY);
@@ -2166,29 +2274,14 @@
         '<button type="button" class="catalog-rulepack-save">Enregistrer</button>' +
         '<span class="catalog-rulepack-status"></span>' +
       '</div>' +
-      '<div class="catalog-synonyms-label">Synonymes</div>' +
-      '<div class="catalog-synonym-groups"></div>' +
-      '<div class="catalog-synonym-add">' +
-        '<input type="text" placeholder="ex. vis, boulon, screw" class="catalog-synonym-input">' +
-        '<button type="button" class="catalog-synonym-add-btn">Ajouter un groupe</button>' +
-      '</div>' +
-      '<div class="catalog-synonyms-label" style="margin-top:22px;">Règles personnalisées</div>' +
-      '<div class="catalog-rules-list"></div>' +
-      '<div class="catalog-synonyms-label catalog-rule-form-title" style="margin-top:14px; font-size:12.5px;">Ajouter une règle</div>' +
-      '<div class="catalog-rule-add">' +
-        '<div class="catalog-rule-add-row">' +
-          '<select class="catalog-rule-type">' +
-            '<option value="keyword">Mot-clé → étiquette</option>' +
-            '<option value="prefix_number">Préfixe + nombre → étiquette</option>' +
-          '</select>' +
-          '<input type="text" placeholder="Nom de la règle, ex. Cheville" class="catalog-rule-label">' +
-        '</div>' +
-        '<input type="text" placeholder="Mots équivalents, ex. placo, cheville, molly" class="catalog-rule-keywords">' +
-        '<input type="text" placeholder="Préfixe à reconnaître, ex. M (pour M8, M10…)" class="catalog-rule-prefix" hidden>' +
-        '<button type="button" class="catalog-rule-add-btn">Créer la règle</button>' +
-        '<button type="button" class="btn btn-ghost catalog-rule-cancel-edit-btn" hidden style="margin-left:8px;">Annuler la modification</button>' +
-        '<span class="catalog-rule-status"></span>' +
-      '</div>' +
+      // Synonymes et regles personnalisees ont ete DEPLACES vers
+      // Personnalisation -> Search (voir wireCustomRulesPane) : un
+      // utilisateur qui veut personnaliser sa recherche n'allait pas les
+      // chercher dans la fiche d'un catalogue. On laisse ici un renvoi
+      // plutot qu'un doublon -- deux formulaires edifiant la meme donnee
+      // finissent toujours par diverger.
+      '<div class="catalog-synonyms-label" style="margin-top:22px;">Synonymes et règles personnalisées</div>' +
+      '<p class="console-panel-note" style="margin:6px 0 0;">Gérés depuis <button type="button" class="catalog-goto-rules" data-goto-pane="pane-search-overrides">Personnalisation → Gestion des règles</button>.</p>' +
     '</div>';
   }
 

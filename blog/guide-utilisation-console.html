@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-PGLPLKDP');</script>
+<!-- End Google Tag Manager -->
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guide d'utilisation de la console Heurix — piloter votre recherche au quotidien</title>
+<meta name="description" content="Une fois installé, comment lire vos statistiques, corriger un classement et faire évoluer votre recherche depuis la console.">
+<link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/guide-utilisation-console.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Guide d'utilisation de la console Heurix — piloter votre recherche au quotidien">
+<meta property="og:description" content="Une fois installé, comment lire vos statistiques, corriger un classement et faire évoluer votre recherche depuis la console.">
+<meta property="og:image" content="https://heurix.fr/og-image.png">
+<meta property="og:url" content="https://heurix.fr/blog/guide-utilisation-console.html">
+<meta property="og:locale" content="fr_FR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Guide d'utilisation de la console Heurix — piloter votre recherche au quotidien">
+<meta name="twitter:description" content="Une fois installé, comment lire vos statistiques, corriger un classement et faire évoluer votre recherche depuis la console.">
+<meta name="twitter:image" content="https://heurix.fr/og-image.png">
+<link rel="icon" type="image/png" href="../favicon-32.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<link rel="stylesheet" href="../styles.css?v=1785007968">
+<link rel="canonical" href="https://heurix.fr/blog/guide-utilisation-console.html">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Heurix",
+  "url": "https://heurix.fr",
+  "logo": "https://heurix.fr/logo.svg?v=1784985918",
+  "image": "https://heurix.fr/og-image.png",
+  "description": "Moteur de recherche et search & discovery pour sites e-commerce, basé sur des expressions régulières, conçu en France.",
+  "email": "contact@heurix.fr",
+  "sameAs": ["https://www.linkedin.com/company/heurix-search/"],
+  "founder": {"@type": "Person", "name": "Alexis Flahaut"},
+  "areaServed": "FR"
+}
+</script>
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PGLPLKDP"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+<header>
+  <div class="header-top">
+    <nav class="header-top-inner">
+      <a href="../index.html" class="logo"><img src="../logo.svg?v=1784985918" alt="Heurix"> <span class="wordmark">Heurix</span></a>
+      <div class="nav-links">
+        <div class="nav-drop">
+          <button type="button" class="nav-drop-btn" aria-expanded="false" aria-haspopup="true">Produit</button>
+          <div class="nav-drop-panel">
+            <a href="../index.html#probleme">Le problème</a>
+            <a href="../index.html#mission">Notre mission</a>
+            <a href="../index.html#moteur">Le moteur</a>
+            <a href="../fonctionnalites.html">Fonctionnalités</a>
+            <a href="../index.html#tarifs">Simulateur ROI</a>
+          </div>
+        </div>
+        <div class="nav-drop">
+          <button type="button" class="nav-drop-btn" aria-expanded="false" aria-haspopup="true">Solutions</button>
+          <div class="nav-drop-panel">
+          <a href="../solutions/outillage.html">Quincaillerie & outillage</a>
+          <a href="../solutions/industrie.html">Pièces détachées & industrie</a>
+          <a href="../solutions/mode.html">Mode & retail</a>
+          <a href="../solutions/electronique.html">Électronique & high-tech</a>
+          <a href="../solutions/livres.html">Librairie & édition</a>
+          <a href="../solutions/vins.html">Vins & spiritueux</a>
+          <a href="../solutions/finance.html">Finance & comptabilité</a>
+          </div>
+        </div>
+        <div class="nav-drop">
+          <button type="button" class="nav-drop-btn" aria-expanded="false" aria-haspopup="true">Developers</button>
+          <div class="nav-drop-panel">
+            <a href="../docs.html">Documentation</a>
+            <a href="../integrations.html">Intégrations</a>
+            <a href="../blog/guide-mise-en-route.html">Guide de mise en route</a>
+          </div>
+        </div>
+        <a href="../blog.html">Blog</a>
+      </div>
+      <div class="header-search">
+        <button id="heurix-search-btn" class="search-trigger" aria-label="Heurix Search — rechercher sur le site" type="button">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <span class="search-trigger-text">Heurix Search</span>
+          <span class="search-trigger-kbd">Ctrl K</span>
+        </button>
+      </div>
+      <div class="header-utility">
+        <button type="button" id="mobile-nav-toggle" class="mobile-nav-toggle" aria-label="Menu" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+        <a href="../console.html" class="header-signin">Se connecter</a>
+        <a href="../en/blog.html" class="lang-switch">EN</a>
+        <a href="../pricing.html" class="btn">Découvrir le moteur</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<div id="heurix-search-modal" class="search-modal">
+  <div id="heurix-search-backdrop" class="search-backdrop" data-search-close></div>
+  <div class="search-panel">
+    <div class="search-panel-head">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input id="heurix-search-input" type="text" placeholder="Heurix Search..." autocomplete="off">
+      <button class="search-close" data-search-close type="button">Échap</button>
+    </div>
+    <p id="heurix-search-suggest-label" class="search-suggest-label" hidden>Derniers articles</p>
+    <div id="heurix-search-results" class="search-results"></div>
+    <p id="heurix-search-empty" class="search-empty" hidden>Aucun résultat pour cette recherche. Essayez un autre terme.</p>
+  </div>
+</div>
+
+<article class="post">
+  <div class="wrap docs-layout" style="max-width:940px;">
+    <aside class="docs-sidebar">
+      <nav aria-label="Sommaire du guide">
+        <a href="#etape-1">Étape 1 — Souscrivez</a>
+        <a href="#etape-2">Étape 2 — Indexez votre catalogue</a>
+        <a href="#etape-3">Étape 3 — Confirmez la recherche</a>
+        <a href="#modules-optionnels">Trois modules optionnels</a>
+        <a href="#module-tracker">Heurix Tracker</a>
+        <a href="#module-frontend">Intégration front-end</a>
+        <a href="#module-mcp">Serveur MCP</a>
+        <a href="#et-ensuite">Et ensuite</a>
+      </nav>
+    </aside>
+    <div>
+    <a href="../blog.html" class="back-link">← Tous les articles</a>
+    <div class="kicker">Guide · Juillet 2026</div>
+    <h1>Piloter votre recherche au quotidien</h1>
+    <p class="post-lede">Votre catalogue est indexé et la recherche fonctionne. Ce guide couvre ce qui vient après : lire ce que cherchent vos clients, corriger un classement, et faire évoluer le moteur au fil de vos gammes.</p>
+
+    <div class="post-body">
+      <p>Si vous n'avez pas encore indexé de catalogue, commencez par le <a href="guide-mise-en-route.html">guide de mise en route</a> : il couvre la souscription, le premier import et l'installation des modules. Celui-ci suppose tout cela déjà en place.</p>
+
+      <h2>Dashboard — ce qu'il faut regarder, et dans quel ordre</h2>
+      <p>Deux chiffres méritent votre attention chaque semaine, et ce ne sont pas les plus flatteurs :</p>
+      <ul>
+        <li><strong>Les recherches sans résultat.</strong> Chacune est un client qui n'a pas trouvé un produit que vous avez peut-être. C'est la première source d'améliorations rentables.</li>
+        <li><strong>Le taux de clic après recherche.</strong> S'il baisse alors que le volume monte, vos résultats se dégradent — souvent parce qu'une gamme récemment importée est mal reconnue.</li>
+      </ul>
+      <p>Le pavé Conversion &amp; ROI vous donne le chiffre d'affaires attribué à la recherche. Utile pour arbitrer, moins pour agir au quotidien.</p>
+
+      <h2>Mes catalogues — ce qui change quand vous réimportez</h2>
+      <p>Réindexer un produit existant le met à jour, il n'est pas dupliqué : l'identifiant fait foi. Vous pouvez donc relancer votre export aussi souvent que vous voulez.</p>
+      <p>Le <strong>pack de règles</strong> se choisit par catalogue. Le changer réindexe l'ensemble : les annotations sont recalculées avec les nouvelles règles. Comptez quelques secondes sur un gros catalogue, pendant lesquelles la recherche continue de fonctionner sur l'ancien index.</p>
+
+      <h2>Analytics — lire avant de corriger</h2>
+      <h3>Côté Search</h3>
+      <p><strong>Recherches populaires</strong> vous dit ce que vos clients cherchent vraiment, souvent différent de ce que vous imaginiez. <strong>Sans résultat</strong> est la liste à traiter en priorité — chaque ligne se corrige en général par un synonyme ou une règle personnalisée.</p>
+      <p><strong>Erreurs</strong> ne devrait rester vide. Une ligne qui apparaît signale un problème d'intégration côté site, pas côté moteur.</p>
+
+      <h3>Côté Ranking</h3>
+      <p><strong>Produits les plus vus</strong> croise les impressions sur vos pages de catégorie avec les clics depuis la recherche. La colonne qui compte est le <strong>ratio</strong> : un produit beaucoup montré et peu cliqué occupe une bonne place sans la mériter. C'est un candidat à la relégation — ou le signe que sa fiche mérite une meilleure photo.</p>
+      <p>Cet écran nécessite l'appel <code class="docs-inline-code">Heurix.trackCategoryView()</code> depuis vos pages de catégorie. Sans lui, il reste vide.</p>
+
+      <h2>Personnalisation — les quatre leviers, du plus large au plus précis</h2>
+      <div class="table-scroll"><table class="docs-params">
+        <tr><th>Levier</th><th>Quand l'utiliser</th></tr>
+        <tr><td><strong>Synonymes</strong></td><td>Vos clients emploient un mot que votre catalogue n'utilise pas. Le plus rentable, et le premier à essayer.</td></tr>
+        <tr><td><strong>Règles personnalisées</strong></td><td>Un terme propre à votre métier échappe au pack sectoriel. Vous décrivez ce qu'il faut reconnaître, sans écrire de regex.</td></tr>
+        <tr><td><strong>Priorités de requête</strong></td><td>Une recherche précise doit mettre un produit en avant — une promotion, une exclusivité.</td></tr>
+        <tr><td><strong>Classement de catégorie</strong></td><td>L'ordre d'une page de rayon, indépendamment de toute recherche.</td></tr>
+      </table></div>
+      <p><strong>Essayez toujours dans cet ordre.</strong> Un synonyme corrige le problème pour toutes les requêtes concernées ; une priorité ne corrige qu'une requête. Poser une priorité là où un synonyme suffisait, c'est traiter le symptôme.</p>
+
+      <h2>L'éditeur visuel — voir avant d'enregistrer</h2>
+      <p>Dans <strong>Gestion des règles</strong> comme dans <strong>Classement &amp; merchandising</strong>, vous manipulez directement des fiches produit :</p>
+      <ul>
+        <li><strong>L'épingle</strong> met un produit en tête.</li>
+        <li><strong>Les flèches</strong>, ou un glisser-déposer d'une carte épinglée sur une autre, changent l'ordre d'une place.</li>
+        <li><strong>Appliquer</strong> enregistre. Tant que vous n'avez pas cliqué, <strong>vos visiteurs voient toujours le classement actuel</strong> — c'est ce que signale le bandeau ambre.</li>
+      </ul>
+      <p>Un comportement qui surprend au début : <strong>déplacer un produit fige aussi les positions au-dessus de lui</strong>, donc plusieurs règles apparaissent d'un seul clic. C'est nécessaire — sans cela, votre produit remonterait en première position au lieu de gagner une place.</p>
+      <p>Les <strong>facettes</strong> de l'aperçu servent à vérifier qu'une règle survit à un filtrage visiteur. Les flèches y sont désactivées : elles figent l'ordre affiché, et sur une liste filtrée elles produiraient des règles sans signification une fois le filtre retiré.</p>
+
+      <h2>Trois erreurs qui coûtent cher</h2>
+      <ul>
+        <li><strong>Épingler pour corriger un problème de reconnaissance.</strong> Si un produit ne sort pas sur une requête légitime, le problème est en amont : synonyme ou règle personnalisée. L'épinglage masquera le symptôme sur cette requête et sur elle seule.</li>
+        <li><strong>Empiler les priorités sans les relire.</strong> Consultez « Règles en place » régulièrement : une promotion terminée dont l'épinglage subsiste continue de fausser vos résultats.</li>
+        <li><strong>Ignorer les recherches sans résultat.</strong> C'est la liste la plus rentable de la console, et la moins consultée.</li>
+      </ul>
+
+      <h2>Pour aller plus loin</h2>
+      <p>La <a href="../docs.html">documentation de l'API</a> détaille chaque endpoint si vous voulez automatiser. Le <a href="guide-mise-en-route.html">guide de mise en route</a> couvre l'installation et les modules optionnels.</p>
+    </div>
+
+    <div class="post-footer-cta">
+      <p>Une question sur votre configuration ?</p>
+      <a href="../pricing.html" class="btn">Voir les offres</a>
+    </div>
+    </div>
+  </div>
+</article>
+
+<footer>
+  <div class="wrap foot-grid">
+    <a href="../index.html" class="logo" style="font-size:15px;"><img src="../logo.svg?v=1784985918" alt="Heurix" style="height:22px;width:22px;"> <span class="wordmark">Heurix</span></a>
+    <div class="foot-links">
+      <a href="../blog.html">Blog</a>
+      <a href="../docs.html">Documentation API</a>
+      <a href="../fonctionnalites.html">Fonctionnalités</a>
+      <a href="../integrations.html">Intégrations</a>
+      <a href="../console.html">Console</a>
+      <a href="../about.html">À propos</a>
+      <a href="../index.html#faq">FAQ</a>
+      <a href="../cgv.html">CGV</a>
+      <a href="../mentions-legales.html">Mentions légales</a>
+      <a href="mailto:contact@heurix.fr">contact@heurix.fr</a>
+    </div>
+    <div class="foot-social">
+      <span class="foot-social-label">Réseaux sociaux</span>
+      <a href="https://www.linkedin.com/company/heurix-search/" target="_blank" rel="noopener" aria-label="LinkedIn" class="foot-social-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+      </a>
+    </div>
+    <div class="foot-legal">
+      Heurix — Entreprise individuelle (micro-entreprise). SIRET 107 681 900 00018. Conseil en systèmes et logiciels informatiques.<br>
+      © <span id="year">2026</span> Heurix. Tous droits réservés.
+    </div>
+  </div>
+</footer>
+
+<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+
+<script src="../search.js"></script>
+<script src="../nav-dropdown.js"></script>
+<script src="../mobile-nav.js?v=1784970606"></script>
+<div id="pricing-nudge" class="pricing-nudge">
+  <button type="button" class="pricing-nudge-close" aria-label="Fermer">&times;</button>
+  <div class="pricing-nudge-kicker">Essai gratuit 14 jours</div>
+  <p>Testez le Search API sur votre catalogue, sans carte bancaire.</p>
+  <a href="../pricing.html" class="btn">Voir les tarifs</a>
+</div>
+<script src="../guide-quiz.js"></script>
+<script src="../pricing-nudge.js"></script>
+</body>
+</html>
