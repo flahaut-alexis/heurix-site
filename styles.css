@@ -1853,3 +1853,111 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
   text-transform:uppercase; color:var(--ink-muted);
   padding:10px 12px 4px; opacity:.75;
 }
+
+/* ------------------------------------------------------------------ */
+/* Passe UX console : listes deroulantes, chevauchement, formulaires   */
+/* ------------------------------------------------------------------ */
+
+/* CORRECTIF DE CHEVAUCHEMENT.
+   .console-panel-note a une marge haute NEGATIVE (-8px), pensee pour se
+   rapprocher d'un .console-panel-head qui a 16px de marge basse. Placee
+   directement apres un h2 dont la marge est nulle, elle remonte DANS le
+   titre -- 7 endroits concernes dans la console. On neutralise la marge
+   negative dans ce cas d'adjacence precis, sans toucher a l'autre usage. */
+.console-panel h2 + .console-panel-note,
+.console-pane-title + .console-panel-note{ margin-top:10px; }
+
+/* Listes deroulantes : elles etaient laissees a l'apparence natives du
+   systeme, ce qui detonne avec le reste. Meme traitement que les champs
+   texte de la console, avec un chevron dessine plutot que la fleche du
+   systeme. */
+.console-pane select,
+.console-panel select{
+  -webkit-appearance:none; appearance:none;
+  font-family:inherit; font-size:13.5px; font-weight:500; color:var(--ink);
+  background-color:#fff;
+  background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%235B5E76' stroke-width='2.5' stroke-linecap='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat:no-repeat; background-position:right 12px center;
+  border:1px solid var(--line); border-radius:9px;
+  padding:9px 34px 9px 13px; cursor:pointer;
+  min-width:190px; max-width:100%;
+  transition:border-color .12s ease, box-shadow .12s ease;
+}
+.console-pane select:hover,
+.console-panel select:hover{ border-color:#C9CDDD; }
+.console-pane select:focus,
+.console-panel select:focus{
+  outline:none; border-color:var(--blue);
+  box-shadow:0 0 0 3px color-mix(in srgb, var(--blue) 16%, transparent);
+}
+.console-pane select:disabled,
+.console-panel select:disabled{ background-color:var(--bg-soft); color:var(--ink-muted); cursor:not-allowed; }
+
+/* Un intitule au-dessus d'une liste ou d'un champ : espacement regulier,
+   au lieu des styles poses au cas par cas en attribut style. */
+.console-field{ display:flex; flex-direction:column; gap:6px; margin-bottom:18px; max-width:340px; }
+.console-field > label{
+  font-size:11.5px; font-weight:800; letter-spacing:0.04em;
+  text-transform:uppercase; color:var(--ink-muted);
+}
+.console-field-row{ display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end; margin-bottom:18px; }
+.console-field-row .console-field{ margin-bottom:0; }
+
+/* Formulaires d'ajout de regle (Custom Rules, priorites de requete,
+   merchandising). Ils etaient une pile de champs bruts sans hierarchie :
+   rien ne distinguait la zone de saisie du reste du pave, et les champs
+   n'avaient ni la meme taille ni le meme rayon que le reste de la
+   console. On en fait un encart identifiable. */
+.catalog-rule-add{
+  gap:10px; background:var(--bg-soft);
+  border:1px solid var(--line); border-radius:12px;
+  padding:16px 18px; margin-top:12px;
+}
+.catalog-rule-add select, .catalog-rule-add input{
+  font-size:13.5px; font-weight:500; background-color:#fff;
+  border:1px solid var(--line); border-radius:9px; padding:9px 13px;
+  transition:border-color .12s ease, box-shadow .12s ease;
+}
+.catalog-rule-add input::placeholder{ color:#9B9EAF; }
+.catalog-rule-add input:focus, .catalog-rule-add select:focus{
+  border-color:var(--blue);
+  box-shadow:0 0 0 3px color-mix(in srgb, var(--blue) 16%, transparent);
+}
+.catalog-rule-add-btn{
+  align-self:flex-start; font-family:inherit; font-size:13px; font-weight:700;
+  background:var(--blue); color:#fff; border:none; cursor:pointer;
+  padding:9px 18px; border-radius:100px;
+  transition:background .12s ease;
+}
+.catalog-rule-add-btn:hover{ background:var(--blue-deep); }
+.catalog-rule-add-btn:disabled{ background:#C9CDDD; cursor:not-allowed; }
+
+/* Lignes de regles : elles se lisaient comme une liste plate. On leur
+   donne un fond et une puce coloree, ce qui rend le survol et les actions
+   plus evidents -- et distingue visuellement une regle active d'un simple
+   texte. */
+.catalog-rule-row{
+  align-items:center; padding:11px 14px; margin-bottom:6px;
+  background:#fff; border:1px solid var(--line); border-radius:10px;
+  transition:border-color .12s ease;
+}
+.catalog-rule-row:first-child{ border-top:1px solid var(--line); }
+.catalog-rule-row:hover{ border-color:#C9CDDD; }
+.catalog-rule-row > div:first-child{ position:relative; padding-left:14px; }
+.catalog-rule-row > div:first-child::before{
+  content:""; position:absolute; left:0; top:5px;
+  width:6px; height:6px; border-radius:50%; background:var(--blue);
+}
+.catalog-rule-remove{
+  width:26px; height:26px; background:transparent;
+  border:1px solid transparent; transition:all .12s ease;
+}
+.catalog-rule-row:hover .catalog-rule-remove{ background:var(--bg-soft); }
+.catalog-rule-remove:hover{ background:#FBE4E1; color:#C0392B; border-color:#F3C9C3; }
+.catalog-rule-empty, .console-empty{
+  font-size:13px; color:var(--ink-muted); font-style:italic;
+  padding:14px 0; margin:0;
+}
+.catalog-rule-status{ font-size:12.5px; }
+.catalog-rule-status.ok{ color:#0F7A3D; font-weight:600; }
+.catalog-rule-status.err{ color:#C0392B; font-weight:600; }
