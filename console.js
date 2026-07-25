@@ -325,6 +325,8 @@
       // qu'un menu vide ou un placeholder technique.
       var orgBtn = document.getElementById("console-org-btn");
       if (orgBtn) orgBtn.textContent = company.raison_sociale || "Mon compte";
+      var orgDropVisible = document.querySelector(".console-org-drop");
+      if (orgDropVisible) orgDropVisible.hidden = false;
 
       // Aide ponctuelle : « Mes infos » etait auparavant dans la barre
       // laterale. Un utilisateur habitue la chercherait au mauvais endroit,
@@ -2611,6 +2613,34 @@
     if (token) {
       fetch(API_BASE + "/v1/auth/logout", { method: "POST", headers: { Authorization: "Bearer " + token } }).catch(function () {});
     }
+    // REMISE A ZERO DE L'ETAT DE SESSION.
+    //
+    // Le menu entreprise vit dans l'en-tete du SITE, pas dans la section
+    // tableau de bord : masquer celle-ci ne le fait donc pas disparaitre. Il
+    // continuait d'afficher la raison sociale apres deconnexion, ce qui
+    // laissait croire a une session encore active.
+    var orgDrop = document.querySelector(".console-org-drop");
+    if (orgDrop) orgDrop.hidden = true;
+    var orgBtn = document.getElementById("console-org-btn");
+    if (orgBtn) orgBtn.textContent = "Mon compte";
+
+    // L'etat des catalogues appartient a la session : le laisser en place
+    // exposerait les noms de catalogues du compte precedent a la personne
+    // suivante sur le meme navigateur.
+    catalogueActif = "";
+    catalogueListe = [];
+    catalogueSandbox = {};
+    cleCourante = null;
+    soCurrentCatalog = "";
+    browseCurrentCatalog = "";
+    browseCurrentCategory = "";
+    soDraft = null;
+    brDraft = null;
+    var globalSelect = document.getElementById("global-catalog");
+    if (globalSelect) { globalSelect.innerHTML = ""; globalSelect.disabled = true; }
+    var banniere = document.getElementById("sandbox-banner");
+    if (banniere) banniere.hidden = true;
+
     setAuthMode("login");
     loginForm.reset();
     showLogin();
