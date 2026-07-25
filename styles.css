@@ -2215,29 +2215,39 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
    recherche visiteur, pas d un champ de formulaire -- c est ce qu on y
    simule. Pleine largeur du bloc, loupe Heurix en tete. */
 .so-searchbar{
-  position:relative; display:flex; align-items:center;
-  margin:4px 0 14px; width:100%;
-}
-.so-searchbar-icon{
-  /* Taille fixee en CSS et pas seulement par les attributs SVG : selon le
-     navigateur, un viewBox de 64 sans dimensions CSS peut se rendre plus
-     grand que prevu et mordre sur le texte. */
-  position:absolute; left:15px; width:20px; height:20px;
-  color:var(--blue); pointer-events:none; flex-shrink:0;
-}
-.console-pane .so-searchbar input[type="text"]{
-  width:100%; box-sizing:border-box;
-  font-family:inherit; font-size:15.5px; color:var(--ink);
+  /* L icone est DANS LE FLUX, pas positionnee par-dessus le champ : c est
+     la seule facon de garantir qu elle ne recouvrira jamais le texte saisi,
+     quel que soit le navigateur. La bordure et le fond sont portes par
+     l enveloppe, le champ lui-meme est transparent et sans bordure. */
+  display:flex; align-items:center; gap:12px;
+  margin:4px 0 14px; width:100%; box-sizing:border-box;
   background:#fff; border:1px solid var(--line); border-radius:12px;
-  padding:14px 18px 14px 52px;
+  padding:0 18px;
   transition:border-color .12s ease, box-shadow .12s ease;
 }
-.so-searchbar input::placeholder{ color:#9B9EAF; }
-.so-searchbar input:hover{ border-color:#C9CDDD; }
-.so-searchbar input:focus{
-  outline:none; border-color:var(--blue);
+.so-searchbar:hover{ border-color:#C9CDDD; }
+.so-searchbar:focus-within{
+  border-color:var(--blue);
   box-shadow:0 0 0 4px color-mix(in srgb, var(--blue) 14%, transparent);
 }
+.so-searchbar-icon{
+  width:20px; height:20px; flex:0 0 20px;
+  color:var(--blue); pointer-events:none;
+}
+.console-pane .so-searchbar input[type="text"]{
+  flex:1; min-width:0;
+  font-family:inherit; font-size:15.5px; color:var(--ink);
+  background:transparent; border:none; border-radius:0;
+  padding:14px 0;
+  box-shadow:none;
+}
+.console-pane .so-searchbar input[type="text"]:focus,
+.console-pane .so-searchbar input[type="text"]:hover{
+  outline:none; border:none; box-shadow:none;
+}
+.so-searchbar input::placeholder{ color:#9B9EAF; }
+/* Curseur de l effet de frappe */
+.so-searchbar.tape input::placeholder{ color:#7C8099; }
 
 /* Facettes de l apercu : puces cliquables, comme en verrait un visiteur. */
 .so-facets{ display:flex; flex-wrap:wrap; gap:7px; margin:0 0 12px; }
@@ -2284,9 +2294,6 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 }
 .so-tuto-close:hover{ background:#fff; }
 
-/* Curseur clignotant de l'effet de frappe : signale que le texte s'ecrit,
-   au lieu d'un placeholder fige qu'on lit sans le voir. */
-.so-searchbar.tape input::placeholder{ color:#7C8099; }
 
 /* Renvoi depuis la carte catalogue vers Personnalisation : un lien, pas un
    bouton d action -- il navigue, il ne modifie rien. */

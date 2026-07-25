@@ -432,6 +432,12 @@
     document.querySelectorAll(".console-sidebar-item").forEach(function (btn) {
       btn.classList.toggle("console-sidebar-item-on", btn.getAttribute("data-pane") === paneId && !btn.hasAttribute("data-catalog"));
     });
+    // L'effet de frappe part a l'OUVERTURE du panneau, pas au cablage :
+    // celui-ci s'execute a la connexion, alors que le pave est encore
+    // masque -- l'animation se terminait sans que personne ne la voie.
+    if (paneId === "pane-search-overrides" && typeof soAnimerPlaceholder === "function") {
+      soAnimerPlaceholder();
+    }
     // Remonte en haut du nouvel ecran. Sans cela, un utilisateur descendu
     // dans un pave long arrive sur le suivant deja defile, et ne voit pas
     // ce qu'il vient d'ouvrir -- on doit remonter a la main pour comprendre
@@ -956,7 +962,6 @@
   }
 
   function wireSoPreview(key) {
-    soAnimerPlaceholder();
     var limite = document.getElementById("so-preview-limit");
     if (limite) limite.addEventListener("change", function () { refreshSoPreview(key); });
     var champ = document.getElementById("so-preview-query");
@@ -1393,8 +1398,13 @@
       // ecouteurs aux elements, les recreer evite qu'ils pointent vers le
       // catalogue precedent.
       host.innerHTML = crMarkup();
-      wireSynonymControls(host, catalogue, key);
-      wireCustomRuleControls(host, catalogue, key);
+      // Les deux fonctions lisent `catalog.catalog` : elles attendent un
+      // OBJET, pas une chaine. Leur passer le nom nu laissait catalogName
+      // indefini -- les appels partaient vers /v1/index/undefined/... et
+      // echouaient en silence, d'ou des synonymes qui ne se passaient rien.
+      var objetCatalogue = { catalog: catalogue };
+      wireSynonymControls(host, objetCatalogue, key);
+      wireCustomRuleControls(host, objetCatalogue, key);
     }
 
     apiFetch("/v1/index/catalogs", key).then(function (data) {
@@ -1631,7 +1641,7 @@
           : "<button type='button' data-br-act='pin' data-pid='" + pid + "' title='Mettre en tête' aria-label='Mettre en tête'>&#128204;</button>") +
         "</div>";
 
-      return "<div class='" + classes + "'>" +
+      return "<div class='" + classes + "'" + (h.pinned ? " draggable='true' data-pid='" + pid + "'" : "") + ">" +
         "<span class='so-card-rank'>" + (i + 1) + "</span>" + badge +
         "<div class='so-card-name'>" + esc(p.name || p.id) + "</div>" +
         "<div class='so-card-ref'>" + esc(p.ref || p.id) + "</div>" +
@@ -1767,7 +1777,67 @@
       .then(function () { if (bouton) bouton.disabled = false; });
   }
 
+  // Glisser-deposer cote Ranking, en COMPLEMENT des fleches -- oubli de la
+  // premiere version, signale par Alexis. Meme regle que cote Search : seules
+  // les fiches epinglees sont deplacables, reordonner n'ayant de sens que
+  // pour elles.
+  function wireBrDragDrop(key) {
+    var grille = document.getElementById("br-grid");
+    if (!grille) return;
+    var depuis = null;
+
+    grille.addEventListener("dragstart", function (e) {
+      var carte = e.target.closest(".so-card[draggable='true']");
+      if (!carte) return;
+      depuis = carte.getAttribute("data-pid");
+      carte.classList.add("so-card-dragging");
+      if (e.dataTransfer) e.dataTransfer.effectAllowed = "move";
+    });
+    grille.addEventListener("dragend", function () {
+      depuis = null;
+      grille.querySelectorAll(".so-card-dragging, .so-card-dragover").forEach(function (el) {
+        el.classList.remove("so-card-dragging", "so-card-dragover");
+      });
+    });
+    grille.addEventListener("dragover", function (e) {
+      var carte = e.target.closest(".so-card[draggable='true']");
+      if (!depuis || !carte) return;
+      e.preventDefault();
+      carte.classList.add("so-card-dragover");
+    });
+    grille.addEventListener("dragleave", function (e) {
+      var carte = e.target.closest(".so-card");
+      if (carte) carte.classList.remove("so-card-dragover");
+    });
+    grille.addEventListener("drop", function (e) {
+      var carte = e.target.closest(".so-card[draggable='true']");
+      if (!depuis || !carte) return;
+      e.preventDefault();
+      var vers = carte.getAttribute("data-pid");
+      if (vers === depuis || !brOrdreAffiche.length) return;
+      // Reinsertion a la position de la cible plutot qu'un echange : un
+      // simple echange donnerait un resultat surprenant sur un deplacement
+      // de plusieurs rangs.
+      var ordre = brOrdreAffiche.slice();
+      var iD = ordre.indexOf(depuis), iV = ordre.indexOf(vers);
+      if (iD === -1 || iV === -1) return;
+      var deplacee = ordre.splice(iD, 1)[0];
+      ordre.splice(iV, 0, deplacee);
+
+      brAvecBrouillon(key, function () {
+        var relegations = brDraft.filter(function (r) { return r.action === "bury"; });
+        var jusqua = Math.max(iD, iV);
+        var epingles = ordre.slice(0, jusqua + 1).map(function (id, rang) {
+          return { product_id: id, action: "pin", position: rang + 1 };
+        });
+        brDraft = epingles.concat(relegations);
+        brSimuler(key);
+      });
+    });
+  }
+
   function wireBrowseEditeur(key) {
+    wireBrDragDrop(key);
     var grille = document.getElementById("br-grid");
     if (grille) grille.addEventListener("click", function (e) {
       var btn = e.target.closest("[data-br-act]");
@@ -2256,8 +2326,11 @@
         status.className = "catalog-rulepack-status err"; status.textContent = "Échec — réessayez.";
       }).then(function () { saveBtn.disabled = false; });
     });
-    wireSynonymControls(cardEl, catalog, key);
-    wireCustomRuleControls(cardEl, catalog, key);
+    // Synonymes et regles personnalisees ne sont plus dans la carte : les
+    // cabler ici cherchait des elements absents, levait une TypeError, et
+    // faisait echouer le rendu de TOUS les catalogues -- d'ou une section
+    // « Mes catalogues » vide. Ils sont desormais cables par
+    // wireCustomRulesPane, sous Personnalisation.
   }
 
   function catalogCardHtml(c) {
