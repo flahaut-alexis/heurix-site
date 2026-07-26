@@ -2604,10 +2604,113 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
       signalait : le tableau debordait silencieusement, et l utilisateur
       pouvait croire qu il voyait tout. Un degrade sur le bord droit rend
       le debordement perceptible. */
+/* CORRECTION D UNE REGRESSION que j avais introduite le matin meme.
+   Le degrade destine a signaler un debordement s affichait AUSSI sur les
+   tableaux qui ne debordent pas -- deux bandes grises sur les cotes, qui
+   genaient la lecture.
+   Technique correcte : quatre couches. Les deux premieres sont des CACHES
+   blancs solidaires du contenu (background-attachment:local) ; les deux
+   suivantes sont les ombres, fixes par rapport au cadre (scroll). Tant que
+   rien n a defile, le cache recouvre l ombre et rien n apparait. Des qu on
+   defile, le cache part avec le contenu et decouvre l ombre du cote
+   correspondant. */
 .table-scroll{
   position:relative;
   background:
-    linear-gradient(to right, transparent calc(100% - 28px), rgba(18,20,43,0.07)),
-    linear-gradient(to left, transparent calc(100% - 28px), rgba(18,20,43,0.07));
-  background-attachment:local, local;
+    linear-gradient(to right, var(--bg-card, #fff) 30%, rgba(255,255,255,0)) left / 44px 100% no-repeat,
+    linear-gradient(to left,  var(--bg-card, #fff) 30%, rgba(255,255,255,0)) right / 44px 100% no-repeat,
+    radial-gradient(farthest-side at 0 50%, rgba(18,20,43,0.13), rgba(18,20,43,0)) left / 16px 100% no-repeat,
+    radial-gradient(farthest-side at 100% 50%, rgba(18,20,43,0.13), rgba(18,20,43,0)) right / 16px 100% no-repeat;
+  background-attachment:local, local, scroll, scroll;
 }
+
+/* ------------------------------------------------------------------ */
+/* Tableaux de la console — reprise a la charte                        */
+/*                                                                      */
+/* Le tableau brut (bordures seules, colonnes serrees) ne reprenait pas */
+/* la DA du reste du produit. Trois partis pris :                       */
+/*  - l en-tete devient un bandeau teinte, pas une simple ligne de      */
+/*    texte : il ancre le tableau visuellement ;                        */
+/*  - les lignes reagissent au survol, ce qui aide a suivre une ligne   */
+/*    longue du regard ;                                                */
+/*  - les valeurs structurees (declencheur, position) recoivent un      */
+/*    traitement propre, pour se distinguer du texte courant.           */
+/* ------------------------------------------------------------------ */
+.console-table{
+  width:100%; border-collapse:separate; border-spacing:0;
+  font-size:13.5px;
+  background:#fff; border:1px solid var(--line); border-radius:11px;
+  overflow:hidden;
+}
+.console-table thead th{
+  background:var(--bg-soft);
+  padding:11px 14px;
+  font-size:10.5px; font-weight:800; letter-spacing:.06em; text-transform:uppercase;
+  color:var(--ink-muted); text-align:left;
+  border-bottom:1px solid var(--line);
+  white-space:nowrap;
+}
+.console-table tbody td{
+  padding:12px 14px;
+  border-bottom:1px solid #F1F2F8;
+  color:var(--ink); vertical-align:middle;
+}
+.console-table tbody tr:last-child td{ border-bottom:none; }
+/* Survol : suivre une ligne du regard sur un tableau large est penible
+   sans ce reperage. */
+.console-table tbody tr{ transition:background .1s ease; }
+.console-table tbody tr:hover{ background:var(--blue-tint); }
+
+/* Le declencheur est une valeur saisie par l utilisateur : on la traite
+   comme une donnee, en jeton, plutot que comme du texte courant. */
+.console-table .cell-trigger{
+  display:inline-block; max-width:220px; overflow:hidden; text-overflow:ellipsis;
+  white-space:nowrap; vertical-align:bottom;
+  font-family:var(--mono, ui-monospace, monospace); font-size:12.5px;
+  background:var(--bg-soft); border:1px solid var(--line); border-radius:6px;
+  padding:3px 8px; color:var(--ink);
+}
+/* La position est un rang : un pastillage rond se lit plus vite qu un
+   chiffre nu dans une colonne. */
+.console-table .cell-rank{
+  display:inline-flex; align-items:center; justify-content:center;
+  min-width:26px; height:26px; padding:0 7px;
+  background:var(--blue-tint); color:var(--blue-deep);
+  border-radius:100px; font-size:12.5px; font-weight:800;
+}
+/* L action : pastille discrete, coloree selon le sens. */
+.console-table .cell-action{
+  display:inline-flex; align-items:center; gap:5px;
+  font-size:12.5px; font-weight:600; white-space:nowrap;
+}
+.console-table .cell-action-pin{ color:var(--blue-deep); }
+.console-table .cell-action-bury{ color:#B4402F; }
+.console-table .cell-action-boost{ color:#0F7A3D; }
+
+/* Colonne d actions : alignee a droite, boutons en ligne plutot
+   qu empiles -- ils apparaissaient les uns sous les autres. */
+.console-table .cell-actions{
+  text-align:right; white-space:nowrap;
+}
+.console-table .cell-actions button{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:28px; height:28px; margin-left:4px; padding:0;
+  background:#fff; border:1px solid var(--line); border-radius:7px;
+  color:var(--ink-muted); cursor:pointer;
+  transition:all .12s ease;
+}
+.console-table .cell-actions button:hover{
+  border-color:var(--blue); color:var(--blue-deep); background:var(--blue-tint);
+}
+.console-table .cell-actions button:focus-visible{
+  outline:2px solid var(--blue); outline-offset:1px;
+}
+/* Le retrait se distingue : c est la seule action destructive de la ligne. */
+.console-table .cell-actions button[aria-label*="Supprimer"]:hover,
+.console-table .cell-actions button[aria-label*="Retirer"]:hover{
+  border-color:#C0392B; color:#C0392B; background:#FDF2F1;
+}
+
+/* Un tableau dans un depliant ou un encart n a pas besoin de sa propre
+   bordure : elle doublerait celle du conteneur. */
+.br-attrs .console-table, .confirm-boite .console-table{ border:none; border-radius:0; }

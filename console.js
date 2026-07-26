@@ -1056,14 +1056,24 @@
   }
 
   function soRowHtml(o) {
-    var actionLabel = o.action === "pin" ? "Épingler" : "Reléguer";
-    return "<td class='mono'>" + esc(o.query) + "</td>" +
-      "<td class='mono'>" + esc(o.product_id) + "</td>" +
+    // Balisage repris a la charte : le declencheur devient un jeton (c'est
+    // une valeur saisie, pas du texte courant), le rang une pastille (il se
+    // lit plus vite qu'un chiffre nu), l'action une puce coloree selon son
+    // sens. Voir les classes .cell-* dans styles.css.
+    var pin = o.action === "pin";
+    var actionLabel = pin
+      ? "<span class='cell-action cell-action-pin'>&#9679; Épingler</span>"
+      : "<span class='cell-action cell-action-bury'>&#9679; Reléguer</span>";
+    var rang = pin && o.position
+      ? "<span class='cell-rank'>" + o.position + "</span>"
+      : "<span style='color:var(--ink-muted);'>–</span>";
+    return "<td><span class='cell-trigger' title='" + esc(o.query) + "'>" + esc(o.query) + "</span></td>" +
+      "<td>" + produitCell(o.product_id, o.product_name) + "</td>" +
       "<td>" + actionLabel + "</td>" +
-      "<td>" + (o.position || "–") + "</td>" +
-      "<td style='white-space:nowrap;'>" +
-        "<button type='button' class='catalog-rule-remove' data-so-edit='1' data-query='" + esc(o.query) + "' data-product-id='" + esc(o.product_id) + "' data-action='" + esc(o.action) + "' data-position='" + (o.position || "") + "' aria-label='Modifier' title='Modifier' style='margin-right:6px;'>&#9998;</button>" +
-        "<button type='button' class='catalog-rule-remove' data-so-duplicate='1' data-query='" + esc(o.query) + "' data-product-id='" + esc(o.product_id) + "' data-action='" + esc(o.action) + "' data-position='" + (o.position || "") + "' aria-label='Dupliquer' title='Dupliquer comme nouvelle règle' style='margin-right:6px;'>&#10697;</button>" +
+      "<td>" + rang + "</td>" +
+      "<td class='cell-actions'>" +
+        "<button type='button' class='catalog-rule-remove' data-so-edit='1' data-query='" + esc(o.query) + "' data-product-id='" + esc(o.product_id) + "' data-action='" + esc(o.action) + "' data-position='" + (o.position || "") + "' aria-label='Modifier' title='Modifier'>&#9998;</button>" +
+        "<button type='button' class='catalog-rule-remove' data-so-duplicate='1' data-query='" + esc(o.query) + "' data-product-id='" + esc(o.product_id) + "' data-action='" + esc(o.action) + "' data-position='" + (o.position || "") + "' aria-label='Dupliquer' title='Dupliquer comme nouvelle règle'>&#10697;</button>" +
         "<button type='button' class='catalog-rule-remove' data-so-delete='1' data-query='" + esc(o.query) + "' data-product-id='" + esc(o.product_id) + "' aria-label='Supprimer'>&times;</button>" +
       "</td>";
   }
