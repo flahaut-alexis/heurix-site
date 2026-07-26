@@ -103,7 +103,14 @@
 
     bulle.addEventListener("click", function (e) {
       var act = e.target.getAttribute("data-visite");
-      if (act === "suivant") aller(index + 1);
+      if (act === "suivant") {
+        // Neutralise l'avancement automatique avant la navigation manuelle :
+        // sans cela, un clic sur « Suivant » a l'etape 2 pouvait declencher
+        // DEUX appels a aller() -- le clic et l'ecouteur d'input encore
+        // attache -- d'ou l'impression qu'un second clic etait necessaire.
+        if (detacheur) { detacheur(); detacheur = null; }
+        aller(index + 1);
+      }
       else if (act === "precedent") aller(index - 1);
       else if (act === "quitter") terminer(true);
     });
@@ -129,6 +136,8 @@
     bulle.style.top = (dessous ? r.bottom + marge : Math.max(marge, r.top - marge - bulle.offsetHeight)) + "px";
     var gauche = Math.min(Math.max(marge, r.left), window.innerWidth - bulle.offsetWidth - marge);
     bulle.style.left = gauche + "px";
+    // Position connue : on peut montrer la bulle.
+    bulle.classList.remove("visite-bulle-transition");
   }
 
   function aller(n) {
@@ -146,6 +155,17 @@
     var visible = estVisible(el);
     index = n;
 
+    // CORRECTIF DU BUG D'INFOBULLE FANTOME (audit UX 4.2).
+    //
+    // Le contenu etait ecrit immediatement, la position recalculee 260 ms
+    // plus tard (le temps du defilement). Entre les deux, la bulle affichait
+    // le NOUVEAU texte a l'ANCIENNE position -- l'infobulle « fantome »
+    // observee a la transition etape 2 -> 3.
+    //
+    // On la masque donc pendant le repositionnement. Un correctif anterieur
+    // avait ajoute des gardes contre un plantage (.style sur null) sans
+    // traiter ce symptome visuel : deux bugs distincts sur le meme code.
+    bulle.classList.add("visite-bulle-transition");
     bulle.innerHTML =
       "<div class='visite-compteur'>Étape " + (n + 1) + " sur " + ETAPES.length + "</div>" +
       "<p class='visite-titre'>" + etape.titre + "</p>" +
@@ -181,6 +201,7 @@
       bulle.style.top = "50%";
       bulle.style.left = "50%";
       bulle.style.transform = "translate(-50%, -50%)";
+      bulle.classList.remove("visite-bulle-transition");
     }
     if (visible) bulle.style.transform = "";
   }

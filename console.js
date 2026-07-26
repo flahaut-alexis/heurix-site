@@ -193,10 +193,18 @@
     document.querySelector("#public-keys-table tbody").addEventListener("click", function (e) {
       var btn = e.target.closest("[data-revoke-key]");
       if (!btn) return;
-      btn.disabled = true;
-      apiFetch("/v1/keys/public/" + encodeURIComponent(btn.getAttribute("data-revoke-key")), key, { method: "DELETE" })
-        .then(function () { refreshPublicKeys(key); })
-        .catch(function () { btn.disabled = false; });
+      var cleVisee = btn.getAttribute("data-revoke-key");
+      confirmerSuppression(
+        "Révoquer la clé publique <strong>" + esc(cleVisee.slice(0, 12)) + "…</strong> ?<br>" +
+        "Si elle est utilisée sur votre site, la recherche cessera de fonctionner immédiatement pour vos visiteurs.",
+        btn,
+        function () {
+          btn.disabled = true;
+          apiFetch("/v1/keys/public/" + encodeURIComponent(cleVisee), key, { method: "DELETE" })
+            .then(function () { refreshPublicKeys(key); })
+            .catch(function () { btn.disabled = false; });
+        }
+      );
     });
 
     refreshPublicKeys(key);
@@ -412,11 +420,21 @@
               .catch(function () { btn.disabled = false; });
           } else if (btn.getAttribute("data-action") === "remove") {
             var email = btn.getAttribute("data-email");
-            if (!window.confirm("Retirer " + email + " de l'équipe ? Cette personne perdra immédiatement l'accès.")) return;
-            btn.disabled = true;
-            apiFetch("/v1/auth/team/" + userId, token, { method: "DELETE" })
-              .then(function () { loadAccountInfo(); })
-              .catch(function () { btn.disabled = false; });
+            // TROISIEME suppression destructive, non signalee par l'audit :
+            // elle utilisait window.confirm. Unifiee sur le meme utilitaire,
+            // pour que les trois se comportent pareil -- deux dialogues
+            // differents pour la meme gravite d'action est en soi un defaut.
+            confirmerSuppression(
+              "Retirer <strong>" + esc(email) + "</strong> de l'équipe ?<br>" +
+              "Cette personne perdra immédiatement l'accès à la console et aux catalogues.",
+              btn,
+              function () {
+                btn.disabled = true;
+                apiFetch("/v1/auth/team/" + userId, token, { method: "DELETE" })
+                  .then(function () { loadAccountInfo(); })
+                  .catch(function () { btn.disabled = false; });
+              }
+            );
           }
         });
       }
@@ -478,6 +496,31 @@
     }).catch(function () {});
   }
 
+  function expliquerCatalogueGlobal() {
+    try {
+      var W = document.defaultView || window;
+      if (!W.localStorage || W.localStorage.getItem("heurix_env_explique") === "1") return;
+      W.localStorage.setItem("heurix_env_explique", "1");
+    } catch (e) { return; }
+
+    var select = document.getElementById("global-catalog");
+    if (!select) return;
+    var bulle = document.createElement("div");
+    bulle.className = "console-env-tip";
+    bulle.innerHTML =
+      "<strong>Vous travaillez sur ce catalogue</strong><br>" +
+      "Ce choix s'applique partout : tableau de bord, analytique et personnalisation. " +
+      "Changez-le ici pour basculer d'un catalogue à l'autre." +
+      "<button type='button' class='console-env-tip-close' aria-label='Compris'>&times;</button>";
+    var enveloppe = select.closest(".console-env-wrap") || select.parentElement;
+    enveloppe.appendChild(bulle);
+    bulle.querySelector(".console-env-tip-close").addEventListener("click", function () { bulle.remove(); });
+    // Se retire aussi dès que l'utilisateur agit sur le sélecteur : il a
+    // compris, l'explication devient du bruit.
+    select.addEventListener("change", function () { bulle.remove(); }, { once: true });
+    setTimeout(function () { if (bulle.parentElement) bulle.remove(); }, 14000);
+  }
+
   function wireGlobalCatalog(key) {
     var select = document.getElementById("global-catalog");
     if (!select) return;
@@ -510,6 +553,11 @@
         ? memoire : catalogueListe[0];
       select.value = catalogueActif;
       appliquerCatalogue(key);
+      // Un nouveau client ne devine pas que ce choix porte sur TOUTE la
+      // console -- il peut le prendre pour un filtre local. On l'explique
+      // une fois, s'il a plus d'un catalogue (avec un seul, le selecteur
+      // n'a rien d'ambigu).
+      if (catalogueListe.length > 1) expliquerCatalogueGlobal();
     }).catch(function () {});
 
     select.addEventListener("change", function () {
@@ -702,6 +750,57 @@
   // l'ecran des regles avant de commencer -- sinon les trois quarts de ses
   // etapes pointeraient dans le vide.
   window.heurixShowPane = function (id) { showPane(id); };
+
+  // ---------------- Confirmation avant suppression (audit UX 4.1) ----------------
+  //
+  // Constat de l'audit : la suppression d'un groupe de synonymes et la
+  // revocation d'une cle publique s'executaient AU PREMIER CLIC, sans
+  // confirmation ni annulation possible. Pour un client ayant construit des
+  // dizaines de regles, un clic accidentel etait une perte definitive.
+  //
+  // Ecrit en UTILITAIRE et non en deux implementations : d'autres
+  // suppressions existent (regles personnalisees, priorites, produits) et
+  // devront le reutiliser.
+  //
+  // Pas de window.confirm : il ne permet ni de nommer l'element concerne ni
+  // de suivre la charte. Or nommer l'element est l'essentiel -- « Confirmer
+  // la suppression ? » n'aide pas, « Supprimer le groupe "vis, boulon" ? »
+  // permet de verifier qu'on a clique le bon.
+  function confirmerSuppression(description, aupresDe, suite) {
+    var fond = document.createElement("div");
+    fond.className = "confirm-fond";
+    fond.innerHTML =
+      "<div class='confirm-boite' role='dialog' aria-modal='true' aria-labelledby='confirm-titre'>" +
+        "<p class='confirm-titre' id='confirm-titre'>Confirmer la suppression</p>" +
+        "<p class='confirm-texte'>" + description + "</p>" +
+        "<p class='confirm-note'>Cette action est irréversible.</p>" +
+        "<div class='confirm-actions'>" +
+          "<button type='button' class='confirm-annuler'>Annuler</button>" +
+          "<button type='button' class='confirm-valider'>Supprimer définitivement</button>" +
+        "</div>" +
+      "</div>";
+    document.body.appendChild(fond);
+
+    function fermer() {
+      fond.remove();
+      document.removeEventListener("keydown", surTouche);
+      // On rend le focus a l'element d'origine : sans cela, la navigation
+      // au clavier repart du haut de la page.
+      if (aupresDe && aupresDe.focus) aupresDe.focus();
+    }
+    function surTouche(e) { if (e.key === "Escape") fermer(); }
+
+    fond.querySelector(".confirm-annuler").addEventListener("click", fermer);
+    fond.addEventListener("click", function (e) { if (e.target === fond) fermer(); });
+    document.addEventListener("keydown", surTouche);
+    fond.querySelector(".confirm-valider").addEventListener("click", function () {
+      fermer();
+      suite();
+    });
+    // Focus sur ANNULER, pas sur Supprimer : quelqu'un qui valide au clavier
+    // par reflexe ne doit pas detruire ses donnees.
+    fond.querySelector(".confirm-annuler").focus();
+  }
 
   function showPane(paneId) {
     ALL_PANE_IDS.forEach(function (id) {
@@ -2428,7 +2527,14 @@
       cardEl.querySelectorAll(".catalog-synonym-remove").forEach(function (btn) {
         btn.addEventListener("click", function () {
           var idx = parseInt(btn.getAttribute("data-idx"), 10);
-          saveGroups(currentGroups.filter(function (_, i) { return i !== idx; })).catch(function () {});
+          var groupe = (currentGroups[idx] || []).join(", ");
+          confirmerSuppression(
+            "Supprimer le groupe de synonymes <strong>« " + esc(groupe) + " »</strong> ?",
+            btn,
+            function () {
+              saveGroups(currentGroups.filter(function (_, i) { return i !== idx; })).catch(function () {});
+            }
+          );
         });
       });
     }
