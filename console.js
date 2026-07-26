@@ -1244,7 +1244,7 @@
           }
           actions += "</div>";
 
-          return "<div class='" + classes + "'" + (h.pinned ? " draggable='true' data-pid='" + pid + "'" : "") + ">" +
+          return "<div class='" + classes + "'" + " draggable='true' data-pid='" + pid + "'" + ">" +
             (q ? "<span class='so-card-rank'>" + (i + 1) + "</span>" : "") +
             badge +
             "<div class='so-card-name'>" + esc(p.name || p.id) + "</div>" +
@@ -1576,38 +1576,31 @@
   // positions de rang 1 jusqu'au produit concerne. Plusieurs regles
   // apparaissent alors dans le brouillon -- c'est normal, et visible avant
   // enregistrement.
+  // Deplace un produit d'une place, en UNE SEULE regle.
+  //
+  // SIMPLIFICATION MAJEURE apres le passage du moteur au rang absolu
+  // (26 juillet). L'ancienne version devait materialiser en epinglages tous
+  // les rangs jusqu'au produit deplace -- jusqu'a 90 regles pour un seul
+  // geste -- parce que la `position` n'ordonnait que les epingles entre eux.
+  // Elle designe desormais le rang FINAL : une regle suffit.
   function soDeplacer(key, pid, sens) {
     var q = soRequeteCourante();
     if (!q || !soOrdreAffiche.length) return;
-
-    var ordre = soOrdreAffiche.slice();
-    var i = ordre.indexOf(pid);
+    var i = soOrdreAffiche.indexOf(pid);
     var cible = i + sens;
-    if (i === -1 || cible < 0 || cible >= ordre.length) return;
-
-    // Permutation dans l'ordre voulu
-    ordre[i] = ordre[cible];
-    ordre[cible] = pid;
+    if (i === -1 || cible < 0 || cible >= soOrdreAffiche.length) return;
 
     soAvecBrouillon(key, function () {
-      // On conserve les relegations : elles ne concernent pas le classement
-      // de tete, et les ecraser serait une perte silencieuse.
-      var relegations = soDraft.filter(function (r) {
-        return r.query === q && r.action === "bury";
+      // On retire une eventuelle regle existante sur ce produit, puis on
+      // pose le rang voulu. Les autres produits ne sont pas touches.
+      soDraft = soDraft.filter(function (r) {
+        return !(r.query === q && r.product_id === pid);
       });
-      var autresRequetes = soDraft.filter(function (r) { return r.query !== q; });
-
-      // Fige les positions jusqu'au produit deplace inclus. Au-dela, le
-      // classement naturel reprend -- inutile d'epingler tout le catalogue.
-      var jusqua = Math.max(i, cible);
-      var epingles = ordre.slice(0, jusqua + 1).map(function (id, rang) {
-        return { query: q, product_id: id, action: "pin", position: rang + 1 };
-      });
-
-      soDraft = autresRequetes.concat(epingles, relegations);
+      soDraft.push({ query: q, product_id: pid, action: "pin", position: cible + 1 });
       refreshSoPreview(key);
     });
   }
+
 
   // Message d'invite quand aucune requete n'est saisie : une priorite se
   // declenche SUR une requete, il n'y a donc rien a epingler depuis la vue
@@ -1666,13 +1659,20 @@
       // Reinsertion a la position de la cible, puis renumerotation --
       // plutot qu'un simple echange, qui donnerait un resultat surprenant
       // sur un deplacement de plusieurs rangs.
-      var liste = soEpingles(q);
-      var iDepuis = liste.findIndex(function (r) { return r.product_id === depuis; });
-      var iVers = liste.findIndex(function (r) { return r.product_id === vers; });
-      if (iDepuis === -1 || iVers === -1) return;
-      var deplacee = liste.splice(iDepuis, 1)[0];
-      liste.splice(iVers, 0, deplacee);
-      liste.forEach(function (r, i) { r.position = i + 1; });
+      // DEPOT : on pose le rang absolu de la cible, en UNE regle.
+      //
+      // L'ancienne version reordonnait soEpingles(q) -- la liste des REGLES
+      // deja posees -- ce qui obligeait a epingler les deux produits au
+      // prealable. Depuis le passage du moteur au rang absolu, on travaille
+      // sur l'ordre AFFICHE : n'importe quelle fiche est deplacable, et le
+      // geste ne coute qu'une regle.
+      var iD = soOrdreAffiche.indexOf(depuis);
+      var iV = soOrdreAffiche.indexOf(vers);
+      if (iD === -1 || iV === -1) return;
+      soDraft = soDraft.filter(function (r) {
+        return !(r.query === q && r.product_id === depuis);
+      });
+      soDraft.push({ query: q, product_id: depuis, action: "pin", position: iV + 1 });
       refreshSoPreview(key);
     });
   }
@@ -2011,7 +2011,7 @@
           : "<button type='button' data-br-act='pin' data-pid='" + pid + "' title='Mettre en tête' aria-label='Mettre en tête'>" + ICONES_FICHE.pin + "</button>") +
         "</div>";
 
-      return "<div class='" + classes + "'" + (h.pinned ? " draggable='true' data-pid='" + pid + "'" : "") + ">" +
+      return "<div class='" + classes + "'" + " draggable='true' data-pid='" + pid + "'" + ">" +
         "<span class='so-card-rank'>" + (i + 1) + "</span>" + badge +
         "<div class='so-card-name'>" + esc(p.name || p.id) + "</div>" +
         "<div class='so-card-ref'>" + esc(p.ref || p.id) + "</div>" +
@@ -2075,23 +2075,20 @@
     });
   }
 
+  // Meme simplification que soDeplacer : une regle, plus N.
   function brDeplacer(key, pid, sens) {
     if (!brOrdreAffiche.length) return;
-    var ordre = brOrdreAffiche.slice();
-    var i = ordre.indexOf(pid), cible = i + sens;
-    if (i === -1 || cible < 0 || cible >= ordre.length) return;
-    ordre[i] = ordre[cible]; ordre[cible] = pid;
+    var i = brOrdreAffiche.indexOf(pid);
+    var cible = i + sens;
+    if (i === -1 || cible < 0 || cible >= brOrdreAffiche.length) return;
 
     brAvecBrouillon(key, function () {
-      var relegations = brDraft.filter(function (r) { return r.action === "bury"; });
-      var jusqua = Math.max(i, cible);
-      var epingles = ordre.slice(0, jusqua + 1).map(function (id, rang) {
-        return { product_id: id, action: "pin", position: rang + 1 };
-      });
-      brDraft = epingles.concat(relegations);
+      brDraft = brDraft.filter(function (r) { return r.product_id !== pid; });
+      brDraft.push({ product_id: pid, action: "pin", position: cible + 1 });
       brSimuler(key);
     });
   }
+
 
   function brSimuler(key) {
     if (!browseCurrentCatalog || !browseCurrentCategory) return;
@@ -2188,19 +2185,17 @@
       // Reinsertion a la position de la cible plutot qu'un echange : un
       // simple echange donnerait un resultat surprenant sur un deplacement
       // de plusieurs rangs.
-      var ordre = brOrdreAffiche.slice();
-      var iD = ordre.indexOf(depuis), iV = ordre.indexOf(vers);
+      // DEPOT : on pose le rang absolu de la cible, en UNE regle.
+      // Avant le passage du moteur au rang absolu, ce geste materialisait
+      // tous les rangs intermediaires -- d'ou la restriction aux fiches
+      // deja epinglees, qui n'a plus lieu d'etre.
+      var iD = brOrdreAffiche.indexOf(depuis), iV = brOrdreAffiche.indexOf(vers);
       if (iD === -1 || iV === -1) return;
-      var deplacee = ordre.splice(iD, 1)[0];
-      ordre.splice(iV, 0, deplacee);
+      var deplace = depuis;
 
       brAvecBrouillon(key, function () {
-        var relegations = brDraft.filter(function (r) { return r.action === "bury"; });
-        var jusqua = Math.max(iD, iV);
-        var epingles = ordre.slice(0, jusqua + 1).map(function (id, rang) {
-          return { product_id: id, action: "pin", position: rang + 1 };
-        });
-        brDraft = epingles.concat(relegations);
+        brDraft = brDraft.filter(function (r) { return !(r.product_id === deplace); });
+        brDraft.push({ product_id: deplace, action: "pin", position: iV + 1 });
         brSimuler(key);
       });
     });
