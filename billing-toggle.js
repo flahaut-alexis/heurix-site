@@ -1,100 +1,128 @@
-// Bascule mensuel / annuel sur la page de tarifs.
+// Tarification de la page de prix : bascule mensuel/annuel et option Ranking.
 //
-// Deux principes :
-//  - La bascule ne s'affiche QUE si les trois prix annuels sont configures
-//    cote Stripe (endpoint /v1/stripe/billing-options). Proposer un tarif
-//    annuel qui echouerait au paiement serait pire que de ne pas le
-//    proposer : l'acheteur le decouvrirait au moment de payer.
-//  - On affiche l'EQUIVALENT MENSUEL, pas le total annuel, avec la mention
-//    « facture X € par an ». C'est ce qui permet de comparer les formules
-//    entre elles ; un total annuel force le lecteur a diviser de tete.
+// SOURCE UNIQUE DE VÉRITÉ. Deux scripts écrivaient auparavant le même
+// élément de prix : celui-ci, qui connaît la période de facturation, et un
+// gestionnaire en ligne dans pricing.html qui l'ignorait. Résultat, cocher
+// Ranking sur Growth en annuel affichait 49 + 67 = 116 € au lieu de 529 €,
+// et le décocher retombait à 49 €. Le gestionnaire fautif a été retiré ;
+// tout le calcul se fait ici.
 (function () {
   "use strict";
   var API = window.HEURIX_API_BASE || "https://api.heurix.fr";
 
-  var TARIFS = {
-    starter: { mensuel: 19, annuelParMois: 17, annuelTotal: 205 },
-    growth:  { mensuel: 49, annuelParMois: 44, annuelTotal: 529 },
-    scale:   { mensuel: 139, annuelParMois: 125, annuelTotal: 1501 },
-  };
+  // Tous les tarifs en un seul endroit. Les dupliquer ailleurs — attributs
+  // data, texte en dur — recréerait la divergence qui a causé le bug.
+  var REMISE_ANNUELLE = 0.10;   // −10 % sur douze mensualités
+  var REMISE_OPTION = 0.25;     // −25 % sur Ranking pris avec un plan
+
+  var PLANS = { starter: 19, growth: 49, scale: 139 };
+  var RANKING_AUTONOME = 89;    // €/mois seul ; 67 € en option
+
+  function annuel(m) { return Math.round(m * 12 * (1 - REMISE_ANNUELLE)); }
+  function optionMensuelle() { return Math.round(RANKING_AUTONOME * (1 - REMISE_OPTION)); }
+  function optionAnnuelle() { return annuel(optionMensuelle()); }
+  function euros(n) { return n.toLocaleString("fr-FR"); }
 
   var toggle = document.getElementById("billing-toggle");
   if (!toggle) return;
   var periode = "monthly";
   var browseAnnuelDispo = false;
 
+  // Transition douce : un montant qui saute sans transition donne
+  // l'impression d'un défaut d'affichage, là où une brève atténuation
+  // accompagne le calcul.
+  function ecrire(el, valeur) {
+    if (!el || el.textContent === String(valeur)) return;
+    el.classList.add("prix-en-transition");
+    setTimeout(function () {
+      el.textContent = valeur;
+      el.classList.remove("prix-en-transition");
+    }, 110);
+  }
+
+  function rankingActif(plan) {
+    var ch = document.getElementById("browse-toggle-" + plan);
+    return !!(ch && ch.checked && !ch.disabled);
+  }
+
   function appliquer() {
-    Object.keys(TARIFS).forEach(function (plan) {
+    var estAnnuel = periode === "annual";
+
+    Object.keys(PLANS).forEach(function (plan) {
+      var base = estAnnuel ? annuel(PLANS[plan]) : PLANS[plan];
+      var option = rankingActif(plan)
+        ? (estAnnuel ? optionAnnuelle() : optionMensuelle()) : 0;
+
       var montant = document.getElementById("price-amount-" + plan);
-      var note = document.getElementById("annual-note-" + plan);
-      var t = TARIFS[plan];
-      // HIERARCHIE INVERSEE (demande d'Alexis, 26 juillet). L'affichage
-      // montrait l'equivalent mensuel en tete avec le total en mention :
-      // Alexis lui-meme a cru a une remise mal appliquee (« il te manque un
-      // x12 »). En mode annuel, c'est donc le TOTAL qui prime, et
-      // l'equivalent mensuel qui passe en second.
-      if (montant) {
-        montant.textContent = periode === "annual"
-          ? t.annuelTotal.toLocaleString("fr-FR")
-          : t.mensuel;
-      }
-      // La periode suit le montant, sinon on lirait « 529 € /mois ».
+      ecrire(montant, euros(base + option));
+
       var periodeEl = montant && montant.parentElement
         ? montant.parentElement.querySelector(".price-tier-period") : null;
-      if (periodeEl) periodeEl.textContent = periode === "annual" ? "/an" : "/mois";
+      if (periodeEl) periodeEl.textContent = estAnnuel ? "/an" : "/mois";
 
+      // DÉCOMPOSITION plutôt que remplacement silencieux : le lecteur doit
+      // voir ce qui compose le total, sinon il constate un chiffre qui a
+      // changé sans savoir pourquoi.
+      var detail = document.getElementById("addon-breakdown-" + plan);
+      if (detail) {
+        detail.hidden = option === 0;
+        if (option > 0) {
+          detail.innerHTML = "dont Ranking : <strong>" + euros(option) +
+            "&nbsp;€" + (estAnnuel ? "/an" : "/mois") + "</strong>";
+        }
+      }
+
+      var note = document.getElementById("annual-note-" + plan);
       if (note) {
-        note.hidden = periode !== "annual";
-        // Le total annuel est mis en avant autant que l'equivalent mensuel :
-        // afficher « 44 € » seul a deja prete a confusion, l'economie
-        // realisee n'etant pas lisible.
-        var economie = t.mensuel * 12 - t.annuelTotal;
-        note.innerHTML = "soit <strong>" + t.annuelParMois +
-          " €/mois</strong> — <strong>" + economie.toLocaleString("fr-FR") +
-          " € économisés</strong> sur l'année";
+        note.hidden = !estAnnuel;
+        if (estAnnuel) {
+          var totalMensuel = PLANS[plan] + (option ? optionMensuelle() : 0);
+          var economie = totalMensuel * 12 - (base + option);
+          note.innerHTML = "soit <strong>" + euros(Math.round((base + option) / 12)) +
+            "&nbsp;€/mois</strong> — <strong>" + euros(economie) +
+            "&nbsp;€ économisés</strong> sur l'année";
+        }
       }
     });
+
+    // Prix de l'option : référence barrée, prix remisé, économie — même
+    // traitement que la bascule annuelle, pour que le lecteur reconnaisse
+    // le signal au lieu d'une pastille « −25 % » isolée.
+    var ref = estAnnuel ? annuel(RANKING_AUTONOME) : RANKING_AUTONOME;
+    var net = estAnnuel ? optionAnnuelle() : optionMensuelle();
+    var unite = estAnnuel ? "/an" : "/mois";
+    document.querySelectorAll("[data-addon-pricing]").forEach(function (zone) {
+      zone.innerHTML =
+        "<s class='addon-ref'>" + euros(ref) + "&nbsp;€" + unite + "</s>" +
+        "<strong class='addon-net'>" + euros(net) + "&nbsp;€" + unite + "</strong>" +
+        "<span class='addon-eco'>" + euros(ref - net) + "&nbsp;€ économisés</span>";
+    });
+
     toggle.querySelectorAll(".billing-toggle-opt").forEach(function (b) {
       b.classList.toggle("on", b.getAttribute("data-period") === periode);
     });
-    // Les boutons de souscription portent la periode : c'est elle que
-    // l'endpoint de paiement attend.
-    // L'option Ranking bascule aussi : afficher « +67 €/mois » a cote d'un
-    // plan annonce a l'annee melangerait deux unites.
-    var RANKING_MENSUEL = 67, RANKING_ANNUEL = Math.round(67 * 12 * 0.9);
-    document.querySelectorAll("[class*='addon-amount-']").forEach(function (el) {
-      el.textContent = periode === "annual"
-        ? RANKING_ANNUEL.toLocaleString("fr-FR") : RANKING_MENSUEL;
-    });
-    document.querySelectorAll(".addon-period").forEach(function (el) {
-      el.textContent = periode === "annual" ? "/an" : "/mois";
-    });
-
     document.querySelectorAll(".checkout-btn").forEach(function (b) {
       b.setAttribute("data-billing-period", periode);
     });
 
-    // Stripe REFUSE de melanger des periodicites dans une meme session. Si
-    // les prix Browse annuels ne sont pas configures, on desactive la case
-    // EN AMONT plutot que de laisser l'acheteur cliquer et recevoir une
-    // erreur -- une case grisee avec son explication vaut mieux qu'un echec
-    // apres coup.
-    var bloquerBrowse = periode === "annual" && !browseAnnuelDispo;
+    // Stripe refuse de mélanger des périodicités dans une même session : si
+    // les prix Ranking annuels ne sont pas configurés, on désactive l'option
+    // en amont plutôt que de laisser l'acheteur recevoir une erreur.
+    var bloquer = estAnnuel && !browseAnnuelDispo;
     document.querySelectorAll(".browse-addon-checkbox").forEach(function (ch) {
-      // La carte ENTIERE, pas seulement son en-tete : depuis la refonte de
-      // l'encart, closest("label") ne renvoie que la ligne titre+prix. Griser
-      // celle-ci seule laisserait la description et la remise pleinement
-      // lisibles alors que l'option ne peut pas etre retenue.
-      var etiquette = ch.closest(".addon-row") || ch.closest("label") || ch.parentElement;
-      if (bloquerBrowse) {
+      var ligne = ch.closest(".addon-row") || ch.parentElement;
+      if (bloquer) {
         ch.checked = false;
         ch.disabled = true;
-        if (etiquette) etiquette.setAttribute("title",
-          "L'option Browse n'est pas encore disponible en facturation annuelle. Vous pourrez l'ajouter depuis votre console après souscription.");
-        if (etiquette) etiquette.classList.add("browse-addon-disabled");
+        if (ligne) {
+          ligne.classList.add("browse-addon-disabled");
+          ligne.setAttribute("title",
+            "L'option Ranking n'est pas encore disponible en facturation annuelle. " +
+            "Vous pourrez l'ajouter depuis votre console après souscription.");
+        }
       } else {
         ch.disabled = false;
-        if (etiquette) { etiquette.removeAttribute("title"); etiquette.classList.remove("browse-addon-disabled"); }
+        if (ligne) { ligne.classList.remove("browse-addon-disabled"); ligne.removeAttribute("title"); }
       }
     });
   }
@@ -106,15 +134,18 @@
     });
   });
 
-  // On n'affiche la bascule qu'apres confirmation que l'annuel est vendable.
+  document.querySelectorAll(".browse-addon-checkbox").forEach(function (ch) {
+    ch.addEventListener("change", appliquer);
+  });
+
+  appliquer();  // état initial cohérent, sans attendre le réseau
+
   fetch(API + "/v1/stripe/billing-options")
     .then(function (r) { return r.json(); })
     .then(function (d) {
       browseAnnuelDispo = !!(d && d.annual_browse_available);
-      if (d && d.annual_available) {
-        toggle.hidden = false;
-        appliquer();
-      }
+      if (d && d.annual_available) toggle.hidden = false;
+      appliquer();
     })
-    .catch(function () { /* bascule laissee masquee : le mensuel fonctionne */ });
+    .catch(function () { /* bascule masquée : le mensuel fonctionne */ });
 })();

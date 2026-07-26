@@ -26,7 +26,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css?v=1785082186">
+<link rel="stylesheet" href="styles.css?v=1785090743">
 <link rel="canonical" href="https://heurix.fr/pricing.html">
 <script type="application/ld+json">
 {
@@ -156,6 +156,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div class="price-tier-card">
         <div class="price-tier-name">Starter</div>
         <div class="price-tier-amount"><span id="price-amount-starter">19</span>&nbsp;€<span class="price-tier-period">/mois</span></div>
+        <p class="addon-breakdown" id="addon-breakdown-starter" hidden></p>
         <p class="billing-annual-note" id="annual-note-starter" hidden></p>
         <p class="price-tier-desc">Un catalogue, un besoin simple.</p>
         <ul class="price-tier-features">
@@ -173,6 +174,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="price-tier-badge">Le plus choisi</div>
         <div class="price-tier-name">Growth</div>
         <div class="price-tier-amount"><span id="price-amount-growth">49</span>&nbsp;€<span class="price-tier-period">/mois</span></div>
+        <p class="addon-breakdown" id="addon-breakdown-growth" hidden></p>
         <p class="billing-annual-note" id="annual-note-growth" hidden></p>
         <p class="price-tier-desc">Pour un site en croissance.</p>
         <ul class="price-tier-features">
@@ -189,12 +191,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               <span class="addon-row-desc">Classement de vos pages de catégorie</span>
             </span>
             <span class="addon-row-right">
-              <span class="addon-row-price">+<span class="addon-amount-growth">67</span>&nbsp;€<em class="addon-period">/mois</em></span>
               <input type="checkbox" class="browse-addon-checkbox visually-hidden" id="browse-toggle-growth" data-search-plan="growth" data-search-price="49" data-browse-price="67" data-browse-plan="growth">
               <span class="addon-switch" aria-hidden="true"><span class="addon-switch-knob"></span></span>
             </span>
           </label>
-          <span class="addon-row-save">−25 %</span>
+          <div class="addon-pricing" data-addon-pricing></div>
         </div>
         <button type="button" class="btn checkout-btn" data-plan="growth">Démarrer l'essai gratuit</button>
       </div>
@@ -202,6 +203,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div class="price-tier-card">
         <div class="price-tier-name">Scale</div>
         <div class="price-tier-amount"><span id="price-amount-scale">139</span>&nbsp;€<span class="price-tier-period">/mois</span></div>
+        <p class="addon-breakdown" id="addon-breakdown-scale" hidden></p>
         <p class="billing-annual-note" id="annual-note-scale" hidden></p>
         <p class="price-tier-desc">Catalogue volumineux, trafic important.</p>
         <ul class="price-tier-features">
@@ -217,12 +219,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               <span class="addon-row-desc">Classement de vos pages de catégorie</span>
             </span>
             <span class="addon-row-right">
-              <span class="addon-row-price">+<span class="addon-amount-scale">67</span>&nbsp;€<em class="addon-period">/mois</em></span>
               <input type="checkbox" class="browse-addon-checkbox visually-hidden" id="browse-toggle-scale" data-search-plan="scale" data-search-price="139" data-browse-price="67" data-browse-plan="growth">
               <span class="addon-switch" aria-hidden="true"><span class="addon-switch-knob"></span></span>
             </span>
           </label>
-          <span class="addon-row-save">−25 %</span>
+          <div class="addon-pricing" data-addon-pricing></div>
         </div>
         <button type="button" class="btn btn-ghost checkout-btn" data-plan="scale">Démarrer l'essai gratuit</button>
       </div>
@@ -564,7 +565,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
       const payload = { plan: plan };
       if (browsePlan) payload.browse_plan = browsePlan;
-      // Periode posee par la reglette (billing-toggle.js?v=1785082186). Absente = mensuel,
+      // Periode posee par la reglette (billing-toggle.js?v=1785090743). Absente = mensuel,
       // ce qui est aussi le defaut cote moteur : un visiteur arrive avant le
       // chargement du script souscrit normalement.
       const periode = btn.getAttribute('data-billing-period');
@@ -592,15 +593,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   });
 
   // Mise a jour du prix affiche en direct quand la case Browse est cochee/decochee.
-  document.querySelectorAll('.browse-addon-checkbox').forEach(function (checkbox) {
-    checkbox.addEventListener('change', function () {
-      const searchPlan = checkbox.getAttribute('data-search-plan');
-      const searchPrice = parseInt(checkbox.getAttribute('data-search-price'), 10);
-      const browsePrice = parseInt(checkbox.getAttribute('data-browse-price'), 10);
-      const amountEl = document.getElementById('price-amount-' + searchPlan);
-      if (amountEl) amountEl.textContent = checkbox.checked ? (searchPrice + browsePrice) : searchPrice;
-    });
-  });
+  // GESTIONNAIRE RETIRE — c'etait la cause du bug de prix.
+  //
+  // Il additionnait les valeurs MENSUELLES des attributs data en ignorant
+  // la periode de facturation : sur Growth en annuel, cocher Ranking
+  // affichait 116 € au lieu de 1 253 €, et decocher retombait a 49 € au
+  // lieu de 529 €.
+  //
+  // Deux scripts ecrivaient le meme element : celui-ci et
+  // billing-toggle.js, qui seul connait la periode. Le calcul y est
+  // desormais centralise, avec une source unique pour les tarifs.
 
   // Browse en autonome (restructuration tarifaire, 24 juillet) — meme
   // logique que ci-dessus, endpoint et parametre distincts. L'option a
@@ -645,6 +647,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <a href="blog/guide-mise-en-route.html" class="btn btn-ghost">Voir le guide →</a>
 </div>
 <script src="guide-nudge.js"></script>
-<script src="billing-toggle.js?v=1785082186"></script>
+<script src="billing-toggle.js?v=1785090743"></script>
 </body>
 </html>

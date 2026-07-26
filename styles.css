@@ -922,23 +922,15 @@ h2{ font-size:clamp(26px,3.4vw,34px); font-weight:800; margin:0 0 18px; max-widt
   background:#fff; border:1px solid var(--line); border-radius:18px; padding:30px 26px;
   display:flex; flex-direction:column;
 }
-.price-tier-highlight{
-  background:var(--ink); border-color:var(--ink);
-  box-shadow:0 24px 48px -24px rgba(18,20,43,0.35);
-}
 .price-tier-badge{
   position:absolute; top:-13px; left:26px;
   background:var(--blue); color:#fff; font-size:11.5px; font-weight:700;
   padding:5px 12px; border-radius:100px;
 }
 .price-tier-name{ font-size:14px; font-weight:700; color:var(--ink-muted); text-transform:uppercase; letter-spacing:0.04em; margin-bottom:14px; }
-.price-tier-highlight .price-tier-name{ color:rgba(255,255,255,0.6); }
 .price-tier-amount{ font-size:38px; font-weight:800; color:var(--ink); letter-spacing:-0.01em; margin-bottom:14px; }
-.price-tier-highlight .price-tier-amount{ color:#fff; }
 .price-tier-period{ font-size:15px; font-weight:500; color:var(--ink-muted); }
-.price-tier-highlight .price-tier-period{ color:rgba(255,255,255,0.5); }
 .price-tier-desc{ font-size:14px; color:var(--ink-muted); margin:0 0 22px; min-height:42px; }
-.price-tier-highlight .price-tier-desc{ color:rgba(255,255,255,0.7); }
 .price-tier-features{ list-style:none; margin:0 0 26px; padding:0; flex-grow:1; }
 .price-tier-features li{
   font-size:13.5px; color:var(--ink); padding:9px 0 9px 22px; position:relative;
@@ -948,10 +940,8 @@ h2{ font-size:clamp(26px,3.4vw,34px); font-weight:800; margin:0 0 18px; max-widt
 .price-tier-features li::before{
   content:"✓"; position:absolute; left:0; top:9px; color:var(--green); font-weight:700; font-size:13px;
 }
-.price-tier-highlight .price-tier-features li{ color:#fff; border-top-color:rgba(255,255,255,0.12); }
-.price-tier-highlight .price-tier-features li::before{ color:#8FE3BC; }
+
 .price-tier-overage{ color:var(--ink-muted); font-size:12px; }
-.price-tier-highlight .price-tier-overage{ color:rgba(255,255,255,0.55); }
 .price-tier-card .btn{ width:100%; justify-content:center; }
 .pricing-note{ text-align:center; color:var(--ink-muted); font-size:13.5px; margin-top:28px; max-width:640px; margin-left:auto; margin-right:auto; }
 .pricing-note a{ color:var(--blue-deep); font-weight:600; text-decoration:none; }
@@ -2832,6 +2822,116 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 }
 
 /* Option indisponible en annuel : toute la ligne se grise. */
+.addon-row.browse-addon-disabled{
+  opacity:.45; background:var(--bg-soft); border-color:var(--line);
+}
+.addon-row.browse-addon-disabled .addon-row-main{ cursor:not-allowed; }
+
+/* ------------------------------------------------------------------ */
+/* Carte mise en avant — sans inversion de couleur                     */
+/*                                                                      */
+/* Le marine plein etait reserve aux blocs « sortie technique »         */
+/* (calculateur, blocs de code) : l employer pour une mise en avant     */
+/* commerciale brouillait ce code visuel. Les quatre cartes partagent   */
+/* desormais le meme fond clair ; Growth se distingue par sa bordure,   */
+/* une elevation discrete et son badge en chevauchement.                */
+/* ------------------------------------------------------------------ */
+.price-tier-highlight{
+  border:2px solid var(--blue);
+  box-shadow:0 10px 30px -12px rgba(84,104,255,0.28);
+}
+/* La bordure de 2px decalerait le contenu d un pixel : on compense pour
+   que les quatre cartes restent alignees. */
+.price-tier-highlight{ padding:29px 23px; }
+
+/* Badge en chevauchement sur le bord superieur */
+.price-tier-badge{
+  position:absolute; top:-12px; left:50%; transform:translateX(-50%);
+  background:var(--blue); color:#fff;
+  font-size:11px; font-weight:800; letter-spacing:.04em; text-transform:uppercase;
+  padding:5px 14px; border-radius:100px;
+  box-shadow:0 4px 12px rgba(84,104,255,0.35);
+  white-space:nowrap;
+}
+
+/* Transition du montant : un chiffre qui saute donne l impression d un
+   defaut d affichage, une breve attenuation accompagne le calcul. */
+.price-tier-amount span[id^="price-amount-"]{
+  display:inline-block;
+  transition:opacity .11s ease, transform .11s ease;
+}
+.prix-en-transition{ opacity:0; transform:translateY(-3px); }
+
+/* Decomposition du total quand l option est active : le lecteur doit voir
+   ce qui compose le prix, pas constater un chiffre qui a change. */
+.addon-breakdown{
+  margin:-4px 0 8px; font-size:12px; color:var(--ink-muted);
+}
+.addon-breakdown strong{ color:var(--blue-deep); font-weight:700; }
+.addon-breakdown[hidden]{ display:none; }
+
+/* ------------------------------------------------------------------ */
+/* Option Ranking — sous-section integree a la carte                   */
+/*                                                                      */
+/* C etait un encart blanc plaque sur fond sombre. Devenu une simple    */
+/* sous-section : fond indigo tres pale, bordure assortie, aucune       */
+/* rupture de contraste avec le reste de la carte.                      */
+/* ------------------------------------------------------------------ */
+.addon-row{
+  margin:16px 0; padding:13px 14px;
+  background:rgba(84,104,255,0.05);
+  border:1px solid rgba(84,104,255,0.16);
+  border-radius:10px;
+  transition:background .14s ease, border-color .14s ease;
+}
+.addon-row:hover{ border-color:rgba(84,104,255,0.34); }
+.addon-row:has(.browse-addon-checkbox:checked){
+  background:rgba(84,104,255,0.10);
+  border-color:var(--blue);
+}
+.addon-row-main{ display:flex; align-items:center; gap:12px; cursor:pointer; margin:0; }
+.addon-row-label{ flex:1; min-width:0; }
+.addon-row-name{ display:block; font-size:13.5px; color:var(--ink); }
+.addon-row-name strong{ color:var(--blue-deep); font-weight:800; }
+.addon-row-desc{ display:block; margin-top:2px; font-size:11.5px; color:var(--ink-muted); }
+.addon-row-right{ display:flex; align-items:center; flex-shrink:0; }
+
+/* Bascule. Le champ reste dans le document — masque visuellement, pas
+   retire — pour rester utilisable au clavier et annonce aux lecteurs
+   d ecran. */
+.visually-hidden{
+  position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+  overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;
+}
+.addon-switch{
+  display:inline-block; position:relative; width:40px; height:23px;
+  background:#CDD1E2; border-radius:100px; transition:background .16s ease;
+}
+.addon-switch-knob{
+  position:absolute; top:3px; left:3px; width:17px; height:17px;
+  background:#fff; border-radius:50%;
+  box-shadow:0 1px 3px rgba(18,20,43,0.26);
+  transition:transform .16s ease;
+}
+.browse-addon-checkbox:checked ~ .addon-switch{ background:var(--blue); }
+.browse-addon-checkbox:checked ~ .addon-switch .addon-switch-knob{ transform:translateX(17px); }
+.browse-addon-checkbox:focus-visible ~ .addon-switch{ outline:3px solid var(--blue); outline-offset:2px; }
+
+/* Prix de l option : reference barree, prix remise, economie — meme
+   traitement que la bascule annuelle, pour que le lecteur reconnaisse le
+   signal au lieu d une pastille « -25 % » isolee. */
+.addon-pricing{
+  display:flex; align-items:baseline; flex-wrap:wrap; gap:8px;
+  margin-top:10px; padding-top:9px;
+  border-top:1px solid rgba(84,104,255,0.14);
+}
+.addon-ref{ font-size:12.5px; color:var(--ink-muted); text-decoration:line-through; }
+.addon-net{ font-size:14.5px; font-weight:800; color:var(--ink); }
+.addon-eco{
+  font-size:11px; font-weight:800; background:#0F7A3D; color:#fff;
+  padding:2px 8px; border-radius:100px;
+}
+
 .addon-row.browse-addon-disabled{
   opacity:.45; background:var(--bg-soft); border-color:var(--line);
 }
