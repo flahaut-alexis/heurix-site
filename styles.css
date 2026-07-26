@@ -2714,3 +2714,56 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 /* Un tableau dans un depliant ou un encart n a pas besoin de sa propre
    bordure : elle doublerait celle du conteneur. */
 .br-attrs .console-table, .confirm-boite .console-table{ border:none; border-radius:0; }
+
+/* ------------------------------------------------------------------ */
+/* Encart d option Ranking sur la page de tarifs                       */
+/*                                                                      */
+/* Avant : une case a cocher nue, glissee entre la liste des            */
+/* fonctionnalites et le bouton d action. Elle ne se lisait pas comme   */
+/* une option payante, et rien ne la rattachait a la charte.            */
+/*                                                                      */
+/* Apres : un encart identifiable, avec son prix aligne a droite comme  */
+/* sur une ligne de facture, et l economie annoncee en pastille verte   */
+/* -- le meme registre que la remise annuelle, pour que le lecteur      */
+/* reconnaisse le signal.                                               */
+/* ------------------------------------------------------------------ */
+.addon-card{
+  margin:14px 0 16px; padding:13px 15px;
+  background:var(--blue-tint); border:1px solid #C9D2FB; border-radius:11px;
+  transition:border-color .14s ease, background .14s ease;
+}
+.addon-card:hover{ border-color:var(--blue); }
+/* Etat coche : l encart se distingue nettement, on doit voir d un coup d oeil
+   que l option est retenue avant de cliquer sur le bouton. */
+.addon-card:has(.browse-addon-checkbox:checked){
+  background:#fff; border-color:var(--blue); box-shadow:0 0 0 3px rgba(84,104,255,0.12);
+}
+.addon-card-head{
+  display:flex; align-items:center; gap:10px; cursor:pointer; margin:0;
+}
+.addon-card-head input{
+  width:17px; height:17px; flex-shrink:0; accent-color:var(--blue); cursor:pointer;
+}
+.addon-card-title{ font-size:13.5px; color:var(--ink); flex:1; }
+.addon-card-title strong{ color:var(--blue-deep); font-weight:800; }
+/* Le prix a droite, comme sur une ligne de facture : c est la lecture
+   attendue pour une option payante. */
+.addon-card-price{
+  font-size:14px; font-weight:800; color:var(--ink); white-space:nowrap;
+}
+.addon-card-price span{ font-size:11.5px; font-weight:600; color:var(--ink-muted); }
+.addon-card-desc{
+  margin:8px 0 0; font-size:12px; line-height:1.5; color:var(--ink-muted);
+}
+.addon-card-save{
+  display:inline-block; margin-top:9px;
+  font-size:11px; font-weight:800; letter-spacing:.02em;
+  background:#0F7A3D; color:#fff; padding:3px 9px; border-radius:100px;
+}
+/* Option indisponible en annuel : l encart entier se grise, pas seulement
+   la case -- sinon le prix et la remise resteraient lisibles alors que
+   l option ne peut pas etre retenue. */
+.addon-card:has(.browse-addon-checkbox:disabled){
+  opacity:.45; background:var(--bg-soft); border-color:var(--line);
+}
+.addon-card:has(.browse-addon-checkbox:disabled) .addon-card-head{ cursor:not-allowed; }

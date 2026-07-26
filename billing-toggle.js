@@ -56,7 +56,11 @@
     // apres coup.
     var bloquerBrowse = periode === "annual" && !browseAnnuelDispo;
     document.querySelectorAll(".browse-addon-checkbox").forEach(function (ch) {
-      var etiquette = ch.closest("label") || ch.parentElement;
+      // La carte ENTIERE, pas seulement son en-tete : depuis la refonte de
+      // l'encart, closest("label") ne renvoie que la ligne titre+prix. Griser
+      // celle-ci seule laisserait la description et la remise pleinement
+      // lisibles alors que l'option ne peut pas etre retenue.
+      var etiquette = ch.closest(".addon-card") || ch.closest("label") || ch.parentElement;
       if (bloquerBrowse) {
         ch.checked = false;
         ch.disabled = true;
