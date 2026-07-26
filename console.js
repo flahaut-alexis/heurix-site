@@ -1837,7 +1837,7 @@
 
       chain
         .then(function () {
-          status.textContent = "Enregistré."; status.className = "catalog-rule-status ok";
+          status.textContent = "Priorité enregistrée."; status.className = "catalog-rule-status ok";
           resetSoForm();
           refreshSoTable(key);
         })
@@ -2333,7 +2333,7 @@
         : apiFetch(base, key, { method: "POST", body: body });
 
       chain.then(function () {
-        status.textContent = "Enregistrée."; status.className = "catalog-rule-status ok";
+        status.textContent = "Priorité de catégorie enregistrée."; status.className = "catalog-rule-status ok";
         resetBrowseOverrideForm();
         refreshBrowseOverrides(key); refreshBrowsePreview(key);
       }).catch(function (err) {
@@ -2382,7 +2382,7 @@
         : apiFetch(base, key, { method: "POST", body: { field: field, value: value, action: action } });
 
       chain.then(function () {
-        status.textContent = "Enregistrée."; status.className = "catalog-rule-status ok";
+        status.textContent = "Règle d'attribut enregistrée."; status.className = "catalog-rule-status ok";
         resetAttributeRuleForm();
         refreshBrowseAttributeRules(key); refreshBrowsePreview(key);
       }).catch(function (err) {
@@ -2698,7 +2698,7 @@
         : createNew();
 
       chain.then(function () {
-        status.textContent = "Enregistrée."; status.className = "catalog-rule-status ok";
+        status.textContent = "Règle personnalisée enregistrée."; status.className = "catalog-rule-status ok";
         resetForm();
         loadRules();
         return apiFetch("/v1/index/" + encodeURIComponent(catalogName) + "/stats", key);

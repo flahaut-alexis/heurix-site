@@ -2562,3 +2562,52 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
   position:absolute; width:1px; height:1px; padding:0; margin:-1px;
   overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;
 }
+
+/* ------------------------------------------------------------------ */
+/* Corrections mobiles (audit UX 3.2) — apres CONSTAT, pas par principe */
+/*                                                                      */
+/* L audit signalait trois zones a risque par analyse structurelle. La  */
+/* verification en montre DEUX deja correctes : .roi-simulator bascule  */
+/* bien en colonne unique, et .roi-compare-bar est une barre de         */
+/* progression, pas deux colonnes juxtaposees. On ne corrige donc que   */
+/* ce qui est reellement en defaut.                                     */
+/* ------------------------------------------------------------------ */
+
+/* 1. Zone tactile des curseurs. La pastille mesurait 18px : sous les
+      44px recommandes pour une cible tactile, elle est difficile a
+      attraper au doigt. On agrandit la zone SANS grossir le visuel, via
+      une bordure transparente -- la pastille garde son apparence. */
+@media (hover:none) and (pointer:coarse){
+  input[type=range]::-webkit-slider-thumb{
+    width:26px; height:26px;
+    border:8px solid transparent;
+    background-clip:padding-box;
+  }
+  input[type=range]::-moz-range-thumb{
+    width:26px; height:26px;
+    border:8px solid transparent;
+    background-clip:padding-box;
+  }
+  /* Piste plus haute : viser une piste de 6px au doigt est frustrant. */
+  input[type=range]{ height:12px; }
+}
+
+/* 2. Les deux colonnes d indicateurs du simulateur deviennent trop
+      etroites sous 420px : deux nombres de 5 chiffres cote a cote y sont
+      illisibles. */
+@media (max-width:420px){
+  .roi-mini-grid{ grid-template-columns:1fr; }
+}
+
+/* 3. Indication de defilement sur les tableaux. .table-scroll avait bien
+      overflow-x:auto, donc le defilement FONCTIONNAIT -- mais rien ne le
+      signalait : le tableau debordait silencieusement, et l utilisateur
+      pouvait croire qu il voyait tout. Un degrade sur le bord droit rend
+      le debordement perceptible. */
+.table-scroll{
+  position:relative;
+  background:
+    linear-gradient(to right, transparent calc(100% - 28px), rgba(18,20,43,0.07)),
+    linear-gradient(to left, transparent calc(100% - 28px), rgba(18,20,43,0.07));
+  background-attachment:local, local;
+}
