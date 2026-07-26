@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-PGLPLKDP');</script>
+<!-- End Google Tag Manager -->
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Elasticsearch et Lucene pour un catalogue technique — Heurix</title>
+<meta name="description" content="Comparatif honnête entre les moteurs de recherche e-commerce les plus courants, du point de vue précis d'un catalogue à références techniques.">
+<link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/elasticsearch-lucene-catalogue-technique.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Elasticsearch et Lucene pour un catalogue technique — Heurix">
+<meta property="og:description" content="Comparatif honnête entre les moteurs de recherche e-commerce les plus courants, du point de vue précis d'un catalogue à références techniques.">
+<meta property="og:image" content="https://heurix.fr/og-image.png">
+<meta property="og:url" content="https://heurix.fr/blog/elasticsearch-lucene-catalogue-technique.html">
+<meta property="og:locale" content="fr_FR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Elasticsearch et Lucene pour un catalogue technique — Heurix">
+<meta name="twitter:description" content="Comparatif honnête entre les moteurs de recherche e-commerce les plus courants, du point de vue précis d'un catalogue à références techniques.">
+<meta name="twitter:image" content="https://heurix.fr/og-image.png">
+<link rel="icon" type="image/png" href="../favicon-32.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<link rel="stylesheet" href="../styles.css?v=1785064980">
+<link rel="canonical" href="https://heurix.fr/blog/elasticsearch-lucene-catalogue-technique.html">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Heurix",
+  "url": "https://heurix.fr",
+  "logo": "https://heurix.fr/logo.svg?v=1784985918",
+  "image": "https://heurix.fr/og-image.png",
+  "description": "Moteur de recherche et search & discovery pour sites e-commerce, basé sur des expressions régulières, conçu en France.",
+  "email": "contact@heurix.fr",
+  "sameAs": ["https://www.linkedin.com/company/heurix-search/"],
+  "founder": {"@type": "Person", "name": "Alexis Flahaut"},
+  "areaServed": "FR"
+}
+</script>
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PGLPLKDP"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+<header>
+  <div class="header-top">
+    <nav class="header-top-inner">
+      <a href="../index.html" class="logo"><img src="../logo.svg?v=1784985918" alt="Heurix"> <span class="wordmark">Heurix</span></a>
+      <div class="nav-links">
+        <div class="nav-drop">
+          <button type="button" class="nav-drop-btn" aria-expanded="false" aria-haspopup="true">Produit</button>
+          <div class="nav-drop-panel">
+            <a href="../index.html#probleme">Le problème</a>
+            <a href="../index.html#mission">Notre mission</a>
+            <a href="../index.html#moteur">Le moteur</a>
+            <a href="../fonctionnalites.html">Fonctionnalités</a>
+            <a href="../index.html#tarifs">Simulateur ROI</a>
+          </div>
+        </div>
+        <div class="nav-drop">
+          <button type="button" class="nav-drop-btn" aria-expanded="false" aria-haspopup="true">Solutions</button>
+          <div class="nav-drop-panel">
+          <a href="../solutions/outillage.html">Quincaillerie & outillage</a>
+          <a href="../solutions/industrie.html">Pièces détachées & industrie</a>
+          <a href="../solutions/mode.html">Mode & retail</a>
+          <a href="../solutions/electronique.html">Électronique & high-tech</a>
+          <a href="../solutions/livres.html">Librairie & édition</a>
+          <a href="../solutions/vins.html">Vins & spiritueux</a>
+          <a href="../solutions/finance.html">Finance & comptabilité</a>
+          </div>
+        </div>
+        <div class="nav-drop">
+          <button type="button" class="nav-drop-btn" aria-expanded="false" aria-haspopup="true">Developers</button>
+          <div class="nav-drop-panel">
+            <a href="../docs.html">Documentation</a>
+            <a href="../integrations.html">Intégrations</a>
+            <a href="../blog/guide-mise-en-route.html">Guide de mise en route</a>
+          </div>
+        </div>
+        <a href="../blog.html">Blog</a>
+      </div>
+      <div class="header-search">
+        <button id="heurix-search-btn" class="search-trigger" aria-label="Heurix Search — rechercher sur le site" type="button">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <span class="search-trigger-text">Heurix Search</span>
+          <span class="search-trigger-kbd">Ctrl K</span>
+        </button>
+      </div>
+      <div class="header-utility">
+        <button type="button" id="mobile-nav-toggle" class="mobile-nav-toggle" aria-label="Menu" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+        <a href="../console.html" class="header-signin">Se connecter</a>
+        <a href="../en/blog.html" class="lang-switch">EN</a>
+        <a href="../pricing.html" class="btn">Découvrir le moteur</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<div id="heurix-search-modal" class="search-modal">
+  <div id="heurix-search-backdrop" class="search-backdrop" data-search-close></div>
+  <div class="search-panel">
+    <div class="search-panel-head">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input id="heurix-search-input" type="text" placeholder="Heurix Search..." autocomplete="off">
+      <button class="search-close" data-search-close type="button">Échap</button>
+    </div>
+    <p id="heurix-search-suggest-label" class="search-suggest-label" hidden>Derniers articles</p>
+    <div id="heurix-search-results" class="search-results"></div>
+    <p id="heurix-search-empty" class="search-empty" hidden>Aucun résultat pour cette recherche. Essayez un autre terme.</p>
+  </div>
+</div>
+
+<article class="post">
+  <div class="wrap post-wrap">
+    <a href="../blog.html" class="back-link">← Tous les articles</a>
+    <div class="kicker">Blog · Juillet 2026</div>
+    <h1>Elasticsearch et Lucene pour un catalogue technique : ce que vous devrez construire vous-même</h1>
+    <p class="post-lede">Ces outils peuvent tout faire. C'est précisément le sujet : ils fournissent les briques, pas la logique métier. Voici le travail que vous aurez à écrire, et à maintenir.</p>
+
+    <div class="post-body">
+      <h2>Commençons par ce qui est vrai</h2>
+      <p>Lucene est la bibliothèque d'indexation la plus éprouvée du secteur. Elasticsearch, qui la met en cluster, fait tourner la recherche de milliers d'entreprises. Sur beaucoup de terrains, ils n'ont pas d'équivalent.</p>
+      <p><strong>Si votre besoin ressemble à l'un de ceux-ci, ne lisez pas le reste :</strong> analyse de journaux et observabilité, recherche vectorielle à très grande échelle, agrégations analytiques sur des centaines de millions de documents, réplication entre régions, ou une équipe qui exploite déjà un cluster pour d'autres usages. Dans ces cas, Elasticsearch est la bonne réponse et Heurix n'en est pas une.</p>
+      <p>La question de cet article est plus étroite : <strong>que se passe-t-il quand on veut chercher dans un catalogue de références techniques ?</strong></p>
+
+      <h2>Le problème n'est pas la puissance, c'est ce qu'il faut écrire</h2>
+      <p>Prenez une vis de diamètre 8, longueur 20. Dans un vrai catalogue, avec un vrai historique d'imports, elle apparaît sous ces formes :</p>
+      <div class="table-scroll"><table class="docs-params">
+        <tr><th>Écriture rencontrée</th><th>Où</th></tr>
+        <tr><td><code class="docs-inline-code">M8x20</code></td><td>Référence fournisseur</td></tr>
+        <tr><td><code class="docs-inline-code">M8 x 20</code></td><td>Libellé du catalogue</td></tr>
+        <tr><td><code class="docs-inline-code">M8X20</code></td><td>Import d'un autre fournisseur</td></tr>
+        <tr><td><code class="docs-inline-code">M 8 x 20</code></td><td>Saisie manuelle</td></tr>
+        <tr><td><code class="docs-inline-code">vis M8-20 inox</code></td><td>Ce que tape votre client</td></tr>
+      </table></div>
+      <p>Pour un moteur généraliste, ce sont <strong>cinq chaînes différentes</strong>. L'analyseur standard découpe le texte selon les règles de segmentation Unicode : il ne sait pas que <code class="docs-inline-code">M8</code> désigne un diamètre, que <code class="docs-inline-code">20</code> est une longueur, ni que le tiret et le « x » jouent le même rôle de séparateur ici.</p>
+
+      <h2>Ce que vous devrez écrire dans Elasticsearch</h2>
+      <p>C'est faisable. Voici l'inventaire honnête, dans l'ordre où vous le découvrirez :</p>
+      <ul>
+        <li><strong>Un analyseur personnalisé</strong> par famille de références, avec ses filtres de caractères pour normaliser les séparateurs</li>
+        <li><strong>Un tokeniseur à motifs</strong> (<code class="docs-inline-code">pattern_capture</code>) pour extraire diamètre, longueur, norme, matière — un motif par attribut, par secteur</li>
+        <li><strong>Un graphe de synonymes</strong> maintenu à la main, avec le piège classique des synonymes multi-mots à l'indexation</li>
+        <li><strong>Une fonction de score</strong> sur mesure : le score par défaut, fondé sur la fréquence des termes, favorise les libellés courts — pas les références exactes</li>
+        <li><strong>Des champs multiples</strong> pour chaque attribut extrait, avec le mapping correspondant</li>
+        <li><strong>Une réindexation complète</strong> à chaque modification de mapping ou d'analyseur, car ils ne s'appliquent qu'à l'indexation</li>
+      </ul>
+      <p>Comptez quelques semaines pour un développeur qui connaît Lucene. Davantage s'il l'apprend en chemin — et c'est le cas le plus fréquent.</p>
+
+      <h2>Puis vient l'exploitation, qui ne s'arrête jamais</h2>
+      <p>Le développement est un coût unique. L'exploitation est permanent :</p>
+      <ul>
+        <li><strong>Trois nœuds minimum</strong> pour un quorum en production. Un nœud unique n'est pas de la production, c'est une démonstration.</li>
+        <li><strong>Dimensionnement de la mémoire JVM</strong>, du nombre de fragments, de la taille des segments. Se tromper ne provoque pas de panne : ça ralentit, progressivement.</li>
+        <li><strong>Montées de version</strong> avec ruptures de compatibilité, et réindexation à la clé.</li>
+        <li><strong>Surveillance de la santé du cluster</strong> — c'est un système distribué, avec les modes de défaillance qui vont avec.</li>
+      </ul>
+      <p>Et un point que beaucoup découvrent tard : <strong>la question de la licence.</strong> Depuis 2021, Elasticsearch n'est plus sous Apache 2.0. Il est aujourd'hui disponible sous trois licences au choix — AGPLv3 ajoutée en septembre 2024, SSPL, et Elastic License 2.0 — mais les distributions officielles restent sous les termes d'Elastic. C'est ce changement qui a provoqué le fork d'OpenSearch par AWS, désormais sous Apache 2.0 et gouverné par la Linux Foundation. Rien de bloquant, mais une décision à prendre en connaissance de cause si vous intégrez le moteur dans un produit que vous revendez.</p>
+
+      <h2>L'approche de Heurix : la logique métier est déjà écrite</h2>
+      <p>Heurix ne remplace pas Elasticsearch sur son terrain. Il fait une chose : <strong>il livre pré-écrit le travail d'analyse que vous auriez dû produire.</strong></p>
+      <p>Voici la sortie réelle de son moteur sur les cinq écritures ci-dessus, avec le pack de règles « outillage » :</p>
+      <pre class="docs-code">M8x20            → DIAM_M8, LONG_20, VIS_M8X20
+M8 x 20          → DIAM_M8, LONG_20, VIS_M8X20
+M8X20            → DIAM_M8, LONG_20, VIS_M8X20
+M 8 x 20         → DIAM_M8, LONG_20, VIS_M8X20
+vis M8-20 inox   → DIAM_M8, DIAM_M8_INOX, FAM_VIS, MAT_INOX</pre>
+      <p>Cinq écritures, les mêmes annotations. C'est ce qui permet à un client qui tape <code class="docs-inline-code">vis M8-20 inox</code> de trouver un produit dont le libellé dit <code class="docs-inline-code">M8X20 A2</code>.</p>
+      <p>Sept packs sectoriels couvrent l'outillage, l'électronique, l'industrie, la mode, les vins, les livres et la finance. Ce que le pack ne reconnaît pas, vous l'ajoutez depuis votre console — <strong>sans écrire d'expression régulière</strong>, en décrivant ce qu'il faut reconnaître.</p>
+
+      <h2>Ce que Heurix ne fait pas</h2>
+      <p>Autant le dire clairement, cela vous évitera une découverte désagréable :</p>
+      <ul>
+        <li>Pas d'analyse de journaux, pas d'observabilité, pas de tableaux de bord analytiques généralistes</li>
+        <li>Pas de recherche vectorielle à grande échelle</li>
+        <li>Pas d'auto-hébergement : c'est une API, pas un cluster que vous exploitez</li>
+        <li>Des limites de volume par plan, là où un cluster que vous dimensionnez n'en a d'autre que votre matériel</li>
+      </ul>
+
+      <h2>Comment trancher</h2>
+      <div class="table-scroll"><table class="docs-params">
+        <tr><th>Votre situation</th><th>Le bon choix</th></tr>
+        <tr><td>Vous exploitez déjà un cluster Elasticsearch et une équipe qui sait le faire</td><td>Restez-y. Écrivez les analyseurs.</td></tr>
+        <tr><td>Vos besoins dépassent la recherche produit — journaux, analytique, vecteurs</td><td>Elasticsearch ou OpenSearch</td></tr>
+        <tr><td>Vous avez un catalogue technique et pas d'équipe pour exploiter un cluster</td><td>Heurix vous fera gagner les semaines d'analyse</td></tr>
+        <tr><td>Vous voulez maîtriser l'hébergement de vos données de bout en bout</td><td>Auto-hébergez. Heurix est une API.</td></tr>
+      </table></div>
+
+      <p>La question n'est pas « lequel est le meilleur moteur ». Elasticsearch est plus puissant, plus large, et il le restera. La question est de savoir si vous voulez <strong>construire et maintenir la logique d'analyse de vos références</strong>, ou la trouver déjà faite.</p>
+
+      <p>Si vous hésitez : <a href="../docs.html">la documentation de l'API</a> est complète, et le <a href="tutoriel-catalogue-outillage-5-minutes.html">tutoriel de cinq minutes</a> vous dira en dix minutes si le moteur reconnaît vos références. C'est plus court qu'un premier analyseur Lucene.</p>
+    </div>
+
+    <div class="post-footer-cta">
+      <p>Vos références sont-elles reconnues ?</p>
+      <a href="../pricing.html" class="btn">Essayer sur votre catalogue</a>
+    </div>
+  </div>
+</article>
+
+<footer>
+  <div class="wrap foot-grid">
+    <a href="../index.html" class="logo" style="font-size:15px;"><img src="../logo.svg?v=1784985918" alt="Heurix" style="height:22px;width:22px;"> <span class="wordmark">Heurix</span></a>
+    <div class="foot-links">
+      <a href="../blog.html">Blog</a>
+      <a href="../docs.html">Documentation API</a>
+      <a href="../fonctionnalites.html">Fonctionnalités</a>
+      <a href="../integrations.html">Intégrations</a>
+      <a href="../console.html">Console</a>
+      <a href="../about.html">À propos</a>
+      <a href="../index.html#faq">FAQ</a>
+      <a href="../cgv.html">CGV</a>
+      <a href="../mentions-legales.html">Mentions légales</a>
+        <a href="../confidentialite.html">Confidentialité</a>
+      <a href="mailto:contact@heurix.fr">contact@heurix.fr</a>
+    </div>
+    <div class="foot-social">
+      <span class="foot-social-label">Réseaux sociaux</span>
+      <a href="https://www.linkedin.com/company/heurix-search/" target="_blank" rel="noopener" aria-label="LinkedIn" class="foot-social-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+      </a>
+    </div>
+    <div class="foot-legal">
+      Heurix — Entreprise individuelle (micro-entreprise). SIRET 107 681 900 00018. Conseil en systèmes et logiciels informatiques.<br>
+      © <span id="year">2026</span> Heurix. Tous droits réservés.
+    </div>
+  </div>
+</footer>
+
+<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+
+<script src="../search.js"></script>
+<script src="../nav-dropdown.js"></script>
+<script src="../mobile-nav.js?v=1784970606"></script>
+<div id="pricing-nudge" class="pricing-nudge">
+  <button type="button" class="pricing-nudge-close" aria-label="Fermer">&times;</button>
+  <div class="pricing-nudge-kicker">Essai gratuit 14 jours</div>
+  <p>Testez le Search API sur votre catalogue, sans carte bancaire.</p>
+  <a href="../pricing.html" class="btn">Voir les tarifs</a>
+</div>
+<script src="../pricing-nudge.js"></script>
+</body>
+</html>
