@@ -144,11 +144,75 @@
     dashboard.hidden = false;
   }
 
+  // ---------------- Tendances sur les indicateurs (audit UX, point 6) ----------------
+  //
+  // Un chiffre seul ne dit pas si la situation s'ameliore : 42 recherches sans
+  // resultat est bon ou mauvais selon qu'on en avait 20 ou 200 le mois d'avant.
+  //
+  // LE SENS DE LA VARIATION N'EST PAS LE SENS DE LA COULEUR. Plus de
+  // recherches est bon ; plus d'erreurs est mauvais ; plus de recherches sans
+  // resultat est mauvais. Un vert automatique sur toute hausse serait
+  // trompeur -- c'est le piege de ce genre d'affichage.
+  var SENS_TENDANCE = {
+    "searches": "hausse_bonne",
+    "usage": "neutre",            // consommer son quota n'est ni bon ni mauvais
+    "zero-rate": "hausse_mauvaise",
+    "errors": "hausse_mauvaise",
+  };
+
+  function afficherTendances(comparaison) {
+    if (!comparaison || !comparaison.variations) return;
+    var v = comparaison.variations;
+    var correspondance = {
+      "searches": v.recherches,
+      "zero-rate": v.taux_sans_resultat,
+      "errors": v.erreurs,
+      "usage": v.recherches,
+    };
+
+    Object.keys(correspondance).forEach(function (cle) {
+      var el = document.getElementById("trend-" + cle);
+      if (!el) return;
+      var pct = correspondance[cle];
+
+      // None cote moteur : la periode precedente etait vide. On n'affiche
+      // rien plutot qu'un « +100 % » qui serait un demarrage, pas une
+      // progression.
+      if (pct === null || pct === undefined) { el.hidden = true; return; }
+      if (Math.abs(pct) < 1) {
+        el.hidden = false;
+        el.className = "kpi-tendance kpi-tendance-stable";
+        el.textContent = "stable";
+        return;
+      }
+
+      var hausse = pct > 0;
+      var sens = SENS_TENDANCE[cle] || "neutre";
+      var couleur = sens === "neutre" ? "neutre"
+        : (hausse === (sens === "hausse_bonne") ? "bonne" : "mauvaise");
+
+      el.hidden = false;
+      el.className = "kpi-tendance kpi-tendance-" + couleur;
+      el.innerHTML = (hausse ? "&#9650;" : "&#9660;") + " " +
+        Math.abs(pct).toLocaleString("fr-FR") + "&nbsp;%" +
+        "<span class='kpi-tendance-ref'>vs période précédente</span>";
+    });
+  }
+
   function renderStats(summary, usage) {
     document.getElementById("stat-searches").textContent = summary.total_searches.toLocaleString("fr-FR");
     document.getElementById("stat-zero-rate").textContent = L.zeroRate(summary.zero_result_rate);
     document.getElementById("stat-errors").textContent = summary.total_errors.toLocaleString("fr-FR");
     document.getElementById("stat-usage").textContent = usage.requests.toLocaleString("fr-FR");
+    // La comparaison est un appel distinct : elle ne doit pas retarder
+    // l'affichage des chiffres principaux.
+    if (typeof activeKey !== "undefined" && activeKey) {
+      var jours = (document.getElementById("period-select") || {}).value || 30;
+      apiFetch("/v1/analytics/comparison?days=" + jours, activeKey)
+        .then(afficherTendances)
+        .catch(function () { /* les tendances sont un bonus */ });
+    }
+
     var emailEl = document.getElementById("account-email");
     emailEl.textContent = usage.account_email ? "Connecté en tant que " + usage.account_email : "";
   }
@@ -889,6 +953,86 @@
     return { texte: e.message || "Erreur non détaillée", brut: true };
   }
 
+  // ---------------- Signalement des erreurs (audit UX, point 4) ----------------
+  //
+  // LE PIEGE QUE CE CODE EVITE : badger toutes les erreurs apprendrait a
+  // l'utilisateur a ignorer le badge.
+  //
+  // Un 401 est un evenement NORMAL d'exploitation -- une cle mal copiee, un
+  // robot qui tatonne. Le journal en contient regulierement, sans qu'aucune
+  // action ne soit requise. Un 404 sur un catalogue inexistant aussi.
+  //
+  // On ne signale donc que ce qui DEMANDE UNE ACTION :
+  //   429 -> quota depasse, le service se degrade pour les visiteurs
+  //   422 -> integration cassee cote site
+  //   5xx -> defaut du moteur
+  //
+  // Et un etat « vu » : le badge s'eteint apres consultation, sinon il
+  // devient un decor permanent.
+  var CODES_ACTIONNABLES = [429, 422, 500, 502, 503];
+  var _dernieresErreurs = [];
+  var CLE_ERREURS_VUES = "heurix_erreurs_vues_le";
+
+  function memoireLocale(cle, valeur) {
+    try {
+      var W = document.defaultView || window;
+      if (!W.localStorage) return null;
+      if (valeur === undefined) return W.localStorage.getItem(cle);
+      W.localStorage.setItem(cle, valeur);
+      return valeur;
+    } catch (e) { return null; }
+  }
+
+  function majSignalementErreurs(erreurs) {
+    var badge = document.getElementById("nav-badge-erreurs");
+    var banniere = document.getElementById("dash-alerte-erreurs");
+    if (!erreurs) erreurs = [];
+
+    var actionnables = erreurs.filter(function (e) {
+      return CODES_ACTIONNABLES.indexOf(e.status_code) !== -1;
+    });
+
+    // Nouveautes depuis la derniere consultation. Sans cette notion, le badge
+    // afficherait le meme nombre indefiniment.
+    var vuLe = memoireLocale(CLE_ERREURS_VUES);
+    var nouvelles = vuLe
+      ? actionnables.filter(function (e) { return e.at > vuLe; })
+      : actionnables;
+
+    if (badge) {
+      badge.hidden = nouvelles.length === 0;
+      badge.textContent = nouvelles.length > 9 ? "9+" : String(nouvelles.length);
+      badge.setAttribute("aria-label", nouvelles.length + " erreur(s) demandant votre attention");
+    }
+
+    if (banniere) {
+      if (actionnables.length === 0) {
+        banniere.hidden = true;
+      } else {
+        banniere.hidden = false;
+        var pluriel = actionnables.length > 1;
+        banniere.innerHTML =
+          "<span class='dash-alerte-texte'><strong>" + actionnables.length +
+            " erreur" + (pluriel ? "s" : "") + "</strong> demande" + (pluriel ? "nt" : "") +
+            " votre attention sur cette période.</span>" +
+          "<button type='button' class='dash-alerte-action' data-pane='pane-errors'>" +
+            "Voir le détail</button>";
+        var bouton = banniere.querySelector(".dash-alerte-action");
+        if (bouton) bouton.addEventListener("click", function () { showPane("pane-errors"); });
+      }
+    }
+  }
+
+  function marquerErreursVues(erreurs) {
+    // La date de l'erreur la PLUS RECENTE, pas l'heure courante : une erreur
+    // survenue pendant la consultation ne doit pas etre marquee vue.
+    if (!erreurs || !erreurs.length) return;
+    var plusRecente = erreurs.reduce(function (max, e) {
+      return e.at > max ? e.at : max;
+    }, "");
+    if (plusRecente) memoireLocale(CLE_ERREURS_VUES, plusRecente);
+  }
+
   function showPane(paneId) {
     ALL_PANE_IDS.forEach(function (id) {
       var el = document.getElementById(id);
@@ -904,6 +1048,12 @@
     // besoin de resaisir le catalogue a chaque fois.
     if (typeof appliquerCatalogueOuverture === "function") appliquerCatalogueOuverture(paneId);
     if (paneId === "pane-billing" && cleCourante) renderBilling(cleCourante);
+    // Consulter les erreurs les marque vues : le badge s'eteint.
+    if (paneId === "pane-errors" && typeof _dernieresErreurs !== "undefined") {
+      marquerErreursVues(_dernieresErreurs);
+      var b = document.getElementById("nav-badge-erreurs");
+      if (b) b.hidden = true;
+    }
     // Remonte en haut du nouvel ecran. Sans cela, un utilisateur descendu
     // dans un pave long arrive sur le suivant deja defile, et ne voit pas
     // ce qu'il vient d'ouvrir -- on doit remonter a la main pour comprendre
@@ -2544,6 +2694,8 @@
       renderTable("zero-results-table", "zero-results-empty", zeroResults, function (q) {
         return "<td>" + esc(q.query) + "</td><td class='num'>" + q.count + "</td>";
       });
+      _dernieresErreurs = errors || [];
+      majSignalementErreurs(errors);
       renderTable("errors-table", "errors-empty", errors, function (e) {
         var t = traduireErreur(e);
         var html = "<td class='err-cell'>" +

@@ -16,7 +16,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="robots" content="noindex">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css?v=1785104382">
+<link rel="stylesheet" href="styles.css?v=1785105091">
 <link rel="canonical" href="https://heurix.fr/console.html">
 </head>
 <body>
@@ -203,7 +203,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <div class="console-sidebar-sublabel">Search</div>
             <button type="button" class="console-sidebar-item" data-pane="pane-top-queries">Recherches populaires</button>
             <button type="button" class="console-sidebar-item" data-pane="pane-zero-results">Sans résultat</button>
-            <button type="button" class="console-sidebar-item" data-pane="pane-errors">Erreurs</button>
+            <button type="button" class="console-sidebar-item" data-pane="pane-errors">Erreurs<span class="nav-badge" id="nav-badge-erreurs" hidden></span></button>
             <div class="console-sidebar-sublabel">Ranking</div>
             <button type="button" class="console-sidebar-item" data-pane="pane-category-views">Produits les plus vus</button>
           </div>
@@ -231,6 +231,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div id="dash-content" hidden>
 
           <div id="pane-overview" class="console-pane">
+            <div class="dash-alerte" id="dash-alerte-erreurs" hidden></div>
             <h2 class="console-pane-title">Vue d'ensemble</h2>
 
             <div id="overview-empty-state" class="console-panel" hidden>
@@ -247,22 +248,22 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               <div class="console-stats">
                 <div class="console-stat">
                   <div class="icn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
-                  <div class="console-stat-num" id="stat-searches">–</div>
+                  <div class="console-stat-num" id="stat-searches">–</div><span class="kpi-tendance" id="trend-searches" hidden></span>
                   <div class="console-stat-label">Recherches</div>
                 </div>
                 <div class="console-stat console-stat-warn">
                   <div class="icn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="13"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
-                  <div class="console-stat-num" id="stat-zero-rate">–</div>
+                  <div class="console-stat-num" id="stat-zero-rate">–</div><span class="kpi-tendance" id="trend-zero-rate" hidden></span>
                   <div class="console-stat-label">Taux sans résultat</div>
                 </div>
                 <div class="console-stat">
                   <div class="icn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
-                  <div class="console-stat-num" id="stat-errors">–</div>
+                  <div class="console-stat-num" id="stat-errors">–</div><span class="kpi-tendance" id="trend-errors" hidden></span>
                   <div class="console-stat-label">Erreurs</div>
                 </div>
                 <div class="console-stat">
                   <div class="icn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6z"/></svg></div>
-                  <div class="console-stat-num" id="stat-usage">–</div>
+                  <div class="console-stat-num" id="stat-usage">–</div><span class="kpi-tendance" id="trend-usage" hidden></span>
                   <div class="console-stat-label">Requêtes ce mois-ci</div>
                 </div>
               </div>
@@ -859,7 +860,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="console-select.js?v=1784983392"></script>
 <script src="visite-editeur.js?v=1785060993"></script>
-<script src="console.js?v=1785104382"></script>
+<script src="console.js?v=1785105091"></script>
 <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 
 <script src="nav-dropdown.js"></script>
