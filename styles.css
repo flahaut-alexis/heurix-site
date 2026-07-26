@@ -2936,3 +2936,32 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
   opacity:.45; background:var(--bg-soft); border-color:var(--line);
 }
 .addon-row.browse-addon-disabled .addon-row-main{ cursor:not-allowed; }
+
+/* Recommandation de pack de regles.
+   Ton informatif et non alarmant : c est une suggestion, pas une erreur. */
+.pack-suggestion{
+  margin:10px 0 0; padding:12px 14px;
+  background:rgba(84,104,255,0.06); border:1px solid rgba(84,104,255,0.2);
+  border-radius:9px;
+}
+.pack-suggestion[hidden]{ display:none; }
+.pack-suggestion-titre{ margin:0 0 5px; font-size:13px; color:var(--ink); }
+.pack-suggestion-titre strong{ color:var(--blue-deep); }
+.pack-suggestion-detail{ margin:0 0 10px; font-size:12px; line-height:1.5; color:var(--ink-muted); }
+.pack-suggestion-detail strong{ color:var(--ink); }
+.pack-suggestion-appliquer{
+  font-family:inherit; font-size:12.5px; font-weight:600; cursor:pointer;
+  padding:7px 13px; border-radius:8px;
+  background:var(--blue); border:1px solid var(--blue); color:#fff;
+}
+.pack-suggestion-appliquer:hover{ background:var(--blue-deep); }
+.pack-suggestion-note{
+  display:block; margin-top:7px; font-size:11.5px; color:var(--ink-muted);
+}
+/* Cas ou AUCUN pack ne reconnait rien : ton d avertissement, car c est un
+   vrai probleme et non une suggestion d amelioration. */
+.pack-suggestion-alerte{
+  background:#FFFBF3; border-color:#F0DDB8; font-size:12.5px; line-height:1.5;
+  color:var(--ink);
+}
+.pack-suggestion-alerte strong{ color:#8A5A00; }

@@ -2718,7 +2718,67 @@
     loadRules();
   }
 
+  // Recommandation de pack d'apres le contenu du catalogue.
+  //
+  // Rien n'aidait l'utilisateur a choisir : un catalogue de vetements pouvait
+  // rester sur le pack outillage sans avertissement -- c'est le cas de
+  // boutique-demo, zero annotation sur trois produits.
+  //
+  // ON AFFICHE, ON N'APPLIQUE PAS. Le bouton propose, l'utilisateur decide :
+  // changer le pack modifierait ses resultats de recherche en production.
+  function chargerSuggestionPack(cardEl, catalogue, key) {
+    var zone = cardEl.querySelector(".pack-suggestion");
+    if (!zone) return;
+    apiFetch("/v1/index/" + encodeURIComponent(catalogue) + "/rulepack-suggestion", key)
+      .then(function (d) {
+        if (!d.recommande) {
+          // On affiche quand meme le constat quand aucun pack ne reconnait
+          // rien : un catalogue a zero annotation est un probleme, meme sans
+          // meilleur candidat.
+          var meilleur = d.meilleur || {};
+          if (meilleur.produits_annotes === 0) {
+            zone.hidden = false;
+            zone.className = "pack-suggestion pack-suggestion-alerte";
+            zone.innerHTML = "<strong>Aucun attribut reconnu</strong> sur cet échantillon. " +
+              "Vos produits ne bénéficient d'aucune annotation — vérifiez que le pack " +
+              "correspond bien à votre secteur, ou créez des règles personnalisées.";
+          } else {
+            zone.hidden = true;
+          }
+          return;
+        }
+        var actuel = d.actuel || { produits_annotes: 0 };
+        var meilleur = d.meilleur;
+        zone.hidden = false;
+        zone.className = "pack-suggestion";
+        zone.innerHTML =
+          "<p class='pack-suggestion-titre'>Le pack <strong>" + esc(d.recommande) +
+            "</strong> semble mieux adapté</p>" +
+          "<p class='pack-suggestion-detail'>Sur " + d.echantillon + " produits : " +
+            "<strong>" + meilleur.produits_annotes + "</strong> annotés avec « " +
+            esc(d.recommande) + " », contre <strong>" + actuel.produits_annotes +
+            "</strong> avec « " + esc(d.pack_actuel || "aucun") + " ».</p>" +
+          "<button type='button' class='pack-suggestion-appliquer' data-pack='" +
+            esc(d.recommande) + "'>Utiliser le pack " + esc(d.recommande) + "</button>" +
+          "<span class='pack-suggestion-note'>Le changement réindexe votre catalogue.</span>";
+
+        var bouton = zone.querySelector(".pack-suggestion-appliquer");
+        bouton.addEventListener("click", function () {
+          // On pre-selectionne SANS enregistrer : l'utilisateur voit son
+          // choix et confirme par le bouton d'enregistrement existant.
+          var select = cardEl.querySelector(".catalog-rulepack-select");
+          if (select) {
+            select.value = d.recommande;
+            select.dispatchEvent(new (select.ownerDocument.defaultView || window).Event("change", { bubbles: true }));
+          }
+          zone.hidden = true;
+        });
+      })
+      .catch(function () { /* la suggestion est un bonus, jamais bloquante */ });
+  }
+
   function wireCatalogCard(cardEl, catalog, key) {
+    chargerSuggestionPack(cardEl, catalog.catalog, key);
     // Bascule bac a sable. Les deux refus possibles (plan insuffisant,
     // plafond atteint) viennent du moteur avec leur message : on les affiche
     // tels quels plutot que de dupliquer la regle cote client, ou elle
@@ -2788,6 +2848,7 @@
         '<button type="button" class="catalog-rulepack-save">Enregistrer</button>' +
         '<span class="catalog-rulepack-status"></span>' +
       '</div>' +
+      '<div class="pack-suggestion" hidden></div>' +
       // Synonymes et regles personnalisees ont ete DEPLACES vers
       // Personnalisation -> Search (voir wireCustomRulesPane) : un
       // utilisateur qui veut personnaliser sa recherche n'allait pas les

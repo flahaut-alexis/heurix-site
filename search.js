@@ -45,6 +45,7 @@ const HEURIX_SEARCH_INDEX = [
   { title: "Finance & comptabilité", excerpt: "SIRET, SIREN, IBAN et TVA reconnus à leur structure, quelle que soit la mise en forme.", path: "solutions/finance.html" },
   { title: "Construire une page de catégorie avec Browse & Discovery", excerpt: "Guide pas à pas : catégories à l'indexation, snippet prêt à l'emploi, tri par prix, marge ou popularité réelle.", path: "blog/guide-page-categorie-browse.html" },
   { title: "Pourquoi la recherche vectorielle échoue sur les catalogues techniques", excerpt: "La similarité sémantique est un atout sur du langage naturel et un défaut sur des références structurées. Démonstration sur de vrais cas.", path: "blog/recherche-vectorielle-catalogues-techniques.html" },
+  { title: "Pourquoi « Heurix » ? Un peu de grec, un peu de gaulois", excerpt: "La racine du nom ne signifie pas « chercher », mais « trouver ». C'est toute la différence — et c'était involontaire.", path: "blog/origine-du-nom-heurix.html" },
   { title: "Elasticsearch et Lucene : ce que vous devrez construire vous-même", excerpt: "Ces outils peuvent tout faire. C'est le sujet : ils fournissent les briques, pas la logique métier de vos références techniques.", path: "blog/elasticsearch-lucene-catalogue-technique.html" },
   { title: "Guide d'utilisation : piloter votre recherche au quotidien", excerpt: "Lire vos statistiques, corriger un classement, faire évoluer le moteur depuis la console — une fois l'installation faite.", path: "blog/guide-utilisation-console.html" },
   { title: "Guide de mise en route — de la souscription à l'installation complète", excerpt: "Le parcours complet : premier catalogue, Heurix Tracker, intégration front-end, serveur MCP.", path: "blog/guide-mise-en-route.html" },
@@ -53,6 +54,7 @@ const HEURIX_SEARCH_INDEX = [
 
 // Derniers articles du blog — affichés par défaut, avant toute frappe.
 const HEURIX_LATEST_ARTICLES = [
+  "blog/origine-du-nom-heurix.html",
   "blog/elasticsearch-lucene-catalogue-technique.html",
   "blog/guide-utilisation-console.html",
   "blog/recherche-vectorielle-catalogues-techniques.html",
