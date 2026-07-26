@@ -2767,3 +2767,72 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
   opacity:.45; background:var(--bg-soft); border-color:var(--line);
 }
 .addon-card:has(.browse-addon-checkbox:disabled) .addon-card-head{ cursor:not-allowed; }
+
+/* ------------------------------------------------------------------ */
+/* Option Ranking — interrupteur a bascule                             */
+/*                                                                      */
+/* Inspire du « Retirer le logo » de Brevo : une ligne, libelle a       */
+/* gauche, prix et bascule a droite. Une case a cocher se lit comme une */
+/* preference ; une bascule avec son prix se lit comme une option       */
+/* payante qu on active -- ce qu elle est.                              */
+/* ------------------------------------------------------------------ */
+.addon-row{
+  position:relative;
+  margin:14px 0 16px; padding:13px 15px;
+  background:#fff; border:1px solid var(--line); border-radius:11px;
+  transition:border-color .14s ease, box-shadow .14s ease;
+}
+.addon-row:hover{ border-color:#C9D2FB; }
+.addon-row:has(.browse-addon-checkbox:checked){
+  border-color:var(--blue); box-shadow:0 0 0 3px rgba(84,104,255,0.11);
+  background:var(--blue-tint);
+}
+.addon-row-main{
+  display:flex; align-items:center; gap:14px; cursor:pointer; margin:0;
+}
+.addon-row-label{ flex:1; min-width:0; }
+.addon-row-name{ display:block; font-size:13.5px; color:var(--ink); }
+.addon-row-name strong{ color:var(--blue-deep); font-weight:800; }
+.addon-row-desc{ display:block; margin-top:2px; font-size:11.5px; color:var(--ink-muted); }
+.addon-row-right{ display:flex; align-items:center; gap:12px; flex-shrink:0; }
+.addon-row-price{ font-size:14px; font-weight:800; color:var(--ink); white-space:nowrap; }
+.addon-row-price em{ font-style:normal; font-size:11px; font-weight:600; color:var(--ink-muted); }
+
+/* La bascule. Le champ reste dans le document pour rester accessible au
+   clavier et aux lecteurs d ecran : on le masque visuellement, on ne le
+   retire pas. */
+.visually-hidden{
+  position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+  overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;
+}
+.addon-switch{
+  display:inline-block; position:relative;
+  width:42px; height:24px; flex-shrink:0;
+  background:#D3D6E4; border-radius:100px;
+  transition:background .16s ease;
+}
+.addon-switch-knob{
+  position:absolute; top:3px; left:3px; width:18px; height:18px;
+  background:#fff; border-radius:50%;
+  box-shadow:0 1px 3px rgba(18,20,43,0.28);
+  transition:transform .16s ease;
+}
+.browse-addon-checkbox:checked ~ .addon-switch{ background:var(--blue); }
+.browse-addon-checkbox:checked ~ .addon-switch .addon-switch-knob{ transform:translateX(18px); }
+/* Focus clavier visible sur la bascule, pas sur le champ masque. */
+.browse-addon-checkbox:focus-visible ~ .addon-switch{
+  outline:3px solid var(--blue); outline-offset:2px;
+}
+
+/* Remise, en pastille d angle : elle ne doit pas concurrencer le prix. */
+.addon-row-save{
+  position:absolute; top:-9px; right:14px;
+  font-size:10.5px; font-weight:800; letter-spacing:.02em;
+  background:#0F7A3D; color:#fff; padding:2px 8px; border-radius:100px;
+}
+
+/* Option indisponible en annuel : toute la ligne se grise. */
+.addon-row.browse-addon-disabled{
+  opacity:.45; background:var(--bg-soft); border-color:var(--line);
+}
+.addon-row.browse-addon-disabled .addon-row-main{ cursor:not-allowed; }

@@ -26,7 +26,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css?v=1785078725">
+<link rel="stylesheet" href="styles.css?v=1785082186">
 <link rel="canonical" href="https://heurix.fr/pricing.html">
 <script type="application/ld+json">
 {
@@ -182,14 +182,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <li>Facettes dynamiques, recherche fédérée</li>
           <li>Support par email</li>
         </ul>
-        <div class="addon-card">
-          <label class="addon-card-head">
-            <input type="checkbox" class="browse-addon-checkbox" id="browse-toggle-growth" data-search-plan="growth" data-search-price="49" data-browse-price="67" data-browse-plan="growth">
-            <span class="addon-card-title">Ajouter <strong>Ranking</strong></span>
-            <span class="addon-card-price">+67&nbsp;€<span>/mois</span></span>
+        <div class="addon-row">
+          <label class="addon-row-main" for="browse-toggle-growth">
+            <span class="addon-row-label">
+              <span class="addon-row-name">Ajouter <strong>Ranking</strong></span>
+              <span class="addon-row-desc">Classement de vos pages de catégorie</span>
+            </span>
+            <span class="addon-row-right">
+              <span class="addon-row-price">+<span class="addon-amount-growth">67</span>&nbsp;€<em class="addon-period">/mois</em></span>
+              <input type="checkbox" class="browse-addon-checkbox visually-hidden" id="browse-toggle-growth" data-search-plan="growth" data-search-price="49" data-browse-price="67" data-browse-plan="growth">
+              <span class="addon-switch" aria-hidden="true"><span class="addon-switch-knob"></span></span>
+            </span>
           </label>
-          <p class="addon-card-desc">Classez vos pages de catégorie : épinglage, marge, stock, popularité. Indépendant de la recherche.</p>
-          <span class="addon-card-save">−25 % en le prenant maintenant</span>
+          <span class="addon-row-save">−25 %</span>
         </div>
         <button type="button" class="btn checkout-btn" data-plan="growth">Démarrer l'essai gratuit</button>
       </div>
@@ -205,14 +210,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <li>Catalogues illimités</li>
           <li>Support prioritaire</li>
         </ul>
-        <div class="addon-card">
-          <label class="addon-card-head">
-            <input type="checkbox" class="browse-addon-checkbox" id="browse-toggle-scale" data-search-plan="scale" data-search-price="139" data-browse-price="67" data-browse-plan="growth">
-            <span class="addon-card-title">Ajouter <strong>Ranking</strong></span>
-            <span class="addon-card-price">+67&nbsp;€<span>/mois</span></span>
+        <div class="addon-row">
+          <label class="addon-row-main" for="browse-toggle-scale">
+            <span class="addon-row-label">
+              <span class="addon-row-name">Ajouter <strong>Ranking</strong></span>
+              <span class="addon-row-desc">Classement de vos pages de catégorie</span>
+            </span>
+            <span class="addon-row-right">
+              <span class="addon-row-price">+<span class="addon-amount-scale">67</span>&nbsp;€<em class="addon-period">/mois</em></span>
+              <input type="checkbox" class="browse-addon-checkbox visually-hidden" id="browse-toggle-scale" data-search-plan="scale" data-search-price="139" data-browse-price="67" data-browse-plan="growth">
+              <span class="addon-switch" aria-hidden="true"><span class="addon-switch-knob"></span></span>
+            </span>
           </label>
-          <p class="addon-card-desc">Classez vos pages de catégorie : épinglage, marge, stock, popularité. Indépendant de la recherche.</p>
-          <span class="addon-card-save">−25 % en le prenant maintenant</span>
+          <span class="addon-row-save">−25 %</span>
         </div>
         <button type="button" class="btn btn-ghost checkout-btn" data-plan="scale">Démarrer l'essai gratuit</button>
       </div>
@@ -554,7 +564,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
       const payload = { plan: plan };
       if (browsePlan) payload.browse_plan = browsePlan;
-      // Periode posee par la reglette (billing-toggle.js?v=1785078725). Absente = mensuel,
+      // Periode posee par la reglette (billing-toggle.js?v=1785082186). Absente = mensuel,
       // ce qui est aussi le defaut cote moteur : un visiteur arrive avant le
       // chargement du script souscrit normalement.
       const periode = btn.getAttribute('data-billing-period');
@@ -635,6 +645,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <a href="blog/guide-mise-en-route.html" class="btn btn-ghost">Voir le guide →</a>
 </div>
 <script src="guide-nudge.js"></script>
-<script src="billing-toggle.js?v=1785078725"></script>
+<script src="billing-toggle.js?v=1785082186"></script>
 </body>
 </html>
