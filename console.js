@@ -634,6 +634,41 @@
     trial: "Essai gratuit", starter: "Starter", growth: "Growth", scale: "Scale",
   };
 
+  // ---------------- Jauges de quota (audit UX, point 2) ----------------
+  //
+  // Les quotas s'affichaient en chiffres bruts : « 1247 / 15000 ». Correct,
+  // mais un chiffre ne dit pas si l'on est proche du plafond -- il faut
+  // diviser de tête. Une barre le montre d'un coup d'oeil.
+  //
+  // POURQUOI CE POINT EST LE PLUS UTILE DES SIX : Alexis a lui-meme decouvert
+  // le plafond de 2 catalogues par un MESSAGE D'ERREUR, en tentant d'en creer
+  // un troisieme. Un signal en amont l'aurait evite.
+  //
+  // Seuils : 80 % ambre, 100 % rouge. Le vert n'est pas un encouragement a
+  // consommer, c'est l'absence d'alerte.
+  function jaugeQuota(libelle, utilise, plafond, unite) {
+    if (!plafond) {
+      // Sans plafond connu (plan sur mesure), on affiche la valeur brute
+      // plutot qu'une barre trompeuse remplie a 0 %.
+      return "<div class='quota-ligne'><span class='quota-label'>" + libelle +
+        "</span><span class='quota-valeur'>" + utilise.toLocaleString("fr-FR") +
+        (unite ? " " + unite : "") + "</span></div>";
+    }
+    var pct = Math.min(100, Math.round(utilise / plafond * 100));
+    var niveau = pct >= 100 ? "critique" : (pct >= 80 ? "attention" : "normal");
+    return "<div class='quota-ligne'>" +
+        "<span class='quota-label'>" + libelle + "</span>" +
+        "<span class='quota-valeur'>" + utilise.toLocaleString("fr-FR") + " / " +
+          plafond.toLocaleString("fr-FR") + (unite ? " " + unite : "") +
+          " <em>(" + pct + "&nbsp;%)</em></span>" +
+      "</div>" +
+      "<div class='quota-barre quota-" + niveau + "' role='progressbar' " +
+        "aria-valuenow='" + pct + "' aria-valuemin='0' aria-valuemax='100' " +
+        "aria-label='" + libelle + " : " + pct + " pour cent utilisés'>" +
+        "<span style='width:" + pct + "%;'></span>" +
+      "</div>";
+  }
+
   function renderBilling(key) {
     var grille = document.getElementById("billing-grid");
     var essai = document.getElementById("billing-trial");
@@ -641,22 +676,25 @@
 
     apiFetch("/v1/usage", key).then(function (d) {
       var plan = d.plan || (d.limit_status && d.limit_status.plan) || "—";
-      var lignes = [
-        ["Formule", "<strong style='font-size:16px;'>" + esc(PLAN_LIBELLES[plan] || plan) + "</strong>"],
-        ["Requêtes ce mois-ci", d.requests + (d.limit ? " / " + d.limit : "")],
-      ];
-      if (d.catalogs_used !== undefined) {
-        lignes.push(["Catalogues", d.catalogs_used + (d.catalogs_limit ? " / " + d.catalogs_limit : "")]);
-      }
-      if (d.products_limit) lignes.push(["Produits par catalogue", "jusqu'à " + d.products_limit]);
-      if (d.browse_plan && d.browse_plan !== "none") {
-        lignes.push(["Browse & Discovery", esc(PLAN_LIBELLES[d.browse_plan] || d.browse_plan)]);
-      }
+      var html = "<div class='billing-row'><span class='billing-label'>Formule</span>" +
+        "<span class='billing-value'><strong style='font-size:16px;'>" +
+        esc(PLAN_LIBELLES[plan] || plan) + "</strong></span></div>";
 
-      grille.innerHTML = lignes.map(function (l) {
-        return "<div class='billing-row'><span class='billing-label'>" + l[0] +
-          "</span><span class='billing-value'>" + l[1] + "</span></div>";
-      }).join("");
+      html += jaugeQuota("Requêtes ce mois-ci", d.requests || 0, d.limit);
+      if (d.catalogs_used !== undefined) {
+        html += jaugeQuota("Catalogues", d.catalogs_used, d.catalogs_limit);
+      }
+      if (d.products_limit) {
+        html += "<div class='quota-ligne'><span class='quota-label'>Produits par catalogue</span>" +
+          "<span class='quota-valeur'>jusqu'à " + d.products_limit.toLocaleString("fr-FR") +
+          "</span></div>";
+      }
+      if (d.browse_plan && d.browse_plan !== "none") {
+        html += "<div class='billing-row'><span class='billing-label'>Ranking</span>" +
+          "<span class='billing-value'>" + esc(PLAN_LIBELLES[d.browse_plan] || d.browse_plan) +
+          "</span></div>";
+      }
+      grille.innerHTML = html;
 
       // Le bloc est TOUJOURS visible, avec un libelle adapte.
       //
@@ -800,6 +838,55 @@
     // Focus sur ANNULER, pas sur Supprimer : quelqu'un qui valide au clavier
     // par reflexe ne doit pas detruire ses donnees.
     fond.querySelector(".confirm-annuler").focus();
+  }
+
+  // ---------------- Journal d'erreurs lisible (audit UX, point 3) ----------------
+  //
+  // Chaque ligne affichait le brut : endpoint, code HTTP, message technique.
+  // Exploitable par un developpeur, opaque pour un responsable e-commerce.
+  //
+  // CE QUI ETAIT DEJA BON : les messages du moteur ecrits recemment sont deja
+  // orientes utilisateur (« Le bac a sable est disponible sur les plans Growth
+  // et Scale »). Ce qui restait brut, ce sont les codes standards.
+  //
+  // REPLI OBLIGATOIRE sur le message d'origine. Sans lui, un type d'erreur non
+  // prevu s'afficherait vide -- pire que technique.
+  var TRADUCTIONS_ERREUR = [
+    { code: 429, motif: /catalogue/i,
+      texte: "Vous avez atteint le nombre de catalogues de votre formule.",
+      action: { libelle: "Voir les formules", pane: "pane-billing" } },
+    { code: 429, motif: null,
+      texte: "Vous avez dépassé le quota de requêtes de votre formule.",
+      action: { libelle: "Voir les formules", pane: "pane-billing" } },
+    { code: 403, motif: /bac à sable|sandbox/i,
+      texte: "Le bac à sable demande une formule Growth ou Scale.",
+      action: { libelle: "Comparer les offres", pane: "pane-billing" } },
+    { code: 403, motif: /clé publique|publique/i,
+      texte: "Une clé publique a tenté une action réservée aux clés serveur.",
+      aide: "Les clés publiques ne peuvent que lire. Vérifiez quelle clé votre site utilise." },
+    { code: 401, motif: null,
+      texte: "Une requête est arrivée avec une clé API invalide ou absente.",
+      aide: "Vérifiez la clé configurée sur votre site. Ce message apparaît aussi lorsqu'un robot teste votre API — c'est alors sans conséquence." },
+    { code: 404, motif: /catalog/i,
+      texte: "Une requête a visé un catalogue qui n'existe pas.",
+      aide: "Vérifiez le nom du catalogue dans votre intégration : il est sensible à la casse." },
+    { code: 422, motif: null,
+      texte: "Une requête a été refusée : format ou paramètre invalide.",
+      aide: "C'est généralement un problème d'intégration côté site, pas côté moteur." },
+    { code: 500, motif: null,
+      texte: "Une erreur interne du moteur s'est produite.",
+      aide: "Si elle se répète, écrivez à contact@heurix.fr avec la date et l'heure." },
+  ];
+
+  function traduireErreur(e) {
+    for (var i = 0; i < TRADUCTIONS_ERREUR.length; i++) {
+      var t = TRADUCTIONS_ERREUR[i];
+      if (t.code !== e.status_code) continue;
+      if (t.motif && !t.motif.test(e.message || "")) continue;
+      return t;
+    }
+    // Repli : on montre le message d'origine plutot que rien.
+    return { texte: e.message || "Erreur non détaillée", brut: true };
   }
 
   function showPane(paneId) {
@@ -2458,7 +2545,22 @@
         return "<td>" + esc(q.query) + "</td><td class='num'>" + q.count + "</td>";
       });
       renderTable("errors-table", "errors-empty", errors, function (e) {
-        return "<td class='mono'>" + esc(e.endpoint) + "</td><td>" + e.status_code + "</td><td>" + esc(e.message) + "</td><td>" + L.when(e.at) + "</td>";
+        var t = traduireErreur(e);
+        var html = "<td class='err-cell'>" +
+          "<span class='err-phrase'>" + esc(t.texte) + "</span>";
+        if (t.aide) html += "<span class='err-aide'>" + esc(t.aide) + "</span>";
+        if (t.action) {
+          html += "<button type='button' class='err-action' data-goto-pane='" +
+            t.action.pane + "'>" + esc(t.action.libelle) + "</button>";
+        }
+        // Le detail technique est REPLIE, pas supprime : un developpeur en a
+        // besoin, un responsable e-commerce non.
+        html += "<details class='err-detail'><summary>Détail technique</summary>" +
+          "<span class='mono'>" + esc(e.endpoint) + " — HTTP " + e.status_code + "</span>" +
+          (t.brut ? "" : "<span class='mono'>" + esc(e.message || "") + "</span>") +
+          "</details>";
+        html += "</td><td class='err-quand'>" + L.when(e.at) + "</td>";
+        return html;
       });
 
       dashLoading.hidden = true;
@@ -2867,11 +2969,51 @@
     '</div>';
   }
 
+  function verifierQuotaCatalogues(key) {
+    var zone = document.getElementById("catalogs-quota-alerte");
+    if (!zone) return;
+    apiFetch("/v1/usage", key).then(function (d) {
+      var utilise = d.catalogs_used, plafond = d.catalogs_limit;
+      if (utilise === undefined || !plafond) { zone.hidden = true; return; }
+
+      var restants = plafond - utilise;
+      // On alerte au DERNIER catalogue disponible, pas seulement au plafond :
+      // prevenir apres coup n'a plus d'interet.
+      if (restants > 1) { zone.hidden = true; return; }
+
+      zone.hidden = false;
+      var atteint = restants <= 0;
+      zone.className = "quota-alerte" + (atteint ? " quota-alerte-critique" : "");
+      zone.innerHTML =
+        "<div class='quota-alerte-texte'>" +
+          "<strong>" + (atteint
+            ? "Vous avez atteint la limite de votre formule"
+            : "Il vous reste un catalogue disponible") + "</strong>" +
+          "<span>" + utilise + " catalogue" + (utilise > 1 ? "s" : "") + " sur " + plafond +
+            " avec la formule " + esc(PLAN_LIBELLES[d.plan] || d.plan || "actuelle") + ". " +
+            (atteint
+              ? "La création d'un nouveau catalogue sera refusée."
+              : "Au-delà, la création sera refusée.") +
+          "</span>" +
+        "</div>" +
+        "<button type='button' class='btn quota-alerte-action' data-goto-pane='pane-billing'>" +
+          "Voir les formules</button>";
+    }).catch(function () { /* l'alerte est un bonus, jamais bloquante */ });
+  }
+
   function loadCatalogs(key) {
     var loading = document.getElementById("catalogs-loading");
     var list = document.getElementById("catalogs-list");
     var empty = document.getElementById("catalogs-empty");
     loading.hidden = false; list.innerHTML = ""; empty.hidden = true;
+
+    // SIGNAL PROACTIF sur le quota de catalogues (audit UX, point 2).
+    //
+    // Alexis a decouvert le plafond de 2 catalogues par un MESSAGE D'ERREUR,
+    // en tentant d'en creer un troisieme. Le prevenir en amont evite la
+    // decouverte par l'echec -- et transforme une frustration en occasion de
+    // montee en gamme.
+    verifierQuotaCatalogues(key);
 
     Promise.all([
       apiFetch("/v1/index/catalogs", key),
