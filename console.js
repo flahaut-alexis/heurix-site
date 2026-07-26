@@ -214,7 +214,9 @@
     }
 
     var emailEl = document.getElementById("account-email");
-    emailEl.textContent = usage.account_email ? "Connecté en tant que " + usage.account_email : "";
+    // L'etiquette « Espace client » porte deja le contexte : repeter
+    // « Connecte en tant que » serait redondant a cote.
+    emailEl.textContent = usage.account_email || "—";
   }
 
   var keyDisplayWired = false;
@@ -985,12 +987,13 @@
 
   function majSignalementErreurs(erreurs) {
     var badge = document.getElementById("nav-badge-erreurs");
-    var banniere = document.getElementById("dash-alerte-erreurs");
+    var bilan = document.getElementById("err-bilan");
     if (!erreurs) erreurs = [];
 
     var actionnables = erreurs.filter(function (e) {
       return CODES_ACTIONNABLES.indexOf(e.status_code) !== -1;
     });
+    var bruit = erreurs.length - actionnables.length;
 
     // Nouveautes depuis la derniere consultation. Sans cette notion, le badge
     // afficherait le meme nombre indefiniment.
@@ -1005,22 +1008,39 @@
       badge.setAttribute("aria-label", nouvelles.length + " erreur(s) demandant votre attention");
     }
 
-    if (banniere) {
-      if (actionnables.length === 0) {
-        banniere.hidden = true;
-      } else {
-        banniere.hidden = false;
-        var pluriel = actionnables.length > 1;
-        banniere.innerHTML =
-          "<span class='dash-alerte-texte'><strong>" + actionnables.length +
-            " erreur" + (pluriel ? "s" : "") + "</strong> demande" + (pluriel ? "nt" : "") +
-            " votre attention sur cette période.</span>" +
-          "<button type='button' class='dash-alerte-action' data-pane='pane-errors'>" +
-            "Voir le détail</button>";
-        var bouton = banniere.querySelector(".dash-alerte-action");
-        if (bouton) bouton.addEventListener("click", function () { showPane("pane-errors"); });
-      }
+    // BILAN EN TETE DE SECTION, et non banniere sur le tableau de bord.
+    //
+    // La version precedente annoncait « 2 erreurs demandent votre attention »
+    // sur le tableau de bord. Deplacee ici telle quelle, elle aurait double
+    // le tableau qui les liste juste en dessous -- une redondance, pas une
+    // amelioration.
+    //
+    // Elle apporte donc autre chose : le PARTAGE entre ce qui demande une
+    // action et ce qui n'est que du bruit d'exploitation. C'est l'information
+    // que le tableau ne donne pas, et celle qui evite de s'alarmer de 401
+    // provoques par des robots.
+    if (!bilan) return;
+    if (erreurs.length === 0) { bilan.hidden = true; return; }
+
+    bilan.hidden = false;
+    var aTraiter = actionnables.length;
+    bilan.className = "err-bilan" + (aTraiter > 0 ? " err-bilan-actif" : " err-bilan-calme");
+    var html = "<div class='err-bilan-chiffres'>";
+    html += "<span class='err-bilan-bloc " + (aTraiter > 0 ? "err-bilan-alerte" : "") + "'>" +
+              "<strong>" + aTraiter + "</strong>" +
+              "<em>" + (aTraiter === 1 ? "erreur à traiter" : "erreurs à traiter") + "</em>" +
+            "</span>";
+    if (bruit > 0) {
+      html += "<span class='err-bilan-bloc'>" +
+                "<strong>" + bruit + "</strong>" +
+                "<em>" + (bruit === 1 ? "événement sans conséquence" : "événements sans conséquence") + "</em>" +
+              "</span>";
     }
+    html += "</div>";
+    html += "<p class='err-bilan-note'>" + (aTraiter > 0
+      ? "Les erreurs à traiter concernent un quota dépassé, une intégration en défaut ou un incident du moteur. Les autres — clés invalides, catalogues inconnus — proviennent souvent de robots qui testent votre API : elles n'ont pas d'effet sur vos visiteurs."
+      : "Aucune erreur ne demande d'action. Les événements listés ci-dessous — clés invalides, catalogues inconnus — proviennent souvent de robots qui testent votre API.") + "</p>";
+    bilan.innerHTML = html;
   }
 
   function marquerErreursVues(erreurs) {
