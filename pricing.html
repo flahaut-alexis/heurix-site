@@ -18,7 +18,7 @@
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css?v=1785190572">
+<link rel="stylesheet" href="styles.css?v=1785193989">
 <link rel="canonical" href="https://heurix.fr/pricing.html">
 <script type="application/ld+json">
 {
@@ -235,7 +235,55 @@
 
 <section class="soft" id="browse-standalone">
   <div class="wrap">
-    <p class="pricing-note" style="text-align:center;">Besoin de Ranking <strong>seul</strong>, sans moteur de recherche ? <button type="button" class="btn btn-ghost checkout-browse-btn" data-browse-plan="starter" style="margin:0 6px;">Ranking Starter — 39&nbsp;€/mois</button> <button type="button" class="btn btn-ghost checkout-browse-btn" data-browse-plan="growth" style="margin:0 6px;">Ranking Growth — 89&nbsp;€/mois</button> <button type="button" class="btn btn-ghost checkout-browse-btn" data-browse-plan="scale" style="margin:0 6px;">Ranking Scale — 199&nbsp;€/mois</button></p>
+    <div class="kicker" style="text-align:center;">Ranking seul</div>
+    <h2 style="text-align:center; margin:6px 0 8px;">Besoin de Ranking sans le moteur de recherche&nbsp;?</h2>
+    <p class="section-lede" style="text-align:center; max-width:620px; margin:0 auto 26px;">
+      Le classement de vos pages de catégorie fonctionne indépendamment de la recherche.
+      Souscrit avec un plan Search, il bénéficie de <strong>&minus;25&nbsp;%</strong>.
+    </p>
+
+    <div class="pricing-grid">
+      <div class="price-tier-card">
+        <div class="price-tier-name">Ranking Starter</div>
+        <div class="price-tier-amount"><span id="ranking-amount-starter">39</span>&nbsp;€<span class="price-tier-period">/mois</span></div>
+        <p class="price-tier-desc">Pages de catégorie d'un catalogue en croissance.</p>
+        <ul class="price-tier-features">
+          <li><strong>50 000</strong> requêtes de classement / mois</li>
+          <li>Épinglage, marge, stock, popularité</li>
+          <li>Éditeur visuel et simulation</li>
+          <li>Dépassement facturé à l'usage, jamais de coupure</li>
+        </ul>
+        <button type="button" class="btn checkout-browse-btn" data-browse-plan="starter">Souscrire</button>
+      </div>
+      <div class="price-tier-card">
+        <div class="price-tier-name">Ranking Growth</div>
+        <div class="price-tier-amount"><span id="ranking-amount-growth">89</span>&nbsp;€<span class="price-tier-period">/mois</span></div>
+        <p class="price-tier-desc">Trafic soutenu, plusieurs rayons actifs.</p>
+        <ul class="price-tier-features">
+          <li><strong>150 000</strong> requêtes de classement / mois</li>
+          <li>Épinglage, marge, stock, popularité</li>
+          <li>Éditeur visuel et simulation</li>
+          <li>Dépassement facturé à l'usage, jamais de coupure</li>
+        </ul>
+        <button type="button" class="btn checkout-browse-btn" data-browse-plan="growth">Souscrire</button>
+      </div>
+      <div class="price-tier-card">
+        <div class="price-tier-name">Ranking Scale</div>
+        <div class="price-tier-amount"><span id="ranking-amount-scale">199</span>&nbsp;€<span class="price-tier-period">/mois</span></div>
+        <p class="price-tier-desc">Gros catalogue, forte fréquentation.</p>
+        <ul class="price-tier-features">
+          <li><strong>500 000</strong> requêtes de classement / mois</li>
+          <li>Épinglage, marge, stock, popularité</li>
+          <li>Éditeur visuel et simulation</li>
+          <li>Dépassement facturé à l'usage, jamais de coupure</li>
+        </ul>
+        <button type="button" class="btn checkout-browse-btn" data-browse-plan="scale">Souscrire</button>
+      </div>
+    </div>
+
+    <p class="pricing-note" style="text-align:center; margin-top:22px;">
+      Tarifs HT. En souscrivant, vous acceptez nos <a href="cgv.html">CGV</a>.
+    </p>
   </div>
 </section>
 
@@ -552,7 +600,7 @@
 
       const payload = { plan: plan };
       if (browsePlan) payload.browse_plan = browsePlan;
-      // Periode posee par la reglette (billing-toggle.js?v=1785190572). Absente = mensuel,
+      // Periode posee par la reglette (billing-toggle.js?v=1785193989). Absente = mensuel,
       // ce qui est aussi le defaut cote moteur : un visiteur arrive avant le
       // chargement du script souscrit normalement.
       const periode = btn.getAttribute('data-billing-period');
@@ -634,7 +682,7 @@
   <a href="blog/guide-mise-en-route.html" class="btn btn-ghost">Voir le guide →</a>
 </div>
 <script src="guide-nudge.js"></script>
-<script src="billing-toggle.js?v=1785190572"></script>
+<script src="billing-toggle.js?v=1785193989"></script>
 <script src="consent.js?v=1785150583"></script>
 </body>
 </html>

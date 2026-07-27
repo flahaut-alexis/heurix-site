@@ -176,6 +176,21 @@
         "<span class='addon-eco'>" + euros(ref - net) + "&nbsp;€ " + TXT.economises + "</span>";
     });
 
+
+    // Cartes Ranking autonome : elles doivent suivre la bascule comme celles
+    // du dessus. Sans cela, un visiteur passant en annuel verrait les plans
+    // Search changer et les paliers Ranking rester au tarif mensuel — une
+    // incohérence qui fait douter de toute la grille.
+    var RANKING_SEUL = { starter: 39, growth: 89, scale: 199 };
+    Object.keys(RANKING_SEUL).forEach(function (cle) {
+      var el = document.getElementById("ranking-amount-" + cle);
+      if (!el) return;
+      var mensuel = RANKING_SEUL[cle];
+      ecrire(el, euros(estAnnuel ? annuel(mensuel) : mensuel));
+      var per = el.parentElement.querySelector(".price-tier-period");
+      if (per) per.textContent = estAnnuel ? PAR_AN : PAR_MOIS;
+    });
+
     toggle.querySelectorAll(".billing-toggle-opt").forEach(function (b) {
       b.classList.toggle("on", b.getAttribute("data-period") === periode);
     });

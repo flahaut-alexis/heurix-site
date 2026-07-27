@@ -18,7 +18,7 @@
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="../favicon-32.png">
 <link rel="apple-touch-icon" href="../apple-touch-icon.png">
-<link rel="stylesheet" href="../styles.css?v=1785190572">
+<link rel="stylesheet" href="../styles.css?v=1785193989">
 <link rel="canonical" href="https://heurix.fr/pricing.html">
 <script type="application/ld+json">
 {
@@ -173,8 +173,8 @@
         <div class="addon-row">
           <label class="addon-row-main" for="browse-toggle-growth">
             <span class="addon-row-label">
-              <span class="addon-row-name">Add <strong>Ranking</strong></span>
-              <span class="addon-row-desc">Ranking for your category pages</span>
+              <span class="addon-row-name">Ajouter <strong>Ranking</strong></span>
+              <span class="addon-row-desc">Classement de vos pages de catégorie</span>
             </span>
             <span class="addon-row-right">
               <input type="checkbox" class="browse-addon-checkbox visually-hidden" id="browse-toggle-growth" data-search-plan="growth" data-search-price="49" data-browse-price="29" data-browse-plan="starter">
@@ -201,8 +201,8 @@
         <div class="addon-row">
           <label class="addon-row-main" for="browse-toggle-scale">
             <span class="addon-row-label">
-              <span class="addon-row-name">Add <strong>Ranking</strong></span>
-              <span class="addon-row-desc">Ranking for your category pages</span>
+              <span class="addon-row-name">Ajouter <strong>Ranking</strong></span>
+              <span class="addon-row-desc">Classement de vos pages de catégorie</span>
             </span>
             <span class="addon-row-right">
               <input type="checkbox" class="browse-addon-checkbox visually-hidden" id="browse-toggle-scale" data-search-plan="scale" data-search-price="139" data-browse-price="67" data-browse-plan="growth">
@@ -229,13 +229,61 @@
 
     </div>
 
-    <p class="pricing-note">Tarifs HT. Facturation mensuelle, sans engagement de durée — vous changez ou arrêtez à tout moment. L'indexation de votre catalogue n'est jamais décomptée de votre quota de requêtes. <strong>Ranking</strong> a son propre quota, indépendant de la recherche — cochez l'option sur Growth ou Scale pour -25%, ou <a href="#browse-standalone">souscrivez-le seul, sans recherche</a>. En souscrivant, vous acceptez nos <a href="cgv.html">CGV</a>.</p>
+    <p class="pricing-note">Prices excl. VAT. Facturation mensuelle, sans engagement de durée — vous changez ou arrêtez à tout moment. L'indexation de votre catalogue n'est jamais décomptée de votre quota de requêtes. <strong>Ranking</strong> a son propre quota, indépendant de la recherche — cochez l'option sur Growth ou Scale pour -25%, ou <a href="#browse-standalone">souscrivez-le seul, sans recherche</a>. By subscribing you accept our <a href="cgv.html">CGV</a>.</p>
   </div>
 </section>
 
 <section class="soft" id="browse-standalone">
   <div class="wrap">
-    <p class="pricing-note" style="text-align:center;">Need Ranking <strong>on its own</strong>, without the search engine? <button type="button" class="btn btn-ghost checkout-browse-btn" data-browse-plan="starter" style="margin:0 6px;">Ranking Starter — 39&nbsp;€/month</button> <button type="button" class="btn btn-ghost checkout-browse-btn" data-browse-plan="growth" style="margin:0 6px;">Ranking Growth — 89&nbsp;€/month</button> <button type="button" class="btn btn-ghost checkout-browse-btn" data-browse-plan="scale" style="margin:0 6px;">Ranking Scale — 199&nbsp;€/month</button></p>
+    <div class="kicker" style="text-align:center;">Ranking on its own</div>
+    <h2 style="text-align:center; margin:6px 0 8px;">Need Ranking without the search engine?</h2>
+    <p class="section-lede" style="text-align:center; max-width:620px; margin:0 auto 26px;">
+      Category page ranking works independently of search.
+      Taken with a Search plan, it gets <strong>&minus;25&nbsp;%</strong>.
+    </p>
+
+    <div class="pricing-grid">
+      <div class="price-tier-card">
+        <div class="price-tier-name">Ranking Starter</div>
+        <div class="price-tier-amount"><span id="ranking-amount-starter">39</span>&nbsp;€<span class="price-tier-period">/month</span></div>
+        <p class="price-tier-desc">Category pages for a growing catalogue.</p>
+        <ul class="price-tier-features">
+          <li><strong>50 000</strong> ranking requests / month</li>
+          <li>Pinning, margin, stock, popularity</li>
+          <li>Visual editor and simulation</li>
+          <li>Overage billed per use, never cut off</li>
+        </ul>
+        <button type="button" class="btn checkout-browse-btn" data-browse-plan="starter">Subscribe</button>
+      </div>
+      <div class="price-tier-card">
+        <div class="price-tier-name">Ranking Growth</div>
+        <div class="price-tier-amount"><span id="ranking-amount-growth">89</span>&nbsp;€<span class="price-tier-period">/month</span></div>
+        <p class="price-tier-desc">Steady traffic, several active aisles.</p>
+        <ul class="price-tier-features">
+          <li><strong>150 000</strong> ranking requests / month</li>
+          <li>Pinning, margin, stock, popularity</li>
+          <li>Visual editor and simulation</li>
+          <li>Overage billed per use, never cut off</li>
+        </ul>
+        <button type="button" class="btn checkout-browse-btn" data-browse-plan="growth">Subscribe</button>
+      </div>
+      <div class="price-tier-card">
+        <div class="price-tier-name">Ranking Scale</div>
+        <div class="price-tier-amount"><span id="ranking-amount-scale">199</span>&nbsp;€<span class="price-tier-period">/month</span></div>
+        <p class="price-tier-desc">Large catalogue, heavy traffic.</p>
+        <ul class="price-tier-features">
+          <li><strong>500 000</strong> ranking requests / month</li>
+          <li>Pinning, margin, stock, popularity</li>
+          <li>Visual editor and simulation</li>
+          <li>Overage billed per use, never cut off</li>
+        </ul>
+        <button type="button" class="btn checkout-browse-btn" data-browse-plan="scale">Subscribe</button>
+      </div>
+    </div>
+
+    <p class="pricing-note" style="text-align:center; margin-top:22px;">
+      Prices excl. VAT. By subscribing you accept our <a href="cgv.html">CGV</a>.
+    </p>
   </div>
 </section>
 
@@ -376,7 +424,7 @@
 
 <section>
   <div class="wrap">
-    <div class="kicker">Frequently asked questions</div>
+    <div class="kicker">Questions fréquentes</div>
     <h2>Ce qu'on vous demande le plus souvent sur le Search API.</h2>
     <div class="faq-list reveal">
 
@@ -552,7 +600,7 @@
 
       const payload = { plan: plan };
       if (browsePlan) payload.browse_plan = browsePlan;
-      // Periode posee par la reglette (billing-toggle.js?v=1785190572). Absente = mensuel,
+      // Periode posee par la reglette (billing-toggle.js?v=1785193989). Absente = mensuel,
       // ce qui est aussi le defaut cote moteur : un visiteur arrive avant le
       // chargement du script souscrit normalement.
       const periode = btn.getAttribute('data-billing-period');
@@ -634,7 +682,7 @@
   <a href="../blog/guide-mise-en-route.html" class="btn btn-ghost">Voir le guide →</a>
 </div>
 <script src="../guide-nudge.js"></script>
-<script src="../billing-toggle.js?v=1785190572"></script>
+<script src="../billing-toggle.js?v=1785193989"></script>
 <script src="../consent.js?v=1785150583"></script>
 </body>
 </html>
