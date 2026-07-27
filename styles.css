@@ -3223,3 +3223,14 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 @media (max-width:720px){
   .portrait{ float:none; width:150px; margin:0 auto 22px; }
 }
+
+/* Sous-titres de decoupage (audit UX, point 2.4).
+   Les sections etaient ecrites en paragraphes compacts sans repere : un
+   visiteur qui balaie la page n y accrochait rien. Ces sous-titres donnent
+   des points d ancrage sans casser la hierarchie h1/h2 qui porte le
+   referencement. */
+.pt-sous{
+  margin:22px 0 6px; font-size:15.5px; font-weight:700; color:var(--ink);
+  line-height:1.35;
+}
+.pt-sous:first-of-type{ margin-top:0; }

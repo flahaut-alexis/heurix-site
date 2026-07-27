@@ -23,6 +23,15 @@
   function optionAnnuelle() { return annuel(optionMensuelle()); }
   function euros(n) { return n.toLocaleString("fr-FR"); }
 
+  // Suffixes selon la langue de la page : ils etaient codes en dur, et la
+  // page anglaise affichait « 529 EUR/an ».
+  var EN = (document.documentElement.lang || "fr").slice(0, 2).toLowerCase() === "en";
+  var PAR_MOIS = EN ? "/month" : "/mois";
+  var PAR_AN = EN ? "/year" : "/an";
+  var TXT = EN
+    ? { soit: "that is", economises: "saved", surLAnnee: "per year", dont: "of which Ranking" }
+    : { soit: "soit", economises: "économisés", surLAnnee: "sur l'année", dont: "dont Ranking" };
+
   var toggle = document.getElementById("billing-toggle");
   if (!toggle) return;
   var periode = "monthly";
@@ -58,7 +67,7 @@
 
       var periodeEl = montant && montant.parentElement
         ? montant.parentElement.querySelector(".price-tier-period") : null;
-      if (periodeEl) periodeEl.textContent = estAnnuel ? "/an" : "/mois";
+      if (periodeEl) periodeEl.textContent = estAnnuel ? PAR_AN : PAR_MOIS;
 
       // DÉCOMPOSITION plutôt que remplacement silencieux : le lecteur doit
       // voir ce qui compose le total, sinon il constate un chiffre qui a
@@ -67,8 +76,8 @@
       if (detail) {
         detail.hidden = option === 0;
         if (option > 0) {
-          detail.innerHTML = "dont Ranking : <strong>" + euros(option) +
-            "&nbsp;€" + (estAnnuel ? "/an" : "/mois") + "</strong>";
+          detail.innerHTML = TXT.dont + " : <strong>" + euros(option) +
+            "&nbsp;€" + (estAnnuel ? PAR_AN : PAR_MOIS) + "</strong>";
         }
       }
 
@@ -78,9 +87,9 @@
         if (estAnnuel) {
           var totalMensuel = PLANS[plan] + (option ? optionMensuelle() : 0);
           var economie = totalMensuel * 12 - (base + option);
-          note.innerHTML = "soit <strong>" + euros(Math.round((base + option) / 12)) +
-            "&nbsp;€/mois</strong> — <strong>" + euros(economie) +
-            "&nbsp;€ économisés</strong> sur l'année";
+          note.innerHTML = TXT.soit + " <strong>" + euros(Math.round((base + option) / 12)) +
+            "&nbsp;€" + PAR_MOIS + "</strong> — <strong>" + euros(economie) +
+            "&nbsp;€ " + TXT.economises + "</strong> " + TXT.surLAnnee;
         }
       }
     });
@@ -90,12 +99,12 @@
     // le signal au lieu d'une pastille « −25 % » isolée.
     var ref = estAnnuel ? annuel(RANKING_AUTONOME) : RANKING_AUTONOME;
     var net = estAnnuel ? optionAnnuelle() : optionMensuelle();
-    var unite = estAnnuel ? "/an" : "/mois";
+    var unite = estAnnuel ? PAR_AN : PAR_MOIS;
     document.querySelectorAll("[data-addon-pricing]").forEach(function (zone) {
       zone.innerHTML =
         "<s class='addon-ref'>" + euros(ref) + "&nbsp;€" + unite + "</s>" +
         "<strong class='addon-net'>" + euros(net) + "&nbsp;€" + unite + "</strong>" +
-        "<span class='addon-eco'>" + euros(ref - net) + "&nbsp;€ économisés</span>";
+        "<span class='addon-eco'>" + euros(ref - net) + "&nbsp;€ " + TXT.economises + "</span>";
     });
 
     toggle.querySelectorAll(".billing-toggle-opt").forEach(function (b) {
