@@ -18,7 +18,7 @@
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css?v=1785182088">
+<link rel="stylesheet" href="styles.css?v=1785187379">
 <link rel="canonical" href="https://heurix.fr/about.html">
 <script type="application/ld+json">
 {
@@ -133,7 +133,36 @@
     <div class="about-text">
       <p>Heurix est né deux fois.</p>
       <p>La première fois, c'était en 2015 : un prototype de moteur d'annotation, en avance sur son temps sur un point — la façon d'utiliser les expressions régulières. Des règles compilées en automates, composées, appliquées en cascade : le niveau 1 reconnaît les motifs bruts, le niveau 2 les combine en concepts. Nous appelions ces jeux de règles des <strong>prismes</strong>, et l'image dit tout : on place un prisme devant la lumière — les données brutes — et il révèle ce qu'elle contient. Les entités nommées apparaissent, chacune avec sa couleur. Ce qui semblait une chaîne de caractères devient du sens.</p>
-      <p>La seconde fois, c'est aujourd'hui. Ce moteur, réécrit de zéro aux standards actuels, répond à un besoin constaté sur le terrain, sur plusieurs verticales — outillage, pièces détachées, mode, industrie : <strong>des acheteurs prêts à acheter qui ne trouvent pas des produits pourtant en stock</strong>, parce que le moteur de leur site lit « M8 x 20 — A2 » comme du texte, et non comme un diamètre, une longueur et une matière. Passée au prisme de Heurix, la même référence révèle ses composantes — et vos clients la trouvent, quelle que soit la façon dont ils l'écrivent.</p>
+      <p><figure class="portrait">
+        <!-- Déposez photo-alexis.jpg dans img/. Si le fichier est absent, le
+             bloc se masque tout seul : une image cassée ferait plus de mal
+             qu'une absence d'image. -->
+        <img src="img/photo-alexis.jpg" alt="Alexis Flahaut, fondateur de Heurix"
+             loading="lazy" onerror="this.closest('.portrait').hidden=true;">
+        <figcaption>Alexis Flahaut — fondateur</figcaption>
+      </figure>
+
+      <h2>Ce qui s'est passé entre les deux</h2>
+
+      <p>Le projet s'est arrêté. Pas pour une raison noble : la vie a pris le dessus. Des enfants, un changement de poste avec des responsabilités qui ne laissaient pas de place à un second chantier. On ne mène pas un moteur de recherche le soir après une journée qui en compte déjà douze.</p>
+
+      <p>Et il y a eu un échec commercial dont je peux parler maintenant qu'il est loin : nous vendions le logiciel <strong>installé chez le client</strong>. C'était le modèle de l'époque, et c'était le mauvais. Chaque déploiement devenait un projet, chaque mise à jour une négociation. Un distributeur de visserie n'a pas d'équipe pour exploiter un moteur d'annotation sur ses serveurs — il veut que ça marche.</p>
+
+      <p>Il faut ajouter le reste, qui est moins confortable à écrire : <strong>j'étais trop junior pour mener ce projet</strong>. La technologie tenait, l'intuition était juste, mais je n'avais ni le recul ni le métier pour transformer un bon prototype en produit. C'est une chose qu'on ne voit qu'après.</p>
+
+      <h2>Pourquoi le reprendre dix ans plus tard</h2>
+
+      <p>Parce que le besoin est réel, et que je l'ai vérifié autrement que par intuition. J'ai rencontré <strong>des centaines de clients</strong> dans mes fonctions commerciales. Le même problème revenait : leur recherche interne ne trouve pas des produits qu'ils ont en stock, et leurs pages de catégorie classent les articles dans un ordre que personne n'a choisi.</p>
+
+      <p>Les solutions existent. Certaines sont excellentes. Mais elles sont chères, et taillées pour des équipes qui ont un développeur à y consacrer. Entre le moteur natif de la plateforme, qui ne suffit pas, et une solution à plusieurs dizaines de milliers d'euros par an, <strong>il n'y a presque rien</strong> pour une entreprise de taille moyenne.</p>
+
+      <p>Deux choses ont changé depuis 2015. Le <strong>SaaS</strong> a résolu le problème du déploiement : plus rien à installer, une clé API et c'est en ligne. Et les <strong>agents conversationnels</strong> ont rendu la recherche structurée plus utile qu'elle ne l'était — un agent qui interroge un catalogue a besoin de comprendre qu'une référence a une grammaire, pas seulement des mots.</p>
+
+      <p>Le moteur, lui, a été réécrit de zéro. L'original était en Java, avec de vrais transducteurs à états finis — la reconnaissance y était linéaire par construction. La version actuelle est en Python, et n'a pas tout à fait cette garantie : elle a gagné en lisibilité et en vitesse de développement ce qu'elle a perdu en pureté théorique. C'est un compromis assumé, et il est documenté.</p>
+
+      <h2>La seconde fois</h2>
+
+      La seconde fois, c'est aujourd'hui. Ce moteur, réécrit de zéro aux standards actuels, répond à un besoin constaté sur le terrain, sur plusieurs verticales — outillage, pièces détachées, mode, industrie : <strong>des acheteurs prêts à acheter qui ne trouvent pas des produits pourtant en stock</strong>, parce que le moteur de leur site lit « M8 x 20 — A2 » comme du texte, et non comme un diamètre, une longueur et une matière. Passée au prisme de Heurix, la même référence révèle ses composantes — et vos clients la trouvent, quelle que soit la façon dont ils l'écrivent.</p>
       <p><strong>Notre mission : faire de la recherche interne un levier de conversion, pas un fardeau.</strong> Les grandes plateformes de search sont pensées pour l'enterprise — chères, complexes, surdimensionnées. Les moteurs livrés par défaut avec les CMS échouent dès que le catalogue devient technique. Entre les deux, des milliers de PME au catalogue volumineux subissent leur moteur de recherche au lieu de s'en servir. C'est pour elles que Heurix existe.</p>
       <p>Heurix est une entreprise française, indépendante, sans levée de fonds. Le moteur est conçu et développé en France, hébergé chez OVH, et chaque résultat qu'il renvoie est explicable — il vous dit pourquoi il sort, terme par terme, annotation par annotation. Pas de boîte noire, pas de magie : de la mécanique de précision.</p>
       <p class="about-signature">Alexis Flahaut, fondateur</p>
