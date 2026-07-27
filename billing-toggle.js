@@ -16,11 +16,37 @@
   var REMISE_OPTION = 0.25;     // −25 % sur Ranking pris avec un plan
 
   var PLANS = { starter: 19, growth: 49, scale: 139 };
-  var RANKING_AUTONOME = 89;    // €/mois seul ; 67 € en option
+  // TARIF DE L'OPTION, PAR CARTE (correctif du 27 juillet).
+  //
+  // Une constante unique donnait le MÊME prix et le MÊME quota sur Growth et
+  // Scale : 67 € pour 150 000 requêtes de Ranking dans les deux cas. Sur un
+  // plan Growth à 30 000 requêtes de recherche, cela vendait cinq fois le
+  // quota principal — et sur Scale, le Ranking devenait le plafond
+  // contraignant, puisque les pages de catégorie génèrent plus d'appels que
+  // la recherche.
+  //
+  // Chaque carte porte désormais son propre rattachement :
+  //   Growth -> Ranking starter  (50 000 req.)  39 € plein, 29 € remisé
+  //   Scale  -> Ranking growth   (150 000 req.) 89 € plein, 67 € remisé
+  //
+  // Le prix est lu sur l'attribut data de la case, source unique partagée
+  // avec ce qui part chez Stripe.
+  var RANKING_PLEIN = { starter: 39, growth: 89 };
+
+  function optionCarte(plan) {
+    var ch = document.getElementById("browse-toggle-" + plan);
+    if (!ch) return null;
+    var remise = parseInt(ch.getAttribute("data-browse-price"), 10);
+    var rattache = ch.getAttribute("data-browse-plan") || "growth";
+    return { remise: remise, plein: RANKING_PLEIN[rattache] || remise, plan: rattache };
+  }
 
   function annuel(m) { return Math.round(m * 12 * (1 - REMISE_ANNUELLE)); }
-  function optionMensuelle() { return Math.round(RANKING_AUTONOME * (1 - REMISE_OPTION)); }
-  function optionAnnuelle() { return annuel(optionMensuelle()); }
+  function optionMensuelle(plan) {
+    var o = optionCarte(plan);
+    return o ? o.remise : 0;
+  }
+  function optionAnnuelle(plan) { return annuel(optionMensuelle(plan)); }
   function euros(n) { return n.toLocaleString("fr-FR"); }
 
   // Suffixes selon la langue de la page : ils etaient codes en dur, et la
@@ -62,7 +88,7 @@
     Object.keys(PLANS).forEach(function (plan) {
       var base = estAnnuel ? annuel(PLANS[plan]) : PLANS[plan];
       var option = rankingActif(plan)
-        ? (estAnnuel ? optionAnnuelle() : optionMensuelle()) : 0;
+        ? (estAnnuel ? optionAnnuelle(plan) : optionMensuelle(plan)) : 0;
 
       // HIÉRARCHIE INVERSÉE (validée par Alexis le 27 juillet).
       //
@@ -83,7 +109,7 @@
 
       if (estAnnuel) {
         var mensuelEquivalent = Math.round((base + option) / 12);
-        var pleinTarif = PLANS[plan] + (option ? optionMensuelle() : 0);
+        var pleinTarif = PLANS[plan] + (option ? optionMensuelle(plan) : 0);
         var economieAnnuelle = pleinTarif * 12 - (base + option);
 
         ecrire(montant, euros(mensuelEquivalent));
@@ -132,13 +158,18 @@
       if (note) note.hidden = true;
     });
 
-    // Prix de l'option : référence barrée, prix remisé, économie — même
-    // traitement que la bascule annuelle, pour que le lecteur reconnaisse
-    // le signal au lieu d'une pastille « −25 % » isolée.
-    var ref = estAnnuel ? annuel(RANKING_AUTONOME) : RANKING_AUTONOME;
-    var net = estAnnuel ? optionAnnuelle() : optionMensuelle();
-    var unite = estAnnuel ? PAR_AN : PAR_MOIS;
+    // Prix de l'option : référence barrée, prix remisé, économie — calculés
+    // PAR CARTE, puisque le plan Ranking rattaché diffère.
     document.querySelectorAll("[data-addon-pricing]").forEach(function (zone) {
+      var carte = zone.closest(".price-tier-card");
+      var ch = carte ? carte.querySelector(".browse-addon-checkbox") : null;
+      if (!ch) return;
+      var plan = ch.id.replace("browse-toggle-", "");
+      var o = optionCarte(plan);
+      if (!o) return;
+      var ref = estAnnuel ? annuel(o.plein) : o.plein;
+      var net = estAnnuel ? annuel(o.remise) : o.remise;
+      var unite = estAnnuel ? PAR_AN : PAR_MOIS;
       zone.innerHTML =
         "<s class='addon-ref'>" + euros(ref) + "&nbsp;€" + unite + "</s>" +
         "<strong class='addon-net'>" + euros(net) + "&nbsp;€" + unite + "</strong>" +

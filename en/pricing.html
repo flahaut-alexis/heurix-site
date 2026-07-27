@@ -18,7 +18,7 @@
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="../favicon-32.png">
 <link rel="apple-touch-icon" href="../apple-touch-icon.png">
-<link rel="stylesheet" href="../styles.css?v=1785189419">
+<link rel="stylesheet" href="../styles.css?v=1785190572">
 <link rel="canonical" href="https://heurix.fr/pricing.html">
 <script type="application/ld+json">
 {
@@ -151,7 +151,7 @@
           <li>1 catalogue</li>
           <li>Cascade d'annotations &amp; regex</li>
           <li>Tolérance aux fautes, synonymes</li>
-          <li>Documentation support</li>
+          <li>Support par documentation</li>
         </ul>
         <button type="button" class="btn btn-ghost checkout-btn" data-plan="starter">Start free trial</button>
       </div>
@@ -177,7 +177,7 @@
               <span class="addon-row-desc">Ranking for your category pages</span>
             </span>
             <span class="addon-row-right">
-              <input type="checkbox" class="browse-addon-checkbox visually-hidden" id="browse-toggle-growth" data-search-plan="growth" data-search-price="49" data-browse-price="67" data-browse-plan="growth">
+              <input type="checkbox" class="browse-addon-checkbox visually-hidden" id="browse-toggle-growth" data-search-plan="growth" data-search-price="49" data-browse-price="29" data-browse-plan="starter">
               <span class="addon-switch" aria-hidden="true"><span class="addon-switch-knob"></span></span>
             </span>
           </label>
@@ -229,13 +229,13 @@
 
     </div>
 
-    <p class="pricing-note">Tarifs HT. Facturation mensuelle, sans engagement de durée — vous changez ou arrêtez à tout moment. L'indexation de votre catalogue n'est jamais décomptée de votre quota de requêtes. <strong>Ranking</strong> a son propre quota, indépendant de la recherche — cochez l'option sur Growth ou Scale pour -25%, ou <a href="#browse-standalone">souscrivez-le seul, sans recherche</a>. By subscribing you accept our <a href="cgv.html">CGV</a>.</p>
+    <p class="pricing-note">Tarifs HT. Facturation mensuelle, sans engagement de durée — vous changez ou arrêtez à tout moment. L'indexation de votre catalogue n'est jamais décomptée de votre quota de requêtes. <strong>Ranking</strong> a son propre quota, indépendant de la recherche — cochez l'option sur Growth ou Scale pour -25%, ou <a href="#browse-standalone">souscrivez-le seul, sans recherche</a>. En souscrivant, vous acceptez nos <a href="cgv.html">CGV</a>.</p>
   </div>
 </section>
 
 <section class="soft" id="browse-standalone">
   <div class="wrap">
-    <p class="pricing-note" style="text-align:center;">Besoin de Ranking <strong>seul</strong>, sans moteur de recherche ? <button type="button" class="btn btn-ghost checkout-browse-btn" data-browse-plan="starter" style="margin:0 6px;">Browse Starter — 39&nbsp;€/month</button> <button type="button" class="btn btn-ghost checkout-browse-btn" data-browse-plan="growth" style="margin:0 6px;">Browse Growth — 89&nbsp;€/month</button></p>
+    <p class="pricing-note" style="text-align:center;">Need Ranking <strong>on its own</strong>, without the search engine? <button type="button" class="btn btn-ghost checkout-browse-btn" data-browse-plan="starter" style="margin:0 6px;">Ranking Starter — 39&nbsp;€/month</button> <button type="button" class="btn btn-ghost checkout-browse-btn" data-browse-plan="growth" style="margin:0 6px;">Ranking Growth — 89&nbsp;€/month</button> <button type="button" class="btn btn-ghost checkout-browse-btn" data-browse-plan="scale" style="margin:0 6px;">Ranking Scale — 199&nbsp;€/month</button></p>
   </div>
 </section>
 
@@ -552,7 +552,7 @@
 
       const payload = { plan: plan };
       if (browsePlan) payload.browse_plan = browsePlan;
-      // Periode posee par la reglette (billing-toggle.js?v=1785189419). Absente = mensuel,
+      // Periode posee par la reglette (billing-toggle.js?v=1785190572). Absente = mensuel,
       // ce qui est aussi le defaut cote moteur : un visiteur arrive avant le
       // chargement du script souscrit normalement.
       const periode = btn.getAttribute('data-billing-period');
@@ -634,7 +634,7 @@
   <a href="../blog/guide-mise-en-route.html" class="btn btn-ghost">Voir le guide →</a>
 </div>
 <script src="../guide-nudge.js"></script>
-<script src="../billing-toggle.js?v=1785189419"></script>
+<script src="../billing-toggle.js?v=1785190572"></script>
 <script src="../consent.js?v=1785150583"></script>
 </body>
 </html>
