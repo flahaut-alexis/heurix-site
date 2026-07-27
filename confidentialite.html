@@ -1,14 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<!-- Google Tag Manager -->
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-PGLPLKDP');</script>
-<!-- End Google Tag Manager -->
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Politique de confidentialité — Heurix</title>
@@ -21,7 +13,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta property="og:url" content="https://heurix.fr/confidentialite.html">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css?v=1785106435">
+<link rel="stylesheet" href="styles.css?v=1785163598">
 <link rel="canonical" href="https://heurix.fr/confidentialite.html">
 <script type="application/ld+json">
 {
@@ -52,12 +44,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 </script>
 </head>
 <body>
-<!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PGLPLKDP"
-height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<!-- End Google Tag Manager (noscript) -->
-
-
 <header>
   <div class="header-top">
     <nav class="header-top-inner">
@@ -163,7 +149,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <li><strong>Nous ne stockons aucune donnée de carte bancaire.</strong> Les paiements sont traités par Stripe ; nous ne conservons qu'un identifiant client chez eux.</li>
         <li><strong>Nous ne vendons ni ne louons vos données</strong> à personne, et nous ne les utilisons pas à des fins publicitaires.</li>
         <li><strong>Nous n'exploitons pas vos catalogues</strong> à d'autres fins que de vous servir. Vos données ne servent pas à améliorer le service pour d'autres clients.</li>
-        <li><strong>Le site vitrine ne dépose aucun cookie de mesure d'audience.</strong></li>
+        <li><strong>Le site vitrine ne dépose aucun traceur avant votre consentement explicite — voir la section « Traceurs et cookies » ci-dessous.</strong></li>
       </ul>
 
       <h2>Un point de vigilance qui vous concerne</h2>
@@ -178,6 +164,43 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <tr><td>Stripe Payments Europe</td><td>Paiement et facturation</td><td>Irlande, avec transferts encadrés</td></tr>
       </table></div>
       <p>Chacun est lié par un contrat de sous-traitance au sens de l'article 28 du RGPD. Vos données ne sont transmises à aucun autre tiers.</p>
+
+      <h2>Traceurs et cookies</h2>
+      <p>Nous distinguons trois catégories. Seule la première fonctionne sans votre accord, parce qu'elle est indispensable au service que vous demandez.</p>
+
+      <div class="table-scroll"><table class="docs-params">
+        <tr><th>Nom</th><th>Finalité</th><th>Durée</th><th>Consentement</th></tr>
+        <tr>
+          <td><code class="docs-inline-code">heurix_session</code></td>
+          <td>Maintient votre connexion à l'espace client</td>
+          <td>Durée de la session</td>
+          <td>Non requis — strictement nécessaire</td>
+        </tr>
+        <tr>
+          <td><code class="docs-inline-code">heurix_catalogue_actif</code>, <code class="docs-inline-code">heurix_env_explique</code>, <code class="docs-inline-code">heurix_org_hint_vu</code>, <code class="docs-inline-code">heurix_tuto_editeur_vu</code></td>
+          <td>Mémorisent vos préférences d'affichage dans la console et les aides déjà consultées</td>
+          <td>Jusqu'à effacement de votre navigateur</td>
+          <td>Non requis — préférences d'un utilisateur authentifié</td>
+        </tr>
+        <tr>
+          <td><code class="docs-inline-code">heurix_consentement</code></td>
+          <td>Conserve votre choix sur cette page, pour ne pas vous le redemander</td>
+          <td>6 mois</td>
+          <td>Non requis — conserve précisément votre refus</td>
+        </tr>
+        <tr>
+          <td>Google Tag Manager <span class="mono">(GTM-PGLPLKDP)</span></td>
+          <td>Mesure d'audience et, le cas échéant, mesure de l'efficacité de nos campagnes</td>
+          <td>Selon les outils activés dans le conteneur</td>
+          <td><strong>Requis</strong> — ne se charge qu'après votre accord</td>
+        </tr>
+      </table></div>
+
+      <p><strong>Ce que nous avons corrigé.</strong> Jusqu'au 26 juillet 2026, Google Tag Manager se chargeait dès l'arrivée sur le site, sans recueil préalable de votre consentement, et cette page affirmait à tort qu'aucun traceur de mesure d'audience n'était déposé. Ce n'est plus le cas : aucun traceur non nécessaire ne part avant votre choix explicite. Nous le mentionnons parce qu'une politique de confidentialité qui masque ses corrections passées ne vaut pas grand-chose.</p>
+
+      <p><strong>Refuser n'a aucune conséquence.</strong> Le site et l'espace client fonctionnent à l'identique. Vous pouvez revenir sur votre choix à tout moment via le lien « Gérer les cookies » en bas de chaque page.</p>
+
+      <p><strong>Deux bibliothèques externes</strong> sont chargées depuis le service <span class="mono">cdnjs.cloudflare.com</span> pour afficher les graphiques et générer les exports PDF de votre console. Elles ne déposent aucun traceur, mais leur chargement expose votre adresse IP à Cloudflare, comme tout appel à un serveur tiers.</p>
 
       <h2>Vos droits</h2>
       <p>Vous disposez d'un droit d'accès, de rectification, d'effacement, de limitation et de portabilité sur vos données, ainsi que du droit de retirer votre consentement lorsque celui-ci fonde le traitement.</p>
@@ -209,6 +232,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <a href="index.html#faq">FAQ</a>
       <a href="cgv.html">CGV</a>
       <a href="mentions-legales.html">Mentions légales</a>
+          <a href="#" data-rouvrir-consentement>Gérer les cookies</a>
       <a href="mailto:contact@heurix.fr">contact@heurix.fr</a>
     </div>
     <div class="foot-social">
@@ -229,5 +253,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script src="search.js"></script>
 <script src="nav-dropdown.js"></script>
 <script src="mobile-nav.js?v=1784970606"></script>
+<script src="consent.js?v=1785150583"></script>
 </body>
 </html>

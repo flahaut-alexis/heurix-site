@@ -1,0 +1,21 @@
+[extend]
+useDefault = true
+
+[[rules]]
+id = "curl-auth-header"
+description = "En-tete Authorization dans un exemple de documentation"
+regex = '''(?i)-H\s+["']Authorization:\s*Bearer\s+([A-Za-z0-9_\-\.<>&;]{6,})["']'''
+secretGroup = 1
+
+  [rules.allowlist]
+  regexes = [
+    '''(?i)votre[_-]?cle''',
+    '''(?i)changez[_-]?moi''',
+    '''(?i)your[_-]?key''',
+    '''(?i)example|placeholder|xxxx''',
+    '''^\$[A-Z_]+$''',
+    '''(?i)^hx_votre''',
+    '''&lt;[a-zA-Zé]+&gt;''',
+    '''(?i)cle[_-]?api''',
+  ]
+  regexTarget = "match"
