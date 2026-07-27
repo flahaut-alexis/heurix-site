@@ -15,6 +15,8 @@ secretGroup = 1
     '''(?i)example|placeholder|xxxx''',
     '''^\$[A-Z_]+$''',
     '''(?i)^hx_votre''',
+    '''(?i)your[_-]?api[_-]?key''',
+    '''(?i)api[_-]?key[_-]?here''',
     '''&lt;[a-zA-Zé]+&gt;''',
     '''(?i)cle[_-]?api''',
   ]
