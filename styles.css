@@ -3234,3 +3234,60 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
   line-height:1.35;
 }
 .pt-sous:first-of-type{ margin-top:0; }
+
+/* ------------------------------------------------------------------ */
+/* Hierarchie du prix en mode annuel                                   */
+/*                                                                      */
+/* Le prix MENSUEL equivalent domine, le plein tarif barre le precede,  */
+/* l economie apparait en pastille verte, et le total reellement        */
+/* debite passe en mention secondaire -- LISIBLE, pas effacee : c est   */
+/* la somme qui sera prelevee.                                          */
+/*                                                                      */
+/* Le motif barre/net/pastille est EXACTEMENT celui de l option         */
+/* Ranking : le lecteur apprend un vocabulaire visuel une seule fois.   */
+/* ------------------------------------------------------------------ */
+.prix-plein{
+  font-size:20px; font-weight:600; color:var(--ink-muted);
+  text-decoration:line-through; margin-right:9px;
+}
+.prix-plein[hidden]{ display:none; }
+
+.prix-eco{
+  display:inline-block; vertical-align:middle; margin-left:10px;
+  font-size:11.5px; font-weight:800; letter-spacing:.01em;
+  background:#0F7A3D; color:#fff; padding:3px 9px; border-radius:100px;
+  white-space:nowrap;
+}
+.prix-eco[hidden]{ display:none; }
+
+.prix-facture{
+  margin:5px 0 0; font-size:12.5px; color:var(--ink-muted);
+}
+.prix-facture[hidden]{ display:none; }
+
+/* Le montant principal ne doit JAMAIS etre vert : le vert signale
+   l economie, pas le prix. Les confondre brouille les deux signaux. */
+.price-tier-amount{ color:var(--ink); }
+
+/* Le badge du selecteur reprend la meme forme que celui des cartes, pour
+   que le lien entre le choix et sa consequence soit visuel. */
+.billing-toggle-opt .eco-pill{
+  display:inline-block; margin-left:7px;
+  font-size:10.5px; font-weight:800;
+  background:#0F7A3D; color:#fff; padding:2px 7px; border-radius:100px;
+}
+
+@media (max-width:420px){
+  .prix-plein{ font-size:16px; margin-right:6px; }
+  .prix-eco{ display:block; margin:7px 0 0; width:fit-content; }
+}
+
+/* Le badge du selecteur reprend EXACTEMENT la forme de celui des cartes :
+   meme pastille, meme vert. Le lien entre le choix et sa consequence sur
+   chaque carte devient visuel, sans qu on ait a l expliquer. */
+.billing-toggle-save{
+  display:inline-block; margin-left:6px;
+  font-size:10.5px; font-weight:800; letter-spacing:.01em;
+  background:#0F7A3D; color:#fff; padding:2px 8px; border-radius:100px;
+  vertical-align:middle;
+}

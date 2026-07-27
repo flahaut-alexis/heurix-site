@@ -18,7 +18,7 @@
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css?v=1785188619">
+<link rel="stylesheet" href="styles.css?v=1785189419">
 <link rel="canonical" href="https://heurix.fr/pricing.html">
 <script type="application/ld+json">
 {
@@ -141,7 +141,7 @@
 
       <div class="price-tier-card">
         <div class="price-tier-name">Starter</div>
-        <div class="price-tier-amount"><span id="price-amount-starter">19</span>&nbsp;€<span class="price-tier-period">/mois</span></div>
+        <div class="price-tier-amount"><s class="prix-plein" id="prix-plein-starter" hidden></s><span id="price-amount-starter">19</span>&nbsp;€<span class="price-tier-period">/mois</span><span class="prix-eco" id="prix-eco-starter" hidden></span></div><p class="prix-facture" id="prix-facture-starter" hidden></p>
         <p class="addon-breakdown" id="addon-breakdown-starter" hidden></p>
         <p class="billing-annual-note" id="annual-note-starter" hidden></p>
         <p class="price-tier-desc">Un catalogue, un besoin simple.</p>
@@ -159,7 +159,7 @@
       <div class="price-tier-card price-tier-highlight">
         <div class="price-tier-badge">Le plus choisi</div>
         <div class="price-tier-name">Growth</div>
-        <div class="price-tier-amount"><span id="price-amount-growth">49</span>&nbsp;€<span class="price-tier-period">/mois</span></div>
+        <div class="price-tier-amount"><s class="prix-plein" id="prix-plein-growth" hidden></s><span id="price-amount-growth">49</span>&nbsp;€<span class="price-tier-period">/mois</span><span class="prix-eco" id="prix-eco-growth" hidden></span></div><p class="prix-facture" id="prix-facture-growth" hidden></p>
         <p class="addon-breakdown" id="addon-breakdown-growth" hidden></p>
         <p class="billing-annual-note" id="annual-note-growth" hidden></p>
         <p class="price-tier-desc">Pour un site en croissance.</p>
@@ -188,7 +188,7 @@
 
       <div class="price-tier-card">
         <div class="price-tier-name">Scale</div>
-        <div class="price-tier-amount"><span id="price-amount-scale">139</span>&nbsp;€<span class="price-tier-period">/mois</span></div>
+        <div class="price-tier-amount"><s class="prix-plein" id="prix-plein-scale" hidden></s><span id="price-amount-scale">139</span>&nbsp;€<span class="price-tier-period">/mois</span><span class="prix-eco" id="prix-eco-scale" hidden></span></div><p class="prix-facture" id="prix-facture-scale" hidden></p>
         <p class="addon-breakdown" id="addon-breakdown-scale" hidden></p>
         <p class="billing-annual-note" id="annual-note-scale" hidden></p>
         <p class="price-tier-desc">Catalogue volumineux, trafic important.</p>
@@ -552,7 +552,7 @@
 
       const payload = { plan: plan };
       if (browsePlan) payload.browse_plan = browsePlan;
-      // Periode posee par la reglette (billing-toggle.js?v=1785188619). Absente = mensuel,
+      // Periode posee par la reglette (billing-toggle.js?v=1785189419). Absente = mensuel,
       // ce qui est aussi le defaut cote moteur : un visiteur arrive avant le
       // chargement du script souscrit normalement.
       const periode = btn.getAttribute('data-billing-period');
@@ -634,7 +634,7 @@
   <a href="blog/guide-mise-en-route.html" class="btn btn-ghost">Voir le guide →</a>
 </div>
 <script src="guide-nudge.js"></script>
-<script src="billing-toggle.js?v=1785188619"></script>
+<script src="billing-toggle.js?v=1785189419"></script>
 <script src="consent.js?v=1785150583"></script>
 </body>
 </html>

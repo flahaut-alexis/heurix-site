@@ -29,8 +29,10 @@
   var PAR_MOIS = EN ? "/month" : "/mois";
   var PAR_AN = EN ? "/year" : "/an";
   var TXT = EN
-    ? { soit: "that is", economises: "saved", surLAnnee: "per year", dont: "of which Ranking" }
-    : { soit: "soit", economises: "économisés", surLAnnee: "sur l'année", dont: "dont Ranking" };
+    ? { soit: "that is", economises: "saved", surLAnnee: "per year",
+        dont: "of which Ranking", facture: "Billed" }
+    : { soit: "soit", economises: "économisés", surLAnnee: "sur l'année",
+        dont: "dont Ranking", facture: "Facturé" };
 
   var toggle = document.getElementById("billing-toggle");
   if (!toggle) return;
@@ -62,16 +64,59 @@
       var option = rankingActif(plan)
         ? (estAnnuel ? optionAnnuelle() : optionMensuelle()) : 0;
 
+      // HIÉRARCHIE INVERSÉE (validée par Alexis le 27 juillet).
+      //
+      // En annuel, c'est le prix MENSUEL ÉQUIVALENT qui domine, avec le plein
+      // tarif barré à côté et l'économie en pastille. Le total réellement
+      // débité passe en mention secondaire.
+      //
+      // POURQUOI LE PRIX BARRÉ EST INDISPENSABLE, et non optionnel : afficher
+      // « 44 €/mois » seul ne montre aucune réduction. Alexis lui-même avait
+      // cru à une remise mal appliquée devant cet affichage — « il te manque
+      // un ×12 ». Le barré rend l'économie visible sans calcul mental.
       var montant = document.getElementById("price-amount-" + plan);
-      ecrire(montant, euros(base + option));
-
+      var plein = document.getElementById("prix-plein-" + plan);
+      var eco = document.getElementById("prix-eco-" + plan);
+      var facture = document.getElementById("prix-facture-" + plan);
       var periodeEl = montant && montant.parentElement
         ? montant.parentElement.querySelector(".price-tier-period") : null;
-      if (periodeEl) periodeEl.textContent = estAnnuel ? PAR_AN : PAR_MOIS;
 
-      // DÉCOMPOSITION plutôt que remplacement silencieux : le lecteur doit
-      // voir ce qui compose le total, sinon il constate un chiffre qui a
-      // changé sans savoir pourquoi.
+      if (estAnnuel) {
+        var mensuelEquivalent = Math.round((base + option) / 12);
+        var pleinTarif = PLANS[plan] + (option ? optionMensuelle() : 0);
+        var economieAnnuelle = pleinTarif * 12 - (base + option);
+
+        ecrire(montant, euros(mensuelEquivalent));
+        if (periodeEl) periodeEl.textContent = PAR_MOIS;
+
+        // Le plein tarif ne s'affiche que s'il diffère : un barré identique
+        // au prix serait absurde.
+        if (plein) {
+          plein.hidden = pleinTarif <= mensuelEquivalent;
+          plein.innerHTML = euros(pleinTarif) + "&nbsp;€";
+        }
+        if (eco) {
+          eco.hidden = economieAnnuelle <= 0;
+          eco.textContent = "−" + euros(economieAnnuelle) + " €" + PAR_AN;
+        }
+        // MENTION LISIBLE, PAS EFFACÉE : c'est le montant réellement débité.
+        // Le réduire à du gris fin frôlerait la zone où un client découvre la
+        // somme au moment du paiement.
+        if (facture) {
+          facture.hidden = false;
+          facture.textContent = TXT.facture + " " + euros(base + option) + " €" + PAR_AN;
+        }
+      } else {
+        // MENSUEL NU. Le barré et la pastille signalent une économie ; en
+        // mensuel il n'y en a aucune. Le contraste entre les deux modes est
+        // précisément ce qui démontre l'intérêt de l'annuel.
+        ecrire(montant, euros(base + option));
+        if (periodeEl) periodeEl.textContent = PAR_MOIS;
+        if (plein) plein.hidden = true;
+        if (eco) eco.hidden = true;
+        if (facture) facture.hidden = true;
+      }
+
       var detail = document.getElementById("addon-breakdown-" + plan);
       if (detail) {
         detail.hidden = option === 0;
@@ -81,17 +126,10 @@
         }
       }
 
+      // L'ancienne phrase combinée est supprimée au profit des trois
+      // éléments distincts ci-dessus.
       var note = document.getElementById("annual-note-" + plan);
-      if (note) {
-        note.hidden = !estAnnuel;
-        if (estAnnuel) {
-          var totalMensuel = PLANS[plan] + (option ? optionMensuelle() : 0);
-          var economie = totalMensuel * 12 - (base + option);
-          note.innerHTML = TXT.soit + " <strong>" + euros(Math.round((base + option) / 12)) +
-            "&nbsp;€" + PAR_MOIS + "</strong> — <strong>" + euros(economie) +
-            "&nbsp;€ " + TXT.economises + "</strong> " + TXT.surLAnnee;
-        }
-      }
+      if (note) note.hidden = true;
     });
 
     // Prix de l'option : référence barrée, prix remisé, économie — même
