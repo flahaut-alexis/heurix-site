@@ -18,7 +18,7 @@
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css?v=1785226092">
+<link rel="stylesheet" href="styles.css?v=1785269696">
 <link rel="canonical" href="https://heurix.fr/docs.html">
 <script type="application/ld+json">
 {
@@ -497,6 +497,43 @@ curl -X DELETE "https://api.heurix.fr/v1/browse/moncatalogue/perceuses-visseuses
       <div class="docs-endpoint"><span class="docs-method docs-method-post">POST</span><code>/v1/index/{catalog}/items</code></div>
       <h2>Indexation</h2>
       <p>Ajoute ou met à jour des produits par lot (upsert sur <code class="docs-inline-code">id</code>). Le catalogue est créé automatiquement s'il n'existe pas. Champ optionnel <code class="docs-inline-code">featured</code> (booléen) : marque un produit comme candidat au secours affiché quand une recherche ne trouve rien — voir <a href="#ep-search">Recherche, secours sur zéro résultat</a>.</p>
+
+      <h3>Catalogues volumineux : indexez par lots</h3>
+      <p>Un appel accepte <strong>5 000 produits au maximum</strong>. Au-delà, la réponse est un <code class="docs-inline-code">422</code> qui vous indique en combien d'envois découper.</p>
+      <p>Les appels successifs <strong>s'ajoutent au même catalogue</strong> : l'ordre n'a pas d'importance, et rien n'est écrasé. Un produit déjà présent est mis à jour, pas dupliqué.</p>
+
+      <pre class="docs-code"><code># Découper un catalogue de 10 000 produits en deux lots
+python3 -c "
+import json
+produits = json.load(open('catalogue.json'))['items']
+for i in range(0, len(produits), 5000):
+    with open(f'lot-{i//5000}.json', 'w') as f:
+        json.dump({'rulepack': 'outillage', 'items': produits[i:i+5000]}, f)
+"
+
+# Puis envoyer chaque lot
+for lot in lot-*.json; do
+  curl -X POST https://api.heurix.fr/v1/index/moncatalogue/items \
+    -H "Authorization: Bearer VOTRE_CLE_API" \
+    -H "Content-Type: application/json" \
+    --data-binary @$lot
+done</code></pre>
+
+      <p><strong>Ordre de grandeur.</strong> Comptez environ une seconde par tranche de 10 000 produits pour l'indexation elle-même. L'envoi réseau dépasse généralement ce temps.</p>
+
+      <h3>Changer le pack de règles d'un catalogue existant</h3>
+      <p>Le pack se déclare <strong>au moment de l'indexation</strong>, dans le champ <code class="docs-inline-code">rulepack</code>. Il n'existe pas d'endpoint pour le changer après coup, et ce n'est pas un oubli : <strong>les annotations sont calculées à l'indexation</strong>, pas à la recherche. Changer le pack sans réindexer laisserait vos produits avec les annotations de l'ancien.</p>
+      <p>Pour changer de pack, <strong>réimportez votre catalogue</strong> avec le nouveau nom de pack. Les produits existants sont mis à jour, rien n'est perdu.</p>
+      <p>Comptez environ <strong>6 secondes pour 10 000 produits</strong>, une minute pour 100 000. Pendant ce temps, les recherches sur l'ensemble de votre instance sont mises en attente — choisissez une heure creuse pour un gros catalogue.</p>
+
+      <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/index/moncatalogue/items \
+  -H "Authorization: Bearer VOTRE_CLE_API" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "rulepack": "mode",
+    "items": [ ... vos produits ... ]
+  }'</code></pre>
+
       <h3>Corps de la requête</h3>
       <div class="table-scroll"><table class="docs-params">
         <tr><th>Paramètre</th><th>Type</th><th>Description</th></tr>

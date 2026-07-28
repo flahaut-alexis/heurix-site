@@ -3033,8 +3033,12 @@
             esc(d.recommande) + " », contre <strong>" + actuel.produits_annotes +
             "</strong> avec « " + esc(d.pack_actuel || "aucun") + " ».</p>" +
           "<button type='button' class='pack-suggestion-appliquer' data-pack='" +
-            esc(d.recommande) + "'>Utiliser le pack " + esc(d.recommande) + "</button>" +
-          "<span class='pack-suggestion-note'>Le changement réindexe votre catalogue.</span>";
+            esc(d.recommande) + "'>Sélectionner le pack " + esc(d.recommande) + "</button>" +
+          "<span class='pack-suggestion-note'>Ce bouton présélectionne le pack. " +
+            "<strong>Les annotations sont calculées à l'indexation</strong> : pour " +
+            "qu'elles changent, réimportez votre catalogue en déclarant le nouveau " +
+            "pack. <a href='../docs.html#ep-items' target='_blank' rel='noopener'>Voir " +
+            "la marche à suivre</a>.</span>";
 
         var bouton = zone.querySelector(".pack-suggestion-appliquer");
         bouton.addEventListener("click", function () {
