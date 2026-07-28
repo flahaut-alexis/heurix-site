@@ -18,7 +18,7 @@
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css?v=1785272204">
+<link rel="stylesheet" href="styles.css?v=1785277101">
 <link rel="canonical" href="https://heurix.fr/docs.html">
 <script type="application/ld+json">
 {
@@ -497,6 +497,117 @@ curl -X DELETE "https://api.heurix.fr/v1/browse/moncatalogue/perceuses-visseuses
       <div class="docs-endpoint"><span class="docs-method docs-method-post">POST</span><code>/v1/index/{catalog}/items</code></div>
       <h2>Indexation</h2>
       <p>Ajoute ou met à jour des produits par lot (upsert sur <code class="docs-inline-code">id</code>). Le catalogue est créé automatiquement s'il n'existe pas. Champ optionnel <code class="docs-inline-code">featured</code> (booléen) : marque un produit comme candidat au secours affiché quand une recherche ne trouve rien — voir <a href="#ep-search">Recherche, secours sur zéro résultat</a>.</p>
+
+      <h3 id="niveaux-integration">Trois niveaux d'intégration</h3>
+      <p>Le temps d'intégration ne dépend pas de Heurix mais de ce que vous remplacez. Ces trois niveaux vont du plus léger au plus complet — <strong>rien n'oblige à commencer par le dernier</strong>.</p>
+
+      <div class="table-scroll"><table class="docs-params">
+        <tr><th>Niveau</th><th>Ce que vous remplacez</th><th>Ordre de grandeur</th></tr>
+        <tr>
+          <td><strong>1 — Autocomplétion</strong></td>
+          <td>Le menu déroulant de votre barre de recherche</td>
+          <td>1 jour</td>
+        </tr>
+        <tr>
+          <td><strong>2 — Liste d'identifiants</strong></td>
+          <td>Quels produits et dans quel ordre. Votre gabarit, vos fiches et vos facettes restent les vôtres</td>
+          <td>3 à 5 jours</td>
+        </tr>
+        <tr>
+          <td><strong>3 — Remplacement complet</strong></td>
+          <td>Toute la page de résultats, avec nos facettes et notre analytique</td>
+          <td>2 à 3 semaines</td>
+        </tr>
+      </table></div>
+
+      <h4>Niveau 2 — le paramètre <code class="docs-inline-code">ids_only</code></h4>
+      <p>Heurix décide <strong>quels produits</strong> et <strong>dans quel ordre</strong>. Votre plateforme affiche ses propres fiches. La réponse ne contient que l'essentiel — sur 50 résultats, quelques centaines d'octets au lieu de plusieurs dizaines de kilo-octets.</p>
+
+      <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/index/moncatalogue/search \
+  -H "Authorization: Bearer VOTRE_CLE_API" \
+  -H "Content-Type: application/json" \
+  -d '{"q": "M8x20 inox", "limit": 24, "ids_only": true}'
+
+# {"total": 47, "ids": ["SKU-1234", "SKU-5678", ...]}</code></pre>
+
+      <p>Le classement, la pagination et les filtres s'appliquent exactement comme sur la réponse complète. Seule la forme change.</p>
+
+      <h4>Appliquer cet ordre dans Magento</h4>
+      <p>Sur une <strong>page de catégorie</strong>, la fonction <code class="docs-inline-code">FIELD()</code> de MySQL impose l'ordre exact d'une liste à une collection de produits :</p>
+
+      <pre class="docs-code"><code>// Plugin sur la collection de produits
+$ids = $this->heurix->getOrderedIds($query);   // appel ids_only
+
+$collection->addIdFilter($ids);
+$collection->getSelect()->order(
+    new \Zend_Db_Expr('FIELD(e.entity_id,' . implode(',', $ids) . ')')
+);</code></pre>
+
+      <p><strong>Point de vigilance.</strong> Depuis Magento&nbsp;2.4, la <strong>page de résultats de recherche</strong> ne passe plus par une collection SQL : elle transite par Elasticsearch ou OpenSearch. Un plugin de collection n'y produit donc aucun effet, et il faut passer par un adaptateur de recherche personnalisé. Les pages de catégorie, elles, restent en collection SQL — c'est pourquoi l'option <strong>Ranking</strong> s'intègre nettement plus vite que Search.</p>
+
+<h4>Selon votre plateforme</h4>
+      <p>Toutes n'accueillent pas une liste d'identifiants avec la même facilité. L'écart est important, et il détermine votre temps d'intégration bien plus que Heurix lui-même.</p>
+
+      <div class="table-scroll"><table class="docs-params">
+        <tr><th>Plateforme</th><th>Point d'accroche</th><th>Nature</th><th>Ordre de grandeur</th></tr>
+        <tr>
+          <td><strong>PrestaShop</strong> 1.7+</td>
+          <td><code class="docs-inline-code">ProductSearchProviderInterface</code></td>
+          <td><strong>Interface prévue pour cela.</strong> Le cœur accepte un tableau d'identifiants et hydrate fiches, facettes, pagination et tri.</td>
+          <td>2 à 3 jours</td>
+        </tr>
+        <tr>
+          <td><strong>WooCommerce</strong></td>
+          <td><code class="docs-inline-code">pre_get_posts</code> avec <code class="docs-inline-code">post__in</code> et <code class="docs-inline-code">orderby&nbsp;=&gt;&nbsp;post__in</code></td>
+          <td>Détournement de la requête WordPress. Fonctionne, mais ce n'est pas un point d'extension conçu pour cela.</td>
+          <td>3 à 4 jours</td>
+        </tr>
+        <tr>
+          <td><strong>Magento</strong> 2.4+ — pages de catégorie</td>
+          <td><code class="docs-inline-code">FIELD(e.entity_id, …)</code> sur la collection</td>
+          <td>Fonctionne : la collection reste en SQL.</td>
+          <td>3 à 5 jours</td>
+        </tr>
+        <tr>
+          <td><strong>Magento</strong> 2.4+ — page de résultats</td>
+          <td>Adaptateur de recherche personnalisé</td>
+          <td>La recherche transite par Elasticsearch : un plugin de collection n'y produit aucun effet.</td>
+          <td>2 à 3 semaines</td>
+        </tr>
+        <tr>
+          <td><strong>Shopify</strong></td>
+          <td>—</td>
+          <td>Non vérifié à ce jour. Écrivez-nous plutôt que de suivre une recette approximative.</td>
+          <td>—</td>
+        </tr>
+      </table></div>
+
+      <h4>PrestaShop — le cas le plus simple</h4>
+      <p>Un module implémentant <code class="docs-inline-code">ProductSearchProviderInterface</code> suffit. Il reçoit la requête, appelle Heurix avec <code class="docs-inline-code">ids_only</code>, renvoie les identifiants. PrestaShop fait le reste.</p>
+
+      <pre class="docs-code"><code>public function runQuery(ProductSearchContext $context, ProductSearchQuery $query)
+{
+    $ids = $this->heurix->rechercher($query->getSearchString());   // ids_only
+
+    $resultat = new ProductSearchResult();
+    // Le coeur de PrestaShop complete les donnees manquantes
+    $resultat->setProducts(array_map(fn($id) =&gt; ['id_product' =&gt; $id], $ids));
+    $resultat->setTotalProductsCount(count($ids));
+    return $resultat;
+}</code></pre>
+
+      <h4>WooCommerce — un détail à connaître</h4>
+      <p>Le mécanisme fonctionne, mais WordPress continue sa propre recherche tant que le paramètre <code class="docs-inline-code">s</code> reste défini. Il faut le retirer — ce qui vide au passage le libellé « Résultats pour&nbsp;: … » affiché en haut de page. Prévoyez un filtre sur le titre pour le rétablir.</p>
+
+      <pre class="docs-code"><code>add_action('pre_get_posts', function ($query) {
+    if (!is_admin() &amp;&amp; $query-&gt;is_main_query() &amp;&amp; $query-&gt;is_search()) {
+        $ids = heurix_rechercher(get_search_query());   // ids_only
+        $query-&gt;set('post_type', 'product');
+        $query-&gt;set('post__in', $ids ?: [0]);           // [0] = aucun resultat
+        $query-&gt;set('orderby', 'post__in');             // preserve NOTRE ordre
+        $query-&gt;set('s', '');                           // sinon WP refiltre
+    }
+});</code></pre>
 
       <h3>Catalogues volumineux : indexez par lots</h3>
       <p>Un appel accepte <strong>5 000 produits au maximum</strong>. Au-delà, la réponse est un <code class="docs-inline-code">422</code> qui vous indique en combien d'envois découper.</p>
