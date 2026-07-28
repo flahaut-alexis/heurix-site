@@ -19,7 +19,7 @@
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css?v=1785270897">
+<link rel="stylesheet" href="styles.css?v=1785271789">
 <link rel="canonical" href="https://heurix.fr/">
 <script type="application/ld+json">
 {
@@ -234,24 +234,7 @@
         <p>Il est pourtant en stock. C'est une vente perdue qui n'apparaît dans aucune de vos statistiques — vous ne la voyez jamais.</p>
       <p>Corriger cela ne demande ni une nouvelle plateforme, ni des mois de projet. Cela demande un moteur qui lit vos références comme vos clients les pensent : Heurix s'ajoute à votre site existant, par API, et comprend « M8x20 » dès le premier appel.</p>
     </div>
-    <div class="why-cards reveal">
-      <div class="why-card">
-        <div class="why-num">≈ 10 ms</div>
-        <h3>Réponse instantanée</h3>
-        <p>Temps de réponse médian du moteur, mesuré sur un catalogue de 10 000 produits. Chaque milliseconde de latence coûte des conversions.</p>
       </div>
-      <div class="why-card why-card-highlight">
-        <div class="why-num">2 fautes</div>
-        <h3>Tolérées par mot</h3>
-        <p>« pul col rolé roug » trouve quand même les pulls col roulé rouges. Une seule sur les références — un chiffre changé, c'est un autre produit.</p>
-      </div>
-      <div class="why-card">
-        <div class="why-num">0 €</div>
-        <h3>Pour commencer</h3>
-        <p>14 jours d'essai gratuit sur le Search API : jusqu'à 2 000 requêtes et 2 000 produits, sans carte bancaire. <a href="pricing.html">Voir les tarifs</a>.</p>
-      </div>
-    </div>
-  </div>
 </section>
 
 <section id="mission" class="mission-section">
@@ -391,6 +374,24 @@
         </div>
       </div>
     </div>
+  
+    <div class="why-cards reveal">
+      <div class="why-card">
+        <div class="why-num">≈ 10 ms</div>
+        <h3>Réponse instantanée</h3>
+        <p>Temps de réponse médian du moteur, mesuré sur un catalogue de 10 000 produits. Chaque milliseconde de latence coûte des conversions.</p>
+      </div>
+      <div class="why-card why-card-highlight">
+        <div class="why-num">2 fautes</div>
+        <h3>Tolérées par mot</h3>
+        <p>« pul col rolé roug » trouve quand même les pulls col roulé rouges. Une seule sur les références — un chiffre changé, c'est un autre produit.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-num">0 €</div>
+        <h3>Pour commencer</h3>
+        <p>14 jours d'essai gratuit sur le Search API : jusqu'à 2 000 requêtes et 2 000 produits, sans carte bancaire. <a href="pricing.html">Voir les tarifs</a>.</p>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -416,33 +417,10 @@
         <h3>Packs de règles métier</h3>
         <p>Outillage, mode, industrie — fournis avec le moteur. Packs sur mesure possibles sur les plans Scale.</p>
       </div>
-      <div class="feature-card">
-        <h3>Synonymes métier</h3>
-        <p>« Vis » trouve « boulon ». Groupes gérés par API, fusion automatique, sans faux positifs. <a href="docs.html#ep-synonyms">API →</a></p>
       </div>
-      <div class="feature-card">
-        <h3>Tri pertinence + stock</h3>
-        <p>Champs pondérés, disponibilité en départage à score égal — un produit en rupture ne passe jamais devant un équivalent disponible.</p>
-      </div>
-      <div class="feature-card">
-        <h3>Résultats explicables</h3>
-        <p>Chaque résultat dit pourquoi il sort : terme trouvé, faute corrigée, annotation partagée. Fini la boîte noire.</p>
-      </div>
-      <div class="feature-card">
-        <h3>Recherches sans résultat traquées</h3>
-        <p>Chaque « aucun résultat » de vos clients est loggé et consultable dans votre console — la liste concrète des ventes ratées, pas une estimation. <a href="console.html">Voir la console →</a></p>
-      </div>
-      <div class="feature-card">
-        <h3>Recherche au fil de la frappe</h3>
-        <p>≈ 10 ms de réponse : assez rapide pour interroger l'API à chaque caractère tapé, sans latence perceptible côté visiteur.</p>
-      </div>
-      <div class="feature-card">
-        <h3>Données en France</h3>
-        <p>Moteur conçu en France, hébergement OVH — vos catalogues ne quittent pas l'Union européenne.</p>
-      </div>
-    </div>
     <p class="section-more"><a href="fonctionnalites.html">Voir toutes les fonctionnalités en détail →</a></p>
-  </div>
+  <p class="voir-tout"><a href="fonctionnalites.html" class="btn btn-ghost">Voir les 10 fonctionnalités &rarr;</a></p>
+      </div>
 </section>
 
 <section id="comment-ca-marche" class="soft">
@@ -467,11 +445,7 @@
         <p>Malgré les fautes de frappe, malgré les écritures différentes — triés par pertinence puis disponibilité. Et chaque résultat explique pourquoi il correspond.</p>
       </div>
     </div>
-    <pre class="docs-code how-code"><code>curl -X POST https://api.heurix.fr/v1/index/moncatalogue/search \
-  -H "Authorization: Bearer VOTRE_CLE_API" \
-  -d '{"q": "m8x20 inox"}'
-
-→ 1er résultat : Vis tête hexagonale M8 x 20 — A2   (annotation #VIS_M8X20)</code></pre>
+    <p class="voir-tout"><a href="docs.html" class="btn btn-ghost">Voir la doc technique &rarr;</a></p>
     <p class="how-note">La référence complète des endpoints est dans la <a href="docs.html">documentation API</a>. <a href="integrations.html">Guides d'intégration avec du vrai code</a> disponibles pour Shopify, PrestaShop, WooCommerce et Magento.</p>
   </div>
 </section>

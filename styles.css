@@ -3412,3 +3412,8 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
   top:10px; right:10px;
   font-size:18px; line-height:1;
 }
+
+/* Lien « voir tout » sous une grille reduite. La home enchainait des paves ;
+   on garde 4 cartes phares et on renvoie a la page dediee plutot que de
+   tout dupliquer. */
+.voir-tout{ margin:22px 0 0; text-align:center; }
