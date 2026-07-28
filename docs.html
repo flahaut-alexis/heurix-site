@@ -18,7 +18,7 @@
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css?v=1785271789">
+<link rel="stylesheet" href="styles.css?v=1785272204">
 <link rel="canonical" href="https://heurix.fr/docs.html">
 <script type="application/ld+json">
 {
@@ -57,9 +57,9 @@
         <div class="nav-drop">
           <button type="button" class="nav-drop-btn" aria-expanded="false" aria-haspopup="true">Produit</button>
           <div class="nav-drop-panel">
-            <a href="index.html#probleme">Le problème</a>
-            <a href="index.html#mission">Notre mission</a>
-            <a href="index.html#moteur">Le moteur</a>
+            <a href="produit.html#probleme">Le problème</a>
+            <a href="produit.html#mission">Notre mission</a>
+            <a href="produit.html#moteur">Le moteur</a>
             <a href="fonctionnalites.html">Fonctionnalités</a>
             <a href="index.html#tarifs">Simulateur ROI</a>
           </div>
@@ -716,7 +716,7 @@ curl -X POST https://api.heurix.fr/v1/events \
       <h2>Interroger Heurix depuis Claude Desktop, Cursor, ou un agent interne</h2>
       <p>Un serveur MCP (Model Context Protocol) qui expose la recherche et Browse comme des outils qu'un agent IA sait appeler nativement — un collaborateur peut demander <em>« est-ce que j'ai des vis M8 en stock ? »</em> en langage naturel, sans jamais toucher à l'API. Trois outils : <code class="docs-inline-code">heurix_search</code>, <code class="docs-inline-code">heurix_browse</code>, <code class="docs-inline-code">heurix_catalog_stats</code>.</p>
       <p><strong>Prérequis</strong> : Python 3.10 ou plus, installé sur la machine où tourne l'agent (votre ordinateur, pas un serveur) — le serveur MCP se lance localement, à la demande, par Claude Desktop ou Cursor eux-mêmes.</p>
-      <p class="regex-reassure">🚀 <a href="../downloads/heurix-mcp-server.zip" download>Téléchargez le serveur MCP</a> — installation et configuration détaillées (Claude Desktop et Cursor) sur <a href="../blog/guide-serveur-mcp-heurix.html">le guide dédié</a>.</p>
+      <p class="regex-reassure">🚀 <a href="../downloads/heurix-mcp-server.zip" download>Téléchargez le serveur MCP</a> — installation et configuration détaillées (Claude Desktop et Cursor) sur <a href="blog/guide-serveur-mcp-heurix.html">le guide dédié</a>.</p>
       <pre class="docs-code"><code>pip install -r requirements.txt
 HEURIX_API_KEY=hx_votre_cle python3 server.py</code></pre>
       <p>La clé API vit uniquement dans la configuration locale du client MCP (un fichier JSON sur la machine de l'utilisateur), jamais transmise en clair dans un appel d'outil. Chaque appel consomme le quota normal de la clé utilisée — <code class="docs-inline-code">heurix_search</code> et <code class="docs-inline-code">heurix_browse</code> comptent comme n'importe quel appel de recherche ou de Browse, <code class="docs-inline-code">heurix_catalog_stats</code> non.</p>
@@ -790,7 +790,7 @@ VIS_M8X20  ────────── correspondance ──────  VIS
       <a href="integrations.html">Intégrations</a>
       <a href="console.html">Console</a>
       <a href="about.html">À propos</a>
-      <a href="index.html#faq">FAQ</a>
+      <a href="faq.html">FAQ</a>
       <a href="cgv.html">CGV</a>
       <a href="mentions-legales.html">Mentions légales</a>
           <a href="#" data-rouvrir-consentement>Gérer les cookies</a>

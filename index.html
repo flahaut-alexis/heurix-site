@@ -19,7 +19,7 @@
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css?v=1785271789">
+<link rel="stylesheet" href="styles.css?v=1785272204">
 <link rel="canonical" href="https://heurix.fr/">
 <script type="application/ld+json">
 {
@@ -93,9 +93,9 @@
         <div class="nav-drop">
           <button type="button" class="nav-drop-btn" aria-expanded="false" aria-haspopup="true">Produit</button>
           <div class="nav-drop-panel">
-            <a href="index.html#probleme">Le problème</a>
-            <a href="index.html#mission">Notre mission</a>
-            <a href="index.html#moteur">Le moteur</a>
+            <a href="produit.html#probleme">Le problème</a>
+            <a href="produit.html#mission">Notre mission</a>
+            <a href="produit.html#moteur">Le moteur</a>
             <a href="fonctionnalites.html">Fonctionnalités</a>
             <a href="index.html#tarifs">Simulateur ROI</a>
           </div>
@@ -225,16 +225,29 @@
 <section id="probleme" class="soft">
   <div class="wrap">
     <div class="kicker">Le problème</div>
-    <h2>La recherche interne est le point de conversion le moins surveillé d'un site marchand.</h2>
-    <div class="problem-grid reveal">
-      <h3 class="pt-sous">Le moteur natif indexe, il ne comprend pas</h3>
-        <p>Celui livré avec votre CMS lit le catalogue, mais il ignore les fautes de frappe, les synonymes de votre métier, et l'ordre dans lequel vos produits devraient sortir.</p>
+    <h2 class="pb-titre">La recherche interne est le point de conversion le moins surveillé d'un site marchand.</h2>
 
-        <h3 class="pt-sous">Le client conclut que vous ne l'avez pas</h3>
+    <!-- REFONTE EN CARTES (28 juillet).
+         Les sous-titres et paragraphes etaient des enfants directs d'une
+         grille en gap:40px : chaque titre et chaque paragraphe formait sa
+         propre cellule, d'ou les ecarts signales. Ils sont desormais
+         regroupes dans des cartes, qui sont les vraies cellules. -->
+    <div class="pb-cartes reveal">
+      <article class="pb-carte">
+        <div class="pb-num">01</div>
+        <h3>Le moteur natif indexe, il ne comprend pas</h3>
+        <p>Celui livré avec votre CMS lit le catalogue, mais il ignore les fautes de frappe, les synonymes de votre métier, et l'ordre dans lequel vos produits devraient sortir.</p>
+      </article>
+
+      <article class="pb-carte">
+        <div class="pb-num">02</div>
+        <h3>Le client conclut que vous ne l'avez pas</h3>
         <p>Il est pourtant en stock. C'est une vente perdue qui n'apparaît dans aucune de vos statistiques — vous ne la voyez jamais.</p>
-      <p>Corriger cela ne demande ni une nouvelle plateforme, ni des mois de projet. Cela demande un moteur qui lit vos références comme vos clients les pensent : Heurix s'ajoute à votre site existant, par API, et comprend « M8x20 » dès le premier appel.</p>
+      </article>
     </div>
-      </div>
+
+    <p class="pb-sortie">Corriger cela ne demande ni une nouvelle plateforme, ni des mois de projet. Il faut un moteur qui lit vos références comme vos clients les pensent : <strong>Heurix s'ajoute à votre site existant, par API</strong>, et comprend <code class="hero-code">M8x20</code> dès le premier appel.</p>
+  </div>
 </section>
 
 <section id="mission" class="mission-section">
@@ -641,33 +654,9 @@
         </div>
       </details>
 
-      <details class="faq-item">
-        <summary>Mon secteur est-il couvert ?</summary>
-        <div class="faq-answer">
-          <p>Dix packs de règles sont fournis (outillage, automobile, électricité, plomberie, industrie, électronique, mode, vins, livres, finance) et la mécanique s'applique à tout catalogue où l'on cherche par référence, dimension ou variante — librairie, vin, pièces détachées, électronique... Si votre secteur a des références très spécifiques, <a href="#contact">décrivez-nous votre catalogue</a> : la conception d'un pack sur mesure est possible sur les plans Scale.</p>
-        </div>
-      </details>
-
-      <details class="faq-item">
-        <summary>Où sont hébergées mes données ?</summary>
-        <div class="faq-answer">
-          <p>En France, chez OVH (Gravelines ou Strasbourg). Vos catalogues ne quittent pas l'Union européenne, et le moteur lui-même est conçu et développé en France. Pour les exigences RGPD, c'est le scénario le plus simple à documenter auprès de votre DPO.</p>
-        </div>
-      </details>
-
-      <details class="faq-item">
-        <summary>Que se passe-t-il si je dépasse le quota de mon plan ?</summary>
-        <div class="faq-answer">
-          <p>Jamais de coupure brutale : le surplus est facturé au tarif à l'usage indiqué sur la <a href="pricing.html">page tarifs</a>. Les règles de comptage sont publiques (1 recherche = 1 requête, 1 000 produits indexés = 10 requêtes) et votre consommation est consultable en temps réel via l'API.</p>
-        </div>
-      </details>
-
-      <details class="faq-item">
-        <summary>La démo sur cette page utilise-t-elle vraiment le moteur ?</summary>
-        <div class="faq-answer">
-          <p>Oui — c'est la logique du moteur Heurix, portée en JavaScript et embarquée dans la page avec un catalogue de démonstration généré : même normalisation, même tolérance aux fautes, même cascade d'annotations, même scoring. Les développeurs peuvent l'interroger en console : <code>window.heurixDemo.search("...")</code>.</p>
-        </div>
-      </details>
+      
+        <p class="voir-tout"><a href="faq.html" class="btn btn-ghost">Voir toutes les questions &rarr;</a></p>
+      
     </div>
   </div>
 </section>
