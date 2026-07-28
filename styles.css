@@ -3347,3 +3347,35 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
   .roi-heros-valeur{ font-size:32px; }
   .roi-soutien{ flex-direction:column; gap:5px; }
 }
+
+/* ------------------------------------------------------------------ */
+/* Grille a trois colonnes, centree                                    */
+/*                                                                      */
+/* .pricing-grid impose repeat(4, 1fr) pour les quatre plans Search.    */
+/* Les trois cartes Ranking s y tassaient donc a gauche, la quatieme   */
+/* colonne restant vide — d ou le decalage signale.                     */
+/* ------------------------------------------------------------------ */
+.pricing-grid-trois{
+  grid-template-columns:repeat(3, minmax(0, 1fr));
+  max-width:860px;
+  margin-left:auto;
+  margin-right:auto;
+}
+@media (max-width:900px){
+  .pricing-grid-trois{ grid-template-columns:repeat(2, minmax(0,1fr)); max-width:600px; }
+}
+@media (max-width:600px){
+  .pricing-grid-trois{ grid-template-columns:1fr; max-width:340px; }
+}
+
+/* La pop-in flottante chevauchait le contenu et son texte etait coupe.
+   On lui laisse la place de son contenu et on l ecarte du bord. */
+.pricing-nudge{
+  max-height:calc(100vh - 60px);
+  overflow-y:auto;
+}
+/* Sous 1180 px, la pop-in mordait sur les cartes : on la reserve aux
+   ecrans qui ont vraiment la place de l accueillir a cote du contenu. */
+@media (max-width:1180px) and (min-width:641px){
+  .pricing-nudge{ display:none; }
+}
