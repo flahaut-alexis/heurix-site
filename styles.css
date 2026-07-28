@@ -3379,3 +3379,36 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 @media (max-width:1180px) and (min-width:641px){
   .pricing-nudge{ display:none; }
 }
+
+/* ------------------------------------------------------------------ */
+/* Correctifs d alignement et de lisibilite (27 juillet, 2e passe)     */
+/* ------------------------------------------------------------------ */
+
+/* TITRE DECALE : h2 porte max-width:640px SANS marges automatiques. Le
+   texte etait donc centre a l interieur d un bloc de 640 px lui-meme colle
+   a gauche. Mon premier correctif ajoutait text-align:center, ce qui ne
+   pouvait pas suffire — il fallait centrer le BLOC, pas son contenu. */
+#browse-standalone h2,
+#browse-standalone .kicker{
+  max-width:none;
+  margin-left:auto;
+  margin-right:auto;
+}
+#browse-standalone .section-lede{ margin-left:auto; margin-right:auto; }
+
+/* POP-IN ILLISIBLE : le bouton de fermeture est en position absolue en haut
+   a droite, sur le meme espace que le titre — d ou le chevauchement. On
+   reserve sa place plutot que de le deplacer, pour qu il reste la ou
+   l utilisateur le cherche. */
+.pricing-nudge{
+  width:290px;
+  padding:16px 18px 16px;
+}
+.pricing-nudge-kicker{
+  padding-right:26px;   /* la place du bouton de fermeture */
+  line-height:1.35;
+}
+.pricing-nudge-close{
+  top:10px; right:10px;
+  font-size:18px; line-height:1;
+}
