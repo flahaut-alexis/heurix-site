@@ -18,7 +18,7 @@
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css?v=1785269696">
+<link rel="stylesheet" href="styles.css?v=1785270897">
 <link rel="canonical" href="https://heurix.fr/docs.html">
 <script type="application/ld+json">
 {
@@ -773,7 +773,7 @@ VIS_M8X20  ────────── correspondance ──────  VIS
         <tr><td>Résultats par page</td><td>100 maximum (<code class="docs-inline-code">limit</code>)</td></tr>
         <tr><td>Indexation</td><td>5 000 produits par appel — envoyez plusieurs lots pour un catalogue plus grand</td></tr>
         <tr><td>Groupes de synonymes</td><td>2 000 par catalogue</td></tr>
-        <tr><td>CORS</td><td>Les appels navigateur ne sont pas ouverts : appelez l'API depuis votre serveur, pas depuis le JavaScript public (votre clé y serait exposée)</td></tr>
+        <tr><td>CORS</td><td>Ouverts aux <strong>clés publiques</strong> (<code class="docs-inline-code">hxp_</code>) sur les endpoints de recherche, de parcours et de conversion — c'est le mode d'intégration prévu pour le widget. Restreignez-les à vos domaines avec <code class="docs-inline-code">allowed_origins</code>. Les <strong>clés serveur</strong> (<code class="docs-inline-code">hx_</code>) ne doivent jamais partir d'un navigateur : elles donnent accès à l'indexation et à la facturation.</td></tr>
       </table></div>
       <p class="docs-hero-note" style="margin-top:18px;">Un besoin au-delà de ces limites ? <a href="index.html#contact">Parlons-en</a> — c'est le rôle du plan Scale et des configurations dédiées.</p>
     </section>
