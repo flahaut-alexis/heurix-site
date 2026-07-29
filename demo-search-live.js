@@ -45,6 +45,12 @@
   var derniereRequete = 0;
   var prismeActif = null;
 
+  // VERTICALE COURANTE. Le sélecteur porte l'argument des dix secteurs :
+  // le même moteur, des règles différentes. Le retirer aurait fait perdre
+  // ce que la page d'accueil démontre de plus important.
+  var verticale = "outillage";
+  var pastilles = racine.querySelectorAll(".play-vertical-pill");
+
   function esc(s) {
     return String(s === undefined || s === null ? "" : s)
       .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -57,6 +63,17 @@
 
   function fiche(hit) {
     var p = hit.product || {};
+    // IMAGE OPTIONNELLE. Si le catalogue en porte une, on l'affiche ; sinon
+    // on montre la RÉFÉRENCE en grand, ce qui est plus honnête qu'un cadre
+    // vide et plus pertinent pour un catalogue technique : un acheteur de
+    // visserie reconnaît « M8x20 A2 », pas la photo d'une vis grise.
+    //
+    // `onerror` masque le visuel si l'URL est cassée : une image absente
+    // vaut mieux qu'une icône de fichier introuvable.
+    var visuel = p.image || p.image_url
+      ? "<div class='play-card-img'><img src='" + esc(p.image || p.image_url) +
+        "' alt='' loading='lazy' onerror=\"this.closest('.play-card-img').hidden=true\"></div>"
+      : "<div class='play-card-vign'>" + esc((p.ref || p.id || "").slice(0, 14)) + "</div>";
     var etat = hit.in_stock === false
       ? "<span class='play-rupture'>Rupture</span>"
       : "<span class='play-stock'>En stock</span>";
@@ -68,6 +85,7 @@
       .map(function (m) { return m.replace("annotation #", ""); })
       .slice(0, 4);
     return "<article class='play-card'>" +
+      visuel +
       "<div class='play-card-name'>" + esc(p.name || p.id) + "</div>" +
       (p.ref ? "<div class='play-card-ref'>" + esc(p.ref) + "</div>" : "") +
       "<div class='play-card-foot'>" +
@@ -152,7 +170,7 @@
       corps.filters = [{ field: prismeActif.champ, value: prismeActif.valeur }];
     }
 
-    fetch(API + "/v1/public-demo/search", {
+    fetch(API + "/v1/public-demo/search?vertical=" + encodeURIComponent(verticale), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(corps),
@@ -188,12 +206,59 @@
     minuteur = setTimeout(function () { chercher(champ.value); }, 220);
   });
 
-  // Les suggestions de la page d'accueil restent cliquables.
-  racine.querySelectorAll(".play-chip").forEach(function (chip) {
-    chip.addEventListener("click", function () {
-      champ.value = chip.textContent.trim();
+  // EXEMPLES PAR SECTEUR. Une suggestion « M8x20 » sur la verticale Mode
+  // ne démontrerait rien : chaque secteur a son vocabulaire, et c'est
+  // précisément ce que le sélecteur illustre.
+  var EXEMPLES = {
+    outillage: ["M8x20 inox", "vis inox moins de 2 euros", "DIN 933", "rondele"],
+    livres: ["roman policier poche", "9782070413119", "science-fiction"],
+    hightech: ["10kΩ 0805", "câble USB-C 2m", "résistance CMS"],
+    mode: ["pull laine rouge taille L", "jean slim W32", "chemise rayée"],
+  };
+
+  function majSuggestions() {
+    var zone = racine.querySelector(".play-chips");
+    if (!zone) return;
+    var liste = EXEMPLES[verticale] || EXEMPLES.outillage;
+    zone.innerHTML = liste.map(function (x) {
+      return "<button type='button' class='play-chip'>" + esc(x) + "</button>";
+    }).join("");
+    brancherChips();
+  }
+
+  pastilles.forEach(function (pill) {
+    pill.addEventListener("click", function () {
+      var v = pill.getAttribute("data-vertical");
+      if (!v || v === verticale) return;
+      verticale = v;
+      pastilles.forEach(function (p) {
+        p.classList.toggle("play-vertical-pill-on", p === pill);
+      });
       prismeActif = null;
-      chercher(champ.value);
+      majSuggestions();
+      // On relance la recherche courante sur le nouveau secteur : c'est ce
+      // qui montre que les RÈGLES changent, pas seulement les données.
+      if (champ.value.trim()) chercher(champ.value);
+      else { grille.innerHTML = ""; if (meta) meta.textContent = ""; }
     });
+  });
+
+  // Les suggestions de la page d'accueil restent cliquables.
+  function brancherChips() {
+    racine.querySelectorAll(".play-chip").forEach(function (chip) {
+      chip.addEventListener("click", function () {
+        champ.value = chip.textContent.trim();
+        prismeActif = null;
+        chercher(champ.value);
+      });
+    });
+  }
+  brancherChips();
+
+  // La pastille du secteur par défaut doit être marquée au chargement.
+  pastilles.forEach(function (p) {
+    if (p.getAttribute("data-vertical") === verticale) {
+      p.classList.add("play-vertical-pill-on");
+    }
   });
 })();
