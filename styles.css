@@ -3457,3 +3457,53 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
   .pb-cartes{ grid-template-columns:1fr; gap:14px; }
   .pb-carte{ padding:20px; }
 }
+
+/* ------------------------------------------------------------------ */
+/* Import CSV                                                          */
+/* ------------------------------------------------------------------ */
+.csv-depot{
+  border:2px dashed var(--line); border-radius:12px;
+  padding:34px 20px; text-align:center; background:var(--bg-soft);
+  transition:border-color .15s, background .15s;
+}
+.csv-depot-actif{ border-color:var(--blue); background:var(--blue-tint); }
+.csv-depot-note{ margin:10px 0 0; font-size:13px; color:var(--ink-muted); }
+
+.csv-resume{
+  margin:20px 0 6px; padding:13px 16px;
+  background:var(--bg-soft); border-radius:10px; font-size:14px;
+}
+.csv-detecte{ font-size:12.5px; color:var(--ink-muted); }
+
+.csv-titre{ margin:24px 0 4px; font-size:15px; font-weight:700; }
+.csv-aide{ margin:0 0 14px; font-size:13px; color:var(--ink-muted); }
+.csv-aide-champ{ font-size:11.5px; color:var(--ink-muted); line-height:1.4; }
+.csv-requis{
+  display:inline-block; margin-left:6px; padding:1px 7px; border-radius:100px;
+  font-size:10.5px; font-weight:700; background:#B4402F; color:#fff;
+}
+.csv-apercu{ font-size:12px; color:var(--ink-muted); }
+#csv-correspondance select{ width:100%; max-width:220px; font-size:13px; padding:5px 7px; }
+
+.csv-options{ display:flex; gap:16px; flex-wrap:wrap; margin:20px 0 14px; }
+.csv-options label{ display:flex; flex-direction:column; gap:5px; font-size:13px; font-weight:600; }
+.csv-options input, .csv-options select{ padding:8px 10px; font-size:13.5px; min-width:200px; }
+.csv-actions{ display:flex; gap:10px; }
+
+/* La barre de progression est le seul retour pendant un import de
+   plusieurs minutes : sans elle, l utilisateur croit a un blocage. */
+.csv-barre{
+  height:8px; background:var(--line); border-radius:100px; overflow:hidden;
+  margin:18px 0 9px;
+}
+.csv-barre-remplie{
+  height:100%; width:0; background:var(--blue);
+  transition:width .25s ease;
+}
+.csv-etat{ margin:0; font-size:13px; color:var(--ink-muted); }
+
+.csv-rapport-bloc{ margin-top:18px; font-size:13.5px; }
+.csv-rapport-bloc ul{ margin:6px 0 14px 18px; font-size:12.5px; color:var(--ink-muted); }
+.csv-succes{ color:#0F7A3D; }
+.csv-echec{ color:#B4402F; }
+.csv-averti{ color:#8A5A00; }
