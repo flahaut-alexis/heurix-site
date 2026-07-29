@@ -3516,3 +3516,26 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 .csv-verdict-ok{ background:#EDF7F1; border:1px solid #BFE3CE; color:#0F5A2E; }
 .csv-verdict-erreur{ background:#FDF3F1; border:1px solid #F0CFC8; color:#8A2E1C; }
 .csv-verdict-exemple{ display:block; margin-top:6px; font-size:12px; opacity:.85; }
+
+/* Suppression d un catalogue — discrete et separee.
+   Une action irreversible ne doit pas voisiner les reglages courants. */
+.catalog-card-danger{
+  margin-top:20px; padding-top:14px; border-top:1px solid var(--line);
+}
+.catalog-delete{
+  font-family:inherit; font-size:12.5px; font-weight:600; cursor:pointer;
+  background:transparent; border:1px solid #E4C6C0; color:#B4402F;
+  padding:7px 13px; border-radius:8px;
+}
+.catalog-delete:hover{ background:#FDF3F1; border-color:#D9A79E; }
+.catalog-delete:disabled{ opacity:.5; cursor:not-allowed; }
+
+/* Recommandation de pack, affichee AVANT l import.
+   Le selecteur demandait un choix a l aveugle : la recommandation
+   n existait qu apres indexation, donc trop tard. */
+.csv-reco{ margin:12px 0 0; padding:12px 15px; border-radius:10px; font-size:13.5px; line-height:1.55;
+  background:var(--bg-soft); border:1px solid var(--line); color:var(--ink-muted); }
+.csv-reco[hidden]{ display:none; }
+.csv-reco-ok{ background:#EEF4FD; border-color:#C9DCF5; color:var(--blue-deep); }
+.csv-reco-neutre{ background:#FDF9EE; border-color:#EADFC2; color:#7A5A18; }
+.csv-reco-note{ font-size:12px; opacity:.85; }

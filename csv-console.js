@@ -148,6 +148,7 @@ function rendreCorrespondance() {
   }
   $("csv-correspondance").innerHTML = html;
   rendreVerdict();
+  recommanderPack();
 
   $("csv-correspondance").querySelectorAll("select").forEach((s) => {
     s.addEventListener("change", () => {
@@ -214,6 +215,75 @@ function rendreVerdict() {
     (erreurs.length
       ? erreurs.length + " ligne(s) seraient ignorées — c'est normal si votre export contient des lignes vides ou des doublons."
       : "La correspondance semble correcte.");
+}
+
+
+/* Recommandation de pack, AVANT l'import.
+ *
+ * DÉFAUT SIGNALÉ APRÈS UN VRAI IMPORT. Le sélecteur de pack demandait un
+ * choix à l'aveugle : rien n'indiquait quel pack convenait au fichier. La
+ * recommandation existait, mais seulement APRÈS indexation — donc trop
+ * tard, puisque corriger imposait de tout réimporter.
+ *
+ * On envoie un échantillon dès que la correspondance permet d'extraire des
+ * libellés, et on préselectionne le pack recommandé.
+ */
+let recoEnCours = false;
+
+async function recommanderPack() {
+  const zone = $("csv-reco");
+  if (!zone || recoEnCours) return;
+  if (etat.correspondance.name === undefined && etat.correspondance.ref === undefined) {
+    zone.hidden = true;
+    return;
+  }
+
+  const lignes = etat.texte.split(/\r?\n/).filter((l) => l.trim());
+  // 100 produits suffisent à trancher — le classement ne bouge plus au-delà.
+  const echantillon = [lignes[0], ...lignes.slice(1, 101)].join("\n");
+  const { produits } = convertir(echantillon, etat.correspondance, {
+    separateur: etat.separateur,
+  });
+  if (!produits.length) { zone.hidden = true; return; }
+
+  recoEnCours = true;
+  zone.hidden = false;
+  zone.className = "csv-reco";
+  zone.textContent = "Analyse du contenu…";
+
+  try {
+    const d = await appelApi("/v1/rulepacks/suggest", {
+      method: "POST",
+      body: JSON.stringify({ items: produits.slice(0, 300) }),
+    });
+    if (!d.recommande) {
+      zone.className = "csv-reco csv-reco-neutre";
+      zone.innerHTML = "<strong>Aucun pack ne se détache</strong> sur cet échantillon. " +
+        "Vous pouvez importer sans pack : la recherche fonctionnera sur les mots, " +
+        "sans reconnaissance de structure.";
+      return;
+    }
+    const meilleur = (d.classement || [])[0] || {};
+    zone.className = "csv-reco csv-reco-ok";
+    zone.innerHTML = "<strong>Pack recommandé : " + escaper(d.recommande) + "</strong>" +
+      (meilleur.produits_annotes !== undefined
+        ? " — " + meilleur.produits_annotes + " produits sur " +
+          Math.min(produits.length, 300) + " reconnus."
+        : "") +
+      "<br><span class='csv-reco-note'>Sélectionné automatiquement. " +
+      "Vous pouvez le changer ci-dessous.</span>";
+
+    // Présélection, sans forcer : l'utilisateur reste maître du choix.
+    const sel = $("csv-rulepack");
+    if (sel && !sel.value) {
+      const opt = [...sel.options].find((o) => o.value === d.recommande);
+      if (opt) sel.value = d.recommande;
+    }
+  } catch (e) {
+    zone.hidden = true;   // silencieux : l'import reste possible sans reco
+  } finally {
+    recoEnCours = false;
+  }
 }
 
 // ----------------------------------------------------------------- envoi

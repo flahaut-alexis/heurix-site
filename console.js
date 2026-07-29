@@ -3066,6 +3066,45 @@
 
   function wireCatalogCard(cardEl, catalog, key) {
     chargerSuggestionPack(cardEl, catalog.catalog, key);
+
+    // SUPPRESSION D'UN CATALOGUE (29 juillet).
+    //
+    // Rien ne permettait de supprimer un catalogue : un import raté
+    // obligeait à en créer un autre sous un nom différent, et l'ancien
+    // continuait de consommer le quota du plan.
+    //
+    // Double garde-fou : la modale habituelle, PUIS la saisie du nom.
+    // L'opération efface produits, priorités, règles et synonymes — et
+    // rien ne permet de revenir en arrière.
+    var btnSupprimer = cardEl.querySelector(".catalog-delete");
+    if (btnSupprimer) {
+      btnSupprimer.addEventListener("click", function () {
+        var nom = catalog.catalog;
+        confirmerSuppression(
+          "Supprimer le catalogue <strong>" + esc(nom) + "</strong> et ses " +
+          (catalog.products || 0) + " produits ?<br>" +
+          "Les priorités, règles personnalisées et synonymes seront perdus. " +
+          "<strong>Cette action est irréversible.</strong>",
+          btnSupprimer,
+          function () {
+            var saisi = window.prompt(
+              "Confirmez en recopiant le nom du catalogue :", "");
+            if (saisi !== nom) {
+              if (saisi !== null) window.alert("Le nom ne correspond pas. Rien n'a été supprimé.");
+              return;
+            }
+            btnSupprimer.disabled = true;
+            apiFetch("/v1/index/" + encodeURIComponent(nom) +
+                     "?confirm=" + encodeURIComponent(nom), key, { method: "DELETE" })
+              .then(function () { loadCatalogs(key); })
+              .catch(function (e) {
+                btnSupprimer.disabled = false;
+                window.alert("Suppression impossible : " + (e.message || e));
+              });
+          }
+        );
+      });
+    }
     // Bascule bac a sable. Les deux refus possibles (plan insuffisant,
     // plafond atteint) viennent du moteur avec leur message : on les affiche
     // tels quels plutot que de dupliquer la regle cote client, ou elle
@@ -3151,6 +3190,12 @@
       '</div>' +
       '<div class="catalog-synonyms-label" style="margin-top:22px;">Synonymes et règles personnalisées</div>' +
       '<p class="console-panel-note" style="margin:6px 0 0;">Gérés depuis <button type="button" class="catalog-goto-rules" data-goto-pane="pane-search-overrides">Personnalisation → Gestion des règles</button>.</p>' +
+      // Suppression, volontairement DISCRÈTE et en dernier : c'est une
+      // action irréversible, elle ne doit pas voisiner les réglages
+      // courants ni se cliquer par réflexe.
+      '<div class="catalog-card-danger">' +
+        '<button type="button" class="catalog-delete">Supprimer ce catalogue</button>' +
+      '</div>' +
     '</div>';
   }
 
