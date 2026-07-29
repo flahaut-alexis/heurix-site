@@ -18,7 +18,7 @@
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css?v=1785277101">
+<link rel="stylesheet" href="styles.css?v=1785279868">
 <link rel="canonical" href="https://heurix.fr/docs.html">
 <script type="application/ld+json">
 {
@@ -582,7 +582,43 @@ $collection->getSelect()->order(
         </tr>
       </table></div>
 
-      <h4>PrestaShop — le cas le plus simple</h4>
+      <h4>PrestaShop — module officiel</h4>
+      <p>Un module prêt à installer existe, en version <strong>0.2.1</strong>. Il implémente <code class="docs-inline-code">ProductSearchProviderInterface</code> et n'exige aucune modification de votre thème.</p>
+
+      <div class="table-scroll"><table class="docs-params">
+        <tr><th>Compatibilité</th><td>PrestaShop 1.7.6 et supérieur, 8.x</td></tr>
+        <tr><th>Dépendances</th><td>Aucune — cURL natif</td></tr>
+        <tr><th>Ce qu'il remplace</th><td>Les résultats de recherche uniquement. Thème, gabarits et filtres restent les vôtres</td></tr>
+        <tr><th>Repli</th><td>Recherche native de PrestaShop si Heurix ne répond pas</td></tr>
+      </table></div>
+
+      <h5>Installation</h5>
+      <ol class="docs-steps">
+        <li>Copiez le dossier <code class="docs-inline-code">heurixsearch</code> dans <code class="docs-inline-code">modules/</code> de votre boutique</li>
+        <li>Back-office → Modules → installer « Heurix Search »</li>
+        <li>Renseignez votre <strong>clé serveur</strong> (<code class="docs-inline-code">hx_</code>) et le nom de votre catalogue</li>
+        <li>Activez</li>
+      </ol>
+
+      <h5>Un prérequis à connaître</h5>
+      <p>PrestaShop identifie ses produits par un <strong>entier</strong> (<code class="docs-inline-code">id_product</code>). Votre catalogue Heurix doit donc être indexé avec ces identifiants, et non avec vos références internes.</p>
+      <p>Concrètement, le champ <code class="docs-inline-code">id</code> envoyé à Heurix doit contenir <code class="docs-inline-code">1360</code>, pas <code class="docs-inline-code">REF-001360</code>. Vous pouvez conserver votre référence métier dans le champ <code class="docs-inline-code">ref</code>, qui est indexé avec le poids le plus fort.</p>
+
+      <pre class="docs-code"><code>{
+  "items": [
+    {
+      "id": "1360",                        // id_product PrestaShop
+      "ref": "REF-001360",                 // votre reference metier
+      "name": "Vis tete hexagonale M8x20 inox A2",
+      "price": 1.24,
+      "stock": 2485
+    }
+  ]
+}</code></pre>
+
+      <p>Si vos identifiants ne sont pas numériques, le module les écarte et l'inscrit dans les journaux PrestaShop — vous verrez alors « aucun résultat » alors que Heurix en a trouvé. C'est le symptôme à reconnaître.</p>
+
+      <h4>PrestaShop — l'interface, si vous préférez votre propre module</h4>
       <p>Un module implémentant <code class="docs-inline-code">ProductSearchProviderInterface</code> suffit. Il reçoit la requête, appelle Heurix avec <code class="docs-inline-code">ids_only</code>, renvoie les identifiants. PrestaShop fait le reste.</p>
 
       <pre class="docs-code"><code>public function runQuery(ProductSearchContext $context, ProductSearchQuery $query)
