@@ -3539,3 +3539,8 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 .csv-reco-ok{ background:#EEF4FD; border-color:#C9DCF5; color:var(--blue-deep); }
 .csv-reco-neutre{ background:#FDF9EE; border-color:#EADFC2; color:#7A5A18; }
 .csv-reco-note{ font-size:12px; opacity:.85; }
+
+.csv-champ-aide{ font-size:11.5px; font-weight:400; color:var(--ink-muted); margin-top:3px; }
+.csv-suite{ margin:16px 0 0; }
+/* L espace reserve anime doit rester lisible pendant qu il se compose. */
+#csv-catalogue::placeholder{ color:var(--ink-muted); opacity:.7; }

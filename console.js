@@ -2758,6 +2758,9 @@
       // fonction anonyme. Sans cela, il utilisait le jeton de SESSION,
       // qui n'autorise pas l'indexation — « Invalid API key ».
       window.HEURIX_CLE_API = key;
+      // Permet aux modules ES — l'import CSV — de rafraichir la liste des
+      // catalogues apres avoir cree le leur, sans recharger la page.
+      window.HEURIX_RECHARGER_CATALOGUES = function () { loadCatalogs(key); };
       wireGlobalCatalog(key);
       wireBilling(key);
       wireCustomRulesPane(key);

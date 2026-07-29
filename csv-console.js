@@ -80,6 +80,88 @@ function afficher(id, visible) {
   if (el) el.hidden = !visible;
 }
 
+
+async function chargerPacks() {
+  const sel = $("csv-rulepack");
+  if (!sel || sel.dataset.charge === "1") return;
+  try {
+    const d = await appelApi("/v1/rulepacks");
+    (d.rulepacks || []).forEach((p) => {
+      const o = document.createElement("option");
+      o.value = p.name;
+      o.textContent = p.name;
+      sel.appendChild(o);
+    });
+    sel.dataset.charge = "1";
+  } catch (e) {
+    // On le DIT plutôt que d'afficher un menu vide : un sélecteur qui ne
+    // propose rien laisse croire qu'aucun pack n'existe.
+    const o = document.createElement("option");
+    o.value = "";
+    o.textContent = "— packs indisponibles, rechargez la page —";
+    sel.appendChild(o);
+  }
+}
+
+
+/* Suggestion animée dans le champ du nom.
+ *
+ * POURQUOI CETTE ANIMATION. Un champ vide avec un espace réservé statique
+ * se survole sans qu'on comprenne qu'il faut le remplir — l'utilisateur l'a
+ * signalé. Un texte qui se tape sous les yeux attire l'œil et montre en
+ * même temps le FORMAT attendu : minuscules, tiret, pas d'espace.
+ *
+ * La suggestion part de la raison sociale du compte quand elle est connue,
+ * pour que l'exemple parle du client plutôt que d'un « mon-catalogue »
+ * abstrait.
+ *
+ * L'animation s'arrête dès la première frappe : continuer à écrire
+ * derrière l'utilisateur serait pénible.
+ */
+let animationNom = null;
+
+function animerSuggestion(suggestion) {
+  const champ = $("csv-catalogue");
+  if (!champ || champ.value) return;
+  if (animationNom) clearInterval(animationNom);
+
+  let i = 0;
+  champ.placeholder = "";
+  animationNom = setInterval(() => {
+    if (champ.value) {           // l'utilisateur a commencé à saisir
+      clearInterval(animationNom);
+      animationNom = null;
+      champ.placeholder = suggestion;
+      return;
+    }
+    i++;
+    champ.placeholder = suggestion.slice(0, i);
+    if (i >= suggestion.length) {
+      clearInterval(animationNom);
+      animationNom = null;
+    }
+  }, 55);
+}
+
+function nettoyerNom(brut) {
+  // Le nom voyage dans une URL : espaces et accents le compliquent à
+  // chaque appel. On propose directement une forme utilisable.
+  return String(brut || "")
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase().replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "").slice(0, 40);
+}
+
+async function suggererNom() {
+  let base = "mon-catalogue";
+  try {
+    const moi = await appelApi("/v1/auth/me");
+    const societe = moi.company_name || moi.company || "";
+    if (societe) base = nettoyerNom(societe);
+  } catch (e) { /* on garde le défaut */ }
+  animerSuggestion(base + "-test");
+}
+
 // --------------------------------------------------------------- lecture
 
 async function lireFichier(fichier) {
@@ -103,6 +185,8 @@ async function lireFichier(fichier) {
     nom: fichier.name,
   };
 
+  await chargerPacks();
+  suggererNom();
   rendreResume();
   rendreCorrespondance();
   afficher("csv-analyse", true);
@@ -312,6 +396,18 @@ async function envoyer() {
 
   afficher("csv-analyse", false);
   afficher("csv-progression", true);
+  afficher("csv-rapport", false);
+
+  // DURÉE MINIMALE D'AFFICHAGE.
+  //
+  // Sur un import d'un seul lot, la barre apparaissait et disparaissait en
+  // un clignement : l'utilisateur ne voyait rien se passer et croyait que
+  // le bouton n'avait pas répondu.
+  //
+  // On garde la progression à l'écran au moins une seconde. Ce n'est pas
+  // un artifice : c'est le temps qu'il faut pour percevoir qu'une action a
+  // eu lieu.
+  const debut = Date.now();
 
   let envoyes = 0;
   const echecs = [];
@@ -339,19 +435,37 @@ async function envoyer() {
   }
 
   majProgression(lots.length, lots.length, envoyes);
+  const ecoule = Date.now() - debut;
+  if (ecoule < 1000) {
+    await new Promise((r) => setTimeout(r, 1000 - ecoule));
+  }
   afficher("csv-progression", false);
-  afficherRapport(envoyes, erreurs, echecs);
+  afficherRapport(envoyes, erreurs, echecs, catalogue);
+
+  // RAFRAÎCHISSEMENT DE LA CONSOLE.
+  //
+  // Le catalogue n'apparaissait pas dans la barre latérale : il fallait
+  // recharger la page pour le voir. L'utilisateur pouvait croire que
+  // l'import n'avait rien produit, malgré le rapport.
+  //
+  // `loadCatalogs` appartient à console.js. On l'appelle si elle est
+  // exposée, sinon on invite à recharger — plutôt que de laisser un écran
+  // qui semble ne rien avoir fait.
+  if (envoyes > 0 && typeof window.HEURIX_RECHARGER_CATALOGUES === "function") {
+    try { window.HEURIX_RECHARGER_CATALOGUES(); } catch (e) {}
+  }
 }
 
 function majProgression(fait, total, envoyes) {
   const pct = total ? Math.round((fait / total) * 100) : 0;
   $("csv-barre-remplie").style.width = pct + "%";
-  $("csv-etat").textContent =
-    "Lot " + Math.min(fait + 1, total) + " sur " + total +
-    " — " + envoyes.toLocaleString("fr-FR") + " produits indexés";
+  $("csv-etat").textContent = fait >= total
+    ? "Terminé — " + envoyes.toLocaleString("fr-FR") + " produits indexés"
+    : "Envoi du lot " + Math.min(fait + 1, total) + " sur " + total +
+      " — " + envoyes.toLocaleString("fr-FR") + " produits indexés";
 }
 
-function afficherRapport(envoyes, erreurs, echecs) {
+function afficherRapport(envoyes, erreurs, echecs, catalogue) {
   let html = "<div class='csv-rapport-bloc'>";
 
   if (envoyes > 0) {
@@ -381,9 +495,23 @@ function afficherRapport(envoyes, erreurs, echecs) {
     html += "</ul>";
   }
 
+  if (envoyes > 0 && catalogue) {
+    html += "<p class='csv-suite'><button type='button' class='btn' " +
+            "id='csv-voir-catalogue'>Voir le catalogue &rarr;</button></p>";
+  }
   html += "</div>";
   $("csv-rapport").innerHTML = html;
   afficher("csv-rapport", true);
+
+  const voir = $("csv-voir-catalogue");
+  if (voir) {
+    voir.addEventListener("click", () => {
+      // On bascule sur le pavé des catalogues plutôt que de laisser
+      // l'utilisateur chercher son import dans le menu.
+      const cible = document.querySelector('[data-pane="pane-catalog-list"]');
+      if (cible) cible.click();
+    });
+  }
 }
 
 function escaper(s) {
@@ -420,18 +548,12 @@ function init() {
 
   // Les packs viennent de l'API : les coder en dur ici les ferait diverger
   // de ceux réellement installés sur le moteur.
-  appelApi("/v1/rulepacks").then((d) => {
-    const sel = $("csv-rulepack");
-    (d.rulepacks || []).forEach((p) => {
-      const o = document.createElement("option");
-      o.value = p.name;
-      o.textContent = p.name;
-      sel.appendChild(o);
-    });
-  }).catch(() => {
-    // Silencieux : l'import reste possible sans pack, et une alerte au
-    // chargement d'un écran qu'on n'a pas encore ouvert serait intrusive.
-  });
+  // Les packs se chargent à la LECTURE DU FICHIER, pas ici.
+  //
+  // DÉFAUT CORRIGÉ. Ce module est chargé AVANT console.js, qui publie la
+  // clé API après connexion. Appeler /v1/rulepacks au démarrage utilisait
+  // donc le jeton de session, recevait un 401, et le sélecteur restait
+  // vide — sans la moindre erreur visible.
 }
 
 if (document.readyState === "loading") {
