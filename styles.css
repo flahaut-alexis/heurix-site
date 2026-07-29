@@ -3507,3 +3507,12 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 .csv-succes{ color:#0F7A3D; }
 .csv-echec{ color:#B4402F; }
 .csv-averti{ color:#8A5A00; }
+
+/* Verdict de correspondance, affiche en temps reel sous le tableau.
+   Une correspondance fausse ne se voyait qu apres l envoi : 462 lignes
+   ignorees sur 502, decouvertes trop tard. */
+.csv-verdict{ margin:14px 0 0; padding:12px 15px; border-radius:10px; font-size:13.5px; line-height:1.55; }
+.csv-verdict[hidden]{ display:none; }
+.csv-verdict-ok{ background:#EDF7F1; border:1px solid #BFE3CE; color:#0F5A2E; }
+.csv-verdict-erreur{ background:#FDF3F1; border:1px solid #F0CFC8; color:#8A2E1C; }
+.csv-verdict-exemple{ display:block; margin-top:6px; font-size:12px; opacity:.85; }

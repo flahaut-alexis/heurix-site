@@ -2753,6 +2753,11 @@
       wireCategoryViews(key);
       wireTutoEditeur(["so-tuto", "br-tuto"]);
       cleCourante = key;
+      // EXPOSITION POUR LES MODULES. L'import CSV est un module ES,
+      // chargé séparément : il n'a pas accès aux variables de cette
+      // fonction anonyme. Sans cela, il utilisait le jeton de SESSION,
+      // qui n'autorise pas l'indexation — « Invalid API key ».
+      window.HEURIX_CLE_API = key;
       wireGlobalCatalog(key);
       wireBilling(key);
       wireCustomRulesPane(key);

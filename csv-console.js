@@ -28,6 +28,18 @@ const API_BASE = "https://api.heurix.fr";
 const CLE_SESSION = "heurix_console_session";
 
 function jeton() {
+  // DEUX IDENTIFIANTS DISTINCTS, et les confondre échoue en silence.
+  //
+  // Le jeton de SESSION authentifie l'utilisateur de la console. La clé
+  // API autorise les opérations sur les catalogues — indexation comprise.
+  // Ma première version envoyait le jeton de session : le serveur
+  // répondait « Invalid API key » sur chaque lot.
+  //
+  // `console.js` expose la clé courante après connexion. On retombe sur le
+  // jeton de session pour les appels de lecture, qui l'acceptent.
+  if (typeof window !== "undefined" && window.HEURIX_CLE_API) {
+    return window.HEURIX_CLE_API;
+  }
   try { return localStorage.getItem(CLE_SESSION) || ""; } catch (e) { return ""; }
 }
 
@@ -135,6 +147,7 @@ function rendreCorrespondance() {
     "</tr>";
   }
   $("csv-correspondance").innerHTML = html;
+  rendreVerdict();
 
   $("csv-correspondance").querySelectorAll("select").forEach((s) => {
     s.addEventListener("change", () => {
@@ -144,6 +157,63 @@ function rendreCorrespondance() {
       rendreCorrespondance();
     });
   });
+}
+
+
+/* Contrôle immédiat de la correspondance.
+ *
+ * DÉFAUT CORRIGÉ APRÈS UN VRAI IMPORT. Une correspondance fausse — la
+ * colonne Identifiant pointée sur « Descriptif technique » — ne se voyait
+ * qu'APRÈS l'envoi, dans le rapport : 462 lignes ignorées sur 502.
+ *
+ * L'utilisateur n'avait aucun moyen de s'en apercevoir avant. On teste
+ * donc la correspondance sur un échantillon et on affiche le verdict sous
+ * le tableau, en temps réel.
+ */
+function rendreVerdict() {
+  const zone = $("csv-verdict");
+  if (!zone) return;
+
+  const lignes = etat.texte.split(/\r?\n/).filter((l) => l.trim());
+  // 60 lignes suffisent à révéler une correspondance fausse, et restent
+  // instantanées même sur un fichier de 100 000 lignes.
+  const echantillon = [lignes[0], ...lignes.slice(1, 61)].join("\n");
+  const { produits, erreurs } = convertir(echantillon, etat.correspondance, {
+    separateur: etat.separateur,
+  });
+  const testees = produits.length + erreurs.length;
+  if (!testees) { zone.hidden = true; return; }
+
+  const tauxEchec = erreurs.length / testees;
+  zone.hidden = false;
+
+  if (etat.correspondance.id === undefined) {
+    zone.className = "csv-verdict csv-verdict-erreur";
+    zone.innerHTML = "<strong>Colonne Identifiant non choisie.</strong> " +
+      "Sans elle, aucun produit ne peut être importé — et un second import " +
+      "créerait des doublons au lieu de mettre à jour.";
+    return;
+  }
+
+  if (tauxEchec > 0.3) {
+    // Au-delà d'un tiers d'échecs, ce n'est plus un fichier imparfait :
+    // c'est la correspondance qui est fausse.
+    zone.className = "csv-verdict csv-verdict-erreur";
+    const exemple = erreurs[0] ? erreurs[0].cause : "";
+    zone.innerHTML = "<strong>" + Math.round(tauxEchec * 100) +
+      " % des lignes testées seraient ignorées.</strong> La colonne " +
+      "Identifiant ne semble pas la bonne — vérifiez qu'elle contient bien " +
+      "une référence unique par produit." +
+      (exemple ? "<br><span class='csv-verdict-exemple'>" + escaper(exemple) + "</span>" : "");
+    return;
+  }
+
+  zone.className = "csv-verdict csv-verdict-ok";
+  zone.innerHTML = "<strong>" + produits.length + " produits sur " + testees +
+    " lignes testées.</strong> " +
+    (erreurs.length
+      ? erreurs.length + " ligne(s) seraient ignorées — c'est normal si votre export contient des lignes vides ou des doublons."
+      : "La correspondance semble correcte.");
 }
 
 // ----------------------------------------------------------------- envoi
@@ -189,7 +259,12 @@ async function envoyer() {
       // arrêter : un import de 50 000 produits ne doit pas être perdu
       // parce que le lot 7 a échoué. Les identifiants sont stables, donc
       // relancer l'import ne créera pas de doublons.
-      echecs.push("Lot " + (i + 1) + " sur " + lots.length + " : " + (e.message || e));
+      var cause = e.message || String(e);
+      if (e.status === 401 || e.status === 403 || /invalid api key/i.test(cause)) {
+        cause = "clé API refusée. Rechargez la console : votre session a " +
+                "peut-être expiré.";
+      }
+      echecs.push("Lot " + (i + 1) + " sur " + lots.length + " : " + cause);
     }
   }
 
