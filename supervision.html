@@ -158,6 +158,35 @@
          "Disque libre : " + s.disque_libre_pct + " % (" + s.disque_libre_go + " Go)</div></div>";
     h += "</div>";
 
+    // --- VEILLE D'ACQUISITION.
+    //
+    // Ce que les visiteurs de la vitrine cherchent. C'est une donnée
+    // qu'aucune autre source ne donne : elle dit quelles verticales
+    // intéressent et quel vocabulaire les prospects emploient.
+    //
+    // Les recherches SANS RÉSULTAT passent en premier : elles nomment les
+    // secteurs qui manquent, et c'est l'information la plus actionnable.
+    var acq = d.acquisition || {};
+    if ((acq.sans_resultat_30j || []).length) {
+      h += "<div class='carte'><h2>Ce que les visiteurs ne trouvent pas — 30 jours</h2>" +
+           "<p class='detail' style='margin:0 0 10px;'>Chaque terme nomme un secteur " +
+           "ou un vocabulaire qui vous manque.</p><table>" +
+           "<tr><th>Recherche</th><th>Fois</th></tr>";
+      acq.sans_resultat_30j.forEach(function (t) {
+        h += "<tr><td>" + t.terme + "</td><td class='mono'>" + t.n + "</td></tr>";
+      });
+      h += "</table></div>";
+    }
+    if ((acq.termes_30j || []).length) {
+      h += "<div class='carte'><h2>Recherches sur la vitrine — 30 jours</h2><table>" +
+           "<tr><th>Recherche</th><th>Fois</th><th>Résultats</th></tr>";
+      acq.termes_30j.forEach(function (t) {
+        h += "<tr><td>" + t.terme + "</td><td class='mono'>" + t.n +
+             "</td><td class='mono'>" + n(t.resultats) + "</td></tr>";
+      });
+      h += "</table></div>";
+    }
+
     // --- les plus gros catalogues
     if ((d.catalogues.plus_gros || []).length) {
       h += "<div class='carte'><h2>Plus gros catalogues</h2><table>" +
@@ -179,7 +208,7 @@
     if (!cle) return;
     $("erreur").hidden = true;
 
-    fetch(API + "/v1/admin/overview", { headers: { Authorization: "Bearer " + cle } })
+    fetch(API + "/v1/admin/overview?vitrine=public-demo", { headers: { Authorization: "Bearer " + cle } })
       .then(function (r) {
         if (r.status === 401 || r.status === 403) throw new Error("Clé refusée.");
         if (!r.ok) throw new Error("Le serveur a répondu " + r.status + ".");
@@ -191,7 +220,7 @@
         // Rafraîchissement automatique : cette page sert à SURVEILLER, on
         // la laisse ouverte sur un second écran.
         setInterval(function () {
-          fetch(API + "/v1/admin/overview", { headers: { Authorization: "Bearer " + cle } })
+          fetch(API + "/v1/admin/overview?vitrine=public-demo", { headers: { Authorization: "Bearer " + cle } })
             .then(function (r) { return r.ok ? r.json() : null; })
             .then(function (d) { if (d) rendre(d); })
             .catch(function () {});
