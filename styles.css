@@ -3544,3 +3544,19 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 .csv-suite{ margin:16px 0 0; }
 /* L espace reserve anime doit rester lisible pendant qu il se compose. */
 #csv-catalogue::placeholder{ color:var(--ink-muted); opacity:.7; }
+
+/* Tutoriel de premier import — meme registre que la visite de l editeur. */
+.csv-tuto{
+  position:relative; margin:0 0 20px; padding:18px 20px 16px;
+  background:var(--blue-tint); border:1px solid #C9DCF5; border-radius:12px;
+}
+.csv-tuto[hidden]{ display:none; }
+.csv-tuto-titre{ margin:0 0 10px; font-size:14.5px; font-weight:700; color:var(--blue-deep); }
+.csv-tuto ol{ margin:0 0 14px 18px; padding:0; font-size:13.5px; line-height:1.6; color:var(--ink); }
+.csv-tuto li{ margin-bottom:7px; }
+.csv-tuto-close{
+  position:absolute; top:10px; right:12px; width:24px; height:24px;
+  border:none; background:transparent; color:var(--ink-muted);
+  font-size:19px; line-height:1; cursor:pointer;
+}
+.csv-tuto-close:hover{ color:var(--ink); }

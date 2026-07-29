@@ -18,7 +18,7 @@
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css?v=1785328313">
+<link rel="stylesheet" href="styles.css?v=1785328627">
 <link rel="canonical" href="https://heurix.fr/docs.html">
 <script type="application/ld+json">
 {
@@ -644,6 +644,36 @@ $collection->getSelect()->order(
         $query-&gt;set('s', '');                           // sinon WP refiltre
     }
 });</code></pre>
+
+      <h3 id="import-csv">Importer un CSV depuis la console</h3>
+      <p>Si vous exportez votre catalogue en CSV depuis un ERP ou un PIM, <strong>aucun développement n'est nécessaire</strong>. La console analyse le fichier et l'envoie pour vous.</p>
+
+      <div class="table-scroll"><table class="docs-params">
+        <tr><th>Détection automatique</th><td>Séparateur (<code class="docs-inline-code">;</code>, <code class="docs-inline-code">,</code>, tabulation) et encodage — y compris Latin-1, fréquent sur les exports français</td></tr>
+        <tr><th>Correspondance</th><td>Proposée d'après vos en-têtes, modifiable, avec aperçu des valeurs</td></tr>
+        <tr><th>Nombres</th><td><code class="docs-inline-code">1,24</code> et <code class="docs-inline-code">1 234,56</code> sont compris</td></tr>
+        <tr><th>Découpage</th><td>Automatique en lots de 5 000</td></tr>
+        <tr><th>Pack de règles</th><td>Recommandé d'après le contenu de votre fichier, avant l'import</td></tr>
+      </table></div>
+
+      <p>Un contrôle affiche, avant l'envoi, combien de lignes seraient retenues — une correspondance fausse se voit immédiatement plutôt qu'après coup.</p>
+
+      <h4>⚠️ Un point à décider avant votre premier import</h4>
+      <p><strong>L'identifiant que vous indexez doit être celui que vous utiliserez partout ailleurs.</strong> C'est la seule décision difficile à revenir en arrière.</p>
+
+      <p>Trois systèmes s'appuient sur cet identifiant :</p>
+      <ul class="docs-steps">
+        <li><strong>Le tracker de conversion.</strong> Il enregistre le <code class="docs-inline-code">product_id</code> que votre site lui envoie. Si vous indexez par référence métier — <code class="docs-inline-code">VIS-M8-INOX</code> — mais que votre site envoie l'identifiant de sa plateforme — <code class="docs-inline-code">1360</code> —, <strong>les deux ne se rencontreront jamais</strong> et vos analyses de ventes resteront vides.</li>
+        <li><strong>Les modules de plateforme.</strong> PrestaShop, WooCommerce et Magento identifient leurs produits par un entier. Le paramètre <code class="docs-inline-code">id_field</code> permet de garder votre référence métier comme identifiant tout en fournissant cet entier — voir ci-dessous.</li>
+        <li><strong>Le serveur MCP.</strong> Il renvoie vos identifiants tels quels. Une référence métier y est même plus lisible pour un agent conversationnel.</li>
+      </ul>
+
+      <p><strong>La solution la plus souple</strong> : indexez avec votre référence métier — c'est elle que vos acheteurs tapent, et elle est fortement pondérée au classement — et ajoutez une colonne <code class="docs-inline-code">platform_id</code> contenant l'identifiant de votre plateforme. Vous disposez alors des deux.</p>
+
+      <pre class="docs-code"><code>Code Article;id_prestashop;Désignation;Prix HT;Qté dispo
+VIS-M8-INOX;1360;Vis tête hexagonale M8x20 inox A2;1,24;2485</code></pre>
+
+      <p>Dans l'écran de correspondance, associez <code class="docs-inline-code">Code Article</code> à <strong>Identifiant</strong> et <code class="docs-inline-code">id_prestashop</code> à <strong>Identifiant plateforme</strong>.</p>
 
       <h3>Catalogues volumineux : indexez par lots</h3>
       <p>Un appel accepte <strong>5 000 produits au maximum</strong>. Au-delà, la réponse est un <code class="docs-inline-code">422</code> qui vous indique en combien d'envois découper.</p>

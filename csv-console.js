@@ -519,6 +519,35 @@ function escaper(s) {
     .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
+
+/* Tutoriel de premier import.
+ *
+ * Même mécanisme que la visite de l'éditeur : affiché une fois, refermable,
+ * mémorisé localement. Trois points seulement — un tutoriel qu'on lit en
+ * entier vaut mieux qu'un manuel qu'on ferme.
+ *
+ * Le deuxième point est celui qui coûte le plus cher s'il est ignoré :
+ * indexer par référence métier pendant que le tracker envoie les
+ * identifiants de la plateforme produit des analyses de conversion vides,
+ * ce qui ressemble à une absence de ventes.
+ */
+const CLE_TUTO = "heurix_tuto_import_vu";
+
+function monterTutoriel() {
+  const boite = $("csv-tuto");
+  if (!boite) return;
+  let vu = false;
+  try { vu = localStorage.getItem(CLE_TUTO) === "1"; } catch (e) {}
+  if (!vu) boite.hidden = false;
+
+  const fermer = () => {
+    boite.hidden = true;
+    try { localStorage.setItem(CLE_TUTO, "1"); } catch (e) {}
+  };
+  boite.querySelectorAll(".csv-tuto-close, .csv-tuto-ok")
+       .forEach((b) => b.addEventListener("click", fermer));
+}
+
 // --------------------------------------------------------------- montage
 
 function init() {
@@ -540,6 +569,7 @@ function init() {
     if (e.dataTransfer.files[0]) lireFichier(e.dataTransfer.files[0]);
   });
 
+  monterTutoriel();
   $("csv-envoyer").addEventListener("click", envoyer);
   $("csv-annuler").addEventListener("click", () => {
     afficher("csv-analyse", false);

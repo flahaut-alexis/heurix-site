@@ -8,7 +8,7 @@
 <meta name="robots" content="noindex">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css?v=1785328313">
+<link rel="stylesheet" href="styles.css?v=1785328627">
 <link rel="canonical" href="https://heurix.fr/console.html">
 </head>
 <body>
@@ -632,6 +632,17 @@
             <h2 class="console-pane-title">Importer un fichier CSV</h2>
 
             <div class="console-panel">
+              <div class="csv-tuto" id="csv-tuto" hidden>
+                <button type="button" class="csv-tuto-close" aria-label="Fermer">&times;</button>
+                <p class="csv-tuto-titre">Trois choses à savoir avant votre premier import</p>
+                <ol>
+                  <li><strong>L'identifiant est ce qui compte le plus.</strong> C'est lui qui permet de mettre à jour un produit au lieu d'en créer un doublon. Réimporter le même fichier ne duplique rien.</li>
+                  <li><strong>Utilisez le même identifiant partout.</strong> Si votre site envoie des références produit au tracker de conversion, indexez avec ces mêmes références — sinon vos analyses de ventes resteront vides.</li>
+                  <li><strong>Le pack de règles se choisit avant.</strong> Nous l'analysons depuis votre fichier et le présélectionnons. Le changer après coup impose de réimporter.</li>
+                </ol>
+                <button type="button" class="btn btn-ghost csv-tuto-ok">J'ai compris</button>
+              </div>
+
               <p class="console-lede">Déposez l'export de votre ERP ou de votre PIM. Nous détectons le séparateur, l'encodage et proposons une correspondance de colonnes — que vous pouvez corriger avant d'envoyer.</p>
 
               <div class="csv-depot" id="csv-depot">
@@ -868,9 +879,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="console-select.js?v=1784983392"></script>
 <script src="visite-editeur.js?v=1785060993"></script>
-<script type="module" src="csv-console.js?v=1785328313"></script>
+<script type="module" src="csv-console.js?v=1785328627"></script>
 <script src="console-i18n.js?v=1785166789"></script>
-<script src="console.js?v=1785328313"></script>
+<script src="console.js?v=1785328627"></script>
 <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 
 <script src="nav-dropdown.js"></script>
