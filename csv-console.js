@@ -13,6 +13,41 @@ import {
   proposerCorrespondance, convertir, enLots,
 } from "./csv-import.js";
 
+
+/* Appel API propre au module.
+ *
+ * `apiFetch` de console.js est enfermée dans sa fonction anonyme, donc
+ * invisible d'ici. L'exposer globalement aurait créé un couplage pour rien :
+ * l'appel dont on a besoin tient en quinze lignes.
+ *
+ * DÉFAUT TROUVÉ APRÈS COUP. Ma première version appelait `apiFetch(chemin,
+ * options)` — une signature inventée. Elle n'existait pas, et l'écran
+ * restait vide sans la moindre erreur visible.
+ */
+const API_BASE = "https://api.heurix.fr";
+const CLE_SESSION = "heurix_console_session";
+
+function jeton() {
+  try { return localStorage.getItem(CLE_SESSION) || ""; } catch (e) { return ""; }
+}
+
+async function appelApi(chemin, options = {}) {
+  const entetes = { Authorization: "Bearer " + jeton() };
+  if (options.body) entetes["Content-Type"] = "application/json";
+  const r = await fetch(API_BASE + chemin, {
+    method: options.method || "GET",
+    headers: entetes,
+    body: options.body,
+  });
+  const donnees = await r.json().catch(() => ({}));
+  if (!r.ok) {
+    const err = new Error(donnees.detail || donnees.solution || ("HTTP " + r.status));
+    err.status = r.status;
+    throw err;
+  }
+  return donnees;
+}
+
 const CHAMPS = [
   ["id", "Identifiant", "Obligatoire. Permet de mettre à jour un produit au lieu d'en créer un doublon."],
   ["platform_id", "Identifiant plateforme", "L'entier attendu par PrestaShop, WooCommerce ou Magento, si vos identifiants sont des références métier."],
@@ -144,7 +179,7 @@ async function envoyer() {
   for (let i = 0; i < lots.length; i++) {
     majProgression(i, lots.length, envoyes);
     try {
-      const r = await apiFetch("/v1/index/" + encodeURIComponent(catalogue) + "/items", {
+      const r = await appelApi("/v1/index/" + encodeURIComponent(catalogue) + "/items", {
         method: "POST",
         body: JSON.stringify(lots[i]),
       });
@@ -240,16 +275,18 @@ function init() {
 
   // Les packs viennent de l'API : les coder en dur ici les ferait diverger
   // de ceux réellement installés sur le moteur.
-  if (typeof apiFetch === "function") {
-    apiFetch("/v1/rulepacks").then((d) => {
-      const sel = $("csv-rulepack");
-      (d.rulepacks || []).forEach((p) => {
-        const o = document.createElement("option");
-        o.value = p.name; o.textContent = p.name;
-        sel.appendChild(o);
-      });
-    }).catch(() => {});
-  }
+  appelApi("/v1/rulepacks").then((d) => {
+    const sel = $("csv-rulepack");
+    (d.rulepacks || []).forEach((p) => {
+      const o = document.createElement("option");
+      o.value = p.name;
+      o.textContent = p.name;
+      sel.appendChild(o);
+    });
+  }).catch(() => {
+    // Silencieux : l'import reste possible sans pack, et une alerte au
+    // chargement d'un écran qu'on n'a pas encore ouvert serait intrusive.
+  });
 }
 
 if (document.readyState === "loading") {

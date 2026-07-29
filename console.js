@@ -508,7 +508,11 @@
   }
 
   var ALL_PANE_IDS = ["pane-overview", "pane-guides", "pane-top-queries", "pane-zero-results", "pane-errors", "pane-search-overrides", "pane-category-views",
-    "pane-browse", "pane-catalog-help", "pane-catalog-list", "pane-billing", "pane-company", "pane-team", "pane-key", "pane-feedback"];
+    "pane-browse", "pane-catalog-help", "pane-catalog-list", "pane-billing", "pane-company", "pane-team", "pane-key", "pane-feedback",
+    // Ajoute le 29 juillet. Cette liste est une LISTE BLANCHE : un pave
+    // absent d'ici s'affiche vide, sans erreur en console -- symptome
+    // difficile a diagnostiquer, puisque le balisage est bien present.
+    "pane-import-csv"];
 
   // Un element peut exister dans le document sans etre visible : un de ses
   // parents suffit a le masquer. Ce piege s'est presente TROIS fois sur cette
