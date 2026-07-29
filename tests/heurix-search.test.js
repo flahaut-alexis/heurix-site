@@ -258,3 +258,59 @@ describe("heurix-search.js — filtre de prix sans résultat (6.6bis)", () => {
     expect(ctx.document.querySelector(".hx-search-state").textContent).toContain("Aucun résultat");
   });
 });
+
+describe("regroupement par famille", () => {
+  // Configuré par le MARCHAND, pas par le visiteur : une case « regrouper »
+  // dans une barre de recherche demande un effort de compréhension qu'un
+  // acheteur pressé n'a pas.
+  const platLarge = { total: 6582, hits: Array.from({ length: 8 }, (_, i) =>
+    ({ product: { id: "P" + i, name: "Vis M8x" + (20 + i) + " inox" }, score: 60 })) };
+  const platEtroit = { total: 3, hits: [
+    { product: { id: "A", name: "Plaquette Bosch 0986494574" }, score: 60 }] };
+  const groupe = { total: 6582, familles: 2, groupes: [
+    { famille: "vis inox hex", produits: 265,
+      representant: { name: "Vis hexagonale M8x30 inox A4" } },
+    { famille: "vis inox fraisee", produits: 300,
+      representant: { name: "Vis TF M8x80 inox A2" } },
+  ] };
+
+  async function taper(config, plat) {
+    // Le mock renvoie la réponse groupée dès que `group_by` est présent :
+    // c'est ainsi qu'on distingue les deux appels.
+    let appels = [];
+    const { appels: journal } = chargerWidget({
+      config, reponses: { defaut: plat },
+    });
+    appels = journal;
+    global.fetch = async (url, opts) => {
+      const corps = JSON.parse(opts.body);
+      appels.push({ corps });
+      return { ok: true, json: async () => (corps.group_by ? groupe : plat) };
+    };
+    const input = global.document.querySelector(".hx-search-input");
+    input.value = "vis M8 inox";
+    input.dispatchEvent(new global.window.Event("input"));
+    await new Promise((r) => setTimeout(r, 400));
+    return appels.filter((a) => a.corps).map((a) => a.corps.group_by ? "groupe" : "plat");
+  }
+
+  it("regroupe au-delà du seuil", async () => {
+    const modes = await taper({ groupThreshold: 50, debounceMs: 1 }, platLarge);
+    expect(modes).toContain("groupe");
+    expect(global.document.querySelectorAll(".hx-group").length).toBeGreaterThan(0);
+  });
+
+  it("NE regroupe PAS une recherche précise", async () => {
+    // Un visiteur qui tape « 0986494574 » veut sa plaquette, pas une
+    // famille. Grouper systématiquement transformerait une recherche
+    // précise en détour.
+    const modes = await taper({ groupThreshold: 50, debounceMs: 1 }, platEtroit);
+    expect(modes).not.toContain("groupe");
+    expect(global.document.querySelectorAll(".hx-group")).toHaveLength(0);
+  });
+
+  it("ne regroupe jamais sans configuration du marchand", async () => {
+    const modes = await taper({ debounceMs: 1 }, platLarge);
+    expect(modes).not.toContain("groupe");
+  });
+});
