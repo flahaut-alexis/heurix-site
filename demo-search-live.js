@@ -48,8 +48,27 @@
   // VERTICALE COURANTE. Le sélecteur porte l'argument des dix secteurs :
   // le même moteur, des règles différentes. Le retirer aurait fait perdre
   // ce que la page d'accueil démontre de plus important.
-  var verticale = "outillage";
   var pastilles = racine.querySelectorAll(".play-vertical-pill");
+
+  // LA VERTICALE DE DÉPART SE LIT DANS LA PAGE, elle n'est pas décidée ici.
+  //
+  // DÉFAUT CORRIGÉ. Je l'avais figée sur « outillage » alors que le HTML
+  // affiche des suggestions de LIVRES au chargement. Un visiteur cliquait
+  // « polar scandinave poche », le widget cherchait dans un catalogue de
+  // visserie, et n'obtenait rien. La démonstration semblait cassée.
+  var verticale = "outillage";
+  var active = racine.querySelector(".play-vertical-on") ||
+               racine.querySelector(".play-vertical-pill-on") ||
+               racine.querySelector(".play-vertical-pill.active") ||
+               racine.querySelector('.play-vertical-pill[aria-pressed="true"]');
+  if (active && active.getAttribute("data-vertical")) {
+    verticale = active.getAttribute("data-vertical");
+  } else if (pastilles.length && pastilles[0].getAttribute("data-vertical")) {
+    // À défaut de marquage, la PREMIÈRE pastille gouverne : c'est celle que
+    // le visiteur voit en tête, et celle dont les suggestions sont
+    // affichées dans le HTML.
+    verticale = pastilles[0].getAttribute("data-vertical");
+  }
 
   function esc(s) {
     return String(s === undefined || s === null ? "" : s)
@@ -70,10 +89,19 @@
     //
     // `onerror` masque le visuel si l'URL est cassée : une image absente
     // vaut mieux qu'une icône de fichier introuvable.
-    var visuel = p.image || p.image_url
-      ? "<div class='play-card-img'><img src='" + esc(p.image || p.image_url) +
-        "' alt='' loading='lazy' onerror=\"this.closest('.play-card-img').hidden=true\"></div>"
-      : "<div class='play-card-vign'>" + esc((p.ref || p.id || "").slice(0, 14)) + "</div>";
+    // ORDRE : image réelle si le catalogue en porte une, sinon pictogramme
+    // choisi par le moteur, sinon la référence. Le pictogramme n'est pas un
+    // habillage : il montre que Heurix a RECONNU la famille du produit.
+    var visuel;
+    if (p.image || p.image_url) {
+      visuel = "<div class='play-card-img'><img src='" + esc(p.image || p.image_url) +
+               "' alt='' loading='lazy' onerror=\"this.closest('.play-card-img').hidden=true\"></div>";
+    } else if (window.HeurixPictos) {
+      visuel = "<div class='play-card-picto'>" +
+               window.HeurixPictos.pictogramme(hit.matched || []) + "</div>";
+    } else {
+      visuel = "<div class='play-card-vign'>" + esc((p.ref || p.id || "").slice(0, 14)) + "</div>";
+    }
     var etat = hit.in_stock === false
       ? "<span class='play-rupture'>Rupture</span>"
       : "<span class='play-stock'>En stock</span>";
@@ -232,7 +260,9 @@
       if (!v || v === verticale) return;
       verticale = v;
       pastilles.forEach(function (p) {
-        p.classList.toggle("play-vertical-pill-on", p === pill);
+        // On bascule la classe REELLE du site, pas une inventee : sinon la
+        // pastille active resterait visuellement inchangee.
+        p.classList.toggle("play-vertical-on", p === pill);
       });
       prismeActif = null;
       majSuggestions();
