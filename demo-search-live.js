@@ -166,7 +166,8 @@
     grille.innerHTML = hits.slice(0, 9).map(fiche).join("");
 
     if (meta) {
-      var bouts = [donnees.total.toLocaleString("fr-FR") + " résultats"];
+      var ms = Math.max(1, Math.round(performance.now() - chrono));
+      var bouts = [donnees.total.toLocaleString("fr-FR") + " résultats en " + ms + " ms"];
       // Le filtre de prix reconnu est un argument à lui seul : « moins de
       // 5 euros » compris comme une contrainte, pas comme des mots-clés.
       if (donnees.price_filter) {
@@ -216,6 +217,16 @@
     }
 
     var id = ++derniereRequete;
+    // TEMPS DE RÉPONSE MESURÉ, affiché sous les résultats.
+    //
+    // Meilisearch affiche « 8 results in 1ms » sous sa démonstration : le
+    // chiffre EST l'argument. Nous n'avons pas de logos clients à montrer ;
+    // nous avons des mesures. Autant les afficher là où elles se produisent.
+    //
+    // C'est le temps TOTAL perçu (réseau compris), pas le temps moteur :
+    // annoncer le second en mesurant le premier serait mentir en notre
+    // faveur les bons jours et en notre défaveur les mauvais.
+    var chrono = performance.now();
     var corps = {
       q: requete,
       limit: 9,

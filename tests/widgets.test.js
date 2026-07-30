@@ -173,3 +173,53 @@ describe("heurix-browse-widget.js", () => {
     expect(alertes.join(" ")).toMatch(/SERVEUR/i);
   });
 });
+
+// ---------------------------------------------------------------------------
+// Suggestions de synonymes depuis les recherches sans resultat (30 juillet).
+//
+// console.js est une IIFE avec session : on ne l'execute pas ici. On verrouille
+// le CONTRAT entre les morceaux — c'est precisement la ou une regression
+// s'est produite pendant le chantier (en-tete a 2 colonnes, lignes a 3).
+// ---------------------------------------------------------------------------
+describe("suggestions de synonymes (contrat console)", () => {
+  const html = fs.readFileSync(path.join(RACINE, "console.html"), "utf8");
+  const js = fs.readFileSync(path.join(RACINE, "console.js"), "utf8");
+
+  it("l'en-tete du tableau sans-resultat a autant de colonnes que les lignes", () => {
+    const thead = html.match(/id="zero-results-table">\s*<thead><tr>(.*?)<\/tr>/s)[1];
+    const nbTh = (thead.match(/<th>/g) || []).length;
+    // Le rendu des lignes emet 3 cellules : requete, compte, action.
+    expect(nbTh).toBe(3);
+    expect(thead).toContain("Corriger");
+  });
+
+  it("le rendu des lignes emet le bouton et la zone de suggestions", () => {
+    const bloc = js.match(/renderTable\("zero-results-table"[\s\S]{0,900}/)[0];
+    expect(bloc).toContain("zr-suggerer");
+    expect(bloc).toContain("zr-suggestions");
+    expect(bloc).toContain("zr-action-cell");
+  });
+
+  it("le cablage est appele apres le rendu, et une seule fois par table", () => {
+    expect(js).toContain("wireSuggestionsSynonymes(key)");
+    // Garde anti-double-cablage : sans elle, chaque rafraichissement des
+    // analytics empilerait un ecouteur de clic de plus.
+    expect(js).toContain('dataset.zrWired');
+  });
+
+  it("la creation lit puis renvoie la liste entiere — jamais un PUT aveugle", () => {
+    const fn = js.match(/function creerSynonyme[\s\S]{0,900}/)[0];
+    // Le PUT remplace tout : un PUT sans GET prealable effacerait les
+    // synonymes existants du marchand.
+    expect(fn.indexOf("synonyms")).toBeGreaterThan(-1);
+    expect(fn).toContain("groupes.push([de, vers])");
+    expect(fn).toContain('method: "PUT"');
+  });
+
+  it("les classes de style existent dans la feuille", () => {
+    const css = fs.readFileSync(path.join(RACINE, "styles.css"), "utf8");
+    for (const cl of [".zr-suggerer", ".zr-suggestions", ".zr-choix", ".zr-fait"]) {
+      expect(css).toContain(cl);
+    }
+  });
+});

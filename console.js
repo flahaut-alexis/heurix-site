@@ -1656,6 +1656,86 @@
     champ.addEventListener("focus", arreter, { once: true });
   }
 
+
+  /* Suggestions de synonymes depuis les recherches sans résultat.
+   *
+   * Idée retenue d'une revue externe (30 juillet) : ces recherches sont
+   * déjà collectées, chaque terme est un client qui n'a pas trouvé. Le
+   * moteur propose les mots du catalogue qui ressemblent au terme, le
+   * marchand clique — et « teeshirt » trouve enfin « T-shirt ».
+   */
+  function wireSuggestionsSynonymes(key) {
+    var table = document.getElementById("zero-results-table");
+    if (!table || table.dataset.zrWired === "1") return;
+    table.dataset.zrWired = "1";
+
+    table.addEventListener("click", function (e) {
+      var btn = e.target.closest(".zr-suggerer");
+      var choix = e.target.closest(".zr-choix");
+      if (choix) { creerSynonyme(choix, key); return; }
+      if (!btn) return;
+
+      var terme = btn.getAttribute("data-terme");
+      var zone = btn.parentElement.querySelector(".zr-suggestions");
+      btn.disabled = true;
+      btn.textContent = "…";
+      apiFetch("/v1/index/" + encodeURIComponent(catalogueActif) +
+               "/synonym-suggestions?q=" + encodeURIComponent(terme), key)
+        .then(function (d) {
+          var candidats = [];
+          (d.suggestions || []).forEach(function (s) {
+            s.candidats.slice(0, 3).forEach(function (cand) {
+              candidats.push({ jeton: s.jeton, terme: cand.terme, produits: cand.produits });
+            });
+          });
+          btn.hidden = true;
+          zone.hidden = false;
+          if (!candidats.length) {
+            // HONNÊTE PLUTÔT QUE MUET. « chandail » n'a aucun voisin par
+            // distance d'édition : c'est un mot différent, pas une faute.
+            // Le renvoi vers l'écran des synonymes est la bonne réponse.
+            zone.innerHTML = "<em>Aucun mot proche dans votre catalogue — " +
+              "s'il s'agit d'un autre mot pour un produit que vous vendez, " +
+              "ajoutez-le dans Personnalisation &rarr; Search.</em>";
+            return;
+          }
+          zone.innerHTML = "&rarr; " + candidats.map(function (cand) {
+            return "<button type='button' class='zr-choix' data-de='" +
+                   esc(cand.jeton) + "' data-vers='" + esc(cand.terme) + "'>" +
+                   esc(cand.terme) + " <i>(" + cand.produits + " produits)</i></button>";
+          }).join(" ");
+        })
+        .catch(function () {
+          btn.disabled = false;
+          btn.textContent = "Corriger";
+        });
+    });
+
+    function creerSynonyme(el, key) {
+      var de = el.getAttribute("data-de");
+      var vers = el.getAttribute("data-vers");
+      el.disabled = true;
+      // Le PUT remplace la liste entière : on lit d'abord, on ajoute, on
+      // renvoie. Les synonymes du pack ne sont pas dans cette liste — ils
+      // se rechargent du YAML, on ne risque pas de les écraser.
+      apiFetch("/v1/index/" + encodeURIComponent(catalogueActif) + "/synonyms", key)
+        .then(function (d) {
+          var groupes = (d.groups || []).slice();
+          groupes.push([de, vers]);
+          return apiFetch("/v1/index/" + encodeURIComponent(catalogueActif) + "/synonyms",
+                          key, { method: "PUT", body: { groups: groupes } });
+        })
+        .then(function () {
+          el.outerHTML = "<span class='zr-fait'>&check; « " + esc(de) +
+                         " » trouvera désormais « " + esc(vers) + " »</span>";
+        })
+        .catch(function (e) {
+          el.disabled = false;
+          window.alert("Création impossible : " + (e.message || e));
+        });
+    }
+  }
+
   function wireSoPreview(key) {
     var stock = document.getElementById("so-in-stock");
     if (stock) stock.addEventListener("change", function () { refreshSoPreview(key); });
@@ -2761,8 +2841,19 @@
         return "<td>" + esc(q.query) + "</td><td class='num'>" + q.count + "</td><td>" + q.avg_results + "</td>";
       });
       renderTable("zero-results-table", "zero-results-empty", zeroResults, function (q) {
-        return "<td>" + esc(q.query) + "</td><td class='num'>" + q.count + "</td>";
+        // CHAQUE LIGNE EST UN CLIENT QUI N'A PAS TROUVÉ. Le bouton propose
+        // les mots du catalogue proches du terme — par la même distance
+        // d'édition que la recherche — et un clic crée le synonyme.
+        //
+        // Le marchand décide : jamais de création automatique. Un
+        // rapprochement faux polluerait la recherche silencieusement.
+        return "<td>" + esc(q.query) + "</td><td class='num'>" + q.count +
+               "</td><td class='zr-action-cell'>" +
+               "<button type='button' class='zr-suggerer' data-terme='" +
+               esc(q.query) + "'>Corriger</button>" +
+               "<span class='zr-suggestions' hidden></span></td>";
       });
+      wireSuggestionsSynonymes(key);
       _dernieresErreurs = errors || [];
       majSignalementErreurs(errors);
       renderTable("errors-table", "errors-empty", errors, function (e) {

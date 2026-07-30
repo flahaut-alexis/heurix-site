@@ -3609,3 +3609,36 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 /* Ligne secondaire de la carte : auteur pour un livre, contenance pour un
    vin, norme pour une vis. Le complement le plus parlant apres le nom. */
 .play-card-sub{ font-size:12.5px; color:var(--ink-muted); line-height:1.4; margin-top:2px; }
+
+/* Pages plateforme (PrestaShop, WooCommerce, Shopify).
+   Doofinder a une page par plateforme : referencement + le visiteur se
+   reconnait. Le contenu vient de la doc, ces pages le mettent ou on le
+   cherche. */
+.int-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:16px; margin-top:24px; }
+.int-card{ background:#fff; border:1px solid var(--line); border-radius:12px; padding:20px 22px; }
+.int-card h3{ margin:0 0 8px; font-size:15.5px; }
+.int-card p{ margin:0; font-size:14px; line-height:1.6; color:var(--ink-muted); }
+.int-card code{ font-size:12.5px; background:var(--bg-soft); padding:1px 5px; border-radius:5px; }
+
+/* Suggestions de synonymes depuis les recherches sans resultat.
+   Chaque ligne est un client qui n a pas trouve ; le bouton propose les
+   mots proches du catalogue, un clic cree le synonyme. */
+.zr-action-cell{ white-space:normal; }
+.zr-suggerer{
+  font:inherit; font-size:12.5px; padding:3px 10px; border-radius:7px;
+  border:1px solid var(--line); background:#fff; cursor:pointer;
+  color:var(--blue-deep);
+}
+.zr-suggerer:hover{ border-color:var(--blue-deep); }
+.zr-suggerer:disabled{ opacity:.55; cursor:default; }
+.zr-suggestions{ font-size:12.5px; line-height:2; }
+.zr-suggestions em{ color:var(--ink-muted); font-style:normal; }
+.zr-choix{
+  font:inherit; font-size:12.5px; padding:2px 9px; border-radius:999px;
+  border:1px solid var(--line); background:var(--bg-soft); cursor:pointer;
+  margin:1px 2px;
+}
+.zr-choix:hover{ border-color:var(--blue-deep); }
+.zr-choix i{ font-style:normal; color:var(--ink-muted); font-size:11.5px; }
+.zr-choix:disabled{ opacity:.55; cursor:default; }
+.zr-fait{ font-size:12.5px; color:var(--ok, #1a7f4e); }
