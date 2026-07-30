@@ -112,13 +112,16 @@
     var etat = hit.in_stock === false
       ? "<span class='play-rupture'>Rupture</span>"
       : "<span class='play-stock'>En stock</span>";
-    // LES ANNOTATIONS SONT AFFICHÉES. C'est ce qui distingue Heurix d'une
-    // recherche par mots-clés : montrer que le moteur a compris « M8 » comme
-    // un diamètre vaut mieux que l'expliquer.
-    var etiquettes = (hit.matched || [])
-      .filter(function (m) { return m.indexOf("annotation #") === 0; })
-      .map(function (m) { return m.replace("annotation #", ""); })
-      .slice(0, 4);
+    // LES ÉTIQUETTES BRUTES SONT RETIRÉES DE LA PAGE PUBLIQUE.
+    //
+    // « FAM_CHEMISE » ne dit rien à un visiteur : c'est du vocabulaire
+    // interne. Dans la console, où le marchand règle son moteur, l'afficher
+    // est utile ; sur la vitrine, c'est du bruit qui fait paraître le
+    // produit inachevé.
+    //
+    // Ce que le moteur a compris se montre autrement : par le pictogramme,
+    // qui change selon la famille reconnue, et par le filtre de prix affiché
+    // en clair sous les résultats.
     // CE QU'ON MONTRE, ET DANS QUEL ORDRE.
     //
     // La carte n'affichait que nom, référence et stock. Sur un livre, cela
@@ -128,7 +131,16 @@
     // La description porte l'auteur pour les livres, la contenance pour les
     // vins, la norme pour la visserie. C'est toujours le complément le plus
     // parlant après le nom.
+    // On évite la redondance : « Chemise coton vert taille M » suivi de
+    // « Olow — M » répétait la taille. On ne garde la description que si
+    // elle apporte autre chose que ce que le nom contient déjà.
     var secondaire = p.description || p.marque || "";
+    if (secondaire && p.name) {
+      var reste = String(secondaire).split(/[—–-]/)[0].trim();
+      secondaire = reste && p.name.toLowerCase().indexOf(reste.toLowerCase()) === -1
+        ? reste : (p.marque && p.name.toLowerCase().indexOf(String(p.marque).toLowerCase()) === -1
+                   ? p.marque : "");
+    }
     return "<article class='play-card'>" +
       visuel +
       "<div class='play-card-name'>" + esc(p.name || p.id) + "</div>" +
@@ -140,11 +152,6 @@
         (p.price !== undefined ? "<span class='play-card-price'>" + euros(p.price) + "</span>" : "") +
         etat +
       "</div>" +
-      (etiquettes.length
-        ? "<div class='play-card-tags'>" + etiquettes.map(function (t) {
-            return "<span>" + esc(t) + "</span>";
-          }).join("") + "</div>"
-        : "") +
     "</article>";
   }
 
