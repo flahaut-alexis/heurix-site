@@ -3,23 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Combien coûte un moteur de recherche e-commerce en 2026 ? — Heurix</title>
-<meta name="description" content="Algolia, Meilisearch, Typesense, Heurix : les modèles de facturation comparés, et comment estimer votre propre volume avant de choisir.">
-<link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/cout-moteur-recherche-ecommerce.html">
+<title>Construire son moteur de recherche ou en acheter un : comment trancher — Heurix</title>
+<meta name="description" content="Développer en interne semble gratuit sur le papier. Voici ce que ça coûte vraiment, dans quels cas ça se justifie, et où Heurix se situe sur cet arbitrage.">
+<link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/build-vs-buy-moteur-recherche.html">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Combien coûte un moteur de recherche e-commerce en 2026 ? — Heurix">
-<meta property="og:description" content="Algolia, Meilisearch, Typesense, Heurix : les modèles de facturation comparés, et comment estimer votre propre volume avant de choisir.">
+<meta property="og:title" content="Construire son moteur de recherche ou en acheter un : comment trancher — Heurix">
+<meta property="og:description" content="Développer en interne semble gratuit sur le papier. Voici ce que ça coûte vraiment, dans quels cas ça se justifie, et où Heurix se situe sur cet arbitrage.">
 <meta property="og:image" content="https://heurix.fr/og-image.png">
-<meta property="og:url" content="https://heurix.fr/blog/cout-moteur-recherche-ecommerce.html">
+<meta property="og:url" content="https://heurix.fr/blog/build-vs-buy-moteur-recherche.html">
 <meta property="og:locale" content="fr_FR">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Combien coûte un moteur de recherche e-commerce en 2026 ? — Heurix">
-<meta name="twitter:description" content="Algolia, Meilisearch, Typesense, Heurix : les modèles de facturation comparés, et comment estimer votre propre volume avant de choisir.">
+<meta name="twitter:title" content="Construire son moteur de recherche ou en acheter un : comment trancher — Heurix">
+<meta name="twitter:description" content="Développer en interne semble gratuit sur le papier. Voici ce que ça coûte vraiment, dans quels cas ça se justifie, et où Heurix se situe sur cet arbitrage.">
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="../favicon-32.png">
 <link rel="apple-touch-icon" href="../apple-touch-icon.png">
 <link rel="stylesheet" href="../styles.css?v=1785446844">
-<link rel="canonical" href="https://heurix.fr/blog/cout-moteur-recherche-ecommerce.html">
+<link rel="canonical" href="https://heurix.fr/blog/build-vs-buy-moteur-recherche.html">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -111,31 +111,41 @@
   <div class="wrap post-wrap">
     <a href="../blog.html" class="back-link">← Tous les articles</a>
     <div class="kicker">Blog · Juillet 2026</div>
-    <h1>Combien coûte un moteur de recherche e-commerce en 2026 ?</h1>
-    <p class="post-lede">Le prix affiché ne dit pas grand-chose tant qu'on ne sait pas ce qu'il facture. Voici comment comparer les offres du marché sans se tromper d'unité.</p>
+    <h1>Construire son moteur de recherche ou en acheter un : comment trancher</h1>
+    <p class="post-lede">« On a un développeur, autant le faire nous-mêmes » — c'est la phrase qui coûte le plus cher dans ce choix. Pas parce qu'elle est fausse, mais parce qu'elle compte mal ce qu'elle compare.</p>
 
     <div class="post-body">
-      <h2>Une question mal posée</h2>
-      <p>« Combien coûte un moteur de recherche ? » n'a pas de réponse unique, parce que les modèles de facturation varient fortement d'un fournisseur à l'autre : au nombre de recherches, au nombre de produits indexés, au forfait fixe, ou à un mélange des trois. Comparer deux offres sans comprendre l'unité facturée mène presque toujours à une mauvaise estimation.</p>
+      <h2>La question posée est rarement la bonne</h2>
+      <p>« Combien ça coûterait de le faire nous-mêmes ? » appelle presque toujours la même réponse : Elasticsearch est gratuit, un développeur en interne coûte ce qu'il coûte déjà, et le reste semble être une question de temps. Sur le papier, construire paraît moins cher qu'acheter.</p>
+      <p>La bonne question n'est pas « combien ça coûte de construire la version 1 », c'est « combien ça coûte de la maintenir en version 40, dans deux ans, quand la personne qui l'a écrite est partie ». C'est là que l'arbitrage bascule presque toujours.</p>
 
-      <h2>Les grands modèles du marché</h2>
-      <p>Algolia facture principalement au volume d'opérations de recherche, avec un premier palier gratuit limité puis une montée en coût qui peut surprendre au-delà de quelques dizaines de milliers de requêtes mensuelles. Meilisearch Cloud et Typesense Cloud proposent des forfaits mensuels à partir d'une vingtaine d'euros, généralement liés à la taille de l'index plutôt qu'au volume de recherche pur. Heurix suit une logique proche de ce dernier modèle : facturation au volume de requêtes avec des paliers explicites, à partir de <a href="../pricing.html">19 €/mois</a>.</p>
+      <h2>Ce que « construire » veut dire, concrètement</h2>
+      <p>Un moteur de recherche pour catalogue technique, ce n'est pas installer Elasticsearch et lancer une requête <code>match</code>. C'est, au minimum :</p>
+      <p>La tokenisation qui distingue une référence d'un mot du langage courant — sans quoi « M8x20 » se fait découper comme trois mots sans rapport. La tolérance aux fautes calibrée par type de token — une faute sur une référence chiffrée ne doit pas se comporter comme une faute sur un nom de produit. La gestion des synonymes et des règles métier par secteur. Le classement qui priorise le stock sans écraser la pertinence. Et, dès qu'un deuxième client ou une deuxième langue de références s'ajoute, la maintenance de tout ça dans le temps.</p>
+      <p>Rien de tout ça n'est exotique. Mais chaque brique, prise séparément, prend une à trois semaines à un développeur compétent — et elles interagissent entre elles, ce qui veut dire que la troisième brique casse parfois la première.</p>
 
-      <h2>Le vrai coût est rarement dans l'abonnement</h2>
-      <p>Le prix affiché d'un moteur de recherche ne représente souvent qu'une partie du coût réel. La configuration initiale (synonymes, règles de correspondance, tri par pertinence) demande du temps de développeur, parfois plusieurs jours selon la complexité du catalogue. Un moteur qui livre des packs de règles pré-configurés par secteur réduit ce coût caché — pas en le rendant gratuit, mais en le rendant beaucoup plus rapide à obtenir un résultat correct.</p>
+      <blockquote>Le vrai coût de « construire », ce n'est pas la première version. C'est le développeur qui doit se souvenir six mois plus tard pourquoi telle regex existe, pendant qu'il devrait travailler sur autre chose que la recherche.</blockquote>
 
-      <h2>Estimer son propre volume avant de comparer les prix</h2>
-      <p>La question à se poser en premier n'est pas « quel est le prix le plus bas » mais « quel volume de recherches mon site génère-t-il réellement ». Une estimation simple : trafic mensuel × part des visiteurs qui utilisent la recherche (en général 15 à 30 % sur un site e-commerce) × nombre moyen de recherches par visiteur qui cherche. La <a href="../pricing.html#calculator">calculatrice de la page tarifs</a> fait ce calcul directement à partir de ces trois chiffres.</p>
+      <h2>Ce que « acheter » évite, précisément</h2>
+      <p>Un moteur de recherche spécialisé n'achète pas une fonctionnalité, il achète un problème déjà résolu par quelqu'un dont c'est le métier à plein temps — pas une tâche annexe sur la liste d'un développeur produit. La différence se voit sur trois points : les cas limites déjà rencontrés (le <code>×</code> typographique copié depuis un PDF, la virgule décimale d'un « 2,5 mm² », les multiples façons d'écrire une même référence), la maintenance qui suit les montées de version sans mobiliser votre équipe, et le temps de mise en route — quelques jours plutôt que plusieurs mois avant le premier résultat exploitable.</p>
 
-      <blockquote>Un moteur à 19 €/mois qui couvre 15 000 requêtes suffit largement à une boutique qui débute. Un moteur "gratuit" qui facture au-delà d'un palier bas peut coûter bien plus cher dès que le trafic grossit.</blockquote>
+      <h2>Quand construire soi-même se justifie réellement</h2>
+      <p>Ce n'est pas toujours le mauvais choix. Construire a du sens quand la recherche EST le produit — un moteur de recherche généraliste, pas un moteur au service d'un catalogue. Quand le volume justifie une équipe dédiée à plein temps, pas une tâche à côté. Ou quand la structure des références est tellement spécifique qu'aucune solution du marché, généraliste ou spécialisée, ne peut la couvrir sans réécriture complète.</p>
+      <p>En dehors de ces trois cas, la question à se poser est simple : est-ce que la recherche est ce qui différencie votre entreprise aux yeux de vos clients, ou est-ce un moyen d'accéder à ce qui différencie réellement votre entreprise — votre catalogue, votre expertise produit, votre relation client ? Si c'est la seconde réponse, chaque semaine passée sur le moteur est une semaine qui ne va pas sur ce qui compte.</p>
 
-      <h2>Ce qu'il faut vérifier avant de signer</h2>
-      <p>Trois questions simples permettent d'éviter une mauvaise surprise : que se passe-t-il en cas de dépassement de quota (blocage brutal ou facturation transparente au-delà) ? Le prix inclut-il la configuration des règles de correspondance ou faut-il un développeur en plus ? Et enfin — souvent oublié — peut-on tester sur un vrai catalogue avant de payer ? Un essai gratuit sans carte bancaire reste le moyen le plus fiable de vérifier qu'un moteur convient avant de s'engager.</p>
-        </div>
+      <h2>Où se situe Heurix sur cet arbitrage</h2>
+      <p>Heurix ne prétend pas remplacer un moteur généraliste sur son terrain — un catalogue de mode ou de contenu éditorial s'en sort très bien avec Algolia ou Meilisearch. Sa place est plus étroite : les catalogues où la référence elle-même porte l'information technique, et où cette information change selon le secteur.</p>
+      <p>Concrètement, ça veut dire des règles métier déjà écrites par secteur — outillage, industrie, électronique, mode, librairie, vins — plutôt qu'à écrire une par une. Un classement qui combine pertinence et disponibilité en stock sans configuration additionnelle. Et un principe simple qui traverse tout le produit : le marchand garde la main sur ses règles, rien n'est décidé à sa place de façon opaque.</p>
+      <p>Le résultat concret : un catalogue déjà exporté peut être testé en une après-midi, et une mise en production sur PrestaShop ou WooCommerce prend de deux à quatre jours — pas plusieurs mois de développement interne pour arriver au même point.</p>
+
+      <h2>Comment trancher, sans idéologie</h2>
+      <p>Trois questions suffisent généralement. Un développeur va-t-il passer plus de temps sur la recherche que sur ce qui différencie réellement votre entreprise ? Si la personne qui construit le moteur partait demain, quelqu'un d'autre pourrait-il reprendre le code en une journée ? Et le catalogue a-t-il une structure de référence assez particulière pour justifier une solution sur mesure plutôt qu'un outil déjà pensé pour ce cas ?</p>
+      <p>Si les réponses penchent vers « non », le calcul le plus honnête n'est pas construire contre acheter — c'est le temps de votre équipe technique investi ailleurs, contre un abonnement qui commence à 19 €/mois.</p>
+    </div>
 
     <div class="post-footer-cta">
-      <p>Envie d'estimer votre propre volume et le palier qui correspond ?</p>
-      <a href="../pricing.html" class="btn">Voir les tarifs et la calculatrice</a>
+      <p>Envie de voir si vos propres références s'y prêtent, avant de trancher ?</p>
+      <a href="../pricing.html" class="btn">Essayer le Search API gratuitement</a>
     </div>
   </div>
 </article>

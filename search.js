@@ -21,6 +21,7 @@ const HEURIX_SEARCH_INDEX = [
   { title: "Devis / Contact", excerpt: "Réservez votre audit initial — réponse sous 48h ouvrées.", path: "index.html#contact" },
   { title: "Mentions légales", excerpt: "Informations légales sur l'éditeur du site heurix.fr.", path: "mentions-legales.html" },
   { title: "Politique de confidentialité", excerpt: "Quelles données Heurix traite, pourquoi, combien de temps, et comment exercer vos droits.", path: "confidentialite.html" },
+  { title: "Construire son moteur de recherche ou en acheter un : comment trancher", excerpt: "Développer en interne semble gratuit sur le papier. Ce que ça coûte vraiment, et où Heurix se situe sur cet arbitrage.", path: "blog/build-vs-buy-moteur-recherche.html" },
   { title: "Comment configurer la recherche par référence (SKU, DIN, ISO) sur un e-commerce B2B ?", excerpt: "Pourquoi les moteurs par défaut échouent sur les codes produits techniques, et comment les regex changent la donne.", path: "blog/recherche-reference-sku-b2b.html" },
   { title: "Shopify, PrestaShop, Magento : pourquoi leurs moteurs natifs échouent au-delà de 10 000 références ?", excerpt: "Les limites d'indexation des gros catalogues, et comment y remédier sans refondre le site.", path: "blog/limites-moteurs-natifs-gros-catalogue.html" },
   { title: "Recherche à facettes en B2B : comment structurer vos filtres multi-attributs ?", excerpt: "Concevoir des facettes dynamiques et bien ordonnées pour des catalogues techniques.", path: "blog/facettes-b2b-multi-attributs.html" },
