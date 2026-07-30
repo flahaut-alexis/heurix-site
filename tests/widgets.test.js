@@ -343,10 +343,16 @@ describe("renvoi vers les synonymes depuis Sans resultat", () => {
   });
 
   it("le gestionnaire data-goto-pane sait pre-remplir le champ synonyme", () => {
-    const bloc = js.match(/document\.addEventListener\("click"[\s\S]{0,3200}/)[0];
+    const bloc = js.match(/document\.addEventListener\("click"[\s\S]{0,4200}/)[0];
     expect(bloc).toContain('link.getAttribute("data-prefill")');
     expect(bloc).toContain(".catalog-synonym-input");
     expect(bloc).toContain("champ.focus()");
+    // Le bloc so-content doit etre force visible : ne pas dependre du
+    // mecanisme existant, dont les conditions peuvent ne pas etre reunies.
+    expect(bloc).toContain('getElementById("so-content")');
+    expect(bloc).toContain("contenuSo.hidden = false");
+    // Sondage de l'apparition du champ, pas un delai fixe unique.
+    expect(bloc).toContain("attendreEtRemplir");
     // Le curseur doit se placer APRES le texte injecte, jamais avant.
     expect(bloc).toContain("setSelectionRange");
   });

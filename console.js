@@ -1148,22 +1148,40 @@
     // virgule, prêt à taper le mot du catalogue auquel le rattacher.
     var terme = link.getAttribute("data-prefill");
     if (terme) {
-      // `cr-host` est déjà peuplé au chargement du tableau de bord — pas
-      // besoin d'attendre un rendu asynchrone. Un court délai laisse
-      // seulement le temps au panneau de devenir visible (hidden -> non
-      // hidden) avant le défilement, sinon scrollIntoView mesure une
-      // position à zéro.
-      setTimeout(function () {
+      // DÉFAUT SIGNALÉ (30 juillet, tard) : le lien atterrissait sur
+      // l'écran mais pas sur le bloc « Ajouter une règle » — `#so-content`,
+      // qui héberge le formulaire, reste MASQUÉ tant que
+      // `appliquerCatalogueOuverture` ne l'a pas explicitement révélé, et
+      // cette révélation dépend de conditions (`cleCourante`,
+      // `catalogueActif`) posées ailleurs dans le code. `scrollIntoView`
+      // sur un élément cependant masqué ne fait RIEN, silencieusement —
+      // aucune erreur, juste un lien qui semble ne pas fonctionner.
+      //
+      // On force la révélation nous-mêmes plutôt que d'en dépendre, et on
+      // SONDE l'apparition du champ au lieu d'un délai fixe unique : plus
+      // robuste si le rendu prend quelques dizaines de ms de plus qu'prévu.
+      var contenuSo = document.getElementById("so-content");
+      if (contenuSo) contenuSo.hidden = false;
+      if (typeof appliquerCatalogueOuverture === "function") {
+        appliquerCatalogueOuverture(paneId);
+      }
+      var tentatives = 0;
+      (function attendreEtRemplir() {
         var champ = document.querySelector(".catalog-synonym-input");
-        if (!champ) return;
+        if (!champ) {
+          if (++tentatives < 12) { setTimeout(attendreEtRemplir, 50); }
+          return;
+        }
         champ.value = terme + ", ";
-        champ.scrollIntoView({ behavior: "smooth", block: "center" });
+        // On centre le BLOC entier (champ + bouton), pas seulement le
+        // champ : le marchand doit voir où cliquer ensuite, pas juste où
+        // taper.
+        var bloc = champ.closest(".catalog-synonym-add") || champ;
+        bloc.scrollIntoView({ behavior: "smooth", block: "center" });
         champ.focus();
-        // Curseur en fin de valeur, jamais au début : sans ceci, certains
-        // navigateurs replacent le curseur avant le texte injecté.
         var fin = champ.value.length;
         champ.setSelectionRange(fin, fin);
-      }, 60);
+      })();
     }
   });
 
