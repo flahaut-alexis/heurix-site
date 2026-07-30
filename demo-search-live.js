@@ -43,6 +43,17 @@
 
   var minuteur = null;
   var derniereRequete = 0;
+  // Chronomètre de la requête en cours. AU NIVEAU DU MODULE, pas dans
+  // chercher() : afficher() le lit pour écrire « X résultats en Y ms »,
+  // et une variable locale à chercher() lui serait invisible.
+  //
+  // DÉFAUT VÉCU (30 juillet) : déclaré local, il provoquait une
+  // ReferenceError à CHAQUE affichage — attrapée par le .catch réseau, qui
+  // affichait « Démonstration momentanément indisponible » sur toutes les
+  // verticales. Le message d'honnêteté conçu pour les pannes réseau
+  // masquait un défaut de code. Leçon : le .catch distingue désormais les
+  // erreurs de programmation, qu'il laisse remonter à la console.
+  var chrono = 0;
   var prismeActif = null;
 
   // VERTICALE COURANTE. Le sélecteur porte l'argument des dix secteurs :
@@ -226,7 +237,7 @@
     // C'est le temps TOTAL perçu (réseau compris), pas le temps moteur :
     // annoncer le second en mesurant le premier serait mentir en notre
     // faveur les bons jours et en notre défaveur les mauvais.
-    var chrono = performance.now();
+    chrono = performance.now();
     var corps = {
       q: requete,
       limit: 9,
@@ -251,6 +262,13 @@
       })
       .catch(function (e) {
         if (id !== derniereRequete) return;
+        // Une erreur de PROGRAMMATION (ReferenceError, TypeError) n'est pas
+        // une panne réseau : l'afficher comme telle mentirait au visiteur
+        // et nous cacherait le défaut. On la journalise et on la laisse
+        // visible en console.
+        if (e instanceof ReferenceError || e instanceof TypeError) {
+          console.error("Défaut du widget (pas une panne réseau) :", e);
+        }
         // Un 429 signifie que le visiteur tape très vite : la limitation de
         // débit du serveur a mordu. On le distingue d'une vraie panne.
         if (String(e.message).indexOf("429") !== -1) {

@@ -223,3 +223,37 @@ describe("suggestions de synonymes (contrat console)", () => {
     }
   });
 });
+
+// ---------------------------------------------------------------------------
+// demo-search-live.js — le defaut du 30 juillet au soir.
+//
+// `chrono` etait declare DANS chercher() mais lu dans afficher() : une
+// ReferenceError a chaque affichage, attrapee par le .catch reseau, qui
+// montrait « Demonstration momentanement indisponible » sur toutes les
+// verticales. Le message d'honnetete concu pour les pannes masquait un
+// defaut de code.
+//
+// Ce test lit le TEXTE de meta — c'est ce que mon test precedent ne
+// faisait pas, et pourquoi le defaut est passe.
+// ---------------------------------------------------------------------------
+describe("demo-search-live.js", () => {
+  it("affiche les resultats ET le temps mesure, sans message d'indisponibilite", async () => {
+    const dom = domNeuf(`<div class="demo play">
+      <button class="play-vertical-pill play-vertical-on" data-vertical="outillage">O</button>
+      <input class="play-input"><div class="play-chips"></div>
+      <div class="play-grid"></div><div class="play-meta"></div><div class="play-prisms"></div>
+    </div>`);
+    const w = dom.window;
+    w.fetch = global.fetch = () => Promise.resolve({ ok: true, json: () => Promise.resolve({
+      total: 42, hits: [{ product: { id: "P1", name: "Vis M8x20", ref: "V-820" }, in_stock: true, matched: [] }], facets: {} }) });
+    w.eval(fs.readFileSync(path.join(RACINE, "demo-search-live.js"), "utf8"));
+    const input = w.document.querySelector(".play-input");
+    input.value = "vis";
+    input.dispatchEvent(new w.Event("input"));
+    await new Promise((r) => setTimeout(r, 400));
+
+    expect(w.document.querySelectorAll(".play-card").length).toBe(1);
+    expect(w.document.querySelector(".play-grid").innerHTML).not.toContain("indisponible");
+    expect(w.document.querySelector(".play-meta").textContent).toMatch(/42 résultats en \d+ ms/);
+  });
+});
