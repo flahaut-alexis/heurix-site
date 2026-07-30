@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Getting started guide — from sign-up to full setup — Heurix</title>
+<meta name="description" content="Three steps to get working search, then three independent optional modules: Heurix Tracker, front-end integration, MCP server.">
+<link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/guide-mise-en-route.html">
+<link rel="alternate" hreflang="en" href="https://heurix.fr/en/blog/guide-mise-en-route.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Getting started guide — from sign-up to full setup — Heurix">
+<meta property="og:description" content="Three steps to get working search, then three independent optional modules: Heurix Tracker, front-end integration, MCP server.">
+<meta property="og:image" content="https://heurix.fr/og-image.png">
+<meta property="og:url" content="https://heurix.fr/en/blog/guide-mise-en-route.html">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Getting started guide — from sign-up to full setup — Heurix">
+<meta name="twitter:image" content="https://heurix.fr/og-image.png">
+<link rel="icon" type="image/png" href="../../favicon-32.png">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<link rel="stylesheet" href="../../styles.css?v=1785448833">
+<link rel="canonical" href="https://heurix.fr/en/blog/guide-mise-en-route.html">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Heurix",
+  "url": "https://heurix.fr",
+  "logo": "https://heurix.fr/logo.svg?v=1784985918",
+  "image": "https://heurix.fr/og-image.png",
+  "description": "Regex-powered search and discovery engine for e-commerce sites, designed in France.",
+  "email": "contact@heurix.fr",
+  "sameAs": ["https://www.linkedin.com/company/heurix-search/"],
+  "founder": {"@type": "Person", "name": "Alexis Flahaut"},
+  "areaServed": "FR"
+}
+</script>
+</head>
+<body>
+<header>
+  <div class="header-top">
+    <nav class="header-top-inner">
+      <a href="../index.html" class="logo"><img src="../../logo.svg?v=1784985918" alt="Heurix"> <span class="wordmark">Heurix</span></a>
+      <div class="nav-links">
+        <div class="nav-drop">
+          <button type="button" class="nav-drop-btn" aria-expanded="false" aria-haspopup="true">Product</button>
+          <div class="nav-drop-panel">
+            <a href="../index.html#probleme">The problem</a>
+            <a href="../index.html#mission">Our mission</a>
+            <a href="../index.html#moteur">The engine</a>
+            <a href="../fonctionnalites.html">Features</a>
+            <a href="../index.html#tarifs">ROI Simulator</a>
+          </div>
+        </div>
+        <div class="nav-drop">
+          <button type="button" class="nav-drop-btn" aria-expanded="false" aria-haspopup="true">Solutions</button>
+          <div class="nav-drop-panel">
+          <a href="../solutions/outillage.html">Hardware & tools</a>
+          <a href="../solutions/industrie.html">Spare parts & industry</a>
+          <a href="../solutions/mode.html">Fashion & retail</a>
+          <a href="../solutions/electronique.html">Electronics & high-tech</a>
+          <a href="../solutions/livres.html">Books & publishing</a>
+          <a href="../solutions/vins.html">Wine & spirits</a>
+          <a href="../solutions/finance.html">Finance & accounting</a>
+          </div>
+        </div>
+        <div class="nav-drop">
+          <button type="button" class="nav-drop-btn" aria-expanded="false" aria-haspopup="true">Developers</button>
+          <div class="nav-drop-panel">
+            <a href="../docs.html">Documentation</a>
+            <a href="../integrations.html">Integrations</a>
+            <a href="../blog/guide-mise-en-route.html">Getting started guide</a>
+          </div>
+        </div>
+        <a href="../blog.html">Blog</a>
+      </div>
+      <div class="header-search">
+        <button id="heurix-search-btn" class="search-trigger" aria-label="Heurix Search — search the site" type="button">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <span class="search-trigger-text">Heurix Search</span>
+          <span class="search-trigger-kbd">Ctrl K</span>
+        </button>
+      </div>
+      <div class="header-utility">
+        <button type="button" id="mobile-nav-toggle" class="mobile-nav-toggle" aria-label="Menu" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+        <a href="../console.html" class="header-signin">Sign in</a>
+        <a href="../../blog/guide-mise-en-route.html" class="lang-switch">FR</a>
+        <a href="../pricing.html" class="btn">Try it free</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<div id="heurix-search-modal" class="search-modal">
+  <div id="heurix-search-backdrop" class="search-backdrop" data-search-close></div>
+  <div class="search-panel">
+    <div class="search-panel-head">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input id="heurix-search-input" type="text" placeholder="Heurix Search..." autocomplete="off">
+      <button class="search-close" data-search-close type="button">Esc</button>
+    </div>
+    <p id="heurix-search-suggest-label" class="search-suggest-label" hidden>Latest articles</p>
+    <div id="heurix-search-results" class="search-results"></div>
+    <p id="heurix-search-empty" class="search-empty" hidden>No results for this search. Try another term.</p>
+  </div>
+</div>
+
+<article class="post">
+  <div class="wrap docs-layout" style="max-width:940px;">
+    <aside class="docs-sidebar">
+      <nav aria-label="Guide contents">
+        <a href="#etape-1">Step 1 — Sign up</a>
+        <a href="#etape-2">Step 2 — Index your catalog</a>
+        <a href="#etape-3">Step 3 — Confirm search works</a>
+        <a href="#modules-optionnels">Three optional modules</a>
+        <a href="#module-tracker">Heurix Tracker</a>
+        <a href="#module-frontend">Front-end integration</a>
+        <a href="#module-mcp">MCP server</a>
+        <a href="#et-ensuite">What's next</a>
+      </nav>
+    </aside>
+    <div>
+    <a href="../blog.html" class="back-link">← All articles</a>
+    <div class="kicker">Guide · July 2026</div>
+    <h1>Getting started guide — from sign-up to full setup</h1>
+    <p class="post-lede">Three steps to get working search. Then three independent modules, to activate as needed — none is required for the engine to answer your customers.</p>
+
+    <div class="post-body">
+      <img src="../img/prisme-mise-en-route.svg?v=1784918437" alt="Four-level pyramid diagram: at the base, the required foundation (sign-up, API key, first catalog); above it, three stacked optional modules — Heurix Tracker, front-end integration, MCP server" style="width:100%; max-width:560px; margin:8px 0 28px;">
+
+      <h2 id="etape-1">Step 1 — Sign up</h2>
+      <p>Choose a plan on the <a href="../pricing.html">pricing page</a> — the 14-day trial requires no credit card. Once you've signed up, your API key (<code class="docs-inline-code">hx_...</code>) is immediately available in <a href="../console.html">your console</a>, under "My info."</p>
+      <p><em>[Screenshot to add: the API key shown in the console, My info section]</em></p>
+
+      <h2 id="etape-2">Step 2 — Index your first catalog</h2>
+      <p>One call is enough — the catalog is created automatically on first import, no prior setup needed:</p>
+      <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/index/mycatalog/items   -H "Authorization: Bearer YOUR_API_KEY"   -H "Content-Type: application/json"   -d '{
+  "items": [
+    {"id": "sku-1", "name": "BOSCH GDX 18V-285 Drill", "ref": "M8 x 20 - Stainless A2", "stock": 8, "price": 139.90}
+  ]
+}'</code></pre>
+      <p>Specify <code class="docs-inline-code">"rulepack": "outillage"</code> in the request body if your industry matches one of the <a href="../docs.html#ep-rulepacks">ten pre-configured rule packs</a> — otherwise, the engine still indexes, with more limited structure recognition until a pack or <a href="../docs.html#ep-custom-rules">Custom Rule</a> is active.</p>
+
+      <h2 id="etape-3">Step 3 — Confirm search works</h2>
+      <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/index/mycatalog/search   -H "Authorization: Bearer YOUR_API_KEY"   -H "Content-Type: application/json"   -d '{"q": "bosch drill"}'</code></pre>
+      <p>A response with your product in <code class="docs-inline-code">hits</code> confirms everything works. At this point, search is fully operational — everything below is optional.</p>
+      <p><em>[Screenshot to add: the console's "Overview" dashboard once the first catalog is indexed]</em></p>
+
+      <div class="guide-quiz" id="guide-quiz">
+        <h2 style="margin-top:0;">Build your own path</h2>
+        <p class="console-panel-note">Three questions to keep only what's relevant to you. Steps 1 to 3 above are required either way.</p>
+
+        <div class="guide-quiz-q">
+          <p><strong>Do you want to measure the sales search generates?</strong></p>
+          <div class="guide-quiz-opts" data-question="tracker">
+            <button type="button" data-value="yes">Yes</button>
+            <button type="button" data-value="no">No</button>
+          </div>
+        </div>
+
+        <div class="guide-quiz-q">
+          <p><strong>Do your teams need to query the catalog through an AI agent?</strong></p>
+          <div class="guide-quiz-opts" data-question="mcp">
+            <button type="button" data-value="yes">Yes</button>
+            <button type="button" data-value="no">No</button>
+          </div>
+        </div>
+
+        <div class="guide-quiz-q">
+          <p><strong>Do you already have a search interface on your site?</strong></p>
+          <div class="guide-quiz-opts" data-question="frontend">
+            <button type="button" data-value="no">No, starting from scratch</button>
+            <button type="button" data-value="yes">Yes, I already have an interface</button>
+          </div>
+        </div>
+
+        <p class="guide-quiz-recap" id="guide-quiz-recap" hidden></p>
+        <button type="button" class="btn btn-ghost" id="guide-quiz-tout">See the full guide</button>
+      </div>
+      <h2 id="modules-optionnels">From here, three independent modules</h2>
+      <p class="regex-reassure">🔑 <strong>Two of the three modules run in the browser</strong> (Tracker and front-end integration). First generate a <strong>public key</strong> from your console (My info → My API key): it starts with <code class="docs-inline-code">hxp_</code> and can only search, browse, and report events. Your server key (<code class="docs-inline-code">hx_</code>) should never appear in a web page — it grants access to your billing. <a href="../docs.html#authentification">Details on both key types</a>.</p>
+      <p>Each answers a different need. Activate what's relevant to you, ignore the rest — nothing is required for the other two, and nothing is required for search itself to keep working.</p>
+
+      <div class="guide-module" data-module="tracker">
+      <h3 id="module-tracker">Optional module — Heurix Tracker (Conversion &amp; ROI)</h3>
+      <p>To find out which searches actually generate sales, not just clicks. Download <a href="../downloads/heurix-tracker.js" download>heurix-tracker.js</a>, edit the two variables at the top of the file with your key and your catalog:</p>
+      <pre class="docs-code"><code>var HEURIX_API_KEY = "YOUR_PUBLIC_KEY";  // hxp_, not hx_
+var HEURIX_CATALOG = "mycatalog";</code></pre>
+      <p>Then drop the script once, site-wide:</p>
+      <pre class="docs-code"><code>&lt;script src="heurix-tracker.js"&gt;&lt;/script&gt;</code></pre>
+      <p>Then call <code class="docs-inline-code">Heurix.trackClick(query, productId)</code> on a click from your search results, and <code class="docs-inline-code">Heurix.trackPurchase([{id, amount, margin}])</code> when an order is confirmed — full details in <a href="../docs.html#ep-events">the Conversion &amp; ROI documentation</a>.</p>
+      <p><em>[Screenshot to add: the console's Conversion &amp; ROI panel with initial data]</em></p>
+
+      </div>
+      <div class="guide-module" data-module="frontend">
+      <h3 id="module-frontend">Optional module — Front-end integration</h3>
+      <p>Two ways to display search on your site, depending on your situation:</p>
+
+      <div data-frontend="no">
+      <p><strong>You're starting from scratch, no existing search</strong> — <a href="../downloads/heurix-search.js?v=1785451559" download>heurix-search.js</a>, a standalone script that renders a full search bar (input, results, facets) in three lines:</p>
+      <pre class="docs-code"><code>&lt;div id="my-search"&gt;&lt;/div&gt;
+&lt;script src="heurix-search.js?v=1785451559"&gt;&lt;/script&gt;
+&lt;script&gt;
+  Heurix.searchBox({ apiKey: "YOUR_PUBLIC_KEY", catalog: "mycatalog", containerId: "my-search" });
+&lt;/script&gt;</code></pre>
+
+      </div>
+      <div data-frontend="yes">
+      <p><strong>You already have an interface, or an established JS/TS stack</strong> — <a href="https://www.npmjs.com/package/heurix-client">heurix-client</a>, a lightweight client to build your own interface:</p>
+      <pre class="docs-code"><code>npm install heurix-client</code></pre>
+      <pre class="docs-code"><code>import { HeurixClient } from "heurix-client";
+const client = new HeurixClient({ apiKey: "YOUR_API_KEY", catalog: "mycatalog" });
+const results = await client.search("bosch drill");</code></pre>
+      </div>
+      <p>Full details on both options: <a href="../docs.html#ep-search-widget">heurix-search.js</a> and <a href="../docs.html#ep-search">the API reference</a> to build your own call.</p>
+      <p><em>[Screenshot to add: heurix-search.js in action on a test page, results shown]</em></p>
+
+      </div>
+      <div class="guide-module" data-module="mcp">
+      <h3 id="module-mcp">Optional module — MCP server (AI agents)</h3>
+      <p>So an AI agent (Claude Desktop, Cursor, an internal agent) can query your catalog in natural language, without ever calling the API itself. Full guide, step-by-step install included: <a href="guide-serveur-mcp-heurix.html">Connecting Heurix to Claude Desktop and Cursor</a>.</p>
+
+      </div>
+      <h2 id="et-ensuite">What's next</h2>
+      <p>Once these basics are in place, the <a href="../docs.html">full documentation</a> covers the rest — synonyms, facets, Browse &amp; Discovery, query priorities. None of it is required to get started, but all of it is available whenever you need it.</p>
+    </div>
+
+    <div class="post-footer-cta">
+      <p>Ready to get started?</p>
+      <a href="../pricing.html" class="btn">Try the Search API for free</a>
+    </div>
+    </div>
+  </div>
+</article>
+
+<footer>
+  <div class="wrap foot-grid">
+    <a href="../index.html" class="logo" style="font-size:15px;"><img src="../../logo.svg?v=1784985918" alt="Heurix" style="height:22px;width:22px;"> <span class="wordmark">Heurix</span></a>
+    <div class="foot-links">
+      <a href="../blog.html">Blog</a>
+      <a href="../docs.html">API Documentation</a>
+      <a href="../fonctionnalites.html">Features</a>
+      <a href="../integrations.html">Integrations</a>
+      <a href="../console.html">Console</a>
+      <a href="../about.html">About</a>
+      <a href="../index.html#faq">FAQ</a>
+      <a href="../cgv.html">Terms of Service</a>
+      <a href="../mentions-legales.html">Legal notice</a>
+      <a href="#" data-rouvrir-consentement>Manage cookies</a>
+      <a href="../privacy.html">Privacy</a>
+      <a href="mailto:contact@heurix.fr">contact@heurix.fr</a>
+    </div>
+    <div class="foot-social">
+      <span class="foot-social-label">Social networks</span>
+      <a href="https://www.linkedin.com/company/heurix-search/" target="_blank" rel="noopener" aria-label="LinkedIn" class="foot-social-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+      </a>
+    </div>
+    <div class="foot-legal">
+      Heurix — Sole proprietorship (French micro-entreprise). SIRET 107 681 900 00018. IT systems and software consulting.<br>
+      © <span id="year">2026</span> Heurix. All rights reserved.
+    </div>
+  </div>
+</footer>
+
+<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+<script src="../../search-en.js?v=1785451559"></script>
+<script src="../../nav-dropdown.js"></script>
+<script src="../../mobile-nav.js?v=1784970606"></script>
+<div id="pricing-nudge" class="pricing-nudge">
+  <button type="button" class="pricing-nudge-close" aria-label="Close">&times;</button>
+  <div class="pricing-nudge-kicker">14-day free trial</div>
+  <p>Try the Search API on your catalog, no credit card.</p>
+  <a href="../pricing.html" class="btn">See pricing</a>
+</div>
+<script src="../../guide-quiz-en.js"></script>
+<script src="../../pricing-nudge.js"></script>
+<script>window.HEURIX_RACINE='../../';</script><script src="../../consent.js?v=1785150583"></script>
+</body>
+</html>

@@ -3,24 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Heurix — Search & Discovery Engine for E-commerce</title>
+<title>Heurix — Search engine for technical e-commerce catalogs</title>
 <meta name="description" content="The Heurix search engine understands your product references through regular expressions — not just your keywords. Self-service or hands-on.">
 <link rel="alternate" hreflang="fr" href="https://heurix.fr/index.html">
 <link rel="alternate" hreflang="en" href="https://heurix.fr/en/index.html">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Heurix — Search & Discovery Engine for E-commerce">
+<meta property="og:title" content="Heurix — Search engine for technical e-commerce catalogs">
 <meta property="og:description" content="The Heurix search engine understands your product references through regular expressions — not just your keywords. Self-service or hands-on.">
 <meta property="og:image" content="https://heurix.fr/og-image.png">
-<meta property="og:url" content="https://heurix.fr/en/">
+<meta property="og:url" content="https://heurix.fr/en/index.html">
 <meta property="og:locale" content="en_US">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Heurix — Search & Discovery Engine for E-commerce">
-<meta name="twitter:description" content="The Heurix search engine understands your product references through regex — not just your keywords.">
+<meta name="twitter:title" content="Heurix — Search engine for technical e-commerce catalogs">
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="../favicon-32.png">
 <link rel="apple-touch-icon" href="../apple-touch-icon.png">
 <link rel="stylesheet" href="../styles.css?v=1785448833">
-<link rel="canonical" href="https://heurix.fr/en/">
+<link rel="canonical" href="https://heurix.fr/en/index.html">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -31,56 +30,9 @@
   "image": "https://heurix.fr/og-image.png",
   "description": "Regex-powered search and discovery engine for e-commerce sites, designed in France.",
   "email": "contact@heurix.fr",
-  "sameAs": [
-    "https://www.linkedin.com/company/heurix-search/"
-  ],
-  "founder": {
-    "@type": "Person",
-    "name": "Alexis Flahaut"
-  },
-  "areaServed": "FR",
-  "knowsAbout": [
-    "Search and discovery",
-    "E-commerce search engines",
-    "Algolia",
-    "Elasticsearch",
-    "Typesense"
-  ]
-}
-</script>
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "SoftwareApplication",
-  "name": "Heurix Search API",
-  "applicationCategory": "BusinessApplication",
-  "operatingSystem": "Web",
-  "description": "Search and discovery engine for technical e-commerce catalogs, available via REST API: annotation cascade, typo tolerance, business synonyms, facets, federated search.",
-  "url": "https://heurix.fr/pricing.html",
-  "offers": {
-    "@type": "AggregateOffer",
-    "priceCurrency": "EUR",
-    "lowPrice": "19",
-    "highPrice": "139",
-    "offerCount": "3"
-  },
-  "provider": {
-    "@type": "Organization",
-    "name": "Heurix",
-    "url": "https://heurix.fr"
-  }
-}
-</script>
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  "mainEntity": [
-    {"@type": "Question", "name": "How do I integrate the Heurix engine into my site?", "acceptedAnswer": {"@type": "Answer", "text": "Via API: index your catalog, wire up search, you're live. No plugin, no rebuild, no CMS dependency. Technical integration guides with real code are available for Shopify, PrestaShop, WooCommerce, and Magento."}},
-    {"@type": "Question", "name": "How much does the Heurix Search API cost?", "acceptedAnswer": {"@type": "Answer", "text": "A 14-day free trial (up to 2,000 requests and 2,000 products) to test without a credit card, then plans from €19/month. Counting rules are public and usage is available in real time."}},
-    {"@type": "Question", "name": "Why pick Heurix over Algolia, Elasticsearch, or Typesense?", "acceptedAnswer": {"@type": "Answer", "text": "Generalist engines compare characters; Heurix reads the structure of product references through its annotation cascade — dimensions, standards, sizes, vintages, editions — with rule packs per vertical and explainable results."}},
-    {"@type": "Question", "name": "Where is the data hosted?", "acceptedAnswer": {"@type": "Answer", "text": "In France, at OVH (Gravelines or Strasbourg). Catalogs never leave the European Union."}}
-  ]
+  "sameAs": ["https://www.linkedin.com/company/heurix-search/"],
+  "founder": {"@type": "Person", "name": "Alexis Flahaut"},
+  "areaServed": "FR"
 }
 </script>
 </head>
@@ -88,39 +40,61 @@
 <header>
   <div class="header-top">
     <nav class="header-top-inner">
-      <a href="index.html" class="logo"><img src="../logo.svg?v=1784985918" alt="Heurix"> <span class="wordmark">HEURIX</span></a>
+      <a href="index.html" class="logo"><img src="../logo.svg?v=1784985918" alt="Heurix"> <span class="wordmark">Heurix</span></a>
+      <div class="nav-links">
+        <div class="nav-drop">
+          <button type="button" class="nav-drop-btn" aria-expanded="false" aria-haspopup="true">Product</button>
+          <div class="nav-drop-panel">
+            <a href="produit.html#probleme">The problem</a>
+            <a href="produit.html#mission">Our mission</a>
+            <a href="produit.html#moteur">The engine</a>
+            <a href="fonctionnalites.html">Features</a>
+            <a href="index.html#tarifs">ROI Simulator</a>
+          </div>
+        </div>
+        <div class="nav-drop">
+          <button type="button" class="nav-drop-btn" aria-expanded="false" aria-haspopup="true">Solutions</button>
+          <div class="nav-drop-panel">
+          <a href="solutions/outillage.html">Hardware & tools</a>
+          <a href="solutions/industrie.html">Spare parts & industry</a>
+          <a href="solutions/mode.html">Fashion & retail</a>
+          <a href="solutions/electronique.html">Electronics & high-tech</a>
+          <a href="solutions/livres.html">Books & publishing</a>
+          <a href="solutions/vins.html">Wine & spirits</a>
+          <a href="solutions/finance.html">Finance & accounting</a>
+          </div>
+        </div>
+        <div class="nav-drop">
+          <button type="button" class="nav-drop-btn" aria-expanded="false" aria-haspopup="true">Developers</button>
+          <div class="nav-drop-panel">
+            <a href="docs.html">Documentation</a>
+            <a href="integrations.html">Integrations</a>
+            <a href="prestashop.html">PrestaShop</a>
+            <a href="woocommerce.html">WooCommerce</a>
+            <a href="shopify.html">Shopify</a>
+            <a href="blog/guide-mise-en-route.html">Getting started guide</a>
+          </div>
+        </div>
+        <a href="blog.html">Blog</a>
+      </div>
       <div class="header-search">
         <button id="heurix-search-btn" class="search-trigger" aria-label="Heurix Search — search the site" type="button">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <span class="search-trigger-text">Heurix Search</span>
-      <span class="search-trigger-kbd">Ctrl K</span>
-    </button>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <span class="search-trigger-text">Heurix Search</span>
+          <span class="search-trigger-kbd">Ctrl K</span>
+        </button>
       </div>
       <div class="header-utility">
-      <button type="button" id="mobile-nav-toggle" class="mobile-nav-toggle" aria-label="Menu" aria-expanded="false">
-        <span></span><span></span><span></span>
-      </button>
-      <a href="console.html" class="header-signin">Sign in</a>
-      <a href="../index.html" class="lang-switch">FR</a>
-      <a href="pricing.html" class="btn">Discover the engine</a>
+        <button type="button" id="mobile-nav-toggle" class="mobile-nav-toggle" aria-label="Menu" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+        <a href="console.html" class="header-signin">Sign in</a>
+        <a href="../index.html" class="lang-switch">FR</a>
+        <a href="pricing.html" class="btn">Try it free</a>
       </div>
-    </nav>
-  </div>
-  <div class="header-nav-row">
-    <nav class="header-nav-row-inner" aria-label="Navigation principale">
-      <div class="nav-links">
-      <a href="#probleme">The problem</a>
-      <a href="#moteur">The engine</a>
-      <a href="fonctionnalites.html">Features</a>
-      <a href="integrations.html">Integrations</a>
-      <a href="docs.html">Documentation</a>
-      <a href="#tarifs">ROI Simulator</a>
-      <a href="blog.html">Blog</a>
-    </div>
     </nav>
   </div>
 </header>
-
 
 <div id="heurix-search-modal" class="search-modal">
   <div id="heurix-search-backdrop" class="search-backdrop" data-search-close></div>
@@ -710,19 +684,22 @@
   </div>
 </section>
 
+
 <footer>
   <div class="wrap foot-grid">
-    <a href="index.html" class="logo" style="font-size:15px;"><img src="../logo.svg?v=1784985918" alt="Heurix" style="height:22px;width:22px;"> <span class="wordmark">HEURIX</span></a>
+    <a href="index.html" class="logo" style="font-size:15px;"><img src="../logo.svg?v=1784985918" alt="Heurix" style="height:22px;width:22px;"> <span class="wordmark">Heurix</span></a>
     <div class="foot-links">
       <a href="blog.html">Blog</a>
       <a href="docs.html">API Documentation</a>
+      <a href="fonctionnalites.html">Features</a>
       <a href="integrations.html">Integrations</a>
       <a href="console.html">Console</a>
       <a href="about.html">About</a>
-      <a href="#faq">FAQ</a>
+      <a href="index.html#faq">FAQ</a>
       <a href="cgv.html">Terms of Service</a>
       <a href="mentions-legales.html">Legal notice</a>
-          <a href="#" data-rouvrir-consentement>Manage cookies</a>
+      <a href="#" data-rouvrir-consentement>Manage cookies</a>
+      <a href="privacy.html">Privacy</a>
       <a href="mailto:contact@heurix.fr">contact@heurix.fr</a>
     </div>
     <div class="foot-social">
@@ -738,389 +715,9 @@
   </div>
 </footer>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="../demo-search-en.js?v=1784765443"></script>
-<script src="../search-en.js"></script>
-<script>
-  document.getElementById('year').textContent = new Date().getFullYear();
-
-
-  // Scroll reveal
-  const playViewTabs = document.querySelectorAll('.play-view-tab');
-  playViewTabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      const target = tab.getAttribute('data-view');
-      playViewTabs.forEach(t => {
-        t.classList.toggle('active', t === tab);
-        t.setAttribute('aria-selected', t === tab ? 'true' : 'false');
-      });
-      document.querySelectorAll('.play-view').forEach(panel => {
-        panel.hidden = panel.getAttribute('data-view-panel') !== target;
-      });
-    });
-  });
-
-  const revealEls = document.querySelectorAll('.reveal');
-  if ('IntersectionObserver' in window) {
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('in');
-          io.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.15 });
-    revealEls.forEach(el => io.observe(el));
-  } else {
-    revealEls.forEach(el => el.classList.add('in'));
-  }
-
-  // Sector copilot — static data, not a chatbot
-  const COPILOT_DATA = {
-    outillage: {
-      points: [
-        "Berner (fastening &amp; industrial tools) — <strong>+20%</strong> increase in search usage",
-        "Jula (tools / DIY retail) — <strong>+30%</strong> conversion rate increase",
-        "Brico Dépôt (DIY) — <strong>69%</strong> of revenue generated by internal search"
-      ],
-      source: "Sources: public case studies, FactFinder &amp; Sensefuel, 2026"
-    },
-    mode: {
-      points: [
-        "Ulla Popken (fashion) — <strong>+42%</strong> conversion rate increase",
-        "Rouge Gorge (lingerie) — <strong>+42%</strong> search conversion increase in one year",
-        "Yves Rocher (beauty) — <strong>+28%</strong> increase in search usage"
-      ],
-      source: "Sources: public case studies, FactFinder &amp; Sensefuel, 2026"
-    },
-    sport: {
-      points: [
-        "Bergfreunde (outdoor) — <strong>+70%</strong> revenue per session",
-        "Kuebler Sport — <strong>+35%</strong> conversion rate increase",
-        "Fitstore24 (fitness) — <strong>+55.6%</strong> average order value on mobile"
-      ],
-      source: "Source: public case study, FactFinder, 2026"
-    },
-    maison: {
-      points: [
-        "Damart (apparel / home) — <strong>+368%</strong> search conversion increase in one year",
-        "Tischwelt (tableware) — <strong>+13%</strong> average order value"
-      ],
-      source: "Sources: public case studies, Sensefuel &amp; FactFinder, 2026"
-    }
-  };
-
-  function setCopilotIndustry(key){
-    const data = COPILOT_DATA[key];
-    if (!data) return;
-    document.querySelectorAll('.copilot-pill').forEach(p => p.classList.toggle('active', p.dataset.industry === key));
-    const pointsEl = document.getElementById('copilot-points');
-    pointsEl.innerHTML = data.points.map(p => `<li>${p}</li>`).join('');
-    document.getElementById('copilot-source').innerHTML = data.source;
-  }
-
-  document.querySelectorAll('.copilot-pill').forEach(pill => {
-    pill.addEventListener('click', () => setCopilotIndustry(pill.dataset.industry));
-  });
-  setCopilotIndustry('outillage');
-
-  // ROI simulator
-  function formatEuro(value){
-    if (Math.abs(value) >= 1000000) {
-      return (value / 1000000).toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + ' M€';
-    }
-    return '€' + Math.round(value).toLocaleString('en-US');
-  }
-
-  function computeROI(){
-    const caInput = document.getElementById('roi-ca');
-    const shareInput = document.getElementById('roi-share');
-    const liftInput = document.getElementById('roi-lift');
-    const marginInput = document.getElementById('roi-margin');
-
-    const ca = parseFloat(caInput.value) * 1000000;
-    const share = parseFloat(shareInput.value) / 100;
-    const lift = parseFloat(liftInput.value) / 100;
-    const margin = parseFloat(marginInput.value) / 100;
-
-    document.getElementById('roi-ca-val').textContent = caInput.value + ' M€';
-    document.getElementById('roi-share-val').textContent = shareInput.value + '%';
-    document.getElementById('roi-lift-val').textContent = liftInput.value + '%';
-    document.getElementById('roi-margin-val').textContent = marginInput.value + '%';
-
-    caInput.setAttribute('aria-valuetext', caInput.value + ' million euros');
-    shareInput.setAttribute('aria-valuetext', shareInput.value + ' percent');
-    liftInput.setAttribute('aria-valuetext', liftInput.value + ' percent');
-    marginInput.setAttribute('aria-valuetext', marginInput.value + ' percent');
-
-    // Annual Search API cost by catalog size / revenue
-    // (Starter plan €19/mo for small catalogs, Growth €49/mo as the real
-    // middle tier, Scale €139/mo for large volumes / high revenue)
-    let cost = 588; // Growth annualized: €49 x 12 — the real middle tier, not an arbitrary average
-    if (ca < 10000000) {
-      cost = 228; // Starter: €19 x 12
-    } else if (ca >= 25000000) {
-      cost = 1668; // Scale: €139 x 12
-    }
-
-    const caSearch = ca * share;
-    const gainCA = caSearch * lift;
-    const gainMarge = gainCA * margin;
-    const roi = gainMarge / cost;
-    const paybackDays = gainMarge > 0 ? Math.round((cost / gainMarge) * 365) : null;
-
-    document.getElementById('roi-out-gainca').textContent = formatEuro(gainCA);
-    document.getElementById('roi-out-gainmarge').textContent = formatEuro(gainMarge);
-    document.getElementById('roi-out-roi').textContent = roi.toFixed(1) + 'x';
-    document.getElementById('roi-out-cost').textContent = '€' + cost.toLocaleString('en-US');
-
-    const paybackEl = document.getElementById('roi-out-payback');
-    let paybackText = '—';
-    if (paybackDays === null) {
-      paybackText = '—';
-    } else if (paybackDays <= 1) {
-      paybackText = '1 day';
-    } else if (paybackDays < 30) {
-      paybackText = paybackDays + ' days';
-    } else {
-      paybackText = (paybackDays / 30).toFixed(1) + ' months';
-    }
-    paybackEl.textContent = paybackText;
-
-    const total = cost + gainMarge;
-    const costPercent = total > 0 ? Math.max((cost / total) * 100, 2) : 50;
-    document.getElementById('roi-bar-cost').style.width = costPercent + '%';
-    document.getElementById('roi-bar-gain').style.width = (100 - costPercent) + '%';
-
-    return {
-      gainCA: formatEuro(gainCA),
-      gainMarge: formatEuro(gainMarge),
-      roi: roi.toFixed(1) + 'x',
-      payback: paybackText
-    };
-  }
-
-  function announceROISummary(){
-    const r = computeROI();
-    const liveRegion = document.getElementById('roi-sr-live');
-    if (liveRegion) {
-      liveRegion.textContent = `Estimated annual revenue gain: ${r.gainCA}. Net annual margin gain: ${r.gainMarge}. Return on investment: ${r.roi}. Subscription paid back in ${r.payback}.`;
-    }
-  }
-
-  let roiInteractionTracked = false;
-  ['roi-ca','roi-share','roi-lift','roi-margin'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) {
-      el.addEventListener('input', computeROI);
-      el.addEventListener('change', () => {
-        announceROISummary();
-        if (!roiInteractionTracked && window.dataLayer) {
-          window.dataLayer.push({ event: "roi_simulator_interaction" });
-          roiInteractionTracked = true;
-        }
-      });
-    }
-  });
-  computeROI();
-
-  // PDF report download (lead capture)
-  const pdfToggle = document.getElementById('roi-pdf-toggle');
-  const pdfForm = document.getElementById('roi-pdf-form');
-  const pdfFeedback = document.getElementById('roi-pdf-feedback');
-  const pdfSubmit = document.getElementById('roi-pdf-submit');
-
-  pdfToggle.addEventListener('click', () => {
-    pdfForm.hidden = !pdfForm.hidden;
-    pdfToggle.style.display = pdfForm.hidden ? 'block' : 'none';
-  });
-
-  pdfForm.addEventListener('submit', async function(e){
-    e.preventDefault();
-    const name = document.getElementById('roi-pdf-name').value;
-    const email = document.getElementById('roi-pdf-email').value;
-
-    pdfSubmit.disabled = true;
-    pdfSubmit.textContent = "Generating…";
-
-    try {
-      await fetch("https://formsubmit.co/ajax/contact@heurix.fr", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "Accept": "application/json" },
-        body: JSON.stringify({
-          _subject: "New lead — ROI report download (EN site)",
-          first_name: name,
-          email: email,
-          revenue: document.getElementById('roi-ca-val').textContent,
-          search_share: document.getElementById('roi-share-val').textContent,
-          conversion_gain: document.getElementById('roi-lift-val').textContent,
-          margin: document.getElementById('roi-margin-val').textContent,
-          estimated_revenue_gain: document.getElementById('roi-out-gainca').textContent,
-          estimated_margin_gain: document.getElementById('roi-out-gainmarge').textContent
-        })
-      });
-    } catch (err) {
-      // The PDF still generates even if the lead notification fails
-    }
-
-    generateROIPdf(name);
-    if (window.dataLayer) window.dataLayer.push({ event: "roi_pdf_download" });
-
-    pdfFeedback.textContent = "Report downloaded — thank you!";
-    pdfFeedback.style.color = "#8FE3BC";
-    pdfSubmit.disabled = false;
-    pdfSubmit.textContent = "Generate my PDF report";
-  });
-
-  function generateROIPdf(name){
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-
-    const ink = [18, 20, 43];
-    const blue = [84, 104, 255];
-    const muted = [91, 94, 118];
-    const green = [31, 170, 107];
-
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(22);
-    doc.setTextColor(...blue);
-    doc.text('HEURIX', 20, 25);
-
-    doc.setFontSize(11);
-    doc.setTextColor(...muted);
-    doc.setFont('helvetica', 'normal');
-    doc.text('Search & discovery engine for e-commerce', 20, 32);
-
-    doc.setDrawColor(230, 230, 235);
-    doc.line(20, 38, 190, 38);
-
-    doc.setFontSize(16);
-    doc.setTextColor(...ink);
-    doc.setFont('helvetica', 'bold');
-    doc.text('Your personalized ROI report', 20, 50);
-
-    doc.setFontSize(10);
-    doc.setTextColor(...muted);
-    doc.setFont('helvetica', 'normal');
-    doc.text('Prepared for ' + (name || 'you') + ' — ' + new Date().toLocaleDateString('en-US'), 20, 57);
-
-    doc.setFontSize(12);
-    doc.setTextColor(...ink);
-    doc.setFont('helvetica', 'bold');
-    doc.text('Assumptions entered', 20, 72);
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(10.5);
-    const inputs = [
-      ['Annual revenue', document.getElementById('roi-ca-val').textContent],
-      ['Share of revenue from internal search', document.getElementById('roi-share-val').textContent],
-      ['Expected conversion gain', document.getElementById('roi-lift-val').textContent],
-      ['Net commercial margin', document.getElementById('roi-margin-val').textContent],
-    ];
-    let y = 80;
-    inputs.forEach(row => {
-      doc.setTextColor(...muted);
-      doc.text(row[0], 20, y);
-      doc.setTextColor(...ink);
-      doc.text(row[1], 130, y);
-      y += 7;
-    });
-
-    y += 8;
-    doc.setFontSize(12);
-    doc.setTextColor(...ink);
-    doc.setFont('helvetica', 'bold');
-    doc.text('Estimated results', 20, y);
-    y += 8;
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(10.5);
-    const outputs = [
-      ['Estimated annual revenue gain', document.getElementById('roi-out-gainca').textContent],
-      ['Net annual margin gain', document.getElementById('roi-out-gainmarge').textContent],
-      ['Annual Search API cost', document.getElementById('roi-out-cost').textContent],
-      ['ROI multiplier', document.getElementById('roi-out-roi').textContent],
-      ['Subscription paid back in', document.getElementById('roi-out-payback').textContent],
-    ];
-    outputs.forEach(row => {
-      doc.setTextColor(...muted);
-      doc.text(row[0], 20, y);
-      doc.setTextColor(...green);
-      doc.setFont('helvetica', 'bold');
-      doc.text(row[1], 130, y);
-      doc.setFont('helvetica', 'normal');
-      y += 7;
-    });
-
-    y += 12;
-    doc.setDrawColor(230, 230, 235);
-    doc.line(20, y, 190, y);
-    y += 8;
-    doc.setFontSize(9);
-    doc.setTextColor(...muted);
-    doc.text('These figures are order-of-magnitude estimates based on your assumptions, to refine', 20, y);
-    y += 5;
-    doc.text('together during an audit. They are not a contractual commitment.', 20, y);
-    y += 12;
-    doc.setTextColor(...blue);
-    doc.setFont('helvetica', 'bold');
-    doc.text('contact@heurix.fr  —  heurix.fr', 20, y);
-
-    doc.save('heurix-roi-report.pdf');
-  }
-
-  /*
-    CONTACT FORM — FORMSUBMIT (free, no signup required)
-    This form sends directly to contact@heurix.fr (Zimbra mailbox hosted on OVH).
-    IMPORTANT: the first time the form is submitted, FormSubmit sends a
-    confirmation email to contact@heurix.fr. That link must be clicked once
-    to activate delivery — already done when the FR form was first configured,
-    since both forms deliver to the same address.
-  */
-  const FORMSUBMIT_ENDPOINT = "https://formsubmit.co/ajax/contact@heurix.fr";
-
-  const form = document.getElementById('heurix-form');
-  const feedback = document.getElementById('form-feedback');
-  const submitBtn = document.getElementById('submit-btn');
-
-  form.addEventListener('submit', async function(e){
-    e.preventDefault();
-
-    submitBtn.disabled = true;
-    submitBtn.textContent = "Sending…";
-
-    try {
-      const formData = new FormData(form);
-      const payload = Object.fromEntries(formData.entries());
-
-      const res = await fetch(FORMSUBMIT_ENDPOINT, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json"
-        },
-        body: JSON.stringify(payload)
-      });
-
-      feedback.style.display = 'block';
-      if (res.ok) {
-        feedback.style.color = 'var(--green)';
-        feedback.textContent = "Thank you, your request has been sent.";
-        form.reset();
-        if (window.dataLayer) window.dataLayer.push({ event: "contact_form_submit" });
-      } else {
-        feedback.style.color = 'var(--red-muted)';
-        feedback.textContent = "Something went wrong — please try again or email us directly at contact@heurix.fr.";
-      }
-    } catch (err) {
-      feedback.style.display = 'block';
-      feedback.style.color = 'var(--red-muted)';
-      feedback.textContent = "Something went wrong — please try again or email us directly at contact@heurix.fr.";
-    } finally {
-      submitBtn.disabled = false;
-      submitBtn.textContent = "Send request";
-    }
-  });
-</script>
-
+<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+<script src="../search-en.js?v=1785451559"></script>
+<script src="../nav-dropdown.js"></script>
 <script src="../mobile-nav.js?v=1784970606"></script>
 <div id="pricing-nudge" class="pricing-nudge">
   <button type="button" class="pricing-nudge-close" aria-label="Close">&times;</button>
