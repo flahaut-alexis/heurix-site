@@ -254,6 +254,71 @@ describe("demo-search-live.js", () => {
 
     expect(w.document.querySelectorAll(".play-card").length).toBe(1);
     expect(w.document.querySelector(".play-grid").innerHTML).not.toContain("indisponible");
-    expect(w.document.querySelector(".play-meta").textContent).toMatch(/42 résultats en \d+ ms/);
+    expect(w.document.querySelector(".play-meta").textContent).toMatch(/42.résultats/);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Badge de temps de reponse (.play-meta-speed) — 30 juillet, soir.
+// Le nombre de resultats et le temps deviennent deux elements distincts,
+// avec une pastille pour le second et une animation de comptage.
+// ---------------------------------------------------------------------------
+describe("badge de temps de reponse", () => {
+  it("separe le compte et le temps en deux elements, sans statistique inventee", async () => {
+    const dom = domNeuf(`<div class="demo play">
+      <button class="play-vertical-pill play-vertical-on" data-vertical="outillage">O</button>
+      <input class="play-input"><div class="play-chips"></div>
+      <p class="play-meta"></p>
+      <div class="play-prisms"></div><div class="play-grid"></div>
+    </div>`);
+    const w = dom.window;
+    w.requestAnimationFrame = (cb) => setTimeout(() => cb(performance.now()), 16);
+    w.fetch = global.fetch = () => Promise.resolve({ ok: true, json: () => Promise.resolve({
+      total: 2721, hits: [{ product: { id: "P1", name: "Vis M8x20", ref: "V-820" }, in_stock: true, matched: [] }], facets: {} }) });
+    w.eval(fs.readFileSync(path.join(RACINE, "demo-search-live.js"), "utf8"));
+    const input = w.document.querySelector(".play-input");
+    input.value = "vis";
+    input.dispatchEvent(new w.Event("input"));
+    await new Promise((r) => setTimeout(r, 400));
+
+    const meta = w.document.querySelector(".play-meta");
+    expect(meta.querySelector(".play-meta-count").textContent).toMatch(/2.721/);
+    const badge = meta.querySelector(".play-meta-speed");
+    expect(badge).toBeTruthy();
+    const msEl = badge.querySelector(".play-meta-ms");
+    const cible = msEl.getAttribute("data-cible");
+    expect(Number(cible)).toBeGreaterThan(0);
+
+    // AUCUNE STATISTIQUE INVENTEE : ni pourcentage, ni comparaison a des
+    // concurrents non mesures.
+    expect(meta.innerHTML).not.toMatch(/%/);
+    expect(meta.innerHTML.toLowerCase()).not.toContain("moteurs");
+
+    // L'animation converge vers la valeur EXACTE mesuree, pas une valeur
+    // arbitraire — c'est un habillage, pas une invention.
+    await new Promise((r) => setTimeout(r, 500));
+    expect(msEl.textContent).toBe(cible);
+  });
+
+  it("respecte prefers-reduced-motion : pas d'animation, valeur directe", async () => {
+    const dom = domNeuf(`<div class="demo play">
+      <button class="play-vertical-pill play-vertical-on" data-vertical="outillage">O</button>
+      <input class="play-input"><div class="play-chips"></div>
+      <p class="play-meta"></p>
+      <div class="play-prisms"></div><div class="play-grid"></div>
+    </div>`);
+    const w = dom.window;
+    w.matchMedia = () => ({ matches: true });
+    w.requestAnimationFrame = (cb) => setTimeout(() => cb(performance.now()), 16);
+    w.fetch = global.fetch = () => Promise.resolve({ ok: true, json: () => Promise.resolve({
+      total: 10, hits: [{ product: { id: "P1", name: "Vis M8x20", ref: "V-820" }, in_stock: true, matched: [] }], facets: {} }) });
+    w.eval(fs.readFileSync(path.join(RACINE, "demo-search-live.js"), "utf8"));
+    const input = w.document.querySelector(".play-input");
+    input.value = "vis";
+    input.dispatchEvent(new w.Event("input"));
+    await new Promise((r) => setTimeout(r, 400));
+    const msEl = w.document.querySelector(".play-meta-ms");
+    // Ecrite directement : pas de valeur de depart differente en transit.
+    expect(msEl.textContent).toBe(msEl.getAttribute("data-cible"));
   });
 });

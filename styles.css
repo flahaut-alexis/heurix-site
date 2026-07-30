@@ -358,7 +358,31 @@ h1 span{ color:var(--blue); }
   cursor:pointer; transition:background .15s ease, color .15s ease;
 }
 .play-chip:hover{ background:var(--blue); color:#fff; }
-.play-meta{ font-size:12.5px; color:var(--ink-muted); margin:0 0 10px; min-height:18px; }
+.play-meta{
+  display:flex; align-items:center; flex-wrap:wrap; gap:10px;
+  font-size:12.5px; color:var(--ink-muted); margin:0 0 10px; min-height:26px;
+}
+.play-meta-count{ font-size:12.5px; color:var(--ink-muted); }
+
+/* Le temps de reponse comme argument visuel, pas comme mention discrete.
+   Meme couleur d'accent que le bouton "Essayer gratuitement" (--blue),
+   sur sa teinte deja definie dans la palette : rien invente, tout reutilise. */
+.play-meta-speed{
+  display:inline-flex; align-items:center; gap:5px;
+  background:var(--blue-tint); color:var(--blue-deep);
+  padding:4px 11px 4px 8px; border-radius:999px;
+  font-size:12.5px; line-height:1;
+}
+.play-meta-speed svg{ width:13px; height:13px; fill:var(--blue-deep); flex:none; }
+.play-meta-ms{
+  font-size:15px; font-weight:700; color:var(--blue-deep);
+  font-variant-numeric:tabular-nums; /* le chiffre ne tressaute pas de largeur pendant l'animation */
+}
+.play-meta-filtre{ font-size:12.5px; color:var(--ink-muted); }
+
+@media (max-width:640px){
+  .play-meta{ gap:8px; }
+}
 .play-speed{
   display:inline-flex; align-items:center; gap:3px;
   background:rgba(16,163,74,0.12); color:#0F7A3D; font-weight:700;

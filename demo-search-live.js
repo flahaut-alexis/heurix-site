@@ -166,6 +166,36 @@
     "</article>";
   }
 
+  // Anime un <b> de 0 (ou d'une valeur proche) jusqu'à sa valeur finale,
+  // sur environ 350 ms. Purement visuel : la valeur AFFICHÉE PENDANT
+  // L'ANIMATION n'est jamais utilisée pour un calcul, seule la cible l'est.
+  function animerCompteurMs(el, cible) {
+    if (!el) return;
+    if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      el.textContent = cible;
+      return;
+    }
+    var depart = Math.max(0, cible - Math.round(cible * 0.6) - 15);
+    var t0 = null;
+    var duree = 350;
+    // RÉFÉRENCÉ VIA window, PAS EN GLOBALE NUE. Le widget est destiné à
+    // être intégré tel quel chez des clients — l'appel direct à un
+    // identifiant global dépend de contextes d'exécution qu'on ne
+    // contrôle pas tous. Le repli en `setTimeout` couvre les rares
+    // environnements sans `requestAnimationFrame`.
+    var rAF = (window.requestAnimationFrame || function (cb) { return setTimeout(function () { cb(Date.now()); }, 16); }).bind(window);
+    function pas(t) {
+      if (t0 === null) t0 = t;
+      var avancement = Math.min(1, (t - t0) / duree);
+      // Ease-out : rapide au départ, se stabilise en douceur sur la
+      // valeur exacte — perceptible sans être criard.
+      var valeur = Math.round(depart + (cible - depart) * (1 - Math.pow(1 - avancement, 3)));
+      el.textContent = valeur;
+      if (avancement < 1) rAF(pas);
+    }
+    rAF(pas);
+  }
+
   function afficher(donnees, requete) {
     var hits = donnees.hits || [];
     if (!hits.length) {
@@ -178,17 +208,43 @@
 
     if (meta) {
       var ms = Math.max(1, Math.round(performance.now() - chrono));
-      var bouts = [donnees.total.toLocaleString("fr-FR") + " résultats en " + ms + " ms"];
-      // Le filtre de prix reconnu est un argument à lui seul : « moins de
-      // 5 euros » compris comme une contrainte, pas comme des mots-clés.
+
+      // LE TEMPS DE RÉPONSE DEVIENT UN ARGUMENT VISUEL, PAS UNE MENTION.
+      //
+      // Nombre de résultats et temps de réponse sont désormais deux
+      // ÉLÉMENTS séparés — pas une seule phrase — pour styliser le
+      // chiffre en ms indépendamment : plus grand, en gras, dans la
+      // couleur d'accent de la marque plutôt que le gris neutre.
+      //
+      // AUCUNE COMPARAISON CHIFFRÉE N'EST AFFICHÉE. « Plus rapide que 95 %
+      // des moteurs » n'est mesuré nulle part — l'écrire serait inventer
+      // une statistique sur notre propre page. Le chiffre mesuré, affiché
+      // clairement, est un argument suffisant et vérifiable : n'importe
+      // quel visiteur peut le reproduire en tapant une recherche.
+      var bouts = [];
+      var filtre = "";
       if (donnees.price_filter) {
         var f = donnees.price_filter;
-        bouts.push(f.max !== null && f.min !== null
+        filtre = " · " + (f.max !== null && f.min !== null
           ? "filtre : entre " + euros(f.min) + " et " + euros(f.max)
           : f.max !== null ? "filtre : moins de " + euros(f.max)
           : "filtre : plus de " + euros(f.min));
       }
-      meta.textContent = bouts.join(" · ");
+      meta.innerHTML =
+        "<span class='play-meta-count'>" + donnees.total.toLocaleString("fr-FR") +
+        " résultats</span>" +
+        "<span class='play-meta-speed'>" +
+          "<svg viewBox='0 0 24 24' aria-hidden='true'><path d='M13 2 3 14h7l-1 8 11-14h-7z'/></svg>" +
+          "<b class='play-meta-ms' data-cible='" + ms + "'>" + ms + "</b> ms" +
+        "</span>" +
+        (filtre ? "<span class='play-meta-filtre'>" + esc(filtre) + "</span>" : "");
+
+      // MICRO-ANIMATION DE COMPTAGE, ~350 ms, requestAnimationFrame.
+      //
+      // Elle ne retarde JAMAIS l'affichage des résultats — la grille est
+      // déjà à l'écran avant que cette animation ne commence. Elle habille
+      // un chiffre déjà exact, elle ne le fait pas attendre.
+      animerCompteurMs(meta.querySelector(".play-meta-ms"), ms);
     }
 
     // Les facettes deviennent des prismes cliquables — le vocabulaire de la
