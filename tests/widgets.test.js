@@ -322,3 +322,38 @@ describe("badge de temps de reponse", () => {
     expect(msEl.textContent).toBe(msEl.getAttribute("data-cible"));
   });
 });
+
+// ---------------------------------------------------------------------------
+// Renvoi actionnable quand aucune suggestion n'est trouvee (30 juillet, soir).
+// Le message "Aucun mot proche..." pointait vers Personnalisation -> Search
+// SANS lien ni pre-remplissage : le marchand devait retrouver l'ecran seul
+// puis retaper le terme. Verrouille le contrat entre les deux morceaux.
+// ---------------------------------------------------------------------------
+describe("renvoi vers les synonymes depuis Sans resultat", () => {
+  const js = fs.readFileSync(path.join(RACINE, "console.js"), "utf8");
+
+  it("le cas sans candidat pose un vrai lien avec le terme en donnee", () => {
+    const bloc = js.match(/if \(!candidats\.length\) \{[\s\S]{0,1400}/)[0];
+    expect(bloc).toContain("data-goto-pane='pane-search-overrides'");
+    expect(bloc).toContain("data-prefill=");
+    expect(bloc).toContain("zr-vers-synonymes");
+    // Le terme recherche doit voyager jusqu'au bouton, pas seulement
+    // apparaitre dans la phrase.
+    expect(bloc).toContain("esc(terme)");
+  });
+
+  it("le gestionnaire data-goto-pane sait pre-remplir le champ synonyme", () => {
+    const bloc = js.match(/document\.addEventListener\("click"[\s\S]{0,3200}/)[0];
+    expect(bloc).toContain('link.getAttribute("data-prefill")');
+    expect(bloc).toContain(".catalog-synonym-input");
+    expect(bloc).toContain("champ.focus()");
+    // Le curseur doit se placer APRES le texte injecte, jamais avant.
+    expect(bloc).toContain("setSelectionRange");
+  });
+
+  it("le style rend le lien visuellement cliquable, pas de la prose", () => {
+    const css = fs.readFileSync(path.join(RACINE, "styles.css"), "utf8");
+    expect(css).toContain(".zr-vers-synonymes");
+    expect(css).toMatch(/\.zr-vers-synonymes\{[^}]*cursor:pointer/);
+  });
+});

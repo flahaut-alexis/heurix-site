@@ -1137,6 +1137,34 @@
       var sectionBtn = section.previousElementSibling;
       if (sectionBtn) sectionBtn.classList.add("console-sidebar-section-on");
     }
+
+    // PRÉ-REMPLISSAGE DU FORMULAIRE D'ARRIVÉE. Sans lui, le lien amène le
+    // marchand au bon endroit mais lui fait retaper un terme qu'il vient
+    // de lire deux secondes plus tôt — un renvoi qui ressemble à une aide
+    // mais n'en fait pas moins le travail à sa place.
+    //
+    // Le champ synonyme attend un GROUPE ("vis, boulon, screw"), pas une
+    // paire : on y dépose "terme, " avec le curseur juste après la
+    // virgule, prêt à taper le mot du catalogue auquel le rattacher.
+    var terme = link.getAttribute("data-prefill");
+    if (terme) {
+      // `cr-host` est déjà peuplé au chargement du tableau de bord — pas
+      // besoin d'attendre un rendu asynchrone. Un court délai laisse
+      // seulement le temps au panneau de devenir visible (hidden -> non
+      // hidden) avant le défilement, sinon scrollIntoView mesure une
+      // position à zéro.
+      setTimeout(function () {
+        var champ = document.querySelector(".catalog-synonym-input");
+        if (!champ) return;
+        champ.value = terme + ", ";
+        champ.scrollIntoView({ behavior: "smooth", block: "center" });
+        champ.focus();
+        // Curseur en fin de valeur, jamais au début : sans ceci, certains
+        // navigateurs replacent le curseur avant le texte injecté.
+        var fin = champ.value.length;
+        champ.setSelectionRange(fin, fin);
+      }, 60);
+    }
   });
 
   document.getElementById("feedback-form").addEventListener("submit", function (e) {
@@ -1691,12 +1719,22 @@
           btn.hidden = true;
           zone.hidden = false;
           if (!candidats.length) {
-            // HONNÊTE PLUTÔT QUE MUET. « chandail » n'a aucun voisin par
-            // distance d'édition : c'est un mot différent, pas une faute.
-            // Le renvoi vers l'écran des synonymes est la bonne réponse.
-            zone.innerHTML = "<em>Aucun mot proche dans votre catalogue — " +
-              "s'il s'agit d'un autre mot pour un produit que vous vendez, " +
-              "ajoutez-le dans Personnalisation &rarr; Search.</em>";
+            // HONNÊTE, ET DÉSORMAIS ACTIONNABLE. « chandail » n'a aucun
+            // voisin par distance d'édition : c'est un mot différent, pas
+            // une faute, la suggestion automatique n'a rien à proposer.
+            //
+            // DÉFAUT SIGNALÉ (30 juillet) : le renvoi vers Personnalisation
+            // → Search n'était qu'une PHRASE, pas un lien — le marchand
+            // devait retrouver seul le bon écran, puis retaper le terme
+            // qu'il venait de voir. Le lien réutilise le mécanisme
+            // `data-goto-pane` déjà posé sur le tableau des erreurs :
+            // même geste, même destination, mais ici avec le terme
+            // PRÉ-REMPLI dans le formulaire d'arrivée — voir le
+            // gestionnaire de clic plus bas, qui repère `data-prefill`.
+            zone.innerHTML = "<em>Aucun mot proche dans votre catalogue.</em> " +
+              "<button type='button' class='zr-vers-synonymes' data-goto-pane='pane-search-overrides' " +
+              "data-prefill='" + esc(terme) + "'>S'il s'agit d'un autre mot pour un produit que vous " +
+              "vendez, ajoutez-le comme synonyme &rarr;</button>";
             return;
           }
           zone.innerHTML = "&rarr; " + candidats.map(function (cand) {

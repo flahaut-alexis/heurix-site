@@ -3657,6 +3657,12 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 .zr-suggerer:disabled{ opacity:.55; cursor:default; }
 .zr-suggestions{ font-size:12.5px; line-height:2; }
 .zr-suggestions em{ color:var(--ink-muted); font-style:normal; }
+.zr-vers-synonymes{
+  font:inherit; font-size:12.5px; color:var(--blue-deep); background:none;
+  border:none; padding:0; text-decoration:underline; cursor:pointer;
+  display:inline; text-align:left;
+}
+.zr-vers-synonymes:hover{ color:var(--blue); }
 .zr-choix{
   font:inherit; font-size:12.5px; padding:2px 9px; border-radius:999px;
   border:1px solid var(--line); background:var(--bg-soft); cursor:pointer;
