@@ -94,8 +94,15 @@
     // habillage : il montre que Heurix a RECONNU la famille du produit.
     var visuel;
     if (p.image || p.image_url) {
+      // SI L'IMAGE ÉCHOUE, LE PICTOGRAMME PREND LE RELAIS. Masquer le cadre
+      // laissait un trou : sur Open Library, une couverture sur deux manque,
+      // et la grille devenait irrégulière.
+      var replPicto = window.HeurixPictos
+        ? window.HeurixPictos.pictogramme(hit.matched || []).replace(/'/g, "&#39;")
+        : "";
       visuel = "<div class='play-card-img'><img src='" + esc(p.image || p.image_url) +
-               "' alt='' loading='lazy' onerror=\"this.closest('.play-card-img').hidden=true\"></div>";
+               "' alt='' loading='lazy' onerror=\"var d=this.closest('.play-card-img');" +
+               "d.className='play-card-picto';d.innerHTML='" + replPicto + "';\"></div>";
     } else if (window.HeurixPictos) {
       visuel = "<div class='play-card-picto'>" +
                window.HeurixPictos.pictogramme(hit.matched || []) + "</div>";
@@ -112,9 +119,22 @@
       .filter(function (m) { return m.indexOf("annotation #") === 0; })
       .map(function (m) { return m.replace("annotation #", ""); })
       .slice(0, 4);
+    // CE QU'ON MONTRE, ET DANS QUEL ORDRE.
+    //
+    // La carte n'affichait que nom, référence et stock. Sur un livre, cela
+    // donnait « Nick Drake / 0747535035 / En stock » — l'auteur, qui est la
+    // seule information utile après le titre, restait invisible.
+    //
+    // La description porte l'auteur pour les livres, la contenance pour les
+    // vins, la norme pour la visserie. C'est toujours le complément le plus
+    // parlant après le nom.
+    var secondaire = p.description || p.marque || "";
     return "<article class='play-card'>" +
       visuel +
       "<div class='play-card-name'>" + esc(p.name || p.id) + "</div>" +
+      (secondaire ? "<div class='play-card-sub'>" + esc(String(secondaire).slice(0, 60)) + "</div>" : "") +
+      // La référence passe APRÈS et en plus discret : elle sert à identifier,
+      // pas à décrire.
       (p.ref ? "<div class='play-card-ref'>" + esc(p.ref) + "</div>" : "") +
       "<div class='play-card-foot'>" +
         (p.price !== undefined ? "<span class='play-card-price'>" + euros(p.price) + "</span>" : "") +

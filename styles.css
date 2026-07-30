@@ -3605,3 +3605,7 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
   background:var(--bg-soft); border-radius:8px; color:var(--blue-deep);
 }
 .play-card-picto svg{ width:40px; height:40px; }
+
+/* Ligne secondaire de la carte : auteur pour un livre, contenance pour un
+   vin, norme pour une vis. Le complement le plus parlant apres le nom. */
+.play-card-sub{ font-size:12.5px; color:var(--ink-muted); line-height:1.4; margin-top:2px; }

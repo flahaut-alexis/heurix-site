@@ -62,6 +62,11 @@
     PULL: svg('<path d="M18 10h12l8 6-4 5-2-2v19H16V19l-2 2-4-5z"/>'),
     PANTALON: svg('<path d="M17 8h14v8l-2 24h-5l-2-16-2 16h-5l-2-24z"/>'),
     CHEMISE: svg('<path d="M19 9l5 4 5-4 8 5-3 5-2-1v20H16V18l-2 1-3-5z"/>'),
+    // --- électronique grand public
+    CHARGEUR: svg('<path d="M18 6h12v8h-12z"/><path d="M22 14v6M26 14v6"/><path d="M14 20h20v18H14z"/><path d="M24 26v6l-3-2 3-2"/>'),
+    ENCEINTE: svg('<path d="M14 8h20v32H14z"/><circle cx="24" cy="18" r="5"/><circle cx="24" cy="31" r="3"/>'),
+    ECOUTEURS: svg('<path d="M10 26v-4a14 14 0 0128 0v4"/><path d="M8 26h6v10H8zM34 26h6v10h-6z"/>'),
+    CASQUE: svg('<path d="M11 28v-6a13 13 0 0126 0v6"/><path d="M8 28h7v12H8zM33 28h7v12h-7z"/><path d="M15 38h6"/>'),
     // --- livres
     LIVRE: svg('<path d="M10 10h12a4 4 0 014 4v24a4 4 0 00-4-4H10z"/><path d="M38 10H26a4 4 0 00-4 4v24a4 4 0 014-4h12z"/>'),
     // --- vins
@@ -87,6 +92,8 @@
     ["FAM_SUSPENSION", "SUSPENSION"],
     ["FAM_PULL", "PULL"], ["FAM_JEAN", "PANTALON"], ["FAM_CHEMISE", "CHEMISE"],
     ["FAM_ROMAN", "LIVRE"], ["FAM_POCHE", "LIVRE"],
+    ["FAM_CHARGEUR", "CHARGEUR"], ["FAM_ENCEINTE", "ENCEINTE"],
+    ["FAM_ECOUTEURS", "ECOUTEURS"], ["FAM_CASQUE", "CASQUE"],
     ["COULEUR_ROUGE", "VIN"], ["COULEUR_BLANC", "VIN"], ["COULEUR_ROSE", "VIN"],
   ];
 
