@@ -211,8 +211,38 @@
     <section id="authentification" class="docs-section">
       <h2>Authentication</h2>
       <p>Every call must carry your API key in the <code class="docs-inline-code">Authorization</code> header:</p>
-      <pre class="docs-code"><code>Authorization: Bearer hx_your_api_key</code></pre>
-      <p>A missing or malformed key returns <code class="docs-inline-code">401</code>; an invalid key returns <code class="docs-inline-code">403</code>. Keep your key server-side — never expose it in your site's public JavaScript. If your key leaks, contact us for immediate rotation.</p>
+      <pre class="docs-code"><code>Authorization: Bearer YOUR_KEY</code></pre>
+      <p>A missing or malformed key returns <code class="docs-inline-code">401</code>; a key that's invalid or outside its scope returns <code class="docs-inline-code">403</code>.</p>
+
+      <h3>Two types of keys</h3>
+      <p>The choice isn't cosmetic: it determines what a third party could do if they got hold of your key.</p>
+      <div class="table-scroll"><table class="docs-params">
+        <tr><th>Type</th><th>Prefix</th><th>Scope</th><th>Where to use it</th></tr>
+        <tr>
+          <td><strong>Server key</strong></td>
+          <td><code class="docs-inline-code">hx_</code></td>
+          <td>Full access: indexing, merchandising, statistics, billing</td>
+          <td><strong>Server-side only.</strong> Never in a web page.</td>
+        </tr>
+        <tr>
+          <td><strong>Public key</strong></td>
+          <td><code class="docs-inline-code">hxp_</code></td>
+          <td>Search, catalog browsing, conversion events — nothing else</td>
+          <td>Browser, mobile apps, any context where the key is visible</td>
+        </tr>
+      </table></div>
+
+      <p>A public key calling an endpoint outside its scope gets an explicit <code class="docs-inline-code">403</code>. It shares the quota of the server key that generated it — creating several therefore doesn't raise your limits.</p>
+
+      <h3>Generating a public key</h3>
+      <p>From <a href="console.html">your console</a> (My info → My API key), or via the API with your server key:</p>
+      <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/keys/public \
+  -H "Authorization: Bearer YOUR_SERVER_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"allowed_origins": "mysite.com,www.mysite.com"}'</code></pre>
+      <p><code class="docs-inline-code">allowed_origins</code> is optional but recommended: the key is then only accepted from the listed domains, making it useless if someone copies it onto another site. <code class="docs-inline-code">GET /v1/keys/public</code> lists them, <code class="docs-inline-code">DELETE /v1/keys/public/{key}</code> revokes one.</p>
+
+      <p class="regex-reassure">⚠️ <strong>Existing keys remain server keys</strong> and keep working exactly as before — nothing breaks. But if you've placed one in your site's JavaScript (search bar, tracker, Browse widget), replace it with a public key: as it stands, any visitor can read it and reach your billing.</p>
     </section>
 
     <section id="comptage" class="docs-section">
@@ -280,8 +310,69 @@
       </table></div>
       <h3>Response</h3>
       <p><code class="docs-inline-code">total</code> (match count), <code class="docs-inline-code">hits</code> — each hit contains the full <code class="docs-inline-code">product</code> as indexed, its <code class="docs-inline-code">score</code>, <code class="docs-inline-code">in_stock</code>, and <code class="docs-inline-code">matched</code>: a readable list of why it matched (terms found, typos corrected, shared annotations) — useful for understanding and tuning relevance. If <code class="docs-inline-code">facets</code> was requested, an additional <code class="docs-inline-code">facets</code> field lists the counts per group.</p>
+
+      <h3>Rule simulation on Browse</h3>
+      <div class="docs-endpoint"><span class="docs-method docs-method-post">POST</span><code>/v1/browse/{catalog}/{category}/simulate</code></div>
+      <p>Counterpart of the search's <code class="docs-inline-code">simulate_overrides</code> field, for category-page merchandising. Previews a ranking with <strong>unsaved</strong> rules:</p>
+      <pre class="docs-code"><code>{
+  "overrides": [{"product_id": "PER-BOSCH-18V", "action": "pin", "position": 1}],
+  "sort": "stock",
+  "limit": 20
+}</code></pre>
+      <p>A dedicated <code class="docs-inline-code">POST</code> endpoint rather than a parameter on the existing <code class="docs-inline-code">GET</code>: a list of draft rules quickly exceeds a reasonable URL length, and this leaves the normal read path entirely untouched.</p>
+      <div class="table-scroll"><table class="docs-params">
+        <tr><th>Guarantee</th><th>Behavior</th></tr>
+        <tr><td>Database write</td><td>None. Your saved rules are unchanged.</td></tr>
+        <tr><td>Browse quota</td><td><strong>Not consumed.</strong> These are your tests, not customer traffic.</td></tr>
+        <tr><td>Key required</td><td><strong>Server</strong> key. A public key gets a <code class="docs-inline-code">403</code>.</td></tr>
+        <tr><td>Attribute rules</td><td><strong>Saved</strong> ones keep applying — the simulation covers per-product merchandising, not catalog configuration.</td></tr>
+      </table></div>
+      <p><code class="docs-inline-code">overrides</code> <strong>replaces</strong> the saved set for this call. An empty list therefore previews "with no rules at all," which lets you see the effect of a deletion before making it.</p>
+
+      <h3>Rule simulation</h3>
+      <p>Testing a query priority used to require saving it — and therefore applying it to your visitors immediately. The <code class="docs-inline-code">simulate_overrides</code> field lets you see the effect <strong>without writing anything</strong>:</p>
+      <pre class="docs-code"><code>{
+  "q": "vis",
+  "simulate_overrides": [
+    {"query": "vis", "product_id": "PER-BOSCH-18V", "action": "pin", "position": 1}
+  ]
+}</code></pre>
+      <p>The response carries <code class="docs-inline-code">"simulated": true</code>, and results are ranked as if these rules were active.</p>
+      <p><strong>The list replaces your entire saved set of priorities for this call — it doesn't add to it.</strong> That's what lets you preview an addition, a change, or a deletion the same way: just send the complete state you want. An empty list therefore previews "with no rules at all."</p>
+      <div class="table-scroll"><table class="docs-params">
+        <tr><th>Guarantee</th><th>Behavior</th></tr>
+        <tr><td>Database write</td><td>None. Your saved priorities are unchanged.</td></tr>
+        <tr><td>Quota</td><td><strong>Not consumed.</strong> These are your own tests on your catalog, not your customers' searches.</td></tr>
+        <tr><td>Search statistics</td><td><strong>Not logged.</strong> Your trials don't pollute your own analytics.</td></tr>
+        <tr><td>Key required</td><td><strong>Server</strong> key only. A public key gets a <code class="docs-inline-code">403</code> — this is an admin tool, not visitor traffic.</td></tr>
+      </table></div>
+
+      <h3>Natural-language price constraints</h3>
+      <p>A price constraint phrased in French is recognized in the query and converted into a filter — "vis inox <strong>moins de 5 €</strong>" (stainless screw under €5) filters on price instead of searching for the words "moins" and "euros" in your catalog.</p>
+      <pre class="docs-code"><code>{"query": "vis inox", "total": 3, "hits": [...],
+ "price_filter": {"min": null, "max": 5.0}}</code></pre>
+      <p>The returned query is <strong>stripped of the consumed fragment</strong> ("vis inox", not "vis inox moins de 5 €"): the constraint's words don't weigh on the relevance score. The <code class="docs-inline-code">price_filter</code> field only appears if a constraint was detected — useful for displaying it to the buyer and letting them remove it.</p>
+      <p><strong>Recognized phrasings</strong> — a deliberately short, documented list rather than an exhaustive one:</p>
+      <div class="table-scroll"><table class="docs-params">
+        <tr><th>Effect</th><th>Phrasings</th></tr>
+        <tr><td>Maximum price</td><td><code class="docs-inline-code">moins de X</code>, <code class="docs-inline-code">inférieur à X</code>, <code class="docs-inline-code">sous X €</code>, <code class="docs-inline-code">en dessous de X</code>, <code class="docs-inline-code">jusqu'à X €</code>, <code class="docs-inline-code">max X €</code></td></tr>
+        <tr><td>Minimum price</td><td><code class="docs-inline-code">plus de X</code>, <code class="docs-inline-code">supérieur à X</code>, <code class="docs-inline-code">au-dessus de X</code>, <code class="docs-inline-code">à partir de X €</code>, <code class="docs-inline-code">min X €</code></td></tr>
+        <tr><td>Range</td><td><code class="docs-inline-code">entre X et Y €</code></td></tr>
+      </table></div>
+      <p>The <code class="docs-inline-code">€</code> symbol and the word "euros" are optional on most phrasings. The French decimal comma is accepted (<code class="docs-inline-code">3,50</code> just like <code class="docs-inline-code">3.50</code>).</p>
+      <p><strong>A product with no <code class="docs-inline-code">price</code> field is excluded</strong> as soon as a constraint is active: there's no way to confirm it satisfies it, and surfacing it anyway would be misleading. It stays findable through a search with no price constraint.</p>
+
+      <h3>Query still being typed</h3>
+      <p>A word of 3 characters or more that matches the <strong>start</strong> of a vocabulary word also surfaces results — not just an exact match or a full typo correction. Typing "per" already finds "perceuse" (drill), without waiting for the whole word. A result found this way always counts for less than an exact match or an ordinary typo correction: as soon as the query is complete, ranking shifts back toward the most relevant results. Below 3 characters, no prefix matching is attempted at all — too many vocabulary words would share a 1- or 2-letter start by pure coincidence.</p>
+
       <h3>Zero-result fallback</h3>
       <p>A search that finds nothing (<code class="docs-inline-code">total: 0</code>) on a catalog containing at least one product marked <code class="docs-inline-code">featured: true</code> at indexing time returns up to 6 of these products in <code class="docs-inline-code">hits</code>, with <code class="docs-inline-code">fallback: true</code> — to offer a way forward instead of a blank page. <code class="docs-inline-code">total</code> stays <code class="docs-inline-code">0</code>: these aren't real search results, so present them distinctly on your end (e.g. "No results for '…' — our picks" rather than blending them with real results). Without any <code class="docs-inline-code">featured</code> product in the catalog, <code class="docs-inline-code">hits</code> stays empty and <code class="docs-inline-code">fallback</code> is <code class="docs-inline-code">false</code>, as before.</p>
+
+      <h3>Suggested category</h3>
+      <p>If a word in the query (4 characters or more) overlaps with a <a href="#ep-browse">Browse category</a> known to this catalog, the response includes a <code class="docs-inline-code">suggested_category</code> field — a cue for offering "did you mean to search in this category?" in your interface, never an automatic filter: the sort order and content of <code class="docs-inline-code">hits</code> stay unchanged.</p>
+      <pre class="docs-code"><code>{"query": "perceuse", "total": 4, "hits": [...],
+ "suggested_category": {"category": "perceuses-visseuses", "products": 12}}</code></pre>
+      <p>Matching is done by substring, not just strict equality — "perceuse" (singular) does find the "perceuses-visseuses" category (plural, with a hyphen). If several categories match at once, the most populated one wins. Absent from the response if there's no match, or in browse mode (empty query).</p>
     </section>
 
     <section id="ep-search-overrides" class="docs-section">
@@ -407,6 +498,275 @@ curl -X DELETE "https://api.heurix.fr/v1/browse/mycatalog/drills-drivers/attribu
       <h3>Response</h3>
       <pre class="docs-code"><code>{"indexed": 2, "catalog": {"catalog": "mycatalog", "products": 2, "terms": 11,
  "annotations": 9, "rulepack": "outillage", "synonym_groups": 0}}</code></pre>
+
+      <h3 id="regroupement">Grouping results by family</h3>
+      <p>On a technical catalog, a broad search often returns hundreds of products that differ only by one dimension. Measured on a 10,000-reference catalog: <code class="docs-inline-code">M8 stainless screw</code> returns <strong>6,582 results</strong>, the first of which are M8×30, M8×80, M8×35, M8×6.</p>
+      <p>Grouped, these 6,582 results become <strong>52 families</strong> — "Hexagon stainless A2 screw, 265 products" — ranked by relevance.</p>
+
+      <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/index/mycatalog/search \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"q": "M8 stainless screw", "limit": 6, "group_by": "auto"}'</code></pre>
+
+      <pre class="docs-code"><code>{
+  "total": 6582,
+  "familles": 52,
+  "groupes": [
+    {
+      "famille": "vis inox hex",
+      "etiquettes": ["FAM_VIS", "MAT_INOX", "TETE_HEX"],
+      "produits": 265,
+      "score": 60.0,
+      "representant": { "id": "REF-001360", "name": "Hexagon screw M8x30 stainless A4" },
+      "ids": ["REF-001360", "REF-001789"]
+    }
+  ]
+}</code></pre>
+
+      <div class="table-scroll"><table class="docs-params">
+        <tr><th>Parameter</th><th>Effect</th></tr>
+        <tr><td><code class="docs-inline-code">group_by: "auto"</code></td><td>Groups on the pack's standard tags — family, material, head type, color</td></tr>
+        <tr><td><code class="docs-inline-code">group_by: "FAM,MAT"</code></td><td>Groups on the prefixes you choose</td></tr>
+      </table></div>
+
+      <p><strong>Dimensions are deliberately excluded</strong> from the family key: they're what varies within a family. Including them would produce one family per product.</p>
+
+      <p>Families are ordered by the <strong>best score among their members</strong>, not by their size. A relevant but small family therefore ranks ahead of a large but marginal one.</p>
+
+      <p>Without <code class="docs-inline-code">group_by</code>, the response is unchanged: your existing integrations see no difference.</p>
+
+      <h4>In the JavaScript widget</h4>
+      <p>Grouping is configured through a <strong>threshold</strong>, not a switch. A visitor typing a precise reference wants their product, not a family — grouping systematically would turn an exact search into a detour.</p>
+
+      <pre class="docs-code"><code>Heurix.searchBox({
+  apiKey: "hxp_your_public_key",
+  catalog: "mycatalog",
+  containerId: "my-search",
+
+  // Groups only past 50 results
+  groupThreshold: 50,
+
+  // Optional: what to do when a family is clicked.
+  // By default, the search refines with the family's name.
+  onSelectGroup: function (famille, requete) {
+    window.location = "/search?q=" + encodeURIComponent(requete + " " + famille.famille);
+  }
+});</code></pre>
+
+      <h3 id="niveaux-integration">Three levels of integration</h3>
+      <p>Integration time doesn't depend on Heurix but on what you're replacing. These three levels go from lightest to most complete — <strong>nothing requires starting with the last one</strong>.</p>
+
+      <div class="table-scroll"><table class="docs-params">
+        <tr><th>Level</th><th>What you replace</th><th>Order of magnitude</th></tr>
+        <tr>
+          <td><strong>1 — Autocomplete</strong></td>
+          <td>Your search bar's dropdown menu</td>
+          <td>1 day</td>
+        </tr>
+        <tr>
+          <td><strong>2 — Identifier list</strong></td>
+          <td>Which products, and in what order. Your template, your product pages, and your facets stay yours</td>
+          <td>3 to 5 days</td>
+        </tr>
+        <tr>
+          <td><strong>3 — Full replacement</strong></td>
+          <td>The entire results page, with our facets and our analytics</td>
+          <td>2 to 3 weeks</td>
+        </tr>
+      </table></div>
+
+      <h4>Level 2 — the <code class="docs-inline-code">ids_only</code> parameter</h4>
+      <p>Heurix decides <strong>which products</strong> and <strong>in what order</strong>. Your platform renders its own product pages. The response contains only the essentials — for 50 results, a few hundred bytes instead of several dozen kilobytes.</p>
+
+      <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/index/mycatalog/search \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"q": "M8x20 stainless", "limit": 24, "ids_only": true}'
+
+# {"total": 47, "ids": ["SKU-1234", "SKU-5678", ...]}</code></pre>
+
+      <p>Ranking, pagination, and filters all apply exactly as on the full response. Only the shape changes.</p>
+
+      <h4>Applying this order in Magento</h4>
+      <p>On a <strong>category page</strong>, MySQL's <code class="docs-inline-code">FIELD()</code> function forces a product collection into a list's exact order:</p>
+
+      <pre class="docs-code"><code>// Plugin on the product collection
+$ids = $this->heurix->getOrderedIds($query);   // ids_only call
+
+$collection->addIdFilter($ids);
+$collection->getSelect()->order(
+    new \Zend_Db_Expr('FIELD(e.entity_id,' . implode(',', $ids) . ')')
+);</code></pre>
+
+      <p><strong>Something to watch for.</strong> Since Magento&nbsp;2.4, the <strong>search results page</strong> no longer goes through a SQL collection: it runs through Elasticsearch or OpenSearch. A collection plugin therefore has no effect there, and a custom search adapter is needed instead. Category pages, however, stay on SQL collections — which is why the <strong>Ranking</strong> option integrates noticeably faster than Search.</p>
+
+<h4>Depending on your platform</h4>
+      <p>Not all platforms accept an identifier list with the same ease. The gap is significant, and it drives your integration time far more than Heurix itself does.</p>
+
+      <div class="table-scroll"><table class="docs-params">
+        <tr><th>Platform</th><th>Hook point</th><th>Nature</th><th>Order of magnitude</th></tr>
+        <tr>
+          <td><strong>PrestaShop</strong> 1.7+</td>
+          <td><code class="docs-inline-code">ProductSearchProviderInterface</code></td>
+          <td><strong>Interface built for this.</strong> The core accepts an array of identifiers and hydrates product pages, facets, pagination, and sorting.</td>
+          <td>2 to 3 days</td>
+        </tr>
+        <tr>
+          <td><strong>WooCommerce</strong></td>
+          <td><code class="docs-inline-code">pre_get_posts</code> with <code class="docs-inline-code">post__in</code> and <code class="docs-inline-code">orderby&nbsp;=&gt;&nbsp;post__in</code></td>
+          <td>Hijacking the WordPress query. Works, but it isn't an extension point designed for this.</td>
+          <td>3 to 4 days</td>
+        </tr>
+        <tr>
+          <td><strong>Magento</strong> 2.4+ — category pages</td>
+          <td><code class="docs-inline-code">FIELD(e.entity_id, …)</code> on the collection</td>
+          <td>Works: the collection stays in SQL.</td>
+          <td>3 to 5 days</td>
+        </tr>
+        <tr>
+          <td><strong>Magento</strong> 2.4+ — results page</td>
+          <td>Custom search adapter</td>
+          <td>Search runs through Elasticsearch: a collection plugin has no effect there.</td>
+          <td>2 to 3 weeks</td>
+        </tr>
+        <tr>
+          <td><strong>Shopify</strong></td>
+          <td>—</td>
+          <td>Not verified to date. Write to us rather than follow an approximate recipe.</td>
+          <td>—</td>
+        </tr>
+      </table></div>
+
+      <h4>PrestaShop — official module</h4>
+      <p>A ready-to-install module exists, at version <strong>0.2.1</strong>. It implements <code class="docs-inline-code">ProductSearchProviderInterface</code> and requires no theme changes.</p>
+
+      <div class="table-scroll"><table class="docs-params">
+        <tr><th>Compatibility</th><td>PrestaShop 1.7.6 and above, 8.x</td></tr>
+        <tr><th>Dependencies</th><td>None — native cURL</td></tr>
+        <tr><th>What it replaces</th><td>Search results only. Theme, templates, and filters stay yours</td></tr>
+        <tr><th>Fallback</th><td>PrestaShop's native search if Heurix doesn't respond</td></tr>
+      </table></div>
+
+      <h5>Installation</h5>
+      <ol class="docs-steps">
+        <li>Copy the <code class="docs-inline-code">heurixsearch</code> folder into your store's <code class="docs-inline-code">modules/</code></li>
+        <li>Back office → Modules → install "Heurix Search"</li>
+        <li>Enter your <strong>server key</strong> (<code class="docs-inline-code">hx_</code>) and your catalog's name</li>
+        <li>Activate</li>
+      </ol>
+
+      <h5>One prerequisite to know about</h5>
+      <p>PrestaShop identifies its products by an <strong>integer</strong> (<code class="docs-inline-code">id_product</code>). Your Heurix catalog must therefore be indexed with these identifiers, not your internal references.</p>
+      <p>Concretely, the <code class="docs-inline-code">id</code> field sent to Heurix must contain <code class="docs-inline-code">1360</code>, not <code class="docs-inline-code">REF-001360</code>. You can keep your business reference in the <code class="docs-inline-code">ref</code> field, which is indexed with the highest weight.</p>
+
+      <pre class="docs-code"><code>{
+  "items": [
+    {
+      "id": "1360",                        // PrestaShop id_product
+      "ref": "REF-001360",                 // your business reference
+      "name": "Hexagon head screw M8x20 stainless A2",
+      "price": 1.24,
+      "stock": 2485
+    }
+  ]
+}</code></pre>
+
+      <p>If your identifiers aren't numeric, the module discards them and logs it in PrestaShop's logs — you'll then see "no results" even though Heurix found some. That's the symptom to recognize.</p>
+
+      <h4>PrestaShop — the interface, if you'd rather use your own module</h4>
+      <p>A module implementing <code class="docs-inline-code">ProductSearchProviderInterface</code> is enough. It receives the query, calls Heurix with <code class="docs-inline-code">ids_only</code>, and returns the identifiers. PrestaShop does the rest.</p>
+
+      <pre class="docs-code"><code>public function runQuery(ProductSearchContext $context, ProductSearchQuery $query)
+{
+    $ids = $this->heurix->rechercher($query->getSearchString());   // ids_only
+
+    $resultat = new ProductSearchResult();
+    // PrestaShop's core fills in the missing data
+    $resultat->setProducts(array_map(fn($id) =&gt; ['id_product' =&gt; $id], $ids));
+    $resultat->setTotalProductsCount(count($ids));
+    return $resultat;
+}</code></pre>
+
+      <h4>WooCommerce — one thing to know</h4>
+      <p>The mechanism works, but WordPress keeps running its own search as long as the <code class="docs-inline-code">s</code> parameter stays set. It needs to be cleared — which also empties the "Results for: …" label shown at the top of the page. Plan for a title filter to restore it.</p>
+
+      <pre class="docs-code"><code>add_action('pre_get_posts', function ($query) {
+    if (!is_admin() &amp;&amp; $query-&gt;is_main_query() &amp;&amp; $query-&gt;is_search()) {
+        $ids = heurix_rechercher(get_search_query());   // ids_only
+        $query-&gt;set('post_type', 'product');
+        $query-&gt;set('post__in', $ids ?: [0]);           // [0] = no results
+        $query-&gt;set('orderby', 'post__in');             // preserve OUR order
+        $query-&gt;set('s', '');                           // otherwise WP refilters
+    }
+});</code></pre>
+
+      <h3 id="import-csv">Importing a file from the console</h3>
+      <p>If you export your catalog as CSV or XML from an ERP or a PIM, <strong>no development is needed</strong>. The console detects the format, analyzes the file, and sends it for you.</p>
+
+      <div class="table-scroll"><table class="docs-params">
+        <tr><th>Accepted formats</th><td>CSV and XML, detected automatically — a single drop button</td></tr>
+        <tr><th>Detection — CSV</th><td>Separator (<code class="docs-inline-code">;</code>, <code class="docs-inline-code">,</code>, tab) and encoding, including Latin-1, common on French exports</td></tr>
+        <tr><th>Detection — XML</th><td>The element that repeats once per product, recognized automatically; encoding read from the file itself. Namespaces (Google Shopping feeds, <code class="docs-inline-code">g:id</code>, <code class="docs-inline-code">g:price</code>) are handled with no configuration</td></tr>
+        <tr><th>Matching</th><td>Suggested from your column headers (CSV) or elements and attributes (XML), editable, with a live value preview</td></tr>
+        <tr><th>Numbers</th><td><code class="docs-inline-code">1,24</code> and <code class="docs-inline-code">1 234,56</code> are understood; in XML, <code class="docs-inline-code">in stock</code> / <code class="docs-inline-code">out of stock</code> are recognized for stock</td></tr>
+        <tr><th>Batching</th><td>Automatic, in batches of 5,000</td></tr>
+        <tr><th>Rule pack</th><td>Recommended from your file's content, before import</td></tr>
+      </table></div>
+
+      <p>A check shows, before sending, how many rows would be kept — a wrong match is visible immediately rather than after the fact.</p>
+
+      <h4>⚠️ One decision to make before your first import</h4>
+      <p><strong>The identifier you index with must be the one you use everywhere else.</strong> It's the one decision that's hard to walk back.</p>
+
+      <p>Three systems rely on this identifier:</p>
+      <ul class="docs-steps">
+        <li><strong>The conversion tracker.</strong> It records the <code class="docs-inline-code">product_id</code> your site sends it. If you index by business reference — <code class="docs-inline-code">VIS-M8-INOX</code> — but your site sends its platform's identifier — <code class="docs-inline-code">1360</code> —, <strong>the two will never meet</strong> and your sales analytics will stay empty.</li>
+        <li><strong>Platform modules.</strong> PrestaShop, WooCommerce, and Magento identify their products by an integer. The <code class="docs-inline-code">id_field</code> parameter lets you keep your business reference as the identifier while still supplying that integer — see below.</li>
+        <li><strong>The MCP server.</strong> It returns your identifiers as-is. A business reference is even more readable there for a conversational agent.</li>
+      </ul>
+
+      <p><strong>The most flexible solution</strong>: index with your business reference — it's what your buyers type, and it's heavily weighted in ranking — and add a <code class="docs-inline-code">platform_id</code> field (a column in CSV, an element or attribute in XML) holding your platform's identifier. That way you have both.</p>
+
+      <pre class="docs-code"><code>Code Article;id_prestashop;Désignation;Prix HT;Qté dispo
+VIS-M8-INOX;1360;Vis tête hexagonale M8x20 inox A2;1,24;2485</code></pre>
+
+      <p>In the matching screen, map <code class="docs-inline-code">Code Article</code> to <strong>Identifier</strong> and <code class="docs-inline-code">id_prestashop</code> to <strong>Platform identifier</strong>. In XML, the principle is the same: map the corresponding element or attribute, whatever it's called in your feed.</p>
+
+      <h3>Large catalogs: index in batches</h3>
+      <p>A single call accepts <strong>5,000 products at most</strong>. Beyond that, the response is a <code class="docs-inline-code">422</code> telling you how many calls to split into.</p>
+      <p>Successive calls <strong>add to the same catalog</strong>: order doesn't matter, and nothing gets overwritten. A product that's already there gets updated, not duplicated.</p>
+
+      <pre class="docs-code"><code># Split a 10,000-product catalog into two batches
+python3 -c "
+import json
+produits = json.load(open('catalog.json'))['items']
+for i in range(0, len(produits), 5000):
+    with open(f'batch-{i//5000}.json', 'w') as f:
+        json.dump({'rulepack': 'outillage', 'items': produits[i:i+5000]}, f)
+"
+
+# Then send each batch
+for batch in batch-*.json; do
+  curl -X POST https://api.heurix.fr/v1/index/mycatalog/items \
+    -H "Authorization: Bearer YOUR_API_KEY" \
+    -H "Content-Type: application/json" \
+    --data-binary @$batch
+done</code></pre>
+
+      <p><strong>Order of magnitude.</strong> Expect roughly one second per 10,000 products for indexing itself. The network upload usually takes longer than that.</p>
+
+      <h3>Changing an existing catalog's rule pack</h3>
+      <p>The pack is declared <strong>at indexing time</strong>, in the <code class="docs-inline-code">rulepack</code> field. There's no endpoint to change it afterward, and that's not an oversight: <strong>annotations are computed at indexing time</strong>, not at search time. Changing the pack without re-indexing would leave your products with the old pack's annotations.</p>
+      <p>To change packs, <strong>re-import your catalog</strong> with the new pack name. Existing products are updated, nothing is lost.</p>
+      <p>Expect roughly <strong>6 seconds for 10,000 products</strong>, a minute for 100,000. During that time, searches across your whole instance are queued — pick an off-peak hour for a large catalog.</p>
+
+      <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/index/mycatalog/items \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "rulepack": "mode",
+    "items": [ ... your products ... ]
+  }'</code></pre>
     </section>
 
     <section id="ep-delete" class="docs-section">
@@ -443,7 +803,14 @@ curl -X DELETE "https://api.heurix.fr/v1/browse/mycatalog/drills-drivers/attribu
     <section id="ep-rulepacks" class="docs-section">
       <div class="docs-endpoint"><span class="docs-method docs-method-get">GET</span><code>/v1/rulepacks</code></div>
       <h2>Rule packs</h2>
-      <p>Lists the packs available on your instance, with their level and rule counts. Three standard packs ship by default: <code class="docs-inline-code">outillage</code> (fasteners, DIN/ISO standards, materials), <code class="docs-inline-code">mode</code> (sizes, colors, materials, families), <code class="docs-inline-code">industrie</code> (bearings, standardized references). Custom packs for your catalog can be designed as a <a href="index.html#tarifs">ROI Simulator</a> mission.</p>
+      <p>Lists the packs available on your instance, with their level and rule counts. <strong>Ten standard packs</strong> are provided, covering verticals where references are structured:
+        <strong>hardware</strong> (fasteners, DIN/ISO standards, materials),
+        <strong>automotive</strong> (Bosch/MANN/Valeo OEM references, engine type, mounting side),
+        <strong>electrical</strong> (ratings, curves, cross-sections, harmonized designations),
+        <strong>plumbing</strong> (15x21 threads, nominal diameters, materials),
+        <strong>industrial</strong> (bearings, standardized references),
+        <strong>electronics</strong>, <strong>fashion</strong> (sizes, colors, materials),
+        <strong>wine</strong>, <strong>books</strong>, and <strong>finance</strong>. Custom packs for your catalog can be designed as a <a href="index.html#tarifs">ROI Simulator</a> mission.</p>
     </section>
 
     <section id="ep-custom-rules" class="docs-section">
@@ -529,13 +896,13 @@ curl -X POST https://api.heurix.fr/v1/events \
       <div class="docs-endpoint"><span class="docs-method docs-method-get">JS</span><code>heurix-search.js</code></div>
       <h2>Ready-to-use search bar</h2>
       <p>Don't want to code the <code class="docs-inline-code">fetch</code> call, result rendering, and facet handling yourself? A standalone JavaScript library (zero dependencies) renders a complete search bar — input, live results, clickable facets, keyboard navigation — connected to your catalog in a few lines.</p>
-      <p class="regex-reassure">🚀 <a href="downloads/heurix-search.js?v=1785533294" download>Download heurix-search.js</a> — a single file, drop it wherever you want on your site.</p>
+      <p class="regex-reassure">🚀 <a href="downloads/heurix-search.js?v=1785535198" download>Download heurix-search.js</a> — a single file, drop it wherever you want on your site.</p>
 
       <p class="regex-reassure">🔑 Use a <a href="#authentification">public key</a> (<code class="docs-inline-code">hxp_</code>) — this script runs in the visitor's browser, where the key is readable by anyone. A server key would grant access to your billing.</p>
 
       <h3>Minimal integration</h3>
       <pre class="docs-code"><code>&lt;div id="my-search"&gt;&lt;/div&gt;
-&lt;script src="heurix-search.js?v=1785533294"&gt;&lt;/script&gt;
+&lt;script src="heurix-search.js?v=1785535198"&gt;&lt;/script&gt;
 &lt;script&gt;
   Heurix.searchBox({
     apiKey: "YOUR_PUBLIC_KEY",
@@ -780,7 +1147,7 @@ VIS_M8X20  ──────────── match ────────�
     });
   })();
 </script>
-<script src="../search-en.js?v=1785533294"></script>
+<script src="../search-en.js?v=1785535198"></script>
 <script src="../nav-dropdown.js"></script>
 <script src="../mobile-nav.js?v=1784970606"></script>
 <div id="pricing-nudge" class="pricing-nudge">

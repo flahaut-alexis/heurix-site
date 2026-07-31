@@ -1,23 +1,28 @@
+# Config gitleaks pour heurix-site.
+#
+# POURQUOI CE FICHIER. Ce dépôt est un site de documentation : des dizaines
+# d'exemples `curl` y sont volontairement affichés, chacun avec un espace
+# réservé (VOTRE_CLE_API, YOUR_API_KEY...) à la place d'une vraie clé. La
+# règle par défaut "curl-auth-header" de gitleaks ne fait pas la différence
+# entre un exemple et un vrai secret par sa STRUCTURE seule.
+#
+# APPROCHE CHOISIE, ET POURQUOI PAS UNE AUTRE. Désactiver la règle entière
+# (`disabledRules`) a été testé et écarté : ça supprime aussi la détection
+# d'une VRAIE clé collée par erreur dans un exemple, pas seulement les
+# espaces réservés. `stopwords` cible la VALEUR extraite, pas la règle :
+# un mot reconnu dedans (YOUR, VOTRE...) suffit à l'exclure, sans jamais
+# désactiver la détection sur une valeur qui ne contient aucun de ces mots
+# — donc une vraie clé, même collée dans un exemple, reste détectée.
 [extend]
 useDefault = true
 
-[[rules]]
-id = "curl-auth-header"
-description = "En-tete Authorization dans un exemple de documentation"
-regex = '''(?i)-H\s+["']Authorization:\s*Bearer\s+([A-Za-z0-9_\-\.<>&;]{6,})["']'''
-secretGroup = 1
-
-  [rules.allowlist]
-  regexes = [
-    '''(?i)votre[_-]?cle''',
-    '''(?i)changez[_-]?moi''',
-    '''(?i)your[_-]?key''',
-    '''(?i)example|placeholder|xxxx''',
-    '''^\$[A-Z_]+$''',
-    '''(?i)^hx_votre''',
-    '''(?i)your[_-]?api[_-]?key''',
-    '''(?i)api[_-]?key[_-]?here''',
-    '''&lt;[a-zA-Zé]+&gt;''',
-    '''(?i)cle[_-]?api''',
-  ]
-  regexTarget = "match"
+[[allowlists]]
+description = "Exemples de documentation curl -- jamais de vrais secrets"
+targetRules = ["curl-auth-header"]
+regexTarget = "match"
+stopwords = [
+  "your",
+  "votre",
+  "example",
+  "exemple",
+]

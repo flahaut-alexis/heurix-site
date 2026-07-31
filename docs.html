@@ -703,13 +703,15 @@ $collection->getSelect()->order(
     }
 });</code></pre>
 
-      <h3 id="import-csv">Importer un CSV depuis la console</h3>
-      <p>Si vous exportez votre catalogue en CSV depuis un ERP ou un PIM, <strong>aucun développement n'est nécessaire</strong>. La console analyse le fichier et l'envoie pour vous.</p>
+      <h3 id="import-csv">Importer un fichier depuis la console</h3>
+      <p>Si vous exportez votre catalogue en CSV ou en XML depuis un ERP ou un PIM, <strong>aucun développement n'est nécessaire</strong>. La console détecte le format, analyse le fichier et l'envoie pour vous.</p>
 
       <div class="table-scroll"><table class="docs-params">
-        <tr><th>Détection automatique</th><td>Séparateur (<code class="docs-inline-code">;</code>, <code class="docs-inline-code">,</code>, tabulation) et encodage — y compris Latin-1, fréquent sur les exports français</td></tr>
-        <tr><th>Correspondance</th><td>Proposée d'après vos en-têtes, modifiable, avec aperçu des valeurs</td></tr>
-        <tr><th>Nombres</th><td><code class="docs-inline-code">1,24</code> et <code class="docs-inline-code">1 234,56</code> sont compris</td></tr>
+        <tr><th>Formats acceptés</th><td>CSV et XML, détectés automatiquement — un seul bouton de dépôt</td></tr>
+        <tr><th>Détection — CSV</th><td>Séparateur (<code class="docs-inline-code">;</code>, <code class="docs-inline-code">,</code>, tabulation) et encodage, y compris Latin-1, fréquent sur les exports français</td></tr>
+        <tr><th>Détection — XML</th><td>L'élément qui se répète une fois par produit, reconnu automatiquement ; encodage lu depuis le fichier lui-même. Les espaces de noms (flux Google Shopping, <code class="docs-inline-code">g:id</code>, <code class="docs-inline-code">g:price</code>) sont gérés sans configuration</td></tr>
+        <tr><th>Correspondance</th><td>Proposée d'après vos en-têtes de colonnes (CSV) ou vos éléments et attributs (XML), modifiable, avec aperçu des valeurs</td></tr>
+        <tr><th>Nombres</th><td><code class="docs-inline-code">1,24</code> et <code class="docs-inline-code">1 234,56</code> sont compris ; en XML, <code class="docs-inline-code">in stock</code> / <code class="docs-inline-code">out of stock</code> sont reconnus pour le stock</td></tr>
         <tr><th>Découpage</th><td>Automatique en lots de 5 000</td></tr>
         <tr><th>Pack de règles</th><td>Recommandé d'après le contenu de votre fichier, avant l'import</td></tr>
       </table></div>
@@ -726,12 +728,12 @@ $collection->getSelect()->order(
         <li><strong>Le serveur MCP.</strong> Il renvoie vos identifiants tels quels. Une référence métier y est même plus lisible pour un agent conversationnel.</li>
       </ul>
 
-      <p><strong>La solution la plus souple</strong> : indexez avec votre référence métier — c'est elle que vos acheteurs tapent, et elle est fortement pondérée au classement — et ajoutez une colonne <code class="docs-inline-code">platform_id</code> contenant l'identifiant de votre plateforme. Vous disposez alors des deux.</p>
+      <p><strong>La solution la plus souple</strong> : indexez avec votre référence métier — c'est elle que vos acheteurs tapent, et elle est fortement pondérée au classement — et ajoutez un champ <code class="docs-inline-code">platform_id</code> (une colonne en CSV, un élément ou attribut en XML) contenant l'identifiant de votre plateforme. Vous disposez alors des deux.</p>
 
       <pre class="docs-code"><code>Code Article;id_prestashop;Désignation;Prix HT;Qté dispo
 VIS-M8-INOX;1360;Vis tête hexagonale M8x20 inox A2;1,24;2485</code></pre>
 
-      <p>Dans l'écran de correspondance, associez <code class="docs-inline-code">Code Article</code> à <strong>Identifiant</strong> et <code class="docs-inline-code">id_prestashop</code> à <strong>Identifiant plateforme</strong>.</p>
+      <p>Dans l'écran de correspondance, associez <code class="docs-inline-code">Code Article</code> à <strong>Identifiant</strong> et <code class="docs-inline-code">id_prestashop</code> à <strong>Identifiant plateforme</strong>. En XML, le principe est identique : associez l'élément ou l'attribut correspondant, quel que soit son nom dans votre flux.</p>
 
       <h3>Catalogues volumineux : indexez par lots</h3>
       <p>Un appel accepte <strong>5 000 produits au maximum</strong>. Au-delà, la réponse est un <code class="docs-inline-code">422</code> qui vous indique en combien d'envois découper.</p>
@@ -898,13 +900,13 @@ curl -X POST https://api.heurix.fr/v1/events \
       <div class="docs-endpoint"><span class="docs-method docs-method-get">JS</span><code>heurix-search.js</code></div>
       <h2>Barre de recherche prête à l'emploi</h2>
       <p>Pas envie de coder l'appel <code class="docs-inline-code">fetch</code>, le rendu des résultats et la gestion des facettes vous-même ? Une bibliothèque JavaScript autonome (zéro dépendance) affiche une barre de recherche complète — saisie, résultats en direct, facettes cliquables, navigation clavier — connectée à votre catalogue en quelques lignes.</p>
-      <p class="regex-reassure">🚀 <a href="downloads/heurix-search.js?v=1785533294" download>Téléchargez heurix-search.js</a> — un seul fichier, à poser où vous voulez sur votre site.</p>
+      <p class="regex-reassure">🚀 <a href="downloads/heurix-search.js?v=1785535198" download>Téléchargez heurix-search.js</a> — un seul fichier, à poser où vous voulez sur votre site.</p>
 
       <p class="regex-reassure">🔑 Utilisez une <a href="#authentification">clé publique</a> (<code class="docs-inline-code">hxp_</code>) — ce script tourne dans le navigateur du visiteur, où la clé est lisible par tous. Une clé serveur donnerait accès à votre facturation.</p>
 
       <h3>Intégration minimale</h3>
       <pre class="docs-code"><code>&lt;div id="ma-recherche"&gt;&lt;/div&gt;
-&lt;script src="heurix-search.js?v=1785533294"&gt;&lt;/script&gt;
+&lt;script src="heurix-search.js?v=1785535198"&gt;&lt;/script&gt;
 &lt;script&gt;
   Heurix.searchBox({
     apiKey: "VOTRE_CLE_PUBLIQUE",
@@ -1079,7 +1081,7 @@ VIS_M8X20  ────────── correspondance ──────  VIS
   </div>
 </footer>
 
-<script src="search.js?v=1785533294"></script>
+<script src="search.js?v=1785535198"></script>
 <script>
   document.getElementById('year').textContent = new Date().getFullYear();
 

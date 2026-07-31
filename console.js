@@ -145,6 +145,7 @@
   function showLogin(message) {
     dashboard.hidden = true;
     loginScreen.hidden = false;
+    logoutBtn.hidden = true;
     if (message) {
       loginError.textContent = message;
       loginError.hidden = false;
@@ -154,6 +155,7 @@
   function showDashboard() {
     loginScreen.hidden = true;
     dashboard.hidden = false;
+    logoutBtn.hidden = false;
   }
 
   // ---------------- Tendances sur les indicateurs (audit UX, point 6) ----------------
