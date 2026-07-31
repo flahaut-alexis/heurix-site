@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Why vector search fails on technical catalogs — Heurix</title>
+<meta name="description" content="Semantic similarity is a real advance, and the wrong tool when references encode dimensions, standards, and identifiers.">
+<link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/recherche-vectorielle-catalogues-techniques.html">
+<link rel="alternate" hreflang="en" href="https://heurix.fr/en/blog/recherche-vectorielle-catalogues-techniques.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Why vector search fails on technical catalogs — Heurix">
+<meta property="og:description" content="Semantic similarity is a real advance, and the wrong tool when references encode dimensions, standards, and identifiers.">
+<meta property="og:image" content="https://heurix.fr/og-image.png">
+<meta property="og:url" content="https://heurix.fr/en/blog/recherche-vectorielle-catalogues-techniques.html">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Why vector search fails on technical catalogs — Heurix">
+<meta name="twitter:image" content="https://heurix.fr/og-image.png">
+<link rel="icon" type="image/png" href="../../favicon-32.png">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<link rel="stylesheet" href="../../styles.css?v=1785448833">
+<link rel="canonical" href="https://heurix.fr/en/blog/recherche-vectorielle-catalogues-techniques.html">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Heurix",
+  "url": "https://heurix.fr",
+  "logo": "https://heurix.fr/logo.svg?v=1784985918",
+  "image": "https://heurix.fr/og-image.png",
+  "description": "Regex-powered search and discovery engine for e-commerce sites, designed in France.",
+  "email": "contact@heurix.fr",
+  "sameAs": ["https://www.linkedin.com/company/heurix-search/"],
+  "founder": {"@type": "Person", "name": "Alexis Flahaut"},
+  "areaServed": "FR"
+}
+</script>
+</head>
+<body>
+<header>
+  <div class="header-top">
+    <nav class="header-top-inner">
+      <a href="../index.html" class="logo"><img src="../../logo.svg?v=1784985918" alt="Heurix"> <span class="wordmark">Heurix</span></a>
+      <div class="nav-links">
+        <div class="nav-drop">
+          <button type="button" class="nav-drop-btn" aria-expanded="false" aria-haspopup="true">Product</button>
+          <div class="nav-drop-panel">
+            <a href="../index.html#probleme">The problem</a>
+            <a href="../index.html#mission">Our mission</a>
+            <a href="../index.html#moteur">The engine</a>
+            <a href="../fonctionnalites.html">Features</a>
+            <a href="../index.html#tarifs">ROI Simulator</a>
+          </div>
+        </div>
+        <div class="nav-drop">
+          <button type="button" class="nav-drop-btn" aria-expanded="false" aria-haspopup="true">Solutions</button>
+          <div class="nav-drop-panel">
+          <a href="../solutions/outillage.html">Hardware & tools</a>
+          <a href="../solutions/industrie.html">Spare parts & industry</a>
+          <a href="../solutions/mode.html">Fashion & retail</a>
+          <a href="../solutions/electronique.html">Electronics & high-tech</a>
+          <a href="../solutions/livres.html">Books & publishing</a>
+          <a href="../solutions/vins.html">Wine & spirits</a>
+          <a href="../solutions/finance.html">Finance & accounting</a>
+          </div>
+        </div>
+        <div class="nav-drop">
+          <button type="button" class="nav-drop-btn" aria-expanded="false" aria-haspopup="true">Developers</button>
+          <div class="nav-drop-panel">
+            <a href="../docs.html">Documentation</a>
+            <a href="../integrations.html">Integrations</a>
+            <a href="../blog/guide-mise-en-route.html">Getting started guide</a>
+          </div>
+        </div>
+        <a href="../blog.html">Blog</a>
+      </div>
+      <div class="header-search">
+        <button id="heurix-search-btn" class="search-trigger" aria-label="Heurix Search — search the site" type="button">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <span class="search-trigger-text">Heurix Search</span>
+          <span class="search-trigger-kbd">Ctrl K</span>
+        </button>
+      </div>
+      <div class="header-utility">
+        <button type="button" id="mobile-nav-toggle" class="mobile-nav-toggle" aria-label="Menu" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+        <a href="../console.html" class="header-signin">Sign in</a>
+        <a href="../../blog/recherche-vectorielle-catalogues-techniques.html" class="lang-switch">FR</a>
+        <a href="../pricing.html" class="btn">Try it free</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<div id="heurix-search-modal" class="search-modal">
+  <div id="heurix-search-backdrop" class="search-backdrop" data-search-close></div>
+  <div class="search-panel">
+    <div class="search-panel-head">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input id="heurix-search-input" type="text" placeholder="Heurix Search..." autocomplete="off">
+      <button class="search-close" data-search-close type="button">Esc</button>
+    </div>
+    <p id="heurix-search-suggest-label" class="search-suggest-label" hidden>Latest articles</p>
+    <div id="heurix-search-results" class="search-results"></div>
+    <p id="heurix-search-empty" class="search-empty" hidden>No results for this search. Try another term.</p>
+  </div>
+</div>
+
+<article class="post">
+  <div class="wrap post-wrap">
+    <a href="../blog.html" class="back-link">← All articles</a>
+    <div class="kicker">Analysis · July 2026</div>
+    <h1>Why vector search fails on technical catalogs</h1>
+    <p class="post-lede">Semantic similarity is a real advance. It's also the wrong tool when your references encode dimensions, standards, and identifiers — and here's precisely why.</p>
+
+    <div class="post-body">
+      <h2>What a vector engine does, and why it's brilliant</h2>
+      <p>A vector engine turns each piece of text into a series of numbers — a point in a space with several hundred dimensions. Two texts with close meaning end up close together in that space. That's what lets a search for "running shoes" find "running sneakers," with no synonym ever declared.</p>
+      <p>On natural language, it's a considerable advance. On a fashion, furniture, or editorial content catalog, semantic similarity answers the need exactly: the buyer describes what they want in their own words, the engine understands the intent.</p>
+      <p><strong>So the problem isn't the technique. It's whether it fits a particular type of catalog.</strong></p>
+
+      <h2>The core of the problem: a distance that doesn't measure the right thing</h2>
+      <p>Take two fastener references, as they exist in any hardware catalog:</p>
+      <div class="table-scroll"><table class="docs-params">
+        <tr><th>Reference</th><th>Semantic distance</th><th>Commercial distance</th></tr>
+        <tr><td class="mono">M8 x 20 - Stainless A2 - DIN 933</td><td rowspan="2" style="vertical-align:middle;">Nearly zero — the two texts are almost identical</td><td rowspan="2" style="vertical-align:middle;"><strong>Total</strong> — these are two incompatible products</td></tr>
+        <tr><td class="mono">M8 x 25 - Stainless A2 - DIN 933</td></tr>
+      </table></div>
+      <p>A vector engine isn't incapable of distinguishing these two strings: "20" and "25" are indeed two different tokens. The problem lies elsewhere, and it's more fundamental: <strong>the distance it computes doesn't correlate with the distance that matters</strong>. Between these two references, the difference in meaning is tiny while the difference in use is absolute. A screw 5mm too long goes straight through the part.</p>
+      <p>It's this mismatch that produces the symptoms technical distributors know well: results that are "close" but wrong, degraded trust in search, and merchandise returns nobody links back to the engine.</p>
+
+      <h2>Three more cases where the gap widens</h2>
+
+      <h3>The suffix that changes everything</h3>
+      <p>In spare parts, the decisive information is often the suffix. A <span class="mono">6204-2RS</span> bearing and a <span class="mono">6204-ZZ</span> bearing carry the same number and differ in their sealing: rubber gaskets versus sheet-metal shields. Two characters apart in the text, two non-interchangeable parts on a machine in production.</p>
+
+      <h3>The identifier with several spellings</h3>
+      <p>An ISBN appears just as validly as <span class="mono">978-2-07-041311-9</span> or <span class="mono">9782070413119</span>. These are two spellings of the same identifier, and a buyer will use one or the other depending on their source. An engine that treats these strings as plain text considers them different — when they're the same book.</p>
+      <p>Conversely, two editions of the same title share the same name, the same author, sometimes the same cover — and two distinct ISBNs. Semantically, they're interchangeable. Commercially, they're two products, two prices, two availabilities.</p>
+
+      <h3>The number that isn't a quantity</h3>
+      <p>On a wine, <span class="mono">2015</span> is a vintage, not a quantity or a price. A generalist engine treats it as a number like any other — and a search for "magnum 2015" then surfaces everything containing "2015" anywhere, including an internal reference code or a $20.15 price.</p>
+
+      <h2>The opposite approach: recognizing structure</h2>
+      <p>Heurix doesn't compute a semantic distance. It recognizes a reference's <strong>structure</strong>, through a cascade of rules, and extracts usable attributes from it. On the two screws from earlier:</p>
+      <div class="table-scroll"><table class="docs-params">
+        <tr><th>Reference</th><th>What the engine extracts</th></tr>
+        <tr><td class="mono">M8 x 20 - Stainless A2 - DIN 933</td><td><code class="docs-inline-code">DIAM_M8</code> <code class="docs-inline-code">LONG_20</code> <code class="docs-inline-code">MAT_INOX</code> <code class="docs-inline-code">NORME_DIN933</code></td></tr>
+        <tr><td class="mono">M8 x 25 - Stainless A2 - DIN 933</td><td><code class="docs-inline-code">DIAM_M8</code> <code class="docs-inline-code">LONG_25</code> <code class="docs-inline-code">MAT_INOX</code> <code class="docs-inline-code">NORME_DIN933</code></td></tr>
+      </table></div>
+      <p>The two references share their diameter, material, and standard. They differ on length, isolated as an attribute in its own right — so filterable, comparable, and never confused. The engine doesn't get this wrong because it isn't estimating it: it's reading it.</p>
+      <p>One useful consequence: every result can <strong>explain why it came up</strong>. Exact match, tolerated typo, recognized annotation. A vector ranking, by contrast, is hard to explain — proximity in a 768-dimension space doesn't tell a story.</p>
+
+      <h2>How to know which side you're on</h2>
+      <p>The question isn't which technique is superior, but which one fits your catalog. A few concrete signs:</p>
+      <div class="table-scroll"><table class="docs-params">
+        <tr><th>Semantic similarity fits if…</th><th>Structure recognition fits if…</th></tr>
+        <tr>
+          <td>Your customers describe a need in their own words<br>Your products are distinguished by style, use, or mood<br>An "approximate" answer is satisfying</td>
+          <td>Your customers type a reference or an identifier<br>Your products are distinguished by dimensions, standards, suffixes<br>An approximate answer is an <strong>order mistake</strong></td>
+        </tr>
+      </table></div>
+      <p>Many catalogs fall into both, depending on the page and the visitor. The mistake isn't picking one technique — it's believing one alone is enough.</p>
+
+      <h2>A test you can run today, on your own engine</h2>
+      <p>No new tool, no phone call needed:</p>
+      <ol>
+        <li>Pick two references that differ only by one dimension — two lengths, two diameters, two suffixes.</li>
+        <li>Search for the first one in your current engine.</li>
+        <li>Check whether the second one shows up, and at what rank.</li>
+      </ol>
+      <p>If it comes up right after, your engine is measuring text resemblance, not product difference. Repeat the exercise with an identifier written in two formats, with and without punctuation — the gap is often even more telling.</p>
+
+      <h2>Going further</h2>
+      <p>The <a href="../index.html#moteur">engine's principles</a> are detailed on the homepage, and each industry has its own dedicated page: <a href="../solutions/outillage.html">hardware &amp; tools</a>, <a href="../solutions/industrie.html">spare parts</a>, <a href="../solutions/livres.html">books &amp; publishing</a>, <a href="../solutions/vins.html">wine &amp; spirits</a>.</p>
+    </div>
+
+    <div class="post-footer-cta">
+      <p>Run the test on your own catalog</p>
+      <a href="../pricing.html" class="btn">Try it free — 14 days</a>
+    </div>
+  </div>
+</article>
+
+<footer>
+  <div class="wrap foot-grid">
+    <a href="../index.html" class="logo" style="font-size:15px;"><img src="../../logo.svg?v=1784985918" alt="Heurix" style="height:22px;width:22px;"> <span class="wordmark">Heurix</span></a>
+    <div class="foot-links">
+      <a href="../blog.html">Blog</a>
+      <a href="../docs.html">API Documentation</a>
+      <a href="../fonctionnalites.html">Features</a>
+      <a href="../integrations.html">Integrations</a>
+      <a href="../console.html">Console</a>
+      <a href="../about.html">About</a>
+      <a href="../index.html#faq">FAQ</a>
+      <a href="../cgv.html">Terms of Service</a>
+      <a href="../mentions-legales.html">Legal notice</a>
+      <a href="#" data-rouvrir-consentement>Manage cookies</a>
+      <a href="../privacy.html">Privacy</a>
+      <a href="mailto:contact@heurix.fr">contact@heurix.fr</a>
+    </div>
+    <div class="foot-social">
+      <span class="foot-social-label">Social networks</span>
+      <a href="https://www.linkedin.com/company/heurix-search/" target="_blank" rel="noopener" aria-label="LinkedIn" class="foot-social-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+      </a>
+    </div>
+    <div class="foot-legal">
+      Heurix — Sole proprietorship (French micro-entreprise). SIRET 107 681 900 00018. IT systems and software consulting.<br>
+      © <span id="year">2026</span> Heurix. All rights reserved.
+    </div>
+  </div>
+</footer>
+
+<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+<script src="../../search-en.js"></script>
+<script src="../../nav-dropdown.js"></script>
+<script src="../../mobile-nav.js?v=1784970606"></script>
+<div id="pricing-nudge" class="pricing-nudge">
+  <button type="button" class="pricing-nudge-close" aria-label="Close">&times;</button>
+  <div class="pricing-nudge-kicker">14-day free trial</div>
+  <p>Try the Search API on your catalog, no credit card.</p>
+  <a href="../pricing.html" class="btn">See pricing</a>
+</div>
+<script src="../../pricing-nudge.js"></script>
+<script>window.HEURIX_RACINE='../../';</script><script src="../../consent.js?v=1785150583"></script>
+</body>
+</html>

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Custom Rules: personalize your search engine without writing regex — Heurix</title>
+<meta name="description" content="A rule pack covers the essentials of an industry, but never your own catalog's exact vocabulary. That's what Custom Rules are for.">
+<link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/custom-rules-personnaliser-moteur-recherche.html">
+<link rel="alternate" hreflang="en" href="https://heurix.fr/en/blog/custom-rules-personnaliser-moteur-recherche.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Custom Rules: personalize your search engine without writing regex — Heurix">
+<meta property="og:description" content="A rule pack covers the essentials of an industry, but never your own catalog's exact vocabulary. That's what Custom Rules are for.">
+<meta property="og:image" content="https://heurix.fr/og-image.png">
+<meta property="og:url" content="https://heurix.fr/en/blog/custom-rules-personnaliser-moteur-recherche.html">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Custom Rules: personalize your search engine without writing regex — Heurix">
+<meta name="twitter:image" content="https://heurix.fr/og-image.png">
+<link rel="icon" type="image/png" href="../../favicon-32.png">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<link rel="stylesheet" href="../../styles.css?v=1785448833">
+<link rel="canonical" href="https://heurix.fr/en/blog/custom-rules-personnaliser-moteur-recherche.html">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Heurix",
+  "url": "https://heurix.fr",
+  "logo": "https://heurix.fr/logo.svg?v=1784985918",
+  "image": "https://heurix.fr/og-image.png",
+  "description": "Regex-powered search and discovery engine for e-commerce sites, designed in France.",
+  "email": "contact@heurix.fr",
+  "sameAs": ["https://www.linkedin.com/company/heurix-search/"],
+  "founder": {"@type": "Person", "name": "Alexis Flahaut"},
+  "areaServed": "FR"
+}
+</script>
+</head>
+<body>
+<header>
+  <div class="header-top">
+    <nav class="header-top-inner">
+      <a href="../index.html" class="logo"><img src="../../logo.svg?v=1784985918" alt="Heurix"> <span class="wordmark">Heurix</span></a>
+      <div class="nav-links">
+        <div class="nav-drop">
+          <button type="button" class="nav-drop-btn" aria-expanded="false" aria-haspopup="true">Product</button>
+          <div class="nav-drop-panel">
+            <a href="../index.html#probleme">The problem</a>
+            <a href="../index.html#mission">Our mission</a>
+            <a href="../index.html#moteur">The engine</a>
+            <a href="../fonctionnalites.html">Features</a>
+            <a href="../index.html#tarifs">ROI Simulator</a>
+          </div>
+        </div>
+        <div class="nav-drop">
+          <button type="button" class="nav-drop-btn" aria-expanded="false" aria-haspopup="true">Solutions</button>
+          <div class="nav-drop-panel">
+          <a href="../solutions/outillage.html">Hardware & tools</a>
+          <a href="../solutions/industrie.html">Spare parts & industry</a>
+          <a href="../solutions/mode.html">Fashion & retail</a>
+          <a href="../solutions/electronique.html">Electronics & high-tech</a>
+          <a href="../solutions/livres.html">Books & publishing</a>
+          <a href="../solutions/vins.html">Wine & spirits</a>
+          <a href="../solutions/finance.html">Finance & accounting</a>
+          </div>
+        </div>
+        <div class="nav-drop">
+          <button type="button" class="nav-drop-btn" aria-expanded="false" aria-haspopup="true">Developers</button>
+          <div class="nav-drop-panel">
+            <a href="../docs.html">Documentation</a>
+            <a href="../integrations.html">Integrations</a>
+            <a href="../blog/guide-mise-en-route.html">Getting started guide</a>
+          </div>
+        </div>
+        <a href="../blog.html">Blog</a>
+      </div>
+      <div class="header-search">
+        <button id="heurix-search-btn" class="search-trigger" aria-label="Heurix Search — search the site" type="button">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <span class="search-trigger-text">Heurix Search</span>
+          <span class="search-trigger-kbd">Ctrl K</span>
+        </button>
+      </div>
+      <div class="header-utility">
+        <button type="button" id="mobile-nav-toggle" class="mobile-nav-toggle" aria-label="Menu" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+        <a href="../console.html" class="header-signin">Sign in</a>
+        <a href="../../blog/custom-rules-personnaliser-moteur-recherche.html" class="lang-switch">FR</a>
+        <a href="../pricing.html" class="btn">Try it free</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<div id="heurix-search-modal" class="search-modal">
+  <div id="heurix-search-backdrop" class="search-backdrop" data-search-close></div>
+  <div class="search-panel">
+    <div class="search-panel-head">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input id="heurix-search-input" type="text" placeholder="Heurix Search..." autocomplete="off">
+      <button class="search-close" data-search-close type="button">Esc</button>
+    </div>
+    <p id="heurix-search-suggest-label" class="search-suggest-label" hidden>Latest articles</p>
+    <div id="heurix-search-results" class="search-results"></div>
+    <p id="heurix-search-empty" class="search-empty" hidden>No results for this search. Try another term.</p>
+  </div>
+</div>
+
+<article class="post">
+  <div class="wrap post-wrap">
+    <a href="../blog.html" class="back-link">← All articles</a>
+    <div class="kicker">Blog · July 2026</div>
+    <h1>Custom Rules: personalize your search engine without writing a line of regex</h1>
+    <p class="post-lede">A rule pack covers the essentials of an industry. It will never guess the exact word your customers type for a product in your own catalog. That's precisely what Custom Rules fill in.</p>
+
+    <div class="post-body">
+      <h2>The problem six rule packs don't solve</h2>
+      <p>Heurix currently ships six ready-to-use rule packs — hardware, fashion, industry, books, electronics, wine &amp; spirits. Each automatically recognizes the most common patterns in its sector: a metric diameter, a compound size, a vintage, an ISBN reference. On most catalogs, that covers the essentials right from indexing.</p>
+      <p>But no pack, however complete, can guess the vocabulary specific to your catalog. A drywall anchor is called an "anchor" by one supplier, a "molly" by another, a "toggle" in some regions. A standardized RAL color code only means something to whoever sells paint or furniture. These are details even a well-designed industry pack can't anticipate for every customer — because they depend on your supplier, your region, your internal naming habits.</p>
+
+      <h2>Two formats, no regex to write</h2>
+      <p>A Custom Rule is added on top of the rule pack already active on a catalog — it doesn't replace it, and it never touches the rules shared with other Heurix customers. It's specific to a single catalog. Two formats cover the vast majority of real needs:</p>
+      <p><strong>Keyword → label.</strong> Several equivalent words that should all point to the same concept. "Anchor," "molly," "toggle," "drywall anchor" become interchangeable: a customer typing any one of the four finds products containing any of the other three.</p>
+      <p><strong>Prefix + number → label.</strong> A prefix followed by a number, exactly like the hardware pack already does internally for a metric diameter. The prefix "RAL" recognizes both "RAL 9010" and "RAL9010" — with or without a space, however the supplier wrote it in their product file.</p>
+
+      <h2>A concrete example, start to finish</h2>
+      <p>Take a product indexed under the name "Self-drilling drywall fastener." Without a custom rule, a customer searching "anchor" gets no results — the word appears nowhere on the product listing. After creating a keyword rule with the terms <code class="docs-inline-code">drywall, anchor, molly, toggle</code>, the same search finds the product immediately. The API's response even spells it out in the result details: the product surfaces via the term "drywall," recognized as a synonym of "anchor."</p>
+      <p>Nothing to publish separately. As soon as the rule is created, every already-indexed product is re-analyzed and the change is live in production.</p>
+
+      <h2>It works for any industry</h2>
+      <p>The two formats aren't specific to hardware. A cosmetics site can group "organic," "bio," "certified organic" under one concept. A furniture site can recognize a finish code in a letter-plus-number format. A fashion site can unify "stretch," "elastane," "spandex," and "lycra." The logic stays the same — only the vocabulary changes.</p>
+
+      <blockquote>The question to ask isn't "do I need a custom pack" — it's "is there a word my customers type that my current pack doesn't recognize yet." If the answer is yes, the answer is probably a Custom Rule, not a weeks-long project.</blockquote>
+
+      <h2>One limit, to be honest</h2>
+      <p>Patterns that combine two different numeric values into a single label — a diameter <em>and</em> a length together, like "M8x20" — go beyond what these two formats cover. That kind of logic remains possible, but needs a purpose-built pack, available on Scale plans.</p>
+
+      <h2>How to get started</h2>
+      <p>From the console, under "My catalog," every card now offers a Custom Rules section: a form to pick the format, name the rule, and activate it. No code, no redeployment. Available on every plan, including the free trial.</p>
+    </div>
+
+    <div class="post-footer-cta">
+      <p>Want to see if your catalog needs a Custom Rule?</p>
+      <a href="../pricing.html" class="btn">Try the Search API for free</a>
+    </div>
+  </div>
+</article>
+
+<footer>
+  <div class="wrap foot-grid">
+    <a href="../index.html" class="logo" style="font-size:15px;"><img src="../../logo.svg?v=1784985918" alt="Heurix" style="height:22px;width:22px;"> <span class="wordmark">Heurix</span></a>
+    <div class="foot-links">
+      <a href="../blog.html">Blog</a>
+      <a href="../docs.html">API Documentation</a>
+      <a href="../fonctionnalites.html">Features</a>
+      <a href="../integrations.html">Integrations</a>
+      <a href="../console.html">Console</a>
+      <a href="../about.html">About</a>
+      <a href="../index.html#faq">FAQ</a>
+      <a href="../cgv.html">Terms of Service</a>
+      <a href="../mentions-legales.html">Legal notice</a>
+      <a href="#" data-rouvrir-consentement>Manage cookies</a>
+      <a href="../privacy.html">Privacy</a>
+      <a href="mailto:contact@heurix.fr">contact@heurix.fr</a>
+    </div>
+    <div class="foot-social">
+      <span class="foot-social-label">Social networks</span>
+      <a href="https://www.linkedin.com/company/heurix-search/" target="_blank" rel="noopener" aria-label="LinkedIn" class="foot-social-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+      </a>
+    </div>
+    <div class="foot-legal">
+      Heurix — Sole proprietorship (French micro-entreprise). SIRET 107 681 900 00018. IT systems and software consulting.<br>
+      © <span id="year">2026</span> Heurix. All rights reserved.
+    </div>
+  </div>
+</footer>
+
+<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+<script src="../../search-en.js"></script>
+<script src="../../nav-dropdown.js"></script>
+<script src="../../mobile-nav.js?v=1784970606"></script>
+<div id="pricing-nudge" class="pricing-nudge">
+  <button type="button" class="pricing-nudge-close" aria-label="Close">&times;</button>
+  <div class="pricing-nudge-kicker">14-day free trial</div>
+  <p>Try the Search API on your catalog, no credit card.</p>
+  <a href="../pricing.html" class="btn">See pricing</a>
+</div>
+<script src="../../pricing-nudge.js"></script>
+<script>window.HEURIX_RACINE='../../';</script><script src="../../consent.js?v=1785150583"></script>
+</body>
+</html>
