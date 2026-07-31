@@ -576,6 +576,25 @@
           <button type="submit" class="btn roi-cta" id="roi-pdf-submit">Générer mon rapport PDF</button>
           <div id="roi-pdf-feedback" class="roi-pdf-feedback"></div>
         </form>
+
+        <!-- Pop-in de confirmation (31 juillet). Le telechargement local
+             se produisait deja, mais rien ne le signalait clairement :
+             un simple changement de texte sous le bouton passait
+             inapercu. On demande explicitement au visiteur de verifier
+             ses telechargements. -->
+        <div id="pdf-modal" class="pdf-modal">
+          <div class="pdf-modal-backdrop" data-pdf-modal-close></div>
+          <div class="pdf-modal-card">
+            <button type="button" class="pdf-modal-close" data-pdf-modal-close aria-label="Fermer">&times;</button>
+            <div class="pdf-modal-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+            </div>
+            <h3>Rapport téléchargé</h3>
+            <p>Vérifiez votre dossier <strong>Téléchargements</strong> — le fichier <strong>heurix-etude-roi.pdf</strong> vient d'y être enregistré.</p>
+            <p id="pdf-modal-email-line"></p>
+            <button type="button" class="btn" data-pdf-modal-close>Compris</button>
+          </div>
+        </div>
       </div>
 
     </div>
@@ -990,14 +1009,58 @@
       // Le PDF se génère quand même même si l'envoi du lead échoue
     }
 
-    generateROIPdf(name);
+    var pdfBase64 = generateROIPdf(name);
     if (window.dataLayer) window.dataLayer.push({ event: "roi_pdf_download" });
 
-    pdfFeedback.textContent = "Rapport téléchargé — merci !";
-    pdfFeedback.style.color = "#8FE3BC";
+    // ENVOI AU VISITEUR, PAS SEULEMENT NOTIFICATION INTERNE. L'appel
+    // formsubmit.co ci-dessus prévient contact@heurix.fr qu'un lead existe
+    // — il n'a jamais envoyé le PDF à qui que ce soit. Celui-ci relaie le
+    // fichier déjà généré vers l'adresse du visiteur. Ne bloque jamais le
+    // message de confirmation : le téléchargement local a déjà réussi,
+    // un email en échec ne doit pas donner l'impression que tout a raté.
+    var emailEnvoye = false;
+    try {
+      var reponseRoi = await fetch("https://api.heurix.fr/v1/roi-report", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: name, email: email, pdf_base64: pdfBase64, lang: "fr" }),
+      });
+      if (reponseRoi.ok) {
+        var dataRoi = await reponseRoi.json();
+        emailEnvoye = !!dataRoi.sent;
+      }
+    } catch (err) {
+      // Le téléchargement local a déjà eu lieu ; un échec réseau ici ne
+      // doit pas être présenté comme un échec global.
+    }
+
+    pdfFeedback.textContent = "Rapport téléchargé.";
     pdfSubmit.disabled = false;
     pdfSubmit.textContent = "Générer mon rapport PDF";
+
+    // POP-IN DE CONFIRMATION. Le téléchargement se produisait déjà avant
+    // ce chantier, mais rien ne le signalait clairement — un simple
+    // changement de texte sous le bouton passait inaperçu. Le message sur
+    // l'email s'adapte : jamais affirmer un envoi qui a pu échouer
+    // silencieusement (Brevo mal configuré, coupure réseau).
+    var ligneEmail = document.getElementById('pdf-modal-email-line');
+    ligneEmail.innerHTML = emailEnvoye
+      ? "Une copie a aussi été envoyée à <strong>" + email.replace(/</g, "&lt;") + "</strong>."
+      : "L'envoi par email n'a pas pu être confirmé — le fichier téléchargé reste disponible dans tous les cas.";
+    document.getElementById('pdf-modal').classList.add('open');
   });
+
+  (function () {
+    var modal = document.getElementById('pdf-modal');
+    if (!modal) return;
+    function fermer() { modal.classList.remove('open'); }
+    modal.querySelectorAll('[data-pdf-modal-close]').forEach(function (el) {
+      el.addEventListener('click', fermer);
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && modal.classList.contains('open')) fermer();
+    });
+  })();
 
   function generateROIPdf(name){
     const { jsPDF } = window.jspdf;
@@ -1092,6 +1155,14 @@
     doc.text('contact@heurix.fr  —  heurix.fr', 20, y);
 
     doc.save('heurix-etude-roi.pdf');
+
+    // CORRECTIF DU 31 JUILLET : le lead arrivait bien sur contact@heurix.fr,
+    // mais le visiteur ne recevait jamais son PDF — `doc.save()` n'a
+    // jamais été qu'un téléchargement LOCAL. On renvoie ici le contenu en
+    // base64 pour que l'appelant puisse le relayer par email, SANS le
+    // régénérer côté serveur : c'est le fichier déjà téléchargé, à
+    // l'octet près.
+    return doc.output('datauristring').split(',')[1];
   }
 
 
@@ -1152,7 +1223,7 @@
   });
 </script>
 
-<script src="search.js?v=1785469666"></script>
+<script src="search.js?v=1785481571"></script>
 <script src="nav-dropdown.js"></script>
 <script src="mobile-nav.js?v=1784970606"></script>
 <div id="pricing-nudge" class="pricing-nudge">

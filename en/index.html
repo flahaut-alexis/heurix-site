@@ -549,7 +549,25 @@
           <button type="submit" class="btn roi-cta" id="roi-pdf-submit">Generate my PDF report</button>
           <div id="roi-pdf-feedback" class="roi-pdf-feedback"></div>
         </form>
+
+        <!-- Confirmation pop-in (July 31). The local download already
+             happened before this fix, but nothing signaled it clearly —
+             a small text change under the button went unnoticed. -->
+        <div id="pdf-modal" class="pdf-modal">
+          <div class="pdf-modal-backdrop" data-pdf-modal-close></div>
+          <div class="pdf-modal-card">
+            <button type="button" class="pdf-modal-close" data-pdf-modal-close aria-label="Close">&times;</button>
+            <div class="pdf-modal-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+            </div>
+            <h3>Report downloaded</h3>
+            <p>Check your <strong>Downloads</strong> folder — <strong>heurix-roi-study.pdf</strong> was just saved there.</p>
+            <p id="pdf-modal-email-line"></p>
+            <button type="button" class="btn" data-pdf-modal-close>Got it</button>
+          </div>
+        </div>
       </div>
+
 
     </div>
     <p class="form-note" style="margin-top:20px;">Cost estimated from an annual Search API subscription (Growth or Scale plan depending on catalog size). Impact assumptions are order-of-magnitude estimates, not a promise.</p>
@@ -977,14 +995,57 @@
       // The PDF still generates even if the lead notification fails
     }
 
-    generateROIPdf(name);
+    var pdfBase64 = generateROIPdf(name);
     if (window.dataLayer) window.dataLayer.push({ event: "roi_pdf_download" });
 
-    pdfFeedback.textContent = "Report downloaded — thank you!";
-    pdfFeedback.style.color = "#8FE3BC";
+    // SENT TO THE VISITOR, NOT JUST AN INTERNAL NOTIFICATION. The
+    // formsubmit.co call above tells contact@heurix.fr a lead exists — it
+    // never emailed the PDF to anyone. This relays the already-generated
+    // file to the visitor's own address. Never blocks the confirmation
+    // message: the local download already succeeded, a failed email
+    // shouldn't look like a total failure.
+    var emailSent = false;
+    try {
+      var roiResponse = await fetch("https://api.heurix.fr/v1/roi-report", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: name, email: email, pdf_base64: pdfBase64, lang: "en" }),
+      });
+      if (roiResponse.ok) {
+        var roiData = await roiResponse.json();
+        emailSent = !!roiData.sent;
+      }
+    } catch (err) {
+      // The local download already happened; a network failure here
+      // shouldn't be presented as an overall failure.
+    }
+
+    pdfFeedback.textContent = "Report downloaded.";
     pdfSubmit.disabled = false;
     pdfSubmit.textContent = "Generate my PDF report";
+
+    // CONFIRMATION POP-IN. The download already happened before this fix,
+    // but nothing signaled it clearly — a small text change under the
+    // button went unnoticed. The email line adapts: never claim a send
+    // that may have silently failed (Brevo misconfigured, network drop).
+    var emailLine = document.getElementById('pdf-modal-email-line');
+    emailLine.innerHTML = emailSent
+      ? "A copy was also sent to <strong>" + email.replace(/</g, "&lt;") + "</strong>."
+      : "The email couldn't be confirmed as sent — the downloaded file remains available either way.";
+    document.getElementById('pdf-modal').classList.add('open');
   });
+
+  (function () {
+    var modal = document.getElementById('pdf-modal');
+    if (!modal) return;
+    function close() { modal.classList.remove('open'); }
+    modal.querySelectorAll('[data-pdf-modal-close]').forEach(function (el) {
+      el.addEventListener('click', close);
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && modal.classList.contains('open')) close();
+    });
+  })();
 
   function generateROIPdf(name){
     const { jsPDF } = window.jspdf;
@@ -1079,6 +1140,13 @@
     doc.text('contact@heurix.fr  —  heurix.fr', 20, y);
 
     doc.save('heurix-roi-study.pdf');
+
+    // FIX (July 31): the lead correctly arrived at contact@heurix.fr, but
+    // the visitor never received the PDF — `doc.save()` was always a LOCAL
+    // download only. Return the base64 content here so the caller can
+    // relay it by email, WITHOUT regenerating it server-side: it's the
+    // exact file already downloaded, byte for byte.
+    return doc.output('datauristring').split(',')[1];
   }
 
   // Contact form — FormSubmit (free, no signup required), same mechanism
@@ -1128,7 +1196,7 @@
     }
   });
 </script>
-<script src="../search-en.js?v=1785469666"></script>
+<script src="../search-en.js?v=1785481571"></script>
 <script src="../nav-dropdown.js"></script>
 <script src="../mobile-nav.js?v=1784970606"></script>
 <div id="pricing-nudge" class="pricing-nudge">

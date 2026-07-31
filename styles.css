@@ -3672,3 +3672,44 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 .zr-choix i{ font-style:normal; color:var(--ink-muted); font-size:11.5px; }
 .zr-choix:disabled{ opacity:.55; cursor:default; }
 .zr-fait{ font-size:12.5px; color:var(--ok, #1a7f4e); }
+
+/* Pop-in de confirmation apres generation du rapport ROI (31 juillet).
+   SIGNALE EN PRODUCTION : le PDF se telechargeait bien dans le navigateur
+   du visiteur, mais rien ne le signalait — le simple changement de texte
+   sous le bouton passait inapercu. Cette pop-in demande explicitement au
+   visiteur de verifier ses telechargements, sur le meme registre visuel
+   que la recherche du site (fond assombri, carte centree). */
+.pdf-modal{
+  position:fixed; inset:0; z-index:250;
+  display:none; align-items:center; justify-content:center;
+  padding:20px;
+}
+.pdf-modal.open{ display:flex; }
+.pdf-modal-backdrop{
+  position:absolute; inset:0;
+  background:rgba(18,20,43,0.45); backdrop-filter:blur(2px);
+}
+.pdf-modal-card{
+  position:relative; z-index:1;
+  width:min(420px, 100%);
+  background:#fff; border-radius:16px; border:1px solid var(--line);
+  box-shadow:0 30px 60px -20px rgba(18,20,43,0.35);
+  padding:28px 26px 24px; text-align:center;
+}
+.pdf-modal-icon{
+  width:48px; height:48px; margin:0 auto 14px;
+  border-radius:999px; background:var(--green-tint);
+  display:flex; align-items:center; justify-content:center;
+}
+.pdf-modal-icon svg{ width:24px; height:24px; stroke:var(--green); }
+.pdf-modal-card h3{ margin:0 0 8px; font-size:17px; }
+.pdf-modal-card p{ margin:0 0 6px; font-size:14px; color:var(--ink-muted); line-height:1.55; }
+.pdf-modal-card p strong{ color:var(--ink); }
+.pdf-modal-card .btn{ margin-top:16px; width:100%; justify-content:center; }
+.pdf-modal-close{
+  position:absolute; top:12px; right:12px;
+  width:28px; height:28px; border-radius:999px; border:none;
+  background:var(--bg-soft); color:var(--ink-muted); cursor:pointer;
+  font-size:16px; line-height:1;
+}
+.pdf-modal-close:hover{ background:var(--line); color:var(--ink); }
