@@ -26,6 +26,8 @@ import {
  */
 const API_BASE = "https://api.heurix.fr";
 const CLE_SESSION = "heurix_console_session";
+const LANGUE_EN = (document.documentElement.lang || "fr").slice(0, 2).toLowerCase() === "en";
+const LOCALE = LANGUE_EN ? "en-US" : "fr-FR";
 
 function jeton() {
   // DEUX IDENTIFIANTS DISTINCTS, et les confondre échoue en silence.
@@ -61,14 +63,14 @@ async function appelApi(chemin, options = {}) {
 }
 
 const CHAMPS = [
-  ["id", "Identifiant", "Obligatoire. Permet de mettre à jour un produit au lieu d'en créer un doublon."],
-  ["platform_id", "Identifiant plateforme", "L'entier attendu par PrestaShop, WooCommerce ou Magento, si vos identifiants sont des références métier."],
-  ["ref", "Référence", "Le champ le plus fortement pondéré à la recherche."],
-  ["name", "Désignation", ""],
+  ["id", T("Identifiant"), T("Obligatoire. Permet de mettre à jour un produit au lieu d'en créer un doublon.")],
+  ["platform_id", T("Identifiant plateforme"), T("L'entier attendu par PrestaShop, WooCommerce ou Magento, si vos identifiants sont des références métier.")],
+  ["ref", T("Référence"), T("Le champ le plus fortement pondéré à la recherche.")],
+  ["name", T("Désignation"), ""],
   ["description", "Description", ""],
-  ["price", "Prix", ""],
+  ["price", T("Prix"), ""],
   ["stock", "Stock", ""],
-  ["categories", "Catégories", "Séparées par > | ou /"],
+  ["categories", T("Catégories"), T("Séparées par > | ou /")],
 ];
 
 let etat = { entetes: [], texte: "", correspondance: {}, separateur: ";" };
@@ -94,11 +96,9 @@ async function chargerPacks() {
     });
     sel.dataset.charge = "1";
   } catch (e) {
-    // On le DIT plutôt que d'afficher un menu vide : un sélecteur qui ne
-    // propose rien laisse croire qu'aucun pack n'existe.
     const o = document.createElement("option");
     o.value = "";
-    o.textContent = "— packs indisponibles, rechargez la page —";
+    o.textContent = T("— packs indisponibles, rechargez la page —");
     sel.appendChild(o);
   }
 }
@@ -153,7 +153,7 @@ function nettoyerNom(brut) {
 }
 
 async function suggererNom() {
-  let base = "mon-catalogue";
+  let base = LANGUE_EN ? "my-catalog" : "mon-catalogue";
   try {
     const moi = await appelApi("/v1/auth/me");
     const societe = moi.company_name || moi.company || "";
@@ -194,37 +194,34 @@ async function lireFichier(fichier) {
 }
 
 function rendreResume() {
-  const separateurLisible = { ";": "point-virgule", ",": "virgule", "\t": "tabulation", "|": "barre verticale" };
+  const separateurLisible = LANGUE_EN
+    ? { ";": "semicolon", ",": "comma", "\t": "tab", "|": "vertical bar" }
+    : { ";": "point-virgule", ",": "virgule", "\t": "tabulation", "|": "barre verticale" };
   $("csv-resume").innerHTML =
     "<strong>" + escaper(etat.nom) + "</strong> — " +
-    etat.nbLignes.toLocaleString("fr-FR") + " lignes, " +
-    etat.entetes.length + " colonnes<br>" +
-    "<span class='csv-detecte'>Séparateur : " +
-    (separateurLisible[etat.separateur] || etat.separateur) +
-    " · Encodage : " + etat.encodage + "</span>";
+    T("{0} lignes, {1} colonnes", etat.nbLignes.toLocaleString(LOCALE), etat.entetes.length) + "<br>" +
+    "<span class='csv-detecte'>" + T("Séparateur : {0}", separateurLisible[etat.separateur] || etat.separateur) +
+    " · " + T("Encodage : {0}", etat.encodage) + "</span>";
 }
 
 function rendreCorrespondance() {
-  // APERÇU DES PREMIÈRES VALEURS. Un nom de colonne ne suffit pas à
-  // décider : « Code » peut être un identifiant, une référence ou un code
-  // barre. Voir trois valeurs tranche en une seconde.
   const lignes = etat.texte.split(/\r?\n/).filter((l) => l.trim()).slice(1, 4);
   const exemples = lignes.map((l) => decouperLigne(l, etat.separateur));
 
-  let html = "<tr><th>Champ Heurix</th><th>Colonne du fichier</th><th>Exemples</th></tr>";
+  let html = "<tr><th>" + T("Champ Heurix") + "</th><th>" + T("Colonne du fichier") + "</th><th>" + T("Exemples") + "</th></tr>";
   for (const [cle, libelle, aide] of CHAMPS) {
     const choisie = etat.correspondance[cle];
-    let options = "<option value=''>— ignorer —</option>";
+    let options = "<option value=''>" + T("— ignorer —") + "</option>";
     etat.entetes.forEach((e, i) => {
       options += "<option value='" + i + "'" + (choisie === i ? " selected" : "") + ">" +
-                 escaper(e || "colonne " + (i + 1)) + "</option>";
+                 escaper(e || T("colonne {0}", i + 1)) + "</option>";
     });
     const apercu = choisie === undefined ? "—"
       : exemples.map((l) => escaper((l[choisie] || "").slice(0, 24))).filter(Boolean).join(" · ");
 
     html += "<tr>" +
       "<td><strong>" + libelle + "</strong>" +
-        (cle === "id" ? " <span class='csv-requis'>requis</span>" : "") +
+        (cle === "id" ? " <span class='csv-requis'>" + T("requis") + "</span>" : "") +
         (aide ? "<br><span class='csv-aide-champ'>" + aide + "</span>" : "") + "</td>" +
       "<td><select data-champ='" + cle + "'>" + options + "</select></td>" +
       "<td class='mono csv-apercu'>" + apercu + "</td>" +
@@ -274,9 +271,8 @@ function rendreVerdict() {
 
   if (etat.correspondance.id === undefined) {
     zone.className = "csv-verdict csv-verdict-erreur";
-    zone.innerHTML = "<strong>Colonne Identifiant non choisie.</strong> " +
-      "Sans elle, aucun produit ne peut être importé — et un second import " +
-      "créerait des doublons au lieu de mettre à jour.";
+    zone.innerHTML = "<strong>" + T("Colonne Identifiant non choisie.") + "</strong> " +
+      T("Sans elle, aucun produit ne peut être importé — et un second import créerait des doublons au lieu de mettre à jour.");
     return;
   }
 
@@ -284,21 +280,31 @@ function rendreVerdict() {
     // Au-delà d'un tiers d'échecs, ce n'est plus un fichier imparfait :
     // c'est la correspondance qui est fausse.
     zone.className = "csv-verdict csv-verdict-erreur";
-    const exemple = erreurs[0] ? erreurs[0].cause : "";
-    zone.innerHTML = "<strong>" + Math.round(tauxEchec * 100) +
-      " % des lignes testées seraient ignorées.</strong> La colonne " +
-      "Identifiant ne semble pas la bonne — vérifiez qu'elle contient bien " +
-      "une référence unique par produit." +
+    const exemple = erreurs[0] ? traduireCause(erreurs[0].cause) : "";
+    zone.innerHTML = "<strong>" + T("{0}% des lignes testées seraient ignorées.", Math.round(tauxEchec * 100)) + "</strong> " +
+      T("La colonne Identifiant ne semble pas la bonne — vérifiez qu'elle contient bien une référence unique par produit.") +
       (exemple ? "<br><span class='csv-verdict-exemple'>" + escaper(exemple) + "</span>" : "");
     return;
   }
 
   zone.className = "csv-verdict csv-verdict-ok";
-  zone.innerHTML = "<strong>" + produits.length + " produits sur " + testees +
-    " lignes testées.</strong> " +
+  zone.innerHTML = "<strong>" + T("{0} produits sur {1} lignes testées.", produits.length, testees) + "</strong> " +
     (erreurs.length
-      ? erreurs.length + " ligne(s) seraient ignorées — c'est normal si votre export contient des lignes vides ou des doublons."
-      : "La correspondance semble correcte.");
+      ? T("{0} ligne(s) seraient ignorées — c'est normal si votre export contient des lignes vides ou des doublons.", erreurs.length)
+      : T("La correspondance semble correcte."));
+}
+
+// Traduit les trois causes d'erreur brutes renvoyees par csv-import.js
+// (module de logique pure, reste non traduit — voir la note en tete de
+// fichier). Tout ce qui n'est pas reconnu passe tel quel : plus sur que
+// de masquer un message que le dictionnaire ne couvre pas encore.
+function traduireCause(cause) {
+  if (!LANGUE_EN) return cause;
+  if (cause === "Fichier vide ou sans données.") return "Empty file or no data.";
+  if (cause === "Identifiant manquant.") return "Missing identifier.";
+  const m = /^Identifiant « (.+) » déjà présent plus haut\.$/.exec(cause);
+  if (m) return `Identifier "${m[1]}" already appears earlier in the file.`;
+  return cause;
 }
 
 
@@ -333,7 +339,7 @@ async function recommanderPack() {
   recoEnCours = true;
   zone.hidden = false;
   zone.className = "csv-reco";
-  zone.textContent = "Analyse du contenu…";
+  zone.textContent = T("Analyse du contenu…");
 
   try {
     const d = await appelApi("/v1/rulepacks/suggest", {
@@ -342,20 +348,17 @@ async function recommanderPack() {
     });
     if (!d.recommande) {
       zone.className = "csv-reco csv-reco-neutre";
-      zone.innerHTML = "<strong>Aucun pack ne se détache</strong> sur cet échantillon. " +
-        "Vous pouvez importer sans pack : la recherche fonctionnera sur les mots, " +
-        "sans reconnaissance de structure.";
+      zone.innerHTML = "<strong>" + T("Aucun pack ne se détache") + "</strong> " +
+        T("sur cet échantillon. Vous pouvez importer sans pack : la recherche fonctionnera sur les mots, sans reconnaissance de structure.");
       return;
     }
     const meilleur = (d.classement || [])[0] || {};
     zone.className = "csv-reco csv-reco-ok";
-    zone.innerHTML = "<strong>Pack recommandé : " + escaper(d.recommande) + "</strong>" +
+    zone.innerHTML = "<strong>" + T("Pack recommandé : {0}", escaper(d.recommande)) + "</strong>" +
       (meilleur.produits_annotes !== undefined
-        ? " — " + meilleur.produits_annotes + " produits sur " +
-          Math.min(produits.length, 300) + " reconnus."
+        ? " — " + T("{0} produits sur {1} reconnus.", meilleur.produits_annotes, Math.min(produits.length, 300))
         : "") +
-      "<br><span class='csv-reco-note'>Sélectionné automatiquement. " +
-      "Vous pouvez le changer ci-dessous.</span>";
+      "<br><span class='csv-reco-note'>" + T("Sélectionné automatiquement. Vous pouvez le changer ci-dessous.") + "</span>";
 
     // Présélection, sans forcer : l'utilisateur reste maître du choix.
     const sel = $("csv-rulepack");
@@ -375,11 +378,11 @@ async function recommanderPack() {
 async function envoyer() {
   const catalogue = $("csv-catalogue").value.trim();
   if (!catalogue) {
-    alert("Indiquez le nom du catalogue.");
+    alert(T("Indiquez le nom du catalogue."));
     return;
   }
   if (etat.correspondance.id === undefined) {
-    alert("La colonne Identifiant est obligatoire : sans elle, un second import créerait des doublons au lieu de mettre à jour.");
+    alert(T("La colonne Identifiant est obligatoire : sans elle, un second import créerait des doublons au lieu de mettre à jour."));
     return;
   }
 
@@ -387,7 +390,7 @@ async function envoyer() {
     separateur: etat.separateur,
   });
   if (!produits.length) {
-    afficherRapport(0, erreurs, ["Aucun produit exploitable — vérifiez la correspondance."]);
+    afficherRapport(0, erreurs, [T("Aucun produit exploitable — vérifiez la correspondance.")]);
     return;
   }
 
@@ -427,10 +430,9 @@ async function envoyer() {
       // relancer l'import ne créera pas de doublons.
       var cause = e.message || String(e);
       if (e.status === 401 || e.status === 403 || /invalid api key/i.test(cause)) {
-        cause = "clé API refusée. Rechargez la console : votre session a " +
-                "peut-être expiré.";
+        cause = T("clé API refusée. Rechargez la console : votre session a peut-être expiré.");
       }
-      echecs.push("Lot " + (i + 1) + " sur " + lots.length + " : " + cause);
+      echecs.push(T("Lot {0} sur {1} : {2}", i + 1, lots.length, cause));
     }
   }
 
@@ -460,44 +462,40 @@ function majProgression(fait, total, envoyes) {
   const pct = total ? Math.round((fait / total) * 100) : 0;
   $("csv-barre-remplie").style.width = pct + "%";
   $("csv-etat").textContent = fait >= total
-    ? "Terminé — " + envoyes.toLocaleString("fr-FR") + " produits indexés"
-    : "Envoi du lot " + Math.min(fait + 1, total) + " sur " + total +
-      " — " + envoyes.toLocaleString("fr-FR") + " produits indexés";
+    ? T("Terminé — {0} produits indexés", envoyes.toLocaleString(LOCALE))
+    : T("Envoi du lot {0} sur {1} — {2} produits indexés", Math.min(fait + 1, total), total, envoyes.toLocaleString(LOCALE));
 }
 
 function afficherRapport(envoyes, erreurs, echecs, catalogue) {
   let html = "<div class='csv-rapport-bloc'>";
 
   if (envoyes > 0) {
-    html += "<p class='csv-succes'><strong>" + envoyes.toLocaleString("fr-FR") +
-            " produits indexés.</strong></p>";
+    html += "<p class='csv-succes'><strong>" + T("{0} produits indexés.", envoyes.toLocaleString(LOCALE)) + "</strong></p>";
   }
 
   if (echecs.length) {
     // Les échecs de lot passent AVANT les lignes ignorées : ils touchent
     // des milliers de produits, pas quelques lignes.
-    html += "<p class='csv-echec'><strong>" + echecs.length +
-            " lot(s) en échec.</strong> Relancez l'import : les identifiants " +
-            "étant stables, les produits déjà indexés seront mis à jour, pas dupliqués.</p><ul>";
+    html += "<p class='csv-echec'><strong>" + T("{0} lot(s) en échec.", echecs.length) + "</strong> " +
+            T("Relancez l'import : les identifiants étant stables, les produits déjà indexés seront mis à jour, pas dupliqués.") + "</p><ul>";
     echecs.slice(0, 5).forEach((e) => { html += "<li>" + escaper(e) + "</li>"; });
     html += "</ul>";
   }
 
   if (erreurs.length) {
-    html += "<p class='csv-averti'>" + erreurs.length +
-            " ligne(s) ignorée(s) :</p><ul>";
+    html += "<p class='csv-averti'>" + T("{0} ligne(s) ignorée(s) :", erreurs.length) + "</p><ul>";
     erreurs.slice(0, 8).forEach((e) => {
-      html += "<li>Ligne " + e.ligne + " — " + escaper(e.cause) + "</li>";
+      html += "<li>" + T("Ligne {0} — {1}", e.ligne, escaper(traduireCause(e.cause))) + "</li>";
     });
     if (erreurs.length > 8) {
-      html += "<li>… et " + (erreurs.length - 8) + " autres</li>";
+      html += "<li>" + T("… et {0} autres", erreurs.length - 8) + "</li>";
     }
     html += "</ul>";
   }
 
   if (envoyes > 0 && catalogue) {
     html += "<p class='csv-suite'><button type='button' class='btn' " +
-            "id='csv-voir-catalogue'>Voir le catalogue &rarr;</button></p>";
+            "id='csv-voir-catalogue'>" + T("Voir le catalogue &rarr;") + "</button></p>";
   }
   html += "</div>";
   $("csv-rapport").innerHTML = html;

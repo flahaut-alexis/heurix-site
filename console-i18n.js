@@ -1,33 +1,42 @@
-/* Traduction de la console — une seule source, un dictionnaire.
+/* Console translation — one source, one dictionary.
  *
- * POURQUOI CE MÉCANISME PLUTÔT QU'UNE SECONDE CONSOLE.
+ * WHY THIS MECHANISM INSTEAD OF A SECOND CONSOLE.
  *
- * `en/console.html` était une ébauche de 179 lignes contre 829 pour la
- * version française : pas de barre latérale, pas de gestion de catalogues,
- * pas d'éditeur. Un client européen n'avait aucun espace de travail.
+ * A duplicated, hand-translated `console-en.js` was tried first (31 July).
+ * It worked, but it recreated the exact problem this file was originally
+ * built to avoid: two files that drift apart at the next change. Within
+ * the same session, `index.html` and `docs.html` had already lost real
+ * functionality this way — a script edited on one side, forgotten on the
+ * other.
  *
- * La réponse évidente — dupliquer console.html et le traduire — produirait
- * deux fichiers qui divergeraient à la première modification. Cette session
- * en a donné plusieurs exemples : un correctif appliqué d'un côté, oublié de
- * l'autre.
+ * `console.html` and `console.js` are now the ONLY source, in both
+ * languages. `en/console.html` is a copy differing only in `lang` and
+ * relative paths. Every user-facing string in `console.js` is passed
+ * through `T(...)`. On a French page, `T` is a passthrough (after
+ * variable substitution). On an English page, `T` looks the string up in
+ * `DICT` below before substituting.
  *
- * Ici, `console.html` reste l'unique source. `en/console.html` en est une
- * copie dont seuls l'attribut `lang` et les chemins relatifs diffèrent, et
- * la traduction se fait à l'affichage à partir du dictionnaire ci-dessous.
- * Une chaîne ajoutée en français apparaîtra en français côté anglais —
- * visible, donc corrigeable — plutôt que de disparaître silencieusement.
+ * TWO TRANSLATION PATHS, ONE DICTIONARY.
  *
- * COUVERTURE. Le dictionnaire couvre la navigation, les titres, les actions
- * et les messages d'état — ce qu'un utilisateur voit en permanence. Les
- * textes d'aide longs restent à traduire ; ils s'afficheront en français,
- * ce qui est préférable à une traduction automatique approximative sur des
- * explications techniques.
+ *   1. STATIC HTML — a TreeWalker scans the page (plus a MutationObserver
+ *      for anything rendered later) and replaces any text node or
+ *      title/aria-label/placeholder/alt attribute that matches a DICT key
+ *      exactly. This covers `console.html`'s own markup.
+ *
+ *   2. DYNAMIC STRINGS FROM console.js — call `T("template with {0}",
+ *      value)` instead of building the string by concatenation. `T` looks
+ *      up the TEMPLATE (the part before substitution) in DICT, then fills
+ *      in `{0}`, `{1}`, etc. A template with no matching DICT entry is
+ *      returned as-is (still substituted) — visible in French rather than
+ *      silently missing, exactly like path 1's fallback.
+ *
+ * A string added in French and never translated shows up in French on
+ * the English console — a visible, fixable gap, not a silent one.
  */
 (function () {
   "use strict";
 
   var EN = (document.documentElement.lang || "fr").slice(0, 2).toLowerCase() === "en";
-  if (!EN) { window.T = function (s) { return s; }; return; }
 
   var DICT = {
     // --------------------------------------------- seconde passe (couverture)
@@ -54,7 +63,7 @@
     "Heurix. Tous droits réservés.": "Heurix. All rights reserved.",
     "Intégrations": "Integrations",
     "La clé ci-dessus est une": "The key above is a",
-    "Le catalogue": "The catalogue",
+    "Le catalogue": "The catalog",
     "Masquer les produits en rupture": "Hide out-of-stock products",
     "Mot de passe oublié ?": "Forgot your password?",
     "Réinitialiser mon mot de passe": "Reset my password",
@@ -63,7 +72,10 @@
     "Priorités par produit": "Priorities by product",
     "Priorités par produit (liste détaillée)": "Priorities by product (detailed list)",
     "Produits affichés": "Products shown",
-    "Préfixe à reconnaître": "Prefix to recognise",
+    "Préfixe à reconnaître": "Prefix to recognize",
+    "Mots les plus recherchés, recherches sans résultat, erreurs récentes, consommation — connectez-vous pour les consulter.":
+      "Top searched terms, zero-result searches, recent errors, usage — sign in to see them.",
+    "Préfixe à reconnaître, ex. M (pour M8, M10…)": "Prefix to recognize, e.g. M (for M8, M10…)",
     "Recherches sans résultat": "Zero-result searches",
     "Rejoindre l'équipe": "Join the team",
     "Suggestion de fonctionnalité": "Feature suggestion",
@@ -120,9 +132,9 @@
     "Vues de catégorie": "Category views",
     "Ajouter un synonyme": "Add a synonym",
     "Groupe de synonymes": "Synonym group",
-    "Sélectionnez un catalogue": "Select a catalogue",
+    "Sélectionnez un catalogue": "Select a catalog",
     "Sélectionnez une catégorie": "Select a category",
-    "Tous les catalogues": "All catalogues",
+    "Tous les catalogues": "All catalogs",
     "Toutes les catégories": "All categories",
     "Rôle : administrateur": "Role: administrator",
     "Rôle : membre": "Role: member",
@@ -134,7 +146,7 @@
     "Prochaine échéance": "Next renewal",
 
     // ------------------------------------------------------ phrases d'aide
-    "Aucun catalogue indexé pour l'instant —": "No catalogue indexed yet —",
+    "Aucun catalogue indexé pour l'instant —": "No catalog indexed yet —",
     "Ces chiffres dépendent de la balise que": "These figures depend on the tag you",
     "Ne posez jamais cette clé dans une page web":
       "Never put this key in a web page",
@@ -166,8 +178,8 @@
     "erreurs à traiter": "errors to handle",
     "événement sans conséquence": "harmless event",
     "événements sans conséquence": "harmless events",
-    "Vous travaillez sur ce catalogue": "You are working on this catalogue",
-    "Il vous reste un catalogue disponible": "You have one catalogue left",
+    "Vous travaillez sur ce catalogue": "You are working on this catalog",
+    "Il vous reste un catalogue disponible": "You have one catalog left",
     "Vous avez atteint la limite de votre formule":
       "You have reached your plan's limit",
     // ---------------------------------------------------------- navigation
@@ -265,7 +277,7 @@
     "Rôle": "Role",
     "Statut": "Status",
     "Catégorie": "Category",
-    "Catalogue": "Catalogue",
+    "Catalogue": "Catalog",
     "Synonymes": "Synonyms",
     "Règles personnalisées": "Custom rules",
     "Pack de règles": "Rule pack",
@@ -285,7 +297,7 @@
     "Règles en place": "Rules in place",
     "Tableau de bord": "Dashboard",
     "Espace client": "Client area",
-    "Mes catalogues": "My catalogues",
+    "Mes catalogues": "My catalogs",
     "Analytics": "Analytics",
     "Personnalisation": "Personalisation",
     "Recherches": "Searches",
@@ -308,7 +320,7 @@
     "7 derniers jours": "Last 7 days",
     "30 derniers jours": "Last 30 days",
     "90 derniers jours": "Last 90 days",
-    "Catalogue actif": "Active catalogue",
+    "Catalogue actif": "Active catalog",
 
     // ------------------------------------------------------------- actions
     "Enregistrer": "Save",
@@ -340,8 +352,8 @@
     "Taux sans résultat": "Zero-result rate",
     "Requêtes": "Requests",
     "Requêtes ce mois-ci": "Requests this month",
-    "Catalogues": "Catalogues",
-    "Produits par catalogue": "Products per catalogue",
+    "Catalogues": "Catalogs",
+    "Produits par catalogue": "Products per catalog",
     "Formule": "Plan",
     "stable": "stable",
     "vs période précédente": "vs previous period",
@@ -366,7 +378,7 @@
     "Aucun produit dans cette catégorie.": "No products in this category.",
     "Aucun résultat pour cette requête.": "No results for this query.",
     "Aucune clé publique pour l'instant.": "No public key yet.",
-    "Aucune priorité posée sur ce catalogue.": "No priorities set on this catalogue.",
+    "Aucune priorité posée sur ce catalogue.": "No priorities set on this catalog.",
     "Aucune priorité posée sur cette catégorie.": "No priorities set on this category.",
     "Aucune règle d'attribut posée sur cette catégorie.": "No attribute rules set on this category.",
     "Aucune recherche sans résultat sur cette période — bon signe.":
@@ -383,13 +395,264 @@
     "(optionnel)": "(optional)",
     "Aperçu des résultats": "Results preview",
     "Aperçu du classement": "Ranking preview",
+
+    // --------------------------------------------- gabarits T() (console.js)
+    //
+    // Clé = le gabarit tel qu'écrit dans l'appel T(...), AVANT substitution
+    // des {0}, {1}... — jamais la chaîne finale, qui varie à chaque appel.
+    "Email ou mot de passe incorrect.": "Incorrect email or password.",
+    "Impossible de joindre api.heurix.fr. Le service est peut-être temporairement indisponible.": "Couldn't reach api.heurix.fr. The service may be temporarily unavailable.",
+    "Bonjour, {0}": "Hi, {0}",
+    "à": "at",
+    "tous": "all",
+    "Révoquer": "Revoke",
+    "Génération…": "Generating…",
+    "Clé publique générée.": "Public key generated.",
+    "Échec de la génération.": "Generation failed.",
+    "Révoquer la clé publique <strong>{0}…</strong> ?<br>Si elle est utilisée sur votre site, la recherche cessera de fonctionner immédiatement pour vos visiteurs.":
+      "Revoke the public key <strong>{0}…</strong>?<br>If it's used on your site, search will stop working immediately for your visitors.",
+    "{0} impressions": "{0} impressions",
+    "Vues": "Views",
+    "Clics recherche": "Search clicks",
+    "Ratio": "Ratio",
+    "Masquer la clé": "Hide key",
+    "Afficher la clé": "Show key",
+    "Administrateur": "Admin",
+    "Membre": "Member",
+    "Rétrograder": "Demote",
+    "Promouvoir admin": "Promote to admin",
+    "Envoi…": "Sending…",
+    "Invitation envoyée à {0}.": "Invitation sent to {0}.",
+    "Échec de l'envoi.": "Failed to send.",
+    "Enregistrement…": "Saving…",
+    "Informations enregistrées.": "Information saved.",
+    "Échec de l'enregistrement.": "Failed to save.",
+    "Retirer <strong>{0}</strong> de l'équipe ?<br>Cette personne perdra immédiatement l'accès à la console et aux catalogues.":
+      "Remove <strong>{0}</strong> from the team?<br>This person will immediately lose access to the console and to catalogs.",
+    "Ce choix s'applique partout : tableau de bord, analytique et personnalisation. Changez-le ici pour basculer d'un catalogue à l'autre.":
+      "This choice applies everywhere: dashboard, analytics, and personalization. Change it here to switch to a different catalog.",
+    "jusqu'à {0}": "up to {0}",
+    "{0} : {1} pour cent utilisés": "{0}: {1} percent used",
+    "Essai gratuit": "Free trial",
+    "Souscrire une formule": "Subscribe to a plan",
+    "Vous êtes en période d'essai : choisissez une formule pour continuer après son terme. Aucun abonnement n'est encore actif sur votre compte.":
+      "You're in your trial period: pick a plan to continue after it ends. No subscription is active on your account yet.",
+    "Le changement se fait depuis le portail de facturation : Stripe calcule le prorata et ajuste votre abonnement en cours. Vous n'êtes pas facturé deux fois, et il n'y a pas de nouvelle période d'essai.":
+      "Changes happen from the billing portal: Stripe calculates the proration and adjusts your current subscription. You're never billed twice, and there's no new trial period.",
+    "<strong>Votre essai est terminé.</strong> Choisissez une formule pour continuer à utiliser Heurix.":
+      "<strong>Your trial has ended.</strong> Choose a plan to keep using Heurix.",
+    "Il vous reste {0} jours d'essai.": "You have {0} days left in your trial.",
+    "Il vous reste {0} jour d'essai.": "You have {0} day left in your trial.",
+    "Impossible de charger votre abonnement.": "Couldn't load your subscription.",
+    "Ouverture du portail…": "Opening the portal…",
+    "Aucun abonnement actif : souscrivez d'abord une formule depuis la page des tarifs.":
+      "No active subscription: subscribe to a plan first from the pricing page.",
+    "Aucun abonnement actif : le portail devient disponible après souscription.":
+      "No active subscription: the portal becomes available after subscribing.",
+    "Vous avez atteint le nombre de catalogues de votre formule.": "You've reached the number of catalogs in your plan.",
+    "Vous avez dépassé le quota de requêtes de votre formule.": "You've exceeded your plan's request quota.",
+    "Le bac à sable demande une formule Growth ou Scale.": "The sandbox requires a Growth or Scale plan.",
+    "Une clé publique a tenté une action réservée aux clés serveur.": "A public key attempted an action reserved for server keys.",
+    "Les clés publiques ne peuvent que lire. Vérifiez quelle clé votre site utilise.": "Public keys can only read. Check which key your site is using.",
+    "Une requête est arrivée avec une clé API invalide ou absente.": "A request arrived with an invalid or missing API key.",
+    "Vérifiez la clé configurée sur votre site. Ce message apparaît aussi lorsqu'un robot teste votre API — c'est alors sans conséquence.":
+      "Check the key configured on your site. This message also appears when a bot probes your API — in that case it has no consequence.",
+    "Une requête a visé un catalogue qui n'existe pas.": "A request targeted a catalog that doesn't exist.",
+    "Vérifiez le nom du catalogue dans votre intégration : il est sensible à la casse.": "Check the catalog name in your integration: it's case-sensitive.",
+    "Une requête a été refusée : format ou paramètre invalide.": "A request was rejected: invalid format or parameter.",
+    "C'est généralement un problème d'intégration côté site, pas côté moteur.": "This is usually an integration issue on the site side, not the engine side.",
+    "Une erreur interne du moteur s'est produite.": "An internal engine error occurred.",
+    "Si elle se répète, écrivez à contact@heurix.fr avec la date et l'heure.": "If it keeps happening, email contact@heurix.fr with the date and time.",
+    "Erreur non détaillée": "Undetailed error",
+    "{0} erreur(s) demandant votre attention": "{0} error(s) needing your attention",
+    "Les erreurs à traiter concernent un quota dépassé, une intégration en défaut ou un incident du moteur. Les autres — clés invalides, catalogues inconnus — proviennent souvent de robots qui testent votre API : elles n'ont pas d'effet sur vos visiteurs.":
+      "Errors to address involve an exceeded quota, a broken integration, or an engine incident. The others — invalid keys, unknown catalogs — often come from bots probing your API: they have no effect on your visitors.",
+    "Aucune erreur ne demande d'action. Les événements listés ci-dessous — clés invalides, catalogues inconnus — proviennent souvent de robots qui testent votre API.":
+      "No error needs action. The events listed below — invalid keys, unknown catalogs — often come from bots probing your API.",
+    "ex. vis, boulon, screw": "e.g. screw, bolt, fastener",
+    "Ajouter un groupe": "Add a group",
+    "Mot-clé → étiquette": "Keyword → label",
+    "Préfixe + nombre → étiquette": "Prefix + number → label",
+    "Nom de la règle, ex. Cheville": "Rule name, e.g. Anchor",
+    "Mots équivalents, ex. placo, cheville, molly": "Equivalent words, e.g. drywall, anchor, molly",
+    "Message envoyé — une réponse vous revient directement par email.": "Message sent — you'll get a reply directly by email.",
+    "Échec de l'envoi — réessayez, ou écrivez directement à contact@heurix.fr.": "Failed to send — try again, or email contact@heurix.fr directly.",
+    "CA réellement attribué (tracker non installé)": "Actually attributed revenue (tracker not installed)",
+    "Dupliquer comme nouvelle règle": "Duplicate as a new rule",
+    "{0} produits": "{0} products",
+    "{0} produit": "{0} product",
+    "ex. {0}": "e.g. {0}",
+    "{0} résultats regroupés en {1} familles, classées par pertinence.": "{0} results grouped into {1} families, ranked by relevance.",
+    "Rupture": "Out of stock",
+    "{0} en stock": "{0} in stock",
+    "Injecté par une règle": "Injected by a rule",
+    "Monter {0}": "Move up {0}",
+    "Descendre {0}": "Move down {0}",
+    "Retirer l'épinglage": "Unpin",
+    "Retirer l'épinglage de {0}": "Unpin {0}",
+    "Mettre en tête": "Pin to top",
+    "Mettre {0} en tête": "Pin {0} to top",
+    "{0} résultats sur {1} pour « {2} »": "{0} results out of {1} for \"{2}\"",
+    "{0} résultat sur {1} pour « {2} »": "{0} result out of {1} for \"{2}\"",
+    "Aperçu du catalogue, par ordre alphabétique — tapez une requête pour voir le classement.":
+      "Catalog preview, alphabetical order — type a query to see the ranking.",
+    "{0} règles actives": "{0} active rules",
+    "{0} règle active": "{0} active rule",
+    "Tapez une requête comme le ferait un visiteur…": "Type a query the way a visitor would…",
+    "Aucun mot proche dans votre catalogue.": "No close word in your catalog.",
+    "S'il s'agit d'un autre mot pour un produit que vous vendez, ajoutez-le comme synonyme &rarr;":
+      "If it's another word for a product you sell, add it as a synonym &rarr;",
+    "Corriger": "Fix",
+    "« {0} » trouvera désormais « {1} »": "\"{0}\" will now find \"{1}\"",
+    "Création impossible : {0}": "Couldn't create it: {0}",
+    "Règles appliquées.": "Rules applied.",
+    "Saisissez d'abord une requête": "Type a query first",
+    "pour épingler ou reléguer : une priorité se déclenche sur une recherche précise, elle n'existe pas en dehors d'une requête.":
+      "to pin or bury: a priority triggers on a specific search, it doesn't exist outside of one.",
+    "Modifier la priorité": "Edit priority",
+    "Enregistrer les modifications": "Save changes",
+    "Dupliquer une priorité — modifiez au moins un champ": "Duplicate a priority — change at least one field",
+    "Créer cette priorité": "Create this priority",
+    "— Choisir un catalogue d'abord —": "— Choose a catalog first —",
+    "— Aucune catégorie —": "— No categories —",
+    "— Choisir —": "— Choose —",
+    "— Erreur de chargement —": "— Loading error —",
+    "{0} produits dans « {1} »": "{0} products in \"{1}\"",
+    "{0} produit dans « {1} »": "{0} product in \"{1}\"",
+    "classement simulé": "simulated ranking",
+    "Booster": "Boost",
+    "Échec.": "Failed.",
+    "Dupliquer — modifiez au moins un champ": "Duplicate — change at least one field",
+    "Modifier la règle": "Edit rule",
+    "Créer cette règle": "Create this rule",
+    "Créer votre compte.": "Create your account.",
+    "Une entreprise, un email, un mot de passe — votre clé API est générée immédiatement et envoyée par email.":
+      "A company, an email, a password — your API key is generated immediately and emailed to you.",
+    "Indiquez votre email, on vous envoie un lien pour en choisir un nouveau.":
+      "Enter your email and we'll send you a link to choose a new one.",
+    "Nouveau mot de passe.": "New password.",
+    "Choisissez un nouveau mot de passe pour votre compte.": "Choose a new password for your account.",
+    "Rejoindre votre équipe.": "Join your team.",
+    "Dernière étape : choisissez votre mot de passe.": "Last step: choose your password.",
+    "Un synonyme relie des mots entre eux : ajoutez-en au moins un second, séparé par une virgule (ex. vis, boulon).":
+      "A synonym links words together: add at least a second one, separated by a comma (e.g. screw, bolt).",
+    "Saisissez au moins deux mots séparés par une virgule.": "Enter at least two words separated by a comma.",
+    "Groupe ajouté.": "Group added.",
+    "Si le texte contient {0} → {1}": "If the text contains {0} → {1}",
+    "Si « {0} » est suivi d'un nombre (ex. {0}8) → {1}": "If \"{0}\" is followed by a number (e.g. {0}8) → {1}",
+    "nombre": "number",
+    "Aucune règle personnalisée pour l'instant.": "No custom rules yet.",
+    "Retirer cette règle": "Remove this rule",
+    "sur cet échantillon. Vos produits ne bénéficient d'aucune annotation — vérifiez que le pack correspond bien à votre secteur, ou créez des règles personnalisées.":
+      "on this sample. Your products get no annotations at all — check that the pack matches your industry, or create custom rules.",
+    "Le pack <strong>{0}</strong> semble mieux adapté": "The <strong>{0}</strong> pack looks like a better fit",
+    "Sur {0} produits : <strong>{1}</strong> annotés avec « {2} », contre <strong>{3}</strong> avec « {4} ».":
+      "Out of {0} products: <strong>{1}</strong> annotated with \"{2}\", versus <strong>{3}</strong> with \"{4}\".",
+    "aucun": "none",
+    "Sélectionner le pack {0}": "Select the {0} pack",
+    "Ce bouton présélectionne le pack.": "This button preselects the pack.",
+    "<strong>Les annotations sont calculées à l'indexation</strong> : pour qu'elles changent, réimportez votre catalogue en déclarant le nouveau pack.":
+      "<strong>Annotations are computed at indexing time</strong>: for them to change, re-import your catalog declaring the new pack.",
+    "Voir la marche à suivre": "See how",
+    "Supprimer le catalogue <strong>{0}</strong> et ses {1} produits ?<br>Les priorités, règles personnalisées et synonymes seront perdus. <strong>Cette action est irréversible.</strong>":
+      "Delete the catalog <strong>{0}</strong> and its {1} products?<br>Priorities, custom rules, and synonyms will be lost. <strong>This action cannot be undone.</strong>",
+    "Confirmez en recopiant le nom du catalogue :": "Confirm by typing the catalog name:",
+    "Le nom ne correspond pas. Rien n'a été supprimé.": "The name doesn't match. Nothing was deleted.",
+    "Suppression impossible : {0}": "Couldn't delete it: {0}",
+    "Bac à sable activé.": "Sandbox enabled.",
+    "Catalogue redevenu facturé.": "Catalog is billed again.",
+    "Impossible de modifier ce réglage.": "Couldn't change this setting.",
+    "Réindexation…": "Reindexing…",
+    "Enregistré — produits réindexés.": "Saved — products reindexed.",
+    "Échec — réessayez.": "Failed — please try again.",
+    "{0} annotations": "{0} annotations",
+    "{0} groupes de synonymes": "{0} synonym groups",
+    "{0} groupe de synonymes": "{0} synonym group",
+    "Bac à sable — ne pas facturer ce catalogue": "Sandbox — don't bill this catalog",
+    "Gérés depuis": "Managed from",
+    "Personnalisation → Gestion des règles": "Personalization → Rule management",
+    "Supprimer ce catalogue": "Delete this catalog",
+    "{0} catalogues sur {1}": "{0} catalogs out of {1}",
+    "{0} catalogue sur {1}": "{0} catalog out of {1}",
+    "avec la formule {0}.": "on the {0} plan.",
+    "actuelle": "current",
+    "La création d'un nouveau catalogue sera refusée.": "Creating a new catalog will be refused.",
+    "Au-delà, la création sera refusée.": "Beyond that, creation will be refused.",
+    "Impossible de charger vos catalogues pour le moment.": "Couldn't load your catalogs right now.",
+    "Connexion…": "Signing in…",
+    "Ce compte n'a pas encore de clé API associée. Contactez le support.": "This account doesn't have an API key yet. Contact support.",
+    "Se connecter": "Sign in",
+    "Création…": "Creating…",
+    "Si un compte existe avec cet email, un lien de réinitialisation vient d'être envoyé.": "If an account exists with this email, a reset link was just sent.",
+    "Réinitialisation…": "Resetting…",
+    "Mot de passe mis à jour — vous pouvez vous connecter.": "Password updated — you can sign in now.",
+    "Vous rejoignez l'équipe de {0} ({1}).": "You're joining {0}'s team ({1}).",
+    "Invitation pour {0}.": "Invitation for {0}.",
+    "Ce lien d'invitation semble invalide ou expiré.": "This invitation link looks invalid or expired.",
+    "Identifiant plateforme": "Platform identifier",
+    "Désignation": "Name",
+    "Séparées par > | ou /": "Separated by > | or /",
+    "Obligatoire. Permet de mettre à jour un produit au lieu d'en créer un doublon.": "Required. Lets a product be updated instead of duplicated.",
+    "L'entier attendu par PrestaShop, WooCommerce ou Magento, si vos identifiants sont des références métier.":
+      "The integer expected by PrestaShop, WooCommerce, or Magento, if your identifiers are business references.",
+    "Le champ le plus fortement pondéré à la recherche.": "The most heavily weighted field for search.",
+    "— packs indisponibles, rechargez la page —": "— packs unavailable, reload the page —",
+    "{0} lignes, {1} colonnes": "{0} rows, {1} columns",
+    "Séparateur : {0}": "Separator: {0}",
+    "Encodage : {0}": "Encoding: {0}",
+    "Champ Heurix": "Heurix field",
+    "Colonne du fichier": "File column",
+    "Exemples": "Examples",
+    "— ignorer —": "— ignore —",
+    "colonne {0}": "column {0}",
+    "requis": "required",
+    "Colonne Identifiant non choisie.": "Identifier column not chosen.",
+    "Sans elle, aucun produit ne peut être importé — et un second import créerait des doublons au lieu de mettre à jour.":
+      "Without it, no product can be imported — and a second import would create duplicates instead of updating.",
+    "{0}% des lignes testées seraient ignorées.": "{0}% of tested rows would be ignored.",
+    "La colonne Identifiant ne semble pas la bonne — vérifiez qu'elle contient bien une référence unique par produit.":
+      "The Identifier column doesn't look right — check that it contains a unique reference per product.",
+    "{0} produits sur {1} lignes testées.": "{0} products out of {1} tested rows.",
+    "{0} ligne(s) seraient ignorées — c'est normal si votre export contient des lignes vides ou des doublons.":
+      "{0} row(s) would be ignored — normal if your export contains blank rows or duplicates.",
+    "La correspondance semble correcte.": "The match looks correct.",
+    "Analyse du contenu…": "Analyzing content…",
+    "Aucun pack ne se détache": "No pack stands out",
+    "sur cet échantillon. Vous pouvez importer sans pack : la recherche fonctionnera sur les mots, sans reconnaissance de structure.":
+      "on this sample. You can import without a pack: search will work on words, with no structure recognition.",
+    "Pack recommandé : {0}": "Recommended pack: {0}",
+    "{0} produits sur {1} reconnus.": "{0} products out of {1} recognized.",
+    "Sélectionné automatiquement. Vous pouvez le changer ci-dessous.": "Automatically selected. You can change it below.",
+    "Indiquez le nom du catalogue.": "Enter the catalog name.",
+    "La colonne Identifiant est obligatoire : sans elle, un second import créerait des doublons au lieu de mettre à jour.":
+      "The Identifier column is required: without it, a second import would create duplicates instead of updating.",
+    "Aucun produit exploitable — vérifiez la correspondance.": "No usable products — check the column matching.",
+    "clé API refusée. Rechargez la console : votre session a peut-être expiré.": "API key rejected. Reload the console: your session may have expired.",
+    "Lot {0} sur {1} : {2}": "Batch {0} of {1}: {2}",
+    "Terminé — {0} produits indexés": "Done — {0} products indexed",
+    "Envoi du lot {0} sur {1} — {2} produits indexés": "Sending batch {0} of {1} — {2} products indexed",
+    "{0} produits indexés.": "{0} products indexed.",
+    "{0} lot(s) en échec.": "{0} batch(es) failed.",
+    "Relancez l'import : les identifiants étant stables, les produits déjà indexés seront mis à jour, pas dupliqués.":
+      "Restart the import: since identifiers are stable, products already indexed will be updated, not duplicated.",
+    "{0} ligne(s) ignorée(s) :": "{0} row(s) ignored:",
+    "Ligne {0} — {1}": "Row {0} — {1}",
+    "… et {0} autres": "… and {0} more",
+    "Voir le catalogue &rarr;": "See the catalog &rarr;",
+    "Créer la règle": "Create rule",
+    "Compris": "Got it",
+    "Aucun catalogue": "No catalog",
+    "bac à sable": "sandbox",
   };
 
   // Attributs porteurs de texte visible ou annoncé aux lecteurs d'écran.
   var ATTRIBUTS = ["title", "aria-label", "placeholder", "alt"];
 
+  // Chemin 1 — noeud de texte STATIQUE entier (TreeWalker). Correspondance
+  // exacte sur la chaîne entière, sans variable : c'est ce que produit du
+  // HTML écrit à la main.
   function traduire(s) {
-    if (!s) return s;
+    if (!EN || !s) return s;
     var net = s.trim();
     if (!net) return s;
     var trad = DICT[net];
@@ -399,7 +662,32 @@
     return s.replace(net, trad);
   }
 
+  // Chemin 2 — GABARIT avec variables, appelé depuis console.js.
+  //
+  //   T("Invitation envoyée à {0}.", email)
+  //
+  // Le gabarit lui-même (avant substitution) est la clé du dictionnaire —
+  // jamais la chaîne finale, qui varie à chaque appel et ne pourrait donc
+  // jamais correspondre à une entrée fixe.
+  //
+  // Fonctionne aussi en français : la substitution a toujours lieu, seule
+  // la traduction du gabarit dépend de la langue. `T("Ajouté.")` sans
+  // argument est donc un appel valide, équivalent à `traduire()` mais
+  // explicite dans le code source plutôt qu'implicite dans le DOM.
+  function T(gabarit) {
+    var args = Array.prototype.slice.call(arguments, 1);
+    var texte = EN ? (Object.prototype.hasOwnProperty.call(DICT, gabarit) ? DICT[gabarit] : gabarit) : gabarit;
+    for (var i = 0; i < args.length; i++) {
+      // split/join plutôt que replace : un identifiant produit contenant
+      // "{0}" par coïncidence ne doit pas casser un remplacement suivant.
+      texte = texte.split("{" + i + "}").join(args[i] === undefined || args[i] === null ? "" : args[i]);
+    }
+    return texte;
+  }
+  window.T = T;
+
   function parcourir(racine) {
+    if (!EN) return;
     // Constantes numeriques plutot que NodeFilter.* : l'objet global
     // n'est pas resolu dans tous les contextes d'execution, et un plantage
     // ici laisserait l'interface entierement en francais.
@@ -435,10 +723,8 @@
     }
   }
 
-  // Fonction exposée à console.js pour ses chaînes construites en JavaScript.
-  window.T = traduire;
-
   function lancer() {
+    if (!EN) return;
     parcourir(document.body);
 
     // La console rend beaucoup de contenu APRÈS le chargement : tableaux,

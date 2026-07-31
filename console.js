@@ -1,24 +1,36 @@
-// Heurix — Console client (FR)
+// Heurix — Console client (source unique FR/EN)
 // Se connecte avec une vraie clé API et appelle le vrai moteur en
 // production (https://api.heurix.fr) — aucune donnée simulée ici,
 // contrairement au widget de démonstration de la page d'accueil.
+//
+// TRADUCTION : chaque chaîne visible passe par T(gabarit, ...valeurs),
+// fourni par console-i18n.js (chargé avant ce fichier). Sur une page
+// française, T() ne fait que la substitution des valeurs ; sur une page
+// anglaise, il traduit le gabarit via son dictionnaire avant de substituer.
+// Voir console-i18n.js pour le mécanisme complet.
 (function () {
   "use strict";
 
   var API_BASE = "https://api.heurix.fr";
   var SESSION_STORAGE_KEY = "heurix_console_session";
 
+  // LANGUE ET LOCALE. Lues ici aussi (pas seulement dans console-i18n.js) :
+  // les formats de date et de nombre (toLocaleString) sont un besoin propre
+  // à ce fichier, indépendant du mécanisme de traduction de texte.
+  var LANGUE_EN = (document.documentElement.lang || "fr").slice(0, 2).toLowerCase() === "en";
+  var LOCALE = LANGUE_EN ? "en-US" : "fr-FR";
+
   var L = {
-    loading: "Chargement des données…",
-    loginErrorInvalid: "Email ou mot de passe incorrect.",
-    loginErrorNetwork: "Impossible de joindre api.heurix.fr. Le service est peut-être temporairement indisponible.",
-    zeroRate: function (n) { return Math.round(n * 100) + " %"; },
-    dashTitle: function (label) { return label ? "Bonjour, " + label : "Tableau de bord"; },
+    loading: T("Chargement des données…"),
+    loginErrorInvalid: T("Email ou mot de passe incorrect."),
+    loginErrorNetwork: T("Impossible de joindre api.heurix.fr. Le service est peut-être temporairement indisponible."),
+    zeroRate: function (n) { return Math.round(n * 100) + "%"; },
+    dashTitle: function (label) { return label ? T("Bonjour, {0}", label) : T("Tableau de bord"); },
     when: function (iso) {
       try {
         var d = new Date(iso);
-        return d.toLocaleDateString("fr-FR", { day: "numeric", month: "short" }) + " à " +
-               d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+        return d.toLocaleDateString(LOCALE, { day: "numeric", month: "short" }) + " " + T("à") + " " +
+               d.toLocaleTimeString(LOCALE, { hour: "2-digit", minute: "2-digit" });
       } catch (e) { return iso; }
     }
   };
@@ -110,11 +122,11 @@
 
   var AUTH_FORMS = [loginForm, signupForm, resetRequestForm, resetConfirmForm, acceptInviteForm];
   var AUTH_COPY = {
-    "login": ["Votre tableau de bord.", "Mots les plus recherchés, recherches sans résultat, erreurs récentes, consommation — connectez-vous pour les consulter."],
-    "signup": ["Créer votre compte.", "Une entreprise, un email, un mot de passe — votre clé API est générée immédiatement et envoyée par email."],
-    "reset-request": ["Mot de passe oublié ?", "Indiquez votre email, on vous envoie un lien pour en choisir un nouveau."],
-    "reset-confirm": ["Nouveau mot de passe.", "Choisissez un nouveau mot de passe pour votre compte."],
-    "accept-invite": ["Rejoindre votre équipe.", "Dernière étape : choisissez votre mot de passe."]
+    "login": [T("Votre tableau de bord."), T("Mots les plus recherchés, recherches sans résultat, erreurs récentes, consommation — connectez-vous pour les consulter.")],
+    "signup": [T("Créer votre compte."), T("Une entreprise, un email, un mot de passe — votre clé API est générée immédiatement et envoyée par email.")],
+    "reset-request": [T("Mot de passe oublié ?"), T("Indiquez votre email, on vous envoie un lien pour en choisir un nouveau.")],
+    "reset-confirm": [T("Nouveau mot de passe."), T("Choisissez un nouveau mot de passe pour votre compte.")],
+    "accept-invite": [T("Rejoindre votre équipe."), T("Dernière étape : choisissez votre mot de passe.")]
   };
   function setAuthMode(mode) {
     AUTH_FORMS.forEach(function (f) { f.hidden = true; });
@@ -194,16 +206,16 @@
       el.hidden = false;
       el.className = "kpi-tendance kpi-tendance-" + couleur;
       el.innerHTML = (hausse ? "&#9650;" : "&#9660;") + " " +
-        Math.abs(pct).toLocaleString("fr-FR") + "&nbsp;%" +
-        "<span class='kpi-tendance-ref'>vs période précédente</span>";
+        Math.abs(pct).toLocaleString(LOCALE) + "&nbsp;%" +
+        "<span class='kpi-tendance-ref'>" + T("vs période précédente") + "</span>";
     });
   }
 
   function renderStats(summary, usage) {
-    document.getElementById("stat-searches").textContent = summary.total_searches.toLocaleString("fr-FR");
+    document.getElementById("stat-searches").textContent = summary.total_searches.toLocaleString(LOCALE);
     document.getElementById("stat-zero-rate").textContent = L.zeroRate(summary.zero_result_rate);
-    document.getElementById("stat-errors").textContent = summary.total_errors.toLocaleString("fr-FR");
-    document.getElementById("stat-usage").textContent = usage.requests.toLocaleString("fr-FR");
+    document.getElementById("stat-errors").textContent = summary.total_errors.toLocaleString(LOCALE);
+    document.getElementById("stat-usage").textContent = usage.requests.toLocaleString(LOCALE);
     // La comparaison est un appel distinct : elle ne doit pas retarder
     // l'affichage des chiffres principaux.
     if (typeof activeKey !== "undefined" && activeKey) {
@@ -228,8 +240,8 @@
       .then(function (data) {
         renderTable("public-keys-table", "public-keys-empty", data.keys, function (k) {
           return "<td class='mono' style='word-break:break-all;'>" + esc(k.key) + "</td>" +
-            "<td>" + (k.allowed_origins ? esc(k.allowed_origins) : "<span style='color:var(--ink-muted);'>tous</span>") + "</td>" +
-            "<td><button type='button' class='catalog-rule-remove' data-revoke-key='" + esc(k.key) + "' aria-label='Révoquer'>&times;</button></td>";
+            "<td>" + (k.allowed_origins ? esc(k.allowed_origins) : "<span style='color:var(--ink-muted);'>" + T("tous") + "</span>") + "</td>" +
+            "<td><button type='button' class='catalog-rule-remove' data-revoke-key='" + esc(k.key) + "' aria-label='" + T("Révoquer") + "'>&times;</button></td>";
         });
       })
       .catch(function () {});
@@ -243,15 +255,15 @@
       e.preventDefault();
       var status = document.getElementById("public-key-status");
       var origins = document.getElementById("public-key-origins").value.trim();
-      status.textContent = "Génération…"; status.className = "catalog-rule-status";
+      status.textContent = T("Génération…"); status.className = "catalog-rule-status";
       apiFetch("/v1/keys/public", key, { method: "POST", body: { allowed_origins: origins || null } })
         .then(function () {
-          status.textContent = "Clé publique générée."; status.className = "catalog-rule-status ok";
+          status.textContent = T("Clé publique générée."); status.className = "catalog-rule-status ok";
           document.getElementById("public-key-origins").value = "";
           refreshPublicKeys(key);
         })
         .catch(function (err) {
-          status.textContent = (err && err.message) || "Échec de la génération.";
+          status.textContent = (err && err.message) || T("Échec de la génération.");
           status.className = "catalog-rule-status err";
         });
     });
@@ -261,8 +273,7 @@
       if (!btn) return;
       var cleVisee = btn.getAttribute("data-revoke-key");
       confirmerSuppression(
-        "Révoquer la clé publique <strong>" + esc(cleVisee.slice(0, 12)) + "…</strong> ?<br>" +
-        "Si elle est utilisée sur votre site, la recherche cessera de fonctionner immédiatement pour vos visiteurs.",
+        T("Révoquer la clé publique <strong>{0}…</strong> ?<br>Si elle est utilisée sur votre site, la recherche cessera de fonctionner immédiatement pour vos visiteurs.", esc(cleVisee.slice(0, 12))),
         btn,
         function () {
           btn.disabled = true;
@@ -286,7 +297,7 @@
     function charger() {
       var catalogue = select.value;
       if (!catalogue) return;
-      contenu.innerHTML = "<p class='console-panel-note'>Chargement…</p>";
+      contenu.innerHTML = "<p class='console-panel-note'>" + T("Chargement…") + "</p>";
       vide.hidden = true;
       apiFetch("/v1/analytics/category-views/" + encodeURIComponent(catalogue), key)
         .then(function (data) {
@@ -303,13 +314,13 @@
               var ratio = p.views ? Math.round((p.search_clicks / p.views) * 100) : 0;
               return "<tr><td>" + produitCell(p.product_id, p.name, p.price) + "</td>" +
                 "<td class='num'>" + p.views + "</td><td class='num'>" + p.search_clicks + "</td>" +
-                "<td class='num'>" + ratio + " %</td></tr>";
+                "<td class='num'>" + ratio + "%</td></tr>";
             }).join("");
             return "<h2 style='margin-top:22px;'>" + esc(cat.category) +
               " <span style='font-weight:400; color:var(--ink-muted); font-size:13px;'>— " +
-              cat.total_views + " impressions</span></h2>" +
+              T("{0} impressions", cat.total_views) + "</span></h2>" +
               "<div class='table-scroll'><table class='console-table'>" +
-              "<thead><tr><th>Produit</th><th>Vues</th><th>Clics recherche</th><th>Ratio</th></tr></thead>" +
+              "<thead><tr><th>" + T("Produit") + "</th><th>" + T("Vues") + "</th><th>" + T("Clics recherche") + "</th><th>" + T("Ratio") + "</th></tr></thead>" +
               "<tbody>" + lignes + "</tbody></table></div>";
           }).join("");
         })
@@ -347,7 +358,7 @@
       toggleBtn.addEventListener("click", function () {
         shown = !shown;
         valueEl.textContent = shown ? valueEl.dataset.full : valueEl.dataset.masked;
-        toggleBtn.setAttribute("aria-label", shown ? "Masquer la clé" : "Afficher la clé");
+        toggleBtn.setAttribute("aria-label", shown ? T("Masquer la clé") : T("Afficher la clé"));
       });
       copyBtn.addEventListener("click", function () {
         navigator.clipboard.writeText(valueEl.dataset.full).then(function () {
@@ -367,14 +378,14 @@
   function renderTeam(teammates, myEmail, isAdmin) {
     var tbody = document.querySelector("#team-table tbody");
     tbody.innerHTML = teammates.map(function (t) {
-      var roleLabel = t.role === "admin" ? "Administrateur" : "Membre";
+      var roleLabel = t.role === "admin" ? T("Administrateur") : T("Membre");
       var actions = "";
       if (isAdmin && t.email !== myEmail) {
-        var toggleLabel = t.role === "admin" ? "Rétrograder" : "Promouvoir admin";
+        var toggleLabel = t.role === "admin" ? T("Rétrograder") : T("Promouvoir admin");
         var toggleRole = t.role === "admin" ? "member" : "admin";
         actions = '<div class="console-team-actions">' +
           '<button type="button" class="console-team-action" data-action="role" data-id="' + t.id + '" data-role="' + toggleRole + '">' + toggleLabel + '</button>' +
-          '<button type="button" class="console-team-action console-team-action-danger" data-action="remove" data-id="' + t.id + '" data-email="' + esc(t.email) + '">Retirer</button>' +
+          '<button type="button" class="console-team-action console-team-action-danger" data-action="remove" data-id="' + t.id + '" data-email="' + esc(t.email) + '">' + T("Retirer") + '</button>' +
           '</div>';
       }
       return "<tr><td>" + esc(t.email) + "</td><td>" + roleLabel + "</td><td>" + L.when(t.created_at) + "</td><td>" + actions + "</td></tr>";
@@ -398,7 +409,7 @@
       // encore renseignee -- on garde alors un intitule neutre plutot
       // qu'un menu vide ou un placeholder technique.
       var orgBtn = document.getElementById("console-org-btn");
-      if (orgBtn) orgBtn.textContent = company.raison_sociale || "Mon compte";
+      if (orgBtn) orgBtn.textContent = company.raison_sociale || T("Mon compte");
       var orgDropVisible = document.querySelector(".console-org-drop");
       if (orgDropVisible) orgDropVisible.hidden = false;
 
@@ -436,19 +447,19 @@
           e.preventDefault();
           var emailInput = document.getElementById("invite-email");
           var btn = document.getElementById("invite-btn");
-          btn.disabled = true; btn.textContent = "Envoi…";
+          btn.disabled = true; btn.textContent = T("Envoi…");
           inviteStatus.hidden = true;
           apiFetch("/v1/auth/invite", localStorage.getItem(SESSION_STORAGE_KEY), { method: "POST", body: { email: emailInput.value.trim() } })
             .then(function (r) {
-              inviteStatus.textContent = "Invitation envoyée à " + r.invited + ".";
+              inviteStatus.textContent = T("Invitation envoyée à {0}.", r.invited);
               inviteStatus.hidden = false;
               emailInput.value = "";
             })
             .catch(function (err) {
-              inviteStatus.textContent = (err && err.message) || "Échec de l'envoi.";
+              inviteStatus.textContent = (err && err.message) || T("Échec de l'envoi.");
               inviteStatus.hidden = false;
             })
-            .then(function () { btn.disabled = false; btn.textContent = "Inviter"; });
+            .then(function () { btn.disabled = false; btn.textContent = T("Inviter"); });
         });
       }
 
@@ -457,18 +468,18 @@
         document.getElementById("company-form").addEventListener("submit", function (e) {
           e.preventDefault();
           var status = document.getElementById("company-status");
-          companySaveBtn.disabled = true; companySaveBtn.textContent = "Enregistrement…";
+          companySaveBtn.disabled = true; companySaveBtn.textContent = T("Enregistrement…");
           status.hidden = true;
           apiFetch("/v1/auth/company", localStorage.getItem(SESSION_STORAGE_KEY), {
             method: "PUT", body: { raison_sociale: raisonInput.value.trim(), numero_tva: tvaInput.value.trim() || null },
           }).then(function () {
-            status.textContent = "Informations enregistrées.";
+            status.textContent = T("Informations enregistrées.");
             status.hidden = false;
           }).catch(function (err) {
-            status.textContent = (err && err.message) || "Échec de l'enregistrement.";
+            status.textContent = (err && err.message) || T("Échec de l'enregistrement.");
             status.hidden = false;
           }).then(function () {
-            companySaveBtn.disabled = false; companySaveBtn.textContent = "Enregistrer";
+            companySaveBtn.disabled = false; companySaveBtn.textContent = T("Enregistrer");
           });
         });
 
@@ -491,8 +502,7 @@
             // pour que les trois se comportent pareil -- deux dialogues
             // differents pour la meme gravite d'action est en soi un defaut.
             confirmerSuppression(
-              "Retirer <strong>" + esc(email) + "</strong> de l'équipe ?<br>" +
-              "Cette personne perdra immédiatement l'accès à la console et aux catalogues.",
+              T("Retirer <strong>{0}</strong> de l'équipe ?<br>Cette personne perdra immédiatement l'accès à la console et aux catalogues.", esc(email)),
               btn,
               function () {
                 btn.disabled = true;
@@ -560,7 +570,7 @@
       catalogueSandbox = {};
       (data.catalogs || []).forEach(function (c) { catalogueSandbox[c.catalog] = !!c.sandbox; });
       Array.prototype.forEach.call(select.options, function (opt) {
-        opt.textContent = opt.value + (catalogueSandbox[opt.value] ? " — bac à sable" : "");
+        opt.textContent = opt.value + (catalogueSandbox[opt.value] ? " — " + T("bac à sable") : "");
       });
       majBandeauSandbox();
     }).catch(function () {});
@@ -578,10 +588,9 @@
     var bulle = document.createElement("div");
     bulle.className = "console-env-tip";
     bulle.innerHTML =
-      "<strong>Vous travaillez sur ce catalogue</strong><br>" +
-      "Ce choix s'applique partout : tableau de bord, analytique et personnalisation. " +
-      "Changez-le ici pour basculer d'un catalogue à l'autre." +
-      "<button type='button' class='console-env-tip-close' aria-label='Compris'>&times;</button>";
+      "<strong>" + T("Vous travaillez sur ce catalogue") + "</strong><br>" +
+      T("Ce choix s'applique partout : tableau de bord, analytique et personnalisation. Changez-le ici pour basculer d'un catalogue à l'autre.") +
+      "<button type='button' class='console-env-tip-close' aria-label='" + T("Compris") + "'>&times;</button>";
     var enveloppe = select.closest(".console-env-wrap") || select.parentElement;
     enveloppe.appendChild(bulle);
     bulle.querySelector(".console-env-tip-close").addEventListener("click", function () { bulle.remove(); });
@@ -603,17 +612,14 @@
       if (!catalogueListe.length) {
         // Compte neuf : rien a choisir. On le dit plutot que d'afficher une
         // liste vide, qui laisserait croire a une panne.
-        select.innerHTML = '<option value="">Aucun catalogue</option>';
+        select.innerHTML = '<option value="">' + T("Aucun catalogue") + '</option>';
         select.disabled = true;
         return;
       }
       select.disabled = false;
       select.innerHTML = catalogueListe.map(function (n) {
-        // Le bac a sable est signale dans le libelle : sans cela, rien ne
-        // distinguerait un catalogue non facture d'un catalogue reel, et on
-        // risquerait de tester sur la production en croyant l'inverse.
         return "<option value='" + esc(n) + "'>" + esc(n) +
-          (catalogueSandbox[n] ? " — bac à sable" : "") + "</option>";
+          (catalogueSandbox[n] ? " — " + T("bac à sable") : "") + "</option>";
       }).join("");
 
       // La grande majorite des comptes n'a qu'un catalogue : on le
@@ -701,7 +707,7 @@
   // reconstruites ici : c'est lui qui fait foi, et le dupliquer creerait
   // deux verites sur la meme donnee.
   var PLAN_LIBELLES = {
-    trial: "Essai gratuit", starter: "Starter", growth: "Growth", scale: "Scale",
+    trial: T("Essai gratuit"), starter: "Starter", growth: "Growth", scale: "Scale",
   };
 
   // ---------------- Jauges de quota (audit UX, point 2) ----------------
@@ -718,23 +724,21 @@
   // consommer, c'est l'absence d'alerte.
   function jaugeQuota(libelle, utilise, plafond, unite) {
     if (!plafond) {
-      // Sans plafond connu (plan sur mesure), on affiche la valeur brute
-      // plutot qu'une barre trompeuse remplie a 0 %.
       return "<div class='quota-ligne'><span class='quota-label'>" + libelle +
-        "</span><span class='quota-valeur'>" + utilise.toLocaleString("fr-FR") +
+        "</span><span class='quota-valeur'>" + utilise.toLocaleString(LOCALE) +
         (unite ? " " + unite : "") + "</span></div>";
     }
     var pct = Math.min(100, Math.round(utilise / plafond * 100));
     var niveau = pct >= 100 ? "critique" : (pct >= 80 ? "attention" : "normal");
     return "<div class='quota-ligne'>" +
         "<span class='quota-label'>" + libelle + "</span>" +
-        "<span class='quota-valeur'>" + utilise.toLocaleString("fr-FR") + " / " +
-          plafond.toLocaleString("fr-FR") + (unite ? " " + unite : "") +
-          " <em>(" + pct + "&nbsp;%)</em></span>" +
+        "<span class='quota-valeur'>" + utilise.toLocaleString(LOCALE) + " / " +
+          plafond.toLocaleString(LOCALE) + (unite ? " " + unite : "") +
+          " <em>(" + pct + "%)</em></span>" +
       "</div>" +
       "<div class='quota-barre quota-" + niveau + "' role='progressbar' " +
         "aria-valuenow='" + pct + "' aria-valuemin='0' aria-valuemax='100' " +
-        "aria-label='" + libelle + " : " + pct + " pour cent utilisés'>" +
+        "aria-label='" + T("{0} : {1} pour cent utilisés", libelle, pct) + "'>" +
         "<span style='width:" + pct + "%;'></span>" +
       "</div>";
   }
@@ -746,17 +750,17 @@
 
     apiFetch("/v1/usage", key).then(function (d) {
       var plan = d.plan || (d.limit_status && d.limit_status.plan) || "—";
-      var html = "<div class='billing-row'><span class='billing-label'>Formule</span>" +
+      var html = "<div class='billing-row'><span class='billing-label'>" + T("Formule") + "</span>" +
         "<span class='billing-value'><strong style='font-size:16px;'>" +
         esc(PLAN_LIBELLES[plan] || plan) + "</strong></span></div>";
 
-      html += jaugeQuota("Requêtes ce mois-ci", d.requests || 0, d.limit);
+      html += jaugeQuota(T("Requêtes ce mois-ci"), d.requests || 0, d.limit);
       if (d.catalogs_used !== undefined) {
-        html += jaugeQuota("Catalogues", d.catalogs_used, d.catalogs_limit);
+        html += jaugeQuota(T("Catalogues"), d.catalogs_used, d.catalogs_limit);
       }
       if (d.products_limit) {
-        html += "<div class='quota-ligne'><span class='quota-label'>Produits par catalogue</span>" +
-          "<span class='quota-valeur'>jusqu'à " + d.products_limit.toLocaleString("fr-FR") +
+        html += "<div class='quota-ligne'><span class='quota-label'>" + T("Produits par catalogue") + "</span>" +
+          "<span class='quota-valeur'>" + T("jusqu'à {0}", d.products_limit.toLocaleString(LOCALE)) +
           "</span></div>";
       }
       if (d.browse_plan && d.browse_plan !== "none") {
@@ -781,14 +785,14 @@
       var enEssai = (plan === "trial" || plan === "—");
       if (blocUpgrade) {
         blocUpgrade.hidden = false;
-        if (titreUpgrade) titreUpgrade.textContent = enEssai ? "Souscrire une formule" : "Changer de formule";
+        if (titreUpgrade) titreUpgrade.textContent = enEssai ? T("Souscrire une formule") : T("Changer de formule");
         if (texteUpgrade) {
           texteUpgrade.textContent = enEssai
-            ? "Vous êtes en période d'essai : choisissez une formule pour continuer après son terme. Aucun abonnement n'est encore actif sur votre compte."
-            : "Le changement se fait depuis le portail de facturation : Stripe calcule le prorata et ajuste votre abonnement en cours. Vous n'êtes pas facturé deux fois, et il n'y a pas de nouvelle période d'essai.";
+            ? T("Vous êtes en période d'essai : choisissez une formule pour continuer après son terme. Aucun abonnement n'est encore actif sur votre compte.")
+            : T("Le changement se fait depuis le portail de facturation : Stripe calcule le prorata et ajuste votre abonnement en cours. Vous n'êtes pas facturé deux fois, et il n'y a pas de nouvelle période d'essai.");
         }
         if (boutonUpgrade) {
-          boutonUpgrade.textContent = enEssai ? "Voir les formules" : "Changer de formule";
+          boutonUpgrade.textContent = enEssai ? T("Voir les formules") : T("Changer de formule");
           boutonUpgrade.setAttribute("data-mode", enEssai ? "souscrire" : "changer");
         }
       }
@@ -796,23 +800,22 @@
       if (essai) {
         if (d.trial_expired) {
           essai.hidden = false;
-          essai.innerHTML = "<strong>Votre essai est terminé.</strong> Choisissez une formule pour continuer à utiliser Heurix.";
+          essai.innerHTML = T("<strong>Votre essai est terminé.</strong> Choisissez une formule pour continuer à utiliser Heurix.");
         } else if (d.trial_days_left !== undefined && d.trial_days_left !== null) {
           essai.hidden = false;
-          essai.textContent = "Il vous reste " + d.trial_days_left + " jour" +
-            (d.trial_days_left > 1 ? "s" : "") + " d'essai.";
+          essai.textContent = T(d.trial_days_left > 1 ? "Il vous reste {0} jours d'essai." : "Il vous reste {0} jour d'essai.", d.trial_days_left);
         } else {
           essai.hidden = true;
         }
       }
     }).catch(function () {
-      grille.innerHTML = "<p class='console-panel-note'>Impossible de charger votre abonnement.</p>";
+      grille.innerHTML = "<p class='console-panel-note'>" + T("Impossible de charger votre abonnement.") + "</p>";
     });
   }
 
   function ouvrirPortail(key, bouton, statut, messageEchec) {
     bouton.disabled = true;
-    if (statut) { statut.className = "catalog-rule-status"; statut.textContent = "Ouverture du portail…"; }
+    if (statut) { statut.className = "catalog-rule-status"; statut.textContent = T("Ouverture du portail…"); }
     apiFetch("/v1/stripe/create-portal-session", key, { method: "POST", body: {} })
       .then(function (d) {
         if (d.portal_url) window.location.href = d.portal_url;
@@ -842,7 +845,7 @@
       // creerait un SECOND abonnement, donc une double facturation. Le
       // portail, lui, MODIFIE l'abonnement existant avec prorata.
       ouvrirPortail(key, changer, statutU,
-        "Aucun abonnement actif : souscrivez d'abord une formule depuis la page des tarifs.");
+        T("Aucun abonnement actif : souscrivez d'abord une formule depuis la page des tarifs."));
     });
 
     var bouton = document.getElementById("billing-portal");
@@ -850,7 +853,7 @@
     if (!bouton) return;
     bouton.addEventListener("click", function () {
       ouvrirPortail(key, bouton, statut,
-        "Aucun abonnement actif : le portail devient disponible après souscription.");
+        T("Aucun abonnement actif : le portail devient disponible après souscription."));
     });
   }
 
@@ -879,12 +882,12 @@
     fond.className = "confirm-fond";
     fond.innerHTML =
       "<div class='confirm-boite' role='dialog' aria-modal='true' aria-labelledby='confirm-titre'>" +
-        "<p class='confirm-titre' id='confirm-titre'>Confirmer la suppression</p>" +
+        "<p class='confirm-titre' id='confirm-titre'>" + T("Confirmer la suppression") + "</p>" +
         "<p class='confirm-texte'>" + description + "</p>" +
-        "<p class='confirm-note'>Cette action est irréversible.</p>" +
+        "<p class='confirm-note'>" + T("Cette action est irréversible.") + "</p>" +
         "<div class='confirm-actions'>" +
-          "<button type='button' class='confirm-annuler'>Annuler</button>" +
-          "<button type='button' class='confirm-valider'>Supprimer définitivement</button>" +
+          "<button type='button' class='confirm-annuler'>" + T("Annuler") + "</button>" +
+          "<button type='button' class='confirm-valider'>" + T("Supprimer définitivement") + "</button>" +
         "</div>" +
       "</div>";
     document.body.appendChild(fond);
@@ -923,29 +926,29 @@
   // prevu s'afficherait vide -- pire que technique.
   var TRADUCTIONS_ERREUR = [
     { code: 429, motif: /catalogue/i,
-      texte: "Vous avez atteint le nombre de catalogues de votre formule.",
-      action: { libelle: "Voir les formules", pane: "pane-billing" } },
+      texte: T("Vous avez atteint le nombre de catalogues de votre formule."),
+      action: { libelle: T("Voir les formules"), pane: "pane-billing" } },
     { code: 429, motif: null,
-      texte: "Vous avez dépassé le quota de requêtes de votre formule.",
-      action: { libelle: "Voir les formules", pane: "pane-billing" } },
+      texte: T("Vous avez dépassé le quota de requêtes de votre formule."),
+      action: { libelle: T("Voir les formules"), pane: "pane-billing" } },
     { code: 403, motif: /bac à sable|sandbox/i,
-      texte: "Le bac à sable demande une formule Growth ou Scale.",
-      action: { libelle: "Comparer les offres", pane: "pane-billing" } },
+      texte: T("Le bac à sable demande une formule Growth ou Scale."),
+      action: { libelle: T("Comparer les offres"), pane: "pane-billing" } },
     { code: 403, motif: /clé publique|publique/i,
-      texte: "Une clé publique a tenté une action réservée aux clés serveur.",
-      aide: "Les clés publiques ne peuvent que lire. Vérifiez quelle clé votre site utilise." },
+      texte: T("Une clé publique a tenté une action réservée aux clés serveur."),
+      aide: T("Les clés publiques ne peuvent que lire. Vérifiez quelle clé votre site utilise.") },
     { code: 401, motif: null,
-      texte: "Une requête est arrivée avec une clé API invalide ou absente.",
-      aide: "Vérifiez la clé configurée sur votre site. Ce message apparaît aussi lorsqu'un robot teste votre API — c'est alors sans conséquence." },
+      texte: T("Une requête est arrivée avec une clé API invalide ou absente."),
+      aide: T("Vérifiez la clé configurée sur votre site. Ce message apparaît aussi lorsqu'un robot teste votre API — c'est alors sans conséquence.") },
     { code: 404, motif: /catalog/i,
-      texte: "Une requête a visé un catalogue qui n'existe pas.",
-      aide: "Vérifiez le nom du catalogue dans votre intégration : il est sensible à la casse." },
+      texte: T("Une requête a visé un catalogue qui n'existe pas."),
+      aide: T("Vérifiez le nom du catalogue dans votre intégration : il est sensible à la casse.") },
     { code: 422, motif: null,
-      texte: "Une requête a été refusée : format ou paramètre invalide.",
-      aide: "C'est généralement un problème d'intégration côté site, pas côté moteur." },
+      texte: T("Une requête a été refusée : format ou paramètre invalide."),
+      aide: T("C'est généralement un problème d'intégration côté site, pas côté moteur.") },
     { code: 500, motif: null,
-      texte: "Une erreur interne du moteur s'est produite.",
-      aide: "Si elle se répète, écrivez à contact@heurix.fr avec la date et l'heure." },
+      texte: T("Une erreur interne du moteur s'est produite."),
+      aide: T("Si elle se répète, écrivez à contact@heurix.fr avec la date et l'heure.") },
   ];
 
   function traduireErreur(e) {
@@ -956,7 +959,7 @@
       return t;
     }
     // Repli : on montre le message d'origine plutot que rien.
-    return { texte: e.message || "Erreur non détaillée", brut: true };
+    return { texte: e.message || T("Erreur non détaillée"), brut: true };
   }
 
   // ---------------- Signalement des erreurs (audit UX, point 4) ----------------
@@ -1009,7 +1012,7 @@
     if (badge) {
       badge.hidden = nouvelles.length === 0;
       badge.textContent = nouvelles.length > 9 ? "9+" : String(nouvelles.length);
-      badge.setAttribute("aria-label", nouvelles.length + " erreur(s) demandant votre attention");
+      badge.setAttribute("aria-label", T("{0} erreur(s) demandant votre attention", nouvelles.length));
     }
 
     // BILAN EN TETE DE SECTION, et non banniere sur le tableau de bord.
@@ -1032,18 +1035,18 @@
     var html = "<div class='err-bilan-chiffres'>";
     html += "<span class='err-bilan-bloc " + (aTraiter > 0 ? "err-bilan-alerte" : "") + "'>" +
               "<strong>" + aTraiter + "</strong>" +
-              "<em>" + (aTraiter === 1 ? "erreur à traiter" : "erreurs à traiter") + "</em>" +
+              "<em>" + T(aTraiter === 1 ? "erreur à traiter" : "erreurs à traiter") + "</em>" +
             "</span>";
     if (bruit > 0) {
       html += "<span class='err-bilan-bloc'>" +
                 "<strong>" + bruit + "</strong>" +
-                "<em>" + (bruit === 1 ? "événement sans conséquence" : "événements sans conséquence") + "</em>" +
+                "<em>" + T(bruit === 1 ? "événement sans conséquence" : "événements sans conséquence") + "</em>" +
               "</span>";
     }
     html += "</div>";
     html += "<p class='err-bilan-note'>" + (aTraiter > 0
-      ? "Les erreurs à traiter concernent un quota dépassé, une intégration en défaut ou un incident du moteur. Les autres — clés invalides, catalogues inconnus — proviennent souvent de robots qui testent votre API : elles n'ont pas d'effet sur vos visiteurs."
-      : "Aucune erreur ne demande d'action. Les événements listés ci-dessous — clés invalides, catalogues inconnus — proviennent souvent de robots qui testent votre API.") + "</p>";
+      ? T("Les erreurs à traiter concernent un quota dépassé, une intégration en défaut ou un incident du moteur. Les autres — clés invalides, catalogues inconnus — proviennent souvent de robots qui testent votre API : elles n'ont pas d'effet sur vos visiteurs.")
+      : T("Aucune erreur ne demande d'action. Les événements listés ci-dessous — clés invalides, catalogues inconnus — proviennent souvent de robots qui testent votre API.")) + "</p>";
     bilan.innerHTML = html;
   }
 
@@ -1192,22 +1195,22 @@
     var messageInput = document.getElementById("feedback-message");
     var message = messageInput.value.trim();
     if (!message) { messageInput.focus(); return; }
-    btn.disabled = true; btn.textContent = "Envoi…";
+    btn.disabled = true; btn.textContent = T("Envoi…");
     status.hidden = true;
     apiFetch("/v1/feedback", localStorage.getItem(SESSION_STORAGE_KEY), {
       method: "POST",
       body: { category: document.getElementById("feedback-category").value, message: message },
     }).then(function () {
-      status.textContent = "Message envoyé — une réponse vous revient directement par email.";
+      status.textContent = T("Message envoyé — une réponse vous revient directement par email.");
       status.className = "console-form-status ok";
       status.hidden = false;
       messageInput.value = "";
     }).catch(function (err) {
-      status.textContent = (err && err.message) || "Échec de l'envoi — réessayez, ou écrivez directement à contact@heurix.fr.";
+      status.textContent = (err && err.message) || T("Échec de l'envoi — réessayez, ou écrivez directement à contact@heurix.fr.");
       status.className = "console-form-status err";
       status.hidden = false;
     }).then(function () {
-      btn.disabled = false; btn.textContent = "Envoyer";
+      btn.disabled = false; btn.textContent = T("Envoyer");
     });
   });
 
@@ -1282,7 +1285,7 @@
   }
 
   function eur(n) {
-    return n.toLocaleString("fr-FR", { style: "currency", currency: "EUR" });
+    return n.toLocaleString(LOCALE, { style: "currency", currency: "EUR" });
   }
 
   var convSortWired = false;
@@ -1295,16 +1298,16 @@
       var summary = results[0], products = results[1].products;
       document.getElementById("conv-ctr").textContent = L.zeroRate(summary.click_through_rate);
       document.getElementById("conv-revenue").textContent = eur(summary.total_revenue);
-      document.getElementById("conv-products").textContent = summary.products_purchased.toLocaleString("fr-FR");
+      document.getElementById("conv-products").textContent = summary.products_purchased.toLocaleString(LOCALE);
 
       var attributedEl = document.getElementById("conv-attributed");
       var attributedLabel = document.getElementById("conv-attributed-label");
       if (summary.attributed_revenue === null) {
         attributedEl.textContent = "–";
-        attributedLabel.textContent = "CA réellement attribué (tracker non installé)";
+        attributedLabel.textContent = T("CA réellement attribué (tracker non installé)");
       } else {
         attributedEl.textContent = eur(summary.attributed_revenue);
-        attributedLabel.textContent = "CA réellement attribué";
+        attributedLabel.textContent = T("CA réellement attribué");
       }
 
       renderTable("top-products-table", "top-products-empty", products, function (p) {
@@ -1348,8 +1351,8 @@
     document.getElementById("so-action").value = "pin";
     document.getElementById("so-position").hidden = false;
     document.getElementById("so-position").value = "";
-    document.getElementById("so-form-title").textContent = "Ajouter une priorité";
-    document.getElementById("so-submit-btn").textContent = "Ajouter la priorité";
+    document.getElementById("so-form-title").textContent = T("Ajouter une priorité");
+    document.getElementById("so-submit-btn").textContent = T("Ajouter la priorité");
     document.getElementById("so-cancel-edit-btn").hidden = true;
     document.getElementById("so-status").textContent = "";
   }
@@ -1369,8 +1372,8 @@
     // sens. Voir les classes .cell-* dans styles.css.
     var pin = o.action === "pin";
     var actionLabel = pin
-      ? "<span class='cell-action cell-action-pin'>&#9679; Épingler</span>"
-      : "<span class='cell-action cell-action-bury'>&#9679; Reléguer</span>";
+      ? "<span class='cell-action cell-action-pin'>&#9679; " + T("Épingler") + "</span>"
+      : "<span class='cell-action cell-action-bury'>&#9679; " + T("Reléguer") + "</span>";
     var rang = pin && o.position
       ? "<span class='cell-rank'>" + o.position + "</span>"
       : "<span style='color:var(--ink-muted);'>–</span>";
@@ -1379,9 +1382,9 @@
       "<td>" + actionLabel + "</td>" +
       "<td>" + rang + "</td>" +
       "<td class='cell-actions'>" +
-        "<button type='button' class='catalog-rule-remove' data-so-edit='1' data-query='" + esc(o.query) + "' data-product-id='" + esc(o.product_id) + "' data-action='" + esc(o.action) + "' data-position='" + (o.position || "") + "' aria-label='Modifier' title='Modifier'>&#9998;</button>" +
-        "<button type='button' class='catalog-rule-remove' data-so-duplicate='1' data-query='" + esc(o.query) + "' data-product-id='" + esc(o.product_id) + "' data-action='" + esc(o.action) + "' data-position='" + (o.position || "") + "' aria-label='Dupliquer' title='Dupliquer comme nouvelle règle'>&#10697;</button>" +
-        "<button type='button' class='catalog-rule-remove' data-so-delete='1' data-query='" + esc(o.query) + "' data-product-id='" + esc(o.product_id) + "' aria-label='Supprimer'>&times;</button>" +
+        "<button type='button' class='catalog-rule-remove' data-so-edit='1' data-query='" + esc(o.query) + "' data-product-id='" + esc(o.product_id) + "' data-action='" + esc(o.action) + "' data-position='" + (o.position || "") + "' aria-label='" + T("Modifier") + "' title='" + T("Modifier") + "'>&#9998;</button>" +
+        "<button type='button' class='catalog-rule-remove' data-so-duplicate='1' data-query='" + esc(o.query) + "' data-product-id='" + esc(o.product_id) + "' data-action='" + esc(o.action) + "' data-position='" + (o.position || "") + "' aria-label='" + T("Dupliquer") + "' title='" + T("Dupliquer comme nouvelle règle") + "'>&#10697;</button>" +
+        "<button type='button' class='catalog-rule-remove' data-so-delete='1' data-query='" + esc(o.query) + "' data-product-id='" + esc(o.product_id) + "' aria-label='" + T("Supprimer") + "'>&times;</button>" +
       "</td>";
   }
 
@@ -1397,7 +1400,7 @@
       : "<span class='mono'>" + esc(id) + "</span>";
     if (prix !== undefined && prix !== null) {
       html += "<span style='display:block; font-size:12px; font-weight:700; color:var(--blue-deep); margin-top:3px;'>" +
-        Number(prix).toFixed(2).replace(".", ",") + " €</span>";
+        Number(prix).toLocaleString(LOCALE, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €</span>";
     }
     return html;
   }
@@ -1515,9 +1518,8 @@
             var p = g.representant || {};
             return "<div class='so-famille'>" +
               "<div class='so-famille-nom'>" + esc(g.famille) + "</div>" +
-              "<div class='so-famille-compte'>" + g.produits +
-                (g.produits > 1 ? " produits" : " produit") + "</div>" +
-              "<div class='so-famille-ex'>ex. " + esc(p.name || p.id || "") + "</div>" +
+              "<div class='so-famille-compte'>" + T(g.produits > 1 ? "{0} produits" : "{0} produit", g.produits) + "</div>" +
+              "<div class='so-famille-ex'>" + T("ex. {0}", esc(p.name || p.id || "")) + "</div>" +
               (g.etiquettes && g.etiquettes.length
                 ? "<div class='so-famille-tags'>" +
                   g.etiquettes.map(function (t) {
@@ -1526,9 +1528,8 @@
                 : "") +
             "</div>";
           }).join("");
-          legende.textContent = data.total.toLocaleString("fr-FR") +
-            " résultats regroupés en " + data.familles + " familles, " +
-            "classées par pertinence.";
+          legende.textContent = T("{0} résultats regroupés en {1} familles, classées par pertinence.",
+            data.total.toLocaleString(LOCALE), data.familles);
           return;
         }
 
@@ -1545,7 +1546,7 @@
 
         if (!q) {
           hits.sort(function (a, b) {
-            return String(a.product.name || a.product.id).localeCompare(String(b.product.name || b.product.id), "fr");
+            return String(a.product.name || a.product.id).localeCompare(String(b.product.name || b.product.id), LANGUE_EN ? "en" : "fr");
           });
         }
 
@@ -1555,52 +1556,29 @@
           var p = h.product;
           var regle = h.pinned || h.buried;
           var classes = "so-card" + (regle ? (data.simulated ? " so-card-simulated" : " so-card-ruled") : "");
-          // « Relégué » reste possible via le formulaire, mais n'est plus
-          // une action de fiche : un produit relegue partant en fin de
-          // liste, il sortait des 12 fiches affichees et semblait supprime.
           var badge = h.pinned
-            ? "<span class='so-card-badge so-card-badge-pin'>Épinglé · " + (i + 1) + "</span>"
-            : h.buried ? "<span class='so-card-badge so-card-badge-bury'>Relégué</span>" : "";
+            ? "<span class='so-card-badge so-card-badge-pin'>" + T("Épinglé") + " · " + (i + 1) + "</span>"
+            : h.buried ? "<span class='so-card-badge so-card-badge-bury'>" + T("Relégué") + "</span>" : "";
           var enRupture = p.stock === 0;
           var stock = p.stock === undefined ? "" :
             "<span class='so-card-stock" + (enRupture ? " rupture" : "") + "'>" +
-            (enRupture ? "Rupture" : p.stock + " en stock") + "</span>";
+            (enRupture ? T("Rupture") : T("{0} en stock", p.stock)) + "</span>";
           var prix = (p.price !== undefined && p.price !== null)
-            ? "<span class='so-card-price'>" + Number(p.price).toFixed(2).replace(".", ",") + " €</span>" : "";
-          // La raison n'a de sens que sur une recherche : en vue catalogue,
-          // il n'y a pas de requete a expliquer.
+            ? "<span class='so-card-price'>" + Number(p.price).toLocaleString(LOCALE, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €</span>" : "";
           var pourquoi = (q && (h.matched || []).length)
             ? "<div class='so-card-why'>" + esc(h.matched.slice(0, 2).join(" · ")) + "</div>"
-            : (q && h.pinned ? "<div class='so-card-why'>Injecté par une règle</div>" : "");
+            : (q && h.pinned ? "<div class='so-card-why'>" + T("Injecté par une règle") + "</div>" : "");
 
-          // Actions de la fiche. Le glisser-deposer n'est PAS le seul moyen
-          // de reordonner : chaque fiche epinglee porte aussi monter et
-          // descendre. Non negociable -- le glisser-deposer est inutilisable
-          // au clavier et fragile au doigt, et le merchandising doit rester
-          // accessible.
           var pid = esc(p.id);
           var ICONE = ICONES_FICHE;
-          // Un produit ne peut etre deplace qu'une fois EPINGLE : le moteur
-          // place les epingles en bloc ordonne en tete, le reste suit le
-          // classement naturel. « Monter » sur un produit non epingle
-          // l'epingle donc, et « Descendre » sur le dernier epingle le rend
-          // au classement naturel -- jamais en dessous, comme demande.
           var actions = "<div class='so-card-actions'>";
-          // Les trois actions sont disponibles sur TOUS les produits, epingles
-          // ou non : monter ou descendre un produit non epingle materialise
-          // l'ordre au-dessus de lui (voir soDeplacer).
-          // GARDE-FOU : les fleches figent les positions de l'ordre AFFICHE.
-          // Sur une liste filtree par facette, elles produiraient des regles
-          // qui ne veulent plus rien dire une fois le filtre retire. On les
-          // desactive plutot que de fabriquer des regles trompeuses.
-          // L'epinglage, lui, garde le meme sens filtre ou non.
           var bloque = soFiltres.length ? " disabled" : "";
-          actions += "<button type='button'" + bloque + " data-so-act='up' data-pid='" + pid + "' title='Monter d une place' aria-label='Monter " + esc(p.name || p.id) + "'>" + ICONE.up + "</button>" +
-                     "<button type='button'" + bloque + " data-so-act='down' data-pid='" + pid + "' title='Descendre d une place' aria-label='Descendre " + esc(p.name || p.id) + "'>" + ICONE.down + "</button>";
+          actions += "<button type='button'" + bloque + " data-so-act='up' data-pid='" + pid + "' title='" + T("Monter d'une place") + "' aria-label='" + T("Monter {0}", esc(p.name || p.id)) + "'>" + ICONE.up + "</button>" +
+                     "<button type='button'" + bloque + " data-so-act='down' data-pid='" + pid + "' title='" + T("Descendre d'une place") + "' aria-label='" + T("Descendre {0}", esc(p.name || p.id)) + "'>" + ICONE.down + "</button>";
           if (h.pinned) {
-            actions += "<button type='button' data-so-act='retirer' data-pid='" + pid + "' title='Retirer l épinglage' aria-label='Retirer l épinglage de " + esc(p.name || p.id) + "'>" + ICONE.off + "</button>";
+            actions += "<button type='button' data-so-act='retirer' data-pid='" + pid + "' title='" + T("Retirer l'épinglage") + "' aria-label='" + T("Retirer l'épinglage de {0}", esc(p.name || p.id)) + "'>" + ICONE.off + "</button>";
           } else {
-            actions += "<button type='button' data-so-act='pin' data-pid='" + pid + "' title='Mettre en tête' aria-label='Mettre " + esc(p.name || p.id) + " en tête'>" + ICONE.pin + "</button>";
+            actions += "<button type='button' data-so-act='pin' data-pid='" + pid + "' title='" + T("Mettre en tête") + "' aria-label='" + T("Mettre {0} en tête", esc(p.name || p.id)) + "'>" + ICONE.pin + "</button>";
           }
           actions += "</div>";
 
@@ -1615,8 +1593,8 @@
         }).join("");
 
         legende.textContent = q
-          ? hits.length + " résultat" + (hits.length > 1 ? "s" : "") + " sur " + data.total + " pour « " + q + " »"
-          : "Aperçu du catalogue, par ordre alphabétique — tapez une requête pour voir le classement.";
+          ? T(hits.length > 1 ? "{0} résultats sur {1} pour « {2} »" : "{0} résultat sur {1} pour « {2} »", hits.length, data.total, q)
+          : T("Aperçu du catalogue, par ordre alphabétique — tapez une requête pour voir le classement.");
       })
       .catch(function () {
         grille.innerHTML = "";
@@ -1634,7 +1612,7 @@
         if (compteur) {
           var n = (data.overrides || []).length;
           compteur.hidden = n === 0;
-          compteur.textContent = n + (n > 1 ? " règles actives" : " règle active");
+          compteur.textContent = T(n > 1 ? "{0} règles actives" : "{0} règle active", n);
         }
         // La table des regles est rechargee apres tout enregistrement : le
         // brouillon n'a plus lieu d'etre, l'apercu repasse sur le reel.
@@ -1680,7 +1658,7 @@
     // ensuite de rejouer quand la barre apparaissait enfin.
     if (!champ || champ.dataset.anime || !estVisible(champ)) return;
     champ.dataset.anime = "1";
-    var texte = "Tapez une requête comme le ferait un visiteur…";
+    var texte = T("Tapez une requête comme le ferait un visiteur…");
     var i = 0;
     champ.placeholder = "";
     champ.parentElement.classList.add("tape");
@@ -1737,33 +1715,20 @@
           btn.hidden = true;
           zone.hidden = false;
           if (!candidats.length) {
-            // HONNÊTE, ET DÉSORMAIS ACTIONNABLE. « chandail » n'a aucun
-            // voisin par distance d'édition : c'est un mot différent, pas
-            // une faute, la suggestion automatique n'a rien à proposer.
-            //
-            // DÉFAUT SIGNALÉ (30 juillet) : le renvoi vers Personnalisation
-            // → Search n'était qu'une PHRASE, pas un lien — le marchand
-            // devait retrouver seul le bon écran, puis retaper le terme
-            // qu'il venait de voir. Le lien réutilise le mécanisme
-            // `data-goto-pane` déjà posé sur le tableau des erreurs :
-            // même geste, même destination, mais ici avec le terme
-            // PRÉ-REMPLI dans le formulaire d'arrivée — voir le
-            // gestionnaire de clic plus bas, qui repère `data-prefill`.
-            zone.innerHTML = "<em>Aucun mot proche dans votre catalogue.</em> " +
+            zone.innerHTML = "<em>" + T("Aucun mot proche dans votre catalogue.") + "</em> " +
               "<button type='button' class='zr-vers-synonymes' data-goto-pane='pane-search-overrides' " +
-              "data-prefill='" + esc(terme) + "'>S'il s'agit d'un autre mot pour un produit que vous " +
-              "vendez, ajoutez-le comme synonyme &rarr;</button>";
+              "data-prefill='" + esc(terme) + "'>" + T("S'il s'agit d'un autre mot pour un produit que vous vendez, ajoutez-le comme synonyme &rarr;") + "</button>";
             return;
           }
           zone.innerHTML = "&rarr; " + candidats.map(function (cand) {
             return "<button type='button' class='zr-choix' data-de='" +
                    esc(cand.jeton) + "' data-vers='" + esc(cand.terme) + "'>" +
-                   esc(cand.terme) + " <i>(" + cand.produits + " produits)</i></button>";
+                   esc(cand.terme) + " <i>(" + T("{0} produits", cand.produits) + ")</i></button>";
           }).join(" ");
         })
         .catch(function () {
           btn.disabled = false;
-          btn.textContent = "Corriger";
+          btn.textContent = T("Corriger");
         });
     });
 
@@ -1782,12 +1747,11 @@
                           key, { method: "PUT", body: { groups: groupes } });
         })
         .then(function () {
-          el.outerHTML = "<span class='zr-fait'>&check; « " + esc(de) +
-                         " » trouvera désormais « " + esc(vers) + " »</span>";
+          el.outerHTML = "<span class='zr-fait'>&check; " + T("« {0} » trouvera désormais « {1} »", esc(de), esc(vers)) + "</span>";
         })
         .catch(function (e) {
           el.disabled = false;
-          window.alert("Création impossible : " + (e.message || e));
+          window.alert(T("Création impossible : {0}", e.message || e));
         });
     }
   }
@@ -1900,13 +1864,13 @@
       })
       .then(function () {
         soDraft = null;
-        if (statut) { statut.textContent = "Règles appliquées."; statut.className = "catalog-rule-status ok"; }
+        if (statut) { statut.textContent = T("Règles appliquées."); statut.className = "catalog-rule-status ok"; }
         resetSoForm();
-        refreshSoTable(key);  // recharge la table ET l'apercu, brouillon vide
+        refreshSoTable(key);
       })
       .catch(function (err) {
         if (statut) {
-          statut.textContent = (err && err.message) || "Échec de l'enregistrement.";
+          statut.textContent = (err && err.message) || T("Échec de l'enregistrement.");
           statut.className = "catalog-rule-status err";
         }
       })
@@ -2060,8 +2024,8 @@
   function soVerifierRequete() {
     var legende = document.getElementById("so-preview-caption");
     if (legende && !soRequeteCourante()) {
-      legende.innerHTML = "<strong>Saisissez d'abord une requête</strong> pour épingler ou reléguer : " +
-        "une priorité se déclenche sur une recherche précise, elle n'existe pas en dehors d'une requête.";
+      legende.innerHTML = "<strong>" + T("Saisissez d'abord une requête") + "</strong> " +
+        T("pour épingler ou reléguer : une priorité se déclenche sur une recherche précise, elle n'existe pas en dehors d'une requête.");
       legende.classList.add("so-caption-warn");
       setTimeout(function () { legende.classList.remove("so-caption-warn"); }, 2600);
       return false;
@@ -2190,28 +2154,28 @@
   // on leur passe. Toute evolution du cablage profite aux deux endroits sans
   // duplication de logique.
   function crMarkup() {
-    return '<div class="catalog-synonyms-label">Synonymes</div>' +
+    return '<div class="catalog-synonyms-label">' + T("Synonymes") + '</div>' +
       '<div class="catalog-synonym-groups"></div>' +
       '<div class="catalog-synonym-add">' +
-        '<input type="text" placeholder="ex. vis, boulon, screw" class="catalog-synonym-input">' +
-        '<button type="button" class="catalog-synonym-add-btn">Ajouter un groupe</button>' +
+        '<input type="text" placeholder="' + T("ex. vis, boulon, screw") + '" class="catalog-synonym-input">' +
+        '<button type="button" class="catalog-synonym-add-btn">' + T("Ajouter un groupe") + '</button>' +
         '<span class="catalog-synonym-status catalog-rule-status"></span>' +
       '</div>' +
-      '<div class="catalog-synonyms-label" style="margin-top:22px;">Règles personnalisées</div>' +
+      '<div class="catalog-synonyms-label" style="margin-top:22px;">' + T("Règles personnalisées") + '</div>' +
       '<div class="catalog-rules-list"></div>' +
-      '<div class="catalog-synonyms-label catalog-rule-form-title" style="margin-top:14px; font-size:12.5px;">Ajouter une règle</div>' +
+      '<div class="catalog-synonyms-label catalog-rule-form-title" style="margin-top:14px; font-size:12.5px;">' + T("Ajouter une règle") + '</div>' +
       '<div class="catalog-rule-add">' +
         '<div class="catalog-rule-add-row">' +
           '<select class="catalog-rule-type">' +
-            '<option value="keyword">Mot-clé → étiquette</option>' +
-            '<option value="prefix_number">Préfixe + nombre → étiquette</option>' +
+            '<option value="keyword">' + T("Mot-clé → étiquette") + '</option>' +
+            '<option value="prefix_number">' + T("Préfixe + nombre → étiquette") + '</option>' +
           '</select>' +
-          '<input type="text" placeholder="Nom de la règle, ex. Cheville" class="catalog-rule-label">' +
+          '<input type="text" placeholder="' + T("Nom de la règle, ex. Cheville") + '" class="catalog-rule-label">' +
         '</div>' +
-        '<input type="text" placeholder="Mots équivalents, ex. placo, cheville, molly" class="catalog-rule-keywords">' +
-        '<input type="text" placeholder="Préfixe à reconnaître, ex. M (pour M8, M10…)" class="catalog-rule-prefix" hidden>' +
-        '<button type="button" class="catalog-rule-add-btn">Créer la règle</button>' +
-        '<button type="button" class="btn btn-ghost catalog-rule-cancel-edit-btn" hidden style="margin-left:8px;">Annuler la modification</button>' +
+        '<input type="text" placeholder="' + T("Mots équivalents, ex. placo, cheville, molly") + '" class="catalog-rule-keywords">' +
+        '<input type="text" placeholder="' + T("Préfixe à reconnaître, ex. M (pour M8, M10…)") + '" class="catalog-rule-prefix" hidden>' +
+        '<button type="button" class="catalog-rule-add-btn">' + T("Créer la règle") + '</button>' +
+        '<button type="button" class="btn btn-ghost catalog-rule-cancel-edit-btn" hidden style="margin-left:8px;">' + T("Annuler la modification") + '</button>' +
         '<span class="catalog-rule-status"></span>' +
       '</div>';
   }
@@ -2271,7 +2235,7 @@
 
       var submitBtn = document.getElementById("so-submit-btn");
       submitBtn.disabled = true;
-      status.textContent = "Enregistrement…"; status.className = "catalog-rule-status";
+      status.textContent = T("Enregistrement…"); status.className = "catalog-rule-status";
 
       var createOrUpdate = function () {
         return apiFetch("/v1/index/" + encodeURIComponent(soCurrentCatalog) + "/search-overrides", key, { method: "POST", body: body });
@@ -2289,12 +2253,12 @@
 
       chain
         .then(function () {
-          status.textContent = "Priorité enregistrée."; status.className = "catalog-rule-status ok";
+          status.textContent = T("Priorité enregistrée."); status.className = "catalog-rule-status ok";
           resetSoForm();
           refreshSoTable(key);
         })
         .catch(function (err) {
-          status.textContent = (err && err.message) || "Échec de l'enregistrement.";
+          status.textContent = (err && err.message) || T("Échec de l'enregistrement.");
           status.className = "catalog-rule-status err";
         })
         .then(function () { submitBtn.disabled = false; });
@@ -2311,8 +2275,8 @@
           query: editBtn.getAttribute("data-query"), productId: editBtn.getAttribute("data-product-id"),
           action: editBtn.getAttribute("data-action"), position: editBtn.getAttribute("data-position"),
         });
-        document.getElementById("so-form-title").textContent = "Modifier la priorité";
-        document.getElementById("so-submit-btn").textContent = "Enregistrer les modifications";
+        document.getElementById("so-form-title").textContent = T("Modifier la priorité");
+        document.getElementById("so-submit-btn").textContent = T("Enregistrer les modifications");
         document.getElementById("so-cancel-edit-btn").hidden = false;
         document.getElementById("so-query").scrollIntoView({ behavior: "smooth", block: "center" });
         return;
@@ -2323,8 +2287,8 @@
           query: dupBtn.getAttribute("data-query"), productId: dupBtn.getAttribute("data-product-id"),
           action: dupBtn.getAttribute("data-action"), position: dupBtn.getAttribute("data-position"),
         });
-        document.getElementById("so-form-title").textContent = "Dupliquer une priorité — modifiez au moins un champ";
-        document.getElementById("so-submit-btn").textContent = "Créer cette priorité";
+        document.getElementById("so-form-title").textContent = T("Dupliquer une priorité — modifiez au moins un champ");
+        document.getElementById("so-submit-btn").textContent = T("Créer cette priorité");
         document.getElementById("so-cancel-edit-btn").hidden = false;
         document.getElementById("so-query").focus();
         document.getElementById("so-query").select();
@@ -2359,11 +2323,11 @@
     document.getElementById("browse-no-categories").hidden = true;
     if (!catalog) {
       categorySelect.disabled = true;
-      categorySelect.innerHTML = '<option value="">— Choisir un catalogue d\'abord —</option>';
+      categorySelect.innerHTML = '<option value="">' + T("— Choisir un catalogue d'abord —") + '</option>';
       return;
     }
     categorySelect.disabled = false;
-    categorySelect.innerHTML = '<option value="">Chargement…</option>';
+    categorySelect.innerHTML = '<option value="">' + T("Chargement…") + '</option>';
     Promise.all([
       apiFetch("/v1/index/" + encodeURIComponent(catalog) + "/browse-categories", key),
       apiFetch("/v1/index/" + encodeURIComponent(catalog) + "/browse-attributes", key),
@@ -2371,18 +2335,18 @@
       var categories = results[0].categories;
       browseAttributesCache = results[1].attributes;
       if (!categories.length) {
-        categorySelect.innerHTML = '<option value="">— Aucune catégorie —</option>';
+        categorySelect.innerHTML = '<option value="">' + T("— Aucune catégorie —") + '</option>';
         document.getElementById("browse-no-categories").hidden = false;
         return;
       }
-      categorySelect.innerHTML = '<option value="">— Choisir —</option>' + categories.map(function (c) {
+      categorySelect.innerHTML = '<option value="">' + T("— Choisir —") + '</option>' + categories.map(function (c) {
         return "<option value='" + esc(c.category) + "'>" + esc(c.category) + " (" + c.products + ")</option>";
       }).join("");
       document.getElementById("browse-known-fields").innerHTML = browseAttributesCache.map(function (a) {
         return "<option value='" + esc(a.field) + "'>";
       }).join("");
     }).catch(function () {
-      categorySelect.innerHTML = '<option value="">— Erreur de chargement —</option>';
+      categorySelect.innerHTML = '<option value="">' + T("— Erreur de chargement —") + '</option>';
     });
   }
 
@@ -2442,25 +2406,22 @@
       var pid = esc(p.id);
       var regle = h.pinned || h.buried || h.boosted;
       var classes = "so-card" + (regle ? (simule ? " so-card-simulated" : " so-card-ruled") : "");
-      var badge = h.pinned ? "<span class='so-card-badge so-card-badge-pin'>Épinglé · " + (i + 1) + "</span>"
-        : h.boosted ? "<span class='so-card-badge so-card-badge-pin'>Boosté</span>"
-        : h.buried ? "<span class='so-card-badge so-card-badge-bury'>Relégué</span>" : "";
+      var badge = h.pinned ? "<span class='so-card-badge so-card-badge-pin'>" + T("Épinglé") + " · " + (i + 1) + "</span>"
+        : h.boosted ? "<span class='so-card-badge so-card-badge-pin'>" + T("Boosté") + "</span>"
+        : h.buried ? "<span class='so-card-badge so-card-badge-bury'>" + T("Relégué") + "</span>" : "";
       var enRupture = p.stock === 0;
       var stock = p.stock === undefined ? "" :
         "<span class='so-card-stock" + (enRupture ? " rupture" : "") + "'>" +
-        (enRupture ? "Rupture" : p.stock + " en stock") + "</span>";
+        (enRupture ? T("Rupture") : T("{0} en stock", p.stock)) + "</span>";
       var prix = (p.price !== undefined && p.price !== null)
-        ? "<span class='so-card-price'>" + Number(p.price).toFixed(2).replace(".", ",") + " €</span>" : "";
+        ? "<span class='so-card-price'>" + Number(p.price).toLocaleString(LOCALE, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €</span>" : "";
 
-      // Memes icones SVG que cote Search : la premiere version utilisait des
-      // caracteres Unicode (📌 ▲ ▼), qui dependent de la police du systeme et
-      // ne sont pas aux couleurs de la marque.
       var actions = "<div class='so-card-actions'>" +
-        "<button type='button' data-br-act='up' data-pid='" + pid + "' title='Monter d une place' aria-label='Monter " + esc(p.name || p.id) + "'>" + ICONES_FICHE.up + "</button>" +
-        "<button type='button' data-br-act='down' data-pid='" + pid + "' title='Descendre d une place' aria-label='Descendre " + esc(p.name || p.id) + "'>" + ICONES_FICHE.down + "</button>" +
+        "<button type='button' data-br-act='up' data-pid='" + pid + "' title='" + T("Monter d'une place") + "' aria-label='" + T("Monter {0}", esc(p.name || p.id)) + "'>" + ICONES_FICHE.up + "</button>" +
+        "<button type='button' data-br-act='down' data-pid='" + pid + "' title='" + T("Descendre d'une place") + "' aria-label='" + T("Descendre {0}", esc(p.name || p.id)) + "'>" + ICONES_FICHE.down + "</button>" +
         (h.pinned
-          ? "<button type='button' data-br-act='retirer' data-pid='" + pid + "' title='Retirer l épinglage' aria-label='Retirer épinglage'>" + ICONES_FICHE.off + "</button>"
-          : "<button type='button' data-br-act='pin' data-pid='" + pid + "' title='Mettre en tête' aria-label='Mettre en tête'>" + ICONES_FICHE.pin + "</button>") +
+          ? "<button type='button' data-br-act='retirer' data-pid='" + pid + "' title='" + T("Retirer l'épinglage") + "' aria-label='" + T("Retirer l'épinglage") + "'>" + ICONES_FICHE.off + "</button>"
+          : "<button type='button' data-br-act='pin' data-pid='" + pid + "' title='" + T("Mettre en tête") + "' aria-label='" + T("Mettre en tête") + "'>" + ICONES_FICHE.pin + "</button>") +
         "</div>";
 
       return "<div class='" + classes + "'" + " draggable='true' data-pid='" + pid + "'" + ">" +
@@ -2471,8 +2432,8 @@
     }).join("");
 
     if (legende) {
-      legende.textContent = hits.length + " produit" + (hits.length > 1 ? "s" : "") +
-        " dans « " + browseCurrentCategory + " »" + (simule ? " — classement simulé" : "");
+      legende.textContent = T(hits.length > 1 ? "{0} produits dans « {1} »" : "{0} produit dans « {1} »", hits.length, browseCurrentCategory) +
+        (simule ? " — " + T("classement simulé") : "");
     }
     brSimuBar(!!simule);
   }
@@ -2700,11 +2661,11 @@
     var url = "/v1/browse/" + encodeURIComponent(browseCurrentCatalog) + "/" + encodeURIComponent(browseCurrentCategory) + "/overrides";
     apiFetch(url, key).then(function (data) {
       renderTable("browse-overrides-table", "browse-overrides-empty", data.overrides, function (o) {
-        return "<td class='mono'>" + esc(o.product_id) + "</td><td>" + (o.action === "pin" ? "Épingler" : "Reléguer") +
+        return "<td class='mono'>" + esc(o.product_id) + "</td><td>" + T(o.action === "pin" ? "Épingler" : "Reléguer") +
           "</td><td>" + (o.position || "–") + "</td><td style='white-space:nowrap;'>" +
-          "<button type='button' class='catalog-rule-remove' data-edit-override='1' data-product-id='" + esc(o.product_id) + "' data-action='" + esc(o.action) + "' data-position='" + (o.position || "") + "' aria-label='Modifier' title='Modifier' style='margin-right:6px;'>&#9998;</button>" +
-          "<button type='button' class='catalog-rule-remove' data-duplicate-override='1' data-product-id='" + esc(o.product_id) + "' data-action='" + esc(o.action) + "' data-position='" + (o.position || "") + "' aria-label='Dupliquer' title='Dupliquer' style='margin-right:6px;'>&#10697;</button>" +
-          "<button type='button' class='catalog-rule-remove' data-remove-override='" + esc(o.product_id) + "' aria-label='Retirer'>&times;</button></td>";
+          "<button type='button' class='catalog-rule-remove' data-edit-override='1' data-product-id='" + esc(o.product_id) + "' data-action='" + esc(o.action) + "' data-position='" + (o.position || "") + "' aria-label='" + T("Modifier") + "' title='" + T("Modifier") + "' style='margin-right:6px;'>&#9998;</button>" +
+          "<button type='button' class='catalog-rule-remove' data-duplicate-override='1' data-product-id='" + esc(o.product_id) + "' data-action='" + esc(o.action) + "' data-position='" + (o.position || "") + "' aria-label='" + T("Dupliquer") + "' title='" + T("Dupliquer") + "' style='margin-right:6px;'>&#10697;</button>" +
+          "<button type='button' class='catalog-rule-remove' data-remove-override='" + esc(o.product_id) + "' aria-label='" + T("Retirer") + "'>&times;</button></td>";
       });
     }).catch(function () {});
   }
@@ -2714,11 +2675,11 @@
     apiFetch(url, key).then(function (data) {
       renderTable("browse-attribute-rules-table", "browse-attribute-rules-empty", data.rules, function (r) {
         return "<td class='mono'>" + esc(r.field) + "</td><td class='mono'>" + esc(r.value) + "</td><td>" +
-          (r.action === "boost" ? "Booster" : "Reléguer") + "</td><td style='white-space:nowrap;'>" +
-          "<button type='button' class='catalog-rule-remove' data-edit-attribute='1' data-field='" + esc(r.field) + "' data-value='" + esc(r.value) + "' data-action='" + esc(r.action) + "' aria-label='Modifier' title='Modifier' style='margin-right:6px;'>&#9998;</button>" +
-          "<button type='button' class='catalog-rule-remove' data-duplicate-attribute='1' data-field='" + esc(r.field) + "' data-value='" + esc(r.value) + "' data-action='" + esc(r.action) + "' aria-label='Dupliquer' title='Dupliquer' style='margin-right:6px;'>&#10697;</button>" +
+          T(r.action === "boost" ? "Booster" : "Reléguer") + "</td><td style='white-space:nowrap;'>" +
+          "<button type='button' class='catalog-rule-remove' data-edit-attribute='1' data-field='" + esc(r.field) + "' data-value='" + esc(r.value) + "' data-action='" + esc(r.action) + "' aria-label='" + T("Modifier") + "' title='" + T("Modifier") + "' style='margin-right:6px;'>&#9998;</button>" +
+          "<button type='button' class='catalog-rule-remove' data-duplicate-attribute='1' data-field='" + esc(r.field) + "' data-value='" + esc(r.value) + "' data-action='" + esc(r.action) + "' aria-label='" + T("Dupliquer") + "' title='" + T("Dupliquer") + "' style='margin-right:6px;'>&#10697;</button>" +
           "<button type='button' class='catalog-rule-remove' " +
-          "data-remove-attribute-field='" + esc(r.field) + "' data-remove-attribute-value='" + esc(r.value) + "' aria-label='Retirer'>&times;</button></td>";
+          "data-remove-attribute-field='" + esc(r.field) + "' data-remove-attribute-value='" + esc(r.value) + "' aria-label='" + T("Retirer") + "'>&times;</button></td>";
       });
     }).catch(function () {});
   }
@@ -2728,8 +2689,8 @@
     document.getElementById("browse-override-product-id").value = "";
     document.getElementById("browse-override-action").value = "pin";
     document.getElementById("browse-override-position").value = "";
-    document.getElementById("bo-form-title").textContent = "Ajouter une priorité";
-    document.getElementById("bo-submit-btn").textContent = "Ajouter la priorité";
+    document.getElementById("bo-form-title").textContent = T("Ajouter une priorité");
+    document.getElementById("bo-submit-btn").textContent = T("Ajouter la priorité");
     document.getElementById("bo-cancel-edit-btn").hidden = true;
   }
 
@@ -2738,8 +2699,8 @@
     document.getElementById("browse-attribute-field").value = "";
     document.getElementById("browse-attribute-value").value = "";
     document.getElementById("browse-attribute-action").value = "boost";
-    document.getElementById("bar-form-title").textContent = "Ajouter une règle";
-    document.getElementById("bar-submit-btn").textContent = "Ajouter la règle";
+    document.getElementById("bar-form-title").textContent = T("Ajouter une règle");
+    document.getElementById("bar-submit-btn").textContent = T("Ajouter la règle");
     document.getElementById("bar-cancel-edit-btn").hidden = true;
   }
 
@@ -2780,11 +2741,11 @@
         : apiFetch(base, key, { method: "POST", body: body });
 
       chain.then(function () {
-        status.textContent = "Priorité de catégorie enregistrée."; status.className = "catalog-rule-status ok";
+        status.textContent = T("Priorité de catégorie enregistrée."); status.className = "catalog-rule-status ok";
         resetBrowseOverrideForm();
         refreshBrowseOverrides(key); refreshBrowsePreview(key);
       }).catch(function (err) {
-        status.textContent = (err && err.message) || "Échec."; status.className = "catalog-rule-status err";
+        status.textContent = (err && err.message) || T("Échec."); status.className = "catalog-rule-status err";
       });
     });
 
@@ -2799,8 +2760,8 @@
         document.getElementById("browse-override-product-id").value = src.getAttribute("data-product-id");
         document.getElementById("browse-override-action").value = src.getAttribute("data-action");
         document.getElementById("browse-override-position").value = src.getAttribute("data-position") || "";
-        document.getElementById("bo-form-title").textContent = editBtn ? "Modifier la priorité" : "Dupliquer — modifiez au moins un champ";
-        document.getElementById("bo-submit-btn").textContent = editBtn ? "Enregistrer les modifications" : "Créer cette priorité";
+        document.getElementById("bo-form-title").textContent = editBtn ? T("Modifier la priorité") : T("Dupliquer — modifiez au moins un champ");
+        document.getElementById("bo-submit-btn").textContent = editBtn ? T("Enregistrer les modifications") : T("Créer cette priorité");
         document.getElementById("bo-cancel-edit-btn").hidden = false;
         document.getElementById("browse-override-product-id").scrollIntoView({ behavior: "smooth", block: "center" });
         if (dupBtn) { document.getElementById("browse-override-product-id").focus(); document.getElementById("browse-override-product-id").select(); }
@@ -2829,11 +2790,11 @@
         : apiFetch(base, key, { method: "POST", body: { field: field, value: value, action: action } });
 
       chain.then(function () {
-        status.textContent = "Règle d'attribut enregistrée."; status.className = "catalog-rule-status ok";
+        status.textContent = T("Règle d'attribut enregistrée."); status.className = "catalog-rule-status ok";
         resetAttributeRuleForm();
         refreshBrowseAttributeRules(key); refreshBrowsePreview(key);
       }).catch(function (err) {
-        status.textContent = (err && err.message) || "Échec."; status.className = "catalog-rule-status err";
+        status.textContent = (err && err.message) || T("Échec."); status.className = "catalog-rule-status err";
       });
     });
 
@@ -2848,8 +2809,8 @@
         document.getElementById("browse-attribute-field").value = src.getAttribute("data-field");
         document.getElementById("browse-attribute-value").value = src.getAttribute("data-value");
         document.getElementById("browse-attribute-action").value = src.getAttribute("data-action");
-        document.getElementById("bar-form-title").textContent = editBtn ? "Modifier la règle" : "Dupliquer — modifiez au moins un champ";
-        document.getElementById("bar-submit-btn").textContent = editBtn ? "Enregistrer les modifications" : "Créer cette règle";
+        document.getElementById("bar-form-title").textContent = editBtn ? T("Modifier la règle") : T("Dupliquer — modifiez au moins un champ");
+        document.getElementById("bar-submit-btn").textContent = editBtn ? T("Enregistrer les modifications") : T("Créer cette règle");
         document.getElementById("bar-cancel-edit-btn").hidden = false;
         document.getElementById("browse-attribute-field").scrollIntoView({ behavior: "smooth", block: "center" });
         if (dupBtn) { document.getElementById("browse-attribute-field").focus(); document.getElementById("browse-attribute-field").select(); }
@@ -2897,16 +2858,10 @@
         return "<td>" + esc(q.query) + "</td><td class='num'>" + q.count + "</td><td>" + q.avg_results + "</td>";
       });
       renderTable("zero-results-table", "zero-results-empty", zeroResults, function (q) {
-        // CHAQUE LIGNE EST UN CLIENT QUI N'A PAS TROUVÉ. Le bouton propose
-        // les mots du catalogue proches du terme — par la même distance
-        // d'édition que la recherche — et un clic crée le synonyme.
-        //
-        // Le marchand décide : jamais de création automatique. Un
-        // rapprochement faux polluerait la recherche silencieusement.
         return "<td>" + esc(q.query) + "</td><td class='num'>" + q.count +
                "</td><td class='zr-action-cell'>" +
                "<button type='button' class='zr-suggerer' data-terme='" +
-               esc(q.query) + "'>Corriger</button>" +
+               esc(q.query) + "'>" + T("Corriger") + "</button>" +
                "<span class='zr-suggestions' hidden></span></td>";
       });
       wireSuggestionsSynonymes(key);
@@ -2923,7 +2878,7 @@
         }
         // Le detail technique est REPLIE, pas supprime : un developpeur en a
         // besoin, un responsable e-commerce non.
-        html += "<details class='err-detail'><summary>Détail technique</summary>" +
+        html += "<details class='err-detail'><summary>" + T("Détail technique") + "</summary>" +
           "<span class='mono'>" + esc(e.endpoint) + " — HTTP " + e.status_code + "</span>" +
           (t.brut ? "" : "<span class='mono'>" + esc(e.message || "") + "</span>") +
           "</details>";
@@ -3033,8 +2988,8 @@
         if (synStatus) {
           synStatus.className = "catalog-rule-status err";
           synStatus.textContent = terms.length === 1
-            ? "Un synonyme relie des mots entre eux : ajoutez-en au moins un second, séparé par une virgule (ex. vis, boulon)."
-            : "Saisissez au moins deux mots séparés par une virgule.";
+            ? T("Un synonyme relie des mots entre eux : ajoutez-en au moins un second, séparé par une virgule (ex. vis, boulon).")
+            : T("Saisissez au moins deux mots séparés par une virgule.");
         }
         input.focus();
         return;
@@ -3046,7 +3001,7 @@
           input.value = "";
           if (synStatus) {
             synStatus.className = "catalog-rule-status ok";
-            synStatus.textContent = "Groupe ajouté.";
+            synStatus.textContent = T("Groupe ajouté.");
           }
         })
         .catch(function () {})
@@ -3061,21 +3016,21 @@
 
   function ruleDescription(rule) {
     if (rule.rule_type === "keyword") {
-      return "Si le texte contient " + rule.keywords.map(function (k) { return "« " + esc(k) + " »"; }).join(", ") + " → " + esc(rule.tag);
+      return T("Si le texte contient {0} → {1}", rule.keywords.map(function (k) { return "« " + esc(k) + " »"; }).join(", "), esc(rule.tag));
     }
-    return "Si « " + esc(rule.prefix) + " » est suivi d'un nombre (ex. " + esc(rule.prefix) + "8) → " + esc(rule.tag) + "<em>nombre</em>";
+    return T("Si « {0} » est suivi d'un nombre (ex. {0}8) → {1}", esc(rule.prefix), esc(rule.tag)) + "<em>" + T("nombre") + "</em>";
   }
 
   function customRulesListHtml(rules) {
-    if (!rules.length) return '<p class="catalog-rules-empty">Aucune règle personnalisée pour l\'instant.</p>';
+    if (!rules.length) return '<p class="catalog-rules-empty">' + T("Aucune règle personnalisée pour l'instant.") + '</p>';
     return rules.map(function (r) {
       var kw = (r.keywords || []).join(", ");
       return '<div class="catalog-rule-row" data-id="' + r.id + '">' +
         '<div><strong>' + esc(r.label) + '</strong><span class="catalog-rule-desc">' + ruleDescription(r) + '</span></div>' +
         '<div style="white-space:nowrap;">' +
-        '<button type="button" class="catalog-rule-remove" data-edit-rule="1" data-id="' + r.id + '" data-rule-type="' + esc(r.rule_type) + '" data-label="' + esc(r.label) + '" data-keywords="' + esc(kw) + '" data-prefix="' + esc(r.prefix || "") + '" aria-label="Modifier" title="Modifier" style="margin-right:6px;">&#9998;</button>' +
-        '<button type="button" class="catalog-rule-remove" data-duplicate-rule="1" data-rule-type="' + esc(r.rule_type) + '" data-label="' + esc(r.label) + '" data-keywords="' + esc(kw) + '" data-prefix="' + esc(r.prefix || "") + '" aria-label="Dupliquer" title="Dupliquer" style="margin-right:6px;">&#10697;</button>' +
-        '<button type="button" class="catalog-rule-remove" data-id="' + r.id + '" aria-label="Retirer cette règle">&times;</button>' +
+        '<button type="button" class="catalog-rule-remove" data-edit-rule="1" data-id="' + r.id + '" data-rule-type="' + esc(r.rule_type) + '" data-label="' + esc(r.label) + '" data-keywords="' + esc(kw) + '" data-prefix="' + esc(r.prefix || "") + '" aria-label="' + T("Modifier") + '" title="' + T("Modifier") + '" style="margin-right:6px;">&#9998;</button>' +
+        '<button type="button" class="catalog-rule-remove" data-duplicate-rule="1" data-rule-type="' + esc(r.rule_type) + '" data-label="' + esc(r.label) + '" data-keywords="' + esc(kw) + '" data-prefix="' + esc(r.prefix || "") + '" aria-label="' + T("Dupliquer") + '" title="' + T("Dupliquer") + '" style="margin-right:6px;">&#10697;</button>' +
+        '<button type="button" class="catalog-rule-remove" data-id="' + r.id + '" aria-label="' + T("Retirer cette règle") + '">&times;</button>' +
         '</div>' +
       '</div>';
     }).join("");
@@ -3099,8 +3054,8 @@
       typeSelect.value = "keyword";
       keywordsInput.hidden = false; prefixInput.hidden = true;
       labelInput.value = ""; keywordsInput.value = ""; prefixInput.value = "";
-      formTitle.textContent = "Ajouter une règle";
-      addBtn.textContent = "Créer la règle";
+      formTitle.textContent = T("Ajouter une règle");
+      addBtn.textContent = T("Créer la règle");
       cancelBtn.hidden = true;
       status.textContent = "";
     }
@@ -3127,8 +3082,8 @@
                 ruleType: btn.getAttribute("data-rule-type"), label: btn.getAttribute("data-label"),
                 keywords: btn.getAttribute("data-keywords"), prefix: btn.getAttribute("data-prefix"),
               });
-              formTitle.textContent = isEdit ? "Modifier la règle" : "Dupliquer — modifiez au moins un champ";
-              addBtn.textContent = isEdit ? "Enregistrer les modifications" : "Créer cette règle";
+              formTitle.textContent = isEdit ? T("Modifier la règle") : T("Dupliquer — modifiez au moins un champ");
+              addBtn.textContent = isEdit ? T("Enregistrer les modifications") : T("Créer cette règle");
               cancelBtn.hidden = false;
               labelInput.scrollIntoView({ behavior: "smooth", block: "center" });
               if (!isEdit) { labelInput.focus(); labelInput.select(); }
@@ -3167,7 +3122,7 @@
         body.prefix = prefixInput.value.trim();
       }
       if (!body.label) { labelInput.focus(); return; }
-      addBtn.disabled = true; status.textContent = "Enregistrement…"; status.className = "catalog-rule-status";
+      addBtn.disabled = true; status.textContent = T("Enregistrement…"); status.className = "catalog-rule-status";
 
       // Pas d'endpoint de mise a jour cote moteur (GET/POST/DELETE
       // uniquement) -- une modification retire l'ancienne regle avant de
@@ -3181,13 +3136,13 @@
         : createNew();
 
       chain.then(function () {
-        status.textContent = "Règle personnalisée enregistrée."; status.className = "catalog-rule-status ok";
+        status.textContent = T("Règle personnalisée enregistrée."); status.className = "catalog-rule-status ok";
         resetForm();
         loadRules();
         return apiFetch("/v1/index/" + encodeURIComponent(catalogName) + "/stats", key);
       }).then(function (stats) { catalog.annotations = stats.annotations; updateCardMeta(cardEl, catalog); })
         .catch(function (err) {
-          status.textContent = (err && err.message) || "Échec de l'enregistrement.";
+          status.textContent = (err && err.message) || T("Échec de l'enregistrement.");
           status.className = "catalog-rule-status err";
         })
         .then(function () { addBtn.disabled = false; });
@@ -3217,9 +3172,8 @@
           if (meilleur.produits_annotes === 0) {
             zone.hidden = false;
             zone.className = "pack-suggestion pack-suggestion-alerte";
-            zone.innerHTML = "<strong>Aucun attribut reconnu</strong> sur cet échantillon. " +
-              "Vos produits ne bénéficient d'aucune annotation — vérifiez que le pack " +
-              "correspond bien à votre secteur, ou créez des règles personnalisées.";
+            zone.innerHTML = "<strong>" + T("Aucun attribut reconnu") + "</strong> " +
+              T("sur cet échantillon. Vos produits ne bénéficient d'aucune annotation — vérifiez que le pack correspond bien à votre secteur, ou créez des règles personnalisées.");
           } else {
             zone.hidden = true;
           }
@@ -3230,19 +3184,14 @@
         zone.hidden = false;
         zone.className = "pack-suggestion";
         zone.innerHTML =
-          "<p class='pack-suggestion-titre'>Le pack <strong>" + esc(d.recommande) +
-            "</strong> semble mieux adapté</p>" +
-          "<p class='pack-suggestion-detail'>Sur " + d.echantillon + " produits : " +
-            "<strong>" + meilleur.produits_annotes + "</strong> annotés avec « " +
-            esc(d.recommande) + " », contre <strong>" + actuel.produits_annotes +
-            "</strong> avec « " + esc(d.pack_actuel || "aucun") + " ».</p>" +
+          "<p class='pack-suggestion-titre'>" + T("Le pack <strong>{0}</strong> semble mieux adapté", esc(d.recommande)) + "</p>" +
+          "<p class='pack-suggestion-detail'>" + T("Sur {0} produits : <strong>{1}</strong> annotés avec « {2} », contre <strong>{3}</strong> avec « {4} ».",
+            d.echantillon, meilleur.produits_annotes, esc(d.recommande), actuel.produits_annotes, esc(d.pack_actuel || T("aucun"))) + "</p>" +
           "<button type='button' class='pack-suggestion-appliquer' data-pack='" +
-            esc(d.recommande) + "'>Sélectionner le pack " + esc(d.recommande) + "</button>" +
-          "<span class='pack-suggestion-note'>Ce bouton présélectionne le pack. " +
-            "<strong>Les annotations sont calculées à l'indexation</strong> : pour " +
-            "qu'elles changent, réimportez votre catalogue en déclarant le nouveau " +
-            "pack. <a href='../docs.html#ep-items' target='_blank' rel='noopener'>Voir " +
-            "la marche à suivre</a>.</span>";
+            esc(d.recommande) + "'>" + T("Sélectionner le pack {0}", esc(d.recommande)) + "</button>" +
+          "<span class='pack-suggestion-note'>" + T("Ce bouton présélectionne le pack.") + " " +
+            T("<strong>Les annotations sont calculées à l'indexation</strong> : pour qu'elles changent, réimportez votre catalogue en déclarant le nouveau pack.") +
+            " <a href='../docs.html#ep-items' target='_blank' rel='noopener'>" + T("Voir la marche à suivre") + "</a>.</span>";
 
         var bouton = zone.querySelector(".pack-suggestion-appliquer");
         bouton.addEventListener("click", function () {
@@ -3276,16 +3225,13 @@
       btnSupprimer.addEventListener("click", function () {
         var nom = catalog.catalog;
         confirmerSuppression(
-          "Supprimer le catalogue <strong>" + esc(nom) + "</strong> et ses " +
-          (catalog.products || 0) + " produits ?<br>" +
-          "Les priorités, règles personnalisées et synonymes seront perdus. " +
-          "<strong>Cette action est irréversible.</strong>",
+          T("Supprimer le catalogue <strong>{0}</strong> et ses {1} produits ?<br>Les priorités, règles personnalisées et synonymes seront perdus. <strong>Cette action est irréversible.</strong>",
+            esc(nom), catalog.products || 0),
           btnSupprimer,
           function () {
-            var saisi = window.prompt(
-              "Confirmez en recopiant le nom du catalogue :", "");
+            var saisi = window.prompt(T("Confirmez en recopiant le nom du catalogue :"), "");
             if (saisi !== nom) {
-              if (saisi !== null) window.alert("Le nom ne correspond pas. Rien n'a été supprimé.");
+              if (saisi !== null) window.alert(T("Le nom ne correspond pas. Rien n'a été supprimé."));
               return;
             }
             btnSupprimer.disabled = true;
@@ -3294,7 +3240,7 @@
               .then(function () { loadCatalogs(key); })
               .catch(function (e) {
                 btnSupprimer.disabled = false;
-                window.alert("Suppression impossible : " + (e.message || e));
+                window.alert(T("Suppression impossible : {0}", e.message || e));
               });
           }
         );
@@ -3316,15 +3262,14 @@
         catalog.sandbox = voulu;
         if (sandboxStatus) {
           sandboxStatus.className = "catalog-rule-status ok";
-          sandboxStatus.textContent = voulu ? "Bac à sable activé." : "Catalogue redevenu facturé.";
+          sandboxStatus.textContent = voulu ? T("Bac à sable activé.") : T("Catalogue redevenu facturé.");
         }
-        // Le selecteur global doit refleter le changement immediatement.
         if (typeof rechargerCatalogues === "function") rechargerCatalogues(key);
       }).catch(function (err) {
-        sandboxToggle.checked = !voulu;  // on remet l'etat reel
+        sandboxToggle.checked = !voulu;
         if (sandboxStatus) {
           sandboxStatus.className = "catalog-rule-status err";
-          sandboxStatus.textContent = (err && err.message) || "Impossible de modifier ce réglage.";
+          sandboxStatus.textContent = (err && err.message) || T("Impossible de modifier ce réglage.");
         }
       }).then(function () { sandboxToggle.disabled = false; });
     });
@@ -3336,16 +3281,16 @@
     saveBtn.addEventListener("click", function () {
       if (select.value === catalog.rulepack) return;
       saveBtn.disabled = true;
-      status.className = "catalog-rulepack-status"; status.textContent = "Réindexation…";
+      status.className = "catalog-rulepack-status"; status.textContent = T("Réindexation…");
       apiFetch("/v1/index/" + encodeURIComponent(catalog.catalog) + "/config", key, {
         method: "PUT", body: { rulepack: select.value },
       }).then(function (data) {
         catalog.rulepack = data.rulepack;
         catalog.products = data.products; catalog.annotations = data.annotations; catalog.synonym_groups = data.synonym_groups;
-        status.className = "catalog-rulepack-status ok"; status.textContent = "Enregistré — produits réindexés.";
+        status.className = "catalog-rulepack-status ok"; status.textContent = T("Enregistré — produits réindexés.");
         updateCardMeta(cardEl, catalog);
       }).catch(function () {
-        status.className = "catalog-rulepack-status err"; status.textContent = "Échec — réessayez.";
+        status.className = "catalog-rulepack-status err"; status.textContent = T("Échec — réessayez.");
       }).then(function () { saveBtn.disabled = false; });
     });
     // Synonymes et regles personnalisees ne sont plus dans la carte : les
@@ -3361,35 +3306,26 @@
     }).join("");
     return '<div class="catalog-card" data-catalog-card="' + esc(c.catalog) + '">' +
       '<div class="catalog-card-head"><span class="catalog-card-name">' + esc(c.catalog) + '</span></div>' +
-      '<div class="catalog-card-meta">' + c.products + ' produit' + (c.products > 1 ? 's' : '') + ' · ' +
-        c.annotations + ' annotations · ' + c.synonym_groups + ' groupe' + (c.synonym_groups > 1 ? 's' : '') + ' de synonymes</div>' +
+      '<div class="catalog-card-meta">' + T(c.products > 1 ? "{0} produits" : "{0} produit", c.products) + ' · ' +
+        T("{0} annotations", c.annotations) + ' · ' + T(c.synonym_groups > 1 ? "{0} groupes de synonymes" : "{0} groupe de synonymes", c.synonym_groups) + '</div>' +
       '<div class="catalog-card-row">' +
-        '<label>Pack de règles</label>' +
+        '<label>' + T("Pack de règles") + '</label>' +
         '<select class="catalog-rulepack-select">' + options + '</select>' +
-        '<button type="button" class="catalog-rulepack-save">Enregistrer</button>' +
+        '<button type="button" class="catalog-rulepack-save">' + T("Enregistrer") + '</button>' +
         '<span class="catalog-rulepack-status"></span>' +
       '</div>' +
       '<div class="pack-suggestion" hidden></div>' +
-      // Synonymes et regles personnalisees ont ete DEPLACES vers
-      // Personnalisation -> Search (voir wireCustomRulesPane) : un
-      // utilisateur qui veut personnaliser sa recherche n'allait pas les
-      // chercher dans la fiche d'un catalogue. On laisse ici un renvoi
-      // plutot qu'un doublon -- deux formulaires edifiant la meme donnee
-      // finissent toujours par diverger.
       '<div class="catalog-card-row" style="margin-top:16px;">' +
         '<label class="br-stock-toggle" style="margin:0;">' +
           '<input type="checkbox" class="catalog-sandbox-toggle"' + (c.sandbox ? ' checked' : '') + '>' +
-          '<span>Bac à sable — ne pas facturer ce catalogue</span>' +
+          '<span>' + T("Bac à sable — ne pas facturer ce catalogue") + '</span>' +
         '</label>' +
         '<span class="catalog-sandbox-status catalog-rule-status"></span>' +
       '</div>' +
-      '<div class="catalog-synonyms-label" style="margin-top:22px;">Synonymes et règles personnalisées</div>' +
-      '<p class="console-panel-note" style="margin:6px 0 0;">Gérés depuis <button type="button" class="catalog-goto-rules" data-goto-pane="pane-search-overrides">Personnalisation → Gestion des règles</button>.</p>' +
-      // Suppression, volontairement DISCRÈTE et en dernier : c'est une
-      // action irréversible, elle ne doit pas voisiner les réglages
-      // courants ni se cliquer par réflexe.
+      '<div class="catalog-synonyms-label" style="margin-top:22px;">' + T("Synonymes et règles personnalisées") + '</div>' +
+      '<p class="console-panel-note" style="margin:6px 0 0;">' + T("Gérés depuis") + ' <button type="button" class="catalog-goto-rules" data-goto-pane="pane-search-overrides">' + T("Personnalisation → Gestion des règles") + '</button>.</p>' +
       '<div class="catalog-card-danger">' +
-        '<button type="button" class="catalog-delete">Supprimer ce catalogue</button>' +
+        '<button type="button" class="catalog-delete">' + T("Supprimer ce catalogue") + '</button>' +
       '</div>' +
     '</div>';
   }
@@ -3411,18 +3347,18 @@
       zone.className = "quota-alerte" + (atteint ? " quota-alerte-critique" : "");
       zone.innerHTML =
         "<div class='quota-alerte-texte'>" +
-          "<strong>" + (atteint
+          "<strong>" + T(atteint
             ? "Vous avez atteint la limite de votre formule"
             : "Il vous reste un catalogue disponible") + "</strong>" +
-          "<span>" + utilise + " catalogue" + (utilise > 1 ? "s" : "") + " sur " + plafond +
-            " avec la formule " + esc(PLAN_LIBELLES[d.plan] || d.plan || "actuelle") + ". " +
-            (atteint
+          "<span>" + T(utilise > 1 ? "{0} catalogues sur {1}" : "{0} catalogue sur {1}", utilise, plafond) +
+            " " + T("avec la formule {0}.", esc(PLAN_LIBELLES[d.plan] || d.plan || T("actuelle"))) + " " +
+            T(atteint
               ? "La création d'un nouveau catalogue sera refusée."
               : "Au-delà, la création sera refusée.") +
           "</span>" +
         "</div>" +
         "<button type='button' class='btn quota-alerte-action' data-goto-pane='pane-billing'>" +
-          "Voir les formules</button>";
+          T("Voir les formules") + "</button>";
     }).catch(function () { /* l'alerte est un bonus, jamais bloquante */ });
   }
 
@@ -3463,7 +3399,7 @@
     }).catch(function () {
       loading.hidden = true;
       empty.hidden = false;
-      empty.textContent = "Impossible de charger vos catalogues pour le moment.";
+      empty.textContent = T("Impossible de charger vos catalogues pour le moment.");
     });
   }
 
@@ -3493,7 +3429,7 @@
     var orgDrop = document.querySelector(".console-org-drop");
     if (orgDrop) orgDrop.hidden = true;
     var orgBtn = document.getElementById("console-org-btn");
-    if (orgBtn) orgBtn.textContent = "Mon compte";
+    if (orgBtn) orgBtn.textContent = T("Mon compte");
 
     // L'etat des catalogues appartient a la session : le laisser en place
     // exposerait les noms de catalogues du compte precedent a la personne
@@ -3521,12 +3457,12 @@
   loginForm.addEventListener("submit", function (e) {
     e.preventDefault();
     loginBtn.disabled = true;
-    loginBtn.textContent = "Connexion…";
+    loginBtn.textContent = T("Connexion…");
     loginError.hidden = true;
     apiPost("/v1/auth/login", { email: loginEmail.value.trim(), password: loginPassword.value })
       .then(function (data) {
         if (!data.keys || !data.keys.length) {
-          showLogin("Ce compte n'a pas encore de clé API associée. Contactez le support.");
+          showLogin(T("Ce compte n'a pas encore de clé API associée. Contactez le support."));
           return;
         }
         startSession(data.session_token, data.keys[0].key);
@@ -3538,7 +3474,7 @@
       })
       .then(function () {
         loginBtn.disabled = false;
-        loginBtn.textContent = "Se connecter";
+        loginBtn.textContent = T("Se connecter");
       });
   });
 
@@ -3546,7 +3482,7 @@
   signupForm.addEventListener("submit", function (e) {
     e.preventDefault();
     signupBtn.disabled = true;
-    signupBtn.textContent = "Création…";
+    signupBtn.textContent = T("Création…");
     signupError.hidden = true;
     apiPost("/v1/auth/signup", {
       email: signupEmail.value.trim(), password: signupPassword.value,
@@ -3562,7 +3498,7 @@
       })
       .then(function () {
         signupBtn.disabled = false;
-        signupBtn.textContent = "Créer mon compte";
+        signupBtn.textContent = T("Créer mon compte");
       });
   });
 
@@ -3572,7 +3508,7 @@
   acceptInviteForm.addEventListener("submit", function (e) {
     e.preventDefault();
     acceptInviteBtn.disabled = true;
-    acceptInviteBtn.textContent = "Connexion…";
+    acceptInviteBtn.textContent = T("Connexion…");
     acceptInviteError.hidden = true;
     apiPost("/v1/auth/accept-invite", { token: inviteTokenFromUrl, password: acceptInvitePassword.value })
       .then(function (data) {
@@ -3585,7 +3521,7 @@
       })
       .then(function () {
         acceptInviteBtn.disabled = false;
-        acceptInviteBtn.textContent = "Rejoindre l'équipe";
+        acceptInviteBtn.textContent = T("Rejoindre l'équipe");
       });
   });
 
@@ -3593,10 +3529,10 @@
   resetRequestForm.addEventListener("submit", function (e) {
     e.preventDefault();
     resetRequestBtn.disabled = true;
-    resetRequestBtn.textContent = "Envoi…";
+    resetRequestBtn.textContent = T("Envoi…");
     apiPost("/v1/auth/request-password-reset", { email: resetEmail.value.trim() })
       .then(function () {
-        resetRequestMsg.textContent = "Si un compte existe avec cet email, un lien de réinitialisation vient d'être envoyé.";
+        resetRequestMsg.textContent = T("Si un compte existe avec cet email, un lien de réinitialisation vient d'être envoyé.");
         resetRequestMsg.hidden = false;
         resetRequestForm.reset();
       })
@@ -3606,7 +3542,7 @@
       })
       .then(function () {
         resetRequestBtn.disabled = false;
-        resetRequestBtn.textContent = "Envoyer le lien";
+        resetRequestBtn.textContent = T("Envoyer le lien");
       });
   });
 
@@ -3616,13 +3552,13 @@
   resetConfirmForm.addEventListener("submit", function (e) {
     e.preventDefault();
     resetConfirmBtn.disabled = true;
-    resetConfirmBtn.textContent = "Réinitialisation…";
+    resetConfirmBtn.textContent = T("Réinitialisation…");
     resetConfirmError.hidden = true;
     apiPost("/v1/auth/confirm-password-reset", { token: resetTokenFromUrl, password: resetNewPassword.value })
       .then(function () {
-        history.replaceState(null, "", window.location.pathname);  // retire ?reset=... de l'URL
+        history.replaceState(null, "", window.location.pathname);
         setAuthMode("login");
-        loginError.textContent = "Mot de passe mis à jour — vous pouvez vous connecter.";
+        loginError.textContent = T("Mot de passe mis à jour — vous pouvez vous connecter.");
         loginError.hidden = false;
       })
       .catch(function (err) {
@@ -3631,7 +3567,7 @@
       })
       .then(function () {
         resetConfirmBtn.disabled = false;
-        resetConfirmBtn.textContent = "Réinitialiser mon mot de passe";
+        resetConfirmBtn.textContent = T("Réinitialiser mon mot de passe");
       });
   });
 
@@ -3655,11 +3591,11 @@
       .then(function (r) { return r.json(); })
       .then(function (data) {
         acceptInviteIntro.textContent = data.raison_sociale
-          ? "Vous rejoignez l'équipe de " + data.raison_sociale + " (" + data.email + ")."
-          : "Invitation pour " + data.email + ".";
+          ? T("Vous rejoignez l'équipe de {0} ({1}).", data.raison_sociale, data.email)
+          : T("Invitation pour {0}.", data.email);
       })
       .catch(function () {
-        acceptInviteIntro.textContent = "Ce lien d'invitation semble invalide ou expiré.";
+        acceptInviteIntro.textContent = T("Ce lien d'invitation semble invalide ou expiré.");
       });
     showLogin();
   } else if (resetTokenFromUrl) {
