@@ -589,6 +589,36 @@
     "Vous rejoignez l'équipe de {0} ({1}).": "You're joining {0}'s team ({1}).",
     "Invitation pour {0}.": "Invitation for {0}.",
     "Ce lien d'invitation semble invalide ou expiré.": "This invitation link looks invalid or expired.",
+
+    // ------------------------------------------------ pavé d'import (CSV/XML)
+    "Importer un fichier": "Import a file",
+    "Trois choses à savoir avant votre premier import": "Three things to know before your first import",
+    "L'identifiant est ce qui compte le plus.": "The identifier matters most.",
+    "C'est lui qui permet de mettre à jour un produit au lieu d'en créer un doublon. Réimporter le même fichier ne duplique rien.":
+      "It's what lets a product be updated instead of duplicated. Re-importing the same file duplicates nothing.",
+    "Utilisez le même identifiant partout.": "Use the same identifier everywhere.",
+    "Si votre site envoie des références produit au tracker de conversion, indexez avec ces mêmes références — sinon vos analyses de ventes resteront vides.":
+      "If your site sends product references to the conversion tracker, index with those same references — otherwise your sales analytics will stay empty.",
+    "Le pack de règles se choisit avant.": "The rule pack is chosen up front.",
+    "Nous l'analysons depuis votre fichier et le présélectionnons. Le changer après coup impose de réimporter.":
+      "We analyze it from your file and preselect it. Changing it afterward requires re-importing.",
+    "Déposez l'export de votre ERP ou de votre PIM, en CSV ou en XML. Nous détectons la structure et proposons une correspondance de champs — que vous pouvez corriger avant d'envoyer.":
+      "Drop your ERP or PIM export, in CSV or XML. We detect the structure and suggest a field match — which you can correct before sending.",
+    "Choisir un fichier": "Choose a file",
+    "ou glissez-le ici — CSV ou XML, jusqu'à 100 000 lignes": "or drop it here — CSV or XML, up to 100,000 rows",
+    "Correspondance des champs": "Field matching",
+    "Vérifiez chaque champ. <strong>Seul l'identifiant est obligatoire</strong> : c'est lui qui permet de mettre à jour un produit au lieu d'en créer un doublon.":
+      "Check each field. <strong>Only the identifier is required</strong>: it's what lets a product be updated instead of duplicated.",
+    "Nom du catalogue": "Catalog name",
+    "Sans espaces ni accents — il apparaîtra dans vos URL d'API.": "No spaces or accents — it will appear in your API URLs.",
+
+    // ------------------------------------------------ import XML (gabarits T())
+    "{0} éléments <{1}> détectés": "{0} <{1}> elements detected",
+    "aucune structure répétée trouvée": "no repeated structure found",
+    "Élément ou attribut": "Element or attribute",
+    "Aucune structure répétée reconnue dans ce fichier.": "No repeated structure recognized in this file.",
+    "Un import attend un élément qui se répète une fois par produit — vérifiez qu'il s'agit bien d'un catalogue.":
+      "An import expects an element that repeats once per product — check that this is really a catalog.",
     "Identifiant plateforme": "Platform identifier",
     "Désignation": "Name",
     "Séparées par > | ou /": "Separated by > | or /",

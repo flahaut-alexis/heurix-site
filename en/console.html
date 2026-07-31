@@ -138,7 +138,7 @@
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="console-sidebar-chevron"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
           <div class="console-sidebar-items" data-section-items="catalog" hidden>
-            <button type="button" class="console-sidebar-item" data-pane="pane-import-csv">Import a CSV</button>
+            <button type="button" class="console-sidebar-item" data-pane="pane-import-csv">Import a file</button>
             <button type="button" class="console-sidebar-item" data-pane="pane-catalog-help">How it works</button>
             <div id="sidebar-catalog-items"></div>
           </div>
@@ -624,7 +624,7 @@
           </div>
 
           <div id="pane-import-csv" class="console-pane" hidden>
-            <h2 class="console-pane-title">Import a CSV file</h2>
+            <h2 class="console-pane-title">Import a file</h2>
 
             <div class="console-panel">
               <div class="csv-tuto" id="csv-tuto" hidden>
@@ -638,19 +638,19 @@
                 <button type="button" class="btn btn-ghost csv-tuto-ok">Got it</button>
               </div>
 
-              <p class="console-lede">Drop your ERP or PIM export. We detect the separator and encoding, and suggest a column match — which you can correct before sending.</p>
+              <p class="console-lede">Drop your ERP or PIM export, in CSV or XML. We detect the structure and suggest a field match — which you can correct before sending.</p>
 
               <div class="csv-depot" id="csv-depot">
-                <input type="file" id="csv-fichier" accept=".csv,.txt,text/csv" hidden>
+                <input type="file" id="csv-fichier" accept=".csv,.txt,text/csv,.xml,application/xml,text/xml" hidden>
                 <button type="button" class="btn" id="csv-choisir">Choose a file</button>
-                <p class="csv-depot-note">or drop it here — CSV, up to 100,000 rows</p>
+                <p class="csv-depot-note">or drop it here — CSV or XML, up to 100,000 rows</p>
               </div>
 
               <div id="csv-analyse" hidden>
                 <div class="csv-resume" id="csv-resume"></div>
 
-                <h3 class="csv-titre">Column matching</h3>
-                <p class="csv-aide">Check each row. <strong>Only the identifier is required</strong>: it's what lets a product be updated instead of duplicated.</p>
+                <h3 class="csv-titre">Field matching</h3>
+                <p class="csv-aide">Check each field. <strong>Only the identifier is required</strong>: it's what lets a product be updated instead of duplicated.</p>
                 <div class="table-scroll"><table class="console-table" id="csv-correspondance"></table></div>
                 <div class="csv-verdict" id="csv-verdict" hidden></div>
                 <div class="csv-reco" id="csv-reco" hidden></div>

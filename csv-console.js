@@ -1,8 +1,15 @@
-/* Écran d'import CSV de la console.
+/* Écran d'import de fichier de la console — CSV ou XML.
  *
- * La logique d'analyse vit dans `csv-import.js`, qui ne touche pas au
- * réseau et est couvert par 19 tests. Ce fichier-ci n'est que l'interface :
- * lecture du fichier, écran de correspondance, envoi par lots, rapport.
+ * La logique d'analyse vit dans deux modules qui ne touchent pas au
+ * réseau : `csv-import.js` pour les fichiers plats, `xml-import.js`
+ * (ajouté le 31 juillet) pour les flux XML — export ERP/PIM, flux Google
+ * Shopping, ONIX. Ce fichier-ci n'est que l'interface : détection du
+ * format, lecture, écran de correspondance, envoi par lots, rapport.
+ *
+ * LES DEUX MODULES RENVOIENT LA MÊME FORME `{ produits, erreurs }`. C'est
+ * ce qui permet au contrôle, à la recommandation de pack, à l'envoi et au
+ * rapport de ne RIEN savoir du format d'origine — un seul chemin après la
+ * lecture du fichier, quel que soit le format entré.
  *
  * Cette séparation est délibérée. C'est le premier contact d'un client avec
  * ses propres données ; la partie où une erreur coûte cher devait être
@@ -12,6 +19,10 @@ import {
   detecterSeparateur, detecterEncodage, decouperLigne,
   proposerCorrespondance, convertir, enLots,
 } from "./csv-import.js";
+import {
+  detecterRacineItems, champsDisponibles, proposerCorrespondanceXml,
+  extraireValeur, convertirXml, detecterEncodageXml,
+} from "./xml-import.js";
 
 
 /* Appel API propre au module.
@@ -73,7 +84,7 @@ const CHAMPS = [
   ["categories", T("Catégories"), T("Séparées par > | ou /")],
 ];
 
-let etat = { entetes: [], texte: "", correspondance: {}, separateur: ";" };
+let etat = { format: "csv", entetes: [], texte: "", correspondance: {}, separateur: ";" };
 
 function $(id) { return document.getElementById(id); }
 
@@ -164,7 +175,30 @@ async function suggererNom() {
 
 // --------------------------------------------------------------- lecture
 
+/* Répartiteur de format.
+ *
+ * AJOUTÉ LE 31 JUILLET, plutôt qu'un second pavé « Importer un XML »
+ * séparé : demander à l'utilisateur de savoir à l'avance dans quel pavé
+ * cliquer suppose qu'il connaît déjà la nature technique de son propre
+ * fichier — c'est précisément la compétence que cet écran existe pour
+ * lui épargner. Une extension .xml ou un contenu qui commence par « <»
+ * une fois les espaces retirés suffit à trancher, sans lui demander.
+ */
 async function lireFichier(fichier) {
+  const nom = (fichier.name || "").toLowerCase();
+  let estXml = nom.endsWith(".xml");
+  if (!estXml && !nom.endsWith(".csv") && !nom.endsWith(".txt")) {
+    // Extension absente ou ambiguë (fichier renommé, glissé sans
+    // extension) : on regarde le tout début du contenu plutôt que de
+    // deviner au hasard.
+    const debut = await fichier.slice(0, 200).text();
+    estXml = /^\s*<\?xml|^\s*<[a-zA-Z]/.test(debut);
+  }
+  if (estXml) return lireFichierXml(fichier);
+  return lireFichierCsv(fichier);
+}
+
+async function lireFichierCsv(fichier) {
   const octets = new Uint8Array(await fichier.arrayBuffer());
 
   // ENCODAGE. Les exports d'ERP français sortent souvent en Latin-1. Lus
@@ -178,6 +212,7 @@ async function lireFichier(fichier) {
   const entetes = decouperLigne(lignes[0] || "", separateur);
 
   etat = {
+    format: "csv",
     texte, separateur, entetes,
     correspondance: proposerCorrespondance(entetes),
     nbLignes: Math.max(0, lignes.length - 1),
@@ -193,7 +228,63 @@ async function lireFichier(fichier) {
   afficher("csv-rapport", false);
 }
 
+async function lireFichierXml(fichier) {
+  // Un XML se déclare lui-même (<?xml ... encoding="...">) — pas besoin
+  // de deviner l'encodage à partir des octets comme pour le CSV. On lit
+  // d'abord en UTF-8 pour trouver le prologue, puis on relit dans le bon
+  // encodage si besoin.
+  const brut = await fichier.text();
+  const encodage = detecterEncodageXml(brut);
+  const texte = encodage.toLowerCase() === "utf-8"
+    ? brut
+    : new TextDecoder(encodage).decode(new Uint8Array(await fichier.arrayBuffer()));
+
+  const { chemin, elements } = detecterRacineItems(texte);
+  if (!chemin) {
+    etat = { format: "xml", texte, entetes: [], correspondance: {}, chemin: null, nbElements: 0, encodage, nom: fichier.name };
+    rendreResume();
+    $("csv-correspondance").innerHTML = "";
+    afficher("csv-analyse", true);
+    afficher("csv-rapport", false);
+    const verdict = $("csv-verdict");
+    if (verdict) {
+      verdict.hidden = false;
+      verdict.className = "csv-verdict csv-verdict-erreur";
+      verdict.innerHTML = "<strong>" + T("Aucune structure répétée reconnue dans ce fichier.") + "</strong> " +
+        T("Un import attend un élément qui se répète une fois par produit — vérifiez qu'il s'agit bien d'un catalogue.");
+    }
+    return;
+  }
+
+  const champs = champsDisponibles(elements);
+  etat = {
+    format: "xml",
+    texte,
+    entetes: champs,
+    correspondance: proposerCorrespondanceXml(champs),
+    chemin, nbElements: elements.length,
+    encodage,
+    nom: fichier.name,
+  };
+
+  await chargerPacks();
+  suggererNom();
+  rendreResume();
+  rendreCorrespondance();
+  afficher("csv-analyse", true);
+  afficher("csv-rapport", false);
+}
+
 function rendreResume() {
+  if (etat.format === "xml") {
+    $("csv-resume").innerHTML =
+      "<strong>" + escaper(etat.nom) + "</strong> — " +
+      (etat.chemin
+        ? T("{0} éléments <{1}> détectés", etat.nbElements.toLocaleString(LOCALE), escaper(etat.chemin))
+        : T("aucune structure répétée trouvée")) + "<br>" +
+      "<span class='csv-detecte'>" + T("Encodage : {0}", etat.encodage) + "</span>";
+    return;
+  }
   const separateurLisible = LANGUE_EN
     ? { ";": "semicolon", ",": "comma", "\t": "tab", "|": "vertical bar" }
     : { ";": "point-virgule", ",": "virgule", "\t": "tabulation", "|": "barre verticale" };
@@ -204,7 +295,17 @@ function rendreResume() {
     " · " + T("Encodage : {0}", etat.encodage) + "</span>";
 }
 
+/* Aperçu des premières valeurs pour la correspondance XML.
+ *
+ * Contrairement au CSV, il n'y a pas de « lignes de texte » à découper :
+ * on redérive les éléments depuis le texte stocké, puis on lit les
+ * valeurs via le même extracteur que la conversion réelle — l'aperçu ne
+ * peut donc jamais montrer autre chose que ce que l'envoi produirait.
+ */
+
 function rendreCorrespondance() {
+  if (etat.format === "xml") { rendreCorrespondanceXml(); return; }
+
   const lignes = etat.texte.split(/\r?\n/).filter((l) => l.trim()).slice(1, 4);
   const exemples = lignes.map((l) => decouperLigne(l, etat.separateur));
 
@@ -241,6 +342,43 @@ function rendreCorrespondance() {
   });
 }
 
+function rendreCorrespondanceXml() {
+  const { elements } = detecterRacineItems(etat.texte);
+  const echantillon = elements.slice(0, 3);
+
+  let html = "<tr><th>" + T("Champ Heurix") + "</th><th>" + T("Élément ou attribut") + "</th><th>" + T("Exemples") + "</th></tr>";
+  for (const [cle, libelle, aide] of CHAMPS) {
+    const choisi = etat.correspondance[cle];
+    let options = "<option value=''>" + T("— ignorer —") + "</option>";
+    etat.entetes.forEach((champXml) => {
+      options += "<option value='" + escaper(champXml) + "'" + (choisi === champXml ? " selected" : "") + ">" +
+                 escaper(champXml) + "</option>";
+    });
+    const apercu = !choisi ? "—"
+      : echantillon.map((el) => escaper((extraireValeur(el, choisi) || "").slice(0, 24))).filter(Boolean).join(" · ");
+
+    html += "<tr>" +
+      "<td><strong>" + libelle + "</strong>" +
+        (cle === "id" ? " <span class='csv-requis'>" + T("requis") + "</span>" : "") +
+        (aide ? "<br><span class='csv-aide-champ'>" + aide + "</span>" : "") + "</td>" +
+      "<td><select data-champ='" + cle + "'>" + options + "</select></td>" +
+      "<td class='mono csv-apercu'>" + apercu + "</td>" +
+    "</tr>";
+  }
+  $("csv-correspondance").innerHTML = html;
+  rendreVerdict();
+  recommanderPack();
+
+  $("csv-correspondance").querySelectorAll("select").forEach((s) => {
+    s.addEventListener("change", () => {
+      const champ = s.getAttribute("data-champ");
+      if (s.value === "") delete etat.correspondance[champ];
+      else etat.correspondance[champ] = s.value;
+      rendreCorrespondanceXml();
+    });
+  });
+}
+
 
 /* Contrôle immédiat de la correspondance.
  *
@@ -252,17 +390,31 @@ function rendreCorrespondance() {
  * donc la correspondance sur un échantillon et on affiche le verdict sous
  * le tableau, en temps réel.
  */
+/* Répartiteur de conversion, seul point où le format compte encore après
+ * la lecture du fichier. `limite` échantillonne — 60 pour le contrôle,
+ * 100 pour la recommandation de pack, absent (tout traiter) pour l'envoi
+ * réel. Le CSV tronque le TEXTE avant analyse ; le XML ne peut pas être
+ * tronqué sans casser sa validité, donc `convertirXml` échantillonne sa
+ * propre boucle de conversion (voir xml-import.js).
+ */
+function convertirEchantillon(limite) {
+  if (etat.format === "xml") {
+    return convertirXml(etat.texte, etat.correspondance, limite);
+  }
+  const lignes = etat.texte.split(/\r?\n/).filter((l) => l.trim());
+  const echantillon = limite
+    ? [lignes[0], ...lignes.slice(1, limite + 1)].join("\n")
+    : etat.texte;
+  return convertir(echantillon, etat.correspondance, { separateur: etat.separateur });
+}
+
 function rendreVerdict() {
   const zone = $("csv-verdict");
   if (!zone) return;
 
-  const lignes = etat.texte.split(/\r?\n/).filter((l) => l.trim());
-  // 60 lignes suffisent à révéler une correspondance fausse, et restent
-  // instantanées même sur un fichier de 100 000 lignes.
-  const echantillon = [lignes[0], ...lignes.slice(1, 61)].join("\n");
-  const { produits, erreurs } = convertir(echantillon, etat.correspondance, {
-    separateur: etat.separateur,
-  });
+  // 60 lignes/éléments suffisent à révéler une correspondance fausse, et
+  // restent instantanées même sur un fichier de 100 000 lignes.
+  const { produits, erreurs } = convertirEchantillon(60);
   const testees = produits.length + erreurs.length;
   if (!testees) { zone.hidden = true; return; }
 
@@ -328,12 +480,8 @@ async function recommanderPack() {
     return;
   }
 
-  const lignes = etat.texte.split(/\r?\n/).filter((l) => l.trim());
   // 100 produits suffisent à trancher — le classement ne bouge plus au-delà.
-  const echantillon = [lignes[0], ...lignes.slice(1, 101)].join("\n");
-  const { produits } = convertir(echantillon, etat.correspondance, {
-    separateur: etat.separateur,
-  });
+  const { produits } = convertirEchantillon(100);
   if (!produits.length) { zone.hidden = true; return; }
 
   recoEnCours = true;
@@ -386,9 +534,7 @@ async function envoyer() {
     return;
   }
 
-  const { produits, erreurs } = convertir(etat.texte, etat.correspondance, {
-    separateur: etat.separateur,
-  });
+  const { produits, erreurs } = convertirEchantillon();
   if (!produits.length) {
     afficherRapport(0, erreurs, [T("Aucun produit exploitable — vérifiez la correspondance.")]);
     return;

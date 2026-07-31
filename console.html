@@ -147,7 +147,7 @@
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="console-sidebar-chevron"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
           <div class="console-sidebar-items" data-section-items="catalog" hidden>
-            <button type="button" class="console-sidebar-item" data-pane="pane-import-csv">Importer un CSV</button>
+            <button type="button" class="console-sidebar-item" data-pane="pane-import-csv">Importer un fichier</button>
             <button type="button" class="console-sidebar-item" data-pane="pane-catalog-help">Comment ça marche</button>
             <div id="sidebar-catalog-items"></div>
           </div>
@@ -633,7 +633,7 @@
           </div>
 
           <div id="pane-import-csv" class="console-pane" hidden>
-            <h2 class="console-pane-title">Importer un fichier CSV</h2>
+            <h2 class="console-pane-title">Importer un fichier</h2>
 
             <div class="console-panel">
               <div class="csv-tuto" id="csv-tuto" hidden>
@@ -647,19 +647,19 @@
                 <button type="button" class="btn btn-ghost csv-tuto-ok">J'ai compris</button>
               </div>
 
-              <p class="console-lede">Déposez l'export de votre ERP ou de votre PIM. Nous détectons le séparateur, l'encodage et proposons une correspondance de colonnes — que vous pouvez corriger avant d'envoyer.</p>
+              <p class="console-lede">Déposez l'export de votre ERP ou de votre PIM, en CSV ou en XML. Nous détectons la structure et proposons une correspondance de champs — que vous pouvez corriger avant d'envoyer.</p>
 
               <div class="csv-depot" id="csv-depot">
-                <input type="file" id="csv-fichier" accept=".csv,.txt,text/csv" hidden>
+                <input type="file" id="csv-fichier" accept=".csv,.txt,text/csv,.xml,application/xml,text/xml" hidden>
                 <button type="button" class="btn" id="csv-choisir">Choisir un fichier</button>
-                <p class="csv-depot-note">ou glissez-le ici — CSV, jusqu'à 100 000 lignes</p>
+                <p class="csv-depot-note">ou glissez-le ici — CSV ou XML, jusqu'à 100 000 lignes</p>
               </div>
 
               <div id="csv-analyse" hidden>
                 <div class="csv-resume" id="csv-resume"></div>
 
-                <h3 class="csv-titre">Correspondance des colonnes</h3>
-                <p class="csv-aide">Vérifiez chaque ligne. <strong>Seul l'identifiant est obligatoire</strong> : c'est lui qui permet de mettre à jour un produit au lieu d'en créer un doublon.</p>
+                <h3 class="csv-titre">Correspondance des champs</h3>
+                <p class="csv-aide">Vérifiez chaque champ. <strong>Seul l'identifiant est obligatoire</strong> : c'est lui qui permet de mettre à jour un produit au lieu d'en créer un doublon.</p>
                 <div class="table-scroll"><table class="console-table" id="csv-correspondance"></table></div>
                 <div class="csv-verdict" id="csv-verdict" hidden></div>
                 <div class="csv-reco" id="csv-reco" hidden></div>

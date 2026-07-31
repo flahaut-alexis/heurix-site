@@ -112,7 +112,7 @@ export function detecterEncodage(octets) {
 //
 // La liste vient d'un test sur un export réaliste : ma première version ne
 // reconnaissait AUCUNE des colonnes d'identifiant et de référence.
-const INDICES = {
+export const INDICES = {
   // L'ordre compte : « platform_id » est cherché avant « id » pour qu'une
   // colonne « id_product » ne soit pas prise pour l'identifiant métier.
   platform_id: ["platform_id", "id_prestashop", "id_presta", "post_id", "entity_id"],
@@ -129,7 +129,8 @@ const INDICES = {
   price: ["price", "prix", "prix_ht", "tarif", "pu", "prix_unitaire",
           "prix_vente", "pv_ht", "tarif_ht", "prix_public"],
   stock: ["stock", "quantite", "qty", "quantity", "dispo", "disponible",
-          "qte", "qte_dispo", "quantite_dispo", "stock_dispo", "en_stock"],
+          "qte", "qte_dispo", "quantite_dispo", "stock_dispo", "en_stock",
+          "availability", "in_stock", "instock"],
   categories: ["categorie", "category", "categories", "rayon", "famille",
                "sous_famille", "arborescence", "classification", "gamme"],
 };
@@ -171,7 +172,7 @@ export function proposerCorrespondance(entetes) {
  * Conversion en produits                                              *
  * ------------------------------------------------------------------ */
 
-function nombreOuNul(valeur) {
+export function nombreOuNul(valeur) {
   if (valeur === undefined || valeur === null || valeur === "") return null;
   // Les exports français écrivent « 1,24 » et parfois « 1 234,56 » avec
   // une espace insécable comme séparateur de milliers. Les deux doivent
