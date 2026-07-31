@@ -110,7 +110,8 @@
       // laissait un trou : sur Open Library, une couverture sur deux manque,
       // et la grille devenait irrégulière.
       var replPicto = window.HeurixPictos
-        ? window.HeurixPictos.pictogramme(hit.matched || []).replace(/'/g, "&#39;")
+        ? window.HeurixPictos.pictogramme(hit.matched || [])
+            .replace(/'/g, "&#39;").replace(/"/g, "&quot;")
         : "";
       visuel = "<div class='play-card-img'><img src='" + esc(p.image || p.image_url) +
                "' alt='' loading='lazy' onerror=\"var d=this.closest('.play-card-img');" +
@@ -155,12 +156,15 @@
     }
     return "<article class='play-card'>" +
       visuel +
-      "<div class='play-card-name'>" + esc(p.name || p.id) + "</div>" +
-      (secondaire ? "<div class='play-card-sub'>" + esc(String(secondaire).slice(0, 60)) + "</div>" : "") +
-      // La référence passe APRÈS et en plus discret : elle sert à identifier,
-      // pas à décrire.
-      (p.ref ? "<div class='play-card-ref'>" + esc(p.ref) + "</div>" : "") +
+      "<div class='play-card-body'>" +
+        "<div class='play-card-name'>" + esc(p.name || p.id) + "</div>" +
+        (secondaire ? "<div class='play-card-sub'>" + esc(String(secondaire).slice(0, 60)) + "</div>" : "") +
+      "</div>" +
+      // Référence, prix et stock désormais groupés : trois métadonnées de
+      // même nature, alignées ensemble en pied de carte plutôt que la
+      // référence livrée seule entre le texte et le badge.
       "<div class='play-card-foot'>" +
+        (p.ref ? "<span class='play-card-ref'>" + esc(p.ref) + "</span>" : "") +
         (p.price !== undefined ? "<span class='play-card-price'>" + euros(p.price) + "</span>" : "") +
         etat +
       "</div>" +
