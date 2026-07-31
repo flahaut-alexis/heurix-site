@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="heurix-icon-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6B7FFF" />
+      <stop offset="100%" stop-color="#3F52E8" />
+    </linearGradient>
+  </defs>
+  <!-- Rayon entrant, depuis la gauche, s'arrête au bord de la lentille -->
+  <line x1="1" y1="20" x2="11" y2="20" stroke="#B7C1F5" stroke-width="2.6" stroke-linecap="round"/>
+  <!-- Lentille pleine — le prisme : la lumière la traverse, elle ne passe pas devant -->
+  <circle cx="23" cy="22" r="13" fill="#EEF1FF" stroke="url(#heurix-icon-grad)" stroke-width="4.5" />
+  <!-- Rayons sortants, décomposés depuis le bord droit de la lentille, groupés en éventail resserré -->
+  <line x1="34" y1="17" x2="54" y2="8" stroke="#C2CBFF" stroke-width="2.3" stroke-linecap="round"/>
+  <line x1="35" y1="22" x2="57" y2="19" stroke="#8494FF" stroke-width="2.6" stroke-linecap="round"/>
+  <line x1="34" y1="27" x2="55" y2="29" stroke="#3F52E8" stroke-width="2.9" stroke-linecap="round"/>
+  <!-- Manche, tangent naturel au cercle, dans une zone dégagée des rayons -->
+  <line x1="33" y1="32" x2="47" y2="46" stroke="url(#heurix-icon-grad)" stroke-width="5.5" stroke-linecap="round" />
+</svg>
