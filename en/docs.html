@@ -155,6 +155,7 @@
       <a href="#ep-mcp">MCP server</a>
       <a href="#ep-health">Service health</a>
       <div class="docs-sidebar-group">Reference</div>
+      <a href="#glossaire">Glossary</a>
       <a href="#cascade">The annotation cascade</a>
       <a href="#bonnes-pratiques">Good practices</a>
       <a href="#erreurs">Error codes</a>
@@ -528,13 +529,13 @@ curl -X POST https://api.heurix.fr/v1/events \
       <div class="docs-endpoint"><span class="docs-method docs-method-get">JS</span><code>heurix-search.js</code></div>
       <h2>Ready-to-use search bar</h2>
       <p>Don't want to code the <code class="docs-inline-code">fetch</code> call, result rendering, and facet handling yourself? A standalone JavaScript library (zero dependencies) renders a complete search bar — input, live results, clickable facets, keyboard navigation — connected to your catalog in a few lines.</p>
-      <p class="regex-reassure">🚀 <a href="downloads/heurix-search.js?v=1785525560" download>Download heurix-search.js</a> — a single file, drop it wherever you want on your site.</p>
+      <p class="regex-reassure">🚀 <a href="downloads/heurix-search.js?v=1785531428" download>Download heurix-search.js</a> — a single file, drop it wherever you want on your site.</p>
 
       <p class="regex-reassure">🔑 Use a <a href="#authentification">public key</a> (<code class="docs-inline-code">hxp_</code>) — this script runs in the visitor's browser, where the key is readable by anyone. A server key would grant access to your billing.</p>
 
       <h3>Minimal integration</h3>
       <pre class="docs-code"><code>&lt;div id="my-search"&gt;&lt;/div&gt;
-&lt;script src="heurix-search.js?v=1785525560"&gt;&lt;/script&gt;
+&lt;script src="heurix-search.js?v=1785531428"&gt;&lt;/script&gt;
 &lt;script&gt;
   Heurix.searchBox({
     apiKey: "YOUR_PUBLIC_KEY",
@@ -585,6 +586,40 @@ curl -X POST https://api.heurix.fr/v1/events \
       <pre class="docs-code"><code>pip install -r requirements.txt
 HEURIX_API_KEY=hx_your_key python3 server.py</code></pre>
       <p>The API key lives only in the MCP client's local configuration (a JSON file on the user's machine), never sent in the clear in a tool call. Every call consumes the normal quota of the key used — <code class="docs-inline-code">heurix_search</code> and <code class="docs-inline-code">heurix_browse</code> count like any search or Browse call, <code class="docs-inline-code">heurix_catalog_stats</code> does not.</p>
+    </section>
+
+    <section id="glossaire" class="docs-section">
+      <h2>Glossary</h2>
+      <p>Heurix's own vocabulary, in the order a query actually travels through it: first indexing a catalog, then understanding what a visitor types, then ranking results, finally tracking and adjusting. For broader industry terms (index, facet, ranking...), see also <a href="../blog/glossaire-search-ecommerce.html">the e-commerce search glossary</a> on the blog.</p>
+
+      <h3>Indexing a catalog</h3>
+      <p id="gl-catalogue"><strong>Catalog.</strong> A set of products indexed under one name, isolated from every other catalog. An account can hold several — one per language, per brand, or a test environment.</p>
+      <p id="gl-regle"><strong>Rule.</strong> A recognition mechanism: a regular expression, a keyword list, or a prefix + number pattern that spots a pattern in text. A rule doesn't change anything — it produces an <a href="#gl-annotation">annotation</a> when it recognizes something.</p>
+      <p id="gl-annotation"><strong>Annotation.</strong> The label attached to a product once a <a href="#gl-regle">rule</a> has recognized something in its text (reference, name, description). <code class="docs-inline-code">DIAM_M8</code>, <code class="docs-inline-code">FAM_VIS</code> are annotations. A single product accumulates several, one per rule that fired.</p>
+      <p id="gl-rulepack"><strong>Rule pack.</strong> A ready-made set of rules for an industry (hardware, fashion, electronics...). Chosen at indexing time, it determines which annotations a catalog produces automatically.</p>
+      <p id="gl-customrule"><strong>Custom Rule.</strong> A rule you add yourself, specific to one catalog, for vocabulary no pack could have guessed. Two formats: keyword → label, or prefix + number → label.</p>
+
+      <h3>Understanding a query</h3>
+      <p id="gl-tolerance"><strong>Typo tolerance.</strong> The ability to find a product despite a one- or two-letter mistake. How many mistakes are tolerated depends on the length of the typed word: the shorter it is, the smaller the accepted gap, to avoid confusing two unrelated short words.</p>
+      <p id="gl-distance"><strong>Edit distance.</strong> The measurement behind typo tolerance: the minimum number of insertions, deletions, or substitutions needed to turn a typed word into a known one. "tshi" → "tshirt": distance 2.</p>
+      <p id="gl-flou"><strong>Fuzzy matching.</strong> The process that accepts a typed word as a match for a catalog word as long as their <a href="#gl-distance">edit distance</a> stays within the allowed tolerance.</p>
+      <p id="gl-prefixe"><strong>Prefix.</strong> A query still being typed. Unlike typo tolerance, which assumes a complete, possibly misspelled word, prefix search recognizes that an incomplete word unambiguously leads to a longer catalog word.</p>
+      <p id="gl-synonyme"><strong>Synonym.</strong> A declared equivalence between several free-text words ("screw" = "bolt" = "vis"). Unlike an <a href="#gl-annotation">annotation</a>, a synonym labels nothing on the product: it widens what a query can reach, at search time.</p>
+      <p id="gl-facette"><strong>Facet.</strong> A filter built automatically from a catalog field (brand, color, material), letting a results list be narrowed without typing a new query.</p>
+
+      <h3>Ranking results</h3>
+      <p id="gl-pertinence"><strong>Relevance (score).</strong> The value assigned to each result to determine its rank. It combines the nature of the match — exact, fuzzy, prefix, synonym — with its weight: a word found exactly always outweighs one found through typo tolerance.</p>
+      <p id="gl-ranking"><strong>Ranking.</strong> The final order results are presented in, once relevance is computed and priority rules are applied.</p>
+      <p id="gl-override"><strong>Search Override.</strong> A manual rule that pins or buries a specific product for a specific query ("on 'sale', always show X first"). Independent from the natural ranking.</p>
+      <p id="gl-browse"><strong>Browse &amp; Discovery.</strong> Ranking products on a category page, with no search query involved. Runs on its own priorities and boosts, independently from search.</p>
+      <p id="gl-boost"><strong>Attribute boost / bury.</strong> A rule that features — or demotes — every product sharing a common attribute (a brand, a color), without targeting them one by one. A per-product demotion always keeps priority over an attribute boost.</p>
+      <p id="gl-famille"><strong>Family grouping.</strong> Collapsing near-identical results (the same screw in twelve lengths) into one representative entry, so a broad query stays readable instead of drowning in variants.</p>
+
+      <h3>Tracking and adjusting</h3>
+      <p id="gl-zero"><strong>Zero-result query.</strong> A search that found nothing. Every occurrence is a direct signal: either a synonym is missing, or the product being searched for doesn't exist in the catalog.</p>
+      <p id="gl-matched"><strong>The <code class="docs-inline-code">matched</code> field.</strong> The list, included with every result, of the terms and annotations that made it match. It's the diagnostic tool: if a result seems surprising, this field shows why.</p>
+      <p id="gl-cles"><strong>API key (server / public).</strong> The server key authorizes everything, including indexing — it must never appear in a web page. The public key can only search and browse the catalog: it's the only one meant to sit in a site's code.</p>
+      <p id="gl-sandbox"><strong>Sandbox.</strong> A catalog flagged as a test: it isn't billed and its searches don't appear in your statistics. Useful for trying a configuration without touching real data.</p>
     </section>
 
     <section id="cascade" class="docs-section">
@@ -745,7 +780,7 @@ VIS_M8X20  ──────────── match ────────�
     });
   })();
 </script>
-<script src="../search-en.js?v=1785525560"></script>
+<script src="../search-en.js?v=1785531428"></script>
 <script src="../nav-dropdown.js"></script>
 <script src="../mobile-nav.js?v=1784970606"></script>
 <div id="pricing-nudge" class="pricing-nudge">

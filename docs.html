@@ -168,6 +168,7 @@
       <a href="#ep-mcp">Serveur MCP</a>
       <a href="#ep-health">Santé du service</a>
       <div class="docs-sidebar-group">Référence</div>
+      <a href="#glossaire">Glossaire</a>
       <a href="#cascade">La cascade d'annotations</a>
       <a href="#bonnes-pratiques">Bonnes pratiques</a>
       <a href="#erreurs">Codes d'erreur</a>
@@ -897,13 +898,13 @@ curl -X POST https://api.heurix.fr/v1/events \
       <div class="docs-endpoint"><span class="docs-method docs-method-get">JS</span><code>heurix-search.js</code></div>
       <h2>Barre de recherche prête à l'emploi</h2>
       <p>Pas envie de coder l'appel <code class="docs-inline-code">fetch</code>, le rendu des résultats et la gestion des facettes vous-même ? Une bibliothèque JavaScript autonome (zéro dépendance) affiche une barre de recherche complète — saisie, résultats en direct, facettes cliquables, navigation clavier — connectée à votre catalogue en quelques lignes.</p>
-      <p class="regex-reassure">🚀 <a href="downloads/heurix-search.js?v=1785525560" download>Téléchargez heurix-search.js</a> — un seul fichier, à poser où vous voulez sur votre site.</p>
+      <p class="regex-reassure">🚀 <a href="downloads/heurix-search.js?v=1785531428" download>Téléchargez heurix-search.js</a> — un seul fichier, à poser où vous voulez sur votre site.</p>
 
       <p class="regex-reassure">🔑 Utilisez une <a href="#authentification">clé publique</a> (<code class="docs-inline-code">hxp_</code>) — ce script tourne dans le navigateur du visiteur, où la clé est lisible par tous. Une clé serveur donnerait accès à votre facturation.</p>
 
       <h3>Intégration minimale</h3>
       <pre class="docs-code"><code>&lt;div id="ma-recherche"&gt;&lt;/div&gt;
-&lt;script src="heurix-search.js?v=1785525560"&gt;&lt;/script&gt;
+&lt;script src="heurix-search.js?v=1785531428"&gt;&lt;/script&gt;
 &lt;script&gt;
   Heurix.searchBox({
     apiKey: "VOTRE_CLE_PUBLIQUE",
@@ -964,6 +965,40 @@ HEURIX_API_KEY=hx_votre_cle python3 server.py</code></pre>
     </section>
 
     <!-- ================= RÉFÉRENCE ================= -->
+
+    <section id="glossaire" class="docs-section">
+      <h2>Glossaire</h2>
+      <p>Le vocabulaire propre à Heurix, dans l'ordre où une requête le traverse : d'abord indexer un catalogue, puis comprendre ce qu'un visiteur tape, puis classer les résultats, enfin suivre et ajuster. Pour les termes plus généraux du secteur (index, facette, ranking...), voir aussi <a href="blog/glossaire-search-ecommerce.html">le glossaire du search e-commerce</a> sur le blog.</p>
+
+      <h3>Indexer un catalogue</h3>
+      <p id="gl-catalogue"><strong>Catalogue.</strong> Un ensemble de produits indexés sous un même nom, isolé des autres. Un compte peut posséder plusieurs catalogues — une langue, une marque, un environnement de test.</p>
+      <p id="gl-regle"><strong>Règle.</strong> Un mécanisme de reconnaissance : une expression régulière, une liste de mots-clés, ou un patron préfixe + nombre qui repère un motif dans un texte. Une règle ne modifie rien — elle produit une <a href="#gl-annotation">annotation</a> quand elle reconnaît quelque chose.</p>
+      <p id="gl-annotation"><strong>Annotation.</strong> L'étiquette posée sur un produit quand une <a href="#gl-regle">règle</a> a reconnu quelque chose dans son texte (référence, nom, description). <code class="docs-inline-code">DIAM_M8</code>, <code class="docs-inline-code">FAM_VIS</code> sont des annotations. Un même produit en accumule plusieurs, une par règle déclenchée.</p>
+      <p id="gl-rulepack"><strong>Pack de règles.</strong> Un ensemble de règles prêtes à l'emploi pour un secteur (outillage, mode, électronique...). Choisi à l'indexation, il détermine quelles annotations un catalogue produit automatiquement.</p>
+      <p id="gl-customrule"><strong>Custom Rule (règle personnalisée).</strong> Une règle ajoutée par vous, propre à un seul catalogue, pour un vocabulaire qu'aucun pack ne pouvait deviner. Deux formats : mot-clé → étiquette, ou préfixe + nombre → étiquette.</p>
+
+      <h3>Comprendre une requête</h3>
+      <p id="gl-tolerance"><strong>Tolérance aux fautes de frappe.</strong> La capacité à retrouver un produit malgré une faute d'une ou deux lettres. Le nombre de fautes tolérées dépend de la longueur du mot tapé : plus il est court, plus l'écart accepté est faible, pour éviter de confondre deux mots courts sans rapport.</p>
+      <p id="gl-distance"><strong>Distance d'édition.</strong> La mesure derrière la tolérance aux fautes : le nombre minimal d'ajouts, de suppressions ou de substitutions de lettres pour transformer un mot tapé en un mot connu. « tshi » → « tshirt » : distance 2.</p>
+      <p id="gl-flou"><strong>Correspondance floue (fuzzy matching).</strong> Le processus qui accepte un mot tapé comme correspondance d'un mot du catalogue tant que leur <a href="#gl-distance">distance d'édition</a> reste dans la tolérance autorisée.</p>
+      <p id="gl-prefixe"><strong>Préfixe.</strong> Une requête encore en train d'être tapée. Contrairement à la tolérance aux fautes, qui suppose un mot complet et possiblement mal orthographié, la recherche par préfixe reconnaît qu'un mot incomplet mène sans ambiguïté vers un mot plus long du catalogue.</p>
+      <p id="gl-synonyme"><strong>Synonyme.</strong> Une déclaration d'équivalence entre plusieurs mots libres (« vis » = « boulon » = « screw »). Contrairement à une <a href="#gl-annotation">annotation</a>, un synonyme n'étiquette rien sur le produit : il élargit ce qu'une requête peut atteindre, au moment de la recherche.</p>
+      <p id="gl-facette"><strong>Facette.</strong> Un filtre construit automatiquement à partir d'un champ du catalogue (marque, couleur, matière), pour affiner une liste de résultats sans retaper de requête.</p>
+
+      <h3>Classer les résultats</h3>
+      <p id="gl-pertinence"><strong>Pertinence (score).</strong> La note attribuée à chaque résultat pour déterminer son rang. Elle combine la nature de la correspondance — exacte, floue, par préfixe, par synonyme — et son poids : un mot trouvé exactement pèse toujours plus qu'un mot retrouvé après tolérance aux fautes.</p>
+      <p id="gl-ranking"><strong>Ranking (classement).</strong> L'ordre final dans lequel les résultats sont présentés, une fois la pertinence calculée et les règles de priorité appliquées.</p>
+      <p id="gl-override"><strong>Priorité de requête (Search Override).</strong> Une règle manuelle qui épingle ou relègue un produit précis pour une requête précise (« sur "promo", toujours montrer X en premier »). Indépendante du classement naturel.</p>
+      <p id="gl-browse"><strong>Browse &amp; Discovery.</strong> Le classement des produits sur une page de catégorie, sans requête de recherche associée. Fonctionne avec ses propres priorités et boosts, indépendamment de la recherche.</p>
+      <p id="gl-boost"><strong>Boost / relégation par attribut.</strong> Une règle qui met en avant ou recule tous les produits partageant un attribut commun (une marque, une couleur), sans les cibler un par un. Une relégation individuelle garde toujours la priorité sur un boost par attribut.</p>
+      <p id="gl-famille"><strong>Regroupement par famille.</strong> Le rassemblement de résultats très proches (les mêmes vis en douze longueurs) sous une entrée représentative, pour qu'une requête large reste lisible plutôt que noyée sous des variantes.</p>
+
+      <h3>Suivre et ajuster</h3>
+      <p id="gl-zero"><strong>Requête à zéro résultat.</strong> Une recherche qui n'a rien trouvé. Chaque occurrence est un signal direct : soit un synonyme manque, soit le produit cherché n'existe pas au catalogue.</p>
+      <p id="gl-matched"><strong>Champ <code class="docs-inline-code">matched</code>.</strong> La liste, incluse dans chaque résultat, des termes et annotations qui l'ont fait matcher. C'est l'outil de diagnostic : si un résultat surprend, ce champ montre pourquoi.</p>
+      <p id="gl-cles"><strong>Clé API (serveur / publique).</strong> La clé serveur autorise tout, y compris l'indexation — elle ne doit jamais apparaître dans une page web. La clé publique ne peut que chercher et consulter le catalogue : c'est la seule à poser dans le code d'un site.</p>
+      <p id="gl-sandbox"><strong>Bac à sable (sandbox).</strong> Un catalogue marqué comme test : il n'est pas facturé et ses recherches n'apparaissent pas dans les statistiques. Utile pour essayer une configuration sans toucher à de vraies données.</p>
+    </section>
 
     <section id="cascade" class="docs-section">
       <h2>La cascade d'annotations</h2>
@@ -1044,7 +1079,7 @@ VIS_M8X20  ────────── correspondance ──────  VIS
   </div>
 </footer>
 
-<script src="search.js?v=1785525560"></script>
+<script src="search.js?v=1785531428"></script>
 <script>
   document.getElementById('year').textContent = new Date().getFullYear();
 
