@@ -122,6 +122,10 @@
 <div class="wrap docs-layout">
 
   <aside class="docs-sidebar">
+    <div class="docs-page-search">
+      <input id="docs-page-search-input" type="text" placeholder="Search this page…" autocomplete="off">
+      <div id="docs-page-search-results" class="docs-page-search-results" hidden></div>
+    </div>
     <nav aria-label="Documentation contents">
       <div class="docs-sidebar-group">Getting started</div>
       <a href="#introduction">Introduction</a>
@@ -132,7 +136,9 @@
       <a href="#produits">Product structure</a>
       <div class="docs-sidebar-group">Endpoints</div>
       <a href="#ep-search">Search</a>
+      <a href="#ep-search-overrides">Query priorities</a>
       <a href="#facettes">Facets and filters</a>
+      <a href="#ep-browse">Browse &amp; Discovery</a>
       <a href="#ep-federated">Federated search</a>
       <a href="#ep-items">Indexing</a>
       <a href="#ep-delete">Deletion</a>
@@ -140,6 +146,13 @@
       <a href="#ep-stats">Statistics</a>
       <a href="#ep-usage">Usage</a>
       <a href="#ep-rulepacks">Rule packs</a>
+      <a href="#ep-custom-rules">Custom Rules</a>
+      <a href="#ep-events">Conversion &amp; ROI</a>
+      <a href="#ep-top-products">Top products</a>
+      <a href="#ep-category-views">Category views</a>
+      <a href="#ep-related-products">Related products</a>
+      <a href="#ep-search-widget">Ready-to-use search bar</a>
+      <a href="#ep-mcp">MCP server</a>
       <a href="#ep-health">Service health</a>
       <div class="docs-sidebar-group">Reference</div>
       <a href="#cascade">The annotation cascade</a>
@@ -270,6 +283,25 @@
       <p>A search that finds nothing (<code class="docs-inline-code">total: 0</code>) on a catalog containing at least one product marked <code class="docs-inline-code">featured: true</code> at indexing time returns up to 6 of these products in <code class="docs-inline-code">hits</code>, with <code class="docs-inline-code">fallback: true</code> — to offer a way forward instead of a blank page. <code class="docs-inline-code">total</code> stays <code class="docs-inline-code">0</code>: these aren't real search results, so present them distinctly on your end (e.g. "No results for '…' — our picks" rather than blending them with real results). Without any <code class="docs-inline-code">featured</code> product in the catalog, <code class="docs-inline-code">hits</code> stays empty and <code class="docs-inline-code">fallback</code> is <code class="docs-inline-code">false</code>, as before.</p>
     </section>
 
+    <section id="ep-search-overrides" class="docs-section">
+      <div class="docs-endpoint"><span class="docs-method docs-method-post">POST</span><code>/v1/index/{catalog}/search-overrides</code></div>
+      <h2>Query priorities</h2>
+      <p>Pin or bury a product when a search contains a specific word — "if the search contains <em>promo</em>, this product appears first." Independent from <a href="#ep-browse">Browse &amp; Discovery</a>, which ranks browse categories, not search queries.</p>
+      <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/index/mycatalog/search-overrides \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"query": "promo", "product_id": "sku-123", "action": "pin", "position": 1}'</code></pre>
+      <p><strong>Triggered by contiguous substring</strong>, not just an exact match: a rule set on <code class="docs-inline-code">"promo"</code> triggers for <code class="docs-inline-code">"screw promo"</code> or <code class="docs-inline-code">"big stainless promo"</code>, but not for <code class="docs-inline-code">"promotional"</code> (a different word once normalized). A <code class="docs-inline-code">pin</code> can surface a product that doesn't textually match the query — that's the point of this feature, not a bug.</p>
+      <div class="table-scroll"><table class="docs-params">
+        <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+        <tr><td><code class="docs-inline-code">query</code></td><td>string</td><td>The trigger, normalized like the rest of the engine (accents, case) before comparison.</td></tr>
+        <tr><td><code class="docs-inline-code">product_id</code></td><td>string</td><td>The affected product.</td></tr>
+        <tr><td><code class="docs-inline-code">action</code></td><td>string</td><td><code class="docs-inline-code">pin</code> (exact position, requires <code class="docs-inline-code">position</code>) or <code class="docs-inline-code">bury</code> (end of list, only applies to a product already present naturally).</td></tr>
+        <tr><td><code class="docs-inline-code">position</code></td><td>integer</td><td><strong>The product's final rank</strong>, starting at 1. <code class="docs-inline-code">position: 3</code> places it 3rd; other products fill the remaining slots in their natural order. Two products requesting the same rank are placed side by side. A rank beyond the number of results puts the product at the end of the list.</td></tr>
+      </table></div>
+      <p><code class="docs-inline-code">GET /v1/index/{catalog}/search-overrides</code> lists every rule for the catalog (or those for a specific query with <code class="docs-inline-code">?query=...</code>); <code class="docs-inline-code">DELETE /v1/index/{catalog}/search-overrides?query=...&amp;product_id=...</code> removes one. None of these three calls consume your quota — they're configuration actions, not search requests.</p>
+    </section>
+
     <section id="facettes" class="docs-section">
       <h2>Facets and filters</h2>
       <p>A facet groups the annotations that share a common prefix — <code class="docs-inline-code">PAYS_SE</code> and <code class="docs-inline-code">PAYS_FR</code> belong to the <code class="docs-inline-code">PAYS</code> group. Request a per-group count with <code class="docs-inline-code">facets</code>, narrow results with <code class="docs-inline-code">filters</code>:</p>
@@ -285,6 +317,61 @@
   }
 }</code></pre>
       <p><strong>Counting is disjunctive within a single group</strong>: filtering on <code class="docs-inline-code">PAYS_SE</code> doesn't make <code class="docs-inline-code">PAYS_FR</code> disappear from the count — that's what lets you show "France (34)" as an alternative option even once Sweden is selected, exactly like a standard e-commerce filter sidebar. Across different groups, however, filters remain cumulative (logical AND).</p>
+    </section>
+
+    <section id="ep-browse" class="docs-section">
+      <div class="docs-endpoint"><span class="docs-method docs-method-get">GET</span><code>/v1/browse/{catalog}/{category}</code></div>
+      <h2>Browse &amp; Discovery</h2>
+      <p>Ranks <strong>every</strong> product in a category with no query — for a listing page (category, department), not a search bar. Replaces a static sort with configurable ranking, enriched by your own manual priorities.</p>
+      <p><strong><code class="docs-inline-code">{category}</code> is a field you supply at indexing time</strong> — exactly like <code class="docs-inline-code">name</code> or <code class="docs-inline-code">stock</code>, never derived from a rule pack. Add <code class="docs-inline-code">categories</code> (a list — a product can belong to several categories at once, useful for listing both a category and its ancestors) or <code class="docs-inline-code">category</code> (a single value) to your products:</p>
+      <p class="regex-reassure">🚀 Don't want to write the fetch call yourself? <a href="downloads/heurix-browse-widget.js" download>Download the ready-to-use snippet</a> — a step-by-step guide with a full example is available on <a href="blog/guide-page-categorie-browse.html">the blog</a>.</p>
+      <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/index/mycatalog/items \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"items": [{"id": "sku-123", "name": "GDX 18V-285 Drill",
+       "categories": ["power-tools", "drills-drivers"],
+       "price": 139.90, "margin": 28.50, "stock": 8}]}'
+
+curl "https://api.heurix.fr/v1/browse/mycatalog/drills-drivers?sort=price_asc" \
+  -H "Authorization: Bearer YOUR_API_KEY"</code></pre>
+      <div class="table-scroll"><table class="docs-params">
+        <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code class="docs-inline-code">sort</code></td><td>string</td><td><code class="docs-inline-code">stock</code> (default) · <code class="docs-inline-code">recent</code> · <code class="docs-inline-code">alphabetical</code> · <code class="docs-inline-code">price_asc</code> / <code class="docs-inline-code">price_desc</code> (reads the <code class="docs-inline-code">price</code> field) · <code class="docs-inline-code">margin</code> (reads the <code class="docs-inline-code">margin</code> field, highest first) · <code class="docs-inline-code">popular</code> (see below)</td></tr>
+          <tr><td><code class="docs-inline-code">filters</code></td><td>string</td><td><code class="docs-inline-code">"field:value,field2:value2"</code> (logical AND) — narrows on any free product attribute (brand, color…), in addition to the category. Any non-reserved text field automatically becomes filterable at indexing time, no configuration needed.</td></tr>
+          <tr><td><code class="docs-inline-code">facets</code></td><td>string</td><td><code class="docs-inline-code">"field,field2"</code> — returns a count per value for each requested field, disjunctive (filtering on one value of a field doesn't remove the field's other values from the count, same as on the search side).</td></tr>
+          <tr><td><code class="docs-inline-code">limit</code> / <code class="docs-inline-code">offset</code></td><td>int</td><td>Pagination, same as search.</td></tr>
+        </tbody>
+      </table></div>
+      <pre class="docs-code"><code>curl "https://api.heurix.fr/v1/browse/mycatalog/drills-drivers?filters=brand:Makita&facets=brand,color" \
+  -H "Authorization: Bearer YOUR_API_KEY"</code></pre>
+      <p>A product missing the requested field (no <code class="docs-inline-code">price</code> for a <code class="docs-inline-code">price_asc</code> sort, for example) is never excluded and never breaks the call — it simply lands at the end of the list, regardless of sort direction.</p>
+      <p>Consumes the request quota, same as a search call — it's an engine call just the same.</p>
+
+      <h3>Sort by popularity (clicks + purchases)</h3>
+      <p><code class="docs-inline-code">sort=popular</code> relies on events actually reported by the <a href="#ep-events">Heurix Tracker</a> — a purchase counts for 5, a click on a search result for 1. A heavily-clicked but never-yet-purchased product therefore stays visible in the ranking rather than being fully absent until a sale is reported. With no tracking data at all, every product simply falls back to the default order — the call never fails.</p>
+
+      <h3>Manual merchandising: pinning or burying a product</h3>
+      <p>Independent from natural sort: a pinned product (<code class="docs-inline-code">pin</code>) appears at the chosen position at the top of the list regardless of its stock, price, or popularity; a buried product (<code class="docs-inline-code">bury</code>) is systematically pushed to the end. Useful for featuring a new arrival or discreetly hiding an end-of-life product without unindexing it.</p>
+      <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/browse/mycatalog/drills-drivers/overrides \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"product_id": "sku-123", "action": "pin", "position": 1}'
+
+curl -X DELETE https://api.heurix.fr/v1/browse/mycatalog/drills-drivers/overrides/sku-123 \
+  -H "Authorization: Bearer YOUR_API_KEY"</code></pre>
+      <p>Doesn't consume your quota — it's a configuration action, not a request. A priority set on a product that later leaves the category simply becomes a no-op, not an error.</p>
+
+      <h3>Boost or demote by attribute</h3>
+      <p>Same principle as manual merchandising, but for <strong>every</strong> product sharing an attribute rather than one at a time — "boost the entire Makita brand" instead of pinning each reference individually. A boost or demotion by attribute positions the affected products as a group, sorted among themselves by the chosen <code class="docs-inline-code">sort</code>; it's not a fixed position (see <code class="docs-inline-code">pin</code> above for that).</p>
+      <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/browse/mycatalog/drills-drivers/attribute-rules \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"field": "brand", "value": "Makita", "action": "boost"}'
+
+curl -X DELETE "https://api.heurix.fr/v1/browse/mycatalog/drills-drivers/attribute-rules?field=brand&value=Makita" \
+  -H "Authorization: Bearer YOUR_API_KEY"</code></pre>
+      <p><strong>Priority order in case of conflict</strong>, strongest to weakest: pinned (per product) &gt; buried (per product or per attribute) &gt; boosted (per attribute) &gt; natural sort. A demotion, whether set per product or per attribute, always wins over a boost — a product explicitly hidden should never be resurfaced by a broader boost rule that happens to also apply to it.</p>
     </section>
 
     <section id="ep-federated" class="docs-section">
@@ -358,6 +445,76 @@
       <p>Lists the packs available on your instance, with their level and rule counts. Three standard packs ship by default: <code class="docs-inline-code">outillage</code> (fasteners, DIN/ISO standards, materials), <code class="docs-inline-code">mode</code> (sizes, colors, materials, families), <code class="docs-inline-code">industrie</code> (bearings, standardized references). Custom packs for your catalog can be designed as a <a href="index.html#tarifs">ROI Simulator</a> mission.</p>
     </section>
 
+    <section id="ep-custom-rules" class="docs-section">
+      <div class="docs-endpoint"><span class="docs-method docs-method-get">GET</span><span class="docs-method docs-method-post">POST</span><span class="docs-method docs-method-delete">DELETE</span><code>/v1/index/{catalog}/custom-rules</code></div>
+      <h2>Custom Rules</h2>
+      <p>Extends a catalog's active rule pack, without touching it — a Custom Rule belongs to a single catalog, never shared with another account. Two templates, no regex to write: <code class="docs-inline-code">keyword</code> (a list of equivalent words all trigger the same label) and <code class="docs-inline-code">prefix_number</code> (a prefix followed by a number becomes a label with the captured value, e.g. <code class="docs-inline-code">RAL</code> recognizes "RAL 9010" and "RAL9010"). Immediate effect: every already-indexed product is re-annotated as soon as the rule is created. Up to 30 custom rules per catalog.</p>
+      <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/index/mycatalog/custom-rules \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"rule_type": "keyword", "label": "Anchor",
+       "keywords": ["drywall anchor", "molly bolt", "toggle anchor"]}'
+
+curl -X POST https://api.heurix.fr/v1/index/mycatalog/custom-rules \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"rule_type": "prefix_number", "label": "RAL color", "prefix": "RAL"}'</code></pre>
+      <p>Manageable both via API and directly from the console, under "My catalog."</p>
+    </section>
+
+    <section id="ep-events" class="docs-section">
+      <div class="docs-endpoint"><span class="docs-method docs-method-post">POST</span><code>/v1/events</code></div>
+      <h2>Conversion &amp; ROI</h2>
+      <p>Reports clicks and purchases from your site back to Heurix, to measure the click-through rate on your searches and the revenue — even the margin — that results from them. Two event types: <code class="docs-inline-code">search_click</code> (a click on a search result) and <code class="docs-inline-code">purchase</code> (one or more products purchased, with amount and optional margin per product).</p>
+      <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/events \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"event_type": "search_click", "catalog": "mycatalog",
+       "query": "drywall anchor", "product_id": "sku-123"}'
+
+curl -X POST https://api.heurix.fr/v1/events \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"event_type": "purchase", "catalog": "mycatalog",
+       "products": [{"id": "sku-123", "amount": 29.90, "margin": 8.50}]}'</code></pre>
+      <p>This endpoint is designed to be called <strong>from your end visitor's browser</strong>, on your own site — not from heurix.fr — hence CORS open to every origin. Three ways to set it up, from most complete to simplest:</p>
+      <ul>
+        <li><a href="downloads/heurix-tracker.js" download>Heurix Tracker</a> (recommended) — a persistent visitor identifier, to link a click to a later purchase from the same visitor rather than a simple aggregate correlation. One single script to drop site-wide, exposes the same functions as the snippet below.</li>
+        <li><a href="downloads/heurix-conversion-events.tpl" download>Google Tag Manager tag template</a> (<code class="docs-inline-code">.tpl</code> file, import under Templates → Tag Templates → Import) — compatible with the tracker via an optional "Visitor ID" field</li>
+        <li><a href="downloads/heurix-conversion-snippet.html" download>Simple JavaScript snippet</a>, no persistent identifier — for a minimal integration with no GTM or tracker</li>
+      </ul>
+      <p><strong>Doesn't consume your request quota</strong> — it's not an engine call, it's a data report.</p>
+      <p class="regex-reassure">⚠️ Worth knowing before reading your numbers: even with the tracker, search → purchase attribution is <strong>not a 100% guarantee</strong>. Without a visitor identifier, Heurix aggregates clicks and purchases received over the same period and account (<code class="docs-inline-code">total_revenue</code>) — a correlation, not proof. With the tracker installed, an additional field (<code class="docs-inline-code">attributed_revenue</code>) only counts purchases where the <strong>same visitor</strong> clicked from a search within the previous 24 hours — a real link, notably more reliable, but still dependent on the quality of your implementation.</p>
+
+      <div class="docs-endpoint" style="margin-top:22px;"><span class="docs-method docs-method-get">GET</span><code>/v1/analytics/conversion-summary</code></div>
+      <p>Click-through rate, attributed revenue, and margin over the period (<code class="docs-inline-code">?days=30</code> by default). Also returns <code class="docs-inline-code">attributed_revenue</code> and <code class="docs-inline-code">attributed_products</code> — <code class="docs-inline-code">null</code> if no event in the period carries a visitor identifier (the tracker isn't installed), a real figure otherwise.</p>
+
+      <div id="ep-top-products" class="docs-endpoint" style="margin-top:14px;"><span class="docs-method docs-method-get">GET</span><code>/v1/analytics/top-products</code></div>
+      <p>Most-purchased products, sorted by volume or by margin (<code class="docs-inline-code">?sort_by=volume</code> or <code class="docs-inline-code">margin</code>).</p>
+
+      <h3>Category page views</h3>
+      <p>The tracker can report which products were shown on a category page, which makes it possible to spot ones that are shown a lot but rarely clicked — exactly the population that pinning and burying exist to correct.</p>
+      <pre class="docs-code"><code>Heurix.trackCategoryView("fasteners", ["sku-1", "sku-2", "sku-3"]);</code></pre>
+      <p><strong>One call per page view</strong>, carrying the list of displayed products — not one call per product. The engine then records one impression per product, which makes aggregation possible in a single request. Worth knowing on volume: a page showing 24 products generates 24 rows, automatically purged past the retention period. The list is capped at 50 identifiers.</p>
+      <div id="ep-category-views" class="docs-endpoint" style="margin-top:14px;"><span class="docs-method docs-method-get">GET</span><code>/v1/analytics/category-views/{catalog}</code></div>
+      <p>Returns categories sorted by number of impressions, and within each, the most-viewed products with their click count from search. Doesn't consume your quota.</p>
+      <pre class="docs-code"><code>{"catalog": "mycatalog", "categories": [
+  {"category": "fasteners", "total_views": 512, "products": [
+     {"product_id": "sku-1", "views": 180, "search_clicks": 12},
+     {"product_id": "sku-2", "views": 175, "search_clicks": 0}
+  ]}
+]}</code></pre>
+      <p><strong>Returns an empty list</strong> until the tracker reports this event — the case for any integration that predates this feature. Nothing breaks, the screen just stays empty.</p>
+
+      <div id="ep-related-products" class="docs-endpoint" style="margin-top:14px;"><span class="docs-method docs-method-get">GET</span><code>/v1/analytics/related-products/{catalog}/{product_id}</code></div>
+      <p>Products frequently purchased in the same cart as <code class="docs-inline-code">{product_id}</code> — a counted co-occurrence, not machine learning. Useful for an "often bought with" section on a product page.</p>
+      <pre class="docs-code"><code>{"product_id": "sku-123", "related": [
+  {"product_id": "sku-456", "co_purchases": 12},
+  {"product_id": "sku-789", "co_purchases": 4}
+]}</code></pre>
+      <p>Empty list if fewer than 5 purchases are recorded for that specific product — not enough signal to be reliable, never an error. Requires the <a href="#ep-events">Heurix Tracker</a> for a meaningful result on a high-traffic site: without a visitor identifier, two different customers' purchases occurring almost simultaneously can, rarely, be mistaken for a single cart.</p>
+    </section>
+
     <section id="ep-health" class="docs-section">
       <div class="docs-endpoint"><span class="docs-method docs-method-get">GET</span><code>/health</code></div>
       <h2>Service health</h2>
@@ -366,6 +523,69 @@
     </section>
 
     <!-- ================= REFERENCE ================= -->
+
+    <section id="ep-search-widget" class="docs-section">
+      <div class="docs-endpoint"><span class="docs-method docs-method-get">JS</span><code>heurix-search.js</code></div>
+      <h2>Ready-to-use search bar</h2>
+      <p>Don't want to code the <code class="docs-inline-code">fetch</code> call, result rendering, and facet handling yourself? A standalone JavaScript library (zero dependencies) renders a complete search bar — input, live results, clickable facets, keyboard navigation — connected to your catalog in a few lines.</p>
+      <p class="regex-reassure">🚀 <a href="downloads/heurix-search.js?v=1785453563" download>Download heurix-search.js</a> — a single file, drop it wherever you want on your site.</p>
+
+      <p class="regex-reassure">🔑 Use a <a href="#authentification">public key</a> (<code class="docs-inline-code">hxp_</code>) — this script runs in the visitor's browser, where the key is readable by anyone. A server key would grant access to your billing.</p>
+
+      <h3>Minimal integration</h3>
+      <pre class="docs-code"><code>&lt;div id="my-search"&gt;&lt;/div&gt;
+&lt;script src="heurix-search.js?v=1785453563"&gt;&lt;/script&gt;
+&lt;script&gt;
+  Heurix.searchBox({
+    apiKey: "YOUR_PUBLIC_KEY",
+    catalog: "mycatalog",
+    containerId: "my-search"
+  });
+&lt;/script&gt;</code></pre>
+      <p>That's enough for a functional search bar — input with built-in debounce, results shown from 2 characters, typo tolerance (handled engine-side, nothing to do here), automatic fallback on zero results if your catalog has <code class="docs-inline-code">featured</code> products.</p>
+
+      <h3>Configuration options</h3>
+      <div class="table-scroll"><table class="docs-params">
+        <tr><th>Option</th><th>Type</th><th>Description</th></tr>
+        <tr><td><code class="docs-inline-code">apiKey</code>, <code class="docs-inline-code">catalog</code>, <code class="docs-inline-code">containerId</code></td><td>string</td><td>The only required options.</td></tr>
+        <tr><td><code class="docs-inline-code">facets</code></td><td>string[]</td><td>Fields to offer as clickable filters (e.g. <code class="docs-inline-code">["brand", "color"]</code>). Absent by default — no facet shown until you list them explicitly.</td></tr>
+        <tr><td><code class="docs-inline-code">accentColor</code></td><td>string</td><td>An accent color (e.g. <code class="docs-inline-code">"#2952E3"</code>) for focus and active filters — minimal personalization by design, not a full CSS overhaul.</td></tr>
+        <tr><td><code class="docs-inline-code">placeholder</code></td><td>string</td><td>Search field text. Default: "Search…".</td></tr>
+        <tr><td><code class="docs-inline-code">minChars</code></td><td>number</td><td>Number of characters before triggering a search. Default: 2.</td></tr>
+        <tr><td><code class="docs-inline-code">debounceMs</code></td><td>number</td><td>Debounce delay in milliseconds. Default: 200.</td></tr>
+        <tr><td><code class="docs-inline-code">limit</code></td><td>number</td><td>Maximum number of results shown. Default: 8.</td></tr>
+        <tr><td><code class="docs-inline-code">renderItem</code></td><td>function(hit)</td><td>Customizes the HTML of each result. Receives a full hit (see <a href="#ep-search">the search reference</a>); shows name, reference, price, and out-of-stock status by default.</td></tr>
+        <tr><td><code class="docs-inline-code">resultHref</code></td><td>function(hit) → string</td><td>If provided, each result becomes an <code class="docs-inline-code">&lt;a&gt;</code> link to the returned URL (e.g. the product page), rather than a plain clickable element.</td></tr>
+        <tr><td><code class="docs-inline-code">onSelect</code></td><td>function(hit)</td><td>Called on click or keyboard confirmation (Enter) on a result — useful if you handle navigation yourself rather than via <code class="docs-inline-code">resultHref</code>.</td></tr>
+        <tr><td><code class="docs-inline-code">baseUrl</code></td><td>string</td><td>Default: <code class="docs-inline-code">https://api.heurix.fr</code>. Only change this for a test environment.</td></tr>
+      </table></div>
+
+      <h3>Full example, with facets and product link</h3>
+      <pre class="docs-code"><code>Heurix.searchBox({
+  apiKey: "hxp_your_public_key",
+  catalog: "mycatalog",
+  containerId: "my-search",
+  facets: ["brand"],
+  accentColor: "#C0392B",
+  resultHref: function (hit) {
+    return "/products/" + hit.product.id;
+  }
+});</code></pre>
+
+      <p>Every search through this widget consumes the normal quota of the key used, exactly like a direct <code class="docs-inline-code">fetch</code> call to the <a href="#ep-search">search endpoint</a> — it's just a facade, not a new billing mechanism.</p>
+      <p><strong>The visual style provided stays deliberately minimal</strong> — functional and readable, designed to be easily customized (every element has a CSS class prefixed <code class="docs-inline-code">hx-</code>) rather than to match a specific brand identity out of the box.</p>
+    </section>
+
+    <section id="ep-mcp" class="docs-section">
+      <div class="docs-endpoint"><span class="docs-method docs-method-get">MCP</span><code>Heurix server for AI agents</code></div>
+      <h2>Querying Heurix from Claude Desktop, Cursor, or an internal agent</h2>
+      <p>An MCP (Model Context Protocol) server that exposes search and Browse as tools an AI agent can call natively — a team member can ask <em>"do I have M8 screws in stock?"</em> in natural language, without ever touching the API. Three tools: <code class="docs-inline-code">heurix_search</code>, <code class="docs-inline-code">heurix_browse</code>, <code class="docs-inline-code">heurix_catalog_stats</code>.</p>
+      <p><strong>Requirements</strong>: Python 3.10 or later, installed on the machine running the agent (your computer, not a server) — the MCP server launches locally, on demand, by Claude Desktop or Cursor themselves.</p>
+      <p class="regex-reassure">🚀 <a href="../downloads/heurix-mcp-server.zip" download>Download the MCP server</a> — detailed installation and configuration (Claude Desktop and Cursor) on <a href="blog/guide-serveur-mcp-heurix.html">the dedicated guide</a>.</p>
+      <pre class="docs-code"><code>pip install -r requirements.txt
+HEURIX_API_KEY=hx_your_key python3 server.py</code></pre>
+      <p>The API key lives only in the MCP client's local configuration (a JSON file on the user's machine), never sent in the clear in a tool call. Every call consumes the normal quota of the key used — <code class="docs-inline-code">heurix_search</code> and <code class="docs-inline-code">heurix_browse</code> count like any search or Browse call, <code class="docs-inline-code">heurix_catalog_stats</code> does not.</p>
+    </section>
 
     <section id="cascade" class="docs-section">
       <h2>The annotation cascade</h2>
@@ -448,8 +668,84 @@ VIS_M8X20  ──────────── match ────────�
   </div>
 </footer>
 
-<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
-<script src="../search-en.js?v=1785453013"></script>
+<script>document.getElementById('year').textContent = new Date().getFullYear();
+
+  // Sidebar: active link on scroll
+  const sections = document.querySelectorAll('.docs-section');
+  const sideLinks = document.querySelectorAll('.docs-sidebar a');
+  if ('IntersectionObserver' in window && sections.length) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          sideLinks.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + entry.target.id));
+        }
+      });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+    sections.forEach(s => io.observe(s));
+  }
+
+  // In-page search (added July 24) -- filters only THIS page's content, not
+  // a site-wide search like the rest of the site's Ctrl+K modal. Index
+  // built from the actual sections (h2, already carrying an anchor id),
+  // not a hand-maintained list -- a newly documented endpoint appears in
+  // search automatically, with nothing to remember.
+  (function () {
+    function esc(s) {
+      return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    }
+
+    var docsIndex = [];
+    document.querySelectorAll(".docs-section, section[id]").forEach(function (section) {
+      var heading = section.querySelector("h2");
+      if (!heading || !section.id) return;
+      docsIndex.push({
+        id: section.id,
+        title: heading.textContent.trim(),
+        text: section.textContent.trim().toLowerCase(),
+      });
+    });
+
+    var input = document.getElementById("docs-page-search-input");
+    var resultsEl = document.getElementById("docs-page-search-results");
+    if (!input || !resultsEl) return;
+
+    function render(matches, query) {
+      if (!matches.length) {
+        resultsEl.innerHTML = '<div class="docs-page-search-empty">No results for "' + esc(query) + '".</div>';
+        return;
+      }
+      resultsEl.innerHTML = matches.map(function (m) {
+        return '<a href="#' + esc(m.id) + '" class="docs-page-search-result">' + esc(m.title) + "</a>";
+      }).join("");
+    }
+
+    input.addEventListener("input", function () {
+      var q = input.value.trim().toLowerCase();
+      if (!q) { resultsEl.hidden = true; resultsEl.innerHTML = ""; return; }
+      var matches = docsIndex.filter(function (item) {
+        return item.title.toLowerCase().indexOf(q) !== -1 || item.text.indexOf(q) !== -1;
+      });
+      render(matches, input.value.trim());
+      resultsEl.hidden = false;
+    });
+
+    input.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") { resultsEl.hidden = true; input.blur(); }
+    });
+
+    resultsEl.addEventListener("click", function (e) {
+      if (e.target.closest("a")) {
+        resultsEl.hidden = true;
+        input.value = "";
+      }
+    });
+
+    document.addEventListener("click", function (e) {
+      if (!e.target.closest(".docs-page-search")) resultsEl.hidden = true;
+    });
+  })();
+</script>
+<script src="../search-en.js?v=1785453563"></script>
 <script src="../nav-dropdown.js"></script>
 <script src="../mobile-nav.js?v=1784970606"></script>
 <div id="pricing-nudge" class="pricing-nudge">
