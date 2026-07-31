@@ -58,7 +58,8 @@
 
   function esc(s) {
     return String(s === undefined || s === null ? "" : s)
-      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/'/g, "&#39;").replace(/"/g, "&quot;");
   }
 
   function euros(n) {
@@ -334,6 +335,11 @@
       // the RULES change, not just the data.
       if (champ.value.trim()) chercher(champ.value);
       else { grille.innerHTML = ""; if (meta) meta.textContent = ""; }
+      // Return focus to the search field (reported July 31): without
+      // this, focus stayed on the clicked pill and typing a new query
+      // required clicking back into the field — one extra step every
+      // time the sector changed.
+      champ.focus();
     });
   });
 

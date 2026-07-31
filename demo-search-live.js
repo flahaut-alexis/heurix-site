@@ -83,7 +83,8 @@
 
   function esc(s) {
     return String(s === undefined || s === null ? "" : s)
-      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/'/g, "&#39;").replace(/"/g, "&quot;");
   }
 
   function euros(n) {
@@ -382,6 +383,11 @@
       // qui montre que les RÈGLES changent, pas seulement les données.
       if (champ.value.trim()) chercher(champ.value);
       else { grille.innerHTML = ""; if (meta) meta.textContent = ""; }
+      // Repositionne le curseur dans le champ (signalé le 31 juillet) :
+      // sans ça, le focus restait sur la pastille cliquée et il fallait
+      // recliquer dans le champ pour retaper une requête — un geste en
+      // trop à chaque changement de secteur.
+      champ.focus();
     });
   });
 
