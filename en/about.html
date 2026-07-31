@@ -123,6 +123,35 @@
     <div class="about-text">
       <p>Heurix was born twice.</p>
       <p>The first time was in 2015: a prototype annotation engine, ahead of its time on one thing — how it used regular expressions. Rules compiled into automata, composed, applied in cascade: level 1 recognizes raw patterns, level 2 combines them into concepts. We called these rule sets <strong>prisms</strong>, and the image says it all: place a prism in front of light — the raw data — and it reveals what the light contains. Named entities appear, each with its own color. What looked like a string of characters becomes meaning.</p>
+      <p><figure class="portrait">
+        <!-- Drop photo-alexis.jpg into img/. If the file is missing, the
+             block hides itself: a broken image would do more harm than no
+             image at all. -->
+        <img src="img/photo-alexis.jpg" alt="Alexis Flahaut, founder of Heurix"
+             loading="lazy" onerror="this.closest('.portrait').hidden=true;">
+        <figcaption>Alexis Flahaut — founder</figcaption>
+      </figure>
+
+      <h2>What happened in between</h2>
+
+      <p>The project stopped. Not for a noble reason: life took over. Kids, a career change into a role whose responsibilities left no room for a second undertaking. You don't run a search engine in the evening after a day that already ran twelve hours.</p>
+
+      <p>And there was a commercial failure I can talk about now that it's far behind me: we sold the software <strong>installed on the customer's own servers</strong>. That was the model of the time, and it was the wrong one. Every deployment became a project, every update a negotiation. A fastener distributor doesn't have a team to operate an annotation engine on their own servers — they want it to just work.</p>
+
+      <p>I should add the rest, which is less comfortable to write: <strong>I was too junior to lead that project</strong>. The technology held up, the intuition was right, but I had neither the experience nor the business judgment to turn a good prototype into a product. That's something you only see afterward.</p>
+
+      <h2>Why pick it back up ten years later</h2>
+
+      <p>Because the need is real, and I verified it another way than intuition. I met <strong>hundreds of customers</strong> in my sales roles. The same problem kept coming up: their internal search doesn't find products they have in stock, and their category pages rank items in an order nobody chose.</p>
+
+      <p>Solutions exist. Some are excellent. But they're expensive, and built for teams with a developer to dedicate to them. Between the platform's native engine, which isn't enough, and a solution costing tens of thousands of euros a year, <strong>there's almost nothing</strong> for a mid-sized business.</p>
+
+      <p>Two things have changed since 2015. <strong>SaaS</strong> solved the deployment problem: nothing to install anymore, an API key and it's live. And <strong>conversational agents</strong> have made structured search more useful than it used to be — an agent querying a catalog needs to understand that a reference has a grammar, not just words.</p>
+
+      <p>The engine itself was rewritten from scratch. The original was in Java, with real finite-state transducers — recognition was linear by construction. The current version is in Python, and doesn't quite carry that same guarantee: it gained in readability and development speed what it lost in theoretical purity. That's a deliberate trade-off, and it's documented.</p>
+
+      <h2>The second time</h2>
+
       <p>The second time is now. That engine, rewritten from scratch to today's standards, answers a need observed in the field, across several verticals — hardware, spare parts, fashion, industry: <strong>buyers ready to buy who can't find products that are sitting in stock</strong>, because their site's engine reads "M8 x 20 — A2" as text, not as a diameter, a length, and a material. Passed through the Heurix prism, the same reference reveals its components — and your customers find it, however they type it.</p>
       <p><strong>Our mission: make internal search a conversion lever, not a burden.</strong> The big search platforms are built for the enterprise — expensive, complex, oversized. The engines that ship with CMSs fail as soon as the catalog gets technical. In between, thousands of SMEs with large catalogs put up with their search engine instead of using it. Heurix exists for them.</p>
       <p>Heurix is a French, independent, bootstrapped company. The engine is designed and built in France, hosted at OVH, and every result it returns is explainable — it tells you why it ranks, term by term, annotation by annotation. No black box, no magic: precision mechanics.</p>
@@ -192,7 +221,7 @@
 </footer>
 
 <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
-<script src="../search-en.js?v=1785453563"></script>
+<script src="../search-en.js?v=1785469666"></script>
 <script src="../nav-dropdown.js"></script>
 <script src="../mobile-nav.js?v=1784970606"></script>
 <div id="pricing-nudge" class="pricing-nudge">
