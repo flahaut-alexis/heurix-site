@@ -148,6 +148,9 @@
     <loc>https://heurix.fr/blog/custom-rules-personnaliser-moteur-recherche.html</loc>
   </url>
   <url>
+    <loc>https://heurix.fr/blog/mise-en-avant-bundles-packs.html</loc>
+  </url>
+  <url>
     <loc>https://heurix.fr/blog/alternative-algolia-catalogue-technique.html</loc>
   </url>
   <url>
@@ -208,6 +211,7 @@
   <url><loc>https://heurix.fr/en/blog/recherches-sans-resultat-tableau-bord.html</loc></url>
   <url><loc>https://heurix.fr/en/blog/alternative-algolia-catalogue-technique.html</loc></url>
   <url><loc>https://heurix.fr/en/blog/custom-rules-personnaliser-moteur-recherche.html</loc></url>
+  <url><loc>https://heurix.fr/en/blog/mise-en-avant-bundles-packs.html</loc></url>
   <url><loc>https://heurix.fr/en/blog/heurix-vs-algolia-typesense-sensefuel-doofinder.html</loc></url>
   <url><loc>https://heurix.fr/en/blog/build-vs-buy-moteur-recherche.html</loc></url>
   <url><loc>https://heurix.fr/en/blog/elasticsearch-lucene-catalogue-technique.html</loc></url>

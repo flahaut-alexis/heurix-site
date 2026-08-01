@@ -3,23 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fashion & retail: search that understands your references | Heurix</title>
-<meta name="description" content="“Wool turtleneck sweater size 38”: four pieces of information in four different vocabularies. One single query.">
-<link rel="alternate" hreflang="fr" href="https://heurix.fr/solutions/mode.html">
-<link rel="alternate" hreflang="en" href="https://heurix.fr/en/solutions/mode.html">
+<title>Highlighting a pack without burying search — Heurix</title>
+<meta name="description" content="A pack almost always has a higher average order value, but naturally loses in pure relevance ranking against a single product. Rather than deciding inside the score, a separate field.">
+<link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/mise-en-avant-bundles-packs.html">
+<link rel="alternate" hreflang="en" href="https://heurix.fr/en/blog/mise-en-avant-bundles-packs.html">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Fashion & retail: search that understands your references | Heurix">
-<meta property="og:description" content="“Wool turtleneck sweater size 38”: four pieces of information in four different vocabularies. One single query.">
+<meta property="og:title" content="Highlighting a pack without burying search — Heurix">
+<meta property="og:description" content="A pack almost always has a higher average order value, but naturally loses in pure relevance ranking against a single product. Rather than deciding inside the score, a separate field.">
 <meta property="og:image" content="https://heurix.fr/og-image.png">
-<meta property="og:url" content="https://heurix.fr/en/solutions/mode.html">
+<meta property="og:url" content="https://heurix.fr/en/blog/mise-en-avant-bundles-packs.html">
 <meta property="og:locale" content="en_US">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Fashion & retail: search that understands your references | Heurix">
+<meta name="twitter:title" content="Highlighting a pack without burying search — Heurix">
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="../../favicon-32.png">
 <link rel="apple-touch-icon" href="../../apple-touch-icon.png">
 <link rel="stylesheet" href="../../styles.css?v=1785599598">
-<link rel="canonical" href="https://heurix.fr/en/solutions/mode.html">
+<link rel="canonical" href="https://heurix.fr/en/blog/mise-en-avant-bundles-packs.html">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -28,7 +28,7 @@
   "url": "https://heurix.fr",
   "logo": "https://heurix.fr/logo.svg?v=1784985918",
   "image": "https://heurix.fr/og-image.png",
-  "description": "Regex-powered search and discovery engine for e-commerce sites, designed in France.",
+  "description": "Search engine and search & discovery for e-commerce sites, built on regular expressions, made in France.",
   "email": "contact@heurix.fr",
   "sameAs": ["https://www.linkedin.com/company/heurix-search/"],
   "founder": {"@type": "Person", "name": "Alexis Flahaut"},
@@ -86,7 +86,7 @@
           <span></span><span></span><span></span>
         </button>
         <a href="../console.html" class="header-signin">Sign in</a>
-        <a href="../../solutions/mode.html" class="lang-switch">FR</a>
+        <a href="../../blog/mise-en-avant-bundles-packs.html" class="lang-switch">FR</a>
         <a href="../pricing.html" class="btn">Try it free</a>
       </div>
     </nav>
@@ -109,55 +109,52 @@
 
 <article class="post">
   <div class="wrap post-wrap">
-    <a href="../index.html" class="back-link">← Back to home</a>
-    <div class="kicker">Solutions · Fashion & retail</div>
-    <h1>Fashion &amp; retail: search that understands your references</h1>
-    <p class="post-lede">“Wool turtleneck sweater size 38”: four pieces of information in four different vocabularies. One single query.</p>
+    <a href="../blog.html" class="back-link">← All articles</a>
+    <div class="kicker">Blog · August 2026</div>
+    <h1>Highlighting a pack without burying search</h1>
+    <p class="post-lede">A pack almost always has a higher average order value than a single product. It almost always has a longer listing too — and that's precisely what puts it at a disadvantage in pure ranking. Rather than artificially deciding inside the score, a separate field.</p>
 
     <div class="post-body">
-      <h2>The problem, specifically in this industry</h2>
-      <p>Fashion vocabulary mixes product family, cut, material, color, size, and season — often in no fixed order and with brand-specific abbreviations. An engine that treats the phrase as a bag of words doesn't know that “UK 10” is a size and not a reference, or that “turtleneck” is a cut attribute and not a distinct product.</p>
+      <h2>The symptom, before the cause</h2>
+      <p>On a professional hardware catalog, a search for "18V drill" consistently surfaced 3-to-8-tool packs ahead of any standalone drill — sometimes with no single product appearing at all in the first fifteen results. Nothing technically broken: every pack genuinely contained an 18V drill, the engine was right to find them.</p>
+      <p>The real question was elsewhere: does someone typing "18V drill" actually want, as a first choice, a several-hundred-euro investment in a full kit?</p>
 
-      <h2>What Heurix understands in your references</h2>
-      <p>The <code class="docs-inline-code">mode</code> rule pack activates when you pick this industry, at indexing time. It produces these annotations, each becoming a usable filter:</p>
-      <div class="table-scroll"><table class="docs-params">
-        <tr><th>Annotation</th><th>What it isolates</th></tr>
-        <tr><td><code class="docs-inline-code">TAILLE_38</code></td><td>the size, distinguished from a model number</td></tr>
-        <tr><td><code class="docs-inline-code">COL_ROULE</code></td><td>the collar cut</td></tr>
-        <tr><td><code class="docs-inline-code">MAT_LAINE</code></td><td>the material</td></tr>
-        <tr><td><code class="docs-inline-code">SAISON_AW25</code></td><td>the season, in professional format</td></tr>
-        <tr><td><code class="docs-inline-code">JEAN_T38_W30</code></td><td>clothing size and jean size reconciled</td></tr>
-      </table></div>
+      <h2>Why the text wins, not the product</h2>
+      <p>A listing describing four tools mechanically accumulates more signal than a listing describing one. Every mention of "drill driver," every "18V-XXX" reference repeated across a long marketing description weighs into the score — the right behavior elsewhere (a word repeated several times in a listing is a legitimate relevance signal), but one that mechanically favors the more verbose content, not the content most relevant to a precise query intent.</p>
+      <p>A pack listing isn't a product gaming the system. It's simply longer, by nature.</p>
 
-      <h2>On real references</h2>
-      <div class="table-scroll"><table class="docs-params">
-        <tr><th>Indexed reference</th><th>What the engine extracts</th></tr>
-        <tr><td class="mono">Merino wool turtleneck sweater, size 38</td><td><code class="docs-inline-code">FAM_PULL · COL_ROULE · MAT_LAINE · TAILLE_38</code></td></tr>
-        <tr><td class="mono">Slim faded jeans W30 L32</td><td><code class="docs-inline-code">FAM_PANTALON · COUPE_SLIM · FINITION_DELAVE · TAILLE_30_32</code></td></tr>
-        <tr><td class="mono">Striped cotton shirt AW25</td><td><code class="docs-inline-code">FAM_CHEMISE · MOTIF_RAYURES · MAT_COTON · SAISON_AW25</code></td></tr>
-      </table></div>
+      <h2>The wrong answer, and why we didn't take it</h2>
+      <p>The first temptation is to fix this inside the score itself — penalize long listings, or categories containing "pack." Two problems. First, a pack ISN'T less relevant: it genuinely contains what's being searched for, often more. Demoting it would hide a legitimate option, sometimes the better deal for the buyer. Second, adjusting a relevance score always has effects that reach beyond the one case you're trying to fix — a tweak designed for one product type ripples into every other one, rarely in a way you can fully predict in a single pass.</p>
 
-      <h2>The trap a generalist engine falls into</h2>
-      <p>A customer searches “red sweater size 38”. Your listings say “burgundy”, “size UK 10”, and “knit”. Three vocabulary gaps, and an empty result on a product you have in stock.</p>
+      <h2>The answer we shipped: a separate field, not a trade-off</h2>
+      <p>Rather than choosing "pack or single product first" inside the ranking itself, the search response now carries a separate field, <code class="docs-inline-code">highlighted_bundle</code>: the best-matching pack for the query, distinct from <code class="docs-inline-code">hits</code>.</p>
+      <pre class="docs-code"><code>{"query": "18V drill", "total": 47, "hits": [...],
+ "highlighted_bundle": {
+   "product": {"name": "4-Tool Pack 18V", "category": "Pack 4 tools", "price": 1200},
+   "score": 35.66,
+   "in_stock": true
+ }}</code></pre>
+      <p><code class="docs-inline-code">hits</code> doesn't change — it's still the natural ranking, standalone products included. It's up to your interface to decide how to present the two zones: a visually distinct highlight above the list, an endcap rather than a spot forced into the regular ranking.</p>
 
-      <h2>Why the pack changes the outcome</h2>
-      <p>The fashion pack handles these vocabulary equivalences natively, and you add your own — house color names, collection abbreviations — via Custom Rules, with no regex to write.</p>
-      <p class="regex-reassure">🔧 A term specific to your catalog that the pack still misses? Add your own <a href="../docs.html#ep-custom-rules">Custom Rule</a> from the console, simply describing what it should recognize — no regex required.</p>
+      <h2>One limit, to be honest</h2>
+      <p>Bundle detection runs on the <code class="docs-inline-code">category</code> field — a product counts as a bundle if its category contains "pack" or "kit" (case-insensitive). No extra data to supply: it works with a catalog you've already indexed, as is. The trade-off, knowingly accepted: it depends on the vocabulary already present in your categories, not an explicit declaration. Two brands in the same industry can name the same thing differently — one writes "Pack," another "Kit," a third might just as well write "Bundle" or "Combo" without today's detection recognizing it.</p>
 
-      <h2>Going further</h2>
-      <p>The <a href="../blog/guide-mise-en-route.html">getting started guide</a> covers the full setup, from sign-up to your first indexed catalog. The <a href="../docs.html">documentation</a> details every endpoint.</p>
+      <blockquote>The question was never "do packs deserve to be seen" — they do, a higher average order value serves the distributor as much as the buyer saving money by purchasing together. The question was how to show them without their natural length accidentally burying what a visitor in a hurry was precisely looking for.</blockquote>
+
+      <h2>Available now</h2>
+      <p>The <code class="docs-inline-code">highlighted_bundle</code> field is active on every search via <code class="docs-inline-code">POST /v1/index/{catalog}/search</code>, with no configuration or migration — absent from the response if no product matching the query has "pack" or "kit" in its category, present otherwise. Full details in the <a href="../docs.html#bundles">documentation</a>.</p>
     </div>
 
     <div class="post-footer-cta">
-      <p>Test it on your own fashion &amp; retail catalog</p>
-      <a href="../pricing.html" class="btn">Try it free — 14 days</a>
+      <p>A catalog with both packs and standalone products, and a search that doesn't yet tell them apart?</p>
+      <a href="../pricing.html" class="btn">Try the Search API for free</a>
     </div>
   </div>
 </article>
 
 <footer>
   <div class="wrap foot-grid">
-    <a href="../index.html" class="logo" style="font-size:15px;"><img src="../logo.svg?v=1784985918" alt="Heurix" style="height:22px;width:22px;"> <span class="wordmark">Heurix</span></a>
+    <a href="../index.html" class="logo" style="font-size:15px;"><img src="../../logo.svg?v=1784985918" alt="Heurix" style="height:22px;width:22px;"> <span class="wordmark">Heurix</span></a>
     <div class="foot-links">
       <a href="../blog.html">Blog</a>
       <a href="../docs.html">API Documentation</a>
@@ -168,8 +165,8 @@
       <a href="../index.html#faq">FAQ</a>
       <a href="../cgv.html">Terms of Service</a>
       <a href="../mentions-legales.html">Legal notice</a>
-        <a href="#" data-rouvrir-consentement>Manage cookies</a>
-        <a href="../privacy.html">Privacy</a>
+      <a href="#" data-rouvrir-consentement>Manage cookies</a>
+      <a href="../privacy.html">Privacy</a>
       <a href="mailto:contact@heurix.fr">contact@heurix.fr</a>
     </div>
     <div class="foot-social">
@@ -186,8 +183,7 @@
 </footer>
 
 <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
-
-<script src="../../search-en.js?v=1785600002"></script>
+<script src="../../search-en.js"></script>
 <script src="../../nav-dropdown.js"></script>
 <script src="../../mobile-nav.js?v=1784970606"></script>
 <div id="pricing-nudge" class="pricing-nudge">
@@ -197,6 +193,6 @@
   <a href="../pricing.html" class="btn">See pricing</a>
 </div>
 <script src="../../pricing-nudge.js"></script>
-<script src="../../consent.js?v=1785150583"></script>
+<script>window.HEURIX_RACINE='../../';</script><script src="../../consent.js?v=1785150583"></script>
 </body>
 </html>
