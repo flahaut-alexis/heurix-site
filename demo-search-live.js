@@ -40,6 +40,17 @@
   var zonePrismes = racine.querySelector(".play-prisms");
   if (!champ || !grille) return;
 
+  // Pulse d'appel sur la barre de recherche (1er août) : retiré
+  // DÉFINITIVEMENT dès la première interaction, jamais réactivé ensuite.
+  // {once:true} sur les deux évènements suffit à garantir ce comportement
+  // sans variable d'état à maintenir à la main.
+  var barre = racine.querySelector(".play-bar");
+  if (barre) {
+    var arreterPulse = function () { barre.classList.remove("play-bar-pulse"); };
+    champ.addEventListener("focus", arreterPulse, { once: true });
+    champ.addEventListener("input", arreterPulse, { once: true });
+  }
+
 
   var minuteur = null;
   var derniereRequete = 0;
@@ -355,9 +366,7 @@
   // ne démontrerait rien : chaque secteur a son vocabulaire, et c'est
   // précisément ce que le sélecteur illustre.
   var EXEMPLES = {
-    outillage: ["perceuse 18V", "marteau moins de 30 euros", "pied à coulisse", "gants taile 10"],
-    livres: ["roman policier poche", "9782070413119", "science-fiction"],
-    hightech: ["10kΩ 0805", "câble USB-C 2m", "résistance CMS"],
+    outillage: ["M8x20 inox", "vis inox moins de 2 euros", "DIN 933", "rondele"],
     mode: ["pull laine rouge taille L", "jean slim W32", "chemise rayée"],
   };
 
