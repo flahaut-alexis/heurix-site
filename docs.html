@@ -18,7 +18,7 @@
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css?v=1785598012">
+<link rel="stylesheet" href="styles.css?v=1785599598">
 <link rel="canonical" href="https://heurix.fr/docs.html">
 <script type="application/ld+json">
 {
@@ -165,6 +165,7 @@
       <a href="#ep-category-views">Vues par catégorie</a>
       <a href="#ep-related-products">Produits liés</a>
       <a href="#ep-search-widget">Barre de recherche prête à l'emploi</a>
+      <a href="#ep-client-js">Client JS/TypeScript</a>
       <a href="#ep-mcp">Serveur MCP</a>
       <a href="#ep-health">Santé du service</a>
       <div class="docs-sidebar-group">Référence</div>
@@ -912,13 +913,13 @@ curl -X POST https://api.heurix.fr/v1/events \
       <div class="docs-endpoint"><span class="docs-method docs-method-get">JS</span><code>heurix-search.js</code></div>
       <h2>Barre de recherche prête à l'emploi</h2>
       <p>Pas envie de coder l'appel <code class="docs-inline-code">fetch</code>, le rendu des résultats et la gestion des facettes vous-même ? Une bibliothèque JavaScript autonome (zéro dépendance) affiche une barre de recherche complète — saisie, résultats en direct, facettes cliquables, navigation clavier — connectée à votre catalogue en quelques lignes.</p>
-      <p class="regex-reassure">🚀 <a href="downloads/heurix-search.js?v=1785598012" download>Téléchargez heurix-search.js</a> — un seul fichier, à poser où vous voulez sur votre site.</p>
+      <p class="regex-reassure">🚀 <a href="downloads/heurix-search.js?v=1785599598" download>Téléchargez heurix-search.js</a> — un seul fichier, à poser où vous voulez sur votre site.</p>
 
       <p class="regex-reassure">🔑 Utilisez une <a href="#authentification">clé publique</a> (<code class="docs-inline-code">hxp_</code>) — ce script tourne dans le navigateur du visiteur, où la clé est lisible par tous. Une clé serveur donnerait accès à votre facturation.</p>
 
       <h3>Intégration minimale</h3>
       <pre class="docs-code"><code>&lt;div id="ma-recherche"&gt;&lt;/div&gt;
-&lt;script src="heurix-search.js?v=1785598012"&gt;&lt;/script&gt;
+&lt;script src="heurix-search.js?v=1785599598"&gt;&lt;/script&gt;
 &lt;script&gt;
   Heurix.searchBox({
     apiKey: "VOTRE_CLE_PUBLIQUE",
@@ -958,6 +959,33 @@ curl -X POST https://api.heurix.fr/v1/events \
 
       <p>Chaque recherche via ce widget consomme le quota normal de la clé utilisée, exactement comme un appel <code class="docs-inline-code">fetch</code> direct au <a href="#ep-search">point d'entrée de recherche</a> — ce n'est qu'une façade, pas un nouveau mécanisme de facturation.</p>
       <p><strong>Le style visuel fourni reste volontairement minimal</strong> — fonctionnel et lisible, pensé pour être facilement personnalisé (chaque élément a une classe CSS préfixée <code class="docs-inline-code">hx-</code>) plutôt que pour correspondre à une charte graphique précise dès cette version.</p>
+    </section>
+
+    <section id="ep-client-js" class="docs-section">
+      <div class="docs-endpoint"><span class="docs-method docs-method-get">npm</span><code>@heurix-site/client</code></div>
+      <h2>Client officiel TypeScript/JavaScript</h2>
+      <p>Pour un projet Node.js, un build TypeScript, ou simplement préférer un module à un <code class="docs-inline-code">fetch</code> écrit à la main : le client officiel couvre la recherche, Browse & Discovery, l'indexation et les synonymes. Zéro dépendance runtime (utilise <code class="docs-inline-code">fetch</code> natif), types complets.</p>
+
+      <pre class="docs-code"><code>npm install @heurix-site/client</code></pre>
+
+      <pre class="docs-code"><code>import { HeurixClient } from "@heurix-site/client";
+
+const client = new HeurixClient({
+  apiKey: "hxp_votre_cle_publique",
+  catalog: "monsite",
+});
+
+const results = await client.search("vis m8 inox");
+console.log(results.hits);</code></pre>
+
+      <p>Sans étape de build, un import direct depuis un CDN fonctionne aussi bien :</p>
+      <pre class="docs-code"><code>&lt;script type="module"&gt;
+  import { HeurixClient } from "https://cdn.jsdelivr.net/npm/@heurix-site/client@latest/dist/index.js";
+&lt;/script&gt;</code></pre>
+
+      <p class="regex-reassure">🔑 Même règle que partout ailleurs côté navigateur : une <a href="#authentification">clé publique</a> (<code class="docs-inline-code">hxp_</code>), jamais votre clé serveur, dans du code qui s'exécute chez le visiteur.</p>
+
+      <p><strong>Un seul nom à retenir</strong> : <code class="docs-inline-code">@heurix-site/client</code>. Le paquet <code class="docs-inline-code">heurix-client</code> (sans organisation) a existé brièvement pendant la mise au point et est aujourd'hui déprécié — s'il apparaît dans un résultat de recherche npm plus ancien, ignorez-le.</p>
     </section>
 
     <section id="ep-mcp" class="docs-section">
@@ -1093,7 +1121,7 @@ VIS_M8X20  ────────── correspondance ──────  VIS
   </div>
 </footer>
 
-<script src="search.js?v=1785598012"></script>
+<script src="search.js?v=1785599598"></script>
 <script>
   document.getElementById('year').textContent = new Date().getFullYear();
 

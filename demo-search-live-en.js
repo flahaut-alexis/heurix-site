@@ -22,6 +22,7 @@
 
   var champ = racine.querySelector(".play-input");
   var grille = racine.querySelector(".play-grid");
+  var zoneBundle = racine.querySelector(".play-bundle-zone");
   var meta = racine.querySelector(".play-meta");
   var zonePrismes = racine.querySelector(".play-prisms");
   if (!champ || !grille) return;
@@ -177,9 +178,26 @@
       grille.innerHTML = "<p class='play-vide'>No results for \"" +
                          esc(requete) + "\".</p>";
       if (meta) meta.textContent = "";
+      if (zoneBundle) zoneBundle.hidden = true;
       return;
     }
     grille.innerHTML = hits.slice(0, 9).map(fiche).join("");
+
+    // Merchant highlight (Aug 1, 2026) — consumes the API's new
+    // `highlighted_bundle` field. Reuses fiche() for the card itself:
+    // same rendering, same apostrophe protection already fixed today,
+    // no product-display logic duplicated here — only the framing differs.
+    if (zoneBundle) {
+      if (donnees.highlighted_bundle) {
+        zoneBundle.hidden = false;
+        zoneBundle.innerHTML =
+          "<div class='play-bundle-etiquette'>Recommended pack</div>" +
+          fiche(donnees.highlighted_bundle);
+      } else {
+        zoneBundle.hidden = true;
+        zoneBundle.innerHTML = "";
+      }
+    }
 
     if (meta) {
       var ms = Math.max(1, Math.round(performance.now() - chrono));

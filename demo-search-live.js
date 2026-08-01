@@ -36,6 +36,7 @@
 
   var champ = racine.querySelector(".play-input");
   var grille = racine.querySelector(".play-grid");
+  var zoneBundle = racine.querySelector(".play-bundle-zone");
   var meta = racine.querySelector(".play-meta");
   var zonePrismes = racine.querySelector(".play-prisms");
   if (!champ || !grille) return;
@@ -218,9 +219,27 @@
       grille.innerHTML = "<p class='play-vide'>Aucun résultat pour « " +
                          esc(requete) + " ».</p>";
       if (meta) meta.textContent = "";
+      if (zoneBundle) zoneBundle.hidden = true;
       return;
     }
     grille.innerHTML = hits.slice(0, 9).map(fiche).join("");
+
+    // MISE EN AVANT MARCHANDE (1er août 2026) — « tête de gondole » côté
+    // widget, consommant le nouveau champ `highlighted_bundle` de l'API.
+    // Réutilise fiche() pour la carte elle-même : même rendu, même
+    // protection contre les apostrophes déjà réglée, aucune logique
+    // d'affichage produit à réécrire ici — seul l'habillage change.
+    if (zoneBundle) {
+      if (donnees.highlighted_bundle) {
+        zoneBundle.hidden = false;
+        zoneBundle.innerHTML =
+          "<div class='play-bundle-etiquette'>Pack recommandé</div>" +
+          fiche(donnees.highlighted_bundle);
+      } else {
+        zoneBundle.hidden = true;
+        zoneBundle.innerHTML = "";
+      }
+    }
 
     if (meta) {
       var ms = Math.max(1, Math.round(performance.now() - chrono));

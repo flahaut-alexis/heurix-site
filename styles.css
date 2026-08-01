@@ -469,6 +469,35 @@ h1 span{ color:var(--blue); }
    defaut implicite) donne à chaque carte la hauteur de sa rangée ; c'est
    la carte elle-même, en colonne flexible avec son pied poussé vers le
    bas, qui absorbe les différences de longueur de texte. */
+/* Mise en avant marchande — « tête de gondole » du widget démo (1er août),
+   consommant `highlighted_bundle` de l'API. Même dégradé de marque que la
+   barre de recherche plus haut, pour rester cohérent visuellement plutôt
+   que d'inventer une troisième palette dans la même page. */
+.play-bundle-zone{
+  position:relative;
+  margin-bottom:16px; padding:20px 20px 16px;
+  border-radius:14px;
+  background:linear-gradient(135deg, var(--blue-tint) 0%, #F3EEFF 100%);
+  border:1.5px solid rgba(91,95,239,0.25);
+}
+.play-bundle-etiquette{
+  display:inline-block; margin-bottom:10px;
+  font-family:'Plus Jakarta Sans', sans-serif; font-size:11.5px; font-weight:800;
+  letter-spacing:.04em; text-transform:uppercase;
+  color:#fff;
+  background:linear-gradient(135deg, var(--blue), #8B5CF6);
+  border-radius:100px; padding:5px 12px;
+}
+/* La carte a l'interieur reprend fiche() a l'identique -- on l'agrandit
+   legerement et on lui donne un fond blanc plein pour qu'elle ressorte
+   sur le degrade de la zone, plutot que de s'y fondre. */
+.play-bundle-zone .play-card{
+  max-width:340px;
+  background:#fff;
+  box-shadow:0 6px 20px -8px rgba(91,95,239,0.35);
+}
+.play-bundle-zone .play-card-name{ font-size:16px; }
+
 .play-grid{
   display:grid;
   grid-template-columns:repeat(auto-fit, minmax(190px, 1fr));
