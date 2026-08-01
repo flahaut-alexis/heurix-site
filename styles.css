@@ -472,28 +472,33 @@ h1 span{ color:var(--blue); }
 /* Mise en avant marchande — « tête de gondole » du widget démo (1er août),
    consommant `highlighted_bundle` de l'API. Même dégradé de marque que la
    barre de recherche plus haut, pour rester cohérent visuellement plutôt
-   que d'inventer une troisième palette dans la même page. */
+   que d'inventer une troisième palette dans la même page.
+
+   REVU LE MÊME JOUR : la première version padait toute la zone comme une
+   bannière pleine largeur, avec la carte flottant seule dedans — bien
+   plus large qu'un résultat de recherche normal. Corrigé pour que la
+   zone épouse la taille d'UNE carte, pas l'inverse : plus de fond ni de
+   padding propres à la zone, l'accent visuel vit sur la bordure et
+   l'ombre de la carte elle-même. */
 .play-bundle-zone{
-  position:relative;
-  margin-bottom:16px; padding:20px 20px 16px;
-  border-radius:14px;
-  background:linear-gradient(135deg, var(--blue-tint) 0%, #F3EEFF 100%);
-  border:1.5px solid rgba(91,95,239,0.25);
+  display:inline-block;
+  max-width:280px;
+  margin-bottom:16px;
 }
+.play-bundle-zone[hidden]{ display:none; }
 .play-bundle-etiquette{
-  display:inline-block; margin-bottom:10px;
-  font-family:'Plus Jakarta Sans', sans-serif; font-size:11.5px; font-weight:800;
+  display:inline-block; margin-bottom:8px;
+  font-family:'Plus Jakarta Sans', sans-serif; font-size:10.5px; font-weight:800;
   letter-spacing:.04em; text-transform:uppercase;
   color:#fff;
   background:linear-gradient(135deg, var(--blue), #8B5CF6);
-  border-radius:100px; padding:5px 12px;
+  border-radius:100px; padding:4px 10px;
 }
-/* La carte a l'interieur reprend fiche() a l'identique -- on l'agrandit
-   legerement et on lui donne un fond blanc plein pour qu'elle ressorte
-   sur le degrade de la zone, plutot que de s'y fondre. */
+/* La carte a l'interieur reprend fiche() a l'identique -- seule sa
+   bordure et son ombre la distinguent desormais des cartes de la grille,
+   plus de fond separe qui la fasse paraitre plus grande qu'elle ne l'est. */
 .play-bundle-zone .play-card{
-  max-width:340px;
-  background:#fff;
+  border:1.5px solid rgba(91,95,239,0.35);
   box-shadow:0 6px 20px -8px rgba(91,95,239,0.35);
 }
 .play-bundle-zone .play-card-name{ font-size:16px; }

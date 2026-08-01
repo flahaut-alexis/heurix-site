@@ -3,22 +3,22 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Highlighting a pack without burying search — Heurix</title>
-<meta name="description" content="A pack almost always has a higher average order value, but naturally loses in pure relevance ranking against a single product. Rather than deciding inside the score, a separate field.">
+<title>Highlighting a pack or bundle without burying search — Heurix</title>
+<meta name="description" content="A pack or bundle almost always has a higher average order value, but naturally loses in pure relevance ranking against a single product. Rather than deciding inside the score, a separate field.">
 <link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/mise-en-avant-bundles-packs.html">
 <link rel="alternate" hreflang="en" href="https://heurix.fr/en/blog/mise-en-avant-bundles-packs.html">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Highlighting a pack without burying search — Heurix">
-<meta property="og:description" content="A pack almost always has a higher average order value, but naturally loses in pure relevance ranking against a single product. Rather than deciding inside the score, a separate field.">
+<meta property="og:title" content="Highlighting a pack or bundle without burying search — Heurix">
+<meta property="og:description" content="A pack or bundle almost always has a higher average order value, but naturally loses in pure relevance ranking against a single product. Rather than deciding inside the score, a separate field.">
 <meta property="og:image" content="https://heurix.fr/og-image.png">
 <meta property="og:url" content="https://heurix.fr/en/blog/mise-en-avant-bundles-packs.html">
 <meta property="og:locale" content="en_US">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Highlighting a pack without burying search — Heurix">
+<meta name="twitter:title" content="Highlighting a pack or bundle without burying search — Heurix">
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="../../favicon-32.png">
 <link rel="apple-touch-icon" href="../../apple-touch-icon.png">
-<link rel="stylesheet" href="../../styles.css?v=1785599598">
+<link rel="stylesheet" href="../../styles.css?v=1785601035">
 <link rel="canonical" href="https://heurix.fr/en/blog/mise-en-avant-bundles-packs.html">
 <script type="application/ld+json">
 {
@@ -111,8 +111,8 @@
   <div class="wrap post-wrap">
     <a href="../blog.html" class="back-link">← All articles</a>
     <div class="kicker">Blog · August 2026</div>
-    <h1>Highlighting a pack without burying search</h1>
-    <p class="post-lede">A pack almost always has a higher average order value than a single product. It almost always has a longer listing too — and that's precisely what puts it at a disadvantage in pure ranking. Rather than artificially deciding inside the score, a separate field.</p>
+    <h1>Highlighting a pack or bundle without burying search</h1>
+    <p class="post-lede">A pack — or a bundle, two words for the same idea depending on your industry's vocabulary — almost always has a higher average order value than a single product. It almost always has a longer listing too — and that's precisely what puts it at a disadvantage in pure ranking. Rather than artificially deciding inside the score, a separate field.</p>
 
     <div class="post-body">
       <h2>The symptom, before the cause</h2>
@@ -137,12 +137,12 @@
       <p><code class="docs-inline-code">hits</code> doesn't change — it's still the natural ranking, standalone products included. It's up to your interface to decide how to present the two zones: a visually distinct highlight above the list, an endcap rather than a spot forced into the regular ranking.</p>
 
       <h2>One limit, to be honest</h2>
-      <p>Bundle detection runs on the <code class="docs-inline-code">category</code> field — a product counts as a bundle if its category contains "pack" or "kit" (case-insensitive). No extra data to supply: it works with a catalog you've already indexed, as is. The trade-off, knowingly accepted: it depends on the vocabulary already present in your categories, not an explicit declaration. Two brands in the same industry can name the same thing differently — one writes "Pack," another "Kit," a third might just as well write "Bundle" or "Combo" without today's detection recognizing it.</p>
+      <p>Detection runs on the <code class="docs-inline-code">category</code> field — a product counts as a pack or bundle if its category contains "pack," "kit," or "bundle" (case-insensitive). No extra data to supply: it works with a catalog you've already indexed, as is. The trade-off, knowingly accepted: it depends on the vocabulary already present in your categories, not an explicit declaration. A brand might just as well write "Lot" or "Combo" without today's detection recognizing it — the three words chosen cover what we've observed on real catalogs, not an exhaustive list of every possible term in the industry.</p>
 
       <blockquote>The question was never "do packs deserve to be seen" — they do, a higher average order value serves the distributor as much as the buyer saving money by purchasing together. The question was how to show them without their natural length accidentally burying what a visitor in a hurry was precisely looking for.</blockquote>
 
       <h2>Available now</h2>
-      <p>The <code class="docs-inline-code">highlighted_bundle</code> field is active on every search via <code class="docs-inline-code">POST /v1/index/{catalog}/search</code>, with no configuration or migration — absent from the response if no product matching the query has "pack" or "kit" in its category, present otherwise. Full details in the <a href="../docs.html#bundles">documentation</a>.</p>
+      <p>The <code class="docs-inline-code">highlighted_bundle</code> field is active on every search via <code class="docs-inline-code">POST /v1/index/{catalog}/search</code>, with no configuration or migration — absent from the response if no product matching the query has "pack," "kit," or "bundle" in its category, present otherwise. It also respects stock: an out-of-stock pack is never highlighted, even if it's the best match — recommending something that can't be bought helps no one. Full details in the <a href="../docs.html#bundles">documentation</a>.</p>
     </div>
 
     <div class="post-footer-cta">

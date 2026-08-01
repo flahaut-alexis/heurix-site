@@ -3,23 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mettre en avant un pack sans écraser la recherche — Heurix</title>
-<meta name="description" content="Un pack a un panier moyen plus élevé, mais perd naturellement au classement pur face à un produit seul. Plutôt que de trancher dans le score, un champ séparé.">
+<title>Mettre en avant un pack ou un bundle sans écraser la recherche — Heurix</title>
+<meta name="description" content="Un pack ou un bundle a un panier moyen plus élevé, mais perd naturellement au classement pur face à un produit seul. Plutôt que de trancher dans le score, un champ séparé.">
 <link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/mise-en-avant-bundles-packs.html">
 <link rel="alternate" hreflang="en" href="https://heurix.fr/en/blog/mise-en-avant-bundles-packs.html">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Mettre en avant un pack sans écraser la recherche — Heurix">
-<meta property="og:description" content="Un pack a un panier moyen plus élevé, mais perd naturellement au classement pur face à un produit seul. Plutôt que de trancher dans le score, un champ séparé.">
+<meta property="og:title" content="Mettre en avant un pack ou un bundle sans écraser la recherche — Heurix">
+<meta property="og:description" content="Un pack ou un bundle a un panier moyen plus élevé, mais perd naturellement au classement pur face à un produit seul. Plutôt que de trancher dans le score, un champ séparé.">
 <meta property="og:image" content="https://heurix.fr/og-image.png">
 <meta property="og:url" content="https://heurix.fr/blog/mise-en-avant-bundles-packs.html">
 <meta property="og:locale" content="fr_FR">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Mettre en avant un pack sans écraser la recherche — Heurix">
-<meta name="twitter:description" content="Un pack a un panier moyen plus élevé, mais perd naturellement au classement pur face à un produit seul. Plutôt que de trancher dans le score, un champ séparé.">
+<meta name="twitter:title" content="Mettre en avant un pack ou un bundle sans écraser la recherche — Heurix">
+<meta name="twitter:description" content="Un pack ou un bundle a un panier moyen plus élevé, mais perd naturellement au classement pur face à un produit seul. Plutôt que de trancher dans le score, un champ séparé.">
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="../favicon-32.png">
 <link rel="apple-touch-icon" href="../apple-touch-icon.png">
-<link rel="stylesheet" href="../styles.css?v=1785599598">
+<link rel="stylesheet" href="../styles.css?v=1785601035">
 <link rel="canonical" href="https://heurix.fr/blog/mise-en-avant-bundles-packs.html">
 <script type="application/ld+json">
 {
@@ -112,8 +112,8 @@
   <div class="wrap post-wrap">
     <a href="../blog.html" class="back-link">← Tous les articles</a>
     <div class="kicker">Blog · Août 2026</div>
-    <h1>Mettre en avant un pack sans écraser la recherche</h1>
-    <p class="post-lede">Un pack a presque toujours un panier moyen plus élevé qu'un produit seul. Il a aussi, presque toujours, une fiche plus longue — et c'est précisément ce qui le désavantage au classement pur. Plutôt que de trancher artificiellement dans le score, un champ séparé.</p>
+    <h1>Mettre en avant un pack ou un bundle sans écraser la recherche</h1>
+    <p class="post-lede">Un pack — ou un bundle, deux mots pour la même idée selon le vocabulaire de votre secteur — a presque toujours un panier moyen plus élevé qu'un produit seul. Il a aussi, presque toujours, une fiche plus longue — et c'est précisément ce qui le désavantage au classement pur. Plutôt que de trancher artificiellement dans le score, un champ séparé.</p>
 
     <div class="post-body">
       <h2>Le symptôme, avant la cause</h2>
@@ -138,12 +138,12 @@
       <p><code class="docs-inline-code">hits</code> ne change pas — c'est toujours le classement naturel, produits seuls compris. À votre interface de décider comment présenter les deux zones : une mise en avant visuelle distincte au-dessus de la liste, une « tête de gondole » plutôt qu'une place gagnée de force dans le classement ordinaire.</p>
 
       <h2>Une limite, pour être honnête</h2>
-      <p>La détection d'un pack se fait sur le champ <code class="docs-inline-code">category</code> — un produit est considéré comme un bundle si sa catégorie contient « pack » ou « kit » (insensible à la casse). Aucune donnée supplémentaire à fournir : ça fonctionne avec un catalogue déjà indexé, tel quel. La contrepartie, assumée : ça dépend du vocabulaire déjà présent dans vos catégories, pas d'une déclaration explicite. Deux marques du même secteur peuvent nommer la même chose différemment — l'une écrit « Pack », l'autre « Kit », une troisième pourrait tout aussi bien écrire « Lot » ou « Combo » sans que la détection actuelle les reconnaisse.</p>
+      <p>La détection se fait sur le champ <code class="docs-inline-code">category</code> — un produit est considéré comme un pack ou un bundle si sa catégorie contient « pack », « kit » ou « bundle » (insensible à la casse). Aucune donnée supplémentaire à fournir : ça fonctionne avec un catalogue déjà indexé, tel quel. La contrepartie, assumée : ça dépend du vocabulaire déjà présent dans vos catégories, pas d'une déclaration explicite. Une marque pourrait tout aussi bien écrire « Lot » ou « Combo » sans que la détection actuelle la reconnaisse — les trois mots retenus couvrent ce qu'on a observé sur de vrais catalogues, pas une liste exhaustive de tout le vocabulaire possible du secteur.</p>
 
       <blockquote>La question n'était jamais « les packs méritent-ils d'être vus » — ils le méritent, un panier moyen plus élevé sert autant le distributeur que l'acheteur qui économise en achetant groupé. La question était comment les montrer sans que leur longueur naturelle n'écrase, par accident, ce qu'un visiteur pressé cherchait précisément.</blockquote>
 
       <h2>Disponible dès maintenant</h2>
-      <p>Le champ <code class="docs-inline-code">highlighted_bundle</code> est actif sur toute recherche via <code class="docs-inline-code">POST /v1/index/{catalog}/search</code>, sans configuration ni migration — absent de la réponse si aucun produit correspondant à la requête n'a « pack » ou « kit » dans sa catégorie, présent sinon. Détail complet dans la <a href="../docs.html#bundles">documentation</a>.</p>
+      <p>Le champ <code class="docs-inline-code">highlighted_bundle</code> est actif sur toute recherche via <code class="docs-inline-code">POST /v1/index/{catalog}/search</code>, sans configuration ni migration — absent de la réponse si aucun produit correspondant à la requête n'a « pack », « kit » ou « bundle » dans sa catégorie, présent sinon. Il respecte aussi le stock : un pack épuisé n'est jamais mis en avant, même s'il est le mieux classé — recommander ce qui ne peut pas être acheté n'aide personne. Détail complet dans la <a href="../docs.html#bundles">documentation</a>.</p>
     </div>
 
     <div class="post-footer-cta">
@@ -185,7 +185,7 @@
 
 <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 
-<script src="../search.js?v=1785600002"></script>
+<script src="../search.js?v=1785601035"></script>
 <script src="../nav-dropdown.js"></script>
 <script src="../mobile-nav.js?v=1784970606"></script>
 <div id="pricing-nudge" class="pricing-nudge">
