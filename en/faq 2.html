@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FAQ — Heurix</title>
+<meta name="description" content="Answers to the most common questions about the Heurix Search API: integration, pricing, coverage, hosting, and quotas.">
+<link rel="alternate" hreflang="fr" href="https://heurix.fr/faq.html">
+<link rel="alternate" hreflang="en" href="https://heurix.fr/en/faq.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="FAQ — Heurix">
+<meta property="og:description" content="Answers to the most common questions about the Heurix Search API: integration, pricing, coverage, hosting, and quotas.">
+<meta property="og:image" content="https://heurix.fr/og-image.png">
+<meta property="og:url" content="https://heurix.fr/en/faq.html">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="FAQ — Heurix">
+<meta name="twitter:image" content="https://heurix.fr/og-image.png">
+<link rel="icon" type="image/png" href="../favicon-32.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<link rel="stylesheet" href="../styles.css?v=1785602392">
+<link rel="canonical" href="https://heurix.fr/en/faq.html">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Heurix",
+  "url": "https://heurix.fr",
+  "logo": "https://heurix.fr/logo.svg?v=1784985918",
+  "image": "https://heurix.fr/og-image.png",
+  "description": "Regex-powered search and discovery engine for e-commerce sites, designed in France.",
+  "email": "contact@heurix.fr",
+  "sameAs": ["https://www.linkedin.com/company/heurix-search/"],
+  "founder": {"@type": "Person", "name": "Alexis Flahaut"},
+  "areaServed": "FR"
+}
+</script>
+</head>
+<body>
+<header>
+  <div class="header-top">
+    <nav class="header-top-inner">
+      <a href="index.html" class="logo"><img src="../logo.svg?v=1784985918" alt="Heurix"> <span class="wordmark">Heurix</span></a>
+      <div class="nav-links">
+        <div class="nav-drop">
+          <button type="button" class="nav-drop-btn" aria-expanded="false" aria-haspopup="true">Product</button>
+          <div class="nav-drop-panel">
+            <a href="produit.html#probleme">The problem</a>
+            <a href="produit.html#mission">Our mission</a>
+            <a href="produit.html#moteur">The engine</a>
+            <a href="fonctionnalites.html">Features</a>
+            <a href="index.html#tarifs">ROI Simulator</a>
+          </div>
+        </div>
+        <div class="nav-drop">
+          <button type="button" class="nav-drop-btn" aria-expanded="false" aria-haspopup="true">Solutions</button>
+          <div class="nav-drop-panel">
+          <a href="solutions/outillage.html">Hardware & tools</a>
+          <a href="solutions/industrie.html">Spare parts & industry</a>
+          <a href="solutions/mode.html">Fashion & retail</a>
+          <a href="solutions/electronique.html">Electronics & high-tech</a>
+          <a href="solutions/livres.html">Books & publishing</a>
+          <a href="solutions/vins.html">Wine & spirits</a>
+          <a href="solutions/finance.html">Finance & accounting</a>
+          </div>
+        </div>
+        <div class="nav-drop">
+          <button type="button" class="nav-drop-btn" aria-expanded="false" aria-haspopup="true">Developers</button>
+          <div class="nav-drop-panel">
+            <a href="docs.html">Documentation</a>
+            <a href="integrations.html">Integrations</a>
+            <a href="prestashop.html">PrestaShop</a>
+            <a href="woocommerce.html">WooCommerce</a>
+            <a href="shopify.html">Shopify</a>
+            <a href="blog/guide-mise-en-route.html">Getting started guide</a>
+          </div>
+        </div>
+        <a href="blog.html">Blog</a>
+      </div>
+      <div class="header-search">
+        <button id="heurix-search-btn" class="search-trigger" aria-label="Heurix Search — search the site" type="button">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <span class="search-trigger-text">Heurix Search</span>
+          <span class="search-trigger-kbd">Ctrl K</span>
+        </button>
+      </div>
+      <div class="header-utility">
+        <button type="button" id="mobile-nav-toggle" class="mobile-nav-toggle" aria-label="Menu" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+        <a href="console.html" class="header-signin">Sign in</a>
+        <a href="../faq.html" class="lang-switch">FR</a>
+        <a href="pricing.html" class="btn">Try it free</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<div id="heurix-search-modal" class="search-modal">
+  <div id="heurix-search-backdrop" class="search-backdrop" data-search-close></div>
+  <div class="search-panel">
+    <div class="search-panel-head">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input id="heurix-search-input" type="text" placeholder="Heurix Search..." autocomplete="off">
+      <button class="search-close" data-search-close type="button">Esc</button>
+    </div>
+    <p id="heurix-search-suggest-label" class="search-suggest-label" hidden>Latest articles</p>
+    <div id="heurix-search-results" class="search-results"></div>
+    <p id="heurix-search-empty" class="search-empty" hidden>No results for this search. Try another term.</p>
+  </div>
+</div>
+
+<section id="faq" class="soft">
+  <div class="wrap">
+      <h1>Frequently asked questions</h1>
+
+    <div class="kicker">Knowledge base</div>
+    <h2>Answers to the questions we get asked.</h2>
+    <div class="faq-list reveal">
+
+      <details class="faq-item">
+        <summary>How do I integrate the Heurix engine into my site?</summary>
+        <div class="faq-answer">
+          <p>By API: you index your catalog (one call), you wire up search (one call), it's live. No plugin to install, no rebuild, no dependency on your CMS. The <a href="docs.html">quickstart guide</a> fits in 3 calls. <a href="integrations.html">Integration guides with real code</a> are available for Shopify, PrestaShop, WooCommerce, and Magento.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>How much does it cost?</summary>
+        <div class="faq-answer">
+          <p>A 14-day free trial (up to 2,000 requests and 2,000 products) to test with no credit card, then plans starting at €19/month. Counting rules are public and your usage is viewable in real time — no surprise at the end of the month. <a href="pricing.html">Full plan details are here</a>.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>Heurix or Algolia / Elasticsearch / Typesense — why choose Heurix?</summary>
+        <div class="faq-answer">
+          <p>Generalist engines compare characters; Heurix reads the structure of your references through its annotation cascade. If your catalog is technical (dimensions, standards, sizes, vintages, editions), that's precisely the case Heurix is built for — with rule packs provided per industry, sorting that respects stock, and explainable results. For a blog or a simple editorial site, a generalist engine is more than enough.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>Do I need to change e-commerce platforms?</summary>
+        <div class="faq-answer">
+          <p>No. Heurix plugs into your existing site by API, whatever your CMS — Shopify, PrestaShop, WooCommerce, Magento, or a custom build. Your catalog stays with you; the engine only replaces search.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>How do I measure the impact on my sales?</summary>
+        <div class="faq-answer">
+          <p>The <code>matched</code> field on every result explains why it came up, and the <a href="#tarifs">ROI simulator</a> on this page gives you an order of magnitude for the economic lever based on your traffic and average order value. The most reliable method remains a before/after test on your zero-result queries — measurable in your analytics tool within the first week.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>Is my industry covered?</summary>
+        <div class="faq-answer">
+          <p>Ten rule packs are provided (hardware, automotive, electrical, plumbing, industry, electronics, fashion, wine, books, finance) and the mechanism applies to any catalog where people search by reference, dimension, or variant — books, wine, spare parts, electronics... If your industry has very specific references, <a href="#contact">tell us about your catalog</a>: designing a fully custom pack is possible on Scale plans.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+  <summary>How long until I'm up and running?</summary>
+  <div class="faq-body">
+    <p><strong>The first result shows up in an afternoon.</strong> Export your catalog to CSV from your ERP, drop it into the console: separator, encoding, and column matching are detected, and the rule pack for your industry is recommended based on your content. You then test search on your own products.</p>
+    <p>Going live depends on your platform: <strong>2 to 3 days on PrestaShop</strong>, <strong>3 to 4 days on WooCommerce</strong> — module provided, your theme unchanged. A fully custom on-site replacement takes 2 to 3 weeks.</p>
+  </div>
+</details>
+
+<details class="faq-item">
+  <summary>What happens if Heurix doesn't respond?</summary>
+  <div class="faq-body">
+    <p><strong>Your visitors keep a working search.</strong> The PrestaShop and WooCommerce modules include an automatic fallback: if Heurix doesn't respond within a second, your platform's native search takes back over, then Heurix is retried a minute later — no action needed on your part.</p>
+    <p>A search-engine outage should never become a storefront outage. That's a design principle, not an option.</p>
+  </div>
+</details>
+
+<details class="faq-item">
+        <summary>Where is my data hosted?</summary>
+        <div class="faq-answer">
+          <p>In France, with OVH (Gravelines or Strasbourg). Your catalogs never leave the European Union, and the engine itself is designed and built in France. For GDPR requirements, it's the simplest scenario to document with your DPO.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>What happens if I exceed my plan's quota?</summary>
+        <div class="faq-answer">
+          <p>Never an abrupt cutoff: the surplus is billed at the usage rate shown on the <a href="pricing.html">pricing page</a>. Counting rules are public (1 search = 1 request, 1,000 indexed products = 10 requests) and your usage is viewable in real time via the API.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>Does the demo on this page really use the engine?</summary>
+        <div class="faq-answer">
+          <p>Yes — it's the actual Heurix engine logic, ported to JavaScript and embedded in the page with a generated demo catalog: same normalization, same typo tolerance, same annotation cascade, same scoring. Developers can query it from the console: <code>window.heurixDemo.search("...")</code>.</p>
+        </div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot-grid">
+    <a href="index.html" class="logo" style="font-size:15px;"><img src="../logo.svg?v=1784985918" alt="Heurix" style="height:22px;width:22px;"> <span class="wordmark">Heurix</span></a>
+    <div class="foot-links">
+      <a href="blog.html">Blog</a>
+      <a href="docs.html">API Documentation</a>
+      <a href="fonctionnalites.html">Features</a>
+      <a href="integrations.html">Integrations</a>
+      <a href="console.html">Console</a>
+      <a href="about.html">About</a>
+      <a href="index.html#faq">FAQ</a>
+      <a href="cgv.html">Terms of Service</a>
+      <a href="mentions-legales.html">Legal notice</a>
+      <a href="#" data-rouvrir-consentement>Manage cookies</a>
+      <a href="privacy.html">Privacy</a>
+      <a href="mailto:contact@heurix.fr">contact@heurix.fr</a>
+    </div>
+    <div class="foot-social">
+      <span class="foot-social-label">Social networks</span>
+      <a href="https://www.linkedin.com/company/heurix-search/" target="_blank" rel="noopener" aria-label="LinkedIn" class="foot-social-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+      </a>
+    </div>
+    <div class="foot-legal">
+      Heurix — Sole proprietorship (French micro-entreprise). SIRET 107 681 900 00018. IT systems and software consulting.<br>
+      © <span id="year">2026</span> Heurix. All rights reserved.
+    </div>
+  </div>
+</footer>
+
+<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+<script src="../search-en.js?v=1785602392"></script>
+<script src="../nav-dropdown.js"></script>
+<script src="../mobile-nav.js?v=1784970606"></script>
+<div id="pricing-nudge" class="pricing-nudge">
+  <button type="button" class="pricing-nudge-close" aria-label="Close">&times;</button>
+  <div class="pricing-nudge-kicker">14-day free trial</div>
+  <p>Try the Search API on your catalog, no credit card.</p>
+  <a href="pricing.html" class="btn">See pricing</a>
+</div>
+<script src="../pricing-nudge.js"></script>
+<script>window.HEURIX_RACINE='../';</script><script src="../consent.js?v=1785150583"></script>
+</body>
+</html>

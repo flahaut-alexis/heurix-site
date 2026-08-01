@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="heurix-icon-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6B7FFF" />
+      <stop offset="100%" stop-color="#3F52E8" />
+    </linearGradient>
+    <!-- Dégradé du faisceau sortant, perpendiculaire à sa direction — comme les bandes
+         de couleur de la pochette, mais dans les bleus Heurix -->
+    <linearGradient id="heurix-beam-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#C7CFFF" />
+      <stop offset="50%" stop-color="#7D8FFF" />
+      <stop offset="100%" stop-color="#3F52E8" />
+    </linearGradient>
+  </defs>
+
+  <!-- Faisceau entrant, plein, depuis la gauche -->
+  <path d="M0 21 L14 21 L14 25 L0 25 Z" fill="#D7DBEA" />
+
+  <!-- Faisceau sortant, décomposé en éventail plein -->
+  <path d="M33 20 L60 6 L60 40 L33 26 Z" fill="url(#heurix-beam-grad)" />
+
+  <!-- Lentille de la loupe, pleine, par-dessus les faisceaux -->
+  <circle cx="23" cy="23" r="14" fill="#FFFFFF" stroke="url(#heurix-icon-grad)" stroke-width="4.5" />
+
+  <!-- Manche, tangent au cercle, dans une zone dégagée -->
+  <line x1="31" y1="33" x2="46" y2="48" stroke="url(#heurix-icon-grad)" stroke-width="5.5" stroke-linecap="round" />
+</svg>
