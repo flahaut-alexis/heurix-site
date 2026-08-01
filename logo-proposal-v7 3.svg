@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 76 64">
+  <defs>
+    <linearGradient id="heurix-icon-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6B7FFF" />
+      <stop offset="100%" stop-color="#3F52E8" />
+    </linearGradient>
+    <!-- Dégradé continu du spectre, orienté sur la largeur du faisceau -->
+    <linearGradient id="heurix-spectrum" x1="0" y1="24" x2="0" y2="40" gradientUnits="userSpaceOnUse">
+      <stop offset="0%"   stop-color="#EC4B3F" />
+      <stop offset="20%"  stop-color="#F0883E" />
+      <stop offset="40%"  stop-color="#F2C94C" />
+      <stop offset="60%"  stop-color="#4CAF50" />
+      <stop offset="80%"  stop-color="#4A90D9" />
+      <stop offset="100%" stop-color="#8E5FBF" />
+    </linearGradient>
+    <!-- Le trait entrant s'estompe en approchant la loupe (gris clair : le blanc
+         pur serait invisible sur fond blanc) -->
+    <linearGradient id="heurix-entry-fade" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"   stop-color="#B7BDD1" stop-opacity="1" />
+      <stop offset="100%" stop-color="#B7BDD1" stop-opacity="0" />
+    </linearGradient>
+  </defs>
+
+  <!-- Fond blanc explicite -->
+  <rect x="0" y="0" width="76" height="64" fill="#FFFFFF" />
+
+  <!-- Faisceau entrant : trait fin qui s'estompe en entrant dans la loupe -->
+  <path d="M0 30.2 L20 31.2 L20 32.8 L0 33.8 Z" fill="url(#heurix-entry-fade)" />
+
+  <!-- Faisceau sortant : court, bandes presque parallèles, léger évasement seulement —
+       fidèle aux proportions de la pochette, pas un large éventail -->
+  <path d="M34 28 L66 24 L66 40 L34 36 Z" fill="url(#heurix-spectrum)" />
+
+  <!-- Lentille de la loupe, pleine, par-dessus les faisceaux -->
+  <circle cx="24" cy="32" r="15" fill="#FFFFFF" stroke="url(#heurix-icon-grad)" stroke-width="5" />
+
+  <!-- Manche -->
+  <line x1="33" y1="43" x2="48" y2="58" stroke="url(#heurix-icon-grad)" stroke-width="6" stroke-linecap="round" />
+</svg>

@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Supervision — Heurix</title>
+<meta name="robots" content="noindex, nofollow">
+<!--
+  PAGE D'EXPLOITANT, séparée de la console client.
+
+  Un distributeur qui consulte son espace se moque de savoir si le serveur
+  approche la saturation. Mélanger les deux brouillerait son écran et
+  exposerait des chiffres agrégés qui ne le regardent pas.
+
+  Cette page n'est pas référencée depuis le site : elle se connaît ou ne se
+  trouve pas. Elle exige la clé admin, saisie à chaque visite et jamais
+  stockée — une clé d'administration en localStorage survivrait à un vol de
+  poste.
+-->
+<style>
+  :root{
+    --fond:#0F1523; --carte:#182234; --ligne:#26334A;
+    --texte:#E6EDF7; --attenue:#8FA0BC;
+    --bleu:#5B9BF8; --vert:#3DD68C; --ambre:#F5B942; --rouge:#F87171;
+  }
+  *{ box-sizing:border-box; }
+  body{
+    margin:0; padding:28px 22px 60px;
+    font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+    background:var(--fond); color:var(--texte); font-size:15px; line-height:1.5;
+  }
+  .wrap{ max-width:1080px; margin:0 auto; }
+  h1{ font-size:20px; margin:0 0 4px; }
+  .sous{ color:var(--attenue); font-size:13.5px; margin:0 0 26px; }
+
+  .connexion{ max-width:420px; }
+  .connexion input{
+    width:100%; padding:11px 13px; font-size:14px; font-family:inherit;
+    background:var(--carte); border:1px solid var(--ligne); border-radius:9px;
+    color:var(--texte); margin-bottom:10px;
+  }
+  button{
+    font-family:inherit; font-size:14px; font-weight:600; cursor:pointer;
+    padding:10px 18px; border-radius:9px; border:none;
+    background:var(--bleu); color:#08111F;
+  }
+  button:hover{ filter:brightness(1.08); }
+
+  .grille{ display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:14px; margin-bottom:14px; }
+  .carte{ background:var(--carte); border:1px solid var(--ligne); border-radius:12px; padding:16px 18px; }
+  .carte h2{ font-size:11.5px; font-weight:700; text-transform:uppercase;
+             letter-spacing:.07em; color:var(--attenue); margin:0 0 10px; }
+  .valeur{ font-size:28px; font-weight:800; line-height:1.1; }
+  .unite{ font-size:13px; font-weight:600; color:var(--attenue); }
+  .detail{ margin-top:9px; font-size:12.5px; color:var(--attenue); line-height:1.6; }
+
+  /* La jauge est le vrai outil de décision : elle dit quand changer de
+     palier, pas seulement où on en est. */
+  .jauge{ height:7px; background:#0B1220; border-radius:100px; overflow:hidden; margin:11px 0 7px; }
+  .jauge i{ display:block; height:100%; background:var(--vert); transition:width .3s; }
+  .jauge-ambre i{ background:var(--ambre); }
+  .jauge-rouge i{ background:var(--rouge); }
+
+  .alerte{ padding:13px 16px; border-radius:10px; margin-bottom:10px; font-size:13.5px; }
+  .alerte-important{ background:#2C2410; border:1px solid #6B5416; color:#F5D48A; }
+  .alerte-bloquant{ background:#2C1414; border:1px solid #6B2020; color:#F8A9A9; }
+  .rien{ color:var(--vert); font-size:13.5px; margin-bottom:18px; }
+
+  table{ width:100%; border-collapse:collapse; font-size:13.5px; }
+  th,td{ text-align:left; padding:7px 10px; border-bottom:1px solid var(--ligne); }
+  th{ color:var(--attenue); font-weight:600; font-size:12px; text-transform:uppercase; letter-spacing:.05em; }
+  .mono{ font-variant-numeric:tabular-nums; }
+  .erreur{ color:var(--rouge); font-size:13.5px; }
+  .maj{ color:var(--attenue); font-size:12px; margin-top:24px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Supervision Heurix</h1>
+  <p class="sous">Vue d'exploitant — agrège tous les comptes. Distincte de la console client.</p>
+
+  <div class="connexion" id="connexion">
+    <input type="password" id="cle" placeholder="Clé d'administration" autocomplete="off">
+    <button type="button" id="entrer">Afficher</button>
+    <p class="detail">La clé n'est pas conservée : elle est redemandée à chaque visite.</p>
+    <p class="erreur" id="erreur" hidden></p>
+  </div>
+
+  <div id="tableau" hidden></div>
+  <p class="maj" id="maj" hidden></p>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var API = "https://api.heurix.fr";
+
+  function $(id) { return document.getElementById(id); }
+  function n(v) { return (v === null || v === undefined) ? "—" : Number(v).toLocaleString("fr-FR"); }
+
+  function jauge(pct) {
+    var classe = pct >= 85 ? "jauge jauge-rouge" : (pct >= 60 ? "jauge jauge-ambre" : "jauge");
+    return "<div class='" + classe + "'><i style='width:" + Math.min(100, pct) + "%'></i></div>";
+  }
+
+  function rendre(d) {
+    var h = "";
+
+    (d.alertes || []).forEach(function (a) {
+      h += "<div class='alerte alerte-" + a.niveau + "'>" + a.message + "</div>";
+    });
+    if (!(d.alertes || []).length) {
+      h += "<p class='rien'>Aucune alerte.</p>";
+    }
+
+    // --- comptes et usage
+    h += "<div class='grille'>";
+    h += "<div class='carte'><h2>Comptes</h2>" +
+         "<div class='valeur'>" + n(d.comptes.total) + "</div>" +
+         "<div class='detail'>" + n(d.comptes.ayant_indexe) + " ont indexé un catalogue<br>" +
+         Object.keys(d.comptes.par_plan).map(function (p) {
+           return p + " : " + d.comptes.par_plan[p];
+         }).join(" · ") +
+         (d.comptes.avec_ranking ? "<br>" + d.comptes.avec_ranking + " avec Ranking" : "") +
+         "</div></div>";
+
+    h += "<div class='carte'><h2>Recherches ce mois</h2>" +
+         "<div class='valeur'>" + n(d.usage.recherches) + "</div>" +
+         "<div class='detail'>Ranking : " + n(d.usage.ranking) + "<br>" +
+         "Erreurs 24 h : " + n(d.usage.erreurs_24h) + "</div></div>";
+
+    h += "<div class='carte'><h2>Catalogues</h2>" +
+         "<div class='valeur'>" + n(d.catalogues.total) + "</div>" +
+         "<div class='detail'>" + n(d.catalogues.produits) + " produits au total</div></div>";
+    h += "</div>";
+
+    // --- les deux jauges qui décident du palier
+    h += "<div class='grille'>";
+    var deb = d.debit;
+    h += "<div class='carte'><h2>Débit — pointe sur 7 jours</h2>" +
+         "<div class='valeur'>" + deb.pointe_7j_req_s + " <span class='unite'>req/s</span></div>" +
+         jauge(deb.charge_pct) +
+         "<div class='detail'>Plafond mesuré : " + deb.plafond_mesure_req_s + " req/s en mono-processus.<br>" +
+         "Alerte à " + deb.seuil_alerte_req_s + " req/s — au-delà, préparez le multi-processus.<br>" +
+         "Actuel : " + deb.actuel_req_s + " req/s</div></div>";
+
+    var s = d.serveur;
+    h += "<div class='carte'><h2>Capacité catalogue</h2>" +
+         "<div class='valeur'>" + (s.occupation_pct === null ? "—" : s.occupation_pct + " <span class='unite'>%</span>") + "</div>" +
+         (s.occupation_pct === null ? "" : jauge(s.occupation_pct)) +
+         "<div class='detail'>" + n(d.catalogues.produits) + " produits sur " +
+         n(s.capacite_produits_estimee) + " estimés<br>" +
+         "Base : 2,45 Ko par produit, 50 % de marge conservée</div></div>";
+
+    h += "<div class='carte'><h2>Serveur</h2>" +
+         "<div class='valeur'>" + (s.memoire_service_mo === null ? "—" : s.memoire_service_mo + " <span class='unite'>Mo</span>") + "</div>" +
+         "<div class='detail'>Mémoire totale : " + n(s.memoire_totale_mo) + " Mo<br>" +
+         "Disque libre : " + s.disque_libre_pct + " % (" + s.disque_libre_go + " Go)</div></div>";
+    h += "</div>";
+
+    // --- VEILLE D'ACQUISITION.
+    //
+    // Ce que les visiteurs de la vitrine cherchent. C'est une donnée
+    // qu'aucune autre source ne donne : elle dit quelles verticales
+    // intéressent et quel vocabulaire les prospects emploient.
+    //
+    // Les recherches SANS RÉSULTAT passent en premier : elles nomment les
+    // secteurs qui manquent, et c'est l'information la plus actionnable.
+    var acq = d.acquisition || {};
+    if ((acq.sans_resultat_30j || []).length) {
+      h += "<div class='carte'><h2>Ce que les visiteurs ne trouvent pas — 30 jours</h2>" +
+           "<p class='detail' style='margin:0 0 10px;'>Chaque terme nomme un secteur " +
+           "ou un vocabulaire qui vous manque.</p><table>" +
+           "<tr><th>Recherche</th><th>Fois</th></tr>";
+      acq.sans_resultat_30j.forEach(function (t) {
+        h += "<tr><td>" + t.terme + "</td><td class='mono'>" + t.n + "</td></tr>";
+      });
+      h += "</table></div>";
+    }
+    if ((acq.termes_30j || []).length) {
+      h += "<div class='carte'><h2>Recherches sur la vitrine — 30 jours</h2><table>" +
+           "<tr><th>Recherche</th><th>Fois</th><th>Résultats</th></tr>";
+      acq.termes_30j.forEach(function (t) {
+        h += "<tr><td>" + t.terme + "</td><td class='mono'>" + t.n +
+             "</td><td class='mono'>" + n(t.resultats) + "</td></tr>";
+      });
+      h += "</table></div>";
+    }
+
+    // --- les plus gros catalogues
+    if ((d.catalogues.plus_gros || []).length) {
+      h += "<div class='carte'><h2>Plus gros catalogues</h2><table>" +
+           "<tr><th>Catalogue</th><th>Produits</th></tr>";
+      d.catalogues.plus_gros.forEach(function (c) {
+        h += "<tr><td>" + c.nom + "</td><td class='mono'>" + n(c.produits) + "</td></tr>";
+      });
+      h += "</table></div>";
+    }
+
+    $("tableau").innerHTML = h;
+    $("tableau").hidden = false;
+    $("maj").textContent = "Relevé du " + new Date().toLocaleString("fr-FR");
+    $("maj").hidden = false;
+  }
+
+  function charger() {
+    var cle = $("cle").value.trim();
+    if (!cle) return;
+    $("erreur").hidden = true;
+
+    fetch(API + "/v1/admin/overview?vitrine=public-demo", { headers: { Authorization: "Bearer " + cle } })
+      .then(function (r) {
+        if (r.status === 401 || r.status === 403) throw new Error("Clé refusée.");
+        if (!r.ok) throw new Error("Le serveur a répondu " + r.status + ".");
+        return r.json();
+      })
+      .then(function (d) {
+        $("connexion").hidden = true;
+        rendre(d);
+        // Rafraîchissement automatique : cette page sert à SURVEILLER, on
+        // la laisse ouverte sur un second écran.
+        setInterval(function () {
+          fetch(API + "/v1/admin/overview?vitrine=public-demo", { headers: { Authorization: "Bearer " + cle } })
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (d) { if (d) rendre(d); })
+            .catch(function () {});
+        }, 60000);
+      })
+      .catch(function (e) {
+        $("erreur").textContent = e.message;
+        $("erreur").hidden = false;
+      });
+  }
+
+  $("entrer").addEventListener("click", charger);
+  $("cle").addEventListener("keydown", function (e) { if (e.key === "Enter") charger(); });
+})();
+</script>
+</body>
+</html>

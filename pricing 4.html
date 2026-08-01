@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tarifs Search API — Heurix</title>
+<meta name="description" content="Le moteur de recherche Heurix en self-service, à partir de gratuit. Facturation à l'usage, sans engagement.">
+<link rel="alternate" hreflang="fr" href="https://heurix.fr/pricing.html">
+<link rel="alternate" hreflang="en" href="https://heurix.fr/en/pricing.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Tarifs Search API — Heurix">
+<meta property="og:description" content="Le moteur de recherche Heurix en self-service, à partir de gratuit. Facturation à l'usage, sans engagement.">
+<meta property="og:image" content="https://heurix.fr/og-image.png">
+<meta property="og:url" content="https://heurix.fr/pricing.html">
+<meta property="og:locale" content="fr_FR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Tarifs Search API — Heurix">
+<meta name="twitter:image" content="https://heurix.fr/og-image.png">
+<link rel="icon" type="image/png" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="styles.css?v=1785448833">
+<link rel="canonical" href="https://heurix.fr/pricing.html">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Heurix",
+  "url": "https://heurix.fr",
+  "logo": "https://heurix.fr/logo.svg?v=1784985918",
+  "image": "https://heurix.fr/og-image.png",
+  "description": "Moteur de recherche et search & discovery pour sites e-commerce, basé sur des expressions régulières, conçu en France.",
+  "email": "contact@heurix.fr",
+  "sameAs": [
+    "https://www.linkedin.com/company/heurix-search/"
+  ],
+  "founder": {
+    "@type": "Person",
+    "name": "Alexis Flahaut"
+  },
+  "areaServed": "FR",
+  "knowsAbout": [
+    "Search and discovery",
+    "E-commerce search engines",
+    "Algolia",
+    "Elasticsearch",
+    "Typesense"
+  ]
+}
+</script>
+</head>
+<body>
+<header>
+  <div class="header-top">
+    <nav class="header-top-inner">
+      <a href="index.html" class="logo"><img src="logo.svg?v=1784985918" alt="Heurix"> <span class="wordmark">Heurix</span></a>
+      <div class="nav-links">
+        <div class="nav-drop">
+          <button type="button" class="nav-drop-btn" aria-expanded="false" aria-haspopup="true">Produit</button>
+          <div class="nav-drop-panel">
+            <a href="produit.html#probleme">Le problème</a>
+            <a href="produit.html#mission">Notre mission</a>
+            <a href="produit.html#moteur">Le moteur</a>
+            <a href="fonctionnalites.html">Fonctionnalités</a>
+            <a href="index.html#tarifs">Simulateur ROI</a>
+          </div>
+        </div>
+        <div class="nav-drop">
+          <button type="button" class="nav-drop-btn" aria-expanded="false" aria-haspopup="true">Solutions</button>
+          <div class="nav-drop-panel">
+          <a href="solutions/outillage.html">Quincaillerie & outillage</a>
+          <a href="solutions/industrie.html">Pièces détachées & industrie</a>
+          <a href="solutions/mode.html">Mode & retail</a>
+          <a href="solutions/electronique.html">Électronique & high-tech</a>
+          <a href="solutions/livres.html">Librairie & édition</a>
+          <a href="solutions/vins.html">Vins & spiritueux</a>
+          <a href="solutions/finance.html">Finance & comptabilité</a>
+          </div>
+        </div>
+        <div class="nav-drop">
+          <button type="button" class="nav-drop-btn" aria-expanded="false" aria-haspopup="true">Developers</button>
+          <div class="nav-drop-panel">
+            <a href="docs.html">Documentation</a>
+            <a href="integrations.html">Intégrations</a>
+            <a href="prestashop.html">PrestaShop</a>
+            <a href="woocommerce.html">WooCommerce</a>
+            <a href="shopify.html">Shopify</a>
+            <a href="blog/guide-mise-en-route.html">Guide de mise en route</a>
+          </div>
+        </div>
+        <a href="blog.html">Blog</a>
+      </div>
+      <div class="header-search">
+        <button id="heurix-search-btn" class="search-trigger" aria-label="Heurix Search — rechercher sur le site" type="button">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <span class="search-trigger-text">Heurix Search</span>
+      <span class="search-trigger-kbd">Ctrl K</span>
+    </button>
+      </div>
+      <div class="header-utility">
+      <button type="button" id="mobile-nav-toggle" class="mobile-nav-toggle" aria-label="Menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+      <a href="console.html" class="header-signin">Se connecter</a>
+      <a href="en/pricing.html" class="lang-switch">EN</a>
+      <a href="pricing.html" class="btn">Découvrir le moteur</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+
+<div id="heurix-search-modal" class="search-modal">
+  <div id="heurix-search-backdrop" class="search-backdrop" data-search-close></div>
+  <div class="search-panel">
+    <div class="search-panel-head">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input id="heurix-search-input" type="text" placeholder="Heurix Search..." autocomplete="off">
+      <button class="search-close" data-search-close type="button">Échap</button>
+    </div>
+    <p id="heurix-search-suggest-label" class="search-suggest-label" hidden>Derniers articles</p>
+    <div id="heurix-search-results" class="search-results"></div>
+    <p id="heurix-search-empty" class="search-empty" hidden>Aucun résultat pour cette recherche. Essayez un autre terme.</p>
+  </div>
+</div>
+
+<section class="pricing-hero">
+  <div class="wrap">
+    <div class="badge">Search API</div>
+    <h1>Le moteur Heurix, en self-service.</h1>
+    <p class="lede">Le moteur Heurix — regex sur les références techniques, synonymes métier, cascade d'annotations — accessible directement par API. Facturation à l'usage, sans engagement.</p>
+  </div>
+</section>
+
+<section class="soft">
+  <div class="wrap">
+    <div class="billing-toggle-wrap"><div class="billing-toggle" id="billing-toggle" hidden>
+        <button type="button" class="billing-toggle-opt on" data-period="monthly">Mensuel</button>
+        <button type="button" class="billing-toggle-opt" data-period="annual">
+          Annuel <span class="billing-toggle-save">−10 %</span>
+        </button>
+      </div></div>
+
+      <div class="pricing-grid reveal">
+
+      <div class="price-tier-card">
+        <div class="price-tier-name">Starter</div>
+        <div class="price-tier-amount"><s class="prix-plein" id="prix-plein-starter" hidden></s><span id="price-amount-starter">19</span>&nbsp;€<span class="price-tier-period">/mois</span><span class="prix-eco" id="prix-eco-starter" hidden></span></div><p class="prix-facture" id="prix-facture-starter" hidden></p>
+        <p class="addon-breakdown" id="addon-breakdown-starter" hidden></p>
+        <p class="billing-annual-note" id="annual-note-starter" hidden></p>
+        <p class="price-tier-desc">Un catalogue, un besoin simple.</p>
+        <ul class="price-tier-features">
+          <li>15 000 requêtes / mois</li>
+          <li>Jusqu'à 8 000 produits</li>
+          <li>1 catalogue</li>
+          <li>Cascade d'annotations &amp; regex</li>
+          <li>Tolérance aux fautes, synonymes</li>
+          <li>Support par documentation</li>
+        </ul>
+        <button type="button" class="btn btn-ghost checkout-btn" data-plan="starter">Démarrer l'essai gratuit</button>
+      </div>
+
+      <div class="price-tier-card price-tier-highlight">
+        <div class="price-tier-badge">Le plus choisi</div>
+        <div class="price-tier-name">Growth</div>
+        <div class="price-tier-amount"><s class="prix-plein" id="prix-plein-growth" hidden></s><span id="price-amount-growth">49</span>&nbsp;€<span class="price-tier-period">/mois</span><span class="prix-eco" id="prix-eco-growth" hidden></span></div><p class="prix-facture" id="prix-facture-growth" hidden></p>
+        <p class="addon-breakdown" id="addon-breakdown-growth" hidden></p>
+        <p class="billing-annual-note" id="annual-note-growth" hidden></p>
+        <p class="price-tier-desc">Pour un site en croissance.</p>
+        <ul class="price-tier-features">
+          <li>30 000 requêtes / mois</li>
+          <li>Jusqu'à 25 000 produits</li>
+          <li>3 catalogues</li>
+          <li>Facettes dynamiques, recherche fédérée</li>
+          <li>Support par email</li>
+        </ul>
+        <div class="addon-row">
+          <label class="addon-row-main" for="browse-toggle-growth">
+            <span class="addon-row-label">
+              <span class="addon-row-name">Ajouter <strong>Ranking</strong></span>
+              <span class="addon-row-desc">Classement de vos pages de catégorie</span>
+            </span>
+            <span class="addon-row-right">
+              <input type="checkbox" class="browse-addon-checkbox visually-hidden" id="browse-toggle-growth" data-search-plan="growth" data-search-price="49" data-browse-price="29" data-browse-plan="starter">
+              <span class="addon-switch" aria-hidden="true"><span class="addon-switch-knob"></span></span>
+            </span>
+          </label>
+          <div class="addon-pricing" data-addon-pricing></div>
+        </div>
+        <button type="button" class="btn checkout-btn" data-plan="growth">Démarrer l'essai gratuit</button>
+      </div>
+
+      <div class="price-tier-card">
+        <div class="price-tier-name">Scale</div>
+        <div class="price-tier-amount"><s class="prix-plein" id="prix-plein-scale" hidden></s><span id="price-amount-scale">139</span>&nbsp;€<span class="price-tier-period">/mois</span><span class="prix-eco" id="prix-eco-scale" hidden></span></div><p class="prix-facture" id="prix-facture-scale" hidden></p>
+        <p class="addon-breakdown" id="addon-breakdown-scale" hidden></p>
+        <p class="billing-annual-note" id="annual-note-scale" hidden></p>
+        <p class="price-tier-desc">Catalogue volumineux, trafic important.</p>
+        <ul class="price-tier-features">
+          <li>150 000 requêtes / mois<br><span class="price-tier-overage">puis 0,80 € / 1 000</span></li>
+          <li>Jusqu'à 100 000 produits</li>
+          <li>Catalogues illimités</li>
+          <li>Support prioritaire</li>
+        </ul>
+        <div class="addon-row">
+          <label class="addon-row-main" for="browse-toggle-scale">
+            <span class="addon-row-label">
+              <span class="addon-row-name">Ajouter <strong>Ranking</strong></span>
+              <span class="addon-row-desc">Classement de vos pages de catégorie</span>
+            </span>
+            <span class="addon-row-right">
+              <input type="checkbox" class="browse-addon-checkbox visually-hidden" id="browse-toggle-scale" data-search-plan="scale" data-search-price="139" data-browse-price="67" data-browse-plan="growth">
+              <span class="addon-switch" aria-hidden="true"><span class="addon-switch-knob"></span></span>
+            </span>
+          </label>
+          <div class="addon-pricing" data-addon-pricing></div>
+        </div>
+        <button type="button" class="btn btn-ghost checkout-btn" data-plan="scale">Démarrer l'essai gratuit</button>
+      </div>
+
+      <div class="price-tier-card">
+        <div class="price-tier-name">Enterprise / Custom</div>
+        <div class="price-tier-amount">Sur devis</div>
+        <p class="price-tier-desc">Search, Browse, ou les deux, à grande échelle.</p>
+        <ul class="price-tier-features">
+          <li>Volumes négociés</li>
+          <li>Catalogues et produits illimités</li>
+          <li>SLA et support dédiés</li>
+          <li>Hébergement dédié possible</li>
+        </ul>
+        <a href="mailto:contact@heurix.fr?subject=Demande%20Enterprise" class="btn btn-ghost">Nous contacter</a>
+      </div>
+
+    </div>
+
+    <p class="pricing-note">Tarifs HT. Facturation mensuelle, sans engagement de durée — vous changez ou arrêtez à tout moment. L'indexation de votre catalogue n'est jamais décomptée de votre quota de requêtes. <strong>Ranking</strong> a son propre quota, indépendant de la recherche — cochez l'option sur Growth ou Scale pour -25%, ou <a href="#browse-standalone">souscrivez-le seul, sans recherche</a>. En souscrivant, vous acceptez nos <a href="cgv.html">CGV</a>.</p>
+  </div>
+</section>
+
+<section class="soft" id="browse-standalone">
+  <div class="wrap">
+    <div class="kicker" style="text-align:center;">Ranking seul</div>
+    <h2 style="text-align:center; margin:6px 0 8px;">Besoin de Ranking sans le moteur de recherche&nbsp;?</h2>
+    <p class="section-lede" style="text-align:center; max-width:620px; margin:0 auto 26px;">
+      Le classement de vos pages de catégorie fonctionne indépendamment de la recherche.
+      Souscrit avec un plan Search, il bénéficie de <strong>&minus;25&nbsp;%</strong>.
+    </p>
+
+    <div class="pricing-grid pricing-grid-trois">
+      <div class="price-tier-card">
+        <div class="price-tier-name">Ranking Starter</div>
+        <div class="price-tier-amount"><span id="ranking-amount-starter">39</span>&nbsp;€<span class="price-tier-period">/mois</span></div>
+        <p class="price-tier-desc">Pages de catégorie d'un catalogue en croissance.</p>
+        <ul class="price-tier-features">
+          <li><strong>50 000</strong> requêtes de classement / mois</li>
+          <li>Épinglage, marge, stock, popularité</li>
+          <li>Éditeur visuel et simulation</li>
+          <li>Dépassement facturé à l'usage, jamais de coupure</li>
+        </ul>
+        <button type="button" class="btn checkout-browse-btn" data-browse-plan="starter">Souscrire</button>
+      </div>
+      <div class="price-tier-card">
+        <div class="price-tier-name">Ranking Growth</div>
+        <div class="price-tier-amount"><span id="ranking-amount-growth">89</span>&nbsp;€<span class="price-tier-period">/mois</span></div>
+        <p class="price-tier-desc">Trafic soutenu, plusieurs rayons actifs.</p>
+        <ul class="price-tier-features">
+          <li><strong>150 000</strong> requêtes de classement / mois</li>
+          <li>Épinglage, marge, stock, popularité</li>
+          <li>Éditeur visuel et simulation</li>
+          <li>Dépassement facturé à l'usage, jamais de coupure</li>
+        </ul>
+        <button type="button" class="btn checkout-browse-btn" data-browse-plan="growth">Souscrire</button>
+      </div>
+      <div class="price-tier-card">
+        <div class="price-tier-name">Ranking Scale</div>
+        <div class="price-tier-amount"><span id="ranking-amount-scale">199</span>&nbsp;€<span class="price-tier-period">/mois</span></div>
+        <p class="price-tier-desc">Gros catalogue, forte fréquentation.</p>
+        <ul class="price-tier-features">
+          <li><strong>500 000</strong> requêtes de classement / mois</li>
+          <li>Épinglage, marge, stock, popularité</li>
+          <li>Éditeur visuel et simulation</li>
+          <li>Dépassement facturé à l'usage, jamais de coupure</li>
+        </ul>
+        <button type="button" class="btn checkout-browse-btn" data-browse-plan="scale">Souscrire</button>
+      </div>
+    </div>
+
+    <p class="pricing-note" style="text-align:center; margin-top:22px;">
+      Tarifs HT. En souscrivant, vous acceptez nos <a href="cgv.html">CGV</a>.
+    </p>
+  </div>
+</section>
+
+<section id="calculator">
+  <div class="wrap">
+    <div class="kicker">Quel palier pour vous ?</div>
+    <h2>Estimez votre volume de requêtes.</h2>
+    <p class="section-lede">Pas besoin de connaître Heurix pour répondre — juste votre trafic. On calcule le reste.</p>
+
+    <div class="calc-simulator reveal">
+      <div class="calc-inputs">
+        <div class="roi-field roi-slider">
+          <div class="roi-slider-head">
+            <label for="calc-visitors">Visiteurs mensuels sur votre site</label>
+            <span id="calc-visitors-val" class="roi-slider-badge mono">20 000</span>
+          </div>
+          <input type="range" id="calc-visitors" min="1000" max="200000" step="1000" value="20000">
+          <div class="roi-range-hint"><span>1 000</span><span class="roi-range-mid">Trouvez ce chiffre dans votre outil d'analytics</span><span>200 000</span></div>
+        </div>
+
+        <div class="roi-field roi-slider">
+          <div class="roi-slider-head">
+            <label for="calc-rate">Part des visiteurs qui utilisent la recherche</label>
+            <span id="calc-rate-val" class="roi-slider-badge mono">25%</span>
+          </div>
+          <input type="range" id="calc-rate" min="5" max="60" step="5" value="25">
+          <div class="roi-range-hint"><span>5%</span><span class="roi-range-mid">Moyenne e-commerce : ~20-30%</span><span>60%</span></div>
+        </div>
+
+        <div class="roi-field roi-slider">
+          <div class="roi-slider-head">
+            <label for="calc-per-user">Recherches moyennes par visiteur qui cherche</label>
+            <span id="calc-per-user-val" class="roi-slider-badge mono">2</span>
+          </div>
+          <input type="range" id="calc-per-user" min="1" max="6" step="1" value="2">
+          <div class="roi-range-hint"><span>1</span><span class="roi-range-mid">Reformulations, fautes de frappe incluses</span><span>6</span></div>
+        </div>
+
+        <div class="roi-field roi-slider">
+          <div class="roi-slider-head">
+            <label for="calc-browse-rate">Part des visiteurs qui naviguent par catégorie</label>
+            <span id="calc-browse-rate-val" class="roi-slider-badge mono">55%</span>
+          </div>
+          <input type="range" id="calc-browse-rate" min="5" max="90" step="5" value="55">
+          <div class="roi-range-hint"><span>5%</span><span class="roi-range-mid">Souvent plus élevé que la recherche — menu, rayons</span><span>90%</span></div>
+        </div>
+
+        <div class="roi-field roi-slider">
+          <div class="roi-slider-head">
+            <label for="calc-browse-pages">Pages catégorie vues par visiteur qui navigue</label>
+            <span id="calc-browse-pages-val" class="roi-slider-badge mono">3</span>
+          </div>
+          <input type="range" id="calc-browse-pages" min="1" max="10" step="1" value="3">
+          <div class="roi-range-hint"><span>1</span><span class="roi-range-mid">Sous-catégories, pagination, tri incluses</span><span>10</span></div>
+        </div>
+      </div>
+
+      <div class="calc-results">
+        <div class="kicker" style="color:#8FE3BC;">Estimation</div>
+        <h4>Votre volume mensuel</h4>
+        <div class="calc-results-num" id="calc-out-requests">10 000</div>
+        <div class="calc-results-label">requêtes de recherche / mois</div>
+        <div class="calc-recommend" id="calc-out-recommend">
+          <span class="calc-recommend-label">Palier Search recommandé</span>
+          <span class="calc-recommend-plan" id="calc-out-plan">Growth — 49 €/mois</span>
+        </div>
+        <div class="calc-recommend" id="calc-out-browse-recommend" style="margin-top:10px;">
+          <span class="calc-recommend-label">+ <span id="calc-out-browse-requests">0</span> requêtes Browse / mois</span>
+          <span class="calc-recommend-plan" id="calc-out-browse-plan">Palier Browse recommandé</span>
+        </div>
+        <p class="calc-results-note">Le trafic Browse est distinct du trafic de recherche — comptabilisé et facturé à part, avec -25% si vous prenez déjà un plan Search ci-dessus. Détail du comptage dans la <a href="docs.html#comptage">documentation</a>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="kicker">Comment ça marche</div>
+    <h2>Comment est comptée une requête ?</h2>
+    <p class="section-lede">Simple par principe : une requête correspond à une action concrète du moteur.</p>
+    <table class="icp-table reveal">
+      <tr><td>Recherche</td><td>Chaque recherche tapée par un visiteur compte pour une requête (le moteur répond dès la 3<sup>e</sup> lettre par défaut, comme la plupart des moteurs modernes)</td></tr>
+      <tr><td>Indexation</td><td>Indexer un lot de 1 000 produits compte pour 10 requêtes</td></tr>
+      <tr><td>Appels API</td><td>Chaque appel à l'API de gestion ou de recherche compte pour une requête</td></tr>
+      <tr><td>Ranking</td><td>Chaque appel à une page de catégorie compte pour une requête Browse — sur un compteur séparé de celui de la recherche, uniquement si vous êtes abonné à Browse</td></tr>
+      <tr><td>Dépassement</td><td>Au-delà du volume inclus dans votre forfait, le surplus est facturé au tarif indiqué sur votre plan — jamais de coupure brutale du service</td></tr>
+    </table>
+  </div>
+</section>
+
+<section id="developers">
+  <div class="wrap">
+    <div class="kicker">Intégrations &amp; Documentation</div>
+    <h2>Se connecter à votre stack, sans friction.</h2>
+    <p class="section-lede">L'<a href="docs.html">API REST est documentée intégralement</a> — authentification, recherche, indexation, Ranking, facettes, analytique. La bibliothèque JavaScript et le serveur MCP sont publiés. Les connecteurs vers les plateformes e-commerce, eux, sont en préparation.</p>
+
+    <div class="integrations-grid reveal">
+      <div class="integration-card">
+        <div class="integration-card-label mono">Intégrations</div>
+        <p class="integration-card-desc">Guides techniques avec du vrai code pour brancher Heurix sur votre plateforme — recherche et synchronisation de catalogue.</p>
+        <div class="tech-chips">
+          <span class="tech-chip">Shopify</span>
+          <span class="tech-chip">PrestaShop</span>
+          <span class="tech-chip">WooCommerce</span>
+          <span class="tech-chip">Magento</span>
+        </div>
+        <a href="integrations.html" class="integration-badge integration-badge-link">Voir les guides →</a>
+      </div>
+
+      <div class="integration-card">
+        <div class="integration-card-label mono">API REST</div>
+        <p class="integration-card-desc">En attendant les connecteurs dédiés, une intégration directe via API REST documentée reste toujours possible — recherche, indexation, gestion des synonymes et facettes.</p>
+        <div class="integration-code mono">
+          <div class="integration-code-line"><span class="integration-code-verb">POST</span> /v1/index/:catalog/search</div>
+          <div class="integration-code-line"><span class="integration-code-verb">POST</span> /v1/index/:catalog/items</div>
+          <div class="integration-code-line"><span class="integration-code-verb">GET</span>&nbsp;&nbsp;/v1/index/:catalog/synonyms</div>
+        </div>
+        <a href="docs.html" class="integration-badge integration-badge-link">Consulter la référence API →</a>
+      </div>
+
+      <div class="integration-card">
+        <div class="integration-card-label mono">Documentation</div>
+        <p class="integration-card-desc">Guide de démarrage rapide, référence API complète, exemples concrets. L'objectif : une première recherche fonctionnelle en quelques minutes.</p>
+        <ul class="integration-doclist">
+          <li>Quickstart en 3 appels</li>
+          <li>Référence des endpoints</li>
+          <li>La cascade d'annotations</li>
+          <li>Bonnes pratiques</li>
+        </ul>
+        <a href="docs.html" class="integration-badge integration-badge-link">Consulter la documentation →</a>
+      </div>
+    </div>
+
+    <p class="pricing-note">La documentation est en ligne — <a href="docs.html">consultez-la ici</a>. L'inscription se fait directement ci-dessus, en quelques clics.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="kicker">Questions fréquentes</div>
+    <h2>Ce qu'on vous demande le plus souvent sur le Search API.</h2>
+    <div class="faq-list reveal">
+
+      <details class="faq-item">
+        <summary>Comment démarrer ?</summary>
+        <div class="faq-answer">
+          <p>Démarrez l'essai gratuit de 14 jours (aucune carte bancaire requise), indexez un premier lot de produits, lancez une recherche. Le <a href="docs.html">guide de démarrage rapide</a> tient en 3 appels API.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>Puis-je changer de forfait ou arrêter à tout moment ?</summary>
+        <div class="faq-answer">
+          <p>Oui. Facturation mensuelle, aucun engagement de durée. Vous changez de forfait ou vous arrêtez quand vous voulez, sans pénalité.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>Le moteur Heurix remplace-t-il Algolia ou Elasticsearch ?</summary>
+        <div class="faq-answer">
+          <p>Ce n'est pas une surcouche des solutions existantes : c'est un moteur différent, spécialisé dans les catalogues où les références comptent — dimensions, tailles, normes, millésimes. Le Search API a du sens dès que vous n'avez pas encore de moteur dédié, ou que le vôtre échoue sur ce type de recherches.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>Que se passe-t-il si je dépasse mon quota de requêtes ?</summary>
+        <div class="faq-answer">
+          <p>Le service continue de fonctionner normalement — le surplus est simplement facturé au tarif par tranche indiqué sur votre forfait. Vous êtes prévenu avant tout dépassement significatif, pas de coupure surprise.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>Puis-je créer des règles pour mon propre secteur ?</summary>
+        <div class="faq-answer">
+          <p>Six packs sont fournis (outillage, mode, industrie, livres, électronique, vins &amp; spiritueux) et couvrent la plupart des catalogues techniques. Un terme spécifique à votre catalogue n'y figure pas ? Ajoutez vos propres <strong>Custom Rules</strong> directement depuis la console, sans écrire de regex — inclus à tous les plans, effet immédiat. Pour un besoin plus complexe (motifs à deux nombres combinés, par exemple), un pack entièrement sur mesure reste possible sur les plans Scale.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>Ranking est-il inclus dans mon plan Search ?</summary>
+        <div class="faq-answer">
+          <p>Non, c'est un produit à part avec son propre quota — vous pouvez le prendre en autonome (sans plan Search) ou en option sur Growth/Scale, avec 25% de remise dans ce second cas. Les deux quotas ne se marchent jamais dessus : votre volume de recherche n'est jamais affecté par votre trafic de navigation par catégorie, et inversement.</p>
+        </div>
+      </details>
+
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot-grid">
+    <a href="index.html" class="logo" style="font-size:15px;"><img src="logo.svg?v=1784985918" alt="Heurix" style="height:22px;width:22px;"> <span class="wordmark">Heurix</span></a>
+    <div class="foot-links">
+      <a href="blog.html">Blog</a>
+      <a href="docs.html">Documentation API</a>
+      <a href="integrations.html">Intégrations</a>
+      <a href="console.html">Console</a>
+      <a href="about.html">À propos</a>
+      <a href="faq.html">FAQ</a>
+      <a href="cgv.html">CGV</a>
+      <a href="mentions-legales.html">Mentions légales</a>
+          <a href="#" data-rouvrir-consentement>Gérer les cookies</a>
+        <a href="confidentialite.html">Confidentialité</a>
+      <a href="mailto:contact@heurix.fr">contact@heurix.fr</a>
+    </div>
+    <div class="foot-social">
+      <span class="foot-social-label">Réseaux sociaux</span>
+      <a href="https://www.linkedin.com/company/heurix-search/" target="_blank" rel="noopener" aria-label="LinkedIn" class="foot-social-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+      </a>
+    </div>
+    <div class="foot-legal">
+      Heurix — Entreprise individuelle (micro-entreprise). SIRET 107 681 900 00018. Conseil en systèmes et logiciels informatiques.<br>
+      © <span id="year">2026</span> Heurix. Tous droits réservés.
+    </div>
+  </div>
+</footer>
+
+<script src="search.js?v=1785562156"></script>
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  const revealEls = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    revealEls.forEach(el => io.observe(el));
+  } else {
+    revealEls.forEach(el => el.classList.add('in'));
+  }
+
+  // Calculatrice de volume de requêtes
+  const TIERS = [
+    { name: 'Starter', price: 19, limit: 15000 },
+    { name: 'Growth', price: 49, limit: 30000 },
+    { name: 'Scale', price: 139, limit: 150000 },
+  ];
+  const BROWSE_TIERS = [
+    { name: 'Browse Starter', priceStandalone: 39, priceAddon: 29, limit: 50000 },
+    { name: 'Browse Growth', priceStandalone: 89, priceAddon: 67, limit: 150000 },
+  ];
+  function computeCalc() {
+    const visitors = parseInt(document.getElementById('calc-visitors').value, 10);
+    const rate = parseInt(document.getElementById('calc-rate').value, 10);
+    const perUser = parseInt(document.getElementById('calc-per-user').value, 10);
+
+    document.getElementById('calc-visitors-val').textContent = visitors.toLocaleString('fr-FR');
+    document.getElementById('calc-rate-val').textContent = rate + '%';
+    document.getElementById('calc-per-user-val').textContent = perUser;
+
+    const requests = Math.round(visitors * (rate / 100) * perUser);
+    document.getElementById('calc-out-requests').textContent = requests.toLocaleString('fr-FR');
+
+    let recommended = TIERS[TIERS.length - 1];
+    for (const tier of TIERS) {
+      if (requests <= tier.limit) { recommended = tier; break; }
+    }
+    const beyond = requests > TIERS[TIERS.length - 1].limit;
+    document.getElementById('calc-out-plan').textContent =
+      (beyond ? 'Scale + dépassement facturé' : recommended.name + ' — ' + recommended.price + ' €/mois');
+
+    // Trafic Browse : distinct du trafic de recherche (chantier Browse &
+    // Discovery, restructuration tarifaire du 24 juillet) — un visiteur
+    // qui navigue par catégorie ne "cherche" pas, mais consomme quand
+    // même du quota, sur un compteur séparé.
+    const browseRateEl = document.getElementById('calc-browse-rate');
+    const browsePagesEl = document.getElementById('calc-browse-pages');
+    if (browseRateEl && browsePagesEl) {
+      const browseRate = parseInt(browseRateEl.value, 10);
+      const browsePages = parseInt(browsePagesEl.value, 10);
+      document.getElementById('calc-browse-rate-val').textContent = browseRate + '%';
+      document.getElementById('calc-browse-pages-val').textContent = browsePages;
+
+      const browseRequests = Math.round(visitors * (browseRate / 100) * browsePages);
+      document.getElementById('calc-out-browse-requests').textContent = browseRequests.toLocaleString('fr-FR');
+
+      let browseTier = BROWSE_TIERS[BROWSE_TIERS.length - 1];
+      for (const tier of BROWSE_TIERS) {
+        if (browseRequests <= tier.limit) { browseTier = tier; break; }
+      }
+      const browseBeyond = browseRequests > BROWSE_TIERS[BROWSE_TIERS.length - 1].limit;
+      document.getElementById('calc-out-browse-plan').textContent = browseTier.name + ' — ' +
+        browseTier.priceAddon + ' €/mois en option sur un plan Search (' + browseTier.priceStandalone + ' € en autonome)' +
+        (browseBeyond ? ', + dépassement facturé' : '');
+    }
+  }
+  ['calc-visitors', 'calc-rate', 'calc-per-user', 'calc-browse-rate', 'calc-browse-pages'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', computeCalc);
+  });
+  if (document.getElementById('calc-visitors')) computeCalc();
+
+  const checkoutBtns = document.querySelectorAll('.checkout-btn');
+  checkoutBtns.forEach(function (btn) {
+    const originalText = btn.textContent;
+    btn.addEventListener('click', function () {
+      const plan = btn.getAttribute('data-plan');
+      // Case Browse cochee dans la meme carte (restructuration tarifaire,
+      // page revue le 24 juillet en carte unique) -> souscrite en meme
+      // temps que le plan Search, dans la meme session Stripe.
+      const card = btn.closest('.price-tier-card');
+      const toggle = card ? card.querySelector('.browse-addon-checkbox') : null;
+      const browsePlan = (toggle && toggle.checked) ? toggle.getAttribute('data-browse-plan') : null;
+
+      checkoutBtns.forEach(function (b) { b.disabled = true; });
+      btn.textContent = "Redirection…";
+
+      const payload = { plan: plan };
+      if (browsePlan) payload.browse_plan = browsePlan;
+      // Periode posee par la reglette (billing-toggle.js?v=1785193989). Absente = mensuel,
+      // ce qui est aussi le defaut cote moteur : un visiteur arrive avant le
+      // chargement du script souscrit normalement.
+      const periode = btn.getAttribute('data-billing-period');
+      if (periode === 'annual') payload.billing_period = 'annual';
+
+      fetch("https://api.heurix.fr/v1/stripe/create-checkout-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      })
+        .then(function (r) {
+          if (!r.ok) throw new Error("HTTP " + r.status);
+          return r.json();
+        })
+        .then(function (data) {
+          if (window.dataLayer) window.dataLayer.push({ event: "checkout_started", plan: plan, browse_plan: browsePlan });
+          window.location.href = data.checkout_url;
+        })
+        .catch(function () {
+          checkoutBtns.forEach(function (b) { b.disabled = false; });
+          btn.textContent = originalText;
+          alert("Une erreur est survenue — réessayez, ou écrivez à contact@heurix.fr si ça persiste.");
+        });
+    });
+  });
+
+  // Mise a jour du prix affiche en direct quand la case Browse est cochee/decochee.
+  // GESTIONNAIRE RETIRE — c'etait la cause du bug de prix.
+  //
+  // Il additionnait les valeurs MENSUELLES des attributs data en ignorant
+  // la periode de facturation : sur Growth en annuel, cocher Ranking
+  // affichait 116 € au lieu de 1 253 €, et decocher retombait a 49 € au
+  // lieu de 529 €.
+  //
+  // Deux scripts ecrivaient le meme element : celui-ci et
+  // billing-toggle.js, qui seul connait la periode. Le calcul y est
+  // desormais centralise, avec une source unique pour les tarifs.
+
+  // Browse en autonome (restructuration tarifaire, 24 juillet) — meme
+  // logique que ci-dessus, endpoint et parametre distincts. L'option a
+  // -25% sur un plan Search existant se souscrit depuis la console, pas
+  // ici : elle exige d'etre connecte pour identifier le bon client Stripe.
+  const checkoutBrowseBtns = document.querySelectorAll('.checkout-browse-btn');
+  checkoutBrowseBtns.forEach(function (btn) {
+    const originalText = btn.textContent;
+    btn.addEventListener('click', function () {
+      const browsePlan = btn.getAttribute('data-browse-plan');
+      checkoutBrowseBtns.forEach(function (b) { b.disabled = true; });
+      btn.textContent = "Redirection…";
+
+      fetch("https://api.heurix.fr/v1/stripe/create-browse-checkout-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ browse_plan: browsePlan }),
+      })
+        .then(function (r) {
+          if (!r.ok) throw new Error("HTTP " + r.status);
+          return r.json();
+        })
+        .then(function (data) {
+          if (window.dataLayer) window.dataLayer.push({ event: "browse_checkout_started", browse_plan: browsePlan });
+          window.location.href = data.checkout_url;
+        })
+        .catch(function () {
+          checkoutBrowseBtns.forEach(function (b) { b.disabled = false; });
+          btn.textContent = originalText;
+          alert("Une erreur est survenue — réessayez, ou écrivez à contact@heurix.fr si ça persiste.");
+        });
+    });
+  });
+</script>
+
+<script src="nav-dropdown.js"></script>
+<script src="mobile-nav.js?v=1784970606"></script>
+<div id="guide-nudge" class="pricing-nudge">
+  <button type="button" class="pricing-nudge-close" aria-label="Fermer">&times;</button>
+  <div class="pricing-nudge-kicker">Pas sûr par où commencer ?</div>
+  <p>Le guide de mise en route couvre tout le parcours — souscription, premier catalogue, puis les modules optionnels un par un.</p>
+  <a href="blog/guide-mise-en-route.html" class="btn btn-ghost">Voir le guide →</a>
+</div>
+<script src="guide-nudge.js"></script>
+<script src="billing-toggle.js?v=1785193989"></script>
+<script src="consent.js?v=1785150583"></script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="heurix-icon-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6B7FFF" />
+      <stop offset="100%" stop-color="#3F52E8" />
+    </linearGradient>
+  </defs>
+  <!-- Lentille de la loupe -->
+  <circle cx="25" cy="25" r="15" stroke="url(#heurix-icon-grad)" stroke-width="5.5" />
+  <!-- Manche, avec deux repères façon règle -->
+  <line x1="36" y1="36" x2="47" y2="47" stroke="url(#heurix-icon-grad)" stroke-width="5.5" stroke-linecap="round" />
+  <line x1="38.5" y1="35.5" x2="41.5" y2="38.5" stroke="#fff" stroke-width="1.6" stroke-linecap="round" />
+  <line x1="42.5" y1="39.5" x2="45.5" y2="42.5" stroke="#fff" stroke-width="1.6" stroke-linecap="round" />
+  <!-- Clin d'œil : un X en bout de manche, comme un point de mesure -->
+  <line x1="49" y1="45" x2="57" y2="53" stroke="url(#heurix-icon-grad)" stroke-width="4" stroke-linecap="round" />
+  <line x1="57" y1="45" x2="49" y2="53" stroke="url(#heurix-icon-grad)" stroke-width="4" stroke-linecap="round" />
+</svg>
