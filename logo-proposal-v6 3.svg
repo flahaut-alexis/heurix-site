@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 64">
+  <defs>
+    <linearGradient id="heurix-icon-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6B7FFF" />
+      <stop offset="100%" stop-color="#3F52E8" />
+    </linearGradient>
+    <!-- Dégradé continu du spectre, pas des bandes séparées — orienté sur la
+         largeur du faisceau, du rouge (haut) au violet (bas) -->
+    <linearGradient id="heurix-spectrum" x1="0" y1="18" x2="0" y2="44" gradientUnits="userSpaceOnUse">
+      <stop offset="0%"   stop-color="#EC4B3F" />
+      <stop offset="20%"  stop-color="#F0883E" />
+      <stop offset="40%"  stop-color="#F2C94C" />
+      <stop offset="60%"  stop-color="#4CAF50" />
+      <stop offset="80%"  stop-color="#4A90D9" />
+      <stop offset="100%" stop-color="#8E5FBF" />
+    </linearGradient>
+  </defs>
+
+  <!-- Fond blanc explicite -->
+  <rect x="0" y="0" width="96" height="64" fill="#FFFFFF" />
+
+  <!-- Faisceau entrant, lumière blanche, depuis la gauche -->
+  <path d="M0 31 L18 31 L18 33 L0 33 Z" fill="#D7DBE8" />
+
+  <!-- Faisceau sortant, fin, dégradé continu du spectre -->
+  <path d="M34 30.8 L94 18 L94 44 L34 33.2 Z" fill="url(#heurix-spectrum)" />
+
+  <!-- Lentille de la loupe, pleine, par-dessus le faisceau -->
+  <circle cx="24" cy="32" r="15" fill="#FFFFFF" stroke="url(#heurix-icon-grad)" stroke-width="5" />
+
+  <!-- Manche -->
+  <line x1="33" y1="43" x2="48" y2="58" stroke="url(#heurix-icon-grad)" stroke-width="6" stroke-linecap="round" />
+</svg>
