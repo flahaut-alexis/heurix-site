@@ -343,14 +343,64 @@
     mode: ["red wool sweater size L", "slim jeans W32", "striped shirt"],
   };
 
+  // CATEGORY SUGGESTIONS ON FOCUS (Aug 1) — orient the search before the
+  // first keystroke, rather than leaving an empty field with no cue.
+  // Real names drawn from the indexed catalogs, not invented: "Drills &
+  // drivers" matches the real Racetools catalog's category structure,
+  // the fashion labels match the categories from the translated dataset
+  // built the same day (T-Shirt, Dress, Jacket...).
+  var CATEGORIES = {
+    outillage: ["Drills & drivers", "Sanders", "Measuring & marking", "Safety gear"],
+    mode: ["T-shirts", "Dresses", "Jackets", "Sweaters"],
+  };
+
   function majSuggestions() {
     var zone = racine.querySelector(".play-chips");
-    if (!zone) return;
-    var liste = EXEMPLES[verticale] || EXEMPLES.outillage;
-    zone.innerHTML = liste.map(function (x) {
-      return "<button type='button' class='play-chip'>" + esc(x) + "</button>";
-    }).join("");
-    brancherChips();
+    if (zone) {
+      var liste = EXEMPLES[verticale] || EXEMPLES.outillage;
+      zone.innerHTML = liste.map(function (x) {
+        return "<button type='button' class='play-chip'>" + esc(x) + "</button>";
+      }).join("");
+      brancherChips();
+    }
+
+    var zoneCategories = racine.querySelector(".play-categories");
+    if (zoneCategories) {
+      var cats = CATEGORIES[verticale] || CATEGORIES.outillage;
+      zoneCategories.innerHTML = cats.map(function (c) {
+        return "<button type='button' class='play-categorie'>" + esc(c) + "</button>";
+      }).join("");
+      brancherCategories();
+    }
+  }
+
+  // CATEGORY PANEL ON FOCUS: visible only while the field is empty and
+  // active — closes on the first keystroke or as soon as focus leaves.
+  // mousedown rather than click on the tiles: the field's `blur` fires
+  // BEFORE `click` when clicking an external element, which would close
+  // the panel before the click ever got a chance to register.
+  // `mousedown` fires before `blur`, so the selection lands in time.
+  var panneauCategories = racine.querySelector(".play-categories");
+  function ouvrirPanneauCategories() {
+    if (panneauCategories && !champ.value.trim()) panneauCategories.hidden = false;
+  }
+  function fermerPanneauCategories() {
+    if (panneauCategories) panneauCategories.hidden = true;
+  }
+  champ.addEventListener("focus", ouvrirPanneauCategories);
+  champ.addEventListener("blur", fermerPanneauCategories);
+  champ.addEventListener("input", fermerPanneauCategories);
+
+  function brancherCategories() {
+    racine.querySelectorAll(".play-categorie").forEach(function (tuile) {
+      tuile.addEventListener("mousedown", function (e) {
+        e.preventDefault();
+        champ.value = tuile.textContent.trim();
+        prismeActif = null;
+        fermerPanneauCategories();
+        chercher(champ.value);
+      });
+    });
   }
 
   pastilles.forEach(function (pill) {
@@ -395,4 +445,10 @@
       p.classList.add("play-vertical-pill-on");
     }
   });
+
+  // BUG FOUND WHILE BUILDING CATEGORY SUGGESTIONS (Aug 1): majSuggestions()
+  // was only ever called on pill click, never on load — the "Try:" chips
+  // showed the static HTML examples at first render, not the correct
+  // default-sector ones.
+  majSuggestions();
 })();

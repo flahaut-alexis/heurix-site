@@ -395,14 +395,65 @@
     mode: ["pull laine rouge taille L", "jean slim W32", "chemise rayée"],
   };
 
+  // CATÉGORIES SUGGÉRÉES AU FOCUS (1er août) — pour orienter la recherche
+  // avant même la première frappe, plutôt que de laisser un champ vide
+  // sans piste. Noms réels tirés des catalogues indexés, pas inventés :
+  // "Perceuses" existe tel quel côté outillage (vu sur le vrai catalogue
+  // Racetools), les intitulés mode reprennent les catégories du jeu de
+  // données traduit le 1er août (T-Shirt, Dress, Jacket...).
+  var CATEGORIES = {
+    outillage: ["Perceuses & visseuses", "Ponceuses", "Mesure & traçage", "Protection & sécurité"],
+    mode: ["T-shirts", "Robes", "Vestes", "Pulls"],
+  };
+
   function majSuggestions() {
     var zone = racine.querySelector(".play-chips");
-    if (!zone) return;
-    var liste = EXEMPLES[verticale] || EXEMPLES.outillage;
-    zone.innerHTML = liste.map(function (x) {
-      return "<button type='button' class='play-chip'>" + esc(x) + "</button>";
-    }).join("");
-    brancherChips();
+    if (zone) {
+      var liste = EXEMPLES[verticale] || EXEMPLES.outillage;
+      zone.innerHTML = liste.map(function (x) {
+        return "<button type='button' class='play-chip'>" + esc(x) + "</button>";
+      }).join("");
+      brancherChips();
+    }
+
+    var zoneCategories = racine.querySelector(".play-categories");
+    if (zoneCategories) {
+      var cats = CATEGORIES[verticale] || CATEGORIES.outillage;
+      zoneCategories.innerHTML = cats.map(function (c) {
+        return "<button type='button' class='play-categorie'>" + esc(c) + "</button>";
+      }).join("");
+      brancherCategories();
+    }
+  }
+
+  // PANNEAU DE CATÉGORIES AU FOCUS (1er août) : visible uniquement quand
+  // le champ est vide et actif -- dès la première frappe ou dès qu'on
+  // quitte le champ, il se referme. mousedown plutôt que click sur les
+  // tuiles : `blur` du champ se déclenche AVANT `click` quand on clique
+  // sur un élément externe, ce qui aurait fermé le panneau avant que le
+  // clic n'ait eu la moindre chance d'être traité. `mousedown` se
+  // déclenche avant `blur`, donc la sélection a lieu à temps.
+  var panneauCategories = racine.querySelector(".play-categories");
+  function ouvrirPanneauCategories() {
+    if (panneauCategories && !champ.value.trim()) panneauCategories.hidden = false;
+  }
+  function fermerPanneauCategories() {
+    if (panneauCategories) panneauCategories.hidden = true;
+  }
+  champ.addEventListener("focus", ouvrirPanneauCategories);
+  champ.addEventListener("blur", fermerPanneauCategories);
+  champ.addEventListener("input", fermerPanneauCategories);
+
+  function brancherCategories() {
+    racine.querySelectorAll(".play-categorie").forEach(function (tuile) {
+      tuile.addEventListener("mousedown", function (e) {
+        e.preventDefault(); // evite que le champ perde le focus avant le clic
+        champ.value = tuile.textContent.trim();
+        prismeActif = null;
+        fermerPanneauCategories();
+        chercher(champ.value);
+      });
+    });
   }
 
   pastilles.forEach(function (pill) {
@@ -447,4 +498,12 @@
       p.classList.add("play-vertical-pill-on");
     }
   });
+
+  // BUG TROUVÉ EN CONSTRUISANT LES CATÉGORIES SUGGÉRÉES (1er août) :
+  // majSuggestions() n'était appelée qu'au clic sur une pastille, jamais
+  // au chargement — les puces "Essayez" affichaient donc encore les
+  // exemples statiques codés dans le HTML (d'anciens exemples "livres",
+  // orphelins depuis le retrait de cette verticale) au premier rendu,
+  // pas les bons exemples "outillage" du secteur par défaut.
+  majSuggestions();
 })();
