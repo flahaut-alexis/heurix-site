@@ -18,7 +18,7 @@
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="../favicon-32.png">
 <link rel="apple-touch-icon" href="../apple-touch-icon.png">
-<link rel="stylesheet" href="../styles.css?v=1785594931">
+<link rel="stylesheet" href="../styles.css?v=1785598012">
 <link rel="canonical" href="https://heurix.fr/en/docs.html">
 <script type="application/ld+json">
 {
@@ -373,6 +373,18 @@
       <pre class="docs-code"><code>{"query": "perceuse", "total": 4, "hits": [...],
  "suggested_category": {"category": "perceuses-visseuses", "products": 12}}</code></pre>
       <p>Matching is done by substring, not just strict equality — "perceuse" (singular) does find the "perceuses-visseuses" category (plural, with a hyphen). If several categories match at once, the most populated one wins. Absent from the response if there's no match, or in browse mode (empty query).</p>
+
+      <h3 id="bundles">Highlighting a pack or bundle</h3>
+      <p>A technical catalog rarely sells only standalone products: a 4-tool pack, a cable-and-connector kit, a lot of 100 screws — these bundles often have a much higher average order value than a single product, but describing them in one long text naturally puts them at a disadvantage in pure ranking (a relevant word repeated several times in a long description accumulates more weight than a short, precise listing — the right behavior elsewhere, not here).</p>
+      <p>Rather than artificially deciding "pack or standalone product first" inside the score itself, the response includes a separate field, <code class="docs-inline-code">highlighted_bundle</code>: the best-matching pack for the query, distinct from <code class="docs-inline-code">hits</code>.</p>
+      <pre class="docs-code"><code>{"query": "perceuse 18V", "total": 47, "hits": [...],
+ "highlighted_bundle": {
+   "product": {"id": "pack-42", "name": "Pack 4 outils 18V Bosch", "category": "Pack 4 outils", "price": 1200},
+   "score": 35.66,
+   "in_stock": true
+ }}</code></pre>
+      <p><code class="docs-inline-code">hits</code> doesn't change: it's still the natural ranking, standalone products included — it's up to your interface to decide how to present the two zones (for example, a visually distinct highlight above the regular results list).</p>
+      <p><strong>Detection via the <code class="docs-inline-code">category</code> field</strong>: the response treats a product as a bundle if its category contains "pack" or "kit" (case-insensitive) — no extra data to supply, it works with a catalog you've already indexed. The trade-off, knowingly accepted: it depends on the vocabulary already present in your categories, not an explicit declaration. If no matching product contains that word, the field is simply absent from the response.</p>
     </section>
 
     <section id="ep-search-overrides" class="docs-section">
@@ -896,13 +908,13 @@ curl -X POST https://api.heurix.fr/v1/events \
       <div class="docs-endpoint"><span class="docs-method docs-method-get">JS</span><code>heurix-search.js</code></div>
       <h2>Ready-to-use search bar</h2>
       <p>Don't want to code the <code class="docs-inline-code">fetch</code> call, result rendering, and facet handling yourself? A standalone JavaScript library (zero dependencies) renders a complete search bar — input, live results, clickable facets, keyboard navigation — connected to your catalog in a few lines.</p>
-      <p class="regex-reassure">🚀 <a href="downloads/heurix-search.js?v=1785594931" download>Download heurix-search.js</a> — a single file, drop it wherever you want on your site.</p>
+      <p class="regex-reassure">🚀 <a href="downloads/heurix-search.js?v=1785598012" download>Download heurix-search.js</a> — a single file, drop it wherever you want on your site.</p>
 
       <p class="regex-reassure">🔑 Use a <a href="#authentification">public key</a> (<code class="docs-inline-code">hxp_</code>) — this script runs in the visitor's browser, where the key is readable by anyone. A server key would grant access to your billing.</p>
 
       <h3>Minimal integration</h3>
       <pre class="docs-code"><code>&lt;div id="my-search"&gt;&lt;/div&gt;
-&lt;script src="heurix-search.js?v=1785594931"&gt;&lt;/script&gt;
+&lt;script src="heurix-search.js?v=1785598012"&gt;&lt;/script&gt;
 &lt;script&gt;
   Heurix.searchBox({
     apiKey: "YOUR_PUBLIC_KEY",
@@ -1147,7 +1159,7 @@ VIS_M8X20  ──────────── match ────────�
     });
   })();
 </script>
-<script src="../search-en.js?v=1785594931"></script>
+<script src="../search-en.js?v=1785598012"></script>
 <script src="../nav-dropdown.js"></script>
 <script src="../mobile-nav.js?v=1784970606"></script>
 <div id="pricing-nudge" class="pricing-nudge">

@@ -18,7 +18,7 @@
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css?v=1785594931">
+<link rel="stylesheet" href="styles.css?v=1785598012">
 <link rel="canonical" href="https://heurix.fr/docs.html">
 <script type="application/ld+json">
 {
@@ -385,6 +385,18 @@
       <pre class="docs-code"><code>{"query": "perceuse", "total": 4, "hits": [...],
  "suggested_category": {"category": "perceuses-visseuses", "products": 12}}</code></pre>
       <p>La correspondance se fait par sous-chaîne, pas seulement une égalité stricte — « perceuse » (singulier) retrouve bien la catégorie « perceuses-visseuses » (pluriel, avec tiret). Si plusieurs catégories correspondent à la fois, la plus peuplée l'emporte. Absent de la réponse s'il n'y a aucune correspondance, ou en mode parcours (requête vide).</p>
+
+      <h3 id="bundles">Mise en avant d'un pack ou d'un bundle</h3>
+      <p>Un catalogue technique vend rarement que des produits seuls : un pack de 4 outils, un kit de câbles avec connecteurs, un lot de 100 vis — ces regroupements ont souvent un panier moyen bien plus élevé qu'un produit seul, mais les décrire en un seul long texte les désavantage naturellement au classement pur (un mot pertinent qui revient plusieurs fois dans une longue description accumule plus de poids qu'une fiche courte et précise — comportement voulu ailleurs, pas ici).</p>
+      <p>Plutôt que de trancher artificiellement « pack ou produit seul en premier » dans le score, la réponse inclut un champ séparé, <code class="docs-inline-code">highlighted_bundle</code> : le meilleur pack correspondant à la requête, distinct de <code class="docs-inline-code">hits</code>.</p>
+      <pre class="docs-code"><code>{"query": "perceuse 18V", "total": 47, "hits": [...],
+ "highlighted_bundle": {
+   "product": {"id": "pack-42", "name": "Pack 4 outils 18V Bosch", "category": "Pack 4 outils", "price": 1200},
+   "score": 35.66,
+   "in_stock": true
+ }}</code></pre>
+      <p><code class="docs-inline-code">hits</code> ne change pas : c'est toujours le classement naturel, produits seuls compris — c'est à votre interface de choisir comment présenter les deux zones (par exemple, une mise en avant visuelle distincte au-dessus de la liste de résultats classique).</p>
+      <p><strong>Détection par le champ <code class="docs-inline-code">category</code></strong> : la réponse considère un produit comme un bundle si sa catégorie contient « pack » ou « kit » (insensible à la casse) — aucune donnée supplémentaire à fournir, ça fonctionne avec un catalogue déjà indexé. La contrepartie, assumée : ça dépend du vocabulaire déjà présent dans vos catégories, pas d'une déclaration explicite. Si aucun produit correspondant ne contient ce mot, le champ est simplement absent de la réponse.</p>
     </section>
 
     <section id="ep-search-overrides" class="docs-section">
@@ -900,13 +912,13 @@ curl -X POST https://api.heurix.fr/v1/events \
       <div class="docs-endpoint"><span class="docs-method docs-method-get">JS</span><code>heurix-search.js</code></div>
       <h2>Barre de recherche prête à l'emploi</h2>
       <p>Pas envie de coder l'appel <code class="docs-inline-code">fetch</code>, le rendu des résultats et la gestion des facettes vous-même ? Une bibliothèque JavaScript autonome (zéro dépendance) affiche une barre de recherche complète — saisie, résultats en direct, facettes cliquables, navigation clavier — connectée à votre catalogue en quelques lignes.</p>
-      <p class="regex-reassure">🚀 <a href="downloads/heurix-search.js?v=1785594931" download>Téléchargez heurix-search.js</a> — un seul fichier, à poser où vous voulez sur votre site.</p>
+      <p class="regex-reassure">🚀 <a href="downloads/heurix-search.js?v=1785598012" download>Téléchargez heurix-search.js</a> — un seul fichier, à poser où vous voulez sur votre site.</p>
 
       <p class="regex-reassure">🔑 Utilisez une <a href="#authentification">clé publique</a> (<code class="docs-inline-code">hxp_</code>) — ce script tourne dans le navigateur du visiteur, où la clé est lisible par tous. Une clé serveur donnerait accès à votre facturation.</p>
 
       <h3>Intégration minimale</h3>
       <pre class="docs-code"><code>&lt;div id="ma-recherche"&gt;&lt;/div&gt;
-&lt;script src="heurix-search.js?v=1785594931"&gt;&lt;/script&gt;
+&lt;script src="heurix-search.js?v=1785598012"&gt;&lt;/script&gt;
 &lt;script&gt;
   Heurix.searchBox({
     apiKey: "VOTRE_CLE_PUBLIQUE",
@@ -1081,7 +1093,7 @@ VIS_M8X20  ────────── correspondance ──────  VIS
   </div>
 </footer>
 
-<script src="search.js?v=1785594931"></script>
+<script src="search.js?v=1785598012"></script>
 <script>
   document.getElementById('year').textContent = new Date().getFullYear();
 
