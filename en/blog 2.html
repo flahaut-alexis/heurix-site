@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blog — Heurix</title>
+<meta name="description" content="Notes on internal search and e-commerce, published monthly by Heurix.">
+<link rel="alternate" hreflang="fr" href="https://heurix.fr/blog.html">
+<link rel="alternate" hreflang="en" href="https://heurix.fr/en/blog.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Blog — Heurix">
+<meta property="og:description" content="Notes on internal search and e-commerce, published monthly by Heurix.">
+<meta property="og:image" content="https://heurix.fr/og-image.png">
+<meta property="og:url" content="https://heurix.fr/en/blog.html">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Blog — Heurix">
+<meta name="twitter:image" content="https://heurix.fr/og-image.png">
+<link rel="icon" type="image/png" href="../favicon-32.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<link rel="stylesheet" href="../styles.css?v=1785566466">
+<link rel="canonical" href="https://heurix.fr/en/blog.html">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Heurix",
+  "url": "https://heurix.fr",
+  "logo": "https://heurix.fr/logo.svg?v=1784985918",
+  "image": "https://heurix.fr/og-image.png",
+  "description": "Regex-powered search and discovery engine for e-commerce sites, designed in France.",
+  "email": "contact@heurix.fr",
+  "sameAs": ["https://www.linkedin.com/company/heurix-search/"],
+  "founder": {"@type": "Person", "name": "Alexis Flahaut"},
+  "areaServed": "FR"
+}
+</script>
+</head>
+<body>
+<header>
+  <div class="header-top">
+    <nav class="header-top-inner">
+      <a href="index.html" class="logo"><img src="../logo.svg?v=1784985918" alt="Heurix"> <span class="wordmark">Heurix</span></a>
+      <div class="nav-links">
+        <div class="nav-drop">
+          <button type="button" class="nav-drop-btn" aria-expanded="false" aria-haspopup="true">Product</button>
+          <div class="nav-drop-panel">
+            <a href="produit.html#probleme">The problem</a>
+            <a href="produit.html#mission">Our mission</a>
+            <a href="produit.html#moteur">The engine</a>
+            <a href="fonctionnalites.html">Features</a>
+            <a href="index.html#tarifs">ROI Simulator</a>
+          </div>
+        </div>
+        <div class="nav-drop">
+          <button type="button" class="nav-drop-btn" aria-expanded="false" aria-haspopup="true">Solutions</button>
+          <div class="nav-drop-panel">
+          <a href="solutions/outillage.html">Hardware & tools</a>
+          <a href="solutions/industrie.html">Spare parts & industry</a>
+          <a href="solutions/mode.html">Fashion & retail</a>
+          <a href="solutions/electronique.html">Electronics & high-tech</a>
+          <a href="solutions/livres.html">Books & publishing</a>
+          <a href="solutions/vins.html">Wine & spirits</a>
+          <a href="solutions/finance.html">Finance & accounting</a>
+          </div>
+        </div>
+        <div class="nav-drop">
+          <button type="button" class="nav-drop-btn" aria-expanded="false" aria-haspopup="true">Developers</button>
+          <div class="nav-drop-panel">
+            <a href="docs.html">Documentation</a>
+            <a href="integrations.html">Integrations</a>
+            <a href="prestashop.html">PrestaShop</a>
+            <a href="woocommerce.html">WooCommerce</a>
+            <a href="shopify.html">Shopify</a>
+            <a href="blog/guide-mise-en-route.html">Getting started guide</a>
+          </div>
+        </div>
+        <a href="blog.html">Blog</a>
+      </div>
+      <div class="header-search">
+        <button id="heurix-search-btn" class="search-trigger" aria-label="Heurix Search — search the site" type="button">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <span class="search-trigger-text">Heurix Search</span>
+          <span class="search-trigger-kbd">Ctrl K</span>
+        </button>
+      </div>
+      <div class="header-utility">
+        <button type="button" id="mobile-nav-toggle" class="mobile-nav-toggle" aria-label="Menu" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+        <a href="console.html" class="header-signin">Sign in</a>
+        <a href="../blog.html" class="lang-switch">FR</a>
+        <a href="pricing.html" class="btn">Try it free</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<div id="heurix-search-modal" class="search-modal">
+  <div id="heurix-search-backdrop" class="search-backdrop" data-search-close></div>
+  <div class="search-panel">
+    <div class="search-panel-head">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input id="heurix-search-input" type="text" placeholder="Heurix Search..." autocomplete="off">
+      <button class="search-close" data-search-close type="button">Esc</button>
+    </div>
+    <p id="heurix-search-suggest-label" class="search-suggest-label" hidden>Latest articles</p>
+    <div id="heurix-search-results" class="search-results"></div>
+    <p id="heurix-search-empty" class="search-empty" hidden>No results for this search. Try another term.</p>
+  </div>
+</div>
+
+<section class="blog-hero">
+  <div class="wrap">
+    <div class="kicker">Blog</div>
+    <h1>Notes on search and e-commerce.</h1>
+    <p class="lede">Concrete cases, technical observations, and lessons learned, published monthly.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="blog-index-grid">
+
+      <a class="blog-card" href="blog/build-vs-buy-moteur-recherche.html">
+        <div class="blog-date mono">July 2026</div>
+        <h3>Build your own search engine or buy one: how to decide</h3>
+        <p>In-house development seems free on paper. What it actually costs, and where Heurix sits on this trade-off.</p>
+        <span class="blog-link">Read the article →</span>
+      </a>
+
+      <a class="blog-card" href="blog/guide-utilisation-console.html">
+        <div class="blog-date mono">July 2026</div>
+        <h3>Running your search day to day</h3>
+        <p>Your catalog is indexed and search works. What comes after: reading what customers search for, fixing rankings.</p>
+        <span class="blog-link">Read the article →</span>
+      </a>
+
+      <a class="blog-card" href="blog/guide-page-categorie-browse.html">
+        <div class="blog-date mono">July 2026</div>
+        <h3>Building a category page with Browse &amp; Discovery</h3>
+        <p>A category page has no query to process — just products to rank well. Index, verify, render.</p>
+        <span class="blog-link">Read the article →</span>
+      </a>
+
+      <a class="blog-card" href="blog/guide-serveur-mcp-heurix.html">
+        <div class="blog-date mono">July 2026</div>
+        <h3>Connecting Heurix to Claude Desktop and Cursor with the MCP server</h3>
+        <p>Ask a natural-language question about your catalog directly inside your AI agent — fifteen minutes to install.</p>
+        <span class="blog-link">Read the article →</span>
+      </a>
+
+      <a class="blog-card" href="blog/recherche-vectorielle-catalogues-techniques.html">
+        <div class="blog-date mono">July 2026</div>
+        <h3>Why vector search fails on technical catalogs</h3>
+        <p>Semantic similarity is a real advance, and the wrong tool when references encode dimensions and standards.</p>
+        <span class="blog-link">Read the article →</span>
+      </a>
+
+      <a class="blog-card" href="blog/origine-du-nom-heurix.html">
+        <div class="blog-date mono">July 2026</div>
+        <h3>Why “Heurix”? A bit of Greek, a bit of Gaulish</h3>
+        <p>The root of the name doesn't mean “to search.” It means “to find.” The etymology, honestly told.</p>
+        <span class="blog-link">Read the article →</span>
+      </a>
+
+      <a class="blog-card" href="blog/tutoriel-catalogue-outillage-5-minutes.html">
+        <div class="blog-date mono">July 2026</div>
+        <h3>Index your first hardware catalog in 5 minutes</h3>
+        <p>Two API calls, one real search result with a typo and a different format. All code is tested.</p>
+        <span class="blog-link">Read the article →</span>
+      </a>
+
+      <a class="blog-card" href="blog/elasticsearch-lucene-catalogue-technique.html">
+        <div class="blog-date mono">July 2026</div>
+        <h3>Elasticsearch and Lucene for a technical catalog</h3>
+        <p>The honest inventory of what you'd have to write and maintain yourself — analyzers, tokenizers, synonym graphs.</p>
+        <span class="blog-link">Read the article →</span>
+      </a>
+
+      <a class="blog-card" href="blog/heurix-vs-algolia-typesense-sensefuel-doofinder.html">
+        <div class="blog-date mono">July 2026</div>
+        <h3>Heurix vs Algolia, Typesense, Sensefuel, Doofinder</h3>
+        <p>Five tools, five different approaches to finding the right product fast — where each one factually excels.</p>
+        <span class="blog-link">Read the article →</span>
+      </a>
+
+      <a class="blog-card" href="blog/custom-rules-personnaliser-moteur-recherche.html">
+        <div class="blog-date mono">July 2026</div>
+        <h3>Custom Rules: personalize your engine without writing regex</h3>
+        <p>A rule pack covers the essentials of an industry, but never your own catalog's exact vocabulary.</p>
+        <span class="blog-link">Read the article →</span>
+      </a>
+
+      <a class="blog-card" href="blog/alternative-algolia-catalogue-technique.html">
+        <div class="blog-date mono">July 2026</div>
+        <h3>Algolia, Typesense, Meilisearch: what alternative for a technical catalog?</h3>
+        <p>Where these three excellent generalist engines stop short against technical references.</p>
+        <span class="blog-link">Read the article →</span>
+      </a>
+
+      <a class="blog-card" href="blog/recherches-sans-resultat-tableau-bord.html">
+        <div class="blog-date mono">July 2026</div>
+        <h3>Zero-result searches: the dashboard most sites don't have</h3>
+        <p>A customer who searches and finds nothing tells you, in their own words, what they wanted to buy.</p>
+        <span class="blog-link">Read the article →</span>
+      </a>
+
+      <a class="blog-card" href="blog/recherche-blog-faq-contenu.html">
+        <div class="blog-date mono">July 2026</div>
+        <h3>Your blog or FAQ search deserves to be good too</h3>
+        <p>Product search gets configured with care, while blog or FAQ search runs on CMS defaults.</p>
+        <span class="blog-link">Read the article →</span>
+      </a>
+
+      <a class="blog-card" href="blog/cout-moteur-recherche-ecommerce.html">
+        <div class="blog-date mono">July 2026</div>
+        <h3>How much does an e-commerce search engine cost in 2026?</h3>
+        <p>The listed price doesn't say much until you know what it actually bills.</p>
+        <span class="blog-link">Read the article →</span>
+      </a>
+
+      <a class="blog-card" href="blog/recherche-reference-sku-b2b.html">
+        <div class="blog-date mono">July 2026</div>
+        <h3>How to configure search by reference (SKU, DIN, ISO) on a B2B e-commerce site?</h3>
+        <p>Why default engines fail on technical product codes, and how regex changes the game.</p>
+        <span class="blog-link">Read the article →</span>
+      </a>
+
+      <a class="blog-card" href="blog/limites-moteurs-natifs-gros-catalogue.html">
+        <div class="blog-date mono">July 2026</div>
+        <h3>Shopify, PrestaShop, Magento: why native search fails past 10,000 references?</h3>
+        <p>Indexing limits of large catalogs, and how to fix it without rebuilding the site.</p>
+        <span class="blog-link">Read the article →</span>
+      </a>
+
+      <a class="blog-card" href="blog/facettes-b2b-multi-attributs.html">
+        <div class="blog-date mono">July 2026</div>
+        <h3>Faceted search in B2B: how to structure multi-attribute filters?</h3>
+        <p>Designing dynamic, well-ordered facets for technical catalogs.</p>
+        <span class="blog-link">Read the article →</span>
+      </a>
+
+      <a class="blog-card" href="blog/synonymes-jargon-industriel.html">
+        <div class="blog-date mono">July 2026</div>
+        <h3>Synonyms and industry jargon: when your customers' vocabulary breaks your search</h3>
+        <p>Designing a business synonym dictionary without creating false positives.</p>
+        <span class="blog-link">Read the article →</span>
+      </a>
+
+      <a class="blog-card" href="blog/impact-ebitda-recherche-interne.html">
+        <div class="blog-date mono">July 2026</div>
+        <h3>Poor internal search: what's the real impact on EBITDA?</h3>
+        <p>The economic leverage of internal search, and a simple method to size the current loss.</p>
+        <span class="blog-link">Read the article →</span>
+      </a>
+
+      <a class="blog-card" href="blog/moteur-natif-ne-suffit-pas.html">
+        <div class="blog-date mono">July 2026</div>
+        <h3>Why your platform's native search engine isn't enough</h3>
+        <p>The three most common blind spots in default search engines, and how to spot them in five minutes.</p>
+        <span class="blog-link">Read the article →</span>
+      </a>
+
+      <a class="blog-card" href="blog/5-signes-recherche-vous-coute-des-ventes.html">
+        <div class="blog-date mono">July 2026</div>
+        <h3>5 signs your search engine is costing you sales</h3>
+        <p>Concrete symptoms to check on your own site, no technical tools required, in under ten minutes.</p>
+        <span class="blog-link">Read the article →</span>
+      </a>
+
+      <a class="blog-card" href="blog/glossaire-search-ecommerce.html">
+        <div class="blog-date mono">July 2026</div>
+        <h3>The e-commerce search glossary, no jargon</h3>
+        <p>Synonyms, facets, typo tolerance: what these terms actually mean for your catalog.</p>
+        <span class="blog-link">Read the article →</span>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+
+<footer>
+  <div class="wrap foot-grid">
+    <a href="index.html" class="logo" style="font-size:15px;"><img src="../logo.svg?v=1784985918" alt="Heurix" style="height:22px;width:22px;"> <span class="wordmark">Heurix</span></a>
+    <div class="foot-links">
+      <a href="blog.html">Blog</a>
+      <a href="docs.html">API Documentation</a>
+      <a href="fonctionnalites.html">Features</a>
+      <a href="integrations.html">Integrations</a>
+      <a href="console.html">Console</a>
+      <a href="about.html">About</a>
+      <a href="index.html#faq">FAQ</a>
+      <a href="cgv.html">Terms of Service</a>
+      <a href="mentions-legales.html">Legal notice</a>
+      <a href="#" data-rouvrir-consentement>Manage cookies</a>
+      <a href="privacy.html">Privacy</a>
+      <a href="mailto:contact@heurix.fr">contact@heurix.fr</a>
+    </div>
+    <div class="foot-social">
+      <span class="foot-social-label">Social networks</span>
+      <a href="https://www.linkedin.com/company/heurix-search/" target="_blank" rel="noopener" aria-label="LinkedIn" class="foot-social-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+      </a>
+    </div>
+    <div class="foot-legal">
+      Heurix — Sole proprietorship (French micro-entreprise). SIRET 107 681 900 00018. IT systems and software consulting.<br>
+      © <span id="year">2026</span> Heurix. All rights reserved.
+    </div>
+  </div>
+</footer>
+
+<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+<script src="../search-en.js?v=1785566466"></script>
+<script src="../nav-dropdown.js"></script>
+<script src="../mobile-nav.js?v=1784970606"></script>
+<div id="pricing-nudge" class="pricing-nudge">
+  <button type="button" class="pricing-nudge-close" aria-label="Close">&times;</button>
+  <div class="pricing-nudge-kicker">14-day free trial</div>
+  <p>Try the Search API on your catalog, no credit card.</p>
+  <a href="pricing.html" class="btn">See pricing</a>
+</div>
+<script src="../pricing-nudge.js"></script>
+<script>window.HEURIX_RACINE='../';</script><script src="../consent.js?v=1785150583"></script>
+</body>
+</html>

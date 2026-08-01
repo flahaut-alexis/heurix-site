@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="heurix-icon-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6B7FFF" />
+      <stop offset="100%" stop-color="#3F52E8" />
+    </linearGradient>
+  </defs>
+  <!-- Rayon entrant, lumière brute -->
+  <line x1="1" y1="23" x2="14" y2="23" stroke="#fff" stroke-width="2.4" stroke-linecap="round" opacity="0.95"/>
+  <!-- Lentille de la loupe — le prisme -->
+  <circle cx="24" cy="23" r="14" fill="none" stroke="url(#heurix-icon-grad)" stroke-width="5" />
+  <!-- Rayons sortants, décomposés, dégradés dans les bleus Heurix -->
+  <line x1="24" y1="23" x2="50" y2="12" stroke="#C2CBFF" stroke-width="2.1" stroke-linecap="round"/>
+  <line x1="24" y1="23" x2="53" y2="23" stroke="#8494FF" stroke-width="2.4" stroke-linecap="round"/>
+  <line x1="24" y1="23" x2="50" y2="34" stroke="#3F52E8" stroke-width="2.7" stroke-linecap="round"/>
+  <!-- Manche de la loupe -->
+  <line x1="34" y1="33" x2="46" y2="45" stroke="url(#heurix-icon-grad)" stroke-width="5.5" stroke-linecap="round" />
+</svg>

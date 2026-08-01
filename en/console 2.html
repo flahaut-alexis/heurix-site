@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Client area — Heurix</title>
+<meta name="description" content="Heurix dashboard: top searched terms, zero-result queries, errors, usage — sign in with your API key.">
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/png" href="../favicon-32.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<link rel="stylesheet" href="../styles.css?v=1785566466">
+<link rel="canonical" href="https://heurix.fr/en/console.html">
+</head>
+<body>
+<header>
+  <div class="header-top">
+    <nav class="header-top-inner">
+      <a href="index.html" class="logo"><img src="../logo.svg?v=1784985918" alt="Heurix"> <span class="wordmark">Heurix</span></a>
+      <div class="nav-links nav-links-console">
+      <div class="console-org-hint" id="console-org-hint" hidden>
+        <p><strong>"My info" has moved.</strong> Company, members, API key, and subscription are now grouped here, under your company name.</p>
+        <button type="button" id="console-org-hint-ok">Got it</button>
+      </div>
+      <div class="nav-drop console-org-drop">
+        <button type="button" class="nav-drop-btn" id="console-org-btn" aria-expanded="false" aria-haspopup="true">My account</button>
+        <div class="nav-drop-panel">
+          <button type="button" data-goto-pane="pane-company">Company</button>
+          <button type="button" data-goto-pane="pane-team">Members</button>
+          <button type="button" data-goto-pane="pane-key">API key</button>
+          <button type="button" data-goto-pane="pane-billing">My subscription</button>
+          <button type="button" data-goto-pane="pane-feedback">Suggest an improvement</button>
+        </div>
+      </div>
+      <a href="../console.html" class="lang-switch">FR</a>
+      <a href="docs.html" class="btn btn-ghost">Documentation</a>
+      <button id="logout-btn" class="btn btn-ghost" type="button" hidden>Sign out</button>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<section id="login-screen" class="console-login">
+  <div class="wrap console-login-wrap">
+    <h1 id="auth-title">Your dashboard.</h1>
+    <p class="lede" id="auth-lede">Top searched terms, zero-result searches, recent errors, usage — sign in to see them.</p>
+
+    <form id="login-form" class="console-login-form" autocomplete="on">
+      <label for="login-email">Email</label>
+      <input type="email" id="login-email" placeholder="you@example.com" autocomplete="email" required>
+      <label for="login-password">Password</label>
+      <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password" required>
+      <button type="submit" class="btn" id="login-btn">Sign in</button>
+      <p id="login-error" class="console-login-error" hidden></p>
+    </form>
+
+    <form id="signup-form" class="console-login-form" autocomplete="on" hidden>
+      <label for="signup-raison-sociale">Company name</label>
+      <input type="text" id="signup-raison-sociale" placeholder="Your company's name" autocomplete="organization" required>
+      <label for="signup-email">Email</label>
+      <input type="email" id="signup-email" placeholder="you@example.com" autocomplete="email" required>
+      <label for="signup-password">Password</label>
+      <input type="password" id="signup-password" placeholder="10 characters minimum" autocomplete="new-password" required minlength="10">
+      <label for="signup-tva">EU VAT number <span class="console-field-optional">(optional)</span></label>
+      <input type="text" id="signup-tva" placeholder="FR12345678901" autocomplete="off">
+      <button type="submit" class="btn" id="signup-btn">Create my account</button>
+      <p id="signup-error" class="console-login-error" hidden></p>
+    </form>
+
+    <form id="accept-invite-form" class="console-login-form" autocomplete="on" hidden>
+      <p id="accept-invite-intro" class="console-login-note" style="margin-top:0;"></p>
+      <label for="accept-invite-password">Choose your password</label>
+      <input type="password" id="accept-invite-password" placeholder="10 characters minimum" autocomplete="new-password" required minlength="10">
+      <button type="submit" class="btn" id="accept-invite-btn">Join the team</button>
+      <p id="accept-invite-error" class="console-login-error" hidden></p>
+    </form>
+
+    <form id="reset-request-form" class="console-login-form" autocomplete="on" hidden>
+      <label for="reset-email">Email</label>
+      <input type="email" id="reset-email" placeholder="you@example.com" autocomplete="email" required>
+      <button type="submit" class="btn" id="reset-request-btn">Send link</button>
+      <p id="reset-request-msg" class="console-login-note" hidden></p>
+    </form>
+
+    <form id="reset-confirm-form" class="console-login-form" autocomplete="on" hidden>
+      <label for="reset-new-password">New password</label>
+      <input type="password" id="reset-new-password" placeholder="10 characters minimum" autocomplete="new-password" required minlength="10">
+      <button type="submit" class="btn" id="reset-confirm-btn">Reset my password</button>
+      <p id="reset-confirm-error" class="console-login-error" hidden></p>
+    </form>
+
+    <p class="console-login-note" id="auth-links">
+      <a href="#" id="show-signup">No account yet? Create a free account</a> ·
+      <a href="#" id="show-reset">Forgot your password?</a>
+    </p>
+    <p class="console-login-note" id="auth-back" hidden>
+      <a href="#" id="show-login">← Retour à la connexion</a>
+    </p>
+  </div>
+</section>
+
+<section id="dashboard" class="console-dash" hidden>
+  <div class="wrap">
+    <div class="console-dash-head">
+      <div class="console-identite">
+        <span class="console-identite-label">Client area</span>
+        <span class="console-identite-email" id="account-email">—</span>
+      </div>
+      <div class="console-dash-actions">
+        <span class="console-env-wrap">
+          <span class="console-env-label">Active catalog</span>
+          <select id="global-catalog" class="console-period console-global-catalog" aria-label="Active catalog — applies to the dashboard, analytics, and personalization"></select>
+        </span>
+        <select id="period-select" class="console-period">
+          <option value="7">Last 7 days</option>
+          <option value="30" selected>Last 30 days</option>
+          <option value="90">Last 90 days</option>
+        </select>
+        <button type="button" class="console-topbar-guides" data-goto-pane="pane-guides">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          <span>Guides</span>
+        </button>
+        <button type="button" class="console-topbar-guides console-topbar-visite" data-visite-demarrer>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+          <span>Guided tour</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="console-layout">
+      <nav class="console-sidebar" id="console-sidebar" aria-label="Dashboard navigation">
+        <div class="console-sidebar-group">
+          <button type="button" class="console-sidebar-item console-sidebar-item-on console-sidebar-item-top" data-pane="pane-overview">Dashboard</button>
+        </div>
+
+        <div class="console-sidebar-group">
+          <button type="button" class="console-sidebar-section" data-section="catalog">
+            <span>My catalogs</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="console-sidebar-chevron"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="console-sidebar-items" data-section-items="catalog" hidden>
+            <button type="button" class="console-sidebar-item" data-pane="pane-import-csv">Import a file</button>
+            <button type="button" class="console-sidebar-item" data-pane="pane-catalog-help">How it works</button>
+            <div id="sidebar-catalog-items"></div>
+          </div>
+        </div>
+
+        <div class="console-sidebar-group">
+          <button type="button" class="console-sidebar-section" data-section="analytics">
+            <span>Analytics</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="console-sidebar-chevron"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="console-sidebar-items" data-section-items="analytics" hidden>
+            <div class="console-sidebar-sublabel">Search</div>
+            <button type="button" class="console-sidebar-item" data-pane="pane-top-queries">Popular searches</button>
+            <button type="button" class="console-sidebar-item" data-pane="pane-zero-results">Zero results</button>
+            <button type="button" class="console-sidebar-item" data-pane="pane-errors">Errors<span class="nav-badge" id="nav-badge-erreurs" hidden></span></button>
+            <div class="console-sidebar-sublabel">Ranking</div>
+            <button type="button" class="console-sidebar-item" data-pane="pane-category-views">Most-viewed products</button>
+          </div>
+        </div>
+
+        <div class="console-sidebar-group">
+          <button type="button" class="console-sidebar-section" data-section="perso">
+            <span>Personalization</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="console-sidebar-chevron"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="console-sidebar-items" data-section-items="perso" hidden>
+            <div class="console-sidebar-sublabel">Search</div>
+            <button type="button" class="console-sidebar-item" data-pane="pane-search-overrides">Rule management</button>
+            <div class="console-sidebar-sublabel">Ranking</div>
+            <button type="button" class="console-sidebar-item" data-pane="pane-browse">Ranking &amp; merchandising</button>
+          </div>
+        </div>
+</nav>
+
+      <div class="console-main">
+        <div class="sandbox-banner" id="sandbox-banner" hidden>
+          <strong>Sandbox</strong> — this catalog isn't billed and its searches don't appear in your statistics. Your visitors don't see it.
+        </div>
+        <div id="dash-loading" class="console-loading">Loading data…</div>
+        <div id="dash-content" hidden>
+
+          <div id="pane-overview" class="console-pane">
+            <h2 class="console-pane-title">Overview</h2>
+
+            <div id="overview-empty-state" class="console-panel" hidden>
+              <h2>Welcome — index your first catalog to get started</h2>
+              <p class="console-panel-note">No catalog found on this key yet. The statistics below (searches, zero-result rate, errors) will only make sense once real products are indexed — no need to wait to get started, one call is enough:</p>
+              <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/index/mycatalog/items \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"items": [{"id": "sku-1", "name": "My first product", "stock": 10}]}'</code></pre>
+              <p class="console-panel-note" style="margin-bottom:0;">The catalog <code class="docs-inline-code">mycatalog</code> is created automatically on the first call — no prior setup required. Want a step-by-step guide instead of a standalone command? <a href="../javascript:void(0)" data-goto-pane="pane-catalog-help">See "How it works"</a>.</p>
+            </div>
+
+            <div id="overview-stats-content">
+              <div class="console-stats">
+                <div class="console-stat">
+                  <div class="icn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+                  <div class="console-stat-num" id="stat-searches">–</div><span class="kpi-tendance" id="trend-searches" hidden></span>
+                  <div class="console-stat-label">Searches</div>
+                </div>
+                <div class="console-stat console-stat-warn">
+                  <div class="icn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="13"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+                  <div class="console-stat-num" id="stat-zero-rate">–</div><span class="kpi-tendance" id="trend-zero-rate" hidden></span>
+                  <div class="console-stat-label">Zero-result rate</div>
+                </div>
+                <div class="console-stat">
+                  <div class="icn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+                  <div class="console-stat-num" id="stat-errors">–</div><span class="kpi-tendance" id="trend-errors" hidden></span>
+                  <div class="console-stat-label">Errors</div>
+                </div>
+                <div class="console-stat">
+                  <div class="icn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6z"/></svg></div>
+                  <div class="console-stat-num" id="stat-usage">–</div><span class="kpi-tendance" id="trend-usage" hidden></span>
+                  <div class="console-stat-label">Requests this month</div>
+                </div>
+              </div>
+              <div class="console-panel">
+                <h2>Search volume</h2>
+                <div class="console-chart-wrap"><canvas id="searches-chart" height="90"></canvas></div>
+              </div>
+            </div>
+          
+
+            <h2 class="console-pane-title" style="margin-top:34px;">Conversion &amp; ROI</h2>
+
+            <div class="console-panel console-panel-warn">
+              <p class="console-panel-note" style="margin:0;">These figures depend on the tag <strong>you</strong> install on your site — Heurix doesn't measure them on its own. "Total revenue" is aggregated over the period (a correlation, not proof). "Actually attributed revenue" only counts purchases where the <strong>same visitor</strong> clicked from a search within the previous 24 hours — more precise, but requires the <a href="../docs.html#ep-events">Heurix Tracker</a>.</p>
+            </div>
+
+            <div class="console-stats">
+              <div class="console-stat">
+                <div class="icn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
+                <div class="console-stat-num" id="conv-ctr">–</div>
+                <div class="console-stat-label">Click-through rate on searches</div>
+              </div>
+              <div class="console-stat">
+                <div class="icn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+                <div class="console-stat-num" id="conv-revenue">–</div>
+                <div class="console-stat-label">Total revenue (period)</div>
+              </div>
+              <div class="console-stat">
+                <div class="icn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><circle cx="12" cy="12" r="10"/></svg></div>
+                <div class="console-stat-num" id="conv-attributed">–</div>
+                <div class="console-stat-label" id="conv-attributed-label">Actually attributed revenue</div>
+              </div>
+              <div class="console-stat">
+                <div class="icn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></div>
+                <div class="console-stat-num" id="conv-products">–</div>
+                <div class="console-stat-label">Products purchased</div>
+              </div>
+            </div>
+
+            <div class="console-panel">
+              <div class="catalog-card-row" style="margin-bottom:14px;">
+                <h2 style="margin:0; flex:1;">Top products</h2>
+                <select id="conv-sort-select" class="catalog-rulepack-select">
+                  <option value="volume">By volume</option>
+                  <option value="margin">By margin</option>
+                </select>
+              </div>
+              <div class="table-scroll"><table class="console-table" id="top-products-table">
+                <thead><tr><th>Product</th><th>Volume</th><th>Revenue</th><th>Margin</th></tr></thead>
+                <tbody></tbody>
+              </table></div>
+              <p class="console-empty" id="top-products-empty" hidden>No purchases reported for this period — check that the tag is properly installed.</p>
+            </div>
+          
+          </div>
+
+          <div id="pane-top-queries" class="console-pane" hidden>
+            <h2 class="console-pane-title">Popular searches</h2>
+            <div class="console-panel">
+              <div class="table-scroll"><table class="console-table" id="top-queries-table">
+                <thead><tr><th>Query</th><th>Count</th><th>Results (avg.)</th></tr></thead>
+                <tbody></tbody>
+              </table></div>
+              <p class="console-empty" id="top-queries-empty" hidden>No searches in this period.</p>
+            </div>
+          </div>
+
+          <div id="pane-zero-results" class="console-pane" hidden>
+            <h2 class="console-pane-title">Zero-result searches</h2>
+            <div class="console-panel console-panel-warn">
+              <p class="console-panel-note">What your customers search for and never find — potentially missed sales. Each row is a candidate for a synonym or a rule to add.</p>
+              <div class="table-scroll"><table class="console-table" id="zero-results-table">
+                <thead><tr><th>Query</th><th># of times</th></tr></thead>
+                <tbody></tbody>
+              </table></div>
+              <p class="console-empty" id="zero-results-empty" hidden>No zero-result searches in this period — good sign.</p>
+            </div>
+          </div>
+
+          <div id="pane-errors" class="console-pane" hidden>
+            <h2 class="console-pane-title">Recent errors</h2>
+            <div class="console-panel">
+              <div class="err-bilan" id="err-bilan" hidden></div>
+              <div class="table-scroll"><table class="console-table" id="errors-table">
+                <thead><tr><th>What happened</th><th>When</th></tr></thead>
+                <tbody></tbody>
+              </table></div>
+              <p class="console-empty" id="errors-empty" hidden>No errors in this period.</p>
+            </div>
+          </div>
+
+          <div id="pane-search-overrides" class="console-pane" hidden>
+            <h2 class="console-pane-title">Rule management</h2>
+            <div class="console-panel">
+              <p class="console-panel-note" style="margin:0 0 14px;">Pin or bury a product when a search contains a specific word (e.g. "promo") — independent from Browse &amp; Discovery, which ranks <strong>categories</strong>, not search queries. <a href="../docs.html#ep-search-overrides">Full documentation</a>.</p>
+
+            </div>
+
+            <div id="so-content" hidden>
+              <div class="console-panel">
+                <h2>Results preview</h2>
+                <p class="console-panel-note">Type a query to see the real ranking, and <strong>why</strong> each product shows up. The arrows move a product one spot, the pin puts it at the top.</p>
+                <p class="console-panel-note" style="margin-top:-8px;">Good to know: moving a product also locks the positions above it — several rules will appear from a single click, that's normal. Nothing is saved before "Apply."</p>
+                <div class="so-searchbar">
+                  <svg class="so-searchbar-icon" width="20" height="20" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+                    <g stroke="currentColor" stroke-linecap="round">
+                      <circle cx="27" cy="27" r="17" stroke-width="6"/>
+                      <path d="M19 21h16M19 27h16M19 33h16" stroke-width="4"/>
+                      <path d="M40 40 L54 54" stroke-width="7"/>
+                    </g>
+                  </svg>
+                  <input type="text" id="so-preview-query" placeholder="Type a query the way a visitor would…" aria-label="Query to test">
+                </div>
+                <div class="console-field" style="max-width:170px;">
+                  <label for="so-preview-limit">Products shown</label>
+                  <select id="so-preview-limit">
+                    <option value="12">12</option>
+                    <option value="24">24</option>
+                    <option value="48">48</option>
+                    <option value="96">96</option>
+                  </select>
+                </div>
+                <label class="br-stock-toggle" for="so-in-stock">
+                  <input type="checkbox" id="so-in-stock">
+                  <span>Hide out-of-stock products</span>
+                </label>
+                <label class="br-stock-toggle" for="so-grouper">
+                  <input type="checkbox" id="so-grouper">
+                  <span>Group by family</span>
+                </label>
+                <div class="console-field-row">
+                  
+                </div>
+                <div class="so-tuto" id="so-tuto" hidden>
+                  <button type="button" class="so-tuto-close" aria-label="Close">&times;</button>
+                  <p class="so-tuto-titre">How to reorder two products</p>
+                  <ol class="so-tuto-etapes">
+                    <li>Click <span class="so-tuto-ico">📌</span> on a product to put it at the top.</li>
+                    <li>Do the same on a second product.</li>
+                    <li><strong>Drag one pinned card onto the other</strong> to swap them — or use the arrows <span class="so-tuto-ico">▲▼</span>, equivalent and keyboard-usable.</li>
+                    <li>Click <strong>Apply</strong> to save.</li>
+                  </ol>
+                  <p class="so-tuto-note"><button type="button" class="so-tuto-lien" data-visite-demarrer>Take the guided tour</button> — or read below.<br>Moving a product also locks the positions above it: several rules therefore appear from a single click. Nothing is saved until you click Apply.</p>
+                </div>
+                <div class="so-facets" id="so-facets" hidden></div>
+                <p class="so-facet-warn" id="so-facet-warn" hidden>Active filter: the arrows are disabled. They lock the positions of the <strong>displayed</strong> list — on a filtered list, the resulting rules would no longer make sense once the filter is removed. Pinning, however, remains possible.</p>
+                <div class="so-grid" id="so-preview-grid"></div>
+                <p class="so-grid-caption" id="so-preview-caption"></p>
+                <p class="console-empty" id="so-preview-empty" hidden>No results for this query.</p>
+                <div class="so-simu-bar" id="so-simu-bar" hidden>
+                  <span class="so-simu-tag">Simulation</span>
+                  <span id="so-simu-text">These results include your draft. Nothing is saved yet — your visitors still see the current ranking.</span>
+                  <button type="button" class="catalog-rule-add-btn" id="so-simu-apply">Apply</button>
+                  <button type="button" class="btn btn-ghost" id="so-simu-discard">Discard</button>
+                </div>
+              </div>
+
+              <div class="console-panel">
+                <h2>Active rules <span class="so-count" id="so-count" hidden></span></h2>
+                <p class="console-panel-note">The <strong>position</strong> is the product's final rank: position 3 places it 3rd, other products filling the remaining slots. <strong>Buried</strong> products always go to the end of the list.</p>
+                <div class="table-scroll"><table class="console-table" id="so-table">
+                  <thead><tr><th>Trigger</th><th>Product</th><th>Action</th><th>Position</th><th></th></tr></thead>
+                  <tbody></tbody>
+                </table></div>
+                <p class="console-empty" id="so-empty" hidden>No priority set on this catalog.</p>
+              </div>
+
+              
+
+              <div class="console-panel">
+                <h2>Synonyms and custom rules</h2>
+                <p class="console-panel-note">Synonyms link the words your customers use to the ones in your catalog. Custom rules teach the engine a term specific to your business, with no regex to write.</p>
+                
+                <div id="cr-host"></div>
+                <p class="console-empty" id="cr-hint">Choose a catalog to manage its synonyms and rules.</p>
+              </div>
+
+              <details class="br-attrs">
+                <summary>Add a priority manually — for a product missing from results</summary>
+                <div style="padding-top:12px;">
+                <h2 id="so-form-title">Add a priority</h2>
+                <form id="so-form" class="catalog-rule-add">
+                  <div class="catalog-rule-add-row">
+                    <input type="text" placeholder="Trigger query, e.g. promo" id="so-query" required>
+                    <input type="text" placeholder="Product identifier" id="so-product-id" required>
+                  </div>
+                  <div class="catalog-rule-add-row">
+                    <select id="so-action">
+                      <option value="pin">Pin</option>
+                      <option value="bury">Bury</option>
+                    </select>
+                    <input type="number" min="1" max="100" placeholder="Position (pin only)" id="so-position">
+                  </div>
+                  <button type="submit" class="catalog-rule-add-btn" id="so-submit-btn">Add priority</button>
+                  <button type="button" class="btn btn-ghost" id="so-cancel-edit-btn" hidden style="margin-left:8px;">Cancel edit</button>
+                  <span class="catalog-rule-status" id="so-status"></span>
+                </form>
+              </div>
+              </details>
+            </div>
+          </div>
+
+          
+
+          <div id="pane-browse" class="console-pane" hidden>
+            <h2 class="console-pane-title">Browse &amp; Discovery</h2>
+            <div class="console-panel console-panel-warn">
+              <details class="br-attrs"><summary>In what order rules apply</summary><p class="console-panel-note" style="margin:10px 0 0;">A pin's <strong>position</strong> is its final rank: position 3 places the product 3rd, other products filling the remaining slots. Attribute <strong>boosts</strong> move up within the natural ranking, <strong>demotions</strong> go to the end of the list. A demotion always wins over a boost — a product explicitly hidden never resurfaces via a broader attribute rule.</p></details>
+            </div>
+            
+
+            <div id="browse-content">
+              <div class="console-panel">
+                <div class="catalog-card-row" style="margin-bottom:14px;">
+                  <h2 style="margin:0; flex:1;">Ranking preview</h2>
+                  <select id="browse-sort-select">
+                    <option value="stock">Available stock</option>
+                    <option value="recent">Most recent</option>
+                    <option value="alphabetical">Alphabetical</option>
+                    <option value="price_asc">Price ascending</option>
+                    <option value="price_desc">Price descending</option>
+                    <option value="margin">Margin</option>
+                    <option value="popular">Popularity (clicks + purchases)</option>
+                  </select>
+                </div>
+                <div class="br-toolbar">
+
+              <p class="console-panel-note" style="margin:0 0 14px;">Rank your products on a category page on your site, with no search involved — <a href="../docs.html#ep-browse">full documentation</a>. Choose a catalog, then a category, to get started.</p>
+              <div class="catalog-card-row">
+                
+                <label style="font-size:12.5px; font-weight:700; color:var(--ink-muted);">Category</label>
+                <select id="browse-category-select" disabled><option value="">— Choose a catalog first —</option></select>
+              </div>
+              <p class="console-empty" id="browse-no-categories" hidden>No category detected on this catalog — index your products with a <code class="docs-inline-code">categories</code> or <code class="docs-inline-code">category</code> field to see them appear here.</p>
+            
+                </div>
+
+                <details class="br-attrs">
+                  <summary>Boost and demotion by attribute</summary>
+                  <div style="padding-top:12px;">
+                <h2>Attribute boost / demotion</h2>
+                <p class="console-panel-note">Feature — or demote — every product sharing an attribute (a brand, a color…), without targeting them one by one. A per-product demotion always keeps priority over an attribute boost.</p>
+                <div class="table-scroll"><table class="console-table" id="browse-attribute-rules-table">
+                  <thead><tr><th>Attribute</th><th>Value</th><th>Action</th><th></th></tr></thead>
+                  <tbody></tbody>
+                </table></div>
+                <p class="console-empty" id="browse-attribute-rules-empty" hidden>No attribute rule set on this category.</p>
+                <h2 id="bar-form-title" style="margin-top:18px;">Add a rule</h2>
+                <form id="browse-attribute-rule-form" class="catalog-rule-add">
+                  <div class="catalog-rule-add-row">
+                    <input type="text" placeholder="Field, e.g. brand" id="browse-attribute-field" list="browse-known-fields" required>
+                    <input type="text" placeholder="Value, e.g. Makita" id="browse-attribute-value" list="browse-known-values" required>
+                  </div>
+                  <datalist id="browse-known-fields"></datalist>
+                  <datalist id="browse-known-values"></datalist>
+                  <select id="browse-attribute-action" style="margin-top:8px;">
+                    <option value="boost">Boost</option>
+                    <option value="bury">Bury</option>
+                  </select>
+                  <button type="submit" class="catalog-rule-add-btn" id="bar-submit-btn">Add rule</button>
+                  <button type="button" class="btn btn-ghost" id="bar-cancel-edit-btn" hidden style="margin-left:8px;">Cancel edit</button>
+                  <span class="catalog-rule-status" id="browse-attribute-rule-status"></span>
+                </form>
+              </div>
+                </details>
+                <label class="br-stock-toggle" for="browse-in-stock">
+                  <input type="checkbox" id="browse-in-stock">
+                  <span>Hide out-of-stock products</span>
+                </label>
+                <div class="console-field" style="max-width:170px; margin-bottom:14px;">
+                  <label for="browse-preview-limit">Products shown</label>
+                  <select id="browse-preview-limit">
+                    <option value="20">20</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                  </select>
+                </div>
+                <div id="browse-results" hidden>
+                <p class="console-panel-note">The arrows move a product one spot within this category, the pin puts it at the top. Moving also locks the positions above — several rules therefore appear from a single click. Nothing is saved before "Apply."</p>
+                <div class="so-tuto" id="br-tuto" hidden>
+                  <button type="button" class="so-tuto-close" aria-label="Close">&times;</button>
+                  <p class="so-tuto-titre">How to reorder two products</p>
+                  <ol class="so-tuto-etapes">
+                    <li>Click <span class="so-tuto-ico">📌</span> on a product to put it at the top.</li>
+                    <li>Do the same on a second product.</li>
+                    <li><strong>Drag one pinned card onto the other</strong> to swap them — or use the arrows <span class="so-tuto-ico">▲▼</span>, equivalent and keyboard-usable.</li>
+                    <li>Click <strong>Apply</strong> to save.</li>
+                  </ol>
+                  <p class="so-tuto-note">Moving a product also locks the positions above it: several rules therefore appear from a single click. Nothing is saved until you click Apply.</p>
+                </div>
+                <div class="so-grid" id="br-grid"></div>
+                <p class="so-grid-caption" id="br-caption"></p>
+                <div class="so-simu-bar" id="br-simu-bar" hidden>
+                  <span class="so-simu-tag">Simulation</span>
+                  <span>This ranking includes your draft. Nothing is saved yet — your visitors still see the current order.</span>
+                  <button type="button" class="catalog-rule-add-btn" id="br-simu-apply">Apply</button>
+                  <button type="button" class="btn btn-ghost" id="br-simu-discard">Discard</button>
+                </div>
+                <details class="br-attrs" style="margin-top:18px;">
+                  <summary>Per-product priorities (detailed list)</summary>
+                  <div style="padding-top:12px;">
+                <h2>Per-product priorities</h2>
+                <p class="console-panel-note">Pin a product to an exact position, or bury it at the end of the list — regardless of the sort chosen above.</p>
+                <div class="table-scroll"><table class="console-table" id="browse-overrides-table">
+                  <thead><tr><th>Product</th><th>Action</th><th>Position</th><th></th></tr></thead>
+                  <tbody></tbody>
+                </table></div>
+                <p class="console-empty" id="browse-overrides-empty" hidden>No priority set on this category.</p>
+                <h2 id="bo-form-title" style="margin-top:18px;">Add a priority</h2>
+                <form id="browse-override-form" class="catalog-rule-add">
+                  <div class="catalog-rule-add-row">
+                    <input type="text" placeholder="Product identifier" id="browse-override-product-id" required>
+                    <select id="browse-override-action">
+                      <option value="pin">Pin</option>
+                      <option value="bury">Bury</option>
+                    </select>
+                  </div>
+                  <input type="number" min="1" max="100" placeholder="Position (1 = first pinned)" id="browse-override-position">
+                  <button type="submit" class="catalog-rule-add-btn" id="bo-submit-btn">Add priority</button>
+                  <button type="button" class="btn btn-ghost" id="bo-cancel-edit-btn" hidden style="margin-left:8px;">Cancel edit</button>
+                  <span class="catalog-rule-status" id="browse-override-status"></span>
+                </form>
+              </div>
+                </details>
+
+                <details style="margin-top:16px;">
+                  <summary style="cursor:pointer; font-size:13px; color:var(--ink-muted); font-weight:600;">See the detailed table</summary>
+                <div class="table-scroll" style="margin-top:10px;"><table class="console-table" id="browse-preview-table">
+                  <thead><tr><th>Product</th><th>Stock</th><th>Status</th></tr></thead>
+                  <tbody></tbody>
+                </table></div>
+                </details>
+                <p class="console-empty" id="browse-preview-empty" hidden>No product in this category.</p>
+                </div>
+                <p class="console-empty" id="browse-hint">Choose a catalog, then a category, to see the ranking.</p>
+              </div>
+
+              
+
+              
+            </div>
+          </div>
+
+          <div id="pane-category-views" class="console-pane" hidden>
+            <h2 class="console-pane-title">Most-viewed products</h2>
+            <div class="console-panel">
+              <p class="console-panel-note">Products shown on your category pages, cross-referenced with their clicks from search. A product shown a lot but rarely clicked is a candidate for demotion; the reverse, for pinning.</p>
+              <label for="cv-catalog" style="font-size:12.5px; font-weight:700; color:var(--ink-muted);">Catalog</label>
+              <select id="cv-catalog" style="margin:6px 0 16px;"></select>
+              <div id="cv-content"></div>
+              <p class="console-empty" id="cv-empty" hidden>No category page views reported yet. This data needs the <code class="docs-inline-code">Heurix.trackCategoryView()</code> call from your category pages — see <a href="../docs.html#ep-category-views">the documentation</a>.</p>
+            </div>
+          </div>
+
+          <div id="pane-guides" class="console-pane" hidden>
+            <h2 class="console-pane-title">Guides</h2>
+            <p class="console-panel-note" style="margin-bottom:22px;">Every Heurix article and guide, without leaving the console. Opened in a new tab to keep your session here.</p>
+
+            <div class="console-panel" style="border-color:var(--blue); background:var(--blue-tint);">
+              <h2>Guided tour of the rule editor</h2>
+              <p class="console-panel-note">Seven steps on your own data, in the console. Nothing is saved during the tour: you can try everything.</p>
+              <button type="button" class="btn" data-visite-demarrer>Start the tour</button>
+            </div>
+
+            <div class="console-panel">
+              <h2>Getting started</h2>
+              <ul class="console-guides-list">
+                <li><a href="../blog/recherche-vectorielle-catalogues-techniques.html" target="_blank" rel="noopener">Why vector search fails on technical catalogs</a></li>
+                <li><a href="../blog/elasticsearch-lucene-catalogue-technique.html" target="_blank" rel="noopener">Elasticsearch and Lucene: what you'll build yourself</a></li>
+                <li><a href="../blog/guide-utilisation-console.html" target="_blank" rel="noopener">Usage guide: running your search day to day</a></li>
+                <li><a href="../blog/guide-mise-en-route.html" target="_blank" rel="noopener">Getting started guide — from sign-up to full setup</a></li>
+                <li><a href="../blog/tutoriel-catalogue-outillage-5-minutes.html" target="_blank" rel="noopener">Index your first catalog in 5 minutes</a></li>
+                <li><a href="../blog/guide-page-categorie-browse.html" target="_blank" rel="noopener">Building a category page with Browse &amp; Discovery</a></li>
+                <li><a href="../blog/guide-serveur-mcp-heurix.html" target="_blank" rel="noopener">Connecting Heurix to Claude Desktop and Cursor (MCP server)</a></li>
+              </ul>
+            </div>
+
+            <div class="console-panel">
+              <h2>Configuring search</h2>
+              <ul class="console-guides-list">
+                <li><a href="../blog/custom-rules-personnaliser-moteur-recherche.html" target="_blank" rel="noopener">Custom Rules: personalize without writing regex</a></li>
+                <li><a href="../blog/synonymes-jargon-industriel.html" target="_blank" rel="noopener">Synonyms and industry jargon</a></li>
+                <li><a href="../blog/facettes-b2b-multi-attributs.html" target="_blank" rel="noopener">Structuring facets for multi-attribute products</a></li>
+                <li><a href="../blog/recherche-reference-sku-b2b.html" target="_blank" rel="noopener">Configuring search by reference (SKU, DIN, ISO)</a></li>
+                <li><a href="../blog/glossaire-search-ecommerce.html" target="_blank" rel="noopener">The e-commerce search glossary, no jargon</a></li>
+              </ul>
+            </div>
+
+            <div class="console-panel">
+              <h2>Why Heurix, comparisons</h2>
+              <ul class="console-guides-list">
+                <li><a href="../blog/heurix-vs-algolia-typesense-sensefuel-doofinder.html" target="_blank" rel="noopener">Heurix vs Algolia, Typesense, Sensefuel, Doofinder</a></li>
+                <li><a href="../blog/alternative-algolia-catalogue-technique.html" target="_blank" rel="noopener">What alternative for a technical catalog?</a></li>
+                <li><a href="../blog/moteur-natif-ne-suffit-pas.html" target="_blank" rel="noopener">Why your platform's native engine isn't enough</a></li>
+                <li><a href="../blog/limites-moteurs-natifs-gros-catalogue.html" target="_blank" rel="noopener">The limits of native engines past 10,000 references</a></li>
+              </ul>
+            </div>
+
+            <div class="console-panel">
+              <h2>Business impact</h2>
+              <ul class="console-guides-list">
+                <li><a href="../blog/5-signes-recherche-vous-coute-des-ventes.html" target="_blank" rel="noopener">5 signs your search is costing you sales</a></li>
+                <li><a href="../blog/cout-moteur-recherche-ecommerce.html" target="_blank" rel="noopener">How much does an e-commerce search engine cost in 2026?</a></li>
+                <li><a href="../blog/impact-ebitda-recherche-interne.html" target="_blank" rel="noopener">The real EBITDA impact for a B2B e-commerce business</a></li>
+                <li><a href="../blog/recherches-sans-resultat-tableau-bord.html" target="_blank" rel="noopener">The "zero-result" dashboard most sites don't have</a></li>
+                <li><a href="../blog/recherche-blog-faq-contenu.html" target="_blank" rel="noopener">Your blog and FAQ deserve good search too</a></li>
+              </ul>
+            </div>
+          </div>
+
+          <div id="pane-import-csv" class="console-pane" hidden>
+            <h2 class="console-pane-title">Import a file</h2>
+
+            <div class="console-panel">
+              <div class="csv-tuto" id="csv-tuto" hidden>
+                <button type="button" class="csv-tuto-close" aria-label="Close">&times;</button>
+                <p class="csv-tuto-titre">Three things to know before your first import</p>
+                <ol>
+                  <li><strong>The identifier matters most.</strong> It's what lets a product be updated instead of duplicated. Re-importing the same file duplicates nothing.</li>
+                  <li><strong>Use the same identifier everywhere.</strong> If your site sends product references to the conversion tracker, index with those same references — otherwise your sales analytics will stay empty.</li>
+                  <li><strong>The rule pack is chosen up front.</strong> We analyze it from your file and preselect it. Changing it afterward requires re-importing.</li>
+                </ol>
+                <button type="button" class="btn btn-ghost csv-tuto-ok">Got it</button>
+              </div>
+
+              <p class="console-lede">Drop your ERP or PIM export, in CSV or XML. We detect the structure and suggest a field match — which you can correct before sending.</p>
+
+              <div class="csv-depot" id="csv-depot">
+                <input type="file" id="csv-fichier" accept=".csv,.txt,text/csv,.xml,application/xml,text/xml" hidden>
+                <button type="button" class="btn" id="csv-choisir">Choose a file</button>
+                <p class="csv-depot-note">or drop it here — CSV or XML, up to 100,000 rows</p>
+              </div>
+
+              <div id="csv-analyse" hidden>
+                <div class="csv-resume" id="csv-resume"></div>
+
+                <h3 class="csv-titre">Field matching</h3>
+                <p class="csv-aide">Check each field. <strong>Only the identifier is required</strong>: it's what lets a product be updated instead of duplicated.</p>
+                <div class="table-scroll"><table class="console-table" id="csv-correspondance"></table></div>
+                <div class="csv-verdict" id="csv-verdict" hidden></div>
+                <div class="csv-reco" id="csv-reco" hidden></div>
+
+                <div class="csv-options">
+                  <label>
+                    <span>Catalog name</span>
+                    <input type="text" id="csv-catalogue" autocomplete="off">
+                    <small class="csv-champ-aide">No spaces or accents — it will appear in your API URLs.</small>
+                  </label>
+                  <label>
+                    <span>Rule pack</span>
+                    <select id="csv-rulepack"><option value="">None</option></select>
+                  </label>
+                </div>
+
+                <div class="csv-actions">
+                  <button type="button" class="btn" id="csv-envoyer">Import</button>
+                  <button type="button" class="btn btn-ghost" id="csv-annuler">Cancel</button>
+                </div>
+              </div>
+
+              <div id="csv-progression" hidden>
+                <div class="csv-barre"><div class="csv-barre-remplie" id="csv-barre-remplie"></div></div>
+                <p class="csv-etat" id="csv-etat"></p>
+              </div>
+
+              <div id="csv-rapport" hidden></div>
+            </div>
+          </div>
+
+          <div id="pane-catalog-help" class="console-pane" hidden>
+            <h2 class="console-pane-title">How it works</h2>
+            <div class="console-panel">
+              <img src="../img/cascade-annotations.svg?v=1784808273" alt="Diagram: the reference M8 x 20 - Stainless A2 is recognized by three rules (diameter, length, material) that combine into three annotations" style="width:100%; max-width:640px; margin:0 0 16px;">
+              <h3 class="console-help-h3" style="margin-top:0;">What a rule pack does</h3>
+              <p class="console-panel-note" style="margin:4px 0 14px;">A rule pack reads your product references and automatically recognizes what they contain — as in the diagram above. Six packs currently exist, covering the most common industries (hardware, fashion, industry, books, electronics, wine &amp; spirits).</p>
+              <h3 class="console-help-h3">Create a custom rule</h3>
+              <p class="console-panel-note" style="margin:4px 0 14px;">Possible directly from each catalog card, with no regex to write — two formats to choose from. Here's exactly what to fill in:</p>
+
+              <div class="console-help-example">
+                <div class="console-help-example-title">Example — Keyword → label</div>
+                <p class="console-help-example-context">Your customers type "anchor," others "molly" or "drywall anchor" for the same product.</p>
+                <div class="console-help-example-fields">
+                  <div><span>Type</span><code>Keyword → label</code></div>
+                  <div><span>Rule name</span><code>Anchor</code></div>
+                  <div><span>Equivalent words</span><code>anchor, molly, drywall, drywall anchor</code></div>
+                </div>
+                <p class="console-help-example-result">→ A search on any of these words finds every product containing any of the other three.</p>
+              </div>
+
+              <div class="console-help-example">
+                <div class="console-help-example-title">Example — Prefix + number → label</div>
+                <p class="console-help-example-context">Your references use a standardized code, like a RAL color.</p>
+                <div class="console-help-example-fields">
+                  <div><span>Type</span><code>Prefix + number → label</code></div>
+                  <div><span>Rule name</span><code>RAL color</code></div>
+                  <div><span>Prefix to recognize</span><code>RAL</code></div>
+                </div>
+                <p class="console-help-example-result">→ "RAL 9010" and "RAL9010" (with or without a space) are now recognized as the same value.</p>
+              </div>
+
+              <p class="console-panel-note" style="margin:14px 0 0;">More examples by industry (hardware, fashion, beauty, furniture…): <a href="../blog/custom-rules-personnaliser-moteur-recherche.html">see the dedicated blog article</a>.</p>
+              <p class="console-panel-note" style="margin:4px 0 14px;">More complex cases (two combined numbers, like a diameter × a length) aren't covered by these two formats yet. Need that? <a href="mailto:contact@heurix.fr">Write to us</a> — it's doable on the engine side.</p>
+              <h3 class="console-help-h3">Publishing a change</h3>
+              <p class="console-panel-note" style="margin:4px 0 0;">There's no separate publish step: changing a rule pack, editing a synonym, or creating a custom rule takes effect <strong>immediately</strong> on your live search, as soon as you confirm.</p>
+            </div>
+          </div>
+
+          <div id="pane-catalog-list" class="console-pane" hidden>
+            <h2 class="console-pane-title" id="catalog-pane-title">My catalog</h2>
+            <div id="catalogs-loading" class="console-loading">Loading…</div>
+            <div class="quota-alerte" id="catalogs-quota-alerte" hidden></div>
+            <div id="catalogs-list"></div>
+            <p class="console-empty" id="catalogs-empty" hidden>No catalog indexed yet — <a href="docs.html">see the documentation</a> to index your first catalog.</p>
+          </div>
+
+          <div id="pane-billing" class="console-pane" hidden>
+            <h2 class="console-pane-title">My subscription</h2>
+            <div class="console-panel">
+              <div class="billing-grid" id="billing-grid">
+                <p class="console-panel-note">Loading…</p>
+              </div>
+              <p class="console-panel-note" id="billing-trial" hidden></p>
+              <div class="billing-upgrade" id="billing-upgrade" hidden>
+                <p><strong id="billing-upgrade-title">Change plan</strong></p>
+                <p class="console-panel-note" style="margin:6px 0 12px;" id="billing-upgrade-text"></p>
+                <button type="button" class="btn" id="billing-change-plan">Change plan</button>
+              </div>
+              <div style="margin-top:18px; display:flex; gap:10px; flex-wrap:wrap;">
+                <button type="button" class="btn btn-ghost" id="billing-portal">My invoices and payment method</button>
+                <a href="pricing.html" target="_blank" rel="noopener" class="btn btn-ghost">Compare plans</a>
+              </div>
+              <p class="console-panel-note" style="margin-top:10px;">The billing portal is hosted by Stripe: you'll find your invoices and payment method there, and can cancel anytime.</p>
+              <p class="catalog-rule-status" id="billing-status"></p>
+            </div>
+          </div>
+
+          <div id="pane-company" class="console-pane" hidden>
+            <h2 class="console-pane-title">Company</h2>
+            <div class="console-panel">
+              <form id="company-form" class="console-invite-form" style="flex-direction:column; align-items:stretch;">
+                <label for="company-raison-sociale" style="font-size:12.5px; font-weight:700; color:var(--ink-muted); margin-bottom:4px;">Company name</label>
+                <input type="text" id="company-raison-sociale" required>
+                <label for="company-numero-tva" style="font-size:12.5px; font-weight:700; color:var(--ink-muted); margin:10px 0 4px;">VAT number <span class="console-field-optional">(optional)</span></label>
+                <input type="text" id="company-numero-tva" placeholder="FR12345678901">
+                <button type="submit" class="btn" id="company-save-btn" style="margin-top:14px; align-self:flex-start;" hidden>Save information</button>
+              </form>
+              <p id="company-status" class="console-form-status" hidden></p>
+            </div>
+          </div>
+
+          <div id="pane-team" class="console-pane" hidden>
+            <h2 class="console-pane-title">Team</h2>
+            <div class="console-panel">
+              <p class="console-panel-note">Everyone at your company shares access to the same catalogs and the same API key.</p>
+              <div class="table-scroll"><table class="console-table" id="team-table">
+                <thead><tr><th>Email</th><th>Role</th><th>Member since</th><th></th></tr></thead>
+                <tbody></tbody>
+              </table></div>
+              <form id="invite-form" class="console-invite-form" hidden>
+                <input type="email" id="invite-email" placeholder="colleague@company.com" required>
+                <button type="submit" class="btn" id="invite-btn">Invite</button>
+              </form>
+              <p id="invite-status" class="console-form-status" hidden></p>
+            </div>
+          </div>
+
+          <div id="pane-key" class="console-pane" hidden>
+            <h2 class="console-pane-title">My API key</h2>
+            <div class="console-panel">
+              <p class="console-panel-note">Use this in the <code class="docs-inline-code">Authorization: Bearer &lt;key&gt;</code> header of your calls. Don't share it — it grants write access to your catalog.</p>
+              <div class="console-key-display">
+                <code id="account-key-value" class="console-key-value">••••••••••••••••••••••••••••••••</code>
+                <button type="button" id="account-key-toggle" class="console-key-btn" aria-label="Show key">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                </button>
+                <button type="button" id="account-key-copy" class="console-key-btn" aria-label="Copy key">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                </button>
+                <span id="account-key-copied" class="console-key-copied" hidden>Copied!</span>
+              </div>
+            </div>
+
+            <div class="console-panel console-panel-warn">
+              <h2>Never put this key in a web page</h2>
+              <p class="console-panel-note">The key above is a <strong>server key</strong>. It authorizes indexing, merchandising, and access to your billing — placed in a page's JavaScript, it becomes readable by any visitor.</p>
+              <p class="console-panel-note" style="margin-bottom:0;">For the search bar, the tracker, or the Browse widget, generate a <strong>public key</strong> below: it can only search, browse your catalog, and report conversion events. Nothing else.</p>
+            </div>
+
+            <div class="console-panel">
+              <h2>Public keys (browser)</h2>
+              <p class="console-panel-note">Use these in <code class="docs-inline-code">heurix-search.js</code>, <code class="docs-inline-code">heurix-tracker.js</code>, and <code class="docs-inline-code">heurix-browse-widget.js</code>. They share your server key's quota — generating several doesn't raise your limits.</p>
+              <div class="table-scroll"><table class="console-table" id="public-keys-table">
+                <thead><tr><th>Key</th><th>Allowed domains</th><th></th></tr></thead>
+                <tbody></tbody>
+              </table></div>
+              <p class="console-empty" id="public-keys-empty" hidden>No public key yet.</p>
+              <h2 style="margin-top:18px;">Generate a public key</h2>
+              <form id="public-key-form" class="catalog-rule-add">
+                <input type="text" id="public-key-origins" placeholder="Allowed domains, e.g. mysite.com,www.mysite.com (optional but recommended)">
+                <button type="submit" class="catalog-rule-add-btn">Generate key</button>
+                <span class="catalog-rule-status" id="public-key-status"></span>
+              </form>
+            </div>
+          </div>
+
+          <div id="pane-feedback" class="console-pane" hidden>
+            <h2 class="console-pane-title">Suggest an improvement</h2>
+            <div class="console-panel">
+              <p class="console-panel-note">A feature you're missing, a bug to report, or just a question — it goes straight to our inbox, and a direct reply comes back to your address.</p>
+              <form id="feedback-form" class="console-invite-form" style="flex-direction:column; align-items:stretch;">
+                <label for="feedback-category" style="font-size:12.5px; font-weight:700; color:var(--ink-muted); margin-bottom:4px;">Request type</label>
+                <select id="feedback-category">
+                  <option value="feature">Feature suggestion</option>
+                  <option value="bug">Bug report</option>
+                  <option value="other">Other request</option>
+                </select>
+                <label for="feedback-message" style="font-size:12.5px; font-weight:700; color:var(--ink-muted); margin:14px 0 4px;">Your message</label>
+                <textarea id="feedback-message" rows="6" placeholder="Describe your need or the issue you ran into, in as much detail as possible…" maxlength="5000" required style="font-family:'Plus Jakarta Sans', sans-serif; font-size:14px; padding:10px 12px; border:1.5px solid var(--line); border-radius:8px; resize:vertical;"></textarea>
+                <button type="submit" class="btn" id="feedback-submit-btn" style="margin-top:14px; align-self:flex-start;">Send my suggestion</button>
+              </form>
+              <p id="feedback-status" class="console-form-status" hidden></p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot-grid">
+    <a href="index.html" class="logo" style="font-size:15px;"><img src="../logo.svg?v=1784985918" alt="Heurix" style="height:22px;width:22px;"> <span class="wordmark">Heurix</span></a>
+    <div class="foot-links">
+      <a href="blog.html">Blog</a>
+      <a href="docs.html">API Documentation</a>
+      <a href="fonctionnalites.html">Features</a>
+      <a href="integrations.html">Integrations</a>
+      <a href="about.html">About</a>
+      <a href="cgv.html">Terms of Service</a>
+      <a href="mentions-legales.html">Legal notice</a>
+          <a href="#" data-rouvrir-consentement>Manage cookies</a>
+        <a href="privacy.html">Privacy</a>
+      <a href="mailto:contact@heurix.fr">contact@heurix.fr</a>
+    </div>
+    <div class="foot-social">
+      <span class="foot-social-label">Social networks</span>
+      <a href="https://www.linkedin.com/company/heurix-search/" target="_blank" rel="noopener" aria-label="LinkedIn" class="foot-social-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+      </a>
+    </div>
+    <div class="foot-legal">
+      Heurix — Sole proprietorship (French micro-entreprise). SIRET 107 681 900 00018. IT systems and software consulting.<br>
+      © <span id="year">2026</span> Heurix. All rights reserved.
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="../console-select.js?v=1784983392"></script>
+<script src="../visite-editeur.js?v=1785060993"></script>
+<script src="../console-i18n.js?v=1785166789"></script>
+<script src="../console.js?v=1785449683"></script>
+<script type="module" src="../csv-console.js?v=1785449683"></script>
+<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+
+<script src="../nav-dropdown.js"></script>
+<script src="../mobile-nav.js?v=1784970606"></script>
+<script src="../consent.js?v=1785150583"></script>
+</body>
+</html>
