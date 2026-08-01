@@ -36,7 +36,6 @@
 
   var champ = racine.querySelector(".play-input");
   var grille = racine.querySelector(".play-grid");
-  var zoneBundle = racine.querySelector(".play-bundle-zone");
   var meta = racine.querySelector(".play-meta");
   var zonePrismes = racine.querySelector(".play-prisms");
   if (!champ || !grille) return;
@@ -104,7 +103,7 @@
       ? "" : Number(n).toFixed(2).replace(".", ",") + " €";
   }
 
-  function fiche(hit) {
+  function fiche(hit, etiquette) {
     var p = hit.product || {};
     // IMAGE OPTIONNELLE. Si le catalogue en porte une, on l'affiche ; sinon
     // on montre la RÉFÉRENCE en grand, ce qui est plus honnête qu'un cadre
@@ -166,7 +165,8 @@
         ? reste : (p.marque && p.name.toLowerCase().indexOf(String(p.marque).toLowerCase()) === -1
                    ? p.marque : "");
     }
-    return "<article class='play-card'>" +
+    return "<article class='play-card" + (etiquette ? " play-card-featured" : "") + "'>" +
+      (etiquette ? "<span class='play-card-etiquette'>" + esc(etiquette) + "</span>" : "") +
       visuel +
       "<div class='play-card-body'>" +
         "<div class='play-card-name'>" + esc(p.name || p.id) + "</div>" +
@@ -219,27 +219,33 @@
       grille.innerHTML = "<p class='play-vide'>Aucun résultat pour « " +
                          esc(requete) + " ».</p>";
       if (meta) meta.textContent = "";
-      if (zoneBundle) zoneBundle.hidden = true;
       return;
     }
-    grille.innerHTML = hits.slice(0, 9).map(fiche).join("");
 
-    // MISE EN AVANT MARCHANDE (1er août 2026) — « tête de gondole » côté
-    // widget, consommant le nouveau champ `highlighted_bundle` de l'API.
-    // Réutilise fiche() pour la carte elle-même : même rendu, même
-    // protection contre les apostrophes déjà réglée, aucune logique
-    // d'affichage produit à réécrire ici — seul l'habillage change.
-    if (zoneBundle) {
-      if (donnees.highlighted_bundle) {
-        zoneBundle.hidden = false;
-        zoneBundle.innerHTML =
-          "<div class='play-bundle-etiquette'>Pack recommandé</div>" +
-          fiche(donnees.highlighted_bundle);
-      } else {
-        zoneBundle.hidden = true;
-        zoneBundle.innerHTML = "";
-      }
+    // MISE EN AVANT MARCHANDE — RÉVISÉ LE 1er AOÛT.
+    //
+    // Version précédente : une zone séparée au-dessus de la grille,
+    // occupant toute une rangée pour une seule carte. Corrigé : le pack
+    // recommandé occupe désormais la POSITION 1 de la grille elle-même —
+    // même taille de carte, juste une étiquette dessus — et les meilleurs
+    // produits suivent en positions 2, 3, 4...
+    //
+    // DÉDOUBLONNAGE : `highlighted_bundle` est choisi indépendamment de
+    // `hits` (voir la doc de l'API) — si le même produit se trouve être
+    // AUSSI le meilleur résultat naturel, on ne veut pas le voir deux
+    // fois. On le retire de `hits` avant de composer la grille finale.
+    var cartes = [];
+    var idBundle = donnees.highlighted_bundle
+      ? donnees.highlighted_bundle.product.id : null;
+    if (donnees.highlighted_bundle) {
+      cartes.push(fiche(donnees.highlighted_bundle, "Pack recommandé"));
     }
+    hits.forEach(function (h) {
+      if (idBundle === null || h.product.id !== idBundle) {
+        cartes.push(fiche(h));
+      }
+    });
+    grille.innerHTML = cartes.slice(0, 9).join("");
 
     if (meta) {
       var ms = Math.max(1, Math.round(performance.now() - chrono));

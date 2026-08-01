@@ -22,7 +22,6 @@
 
   var champ = racine.querySelector(".play-input");
   var grille = racine.querySelector(".play-grid");
-  var zoneBundle = racine.querySelector(".play-bundle-zone");
   var meta = racine.querySelector(".play-meta");
   var zonePrismes = racine.querySelector(".play-prisms");
   if (!champ || !grille) return;
@@ -78,7 +77,7 @@
       ? "" : "€" + Number(n).toFixed(2);
   }
 
-  function fiche(hit) {
+  function fiche(hit, etiquette) {
     var p = hit.product || {};
     // OPTIONAL IMAGE. If the catalog carries one, show it; otherwise show
     // the REFERENCE in large type, which is more honest than an empty
@@ -126,7 +125,8 @@
         ? reste : (p.marque && p.name.toLowerCase().indexOf(String(p.marque).toLowerCase()) === -1
                    ? p.marque : "");
     }
-    return "<article class='play-card'>" +
+    return "<article class='play-card" + (etiquette ? " play-card-featured" : "") + "'>" +
+      (etiquette ? "<span class='play-card-etiquette'>" + esc(etiquette) + "</span>" : "") +
       visuel +
       "<div class='play-card-body'>" +
         "<div class='play-card-name'>" + esc(p.name || p.id) + "</div>" +
@@ -178,26 +178,31 @@
       grille.innerHTML = "<p class='play-vide'>No results for \"" +
                          esc(requete) + "\".</p>";
       if (meta) meta.textContent = "";
-      if (zoneBundle) zoneBundle.hidden = true;
       return;
     }
-    grille.innerHTML = hits.slice(0, 9).map(fiche).join("");
 
-    // Merchant highlight (Aug 1, 2026) — consumes the API's new
-    // `highlighted_bundle` field. Reuses fiche() for the card itself:
-    // same rendering, same apostrophe protection already fixed today,
-    // no product-display logic duplicated here — only the framing differs.
-    if (zoneBundle) {
-      if (donnees.highlighted_bundle) {
-        zoneBundle.hidden = false;
-        zoneBundle.innerHTML =
-          "<div class='play-bundle-etiquette'>Recommended pack</div>" +
-          fiche(donnees.highlighted_bundle);
-      } else {
-        zoneBundle.hidden = true;
-        zoneBundle.innerHTML = "";
-      }
+    // Merchant highlight — REVISED Aug 1. Previous version: a separate
+    // zone above the grid, taking a full row for one card. Fixed: the
+    // recommended pack now occupies grid POSITION 1 itself — same card
+    // size, just a badge on top — with the best products following at
+    // positions 2, 3, 4...
+    //
+    // DEDUP: `highlighted_bundle` is chosen independently of `hits` — if
+    // the same product happens to also be the top natural result, we
+    // don't want it shown twice. Filtered out of `hits` before composing
+    // the final grid.
+    var cartes = [];
+    var idBundle = donnees.highlighted_bundle
+      ? donnees.highlighted_bundle.product.id : null;
+    if (donnees.highlighted_bundle) {
+      cartes.push(fiche(donnees.highlighted_bundle, "Recommended pack"));
     }
+    hits.forEach(function (h) {
+      if (idBundle === null || h.product.id !== idBundle) {
+        cartes.push(fiche(h));
+      }
+    });
+    grille.innerHTML = cartes.slice(0, 9).join("");
 
     if (meta) {
       var ms = Math.max(1, Math.round(performance.now() - chrono));

@@ -294,7 +294,14 @@ h1 span{ color:var(--blue); }
   max-width:560px; margin:0 0 16px;
 }
 .lede{ font-size:18.5px; color:var(--ink-muted); max-width:560px; margin:0 0 32px; }
-.hero-cta{ display:flex; gap:14px; flex-wrap:wrap; margin-bottom:56px; }
+/* Sous-titre plus large et marge resserree, mais SEULEMENT dans le
+   contexte .hero (page d'accueil + 404) -- .lede est partagee par 16
+   autres pages (about, blog, docs, pricing...) qui n'ont pas ce besoin
+   et dont la largeur de 560px reste la bonne pour leur propre texte,
+   plus long. Une regle globale ici aurait change leur mise en page sans
+   raison, juste pour resoudre un probleme propre a cette page. */
+.hero .lede{ max-width:680px; margin-bottom:18px; }
+.hero-cta{ display:flex; gap:14px; flex-wrap:wrap; margin-bottom:24px; }
 
 /* DEMO WIDGET */
 .demo{
@@ -320,16 +327,27 @@ h1 span{ color:var(--blue); }
 .play-api-note a:hover{ text-decoration:underline; }
 
 /* DÉMO INTERACTIVE (playground) */
-.play-verticals{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px; }
-.play-vertical-pill{
-  font-family:'Plus Jakarta Sans', sans-serif; font-size:13px; font-weight:700;
-  color:var(--ink-muted); background:#fff; border:1.5px solid var(--line);
-  border-radius:100px; padding:8px 16px; cursor:pointer;
-  transition:border-color .15s ease, color .15s ease, background .15s ease;
+/* Sélecteur de catalogue en bascule, même gabarit visuel que
+   .billing-toggle sur la page tarifs (structure, pas les couleurs
+   propres à chaque contexte) — demandé pour remplacer les pastilles
+   maintenant qu'il n'y a plus que deux catalogues, un cas d'usage
+   naturel pour une bascule à deux états plutôt qu'une rangée de
+   boutons. Les classes .play-vertical-pill/.play-vertical-on sur les
+   boutons eux-mêmes restent inchangées : c'est tout ce dont le JS a
+   besoin, seul l'habillage visuel change ici. */
+.play-catalog-toggle{
+  display:inline-flex; gap:4px; margin-bottom:14px; padding:4px;
+  background:var(--bg-soft); border:1px solid var(--line); border-radius:100px;
 }
-.play-vertical-pill:hover{ border-color:var(--blue); color:var(--blue-deep); }
-.play-vertical-on{ background:var(--blue); border-color:var(--blue); color:#fff; }
-.play-vertical-on:hover{ color:#fff; }
+.play-vertical-pill{
+  font-family:'Plus Jakarta Sans', sans-serif; font-size:13.5px; font-weight:700;
+  color:var(--ink-muted); background:transparent; border:none;
+  border-radius:100px; padding:9px 18px; cursor:pointer;
+  transition:all .15s ease;
+}
+.play-vertical-pill:hover{ color:var(--ink); }
+.play-vertical-on{ background:#fff; color:var(--blue-deep); box-shadow:0 1px 4px rgba(18,20,43,0.1); }
+.play-vertical-on:hover{ color:var(--blue-deep); }
 .play-thumb-icon svg{ display:block; border-radius:8px; }
 /* Mise en avant du champ de recherche démo (1er août) — les 7 points
    ciblent .play-bar, pas .play-input : c'est LUI qui porte la bordure
@@ -469,39 +487,67 @@ h1 span{ color:var(--blue); }
    defaut implicite) donne à chaque carte la hauteur de sa rangée ; c'est
    la carte elle-même, en colonne flexible avec son pied poussé vers le
    bas, qui absorbe les différences de longueur de texte. */
-/* Mise en avant marchande — « tête de gondole » du widget démo (1er août),
-   consommant `highlighted_bundle` de l'API. Même dégradé de marque que la
-   barre de recherche plus haut, pour rester cohérent visuellement plutôt
-   que d'inventer une troisième palette dans la même page.
-
-   REVU LE MÊME JOUR : la première version padait toute la zone comme une
-   bannière pleine largeur, avec la carte flottant seule dedans — bien
-   plus large qu'un résultat de recherche normal. Corrigé pour que la
-   zone épouse la taille d'UNE carte, pas l'inverse : plus de fond ni de
-   padding propres à la zone, l'accent visuel vit sur la bordure et
-   l'ombre de la carte elle-même. */
-.play-bundle-zone{
-  display:inline-block;
-  max-width:280px;
-  margin-bottom:16px;
+/* Mise en avant marchande — pack recommandé en POSITION 1 de la grille
+   (revu le 1er août, deuxième passe : plus de zone séparée au-dessus,
+   qui prenait toute une rangée pour une seule carte — corrigé pour que
+   la carte occupe une position de grille normale, comme n'importe quel
+   résultat, avec juste une étiquette dessus).
+   Même dégradé de marque que la barre de recherche, pour rester
+   cohérent visuellement plutôt que d'inventer une troisième palette. */
+.play-card-featured{
+  border-color:rgba(91,95,239,0.4);
+  box-shadow:0 8px 20px -10px rgba(91,95,239,0.4);
 }
-.play-bundle-zone[hidden]{ display:none; }
-.play-bundle-etiquette{
-  display:inline-block; margin-bottom:8px;
-  font-family:'Plus Jakarta Sans', sans-serif; font-size:10.5px; font-weight:800;
-  letter-spacing:.04em; text-transform:uppercase;
+.play-card-etiquette{
+  position:absolute; top:10px; left:10px; z-index:1;
+  font-family:'Plus Jakarta Sans', sans-serif; font-size:10px; font-weight:800;
+  letter-spacing:.03em; text-transform:uppercase;
   color:#fff;
   background:linear-gradient(135deg, var(--blue), #8B5CF6);
-  border-radius:100px; padding:4px 10px;
+  border-radius:100px; padding:4px 9px;
+  box-shadow:0 2px 8px rgba(91,95,239,0.35);
 }
-/* La carte a l'interieur reprend fiche() a l'identique -- seule sa
-   bordure et son ombre la distinguent desormais des cartes de la grille,
-   plus de fond separe qui la fasse paraitre plus grande qu'elle ne l'est. */
-.play-bundle-zone .play-card{
-  border:1.5px solid rgba(91,95,239,0.35);
-  box-shadow:0 6px 20px -8px rgba(91,95,239,0.35);
+
+/* Zone de résultats à hauteur plafonnée, défilement interne isolé (1er
+   août, deuxième passe). Objectif : tout le widget tient dans un écran
+   au chargement, sans scroller toute la page -- inspiré de la structure
+   de la démo meilisearch.com (pas ses couleurs).
+
+   overscroll-behavior:contain est la pièce qui fait tout tenir : sans
+   elle, arriver en bas de la liste fait "déborder" le scroll sur la
+   page entière au prochain mouvement de molette -- avec elle, le
+   scroll s'arrête net, cette zone reste bien isolée du reste de la page.
+
+   HAUTEUR RECALCULÉE EN COURS DE ROUTE : un premier essai à 620px
+   partait d'une hauteur de carte estimée à ~210px -- la vraie mesure,
+   une fois les cartes compactées, donne 191px. À 620px, 9 résultats
+   tenaient presque tous sans le moindre scroll : l'estompage ne se
+   déclenchait quasiment jamais. Recalculé à partir de la mesure réelle :
+     2 rangs pleins       : 2 × 191 + 16 (gap)      = 398px
+     amorce du 3e rang     : ~35 % d'une carte + gap = 83px
+     total                                          ≈ 480px
+   Une seule valeur pour les deux gabarits : la hauteur d'un RANG ne
+   dépend pas du nombre de colonnes (chaque rang s'étire sur la carte la
+   plus haute qu'il contient, `align-items:stretch`) -- "2 rangs" pèse
+   le même nombre de pixels qu'on soit à 4 colonnes ou à 1 seule. */
+.play-results-scroll{
+  max-height:480px;
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  /* Coupe visuellement le haut du 3e rang plutôt que del'escamoter net :
+     un rang plein puis un rang qui s'estompe invite à faire défiler,
+     un rang qui s'arrête à la règle donnerait l'impression d'une liste
+     tronquée par erreur. Deux préfixes pour Safari (-webkit-) et le
+     reste (standard) -- aucun n'est encore redondant en 2026. */
+  -webkit-mask-image:linear-gradient(to bottom, black 85%, transparent 100%);
+  mask-image:linear-gradient(to bottom, black 85%, transparent 100%);
 }
-.play-bundle-zone .play-card-name{ font-size:16px; }
+@media (max-width: 640px){
+  /* Marge de sécurité modeste sur petit écran, pas un recalcul complet
+     -- la logique ci-dessus tient déjà, ceci compense juste des écrans
+     encore plus étroits que le smartphone-type visé. */
+  .play-results-scroll{ max-height:460px; }
+}
 
 .play-grid{
   display:grid;
@@ -536,7 +582,7 @@ h1 span{ color:var(--blue); }
 .play-card-body{ margin-bottom:12px; }
 .play-card-name{
   font-size:15px; font-weight:700; color:var(--ink); line-height:1.35;
-  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;
+  display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical;
   overflow:hidden;
 }
 .play-card-sub{
@@ -3737,9 +3783,14 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
    affleurer le bloc jusqu'aux bords, comme avant. */
 .play-card-img{ margin:-14px -14px 12px; border-radius:8px 8px 0 0; overflow:hidden; background:var(--bg-soft); }
 .play-card-img[hidden]{ display:none; }
-.play-card-img img{ width:100%; height:120px; object-fit:contain; display:block; }
+/* 120px -> 96px (1er août, deuxième passe) : gagner de la hauteur par
+   carte pour qu'un 3e rang tienne dans une zone de résultats à hauteur
+   plafonnée. Coordonné sur les trois etats -- image reelle, vignette
+   texte, pictogramme -- pour qu'aucun ne detonne visuellement des deux
+   autres selon ce que le catalogue fournit. */
+.play-card-img img{ width:100%; height:96px; object-fit:contain; display:block; }
 .play-card-vign{
-  margin:-14px -14px 12px; height:120px; display:flex; align-items:center; justify-content:center;
+  margin:-14px -14px 12px; height:96px; display:flex; align-items:center; justify-content:center;
   background:var(--bg-soft); border-radius:8px 8px 0 0;
   font-family:ui-monospace,monospace; font-size:13px; font-weight:700;
   color:var(--ink-muted); letter-spacing:.02em;
@@ -3748,11 +3799,11 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 /* Pictogramme de produit, choisi par le moteur d apres les annotations.
    Ce n est pas un habillage : il montre que Heurix a reconnu la famille. */
 .play-card-picto{
-  margin:-14px -14px 12px; height:120px;
+  margin:-14px -14px 12px; height:96px;
   display:flex; align-items:center; justify-content:center;
   background:var(--bg-soft); border-radius:8px 8px 0 0; color:var(--blue-deep);
 }
-.play-card-picto svg{ width:44px; height:44px; }
+.play-card-picto svg{ width:36px; height:36px; }
 
 /* Pages plateforme (PrestaShop, WooCommerce, Shopify).
    Doofinder a une page par plateforme : referencement + le visiteur se
