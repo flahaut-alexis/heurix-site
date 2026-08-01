@@ -288,6 +288,14 @@ h1{
   max-width:820px;
   color:var(--ink);
 }
+/* Élargi UNIQUEMENT dans .hero (page d'accueil + 404) -- h1 est un
+   sélecteur d'élément brut qui touche 37 pages ; une valeur globale ici
+   aurait changé la mise en page du titre sur des pages qui n'ont ni ce
+   texte ni ce problème de 3 lignes. Seuil de repli sur 2 lignes mesuré
+   séparément par langue (le FR et l'EN n'ont pas le même texte, donc pas
+   le même seuil) : 840px en français, 900px en anglais -- 950px couvre
+   les deux avec une marge de sécurité commune. */
+.hero h1{ max-width:950px; }
 h1 span{ color:var(--blue); }
 .hero-wink{
   font-size:15px; font-style:italic; color:var(--blue-deep);
@@ -301,7 +309,14 @@ h1 span{ color:var(--blue); }
    plus long. Une regle globale ici aurait change leur mise en page sans
    raison, juste pour resoudre un probleme propre a cette page. */
 .hero .lede{ max-width:680px; margin-bottom:18px; }
-.hero-cta{ display:flex; gap:14px; flex-wrap:wrap; margin-bottom:24px; }
+/* Repositionné après le widget et le bandeau de preuves (1er août,
+   troisième passe) — plus entre le sous-titre et la démo. Objectif :
+   laisser la démo respirer dans le premier écran, l'appel à l'action
+   arrive une fois qu'on a déjà vu le moteur en action, comme sur
+   meilisearch.com. La marge utile est désormais AU-DESSUS (séparer du
+   bandeau de preuves), plus en dessous (rien de notable ne suit dans
+   cette section). */
+.hero-cta{ display:flex; gap:14px; flex-wrap:wrap; margin-top:28px; }
 
 /* DEMO WIDGET */
 .demo{
