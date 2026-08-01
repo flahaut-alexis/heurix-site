@@ -331,16 +331,48 @@ h1 span{ color:var(--blue); }
 .play-vertical-on{ background:var(--blue); border-color:var(--blue); color:#fff; }
 .play-vertical-on:hover{ color:#fff; }
 .play-thumb-icon svg{ display:block; border-radius:8px; }
+/* Mise en avant du champ de recherche démo (1er août) — les 7 points
+   ciblent .play-bar, pas .play-input : c'est LUI qui porte la bordure
+   visible, le fond et l'ombre. .play-input reste volontairement sans
+   bordure propre (transparent, colle au fond du conteneur). */
 .play-bar{
   display:flex; align-items:center; gap:12px;
-  background:#fff; border:1.5px solid var(--line); border-radius:100px;
+  border:2px solid transparent;
+  /* Bordure en dégradé : astuce à deux fonds superposés, le premier peint
+     l'intérieur (padding-box) en blanc, le second peint la bordure
+     (border-box) avec le dégradé — aucune couleur plate ne suffit pour un
+     dégradé de bordure en CSS pur. */
+  background-image: linear-gradient(#fff, #fff), linear-gradient(135deg, var(--blue), #8B5CF6);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  border-radius:100px;
   padding:14px 22px; margin-bottom:12px;
   color:var(--ink);
-  box-shadow:0 4px 18px -10px rgba(18,20,43,0.14);
-  transition:border-color .15s ease, box-shadow .15s ease;
+  box-shadow:0 4px 20px rgba(91,95,239,0.15);
+  transition: box-shadow .2s ease;
+  position:relative;
 }
-.play-bar svg{ flex-shrink:0; color:var(--ink-muted); }
-.play-bar:focus-within{ border-color:var(--blue); box-shadow:0 0 0 4px var(--blue-tint), 0 4px 18px -10px rgba(18,20,43,0.14); }
+/* État par défaut légèrement plus discret que le focus : seule l'ombre
+   varie en intensité, la bordure dégradée reste identique — change son
+   dégradé au focus aurait été un signal visuel plus fort que nécessaire
+   pour un simple survol. */
+.play-bar:hover{ box-shadow:0 5px 24px rgba(91,95,239,0.22); }
+.play-bar:focus-within{
+  box-shadow:0 6px 28px rgba(91,95,239,0.32);
+  background-image: linear-gradient(#fff, #fff), linear-gradient(135deg, var(--blue-deep), #7C3AED);
+}
+/* Anneau dédié au clavier : :focus-within seul ne distingue pas un focus
+   clavier d'un simple clic. Un input texte est presque toujours pertinent
+   à signaler au clavier, donc renforcé explicitement plutôt que supposé. */
+.play-input:focus-visible{
+  outline:2px solid var(--blue-deep);
+  outline-offset:4px;
+  border-radius:100px;
+}
+.play-bar svg{
+  flex-shrink:0; color:var(--blue-deep); width:19px; height:19px;
+  transition: color .2s ease;
+}
 .play-input{
   flex:1; width:100%; min-width:0;
   border:none; outline:none; box-shadow:none;
@@ -348,8 +380,23 @@ h1 span{ color:var(--blue); }
   background:transparent;
   font-family:'Plus Jakarta Sans', sans-serif; font-size:16px; color:var(--ink);
 }
-.play-input:focus, .play-input:focus-visible{ border:none; outline:none; box-shadow:none; }
+.play-input:focus{ border:none; outline:none; box-shadow:none; }
+/* Contraste vérifié : #5B5E76 sur fond blanc = 6,34:1, au-delà du seuil
+   AA (4,5:1) pour du texte normal. Le fond blanc du point 5 ne fragilise
+   donc pas la lisibilité du placeholder — rien à changer ici. */
 .play-input::placeholder{ color:var(--ink-muted); }
+
+/* Pulse discret tant que le champ n'a jamais été utilisé — retiré
+   DÉFINITIVEMENT au premier clic ou à la première frappe par JS (voir
+   demo-search-live.js), jamais réactivé ensuite. */
+@keyframes play-bar-pulse{
+  0%, 100% { box-shadow:0 4px 20px rgba(91,95,239,0.15); }
+  50% { box-shadow:0 4px 32px rgba(91,95,239,0.38); }
+}
+.play-bar.play-bar-pulse{ animation: play-bar-pulse 3.5s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce){
+  .play-bar.play-bar-pulse{ animation:none; }
+}
 .play-chips{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:12px; }
 .play-chips-label{ font-size:12px; font-weight:600; color:var(--ink-muted); }
 .play-chip{

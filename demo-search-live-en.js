@@ -26,6 +26,16 @@
   var zonePrismes = racine.querySelector(".play-prisms");
   if (!champ || !grille) return;
 
+  // Pulsing hint on the search bar (Aug 1) — removed PERMANENTLY on the
+  // first interaction, never re-enabled afterward. {once:true} on both
+  // events guarantees this without any hand-rolled state flag.
+  var barre = racine.querySelector(".play-bar");
+  if (barre) {
+    var arreterPulse = function () { barre.classList.remove("play-bar-pulse"); };
+    champ.addEventListener("focus", arreterPulse, { once: true });
+    champ.addEventListener("input", arreterPulse, { once: true });
+  }
+
 
   var minuteur = null;
   var derniereRequete = 0;

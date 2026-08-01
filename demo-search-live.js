@@ -40,6 +40,17 @@
   var zonePrismes = racine.querySelector(".play-prisms");
   if (!champ || !grille) return;
 
+  // Pulse d'appel sur la barre de recherche (1er août) : retiré
+  // DÉFINITIVEMENT dès la première interaction, jamais réactivé ensuite.
+  // {once:true} sur les deux évènements suffit à garantir ce comportement
+  // sans variable d'état à maintenir à la main.
+  var barre = racine.querySelector(".play-bar");
+  if (barre) {
+    var arreterPulse = function () { barre.classList.remove("play-bar-pulse"); };
+    champ.addEventListener("focus", arreterPulse, { once: true });
+    champ.addEventListener("input", arreterPulse, { once: true });
+  }
+
 
   var minuteur = null;
   var derniereRequete = 0;
