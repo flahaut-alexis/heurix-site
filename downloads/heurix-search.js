@@ -84,16 +84,37 @@
       ".hx-search-facets{display:flex;flex-wrap:wrap;gap:6px;padding:10px 12px;border-bottom:1px solid #EEF0F6;}",
       ".hx-search-facet-chip{font-size:12.5px;padding:4px 10px;border-radius:999px;border:1px solid #D6D9E4;background:#fff;cursor:pointer;color:#3A3D52;}",
       ".hx-search-facet-chip.hx-active{background:var(--hx-accent);border-color:var(--hx-accent);color:#fff;}",
-      ".hx-search-hit{display:flex;justify-content:space-between;gap:10px;align-items:baseline;padding:11px 14px;cursor:pointer;text-decoration:none;color:inherit;border-bottom:1px solid #F3F4F8;}",
+      ".hx-search-hit{display:flex;justify-content:space-between;gap:10px;align-items:baseline;padding:11px 14px;cursor:pointer;text-decoration:none;color:inherit;border-bottom:1px solid #F3F4F8;position:relative;transition:box-shadow .12s ease, background .12s ease;}",
       ".hx-search-hit:last-child{border-bottom:none;}",
-      ".hx-search-hit:hover,.hx-search-hit.hx-hit-active{background:#F6F7FC;}",
+      // Survol renforce (2 aout, portage demo->produit) -- legere ombre en
+      // plus du fond, plus de matiere qu'un simple changement de couleur.
+      // Pas de translateY/scale ici : dans une LISTE compacte (pas des
+      // cartes espacees), un deplacement vertical ferait vibrer les lignes
+      // voisines de facon genante.
+      ".hx-search-hit:hover,.hx-search-hit.hx-hit-active{background:#F6F7FC;box-shadow:inset 2px 0 0 var(--hx-accent);}",
       ".hx-search-hit-name{font-size:14px;font-weight:600;color:#181A2E;}",
       ".hx-search-hit-ref{font-size:12px;color:#7B7E93;margin-top:2px;}",
       ".hx-search-hit-meta{font-size:13px;color:#7B7E93;white-space:nowrap;flex-shrink:0;}",
+      // Prix mis en avant (2 aout) -- var(--hx-accent) suit automatiquement
+      // la couleur de marque du client (voir injectStyles), pas de couleur
+      // fixe a re-choisir par catalogue.
+      ".hx-search-hit-price{font-size:14.5px;font-weight:800;color:var(--hx-accent);}",
       ".hx-search-hit-oos{color:#C0392B;}",
+      // Etiquette pack recommande (2 aout) -- s'appuie sur le champ
+      // `highlighted_bundle` de l'API, disponible pour n'importe quel
+      // catalogue (verifie cote moteur, pas specifique a la demo).
+      ".hx-search-hit-badge{position:absolute;top:6px;right:14px;font-size:9.5px;font-weight:800;letter-spacing:.03em;text-transform:uppercase;color:#fff;background:linear-gradient(135deg, var(--hx-accent), color-mix(in srgb, var(--hx-accent) 60%, #8B5CF6));border-radius:100px;padding:2px 8px;}",
       ".hx-search-state{padding:16px 14px;font-size:13.5px;color:#7B7E93;text-align:center;}",
       ".hx-search-clearfilter{font:inherit;font-size:13px;font-weight:600;cursor:pointer;background:var(--hx-accent);color:#fff;border:none;padding:8px 16px;border-radius:100px;}",
       ".hx-search-fallback-label{padding:8px 14px 2px;font-size:11.5px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:#9B9EAF;}",
+      // Pied "voir tous les resultats" (2 aout) -- informatif par defaut
+      // (juste le compte), devient un lien cliquable seulement si le
+      // marchand fournit `seeAllHref`. Comportement par defaut non cassant :
+      // sans configuration, un marchand gagne quand meme la visibilite du
+      // total, meme sans lien de destination a fournir tout de suite.
+      ".hx-search-seeall{display:block;padding:9px 14px;font-size:12.5px;font-weight:600;color:#7B7E93;text-align:center;border-top:1px solid #EEF0F6;text-decoration:none;}",
+      "a.hx-search-seeall{color:var(--hx-accent);cursor:pointer;}",
+      "a.hx-search-seeall:hover{background:#F6F7FC;}",
     ].join("\n");
     var styleEl = document.createElement("style");
     styleEl.setAttribute("data-heurix-search", "1");
@@ -121,12 +142,29 @@
     var p = hit.product;
     var stockKnown = typeof hit.in_stock === "boolean";
     var metaBits = [];
-    if (p.price != null) metaBits.push(esc(p.price) + " €");
+    // PRIX MIS EN AVANT (2 août, portage démo->produit) -- element dedie
+    // plutot qu'un bout de texte noye parmi les autres metadonnees.
+    // var(--hx-accent) est deja themable (injectStyles), donc la mise en
+    // avant suit automatiquement la couleur de marque du client, sans
+    // configuration supplementaire de sa part.
+    var prixHtml = p.price != null
+      ? '<span class="hx-search-hit-price">' + esc(p.price) + " €</span>"
+      : "";
     if (stockKnown && !hit.in_stock) metaBits.push('<span class="hx-search-hit-oos">Rupture</span>');
+    // ÉTIQUETTE PACK (2 août) -- affichée uniquement quand CE hit précis
+    // est le highlighted_bundle renvoyé par l'API pour la requête en
+    // cours. Voir searchBox() : c'est là que le rapprochement est fait,
+    // pas ici -- defaultRenderItem reste une fonction pure sur un seul
+    // hit, sans connaître le contexte de la recherche globale.
+    var etiquetteHtml = hit._heurixBundle
+      ? '<span class="hx-search-hit-badge">Pack recommandé</span>'
+      : "";
     return (
+      etiquetteHtml +
       '<div class="hx-search-hit-name">' + esc(p.name || p.id) + "</div>" +
       (p.ref ? '<div class="hx-search-hit-ref">' + esc(p.ref) + "</div>" : "") +
-      '</div><div class="hx-search-hit-meta">' + metaBits.join(" · ") + "</div>"
+      '</div><div class="hx-search-hit-meta">' + prixHtml +
+      (metaBits.length ? (prixHtml ? " · " : "") + metaBits.join(" · ") : "") + "</div>"
     );
   }
 
@@ -146,6 +184,14 @@
     var renderItem = config.renderItem || defaultRenderItem;
     var onSelect = config.onSelect || null;
     var resultHref = config.resultHref || null; // function(hit) -> url, pour un <a> plutot qu'un <div>
+    // "VOIR TOUS LES RESULTATS" (2 aout, portage démo->produit) -- ce
+    // panneau est volontairement compact (limit par defaut 8), jamais
+    // pense pour tout afficher. `seeAllHref` laisse le marchand pointer
+    // vers sa propre page de resultats complets, meme logique que
+    // `resultHref`/`groupHref` : Heurix ne devine jamais une URL de site.
+    // Sans configuration, le compte total reste affiche quand meme --
+    // valeur immediate sans configuration supplementaire a fournir.
+    var seeAllHref = config.seeAllHref || null; // function(query, total) -> url
 
     // REGROUPEMENT PAR FAMILLE. Configure par le MARCHAND, pas par le
     // visiteur : une case « regrouper » dans une barre de recherche demande
@@ -301,6 +347,28 @@
       currentHits = data.hits || [];
       activeIndex = -1;
 
+      // MISE EN AVANT MARCHANDE (2 août, portage démo->produit) --
+      // `highlighted_bundle` est calculé indépendamment de `hits` côté
+      // moteur : le meilleur pack peut ne pas figurer dans les tout
+      // premiers résultats. S'il est déjà dans `currentHits`, on le
+      // marque en place (pas de doublon). Sinon, on l'ajoute en tête --
+      // même logique de dédoublonnage que la démo widget du même jour.
+      if (data.highlighted_bundle && data.highlighted_bundle.product) {
+        var idBundle = data.highlighted_bundle.product.id;
+        var dejaPresent = currentHits.some(function (h) {
+          if (h.product && h.product.id === idBundle) { h._heurixBundle = true; return true; }
+          return false;
+        });
+        if (!dejaPresent) {
+          var hitBundle = {
+            product: data.highlighted_bundle.product,
+            in_stock: data.highlighted_bundle.in_stock,
+            _heurixBundle: true,
+          };
+          currentHits = [hitBundle].concat(currentHits);
+        }
+      }
+
       if (!currentHits.length) {
         // Chantier 6.6bis : un zero-resultat cause par une contrainte de prix
         // merite une explication et une porte de sortie. Sans cela, un
@@ -353,6 +421,21 @@
         var hrefAttr = href ? ' href="' + esc(href) + '"' : "";
         return "<" + tag + ' class="hx-search-hit" data-index="' + i + '"' + hrefAttr + ">" + inner + "</" + tag + ">";
       }).join("");
+
+      // "VOIR TOUS LES RESULTATS" -- affiché seulement s'il existe
+      // réellement plus de résultats que ce qui tient dans le panneau
+      // (le +1 éventuel du bundle ajouté ci-dessus n'entre pas dans ce
+      // compte, `data.total` reste la vérité côté moteur). Lien cliquable
+      // si `seeAllHref` est configuré, sinon simple compte informatif --
+      // jamais rien de cassé pour un marchand qui n'a pas encore configuré
+      // cette option.
+      if ((data.total || 0) > (data.hits || []).length) {
+        var texteTotal = esc(String(data.total)) + " résultats au total";
+        var lienTotal = seeAllHref ? seeAllHref(data.query || "", data.total) : null;
+        html += lienTotal
+          ? '<a class="hx-search-seeall" href="' + esc(lienTotal) + '">Voir les ' + texteTotal + " →</a>"
+          : '<div class="hx-search-seeall">' + texteTotal + "</div>";
+      }
 
       panel.innerHTML = html;
       openPanel();
