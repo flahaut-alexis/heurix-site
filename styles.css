@@ -641,20 +641,22 @@ h1 span{ color:var(--blue); }
    page entière au prochain mouvement de molette -- avec elle, le
    scroll s'arrête net, cette zone reste bien isolée du reste de la page.
 
-   HAUTEUR RECALCULÉE EN COURS DE ROUTE : un premier essai à 620px
-   partait d'une hauteur de carte estimée à ~210px -- la vraie mesure,
-   une fois les cartes compactées, donne 191px. À 620px, 9 résultats
-   tenaient presque tous sans le moindre scroll : l'estompage ne se
-   déclenchait quasiment jamais. Recalculé à partir de la mesure réelle :
-     2 rangs pleins       : 2 × 191 + 16 (gap)      = 398px
-     amorce du 3e rang     : ~35 % d'une carte + gap = 83px
-     total                                          ≈ 480px
+   HAUTEUR RECALCULÉE UNE DEUXIÈME FOIS (2 août, refonte cartes) : la
+   valeur de 480px datait de cartes à 191px de haut (titre 1 ligne, pas
+   de tags ni de bouton d'action). La refonte des cartes du même jour
+   (titre repassé à 2 lignes + tags marque/catégorie + bouton "Voir le
+   produit") porte la carte à 269px mesurés -- +41 %. À 480px inchangé,
+   même 2 rangs pleins ne tenaient plus (554px nécessaires). Recalculé
+   à partir de la nouvelle mesure réelle :
+     2 rangs pleins       : 2 × 269 + 16 (gap)      = 554px
+     amorce du 3e rang     : ~35 % d'une carte + gap = 110px
+     total                                          ≈ 664px
    Une seule valeur pour les deux gabarits : la hauteur d'un RANG ne
    dépend pas du nombre de colonnes (chaque rang s'étire sur la carte la
    plus haute qu'il contient, `align-items:stretch`) -- "2 rangs" pèse
    le même nombre de pixels qu'on soit à 4 colonnes ou à 1 seule. */
 .play-results-scroll{
-  max-height:480px;
+  max-height:664px;
   overflow-y:auto;
   overscroll-behavior:contain;
   /* Coupe visuellement le haut du 3e rang plutôt que del'escamoter net :
@@ -669,7 +671,7 @@ h1 span{ color:var(--blue); }
   /* Marge de sécurité modeste sur petit écran, pas un recalcul complet
      -- la logique ci-dessus tient déjà, ceci compense juste des écrans
      encore plus étroits que le smartphone-type visé. */
-  .play-results-scroll{ max-height:460px; }
+  .play-results-scroll{ max-height:634px; }
 }
 
 .play-grid{
@@ -696,7 +698,10 @@ h1 span{ color:var(--blue); }
 .play-card:hover{
   box-shadow:0 10px 24px -12px rgba(18,20,43,0.18);
   border-color:var(--blue);
-  transform:translateY(-2px);
+  /* scale ajoute au deplacement existant (2 aout, refonte cartes) --
+     discret (1.015), le translateY faisait deja l'essentiel du travail
+     d'affordance, un scale plus fort aurait fait "sauter" la grille. */
+  transform:translateY(-2px) scale(1.015);
 }
 /* Reflet au survol (2 août, thème prisme retenu parmi les six proposées)
    -- bande diagonale, blanche puis teintee cyan, qui balaie la carte de
@@ -716,18 +721,26 @@ h1 span{ color:var(--blue); }
 .play-card:nth-child(2){animation-delay:.03s;} .play-card:nth-child(3){animation-delay:.06s;}
 .play-card:nth-child(4){animation-delay:.09s;} .play-card:nth-child(5){animation-delay:.12s;}
 .play-card:nth-child(6){animation-delay:.15s;}
-.play-card-out .play-card-name, .play-card-out .play-card-ref{ color:var(--ink-muted); }
-.play-card-body{ margin-bottom:12px; }
+.play-card-out .play-card-name, .play-card-out .play-card-ref-bas{ color:var(--ink-muted); }
+.play-card-body{ margin-bottom:10px; }
+/* Titre repasse a 2 lignes (2 aout, refonte cartes) -- etait a 1 ligne
+   depuis la compaction du matin pour faire tenir 2 rangs + amorce d'un
+   3e dans la zone de resultats a hauteur plafonnee. Consequence directe,
+   mesuree plus bas dans la reponse plutot que juste signalee : chaque
+   carte est plus haute, donc moins de rangs tiennent dans la meme zone. */
 .play-card-name{
   font-size:15px; font-weight:700; color:var(--ink); line-height:1.35;
-  display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical;
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;
   overflow:hidden;
 }
-.play-card-sub{
-  font-size:12.5px; font-weight:500; color:var(--ink-muted); line-height:1.4;
-  margin-top:4px;
-  display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical;
-  overflow:hidden;
+/* Tags d'attributs (2 aout) -- remplace la description generique tronquee.
+   Marque et categorie : les deux seuls champs fiables et presents sur
+   l'ensemble du catalogue reel, pas des attributs extraits d'un texte
+   libre (materiau, dimension...) qui ne seraient pas garantis partout. */
+.play-card-tags{ display:flex; gap:5px; flex-wrap:wrap; margin-top:6px; }
+.play-card-tag{
+  font-size:10.5px; font-weight:600; color:var(--ink-muted);
+  background:#fff; border:1px solid var(--line); border-radius:5px; padding:2px 7px;
 }
 .play-tags{ display:flex; gap:4px; flex-wrap:wrap; margin-top:5px; }
 .play-why{
@@ -735,25 +748,65 @@ h1 span{ color:var(--blue); }
   background:#fff; border:1px solid var(--line); border-radius:4px; padding:1px 5px;
 }
 .play-why-ann{ color:var(--blue-deep); background:var(--blue-tint); border-color:transparent; font-weight:600; }
-/* Pied de carte : référence, prix, disponibilité — trois métadonnées de
-   même poids visuel, toujours ensemble en bas de carte quelle que soit la
-   longueur du titre ou de la description au-dessus (`margin-top:auto`
-   pousse ce bloc contre le bas de la carte flexible). */
-.play-card-foot{
+/* Ligne prix (2 aout, refonte cartes) -- mise en avant demandee : taille
+   augmentee, couleur d'accent de marque, plus au meme niveau visuel que
+   la reference. Le stock reste a cote, meme registre d'information
+   "puis-je l'acheter" que le prix. */
+.play-card-prix-ligne{
   margin-top:auto; padding-top:10px;
-  display:flex; align-items:center; flex-wrap:wrap; gap:6px 8px;
+  display:flex; align-items:center; gap:8px;
 }
-.play-card-ref{
-  font-family:'IBM Plex Mono', monospace; font-size:10.5px; font-weight:500;
-  color:var(--ink-muted); letter-spacing:.01em;
-}
-.play-card-price{ font-size:13px; font-weight:700; color:var(--ink); margin-left:auto; }
+.play-card-price{ font-size:18px; font-weight:800; color:var(--blue-deep); }
 .play-stock{
-  flex-shrink:0;
+  flex-shrink:0; margin-left:auto;
   font-size:10.5px; font-weight:700; color:var(--green);
   background:var(--green-tint); border-radius:100px; padding:4px 10px;
 }
 .play-card-out .play-stock{ color:var(--red-muted); background:var(--red-tint); }
+/* Reference technique (2 aout) -- deliberement discrete desormais : petite,
+   couleur neutre, tout en bas. Reste TOUJOURS visible (pas seulement au
+   survol) -- Heurix se positionne justement sur la recherche par
+   reference exacte, la cacher par defaut contredirait ce positionnement
+   pour un visiteur qui scanne vite la grille. */
+.play-card-ref-bas{
+  font-family:'IBM Plex Mono', monospace; font-size:10px; font-weight:500;
+  color:var(--ink-muted); letter-spacing:.01em; margin-top:6px; opacity:0.75;
+}
+/* Bouton d'action (2 aout) -- "Voir le produit" pointe vers la fiche
+   reelle sur racetools.fr quand l'API la fournit (`url`), coherent avec
+   le choix deja fait d'utiliser leurs donnees et images pour cette demo. */
+.play-card-cta{
+  display:block; margin-top:9px; padding:7px 0;
+  text-align:center; font-size:12.5px; font-weight:700;
+  color:var(--blue-deep); background:var(--blue-tint);
+  border-radius:8px; text-decoration:none;
+  transition:background .15s ease, color .15s ease;
+  position:relative; z-index:2;
+}
+.play-card-cta:hover{ background:var(--blue); color:#fff; }
+
+/* Badges contextuels, systeme generalise (2 aout) -- variantes de couleur
+   pretes pour "Meilleure vente" / "Promo" / "Stock limite", MAIS seule
+   "recommande" (Pack recommandé) est genereree cote JS actuellement :
+   les trois autres demanderaient respectivement un compteur de ventes,
+   un prix barre, et une quantite de stock reelle -- aucun n'existe dans
+   les donnees actuelles (stock est un booleen, pas un nombre). Les
+   fabriquer sans donnee reelle serait un signal merchandising trompeur
+   pour un vrai prospect qui teste la demo -- pas fait tant que la
+   donnee sous-jacente n'existe pas vraiment. */
+.play-card-etiquette{
+  position:absolute; top:10px; left:10px; z-index:2;
+  font-family:'Plus Jakarta Sans', sans-serif; font-size:10px; font-weight:800;
+  letter-spacing:.03em; text-transform:uppercase;
+  color:#fff;
+  background:linear-gradient(135deg, var(--blue), #8B5CF6);
+  border-radius:100px; padding:4px 9px;
+  box-shadow:0 2px 8px rgba(91,95,239,0.35);
+}
+.play-card-etiquette-promo{ background:linear-gradient(135deg, #F97316, #EA580C); }
+.play-card-etiquette-bestseller{ background:linear-gradient(135deg, #10B981, #059669); }
+.play-card-etiquette-stocklimite{ background:linear-gradient(135deg, #EF4444, #DC2626); }
+
 @keyframes rise{ to{ opacity:1; transform:translateY(0); } }
 .result .name{ color:var(--ink); }
 .result .name mark{ background:var(--blue-tint); color:var(--blue-deep); font-weight:700; padding:1px 3px; border-radius:3px; }
@@ -3929,29 +3982,32 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
    pictogramme à 74px sur la même rangée. Les marges négatives
    recalculées pour le nouveau padding de carte (14px) font toujours
    affleurer le bloc jusqu'aux bords, comme avant. */
-.play-card-img{ margin:-14px -14px 12px; border-radius:8px 8px 0 0; overflow:hidden; background:var(--bg-soft); }
+.play-card-img{ margin:-14px -14px 10px; border-radius:8px 8px 0 0; overflow:hidden; background:var(--bg-soft); }
 .play-card-img[hidden]{ display:none; }
-/* 120px -> 96px (1er août, deuxième passe) : gagner de la hauteur par
-   carte pour qu'un 3e rang tienne dans une zone de résultats à hauteur
-   plafonnée. Coordonné sur les trois etats -- image reelle, vignette
-   texte, pictogramme -- pour qu'aucun ne detonne visuellement des deux
-   autres selon ce que le catalogue fournit. */
-.play-card-img img{ width:100%; height:96px; object-fit:contain; display:block; }
+/* 96px -> 62px, soit -35% (2 août, refonte cartes) -- dans la fourchette
+   30-40% demandée. object-fit passe de contain à cover : l'image remplit
+   maintenant tout le cadre plutôt que de laisser des bandes vides autour
+   -- compromis assumé, un produit tres etroit ou tres large peut être
+   légèrement rogné sur les bords, contre un cadre qui semblait a moitie
+   vide auparavant. Coordonné sur les trois etats -- image reelle,
+   vignette texte, pictogramme -- pour qu'aucun ne detonne visuellement
+   des deux autres selon ce que le catalogue fournit. */
+.play-card-img img{ width:100%; height:62px; object-fit:cover; display:block; }
 .play-card-vign{
-  margin:-14px -14px 12px; height:96px; display:flex; align-items:center; justify-content:center;
+  margin:-14px -14px 10px; height:62px; display:flex; align-items:center; justify-content:center;
   background:var(--bg-soft); border-radius:8px 8px 0 0;
-  font-family:ui-monospace,monospace; font-size:13px; font-weight:700;
+  font-family:ui-monospace,monospace; font-size:12px; font-weight:700;
   color:var(--ink-muted); letter-spacing:.02em;
 }
 
 /* Pictogramme de produit, choisi par le moteur d apres les annotations.
    Ce n est pas un habillage : il montre que Heurix a reconnu la famille. */
 .play-card-picto{
-  margin:-14px -14px 12px; height:96px;
+  margin:-14px -14px 10px; height:62px;
   display:flex; align-items:center; justify-content:center;
   background:var(--bg-soft); border-radius:8px 8px 0 0; color:var(--blue-deep);
 }
-.play-card-picto svg{ width:36px; height:36px; }
+.play-card-picto svg{ width:28px; height:28px; }
 
 /* Pages plateforme (PrestaShop, WooCommerce, Shopify).
    Doofinder a une page par plateforme : referencement + le visiteur se

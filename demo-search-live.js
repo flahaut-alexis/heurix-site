@@ -37,6 +37,16 @@
   var champ = racine.querySelector(".play-input");
   var grille = racine.querySelector(".play-grid");
   var meta = racine.querySelector(".play-meta");
+  var boutonPlus = racine.querySelector(".play-more");
+  // État de pagination (2 août, refonte cartes) -- le bouton "Afficher
+  // plus" existait déjà dans le HTML/CSS depuis la restructuration du 1er
+  // août mais n'avait jamais été câblé : aucun gestionnaire de clic,
+  // aucune logique derrière. `donnees.total` était déjà annoncé (ex.
+  // "650 résultats") sans aucun moyen de les parcourir au-delà des 9
+  // premiers -- exactement le trou signalé dans le brief.
+  var requeteEnCours = "";
+  var offsetEnCours = 0;
+  var totalEnCours = 0;
   var zonePrismes = racine.querySelector(".play-prisms");
   if (!champ || !grille) return;
 
@@ -136,50 +146,48 @@
     var etat = hit.in_stock === false
       ? "<span class='play-rupture'>Rupture</span>"
       : "<span class='play-stock'>En stock</span>";
-    // LES ÉTIQUETTES BRUTES SONT RETIRÉES DE LA PAGE PUBLIQUE.
-    //
-    // « FAM_CHEMISE » ne dit rien à un visiteur : c'est du vocabulaire
-    // interne. Dans la console, où le marchand règle son moteur, l'afficher
-    // est utile ; sur la vitrine, c'est du bruit qui fait paraître le
-    // produit inachevé.
-    //
-    // Ce que le moteur a compris se montre autrement : par le pictogramme,
-    // qui change selon la famille reconnue, et par le filtre de prix affiché
-    // en clair sous les résultats.
-    // CE QU'ON MONTRE, ET DANS QUEL ORDRE.
-    //
-    // La carte n'affichait que nom, référence et stock. Sur un livre, cela
-    // donnait « Nick Drake / 0747535035 / En stock » — l'auteur, qui est la
-    // seule information utile après le titre, restait invisible.
-    //
-    // La description porte l'auteur pour les livres, la contenance pour les
-    // vins, la norme pour la visserie. C'est toujours le complément le plus
-    // parlant après le nom.
-    // On évite la redondance : « Chemise coton vert taille M » suivi de
-    // « Olow — M » répétait la taille. On ne garde la description que si
-    // elle apporte autre chose que ce que le nom contient déjà.
-    var secondaire = p.description || p.marque || "";
-    if (secondaire && p.name) {
-      var reste = String(secondaire).split(/[—–-]/)[0].trim();
-      secondaire = reste && p.name.toLowerCase().indexOf(reste.toLowerCase()) === -1
-        ? reste : (p.marque && p.name.toLowerCase().indexOf(String(p.marque).toLowerCase()) === -1
-                   ? p.marque : "");
-    }
+
+    // TAGS D'ATTRIBUTS (2 août, refonte cartes) -- remplace la description
+    // générique tronquée. Marque et catégorie : seuls champs fiables et
+    // présents sur l'ensemble du catalogue réel, contrairement à un
+    // attribut extrait d'un texte libre (matière, dimension...) qui ne
+    // serait pas garanti partout. Pas de tag si aucun des deux n'existe --
+    // conforme à la consigne « supprimer si aucun attribut fiable ».
+    var tags = [];
+    if (p.brand) tags.push(String(p.brand));
+    if (p.category) tags.push(String(p.category));
+    var tagsHtml = tags.length
+      ? "<div class='play-card-tags'>" + tags.slice(0, 2).map(function (t) {
+          return "<span class='play-card-tag'>" + esc(t.slice(0, 24)) + "</span>";
+        }).join("") + "</div>"
+      : "";
+
+    // BOUTON D'ACTION (2 août) -- pointe vers la fiche réelle sur
+    // racetools.fr quand l'API la fournit (`url`), cohérent avec le choix
+    // déjà fait d'utiliser leurs données et images pour cette démo.
+    // z-index:2 явно au-dessus du reflet au survol (z-index:1), pour que
+    // le lien reste cliquable pendant l'animation.
+    var lienHtml = p.url
+      ? "<a class='play-card-cta' href='" + esc(p.url) + "' target='_blank' rel='noopener' " +
+        "onclick='event.stopPropagation()'>Voir le produit →</a>"
+      : "";
+
     return "<article class='play-card" + (etiquette ? " play-card-featured" : "") + "'>" +
       (etiquette ? "<span class='play-card-etiquette'>" + esc(etiquette) + "</span>" : "") +
       visuel +
       "<div class='play-card-body'>" +
         "<div class='play-card-name'>" + esc(p.name || p.id) + "</div>" +
-        (secondaire ? "<div class='play-card-sub'>" + esc(String(secondaire).slice(0, 60)) + "</div>" : "") +
+        tagsHtml +
       "</div>" +
-      // Référence, prix et stock désormais groupés : trois métadonnées de
-      // même nature, alignées ensemble en pied de carte plutôt que la
-      // référence livrée seule entre le texte et le badge.
-      "<div class='play-card-foot'>" +
-        (p.ref ? "<span class='play-card-ref'>" + esc(p.ref) + "</span>" : "") +
+      // Ligne prix mise en avant + stock, puis référence discrète tout en
+      // bas, et enfin le bouton d'action -- ordre vertical exact demandé :
+      // image → titre → tags → prix+dispo → référence.
+      "<div class='play-card-prix-ligne'>" +
         (p.price !== undefined ? "<span class='play-card-price'>" + euros(p.price) + "</span>" : "") +
         etat +
       "</div>" +
+      (p.ref ? "<div class='play-card-ref-bas'>" + esc(p.ref) + "</div>" : "") +
+      lienHtml +
     "</article>";
   }
 
@@ -213,12 +221,13 @@
     rAF(pas);
   }
 
-  function afficher(donnees, requete) {
+  function afficher(donnees, requete, ajouter) {
     var hits = donnees.hits || [];
-    if (!hits.length) {
+    if (!hits.length && !ajouter) {
       grille.innerHTML = "<p class='play-vide'>Aucun résultat pour « " +
                          esc(requete) + " ».</p>";
       if (meta) meta.textContent = "";
+      if (boutonPlus) boutonPlus.hidden = true;
       return;
     }
 
@@ -234,10 +243,13 @@
     // `hits` (voir la doc de l'API) — si le même produit se trouve être
     // AUSSI le meilleur résultat naturel, on ne veut pas le voir deux
     // fois. On le retire de `hits` avant de composer la grille finale.
+    // EN MODE AJOUT (page 2+), pas de rappel du bundle : il a déjà été
+    // affiché en position 1 lors de la première page, le remontrer à
+    // chaque "Afficher plus" le dupliquerait.
     var cartes = [];
-    var idBundle = donnees.highlighted_bundle
+    var idBundle = (!ajouter && donnees.highlighted_bundle)
       ? donnees.highlighted_bundle.product.id : null;
-    if (donnees.highlighted_bundle) {
+    if (!ajouter && donnees.highlighted_bundle) {
       cartes.push(fiche(donnees.highlighted_bundle, "Pack recommandé"));
     }
     hits.forEach(function (h) {
@@ -245,7 +257,28 @@
         cartes.push(fiche(h));
       }
     });
-    grille.innerHTML = cartes.slice(0, 9).join("");
+
+    if (ajouter) {
+      grille.insertAdjacentHTML("beforeend", cartes.join(""));
+    } else {
+      grille.innerHTML = cartes.join("");
+    }
+
+    // PAGINATION : met à jour l'état et le bouton "Afficher plus".
+    requeteEnCours = requete;
+    totalEnCours = donnees.total || 0;
+    offsetEnCours = (ajouter ? offsetEnCours : 0) + hits.length;
+    if (boutonPlus) {
+      var reste = totalEnCours - offsetEnCours;
+      if (reste > 0) {
+        boutonPlus.hidden = false;
+        boutonPlus.textContent = "Afficher plus de résultats (" +
+          reste.toLocaleString("fr-FR") + " restants)";
+        boutonPlus.disabled = false;
+      } else {
+        boutonPlus.hidden = true;
+      }
+    }
 
     if (meta) {
       var ms = Math.max(1, Math.round(performance.now() - chrono));
@@ -325,6 +358,7 @@
     }
 
     var id = ++derniereRequete;
+    offsetEnCours = 0; // nouvelle recherche = on repart de la premiere page
     // TEMPS DE RÉPONSE MESURÉ, affiché sous les résultats.
     //
     // Meilisearch affiche « 8 results in 1ms » sous sa démonstration : le
@@ -338,6 +372,7 @@
     var corps = {
       q: requete,
       limit: 9,
+      offset: 0,
       facets: ["categories", "marque"],
     };
     if (prismeActif) {
@@ -381,6 +416,47 @@
         if (meta) meta.textContent = "";
       });
   }
+
+  // CHARGER PLUS (2 août, refonte cartes) -- le bouton existait déjà dans
+  // le HTML/CSS depuis le 1er août mais n'avait jamais été câblé. Reprend
+  // la même requête que la recherche en cours, avec un offset croissant ;
+  // les résultats s'AJOUTENT à la grille plutôt que de la remplacer.
+  function chargerPlus() {
+    if (!requeteEnCours || !boutonPlus) return;
+    boutonPlus.disabled = true;
+    boutonPlus.textContent = "Chargement…";
+
+    var id = ++derniereRequete;
+    var corpsPage = {
+      q: requeteEnCours,
+      limit: 9,
+      offset: offsetEnCours,
+      facets: ["categories", "marque"],
+    };
+    if (prismeActif) {
+      corpsPage.filters = [{ field: prismeActif.champ, value: prismeActif.valeur }];
+    }
+
+    fetch(API + "/v1/public-demo/search?vertical=" + encodeURIComponent(verticale), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(corpsPage),
+    })
+      .then(function (r) {
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        return r.json();
+      })
+      .then(function (d) {
+        if (id !== derniereRequete) return; // une nouvelle recherche est partie entre-temps
+        afficher(d, requeteEnCours, true);
+      })
+      .catch(function () {
+        if (id !== derniereRequete) return;
+        boutonPlus.disabled = false;
+        boutonPlus.textContent = "Réessayer";
+      });
+  }
+  if (boutonPlus) boutonPlus.addEventListener("click", chargerPlus);
 
   champ.addEventListener("input", function () {
     clearTimeout(minuteur);

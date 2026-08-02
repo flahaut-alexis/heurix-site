@@ -23,6 +23,14 @@
   var champ = racine.querySelector(".play-input");
   var grille = racine.querySelector(".play-grid");
   var meta = racine.querySelector(".play-meta");
+  var boutonPlus = racine.querySelector(".play-more");
+  // Pagination state (Aug 2, card redesign) -- the button already existed
+  // in HTML/CSS since Aug 1 but was never wired: no click handler, no
+  // logic behind it. `donnees.total` was already announced (e.g. "650
+  // results") with no way to page through them beyond the first 9.
+  var requeteEnCours = "";
+  var offsetEnCours = 0;
+  var totalEnCours = 0;
   var zonePrismes = racine.querySelector(".play-prisms");
   if (!champ || !grille) return;
 
@@ -108,37 +116,42 @@
     var etat = hit.in_stock === false
       ? "<span class='play-rupture'>Out of stock</span>"
       : "<span class='play-stock'>In stock</span>";
-    // RAW LABELS ARE STRIPPED FROM THE PUBLIC PAGE. "FAM_CHEMISE" means
-    // nothing to a visitor — it's internal vocabulary. What the engine
-    // understood shows up another way: the pictogram, and the price
-    // filter shown in plain text under the results.
-    //
-    // WHAT WE SHOW, AND IN WHAT ORDER. The description carries the author
-    // for a book, the container size for a wine, the standard for a
-    // fastener — always the most telling detail after the name. No
-    // redundancy: kept only if it adds something the name doesn't already
-    // say.
-    var secondaire = p.description || p.marque || "";
-    if (secondaire && p.name) {
-      var reste = String(secondaire).split(/[—–-]/)[0].trim();
-      secondaire = reste && p.name.toLowerCase().indexOf(reste.toLowerCase()) === -1
-        ? reste : (p.marque && p.name.toLowerCase().indexOf(String(p.marque).toLowerCase()) === -1
-                   ? p.marque : "");
-    }
+
+    // ATTRIBUTE TAGS (Aug 2, card redesign) -- replaces the truncated
+    // generic description. Brand and category: the only two fields
+    // reliably present across the whole real catalog, unlike an
+    // attribute parsed out of free-form text (material, dimension...)
+    // that wouldn't be guaranteed everywhere.
+    var tags = [];
+    if (p.brand) tags.push(String(p.brand));
+    if (p.category) tags.push(String(p.category));
+    var tagsHtml = tags.length
+      ? "<div class='play-card-tags'>" + tags.slice(0, 2).map(function (t) {
+          return "<span class='play-card-tag'>" + esc(t.slice(0, 24)) + "</span>";
+        }).join("") + "</div>"
+      : "";
+
+    // ACTION BUTTON (Aug 2) -- links to the real product page on
+    // racetools.fr when the API provides one (`url`), consistent with the
+    // choice already made to use their data and images for this demo.
+    var lienHtml = p.url
+      ? "<a class='play-card-cta' href='" + esc(p.url) + "' target='_blank' rel='noopener' " +
+        "onclick='event.stopPropagation()'>View product →</a>"
+      : "";
+
     return "<article class='play-card" + (etiquette ? " play-card-featured" : "") + "'>" +
       (etiquette ? "<span class='play-card-etiquette'>" + esc(etiquette) + "</span>" : "") +
       visuel +
       "<div class='play-card-body'>" +
         "<div class='play-card-name'>" + esc(p.name || p.id) + "</div>" +
-        (secondaire ? "<div class='play-card-sub'>" + esc(String(secondaire).slice(0, 60)) + "</div>" : "") +
+        tagsHtml +
       "</div>" +
-      // Reference, price and stock now grouped: three metadata of the
-      // same nature, aligned together at the card's footer.
-      "<div class='play-card-foot'>" +
-        (p.ref ? "<span class='play-card-ref'>" + esc(p.ref) + "</span>" : "") +
+      "<div class='play-card-prix-ligne'>" +
         (p.price !== undefined ? "<span class='play-card-price'>" + euros(p.price) + "</span>" : "") +
         etat +
       "</div>" +
+      (p.ref ? "<div class='play-card-ref-bas'>" + esc(p.ref) + "</div>" : "") +
+      lienHtml +
     "</article>";
   }
 
@@ -172,12 +185,13 @@
     rAF(pas);
   }
 
-  function afficher(donnees, requete) {
+  function afficher(donnees, requete, ajouter) {
     var hits = donnees.hits || [];
-    if (!hits.length) {
+    if (!hits.length && !ajouter) {
       grille.innerHTML = "<p class='play-vide'>No results for \"" +
                          esc(requete) + "\".</p>";
       if (meta) meta.textContent = "";
+      if (boutonPlus) boutonPlus.hidden = true;
       return;
     }
 
@@ -190,11 +204,12 @@
     // DEDUP: `highlighted_bundle` is chosen independently of `hits` — if
     // the same product happens to also be the top natural result, we
     // don't want it shown twice. Filtered out of `hits` before composing
-    // the final grid.
+    // the final grid. IN APPEND MODE (page 2+), skip the bundle entirely:
+    // it already showed at position 1 on the first page.
     var cartes = [];
-    var idBundle = donnees.highlighted_bundle
+    var idBundle = (!ajouter && donnees.highlighted_bundle)
       ? donnees.highlighted_bundle.product.id : null;
-    if (donnees.highlighted_bundle) {
+    if (!ajouter && donnees.highlighted_bundle) {
       cartes.push(fiche(donnees.highlighted_bundle, "Recommended pack"));
     }
     hits.forEach(function (h) {
@@ -202,7 +217,27 @@
         cartes.push(fiche(h));
       }
     });
-    grille.innerHTML = cartes.slice(0, 9).join("");
+
+    if (ajouter) {
+      grille.insertAdjacentHTML("beforeend", cartes.join(""));
+    } else {
+      grille.innerHTML = cartes.join("");
+    }
+
+    requeteEnCours = requete;
+    totalEnCours = donnees.total || 0;
+    offsetEnCours = (ajouter ? offsetEnCours : 0) + hits.length;
+    if (boutonPlus) {
+      var reste = totalEnCours - offsetEnCours;
+      if (reste > 0) {
+        boutonPlus.hidden = false;
+        boutonPlus.textContent = "Show more results (" +
+          reste.toLocaleString("en-US") + " remaining)";
+        boutonPlus.disabled = false;
+      } else {
+        boutonPlus.hidden = true;
+      }
+    }
 
     if (meta) {
       var ms = Math.max(1, Math.round(performance.now() - chrono));
@@ -279,6 +314,7 @@
     }
 
     var id = ++derniereRequete;
+    offsetEnCours = 0; // new search = back to page one
     // MEASURED RESPONSE TIME, shown under the results. This is TOTAL
     // perceived time (network included), not engine time alone:
     // announcing the latter while measuring the former would flatter us
@@ -287,6 +323,7 @@
     var corps = {
       q: requete,
       limit: 9,
+      offset: 0,
       facets: ["categories", "marque"],
     };
     if (prismeActif) {
@@ -329,6 +366,47 @@
         if (meta) meta.textContent = "";
       });
   }
+
+  // LOAD MORE (Aug 2, card redesign) -- the button already existed in
+  // HTML/CSS since Aug 1 but was never wired. Reuses the same request as
+  // the current search, with a growing offset; results are APPENDED to
+  // the grid rather than replacing it.
+  function chargerPlus() {
+    if (!requeteEnCours || !boutonPlus) return;
+    boutonPlus.disabled = true;
+    boutonPlus.textContent = "Loading…";
+
+    var id = ++derniereRequete;
+    var corpsPage = {
+      q: requeteEnCours,
+      limit: 9,
+      offset: offsetEnCours,
+      facets: ["categories", "marque"],
+    };
+    if (prismeActif) {
+      corpsPage.filters = [{ field: prismeActif.champ, value: prismeActif.valeur }];
+    }
+
+    fetch(API + "/v1/public-demo/search?vertical=" + encodeURIComponent(verticale), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(corpsPage),
+    })
+      .then(function (r) {
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        return r.json();
+      })
+      .then(function (d) {
+        if (id !== derniereRequete) return; // a new search fired meanwhile
+        afficher(d, requeteEnCours, true);
+      })
+      .catch(function () {
+        if (id !== derniereRequete) return;
+        boutonPlus.disabled = false;
+        boutonPlus.textContent = "Retry";
+      });
+  }
+  if (boutonPlus) boutonPlus.addEventListener("click", chargerPlus);
 
   champ.addEventListener("input", function () {
     clearTimeout(minuteur);
