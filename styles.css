@@ -2112,7 +2112,7 @@ h2{ font-size:clamp(26px,3.4vw,34px); font-weight:800; margin:0 0 18px; max-widt
 footer{ padding:40px 0; border-top:1px solid var(--line); }
 .foot-grid{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:20px; align-items:center; }
 .foot-legal{ color:var(--ink-muted); font-size:12.5px; line-height:1.7; max-width:520px; }
-.foot-links{ display:flex; gap:18px; font-size:13px; font-weight:600; }
+.foot-links{ display:flex; flex-wrap:wrap; gap:10px 18px; font-size:13px; font-weight:600; }
 .foot-links a{ text-decoration:none; color:var(--ink-muted); }
 .foot-social{ display:flex; align-items:center; gap:12px; }
 .foot-social-label{ font-size:12px; font-weight:600; color:var(--ink-muted); }
@@ -2199,6 +2199,16 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
     box-shadow:0 12px 28px rgba(18,20,43,0.12); padding:14px 24px 20px;
   }
   .nav-links.mobile-open{ display:flex; }
+  /* Fond derriere le menu mobile (2 aout, audit UX point 4) -- cree en
+     JS (mobile-nav.js), z-index:69 -- juste sous le menu (70), juste
+     au-dessus du reste de la page. Invisible et non cliquable par
+     defaut (pointer-events:none), pour ne jamais intercepter de clics
+     hors du contexte "menu ouvert". */
+  .nav-mobile-fond{
+    display:none; position:fixed; inset:0; z-index:69;
+    background:rgba(18,20,43,0.4);
+  }
+  .nav-mobile-fond.visible{ display:block; }
   .header-top{ position:relative; }
   .nav-links > a{ padding:11px 0; border-bottom:1px solid var(--line); font-size:15px; }
   .nav-drop{ border-bottom:1px solid var(--line); }
