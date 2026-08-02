@@ -427,6 +427,38 @@
       });
   }
 
+  // PARCOURIR TOUT (2 août) -- pour le lien "voir plus" du panneau de
+  // catégories. `chercher("")` ne convient PAS ici : son retour anticipé
+  // sur requête vide (ligne ~363) sert à VIDER la grille quand
+  // l'utilisateur efface le champ -- exactement l'inverse de ce qu'on
+  // veut au clic sur "voir plus". Bug trouvé en testant le clic
+  // lui-même : zéro second appel réseau, la garde empêchait `chercher`
+  // d'atteindre le fetch. Fonction séparée, même mécanique que
+  // `chercher()` sans cette garde -- réutilise `afficher()` telle
+  // quelle, donc l'état de pagination (offset, total) se met à jour
+  // correctement et le vrai bouton "Afficher plus" de la grille
+  // principale fonctionne ensuite normalement.
+  function parcourirTout() {
+    var id = ++derniereRequete;
+    offsetEnCours = 0;
+    chrono = performance.now();
+    fetch(API + "/v1/public-demo/search?vertical=" + encodeURIComponent(verticale), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ q: "", limit: 9, offset: 0 }),
+    })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) {
+        if (id !== derniereRequete || !d) return;
+        afficher(d, "");
+      })
+      .catch(function () {
+        if (id !== derniereRequete) return;
+        grille.innerHTML = "<p class='play-vide'>Démonstration momentanément " +
+                           "indisponible. Le moteur reste joignable par API.</p>";
+      });
+  }
+
   // CHARGER PLUS (2 août, refonte cartes) -- le bouton existait déjà dans
   // le HTML/CSS depuis le 1er août mais n'avait jamais été câblé. Reprend
   // la même requête que la recherche en cours, avec un offset croissant ;
@@ -552,7 +584,19 @@
         if (id !== derniereRequeteApercu || !d || !d.hits || !d.hits.length) return;
         // Réutilise fiche() telle quelle : même rendu que les résultats
         // de recherche, aucune logique de carte dupliquée ici.
-        zoneProduits.innerHTML = d.hits.map(function (h) { return fiche(h); }).join("");
+        var voirPlus = (d.total || 0) > d.hits.length
+          ? "<button type='button' class='play-categories-voirplus'>Afficher plus de produits (" +
+            d.total.toLocaleString("fr-FR") + " au total)</button>"
+          : "";
+        zoneProduits.innerHTML = d.hits.map(function (h) { return fiche(h); }).join("") + voirPlus;
+        var boutonVoirPlus = zoneProduits.querySelector(".play-categories-voirplus");
+        if (boutonVoirPlus) {
+          boutonVoirPlus.addEventListener("mousedown", function (e) {
+            e.preventDefault();
+            fermerPanneauCategories();
+            parcourirTout();
+          });
+        }
         reserverEspacePanneau();
       })
       .catch(function () { /* échec silencieux -- les pastilles de catégorie restent utilisables sans aperçu */ });

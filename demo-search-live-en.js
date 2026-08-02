@@ -377,6 +377,37 @@
       });
   }
 
+  // BROWSE ALL (Aug 2) -- for the category panel's "show more" link.
+  // `chercher("")` does NOT work here: its early return on an empty
+  // query (line ~319) exists to CLEAR the grid when the visitor empties
+  // the field -- the exact opposite of what's wanted on "show more".
+  // Bug found while testing the click itself: zero second network call,
+  // the guard prevented `chercher` from ever reaching fetch. Separate
+  // function, same mechanics as `chercher()` without that guard --
+  // reuses `afficher()` as-is, so pagination state (offset, total)
+  // updates correctly and the real "Show more" button on the main grid
+  // works normally afterward.
+  function parcourirTout() {
+    var id = ++derniereRequete;
+    offsetEnCours = 0;
+    chrono = performance.now();
+    fetch(API + "/v1/public-demo/search?vertical=" + encodeURIComponent(verticale), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ q: "", limit: 9, offset: 0 }),
+    })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) {
+        if (id !== derniereRequete || !d) return;
+        afficher(d, "");
+      })
+      .catch(function () {
+        if (id !== derniereRequete) return;
+        grille.innerHTML = "<p class='play-vide'>Demo temporarily " +
+                           "unavailable. The engine remains reachable via API.</p>";
+      });
+  }
+
   // LOAD MORE (Aug 2, card redesign) -- the button already existed in
   // HTML/CSS since Aug 1 but was never wired. Reuses the same request as
   // the current search, with a growing offset; results are APPENDED to
@@ -489,7 +520,19 @@
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (d) {
         if (id !== derniereRequeteApercu || !d || !d.hits || !d.hits.length) return;
-        zoneProduits.innerHTML = d.hits.map(function (h) { return fiche(h); }).join("");
+        var voirPlus = (d.total || 0) > d.hits.length
+          ? "<button type='button' class='play-categories-voirplus'>Show more products (" +
+            d.total.toLocaleString("en-US") + " total)</button>"
+          : "";
+        zoneProduits.innerHTML = d.hits.map(function (h) { return fiche(h); }).join("") + voirPlus;
+        var boutonVoirPlus = zoneProduits.querySelector(".play-categories-voirplus");
+        if (boutonVoirPlus) {
+          boutonVoirPlus.addEventListener("mousedown", function (e) {
+            e.preventDefault();
+            fermerPanneauCategories();
+            parcourirTout();
+          });
+        }
         reserverEspacePanneau();
       })
       .catch(function () { /* silent failure -- category pills stay usable without preview */ });
