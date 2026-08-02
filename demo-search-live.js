@@ -164,10 +164,17 @@
 
     return "<article class='play-card" + (etiquette ? " play-card-featured" : "") + "'>" +
       (etiquette ? "<span class='play-card-etiquette'>" + esc(etiquette) + "</span>" : "") +
-      visuel +
-      "<div class='play-card-body'>" +
-        "<div class='play-card-name'>" + esc(p.name || p.id) + "</div>" +
-        tagsHtml +
+      // NOUVELLE DISPOSITION (2 août, retour Alexis après test réel) :
+      // image carrée à gauche, titre (1 ligne) + tags + référence à
+      // droite -- puis prix + stock en pleine largeur EN DESSOUS des
+      // deux, pas au même niveau que la référence comme avant.
+      "<div class='play-card-top'>" +
+        visuel +
+        "<div class='play-card-details'>" +
+          "<div class='play-card-name'>" + esc(p.name || p.id) + "</div>" +
+          tagsHtml +
+          (p.ref ? "<div class='play-card-ref-bas'>" + esc(p.ref) + "</div>" : "") +
+        "</div>" +
       "</div>" +
       "<div class='play-card-prix-ligne'>" +
         (p.price !== undefined ? "<span class='play-card-price'>" + euros(p.price) + "</span>" : "") +
@@ -180,7 +187,6 @@
       // tiers en un clic. Le champ `url` du produit reste disponible côté
       // API pour qui en aurait besoin ailleurs, simplement plus exploité
       // ici dans la carte.
-      (p.ref ? "<div class='play-card-ref-bas'>" + esc(p.ref) + "</div>" : "") +
     "</article>";
   }
 
@@ -245,7 +251,18 @@
     if (!ajouter && donnees.highlighted_bundle) {
       cartes.push(fiche(donnees.highlighted_bundle, "Pack recommandé"));
     }
-    hits.forEach(function (h) {
+    // ORDRE PAR DISPONIBILITÉ (2 août, retour Alexis après test réel) :
+    // un produit en rupture ne doit jamais être en tête de liste, mais ne
+    // doit pas non plus disparaître -- le retirer complètement risquerait
+    // de cacher la seule correspondance pertinente pour une requête
+    // précise. Tri STABLE (garanti par le moteur JS depuis ES2019) : à
+    // l'intérieur de chaque groupe (en stock / rupture), l'ordre de
+    // pertinence renvoyé par le moteur reste inchangé -- seul le groupe
+    // "rupture" est repoussé après le groupe "en stock".
+    var hitsOrdonnes = hits.slice().sort(function (a, b) {
+      return (a.in_stock === false ? 1 : 0) - (b.in_stock === false ? 1 : 0);
+    });
+    hitsOrdonnes.forEach(function (h) {
       if (idBundle === null || h.product.id !== idBundle) {
         cartes.push(fiche(h));
       }
@@ -488,9 +505,17 @@
     var zoneCategories = racine.querySelector(".play-categories");
     if (zoneCategories) {
       var cats = CATEGORIES[verticale] || CATEGORIES.outillage;
-      zoneCategories.innerHTML = cats.map(function (c) {
-        return "<button type='button' class='play-categorie'>" + esc(c) + "</button>";
-      }).join("");
+      // Catégories + zone produits (2 août) -- la zone produits reste
+      // vide ici, remplie seulement à l'OUVERTURE du panneau (voir
+      // ouvrirPanneauCategories) pour éviter un appel API à chaque
+      // changement de secteur si le panneau n'est pas ouvert.
+      zoneCategories.innerHTML =
+        "<div class='play-categories-pastilles'>" +
+        cats.map(function (c) {
+          return "<button type='button' class='play-categorie'>" + esc(c) + "</button>";
+        }).join("") +
+        "</div>" +
+        "<div class='play-categories-produits'></div>";
       brancherCategories();
     }
   }
@@ -503,8 +528,32 @@
   // clic n'ait eu la moindre chance d'être traité. `mousedown` se
   // déclenche avant `blur`, donc la sélection a lieu à temps.
   var panneauCategories = racine.querySelector(".play-categories");
+  var derniereRequeteApercu = 0;
   function ouvrirPanneauCategories() {
-    if (panneauCategories && !champ.value.trim()) panneauCategories.hidden = false;
+    if (!panneauCategories || champ.value.trim()) return;
+    panneauCategories.hidden = false;
+
+    // APERÇU PRODUITS AU FOCUS (2 août) : requête vide = mode parcours
+    // côté moteur, renvoie un jeu de résultats par défaut sans qu'aucun
+    // terme n'ait été tapé. Simulation volontairement simple (pas un
+    // vrai calcul de "meilleures ventes") -- ce que le moteur renvoie
+    // déjà en mode parcours suffit à donner un aperçu du catalogue.
+    var zoneProduits = panneauCategories.querySelector(".play-categories-produits");
+    if (!zoneProduits) return;
+    var id = ++derniereRequeteApercu;
+    fetch(API + "/v1/public-demo/search?vertical=" + encodeURIComponent(verticale), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ q: "", limit: 8 }),
+    })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) {
+        if (id !== derniereRequeteApercu || !d || !d.hits || !d.hits.length) return;
+        // Réutilise fiche() telle quelle : même rendu que les résultats
+        // de recherche, aucune logique de carte dupliquée ici.
+        zoneProduits.innerHTML = d.hits.map(function (h) { return fiche(h); }).join("");
+      })
+      .catch(function () { /* échec silencieux -- les pastilles de catégorie restent utilisables sans aperçu */ });
   }
   function fermerPanneauCategories() {
     if (panneauCategories) panneauCategories.hidden = true;

@@ -133,10 +133,17 @@
 
     return "<article class='play-card" + (etiquette ? " play-card-featured" : "") + "'>" +
       (etiquette ? "<span class='play-card-etiquette'>" + esc(etiquette) + "</span>" : "") +
-      visuel +
-      "<div class='play-card-body'>" +
-        "<div class='play-card-name'>" + esc(p.name || p.id) + "</div>" +
-        tagsHtml +
+      // NEW LAYOUT (Aug 2, feedback after real testing): square image on
+      // the left, title (1 line) + tags + reference on the right -- then
+      // price + stock full-width BELOW both, not at the same level as
+      // the reference like before.
+      "<div class='play-card-top'>" +
+        visuel +
+        "<div class='play-card-details'>" +
+          "<div class='play-card-name'>" + esc(p.name || p.id) + "</div>" +
+          tagsHtml +
+          (p.ref ? "<div class='play-card-ref-bas'>" + esc(p.ref) + "</div>" : "") +
+        "</div>" +
       "</div>" +
       "<div class='play-card-prix-ligne'>" +
         (p.price !== undefined ? "<span class='play-card-price'>" + euros(p.price) + "</span>" : "") +
@@ -146,7 +153,6 @@
       // real racetools.fr product page -- a real problem flagged by
       // Alexis, not just a detail: a visitor testing Heurix's search
       // should never land on a third party's site in one click.
-      (p.ref ? "<div class='play-card-ref-bas'>" + esc(p.ref) + "</div>" : "") +
     "</article>";
   }
 
@@ -207,7 +213,16 @@
     if (!ajouter && donnees.highlighted_bundle) {
       cartes.push(fiche(donnees.highlighted_bundle, "Recommended pack"));
     }
-    hits.forEach(function (h) {
+    // ORDER BY AVAILABILITY (Aug 2, feedback after real testing): an
+    // out-of-stock product should never lead the list, but shouldn't
+    // disappear either -- removing it entirely risks hiding the only
+    // relevant match for a precise query. STABLE sort (guaranteed by the
+    // JS engine since ES2019): within each group, the engine's relevance
+    // order is preserved -- only the "out of stock" group moves after.
+    var hitsOrdonnes = hits.slice().sort(function (a, b) {
+      return (a.in_stock === false ? 1 : 0) - (b.in_stock === false ? 1 : 0);
+    });
+    hitsOrdonnes.forEach(function (h) {
       if (idBundle === null || h.product.id !== idBundle) {
         cartes.push(fiche(h));
       }
@@ -440,22 +455,42 @@
     var zoneCategories = racine.querySelector(".play-categories");
     if (zoneCategories) {
       var cats = CATEGORIES[verticale] || CATEGORIES.outillage;
-      zoneCategories.innerHTML = cats.map(function (c) {
-        return "<button type='button' class='play-categorie'>" + esc(c) + "</button>";
-      }).join("");
+      zoneCategories.innerHTML =
+        "<div class='play-categories-pastilles'>" +
+        cats.map(function (c) {
+          return "<button type='button' class='play-categorie'>" + esc(c) + "</button>";
+        }).join("") +
+        "</div>" +
+        "<div class='play-categories-produits'></div>";
       brancherCategories();
     }
   }
 
-  // CATEGORY PANEL ON FOCUS: visible only while the field is empty and
-  // active — closes on the first keystroke or as soon as focus leaves.
-  // mousedown rather than click on the tiles: the field's `blur` fires
-  // BEFORE `click` when clicking an external element, which would close
-  // the panel before the click ever got a chance to register.
-  // `mousedown` fires before `blur`, so the selection lands in time.
   var panneauCategories = racine.querySelector(".play-categories");
+  var derniereRequeteApercu = 0;
   function ouvrirPanneauCategories() {
-    if (panneauCategories && !champ.value.trim()) panneauCategories.hidden = false;
+    if (!panneauCategories || champ.value.trim()) return;
+    panneauCategories.hidden = false;
+
+    // PRODUCT PREVIEW ON FOCUS (Aug 2): an empty query means browse mode
+    // on the engine side, returning a default result set with no typed
+    // term. Deliberately simple simulation (not a real "best sellers"
+    // computation) -- what the engine already returns in browse mode is
+    // enough to give a sense of the catalog.
+    var zoneProduits = panneauCategories.querySelector(".play-categories-produits");
+    if (!zoneProduits) return;
+    var id = ++derniereRequeteApercu;
+    fetch(API + "/v1/public-demo/search?vertical=" + encodeURIComponent(verticale), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ q: "", limit: 8 }),
+    })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) {
+        if (id !== derniereRequeteApercu || !d || !d.hits || !d.hits.length) return;
+        zoneProduits.innerHTML = d.hits.map(function (h) { return fiche(h); }).join("");
+      })
+      .catch(function () { /* silent failure -- category pills stay usable without preview */ });
   }
   function fermerPanneauCategories() {
     if (panneauCategories) panneauCategories.hidden = true;

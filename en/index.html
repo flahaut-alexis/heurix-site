@@ -18,7 +18,7 @@
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="../favicon-32.png">
 <link rel="apple-touch-icon" href="../apple-touch-icon.png">
-<link rel="stylesheet" href="../styles.css?v=1785657348">
+<link rel="stylesheet" href="../styles.css?v=1785672006">
 <link rel="canonical" href="https://heurix.fr/en/index.html">
 <script type="application/ld+json">
 {
@@ -114,17 +114,12 @@
   <div class="wrap">
     <div class="badge badge-emoji">⚡ SEARCH &amp; DISCOVERY ENGINE</div>
     <h1><span>Search</span> and <span>ranking</span>: delivered with your business rules already written.</h1>
-    <p class="lede">A search engine doesn't rank your category pages. Heurix does both, with the business rules for your industry already written.</p>
+    <p class="lede">A search engine doesn't rank your category pages. Heurix does both.</p>
 
     <div class="demo play">
-      <div class="play-view-toggle" role="tablist">
-        <button type="button" class="play-view-tab active" data-view="demo" role="tab" aria-selected="true">Interactive demo</button>
-        <button type="button" class="play-view-tab" data-view="api" role="tab" aria-selected="false">API preview</button>
-      </div>
-
       <div class="play-view" data-view-panel="demo">
         <div class="play-catalog-toggle">
-          <button type="button" class="play-vertical-pill play-vertical-on" data-vertical="outillage-en">🛠️ Hardware &amp; Tools</button>
+          <button type="button" class="play-vertical-pill play-vertical-on" data-vertical="outillage">🛠️ Hardware &amp; Tools</button>
           <button type="button" class="play-vertical-pill" data-vertical="mode-en">👗 Fashion &amp; Apparel</button>
         </div>
         <div class="play-bar play-bar-pulse">
@@ -146,6 +141,8 @@
         </div>
         <button type="button" class="play-more" hidden>Show more results</button>
       </div>
+
+      <button type="button" class="play-view-tab play-view-tab-discret" data-view="api" role="tab" aria-selected="false">API preview for developers →</button>
 
       <div class="play-view play-view-api" data-view-panel="api" hidden>
         <p class="play-api-label">What a developer sees — the real API response, on the "m8x20 stainless" example:</p>
@@ -778,7 +775,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="../heurix-pictos.js?v=1785366412"></script>
-<script src="../demo-search-live-en.js?v=1785657348"></script>
+<script src="../demo-search-live-en.js?v=1785672006"></script>
 <script>
   document.getElementById('year').textContent = new Date().getFullYear();
 
@@ -787,13 +784,13 @@
   playViewTabs.forEach(tab => {
     tab.addEventListener('click', () => {
       const target = tab.getAttribute('data-view');
-      playViewTabs.forEach(t => {
-        t.classList.toggle('active', t === tab);
-        t.setAttribute('aria-selected', t === tab ? 'true' : 'false');
-      });
-      document.querySelectorAll('.play-view').forEach(panel => {
-        panel.hidden = panel.getAttribute('data-view-panel') !== target;
-      });
+      const panelCible = document.querySelector('.play-view[data-view-panel="' + target + '"]');
+      const panelDemo = document.querySelector('.play-view[data-view-panel="demo"]');
+      const ouvrir = panelCible.hidden;
+      panelCible.hidden = !ouvrir;
+      panelDemo.hidden = ouvrir;
+      tab.setAttribute('aria-selected', ouvrir ? 'true' : 'false');
+      tab.classList.toggle('active', ouvrir);
     });
   });
 
@@ -1198,7 +1195,7 @@
     }
   });
 </script>
-<script src="../search-en.js?v=1785657348"></script>
+<script src="../search-en.js?v=1785672006"></script>
 <script src="../nav-dropdown.js"></script>
 <script src="../mobile-nav.js?v=1784970606"></script>
 <div id="pricing-nudge" class="pricing-nudge">

@@ -19,7 +19,7 @@
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css?v=1785657348">
+<link rel="stylesheet" href="styles.css?v=1785672006">
 <link rel="canonical" href="https://heurix.fr/">
 <script type="application/ld+json">
 {
@@ -159,14 +159,9 @@
 <section class="hero">
   <div class="wrap">
     <h1><span>Search</span> et <span>ranking</span> : livrés avec vos règles métier déjà écrites.</h1>
-    <p class="lede">Un moteur de recherche ne classe pas vos rayons. Heurix fait les deux, avec les règles métier de votre secteur déjà écrites.</p>
+    <p class="lede">Un moteur de recherche ne classe pas vos rayons. Heurix fait les deux.</p>
 
     <div class="demo play">
-      <div class="play-view-toggle" role="tablist">
-        <button type="button" class="play-view-tab active" data-view="demo" role="tab" aria-selected="true">Démo interactive</button>
-        <button type="button" class="play-view-tab" data-view="api" role="tab" aria-selected="false">Aperçu API</button>
-      </div>
-
       <div class="play-view" data-view-panel="demo">
         <div class="play-catalog-toggle">
           <button type="button" class="play-vertical-pill play-vertical-on" data-vertical="outillage">🛠️ Bricolage &amp; Outillage</button>
@@ -191,6 +186,14 @@
         </div>
         <button type="button" class="play-more" hidden>Afficher plus de résultats</button>
       </div>
+
+      <!-- Onglet "Démo interactive" retiré (2 août) -- redondant, on y
+           est déjà par défaut. "Aperçu API" descendu en lien discret
+           plutôt qu'un onglet de même niveau que la démo -- le mécanisme
+           JS générique (data-view/data-view-panel) reste identique, ne
+           dépend pas d'un bouton "demo" pour révéler le panneau démo
+           (jamais caché par défaut). -->
+      <button type="button" class="play-view-tab play-view-tab-discret" data-view="api" role="tab" aria-selected="false">Aperçu API pour développeurs →</button>
 
       <div class="play-view play-view-api" data-view-panel="api" hidden>
         <p class="play-api-label">Ce que voit un développeur — la vraie réponse de l'API, sur l'exemple « m8x20 inox » :</p>
@@ -779,23 +782,29 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="heurix-pictos.js?v=1785366412"></script>
-<script src="demo-search-live.js?v=1785657348"></script>
+<script src="demo-search-live.js?v=1785672006"></script>
 <script>
   document.getElementById('year').textContent = new Date().getFullYear();
 
 
   // Scroll reveal
+  // Bascule "Aperçu API" (2 août) -- un seul bouton reste depuis le
+  // retrait de l'onglet "Démo interactive" (redondant, on y est déjà par
+  // défaut). L'ancienne logique (exclusion mutuelle entre deux onglets)
+  // aurait laissé un cul-de-sac : cliquer "Aperçu API" aurait caché la
+  // démo sans bouton pour y revenir. Ici, un clic BASCULE l'un ou
+  // l'autre plutôt que de toujours sélectionner la cible.
   const playViewTabs = document.querySelectorAll('.play-view-tab');
   playViewTabs.forEach(tab => {
     tab.addEventListener('click', () => {
       const target = tab.getAttribute('data-view');
-      playViewTabs.forEach(t => {
-        t.classList.toggle('active', t === tab);
-        t.setAttribute('aria-selected', t === tab ? 'true' : 'false');
-      });
-      document.querySelectorAll('.play-view').forEach(panel => {
-        panel.hidden = panel.getAttribute('data-view-panel') !== target;
-      });
+      const panelCible = document.querySelector('.play-view[data-view-panel="' + target + '"]');
+      const panelDemo = document.querySelector('.play-view[data-view-panel="demo"]');
+      const ouvrir = panelCible.hidden; // etat AVANT le clic
+      panelCible.hidden = !ouvrir;
+      panelDemo.hidden = ouvrir; // l'un ou l'autre, jamais aucun des deux
+      tab.setAttribute('aria-selected', ouvrir ? 'true' : 'false');
+      tab.classList.toggle('active', ouvrir);
     });
   });
 
@@ -1225,7 +1234,7 @@
   });
 </script>
 
-<script src="search.js?v=1785657348"></script>
+<script src="search.js?v=1785672006"></script>
 <script src="nav-dropdown.js"></script>
 <script src="mobile-nav.js?v=1784970606"></script>
 <div id="pricing-nudge" class="pricing-nudge">
