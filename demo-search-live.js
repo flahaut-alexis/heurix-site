@@ -74,7 +74,6 @@
   // verticales. Le message d'honnêteté conçu pour les pannes réseau
   // masquait un défaut de code. Leçon : le .catch distingue désormais les
   // erreurs de programmation, qu'il laisse remonter à la console.
-  var chrono = 0;
   var prismeActif = null;
 
   // VERTICALE COURANTE. Le sélecteur porte l'argument des dix secteurs :
@@ -220,7 +219,7 @@
     rAF(pas);
   }
 
-  function afficher(donnees, requete, ajouter) {
+  function afficher(donnees, requete, ajouter, debutMs) {
     var hits = donnees.hits || [];
     if (!hits.length && !ajouter) {
       grille.innerHTML = "<p class='play-vide'>Aucun résultat pour « " +
@@ -291,7 +290,17 @@
     }
 
     if (meta) {
-      var ms = Math.max(1, Math.round(performance.now() - chrono));
+      // debutMs (2 août) -- remplace la variable partagée `chrono`, source
+      // possible de decalage si deux requetes se chevauchent (chercher(),
+      // parcourirTout(), chargerPlus() la modifiaient toutes trois) : un
+      // ecart de 64ms reel contre 11653ms affiche a ete signale, jamais
+      // reproduit en isolant chaque scenario un par un, mais la variable
+      // partagee restait un vrai defaut structurel independamment du
+      // mecanisme exact. Chaque appelant capture desormais SON PROPRE
+      // horodatage en variable locale et le transmet explicitement --
+      // plus aucune possibilite qu'un appel concurrent l'ecrase entre le
+      // depart de la requete et la lecture ici.
+      var ms = Math.max(1, Math.round(performance.now() - (debutMs || performance.now())));
 
       // LE TEMPS DE RÉPONSE DEVIENT UN ARGUMENT VISUEL, PAS UNE MENTION.
       //
@@ -378,7 +387,10 @@
     // C'est le temps TOTAL perçu (réseau compris), pas le temps moteur :
     // annoncer le second en mesurant le premier serait mentir en notre
     // faveur les bons jours et en notre défaveur les mauvais.
-    chrono = performance.now();
+    // Variable LOCALE (2 août) -- voir le commentaire détaillé dans
+    // afficher() sur pourquoi la variable partagée `chrono` a été
+    // remplacée par un horodatage propre à chaque appel.
+    var debut = performance.now();
     var corps = {
       q: requete,
       limit: 9,
@@ -400,7 +412,7 @@
       })
       .then(function (d) {
         if (id !== derniereRequete) return;   // une frappe plus récente est partie
-        afficher(d, requete);
+        afficher(d, requete, false, debut);
       })
       .catch(function (e) {
         if (id !== derniereRequete) return;
@@ -441,7 +453,7 @@
   function parcourirTout() {
     var id = ++derniereRequete;
     offsetEnCours = 0;
-    chrono = performance.now();
+    var debut = performance.now();
     fetch(API + "/v1/public-demo/search?vertical=" + encodeURIComponent(verticale), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -450,7 +462,7 @@
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (d) {
         if (id !== derniereRequete || !d) return;
-        afficher(d, "");
+        afficher(d, "", false, debut);
       })
       .catch(function () {
         if (id !== derniereRequete) return;
@@ -469,6 +481,7 @@
     boutonPlus.textContent = "Chargement…";
 
     var id = ++derniereRequete;
+    var debut = performance.now();
     var corpsPage = {
       q: requeteEnCours,
       limit: 9,
@@ -490,7 +503,7 @@
       })
       .then(function (d) {
         if (id !== derniereRequete) return; // une nouvelle recherche est partie entre-temps
-        afficher(d, requeteEnCours, true);
+        afficher(d, requeteEnCours, true, debut);
       })
       .catch(function () {
         if (id !== derniereRequete) return;

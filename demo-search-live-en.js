@@ -50,7 +50,6 @@
   // Chronometer for the request in flight. AT MODULE LEVEL, not inside
   // chercher(): afficher() reads it to write "X results in Y ms", and a
   // variable local to chercher() would be invisible to it.
-  var chrono = 0;
   var prismeActif = null;
 
   // CURRENT VERTICAL. The selector carries the ten-industry argument: same
@@ -186,7 +185,7 @@
     rAF(pas);
   }
 
-  function afficher(donnees, requete, ajouter) {
+  function afficher(donnees, requete, ajouter, debutMs) {
     var hits = donnees.hits || [];
     if (!hits.length && !ajouter) {
       grille.innerHTML = "<p class='play-vide'>No results for \"" +
@@ -250,7 +249,16 @@
     }
 
     if (meta) {
-      var ms = Math.max(1, Math.round(performance.now() - chrono));
+      // debutMs (Aug 2) -- replaces the shared `chrono` variable, a
+      // possible source of skew if two requests overlap (chercher(),
+      // parcourirTout(), chargerPlus() all modified it). A 64ms real vs
+      // 11653ms displayed gap was reported, never reproduced isolating
+      // each scenario, but the shared variable remained a real
+      // structural flaw regardless of the exact mechanism. Each caller
+      // now captures its OWN timestamp in a local variable and passes it
+      // explicitly -- no longer any way for a concurrent call to
+      // overwrite it between request start and this read.
+      var ms = Math.max(1, Math.round(performance.now() - (debutMs || performance.now())));
 
       // RESPONSE TIME AS A VISUAL ARGUMENT, NOT A MENTION. Count and speed
       // are two SEPARATE elements — not one sentence — so the ms figure
@@ -329,7 +337,9 @@
     // perceived time (network included), not engine time alone:
     // announcing the latter while measuring the former would flatter us
     // on good days and unfairly penalize us on bad ones.
-    chrono = performance.now();
+    // LOCAL variable (Aug 2) -- see the detailed comment in afficher()
+    // on why the shared `chrono` variable was replaced.
+    var debut = performance.now();
     var corps = {
       q: requete,
       limit: 9,
@@ -351,7 +361,7 @@
       })
       .then(function (d) {
         if (id !== derniereRequete) return;   // a more recent keystroke already fired
-        afficher(d, requete);
+        afficher(d, requete, false, debut);
       })
       .catch(function (e) {
         if (id !== derniereRequete) return;
@@ -390,7 +400,7 @@
   function parcourirTout() {
     var id = ++derniereRequete;
     offsetEnCours = 0;
-    chrono = performance.now();
+    var debut = performance.now();
     fetch(API + "/v1/public-demo/search?vertical=" + encodeURIComponent(verticale), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -399,7 +409,7 @@
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (d) {
         if (id !== derniereRequete || !d) return;
-        afficher(d, "");
+        afficher(d, "", false, debut);
       })
       .catch(function () {
         if (id !== derniereRequete) return;
@@ -418,6 +428,7 @@
     boutonPlus.textContent = "Loading…";
 
     var id = ++derniereRequete;
+    var debut = performance.now();
     var corpsPage = {
       q: requeteEnCours,
       limit: 9,
@@ -439,7 +450,7 @@
       })
       .then(function (d) {
         if (id !== derniereRequete) return; // a new search fired meanwhile
-        afficher(d, requeteEnCours, true);
+        afficher(d, requeteEnCours, true, debut);
       })
       .catch(function () {
         if (id !== derniereRequete) return;
