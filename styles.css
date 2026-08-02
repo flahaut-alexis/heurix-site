@@ -391,6 +391,12 @@ h1 span{ color:var(--blue); }
    clair (4.32:1). 88% passe confortablement sur les trois variantes,
    quelle que soit celle finalement retenue. */
 .hero .lede{ max-width:680px; margin-bottom:18px; color:rgba(255,255,255,0.88); }
+/* "Heurix" dans le sous-titre, mêmes caractéristiques que le logo dans
+   l'en-tête (2 août) -- poids 600 et espacement des lettres identiques à
+   .wordmark, mais SANS sa couleur : celle-ci est pensée pour un contexte
+   clair, le sous-titre vit sur le hero sombre. Reprendre le poids/
+   espacement suffit à créer la reconnaissance visuelle demandée. */
+.lede-marque{ font-weight:600; letter-spacing:-0.02em; }
 /* Repositionné après le widget et le bandeau de preuves (1er août,
    troisième passe) — plus entre le sous-titre et la démo. Objectif :
    laisser la démo respirer dans le premier écran, l'appel à l'action
@@ -412,7 +418,14 @@ h1 span{ color:var(--blue); }
   background:var(--bg);
   border:1px solid var(--line);
   border-radius:16px;
-  overflow:hidden;
+  /* overflow:hidden -> visible (2 août) : coupait net le panneau de
+     prévisualisation produits au focus (point 6), qui dépasse largement
+     la hauteur du widget une fois ouvert -- mesuré : jusqu'à 377px de
+     contenu tronqué, dernière carte de l'aperçu invisible. L'ancienne
+     raison d'être de ce overflow:hidden (garder l'image en bandeau
+     plein-largeur dans les coins arrondis) n'existe plus depuis que
+     l'image est devenue une vignette carrée avec son propre arrondi. */
+  overflow:visible;
   box-shadow:0 20px 40px -24px rgba(18,20,43,0.18);
 }
 /* Ombre renforcée UNIQUEMENT dans .hero -- la carte doit maintenant se

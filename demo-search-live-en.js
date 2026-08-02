@@ -467,6 +467,7 @@
   }
 
   var panneauCategories = racine.querySelector(".play-categories");
+  var panneauVueDemo = racine.querySelector('.play-view[data-view-panel="demo"]');
   var derniereRequeteApercu = 0;
   function ouvrirPanneauCategories() {
     if (!panneauCategories || champ.value.trim()) return;
@@ -489,11 +490,26 @@
       .then(function (d) {
         if (id !== derniereRequeteApercu || !d || !d.hits || !d.hits.length) return;
         zoneProduits.innerHTML = d.hits.map(function (h) { return fiche(h); }).join("");
+        reserverEspacePanneau();
       })
       .catch(function () { /* silent failure -- category pills stay usable without preview */ });
+
+    // RESERVE SPACE (Aug 2): the panel is absolutely positioned, so it
+    // never pushes following content in normal flow -- a plain CSS margin
+    // on the proof banner changes nothing (verified: still -277px overlap
+    // even after increasing that margin). Only a real measurement of the
+    // panel's ACTUAL height, applied as padding-bottom on an in-flow
+    // element, genuinely pushes the rest of the page down.
+    reserverEspacePanneau();
+  }
+  function reserverEspacePanneau() {
+    if (!panneauVueDemo || !panneauCategories || panneauCategories.hidden) return;
+    var hauteurPanneau = panneauCategories.getBoundingClientRect().height;
+    panneauVueDemo.style.paddingBottom = Math.round(hauteurPanneau + 8) + "px";
   }
   function fermerPanneauCategories() {
     if (panneauCategories) panneauCategories.hidden = true;
+    if (panneauVueDemo) panneauVueDemo.style.paddingBottom = "";
   }
   champ.addEventListener("focus", ouvrirPanneauCategories);
   champ.addEventListener("blur", fermerPanneauCategories);

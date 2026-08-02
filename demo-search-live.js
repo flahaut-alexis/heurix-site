@@ -528,6 +528,7 @@
   // clic n'ait eu la moindre chance d'être traité. `mousedown` se
   // déclenche avant `blur`, donc la sélection a lieu à temps.
   var panneauCategories = racine.querySelector(".play-categories");
+  var panneauVueDemo = racine.querySelector('.play-view[data-view-panel="demo"]');
   var derniereRequeteApercu = 0;
   function ouvrirPanneauCategories() {
     if (!panneauCategories || champ.value.trim()) return;
@@ -552,11 +553,27 @@
         // Réutilise fiche() telle quelle : même rendu que les résultats
         // de recherche, aucune logique de carte dupliquée ici.
         zoneProduits.innerHTML = d.hits.map(function (h) { return fiche(h); }).join("");
+        reserverEspacePanneau();
       })
       .catch(function () { /* échec silencieux -- les pastilles de catégorie restent utilisables sans aperçu */ });
+
+    // RÉSERVE D'ESPACE (2 août) : le panneau est en position absolue,
+    // donc ne pousse JAMAIS le contenu suivant dans le flux normal --
+    // une simple marge CSS sur le bloc de preuves ne change rien à ça
+    // (vérifié : toujours -277px de recouvrement même après avoir
+    // augmenté cette marge). Seule une vraie mesure de la hauteur RÉELLE
+    // du panneau, appliquée en padding-bottom sur un élément DANS le
+    // flux normal, pousse authentiquement la suite de la page.
+    reserverEspacePanneau();
+  }
+  function reserverEspacePanneau() {
+    if (!panneauVueDemo || !panneauCategories || panneauCategories.hidden) return;
+    var hauteurPanneau = panneauCategories.getBoundingClientRect().height;
+    panneauVueDemo.style.paddingBottom = Math.round(hauteurPanneau + 8) + "px";
   }
   function fermerPanneauCategories() {
     if (panneauCategories) panneauCategories.hidden = true;
+    if (panneauVueDemo) panneauVueDemo.style.paddingBottom = "";
   }
   champ.addEventListener("focus", ouvrirPanneauCategories);
   champ.addEventListener("blur", fermerPanneauCategories);
