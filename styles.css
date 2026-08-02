@@ -1367,6 +1367,21 @@ h2{ font-size:clamp(26px,3.4vw,34px); font-weight:800; margin:0 0 18px; max-widt
 }
 .pricing-hero .badge{ margin-left:auto; margin-right:auto; background:rgba(255,255,255,0.14); color:#fff; }
 .pricing-hero h1{ max-width:720px; margin-left:auto; margin-right:auto; color:#fff; }
+/* Extension du degrade jusqu'aux blocs de prix (2 aout, demande directe)
+   -- .pricing-hero-etendu couvre desormais le hero ET la grille de prix
+   (Search API + Ranking seul), fusionnes en une seule section HTML.
+   Padding bas ajoute pour ne pas coller la derniere carte au bord.
+   Les .price-tier-card (blancs) n'ont besoin d'aucune adaptation --
+   elles "flottent" deja sur n'importe quel fond par construction. Les
+   TEXTES environnants (kicker, h2, lede, note de bas), eux, supposaient
+   un fond clair -- adaptes ici, sans toucher aux regles globales
+   (.kicker etc. restent inchangees partout ailleurs sur le site). */
+.pricing-hero-etendu{ padding-bottom:56px; }
+.pricing-hero-etendu .kicker{ color:rgba(255,255,255,0.75); }
+.pricing-hero-etendu h2{ color:#fff; }
+.pricing-hero-etendu .section-lede{ color:rgba(255,255,255,0.82); }
+.pricing-hero-etendu .pricing-note{ color:rgba(255,255,255,0.75); }
+.pricing-hero-etendu .pricing-note a{ color:#fff; }
 
 .pricing-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; align-items:stretch; }
 @media (max-width:1100px){ .pricing-grid{ grid-template-columns:repeat(2,1fr); } }
