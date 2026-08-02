@@ -294,8 +294,16 @@ header{
 
   /* VARIANTE C - Radial centré (structure différente : un halo plus clair
      centré derrière le H1, qui s'assombrit vers les bords -- effet
-     "projecteur" plutôt qu'une diagonale uniforme) — ACTIVE */
-  background: radial-gradient(ellipse 1400px 900px at 50% 0%, #4C3FE0 0%, #2E1065 100%);
+     "projecteur" plutôt qu'une diagonale uniforme) */
+  /* background: radial-gradient(ellipse 1400px 900px at 50% 0%, #4C3FE0 0%, #2E1065 100%); */
+
+  /* VARIANTE 4 - Douceur étendue (choisie le 2 août). Même structure
+     radiale que C, mais la fin bascule vers un bleu-nuit (#101B4D) plutôt
+     que le violet saturé d'origine (#2E1065) -- objectif : rester dans la
+     famille indigo/marine, jamais dériver vers le violet. Point
+     intermédiaire à 45% (#3648A8) pour une transition progressive plutôt
+     qu'un dégradé à deux tons brutal. — ACTIVE */
+  background: radial-gradient(ellipse 1400px 900px at 50% 0%, #4C3FE0 0%, #3648A8 45%, #101B4D 100%);
 }
 .hero::before{
   content:"";
