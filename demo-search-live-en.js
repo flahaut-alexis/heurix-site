@@ -131,14 +131,6 @@
         }).join("") + "</div>"
       : "";
 
-    // ACTION BUTTON (Aug 2) -- links to the real product page on
-    // racetools.fr when the API provides one (`url`), consistent with the
-    // choice already made to use their data and images for this demo.
-    var lienHtml = p.url
-      ? "<a class='play-card-cta' href='" + esc(p.url) + "' target='_blank' rel='noopener' " +
-        "onclick='event.stopPropagation()'>View product →</a>"
-      : "";
-
     return "<article class='play-card" + (etiquette ? " play-card-featured" : "") + "'>" +
       (etiquette ? "<span class='play-card-etiquette'>" + esc(etiquette) + "</span>" : "") +
       visuel +
@@ -150,8 +142,11 @@
         (p.price !== undefined ? "<span class='play-card-price'>" + euros(p.price) + "</span>" : "") +
         etat +
       "</div>" +
+      // NO "VIEW PRODUCT" BUTTON (removed Aug 2): it linked out to the
+      // real racetools.fr product page -- a real problem flagged by
+      // Alexis, not just a detail: a visitor testing Heurix's search
+      // should never land on a third party's site in one click.
       (p.ref ? "<div class='play-card-ref-bas'>" + esc(p.ref) + "</div>" : "") +
-      lienHtml +
     "</article>";
   }
 

@@ -361,7 +361,14 @@ h1 span{ color:var(--blue); }
    Option (b) -- puce blanche translucide derrière chaque mot plutôt
    qu'une couleur distincte -- juste en dessous, commentée : décommenter
    .hero h1 span et commenter la ligne cyan pour comparer visuellement. */
-.hero h1 span{ color:#7DD3FC; }
+/* Assombri le 2 aout, demande directe -- #7DD3FC etait deja la limite
+   haute pour rester lisible pres du point le plus clair du degrade actif
+   (#4C3FE0, 4.07:1) : impossible d'assombrir dans la meme famille de
+   teinte sans repasser sous 3:1 (seuil applicable, texte large et gras)
+   a cet endroit precis, ou le H1 se trouve justement. #5AB8E8 est la
+   valeur la plus sombre testee qui reste au-dessus (3.06:1) -- nettement
+   plus fonce qu'avant, sans sacrifier la lisibilite. */
+.hero h1 span{ color:#5AB8E8; }
 /* Option (b), à activer à la place de la ligne ci-dessus si préférée :
 .hero h1 span{
   color:#fff; background:rgba(255,255,255,0.12);
@@ -641,22 +648,22 @@ h1 span{ color:var(--blue); }
    page entière au prochain mouvement de molette -- avec elle, le
    scroll s'arrête net, cette zone reste bien isolée du reste de la page.
 
-   HAUTEUR RECALCULÉE UNE DEUXIÈME FOIS (2 août, refonte cartes) : la
-   valeur de 480px datait de cartes à 191px de haut (titre 1 ligne, pas
-   de tags ni de bouton d'action). La refonte des cartes du même jour
-   (titre repassé à 2 lignes + tags marque/catégorie + bouton "Voir le
-   produit") porte la carte à 269px mesurés -- +41 %. À 480px inchangé,
-   même 2 rangs pleins ne tenaient plus (554px nécessaires). Recalculé
-   à partir de la nouvelle mesure réelle :
-     2 rangs pleins       : 2 × 269 + 16 (gap)      = 554px
-     amorce du 3e rang     : ~35 % d'une carte + gap = 110px
-     total                                          ≈ 664px
+   HAUTEUR RECALCULÉE UNE TROISIÈME FOIS (2 août, deuxième revision) :
+   269px (titre 2 lignes + bouton "Voir le produit") avait donné 664px.
+   Titre revenu à 1 ligne et bouton retiré (retour Alexis le même jour :
+   cartes trop hautes, lien vers un tiers à ne jamais montrer) -- la carte
+   mesure maintenant 206px, plus proche du 191px d'origine que du 269px
+   intermédiaire. Recalculé une troisième fois à partir de la mesure
+   réelle :
+     2 rangs pleins       : 2 × 206 + 16 (gap)      = 428px
+     amorce du 3e rang     : ~35 % d'une carte + gap = 88px
+     total                                          ≈ 516px
    Une seule valeur pour les deux gabarits : la hauteur d'un RANG ne
    dépend pas du nombre de colonnes (chaque rang s'étire sur la carte la
    plus haute qu'il contient, `align-items:stretch`) -- "2 rangs" pèse
    le même nombre de pixels qu'on soit à 4 colonnes ou à 1 seule. */
 .play-results-scroll{
-  max-height:664px;
+  max-height:516px;
   overflow-y:auto;
   overscroll-behavior:contain;
   /* Coupe visuellement le haut du 3e rang plutôt que del'escamoter net :
@@ -671,7 +678,7 @@ h1 span{ color:var(--blue); }
   /* Marge de sécurité modeste sur petit écran, pas un recalcul complet
      -- la logique ci-dessus tient déjà, ceci compense juste des écrans
      encore plus étroits que le smartphone-type visé. */
-  .play-results-scroll{ max-height:634px; }
+  .play-results-scroll{ max-height:486px; }
 }
 
 .play-grid{
@@ -698,10 +705,15 @@ h1 span{ color:var(--blue); }
 .play-card:hover{
   box-shadow:0 10px 24px -12px rgba(18,20,43,0.18);
   border-color:var(--blue);
-  /* scale ajoute au deplacement existant (2 aout, refonte cartes) --
-     discret (1.015), le translateY faisait deja l'essentiel du travail
-     d'affordance, un scale plus fort aurait fait "sauter" la grille. */
-  transform:translateY(-2px) scale(1.015);
+  /* scale RETIRE (2 aout, deuxieme revision) -- c'etait tres probablement
+     la cause du reflet qui semblait "deborder" sur la carte voisine :
+     un transform ne change jamais la taille de la cellule de grille,
+     seulement le rendu visuel -- une carte agrandie de 1.5% chevauchait
+     legerement sa voisine, et le reflet tres lumineux a l'interieur
+     rendait ce chevauchement visible. z-index explicite en filet de
+     securite, meme si le chevauchement ne devrait plus se produire. */
+  transform:translateY(-2px);
+  z-index:3;
 }
 /* Reflet au survol (2 août, thème prisme retenu parmi les six proposées)
    -- bande diagonale, blanche puis teintee cyan, qui balaie la carte de
@@ -710,9 +722,13 @@ h1 span{ color:var(--blue); }
    jamais visible a l'arret (pas de residu quand la souris s'eloigne). */
 .play-card::before{
   content:""; position:absolute; top:0; left:-60%; width:40%; height:100%;
+  /* Attenue enormement (2 aout, deuxieme revision) -- opacites divisees
+     par ~3.5 (0.55->0.15, 0.4->0.12) : l'effet etait juge "etonnant",
+     bien trop marque pour un site B2B sobre. Reste visible au survol,
+     beaucoup plus discret. */
   background: linear-gradient(100deg,
-    transparent 0%, rgba(255,255,255,0.55) 40%,
-    rgba(125,211,252,0.4) 55%, transparent 100%);
+    transparent 0%, rgba(255,255,255,0.15) 40%,
+    rgba(125,211,252,0.12) 55%, transparent 100%);
   transform: skewX(-20deg);
   transition: left 0.6s ease;
   pointer-events:none; z-index:1;
@@ -722,17 +738,16 @@ h1 span{ color:var(--blue); }
 .play-card:nth-child(4){animation-delay:.09s;} .play-card:nth-child(5){animation-delay:.12s;}
 .play-card:nth-child(6){animation-delay:.15s;}
 .play-card-out .play-card-name, .play-card-out .play-card-ref-bas{ color:var(--ink-muted); }
-.play-card-body{ margin-bottom:10px; }
-/* Titre repasse a 2 lignes (2 aout, refonte cartes) -- etait a 1 ligne
-   depuis la compaction du matin pour faire tenir 2 rangs + amorce d'un
-   3e dans la zone de resultats a hauteur plafonnee. Consequence directe,
-   mesuree plus bas dans la reponse plutot que juste signalee : chaque
-   carte est plus haute, donc moins de rangs tiennent dans la meme zone. */
+/* Titre repasse a 1 ligne (2 aout, deuxieme revision) -- retour a 1 apres
+   qu'Alexis ait vu l'effet reel du passage a 2 : cartes trop hautes,
+   moins de place. La tension queue j'avais signalee au moment du passage
+   a 2 lignes se confirme dans l'autre sens maintenant. */
 .play-card-name{
   font-size:15px; font-weight:700; color:var(--ink); line-height:1.35;
-  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;
+  display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical;
   overflow:hidden;
 }
+.play-card-body{ margin-bottom:10px; }
 /* Tags d'attributs (2 aout) -- remplace la description generique tronquee.
    Marque et categorie : les deux seuls champs fiables et presents sur
    l'ensemble du catalogue reel, pas des attributs extraits d'un texte
@@ -772,18 +787,6 @@ h1 span{ color:var(--blue); }
   font-family:'IBM Plex Mono', monospace; font-size:10px; font-weight:500;
   color:var(--ink-muted); letter-spacing:.01em; margin-top:6px; opacity:0.75;
 }
-/* Bouton d'action (2 aout) -- "Voir le produit" pointe vers la fiche
-   reelle sur racetools.fr quand l'API la fournit (`url`), coherent avec
-   le choix deja fait d'utiliser leurs donnees et images pour cette demo. */
-.play-card-cta{
-  display:block; margin-top:9px; padding:7px 0;
-  text-align:center; font-size:12.5px; font-weight:700;
-  color:var(--blue-deep); background:var(--blue-tint);
-  border-radius:8px; text-decoration:none;
-  transition:background .15s ease, color .15s ease;
-  position:relative; z-index:2;
-}
-.play-card-cta:hover{ background:var(--blue); color:#fff; }
 
 /* Badges contextuels, systeme generalise (2 aout) -- variantes de couleur
    pretes pour "Meilleure vente" / "Promo" / "Stock limite", MAIS seule

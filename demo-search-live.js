@@ -162,16 +162,6 @@
         }).join("") + "</div>"
       : "";
 
-    // BOUTON D'ACTION (2 août) -- pointe vers la fiche réelle sur
-    // racetools.fr quand l'API la fournit (`url`), cohérent avec le choix
-    // déjà fait d'utiliser leurs données et images pour cette démo.
-    // z-index:2 явно au-dessus du reflet au survol (z-index:1), pour que
-    // le lien reste cliquable pendant l'animation.
-    var lienHtml = p.url
-      ? "<a class='play-card-cta' href='" + esc(p.url) + "' target='_blank' rel='noopener' " +
-        "onclick='event.stopPropagation()'>Voir le produit →</a>"
-      : "";
-
     return "<article class='play-card" + (etiquette ? " play-card-featured" : "") + "'>" +
       (etiquette ? "<span class='play-card-etiquette'>" + esc(etiquette) + "</span>" : "") +
       visuel +
@@ -179,15 +169,18 @@
         "<div class='play-card-name'>" + esc(p.name || p.id) + "</div>" +
         tagsHtml +
       "</div>" +
-      // Ligne prix mise en avant + stock, puis référence discrète tout en
-      // bas, et enfin le bouton d'action -- ordre vertical exact demandé :
-      // image → titre → tags → prix+dispo → référence.
       "<div class='play-card-prix-ligne'>" +
         (p.price !== undefined ? "<span class='play-card-price'>" + euros(p.price) + "</span>" : "") +
         etat +
       "</div>" +
+      // PAS DE BOUTON "VOIR LE PRODUIT" (retiré le 2 août) : il pointait
+      // vers la fiche réelle sur racetools.fr -- un vrai problème signalé
+      // par Alexis, pas juste un détail : un prospect qui teste la
+      // recherche Heurix ne doit jamais se retrouver sur le site d'un
+      // tiers en un clic. Le champ `url` du produit reste disponible côté
+      // API pour qui en aurait besoin ailleurs, simplement plus exploité
+      // ici dans la carte.
       (p.ref ? "<div class='play-card-ref-bas'>" + esc(p.ref) + "</div>" : "") +
-      lienHtml +
     "</article>";
   }
 
