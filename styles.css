@@ -1177,10 +1177,19 @@ h2{ font-size:clamp(26px,3.4vw,34px); font-weight:800; margin:0 0 18px; max-widt
 .roi-range-mid{ font-style:italic; }
 
 /* Custom slider styling */
+/* Cible tactile agrandie (2 août, audit UX point 8) -- l'input lui-meme
+   passe a 44px de haut (zone cliquable/tactile recommandee), la piste
+   VISUELLE reste fine (6px) via ::-webkit-slider-runnable-track /
+   ::-moz-range-track, separee de l'input. Sans cette separation, changer
+   la hauteur de l'input agrandirait aussi la piste visuellement -- pas
+   ce qui est demande. */
 .roi-field input[type="range"]{
   -webkit-appearance:none; appearance:none;
-  width:100%; height:6px; border-radius:9999px;
-  background:#fff; cursor:pointer; margin:0;
+  width:100%; height:44px; border-radius:9999px;
+  background:transparent; cursor:pointer; margin:0;
+}
+.roi-field input[type="range"]::-webkit-slider-runnable-track{
+  width:100%; height:6px; border-radius:9999px; background:#fff;
 }
 .roi-field input[type="range"]::-webkit-slider-thumb{
   -webkit-appearance:none; appearance:none;
@@ -1190,7 +1199,7 @@ h2{ font-size:clamp(26px,3.4vw,34px); font-weight:800; margin:0 0 18px; max-widt
   margin-top:-6px;
 }
 .roi-field input[type="range"]::-webkit-slider-thumb:hover{ transform:scale(1.15); background:var(--blue-deep); }
-.roi-field input[type="range"]::-moz-range-track{ background:#fff; height:6px; border-radius:9999px; }
+.roi-field input[type="range"]::-moz-range-track{ width:100%; height:6px; border-radius:9999px; background:#fff; }
 .roi-field input[type="range"]::-moz-range-thumb{
   border:none; width:18px; height:18px; border-radius:50%;
   background:var(--blue); cursor:pointer; transition:transform .12s ease, background .12s ease;
@@ -1349,13 +1358,15 @@ h2{ font-size:clamp(26px,3.4vw,34px); font-weight:800; margin:0 0 18px; max-widt
 /* PRICING PAGE */
 .pricing-hero{
   padding:56px 0 28px; text-align:center;
-  background:
-    radial-gradient(ellipse 900px 480px at 50% -10%, var(--blue-tint) 0%, rgba(238,241,255,0) 65%),
-    linear-gradient(180deg, #F4F6FF 0%, #FFFFFF 78%);
+  /* Même dégradé que .hero sur la page d'accueil (2 août, demande directe)
+     -- valeurs reprises telles quelles plutôt que réutiliser la classe
+     .hero elle-même, pour éviter d'hériter d'autres réglages propres à la
+     home (rembourrage calé sur le widget de démo, décoration ::before)
+     qui n'ont pas leur place ici. */
+  background: radial-gradient(ellipse 1400px 900px at 50% 0%, #4C3FE0 0%, #3648A8 45%, #101B4D 100%);
 }
-.pricing-hero .badge{ margin-left:auto; margin-right:auto; }
-.pricing-hero h1{ max-width:720px; margin-left:auto; margin-right:auto; }
-.pricing-hero .lede{ max-width:620px; margin-left:auto; margin-right:auto; }
+.pricing-hero .badge{ margin-left:auto; margin-right:auto; background:rgba(255,255,255,0.14); color:#fff; }
+.pricing-hero h1{ max-width:720px; margin-left:auto; margin-right:auto; color:#fff; }
 
 .pricing-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; align-items:stretch; }
 @media (max-width:1100px){ .pricing-grid{ grid-template-columns:repeat(2,1fr); } }
@@ -3592,6 +3603,32 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 /* En-tete de console sans navigation marketing : le bloc restant est court,
    on le colle a droite plutot que de laisser un vide. */
 .nav-links-console{ margin-left:auto; display:flex; align-items:center; gap:12px; }
+/* Repli mobile (2 août, audit UX point 6) -- .nav-links-console avait
+   display:flex non conditionnel, SANS jamais se replier derriere le
+   hamburger comme .nav-links le fait ailleurs -- ce bloc (Mon compte,
+   EN, Documentation, Se deconnecter) occupait tout le premier ecran sur
+   mobile, avant la moindre donnee du tableau de bord. Regle placee APRES
+   la declaration ci-dessus : meme niveau de specificite (une classe),
+   donc l'ordre dans le fichier tranche -- celle-ci doit gagner. Reprend
+   exactement le mecanisme deja utilise pour .nav-links (mobile-nav.js,
+   deja charge sur cette page, gerait deja cet element en silence faute
+   du bouton hamburger, absent jusqu'ici). */
+@media (max-width:1080px){
+  .nav-links-console{
+    display:none; position:absolute; top:100%; left:0; right:0; z-index:70;
+    flex-direction:column; align-items:stretch; gap:0;
+    background:#fff; border-top:1px solid var(--line);
+    box-shadow:0 12px 28px rgba(18,20,43,0.12); padding:14px 24px 20px;
+    margin-left:0;
+  }
+  .nav-links-console.mobile-open{ display:flex; }
+  .nav-links-console .nav-drop{ width:100%; border-bottom:1px solid var(--line); }
+  .nav-links-console .nav-drop-btn{ width:100%; justify-content:space-between; padding:11px 0; font-size:15px; }
+  .nav-links-console > a, .nav-links-console > button{
+    padding:11px 0; border-bottom:1px solid var(--line); font-size:15px;
+    width:100%; justify-content:flex-start;
+  }
+}
 
 /* ------------------------------------------------------------------ */
 /* Bilan des erreurs, en tete de la section Erreurs                    */
