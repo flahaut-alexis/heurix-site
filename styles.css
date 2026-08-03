@@ -615,6 +615,19 @@ h1 span{ color:var(--blue); }
   transition:background .15s ease, color .15s ease;
 }
 .play-categorie:hover{ background:var(--blue); color:#fff; }
+/* Correctif (3 aout, retour Alexis) : la correction precedente (juste
+   ci-dessous) ciblait .play-categories-produits (la grille de PRODUITS)
+   au lieu de .play-categories-pastilles (la grille de CATEGORIES/
+   en-tetes) -- deux noms tres proches, confusion probable a l'ecriture.
+   Verifie en rendu reel avant correction : les 4 categories avaient
+   exactement le meme "left" et un "top" croissant -- empilees une par
+   ligne, une seule colonne calculee par la grille de base
+   (auto-fit/minmax(140px,1fr) ne laisse tenir qu'une colonne sous 480px).
+   C'est ICI, sur le vrai conteneur, que la grille a 4 colonnes doit
+   s'appliquer. */
+@media (max-width:480px){
+  .play-categories-pastilles{ grid-template-columns:repeat(4, 1fr); gap:5px; }
+}
 /* Bug remonte (3 aout) : sur mobile etroit, minmax(190px, 1fr) ne laisse
    tenir qu'une seule colonne -- les 4 categories s'empilaient au lieu de
    rester sur une ligne. Le texte vient du catalogue reel (esc(c) en JS),

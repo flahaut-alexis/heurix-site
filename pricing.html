@@ -18,7 +18,7 @@
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css?v=1785755445">
+<link rel="stylesheet" href="styles.css?v=1785781712">
 <link rel="canonical" href="https://heurix.fr/pricing.html">
 <script type="application/ld+json">
 {
@@ -88,6 +88,10 @@
           </div>
         </div>
         <a href="blog.html">Blog</a>
+        <!-- Correctif "Sign in manquant sur mobile" porte depuis
+             index.html (3 aout) -- .header-signin masque sous 640px
+             sans alternative jusque-la. -->
+        <a href="console.html" class="nav-link-mobile-seul">Se connecter</a>
       </div>
       <div class="header-search">
         <button id="heurix-search-btn" class="search-trigger" aria-label="Heurix Search — rechercher sur le site" type="button">
@@ -503,7 +507,7 @@
   </div>
 </footer>
 
-<script src="search.js?v=1785755445"></script>
+<script src="search.js?v=1785781712"></script>
 <script>
   document.getElementById('year').textContent = new Date().getFullYear();
 
