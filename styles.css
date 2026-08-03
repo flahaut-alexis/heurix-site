@@ -637,7 +637,15 @@ h1 span{ color:var(--blue); }
    que de le laisser deborder ou casser la mise en page si un nom de
    categorie est trop long pour la largeur disponible. */
 @media (max-width:480px){
-  .play-categories-produits{ grid-template-columns:repeat(4, 1fr); gap:5px; }
+  /* Produits en une seule colonne sur mobile (retour Alexis, 3 aout) --
+     repeat(4,1fr) rendait l'apercu illisible sur petit ecran. gap monte
+     de 5px a 10px : pense pour separer des colonnes etroites, pas des
+     cartes empilees verticalement -- 5px les collait trop les unes aux
+     autres une fois en une colonne. .play-categorie (juste en dessous,
+     les PASTILLES de categorie elles-memes) et .play-categories-pastilles
+     (leur conteneur, deja corrige plus tot aujourd'hui pour rester sur
+     une ligne) : aucun des deux touche ici, comme demande explicitement. */
+  .play-categories-produits{ grid-template-columns:1fr; gap:10px; }
   .play-categorie{
     font-size:10.5px; padding:8px 4px;
     white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
