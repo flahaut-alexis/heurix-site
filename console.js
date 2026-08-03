@@ -3598,6 +3598,8 @@
   var postSignupCopyBtn = document.getElementById("post-signup-copy-btn");
   var postSignupCopyConfirm = document.getElementById("post-signup-copy-confirm");
   var postSignupContinueBtn = document.getElementById("post-signup-continue-btn");
+  var segSecteur = document.getElementById("seg-secteur");
+  var segPlateforme = document.getElementById("seg-plateforme");
 
   function showPostSignupScreen(sessionToken, key, email) {
     AUTH_FORMS.forEach(function (f) { f.hidden = true; });
@@ -3607,8 +3609,21 @@
     postSignupEmail.textContent = email;
     postSignupKeyValue.textContent = key;
     postSignupCopyConfirm.hidden = true;
+    if (segSecteur) segSecteur.value = "";
+    if (segPlateforme) segPlateforme.value = "";
     postSignupScreen.hidden = false;
     postSignupContinueBtn.onclick = function () {
+      // Segmentation (2 août, point 4) -- facultative, jamais bloquante :
+      // le bouton fait EXACTEMENT la même chose qu'on ait répondu ou non.
+      // La requête part en tâche de fond (pas de await, pas de .then
+      // avant startSession) -- même si elle échoue ou traîne, l'accès au
+      // tableau de bord ne dépend jamais d'elle.
+      var secteur = segSecteur && segSecteur.value ? segSecteur.value : null;
+      var plateforme = segPlateforme && segPlateforme.value ? segPlateforme.value : null;
+      if (secteur || plateforme) {
+        apiPost("/v1/auth/segmentation", { secteur: secteur, plateforme: plateforme })
+          .catch(function () { /* tache de fond : un echec ici n'affecte jamais l'acces au tableau de bord */ });
+      }
       postSignupScreen.hidden = true;
       startSession(sessionToken, key);
     };

@@ -8,7 +8,7 @@
 <meta name="robots" content="noindex">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css?v=1785747358">
+<link rel="stylesheet" href="styles.css?v=1785749328">
 <link rel="canonical" href="https://heurix.fr/console.html">
 </head>
 <body>
@@ -136,6 +136,36 @@
       <button type="button" id="post-signup-copy-btn" class="btn btn-ghost">Copier</button>
     </div>
     <p id="post-signup-copy-confirm" class="console-login-micro" hidden>Copié.</p>
+
+    <!-- Segmentation (2 août, point 4) -- deux questions, toutes deux
+         facultatives : le bouton "Accéder à mon tableau de bord" plus
+         bas fonctionne identiquement qu'on ait répondu ou non, pas de
+         lien "passer" séparé à construire -- le même bouton sert les
+         deux cas naturellement. -->
+    <div class="console-segmentation">
+      <label for="seg-secteur">Quel secteur décrit le mieux votre catalogue ? <span class="console-field-optional">(facultatif)</span></label>
+      <select id="seg-secteur">
+        <option value="">— Choisir —</option>
+        <option value="mode">Mode &amp; habillement</option>
+        <option value="outillage">Outillage &amp; bricolage</option>
+        <option value="industrie">Industrie &amp; équipement professionnel</option>
+        <option value="electronique">Électronique &amp; high-tech</option>
+        <option value="automobile">Automobile &amp; pièces détachées</option>
+        <option value="livres">Livres &amp; édition</option>
+        <option value="vins">Vins &amp; spiritueux</option>
+        <option value="autre">Autre secteur technique</option>
+      </select>
+      <label for="seg-plateforme" style="margin-top:14px;">Sur quelle plateforme tourne votre boutique ? <span class="console-field-optional">(facultatif)</span></label>
+      <select id="seg-plateforme">
+        <option value="">— Choisir —</option>
+        <option value="shopify">Shopify</option>
+        <option value="prestashop">PrestaShop</option>
+        <option value="woocommerce">WooCommerce</option>
+        <option value="magento">Magento</option>
+        <option value="autre">Autre / stack maison</option>
+      </select>
+    </div>
+
     <button type="button" id="post-signup-continue-btn" class="btn" style="margin-top:18px;">Accéder à mon tableau de bord</button>
   </div>
 </section>
@@ -966,9 +996,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="console-select.js?v=1784983392"></script>
 <script src="visite-editeur.js?v=1785060993"></script>
-<script type="module" src="csv-console.js?v=1785747358"></script>
+<script type="module" src="csv-console.js?v=1785749328"></script>
 <script src="console-i18n.js?v=1785166789"></script>
-<script src="console.js?v=1785747358"></script>
+<script src="console.js?v=1785749328"></script>
 <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 
 <script src="nav-dropdown.js"></script>
