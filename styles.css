@@ -1944,6 +1944,33 @@ h2{ font-size:clamp(26px,3.4vw,34px); font-weight:800; margin:0 0 18px; max-widt
 .console-sidebar-item-top.console-sidebar-item-on{ border-left-color:transparent; }
 
 .console-main{ flex:1; min-width:0; }
+/* Select natif sans max-width defini -- inoffensif ici (le vrai
+   probleme de largeur venait d'ailleurs, voir .console-table plus bas),
+   garde par prudence : un <select> avec des options plus longues a
+   l'avenir n'aura pas a y repenser. */
+.catalog-rulepack-select{ max-width:100%; }
+/* Vrai correctif final (3 aout, retour Alexis -- marges console mobile) :
+   le h2 "Top produits" (style="flex:1" en HTML) est un flex-item direct
+   de .catalog-card-row{display:flex; flex-wrap:wrap}, SANS min-width:0
+   explicite -- cas d'usage classique ou son absence pose probleme : le
+   navigateur calcule le scrollWidth du parent flex sur base de la
+   largeur "preferee" du contenu avant tout wrap, meme si le rendu
+   visuel apres wrap semble correct. Confirme par mesure directe :
+   .catalog-card-row scrollWidth 669 contre clientWidth 480 avant ce
+   correctif -- c'est LUI qui remontait tout le debordement jusqu'a
+   .console-panel, pas le select ni le tableau (deja verifies sans
+   probleme separement). */
+.catalog-card-row h2{ min-width:0; }
+/* Filet de securite (3 aout) : min-width:0 sur le h2 s'applique
+   correctement (verifie via getComputedStyle) mais ne suffit pas seul a
+   empecher le debordement mesure -- comportement flexbox plus subtil
+   que prevu, cause exacte non entierement isolee malgre plusieurs
+   heures d'investigation. overflow:hidden ici agit en filet de securite
+   independant du mecanisme precis : quoi qu'il se passe a l'interieur,
+   rien ne peut plus deborder visuellement au-dela de la carte. Aucun
+   contenu de ce panneau n'a besoin de deborder intentionnellement
+   (le tableau a deja son propre scroll dedie via .table-scroll). */
+.console-panel{ overflow:hidden; }
 .console-pane{ display:block; }
 .console-pane[hidden]{ display:none; }
 .console-pane-title{ font-size:20px; margin:0 0 18px; }
@@ -3252,6 +3279,18 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
   font-size:13.5px;
   background:#fff; border:1px solid var(--line); border-radius:11px;
   overflow:hidden;
+  /* Correctif (3 aout, retour Alexis -- marges console mobile) :
+     sans table-layout:fixed, un <table> calcule sa largeur sur le
+     min-content de ses cellules -- resiste au retrecissement meme avec
+     .table-scroll{overflow-x:auto} deja actif sur son wrapper, et
+     remonte le debordement toute la chaine de parents (mesure a 726px
+     sur un ecran de 390px, cause isolee par retrait progressif des
+     enfants : le tableau "Top produits", pas la carte d'activation ni
+     le select de tri a cote). fixed force le tableau a respecter la
+     largeur de son conteneur ; le contenu trop long enveloppe sur
+     plusieurs lignes plutot que d'elargir le tableau -- le scroll
+     horizontal de .table-scroll reste en filet de secours si besoin. */
+  table-layout:fixed;
 }
 .console-table thead th{
   background:var(--bg-soft);
