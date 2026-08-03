@@ -2829,10 +2829,12 @@
 
   // ---------------- Carte d'activation (2 août, points 5+6) ----------------
   //
-  // Trois signaux, tous réellement calculables depuis l'API -- rien
-  // d'inventé : catalogs_used et first_search_at viennent de la même
-  // réponse /v1/usage déjà chargée par loadDashboard (pas un second
-  // appel), seule la clé publique nécessite un appel séparé.
+  // Quatre signaux, tous réellement calculables depuis l'API -- rien
+  // d'inventé : catalogs_used, first_search_at ET désormais
+  // first_browse_at (palier 4, ajouté le même jour côté moteur) viennent
+  // tous de la même réponse /v1/usage déjà chargée par loadDashboard (pas
+  // d'appel supplémentaire pour ce quatrième signal) -- seule la clé
+  // publique nécessite un appel séparé.
   //
   // JAMAIS BLOQUANTE : aucun autre endroit de la console ne lit l'état de
   // cette carte. Réductible, choix mémorisé dans localStorage -- un
@@ -2845,18 +2847,20 @@
     var boutonRestore = document.getElementById("activation-restore-btn");
     if (!carte) return;
 
-    // Si les trois étapes sont déjà faites, plus la peine d'afficher la
+    // Si les quatre étapes sont déjà faites, plus la peine d'afficher la
     // carte du tout, réduite ou pas -- elle n'apporte plus rien.
     var indexeFait = (usage.catalogs_used || 0) > 0;
     var rechercheFaite = !!usage.first_search_at;
+    var browseFait = !!usage.first_browse_at;
 
     apiFetch("/v1/keys/public", key).then(function (data) {
       var cleFaite = !!(data.public_keys && data.public_keys.length > 0);
-      var toutFait = indexeFait && rechercheFaite && cleFaite;
+      var toutFait = indexeFait && rechercheFaite && cleFaite && browseFait;
 
       majItemActivation("activation-item-index", indexeFait);
       majItemActivation("activation-item-search", rechercheFaite);
       majItemActivation("activation-item-pubkey", cleFaite);
+      majItemActivation("activation-item-browse", browseFait);
 
       if (toutFait) {
         carte.hidden = true;
@@ -2868,9 +2872,10 @@
       boutonRestore.hidden = !reduite;
     }).catch(function () {
       // Échec de CE SEUL appel : pas de raison de priver l'utilisateur des
-      // deux autres signaux, déjà connus via `usage`.
+      // trois autres signaux, déjà connus via `usage`.
       majItemActivation("activation-item-index", indexeFait);
       majItemActivation("activation-item-search", rechercheFaite);
+      majItemActivation("activation-item-browse", browseFait);
       var reduite = localStorage.getItem(ACTIVATION_REDUITE_KEY) === "1";
       carte.hidden = reduite;
       boutonRestore.hidden = !reduite;
