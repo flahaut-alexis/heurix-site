@@ -1948,7 +1948,7 @@ h2{ font-size:clamp(26px,3.4vw,34px); font-weight:800; margin:0 0 18px; max-widt
    probleme de largeur venait d'ailleurs, voir .console-table plus bas),
    garde par prudence : un <select> avec des options plus longues a
    l'avenir n'aura pas a y repenser. */
-.catalog-rulepack-select{ max-width:100%; }
+.catalog-rulepack-select{ max-width:100%; min-width:0; }
 /* Vrai correctif final (3 aout, retour Alexis -- marges console mobile) :
    le h2 "Top produits" (style="flex:1" en HTML) est un flex-item direct
    de .catalog-card-row{display:flex; flex-wrap:wrap}, SANS min-width:0
@@ -2054,7 +2054,15 @@ h2{ font-size:clamp(26px,3.4vw,34px); font-weight:800; margin:0 0 18px; max-widt
 .console-loading{ padding:80px 0; text-align:center; color:var(--ink-muted); font-size:14px; }
 
 .console-stats{ display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:20px; }
-@media (max-width:800px){ .console-stats{ grid-template-columns:repeat(2,1fr); } }
+/* VRAI deuxieme foyer du debordement console mobile (3 aout, retour
+   Alexis) -- meme nature de bug que celui trouve dans catalog-card-row
+   (h2/select), mais pour CSS grid plutot que flexbox : "1fr" seul ne
+   garantit pas qu'une colonne peut retrecir sous la taille minimale
+   naturelle de son contenu (equivalent grid de min-width:auto par
+   defaut en flexbox). minmax(0,1fr) est necessaire pour vraiment
+   permettre le retrecissement -- .console-stat mesurait 262px chacune,
+   deux par ligne depassant largement les 390px disponibles. */
+@media (max-width:800px){ .console-stats{ grid-template-columns:repeat(2, minmax(0,1fr)); } }
 .console-stat{
   background:#fff; border:1px solid var(--line); border-radius:14px; padding:20px;
   box-shadow:0 2px 10px -4px rgba(18,20,43,0.06);
@@ -2622,6 +2630,21 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
   padding:9px 34px 9px 13px; min-width:190px; max-width:100%;
   position:relative;
   transition:border-color .12s ease, box-shadow .12s ease;
+}
+/* VRAIE cause du debordement console mobile (3 aout, retour Alexis) --
+   trouvee apres plusieurs fausses pistes (table-layout:fixed, min-width:0
+   sur le h2 et le <select>, overflow:hidden en filet de securite -- tous
+   corrects en soi, mais aucun ne visait le bon element). .csel-native
+   (juste au-dessus) est un motif classique d'accessibilite : le <select>
+   natif est cache en 1x1px, c'est CE bouton -- .csel-btn -- qui le
+   represente visuellement. min-width:190px, fixe, jamais concerne par
+   aucune des corrections precedentes puisqu'aucune ne touchait cette
+   classe. Confirme par mesure : select_minWidth restait "190px" apres
+   min-width:0 pose sur le <select> lui-meme, qui n'est pourtant pas
+   l'element visible. */
+@media (max-width:900px){
+  .csel-btn{ min-width:0; }
+  .csel{ min-width:0; }
 }
 .csel-btn::after{
   content:""; position:absolute; right:13px; top:50%;
