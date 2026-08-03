@@ -70,7 +70,16 @@ a{ color:inherit; }
 
 /* NAV */
 header{
-  position:sticky; top:0; z-index:50;
+  position:sticky; top:0;
+  /* z-index CORRIGE (bug remonte, 3 aout) : etait a 50, backdrop-filter
+     cree un contexte d'empilement local -- tout ce qui est DANS header,
+     y compris .nav-links a z-index:70 en interne, restait plafonne a 50
+     dans le contexte racine du document. .nav-mobile-fond (cree en JS,
+     directement sur <body>, donc bien dans le contexte racine) a
+     z-index:69 -- 50 < 69, le menu ouvert restait visuellement DERRIERE
+     son propre fond. 71 suffit : juste au-dessus du fond, la valeur
+     absolue au-dela n'a aucune importance, seul le contexte compte. */
+  z-index:71;
   background:rgba(255,255,255,0.92);
   backdrop-filter:blur(8px);
   border-bottom:1px solid var(--line);
@@ -172,6 +181,7 @@ header{
 }
 .nav-links{ display:flex; gap:24px; font-size:13.5px; color:var(--ink-muted); font-weight:600; white-space:nowrap; }
 .nav-links a{ text-decoration:none; }
+.nav-links > a.nav-link-mobile-seul{ display:none; }
 .nav-links a:hover{ color:var(--blue-deep); }
 .btn{
   display:inline-flex; align-items:center; gap:8px;
@@ -605,6 +615,21 @@ h1 span{ color:var(--blue); }
   transition:background .15s ease, color .15s ease;
 }
 .play-categorie:hover{ background:var(--blue); color:#fff; }
+/* Bug remonte (3 aout) : sur mobile etroit, minmax(190px, 1fr) ne laisse
+   tenir qu'une seule colonne -- les 4 categories s'empilaient au lieu de
+   rester sur une ligne. Le texte vient du catalogue reel (esc(c) en JS),
+   pas de libelles fixes connus a l'avance -- impossible de le raccourcir
+   comme pour les pastilles secteur du simulateur ROI. Sous 480px : 4
+   colonnes EGALES forcees, texte tronque proprement (ellipsis) plutot
+   que de le laisser deborder ou casser la mise en page si un nom de
+   categorie est trop long pour la largeur disponible. */
+@media (max-width:480px){
+  .play-categories-produits{ grid-template-columns:repeat(4, 1fr); gap:5px; }
+  .play-categorie{
+    font-size:10.5px; padding:8px 4px;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+}
 
 .play-chips{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:12px; }
 .play-chips-label{ font-size:12px; font-weight:600; color:var(--ink-muted); }
@@ -1116,6 +1141,20 @@ h2{ font-size:clamp(26px,3.4vw,34px); font-weight:800; margin:0 0 18px; max-widt
 }
 .copilot-pill:hover{ border-color:var(--blue-tint); color:var(--blue-deep); }
 .copilot-pill.active{ background:var(--blue); border-color:var(--blue); color:#fff; }
+.copilot-pill-court{ display:none; }
+/* Bug remonte (3 aout) : "Maison & Equipement" etc. sur mobile forcait
+   chaque pastille sur sa propre ligne malgre flex-wrap -- le texte
+   complet ne tient simplement pas a 4 sur une largeur d'ecran etroite,
+   reduire seulement la police n'aurait pas suffi. Sous 480px : libelle
+   court (un seul mot), police et padding reduits, ET flex-wrap:nowrap
+   pour garantir explicitement une seule ligne plutot que de compter sur
+   le manque d'espace pour forcer un retour a la ligne accidentel. */
+@media (max-width:480px){
+  .copilot-pills{ flex-wrap:nowrap; gap:6px; }
+  .copilot-pill{ font-size:12px; padding:7px 10px; flex:1; text-align:center; }
+  .copilot-pill-complet{ display:none; }
+  .copilot-pill-court{ display:inline; }
+}
 
 .copilot-bubble{
   position:relative;
@@ -2300,6 +2339,7 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
     box-shadow:0 12px 28px rgba(18,20,43,0.12); padding:14px 24px 20px;
   }
   .nav-links.mobile-open{ display:flex; }
+  .nav-link-mobile-seul{ display:block !important; }
   /* Fond derriere le menu mobile (2 aout, audit UX point 4) -- cree en
      JS (mobile-nav.js), z-index:69 -- juste sous le menu (70), juste
      au-dessus du reste de la page. Invisible et non cliquable par

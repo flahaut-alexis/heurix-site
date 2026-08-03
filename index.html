@@ -19,7 +19,7 @@
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css?v=1785749328">
+<link rel="stylesheet" href="styles.css?v=1785755445">
 <link rel="canonical" href="https://heurix.fr/">
 <script type="application/ld+json">
 {
@@ -121,6 +121,14 @@
           </div>
         </div>
         <a href="blog.html">Blog</a>
+        <!-- Bug remonte (3 aout) : .header-signin est explicitement
+             masque sous 640px (economie d'espace dans la barre du haut),
+             sans aucune alternative -- sur mobile, aucun moyen d'acceder
+             a la console. Ajoute ici, visible UNIQUEMENT en contexte
+             menu mobile deplie (voir la classe nav-link-mobile-seul plus
+             bas dans le CSS) -- sur desktop, .header-utility affiche
+             deja "Se connecter", le dupliquer ici serait redondant. -->
+        <a href="console.html" class="nav-link-mobile-seul">Se connecter</a>
       </div>
       <div class="header-search">
         <button id="heurix-search-btn" class="search-trigger" aria-label="Heurix Search — rechercher sur le site" type="button">
@@ -481,10 +489,10 @@
         Repères sectoriels observés chez d'autres éditeurs de recherche — pour calibrer vos curseurs
       </div>
       <div class="copilot-pills" role="tablist">
-        <button type="button" class="copilot-pill active" data-industry="outillage">Outillage &amp; Industrie</button>
-        <button type="button" class="copilot-pill" data-industry="mode">Mode &amp; Retail</button>
-        <button type="button" class="copilot-pill" data-industry="sport">Sport &amp; Outdoor</button>
-        <button type="button" class="copilot-pill" data-industry="maison">Maison &amp; Équipement</button>
+        <button type="button" class="copilot-pill active" data-industry="outillage"><span class="copilot-pill-complet">Outillage &amp; Industrie</span><span class="copilot-pill-court">Outillage</span></button>
+        <button type="button" class="copilot-pill" data-industry="mode"><span class="copilot-pill-complet">Mode &amp; Retail</span><span class="copilot-pill-court">Mode</span></button>
+        <button type="button" class="copilot-pill" data-industry="sport"><span class="copilot-pill-complet">Sport &amp; Outdoor</span><span class="copilot-pill-court">Sport</span></button>
+        <button type="button" class="copilot-pill" data-industry="maison"><span class="copilot-pill-complet">Maison &amp; Équipement</span><span class="copilot-pill-court">Maison</span></button>
       </div>
       <div class="copilot-bubble">
         <div class="copilot-bubble-tail"></div>
@@ -769,7 +777,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="heurix-pictos.js?v=1785366412"></script>
-<script src="demo-search-live.js?v=1785749328"></script>
+<script src="demo-search-live.js?v=1785755445"></script>
 <script>
   document.getElementById('year').textContent = new Date().getFullYear();
 
@@ -1233,9 +1241,9 @@
   });
 </script>
 
-<script src="search.js?v=1785749328"></script>
+<script src="search.js?v=1785755445"></script>
 <script src="nav-dropdown.js"></script>
-<script src="mobile-nav.js?v=1785708604"></script>
+<script src="mobile-nav.js?v=1785755445"></script>
 <div id="pricing-nudge" class="pricing-nudge">
   <button type="button" class="pricing-nudge-close" aria-label="Fermer">&times;</button>
   <div class="pricing-nudge-kicker">Essai gratuit 14 jours</div>
