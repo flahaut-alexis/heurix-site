@@ -33,7 +33,7 @@ ___TEMPLATE_PARAMETERS___
     "name": "apiKey",
     "displayName": "Clé API Heurix",
     "simpleValueType": true,
-    "help": "Visible dans votre console Heurix, onglet Mes infos. Commence par hx_.",
+    "help": "Visible dans votre console Heurix, onglet Mes infos > Clés API. Commence par hxp_ (clé PUBLIQUE) — jamais une clé serveur (hx_), lisible par tous vos visiteurs une fois posée côté navigateur.",
     "valueValidators": [
       {
         "type": "NON_EMPTY"
@@ -126,6 +126,23 @@ ___SANDBOXED_JS_FOR_WEB___
 const sendHttpRequest = require('sendHttpRequest');
 const JSON = require('JSON');
 const logToConsole = require('logToConsole');
+
+// Garde-fou securite (3 aout, roadmap audit multi-marques) -- le champ
+// d'aide seul ne suffit pas : rien n'empechait avant ce correctif de
+// coller une cle SERVEUR (hx_) ici, qui aurait alors ete transmise
+// depuis le navigateur de chaque visiteur a chaque evenement. Meme
+// principe que heurixWarnIfServerKey() dans heurix-tracker.js, mais
+// BLOQUANT plutot qu'un simple avertissement console : un tag GTM qui
+// echoue silencieusement est moins grave qu'un tag qui envoie
+// reellement une cle exposee.
+if (data.apiKey && data.apiKey.indexOf('hxp_') !== 0) {
+  logToConsole('Heurix - ATTENTION : la cle fournie ne commence pas par hxp_. ' +
+    'Une cle serveur (hx_) ne doit jamais etre posee cote navigateur -- ' +
+    'elle est lisible par tous vos visiteurs et donne acces a votre facturation. ' +
+    'Generez une cle PUBLIQUE depuis Mes infos > Cles API dans votre console Heurix.');
+  data.gtmOnFailure();
+  return;
+}
 
 var body = {
   event_type: data.eventType,

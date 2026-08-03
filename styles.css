@@ -872,6 +872,16 @@ h1 span{ color:var(--blue); }
   display:flex; align-items:center; gap:8px;
 }
 .play-card-price{ font-size:18px; font-weight:800; color:var(--blue-deep); }
+/* Prix barré (3 août, roadmap compare_at_price) */
+.play-card-price-remise{ display:inline-flex; align-items:baseline; gap:6px; flex-wrap:wrap; }
+.play-card-price-barre{
+  font-size:13px; font-weight:600; color:var(--ink-muted);
+  text-decoration:line-through;
+}
+.play-card-price-pct{
+  font-size:11.5px; font-weight:700; color:#fff; background:#C0392B;
+  border-radius:100px; padding:2px 7px;
+}
 .play-stock{
   flex-shrink:0; margin-left:auto;
   font-size:10.5px; font-weight:700; color:var(--green);

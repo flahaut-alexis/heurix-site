@@ -130,6 +130,28 @@ describe("heurix-search.js — rendu", () => {
     );
   });
 
+  it("affiche le prix barre et le pourcentage quand compare_at_price depasse price (roadmap 3 aout)", async () => {
+    const hitAvecRemise = {
+      ...CONTRAT.search_avec_facettes,
+      hits: [{ ...CONTRAT.search_avec_facettes.hits[0], product: {
+        ...CONTRAT.search_avec_facettes.hits[0].product, price: 27.30, compare_at_price: 39.00,
+      } }],
+    };
+    const ctx = chargerWidget({ reponses: { defaut: hitAvecRemise } });
+    await taper(ctx, "vis");
+    const panneau = ctx.document.querySelector(".hx-search-panel").innerHTML;
+    expect(panneau).toContain("hx-search-hit-price-barre");
+    expect(panneau).toContain("39 €");
+    expect(panneau).toContain("−30%");
+  });
+
+  it("n'affiche jamais de prix barre si compare_at_price est absent ou inferieur au prix (retrocompatibilite)", async () => {
+    const ctx = chargerWidget();
+    await taper(ctx, "vis");
+    const panneau = ctx.document.querySelector(".hx-search-panel").innerHTML;
+    expect(panneau).not.toContain("hx-search-hit-price-remise");
+  });
+
   it("signale les produits en rupture de stock", async () => {
     const enRupture = CONTRAT.search_avec_facettes.hits.filter((h) => !h.in_stock);
     expect(enRupture.length, "la fixture doit contenir au moins une rupture").toBeGreaterThan(0);

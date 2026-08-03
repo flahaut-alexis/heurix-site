@@ -112,6 +112,30 @@
       ? "" : Number(n).toFixed(2).replace(".", ",") + " €";
   }
 
+  // Prix barré (3 août, roadmap compare_at_price) -- verifie deja
+  // confirme cote moteur que compare_at_price traverse tout le pipeline
+  // sans aucune modification backend (json.dumps() stocke le produit
+  // complet, dict(product) le restitue tel quel) : tout le travail est
+  // ici, cote affichage. N'affiche le prix barre QUE si
+  // compare_at_price > price -- une valeur egale ou inferieure ne
+  // represente pas une vraie remise (donnee source parfois incoherente),
+  // et afficher un "-0%" ou une remise negative serait plus trompeur
+  // qu'utile pour le prospect qui evalue le widget.
+  function prixAvecRemise(price, compareAt) {
+    var prixNormal = "<span class='play-card-price'>" + euros(price) + "</span>";
+    if (compareAt === undefined || compareAt === null || Number(compareAt) <= Number(price)) {
+      return prixNormal;
+    }
+    var pourcentage = Math.round((1 - Number(price) / Number(compareAt)) * 100);
+    return (
+      "<span class='play-card-price-remise'>" +
+        "<span class='play-card-price-barre'>" + euros(compareAt) + "</span>" +
+        "<span class='play-card-price'>" + euros(price) + "</span>" +
+        "<span class='play-card-price-pct'>−" + pourcentage + "%</span>" +
+      "</span>"
+    );
+  }
+
   function fiche(hit, etiquette) {
     var p = hit.product || {};
     // IMAGE OPTIONNELLE. Si le catalogue en porte une, on l'affiche ; sinon
@@ -176,7 +200,7 @@
         "</div>" +
       "</div>" +
       "<div class='play-card-prix-ligne'>" +
-        (p.price !== undefined ? "<span class='play-card-price'>" + euros(p.price) + "</span>" : "") +
+        (p.price !== undefined ? prixAvecRemise(p.price, p.compare_at_price) : "") +
         etat +
       "</div>" +
       // PAS DE BOUTON "VOIR LE PRODUIT" (retiré le 2 août) : il pointait

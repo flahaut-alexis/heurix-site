@@ -99,6 +99,9 @@
       // la couleur de marque du client (voir injectStyles), pas de couleur
       // fixe a re-choisir par catalogue.
       ".hx-search-hit-price{font-size:14.5px;font-weight:800;color:var(--hx-accent);}",
+      ".hx-search-hit-price-remise{display:inline-flex;align-items:baseline;gap:6px;flex-wrap:wrap;}",
+      ".hx-search-hit-price-barre{font-size:11.5px;font-weight:600;color:#888;text-decoration:line-through;}",
+      ".hx-search-hit-price-pct{font-size:10.5px;font-weight:700;color:#fff;background:#C0392B;border-radius:100px;padding:1px 6px;}",
       ".hx-search-hit-oos{color:#C0392B;}",
       // Etiquette pack recommande (2 aout) -- s'appuie sur le champ
       // `highlighted_bundle` de l'API, disponible pour n'importe quel
@@ -147,9 +150,25 @@
     // var(--hx-accent) est deja themable (injectStyles), donc la mise en
     // avant suit automatiquement la couleur de marque du client, sans
     // configuration supplementaire de sa part.
-    var prixHtml = p.price != null
-      ? '<span class="hx-search-hit-price">' + esc(p.price) + " €</span>"
-      : "";
+    //
+    // PRIX BARRE (3 aout, roadmap compare_at_price) -- meme logique que
+    // le widget de demo (voir demo-search-live.js), format different :
+    // pas de virgule/toFixed force ici, cette bibliotheque part chez
+    // n'importe quel client, pas seulement des catalogues FR -- reste
+    // fidele au style existant de ce fichier (esc(p.price) tel quel).
+    var prixHtml;
+    if (p.price != null && p.compare_at_price != null && Number(p.compare_at_price) > Number(p.price)) {
+      var pourcentage = Math.round((1 - Number(p.price) / Number(p.compare_at_price)) * 100);
+      prixHtml = '<span class="hx-search-hit-price-remise">' +
+        '<span class="hx-search-hit-price-barre">' + esc(p.compare_at_price) + " €</span>" +
+        '<span class="hx-search-hit-price">' + esc(p.price) + " €</span>" +
+        '<span class="hx-search-hit-price-pct">−' + pourcentage + "%</span>" +
+      "</span>";
+    } else {
+      prixHtml = p.price != null
+        ? '<span class="hx-search-hit-price">' + esc(p.price) + " €</span>"
+        : "";
+    }
     if (stockKnown && !hit.in_stock) metaBits.push('<span class="hx-search-hit-oos">Rupture</span>');
     // ÉTIQUETTE PACK (2 août) -- affichée uniquement quand CE hit précis
     // est le highlighted_bundle renvoyé par l'API pour la requête en
