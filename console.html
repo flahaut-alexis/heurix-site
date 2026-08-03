@@ -8,7 +8,7 @@
 <meta name="robots" content="noindex">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css?v=1785709552">
+<link rel="stylesheet" href="styles.css?v=1785745841">
 <link rel="canonical" href="https://heurix.fr/console.html">
 </head>
 <body>
@@ -67,14 +67,27 @@
     <form id="signup-form" class="console-login-form" autocomplete="on" hidden>
       <label for="signup-raison-sociale">Raison sociale</label>
       <input type="text" id="signup-raison-sociale" placeholder="Nom de votre entreprise" autocomplete="organization" required>
-      <label for="signup-email">Email</label>
+      <label for="signup-email">Email professionnel</label>
       <input type="email" id="signup-email" placeholder="vous@exemple.fr" autocomplete="email" required>
       <label for="signup-password">Mot de passe</label>
       <input type="password" id="signup-password" placeholder="10 caractères minimum" autocomplete="new-password" required minlength="10">
       <label for="signup-tva">N° de TVA intracommunautaire <span class="console-field-optional">(optionnel)</span></label>
       <input type="text" id="signup-tva" placeholder="FR12345678901" autocomplete="off">
-      <button type="submit" class="btn" id="signup-btn">Créer mon compte</button>
+      <button type="submit" class="btn" id="signup-btn">Créer mon compte et obtenir ma clé</button>
+      <p class="console-login-micro">Aucune carte bancaire à cette étape.</p>
       <p id="signup-error" class="console-login-error" hidden></p>
+      <!-- Encart de tension (2 août, point 3) -- non interactif,
+           volontairement : rappelle PENDANT le remplissage du formulaire
+           ce que la home a deja montre, sans concurrencer l'attention que
+           le formulaire lui-meme demande. Visible uniquement en mode
+           inscription -- masque avec le reste du form via [hidden]. -->
+      <div class="console-signup-encart">
+        <div class="console-signup-encart-ligne">POST /v1/index/votrecatalogue/search</div>
+        <div class="console-signup-encart-ligne">{"q": "m8x20 inox"}</div>
+        <div class="console-signup-encart-fleche">→</div>
+        <div class="console-signup-encart-ligne console-signup-encart-match">"matched": ["DIAM_M8", "LONG_20", "MAT_INOX"]</div>
+        <p class="console-signup-encart-legende">C'est ce que vous allez tester dans deux minutes, sur votre propre catalogue.</p>
+      </div>
     </form>
 
     <form id="accept-invite-form" class="console-login-form" autocomplete="on" hidden>
@@ -106,6 +119,24 @@
     <p class="console-login-note" id="auth-back" hidden>
       <a href="#" id="show-login">← Retour à la connexion</a>
     </p>
+  </div>
+</section>
+
+<!-- ===================== ÉCRAN CLÉ (après inscription uniquement) ===================== -->
+<!-- Jamais montré à la connexion normale -- uniquement juste après la
+     création d'un compte, une seule fois. Se saute d'un clic : rien ici
+     ne retarde ni ne conditionne l'accès au tableau de bord, qui reste
+     joignable via startSession() exactement comme avant. -->
+<section id="post-signup-screen" class="console-login" hidden>
+  <div class="wrap console-login-wrap">
+    <h1>Votre clé est prête.</h1>
+    <p class="lede">Également envoyée à <strong id="post-signup-email"></strong>.</p>
+    <div class="console-postsignup-key">
+      <code id="post-signup-key-value"></code>
+      <button type="button" id="post-signup-copy-btn" class="btn btn-ghost">Copier</button>
+    </div>
+    <p id="post-signup-copy-confirm" class="console-login-micro" hidden>Copié.</p>
+    <button type="button" id="post-signup-continue-btn" class="btn" style="margin-top:18px;">Accéder à mon tableau de bord</button>
   </div>
 </section>
 
@@ -193,6 +224,45 @@
         <div id="dash-content" hidden>
 
           <div id="pane-overview" class="console-pane">
+            <!-- Carte activation (2 août, points 5+6) -- indicateur de
+                 progression ET checklist reunis en une seule carte, pas
+                 deux widgets qui diraient la meme chose : les trois
+                 signaux (catalogue, recherche, cle publique) sont
+                 identiques dans les deux. JAMAIS bloquante : simple carte
+                 parmi d'autres, reductible, le choix retenu. Coexiste
+                 avec #overview-empty-state juste en dessous (existant,
+                 non touche) -- chevauchement possible pour un tout
+                 nouveau compte, assumé plutôt que de risquer de casser
+                 la logique déjà en place. -->
+            <div id="activation-card" class="console-panel console-activation" hidden>
+              <button type="button" id="activation-reduce-btn" class="console-activation-reduce" aria-label="Réduire">−</button>
+              <h2>Votre activation</h2>
+              <ul class="console-activation-liste">
+                <li id="activation-item-index" class="console-activation-item">
+                  <span class="console-activation-case"></span>
+                  <div>
+                    <div class="console-activation-texte">Indexer votre premier catalogue</div>
+                    <div class="console-activation-statut">en attente</div>
+                  </div>
+                </li>
+                <li id="activation-item-search" class="console-activation-item">
+                  <span class="console-activation-case"></span>
+                  <div>
+                    <div class="console-activation-texte">Cherchez avec une faute de frappe volontaire — regardez le champ <code class="docs-inline-code">matched</code> de la réponse</div>
+                    <div class="console-activation-statut">en attente</div>
+                  </div>
+                </li>
+                <li id="activation-item-pubkey" class="console-activation-item">
+                  <span class="console-activation-case"></span>
+                  <div>
+                    <div class="console-activation-texte">Générez une clé publique, restreinte à la lecture, pour brancher la recherche sur votre site — <a href="javascript:void(0)" data-goto-pane="pane-key">voir la section clés</a></div>
+                    <div class="console-activation-statut">en attente</div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <button type="button" id="activation-restore-btn" class="console-activation-restore" hidden>Voir ma progression d'activation</button>
+
             <h2 class="console-pane-title">Vue d'ensemble</h2>
 
             <div id="overview-empty-state" class="console-panel" hidden>
@@ -889,9 +959,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="console-select.js?v=1784983392"></script>
 <script src="visite-editeur.js?v=1785060993"></script>
-<script type="module" src="csv-console.js?v=1785449683"></script>
+<script type="module" src="csv-console.js?v=1785745841"></script>
 <script src="console-i18n.js?v=1785166789"></script>
-<script src="console.js?v=1785449683"></script>
+<script src="console.js?v=1785745841"></script>
 <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 
 <script src="nav-dropdown.js"></script>

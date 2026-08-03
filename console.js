@@ -123,7 +123,7 @@
   var AUTH_FORMS = [loginForm, signupForm, resetRequestForm, resetConfirmForm, acceptInviteForm];
   var AUTH_COPY = {
     "login": [T("Votre tableau de bord."), T("Mots les plus recherchés, recherches sans résultat, erreurs récentes, consommation — connectez-vous pour les consulter.")],
-    "signup": [T("Créer votre compte."), T("Une entreprise, un email, un mot de passe — votre clé API est générée immédiatement et envoyée par email.")],
+    "signup": [T("Votre clé API, en moins d'une minute."), T("Une entreprise, un email, un mot de passe — la clé est générée immédiatement, affichée ici et envoyée par email.")],
     "reset-request": [T("Mot de passe oublié ?"), T("Indiquez votre email, on vous envoie un lien pour en choisir un nouveau.")],
     "reset-confirm": [T("Nouveau mot de passe."), T("Choisissez un nouveau mot de passe pour votre compte.")],
     "accept-invite": [T("Rejoindre votre équipe."), T("Dernière étape : choisissez votre mot de passe.")]
@@ -2827,6 +2827,81 @@
     });
   }
 
+  // ---------------- Carte d'activation (2 août, points 5+6) ----------------
+  //
+  // Trois signaux, tous réellement calculables depuis l'API -- rien
+  // d'inventé : catalogs_used et first_search_at viennent de la même
+  // réponse /v1/usage déjà chargée par loadDashboard (pas un second
+  // appel), seule la clé publique nécessite un appel séparé.
+  //
+  // JAMAIS BLOQUANTE : aucun autre endroit de la console ne lit l'état de
+  // cette carte. Réductible, choix mémorisé dans localStorage -- un
+  // client déjà actif qui ferme la carte ne la revoit pas en pleine
+  // largeur à chaque connexion.
+  var ACTIVATION_REDUITE_KEY = "heurix_activation_reduite";
+
+  function majCarteActivation(usage, key) {
+    var carte = document.getElementById("activation-card");
+    var boutonRestore = document.getElementById("activation-restore-btn");
+    if (!carte) return;
+
+    // Si les trois étapes sont déjà faites, plus la peine d'afficher la
+    // carte du tout, réduite ou pas -- elle n'apporte plus rien.
+    var indexeFait = (usage.catalogs_used || 0) > 0;
+    var rechercheFaite = !!usage.first_search_at;
+
+    apiFetch("/v1/keys/public", key).then(function (data) {
+      var cleFaite = !!(data.public_keys && data.public_keys.length > 0);
+      var toutFait = indexeFait && rechercheFaite && cleFaite;
+
+      majItemActivation("activation-item-index", indexeFait);
+      majItemActivation("activation-item-search", rechercheFaite);
+      majItemActivation("activation-item-pubkey", cleFaite);
+
+      if (toutFait) {
+        carte.hidden = true;
+        boutonRestore.hidden = true;
+        return;
+      }
+      var reduite = localStorage.getItem(ACTIVATION_REDUITE_KEY) === "1";
+      carte.hidden = reduite;
+      boutonRestore.hidden = !reduite;
+    }).catch(function () {
+      // Échec de CE SEUL appel : pas de raison de priver l'utilisateur des
+      // deux autres signaux, déjà connus via `usage`.
+      majItemActivation("activation-item-index", indexeFait);
+      majItemActivation("activation-item-search", rechercheFaite);
+      var reduite = localStorage.getItem(ACTIVATION_REDUITE_KEY) === "1";
+      carte.hidden = reduite;
+      boutonRestore.hidden = !reduite;
+    });
+  }
+
+  function majItemActivation(id, fait) {
+    var item = document.getElementById(id);
+    if (!item) return;
+    item.classList.toggle("fait", fait);
+    var statut = item.querySelector(".console-activation-statut");
+    if (statut) statut.textContent = fait ? "fait" : "en attente";
+  }
+
+  var activationReduceBtn = document.getElementById("activation-reduce-btn");
+  var activationRestoreBtn = document.getElementById("activation-restore-btn");
+  if (activationReduceBtn) {
+    activationReduceBtn.addEventListener("click", function () {
+      document.getElementById("activation-card").hidden = true;
+      activationRestoreBtn.hidden = false;
+      localStorage.setItem(ACTIVATION_REDUITE_KEY, "1");
+    });
+  }
+  if (activationRestoreBtn) {
+    activationRestoreBtn.addEventListener("click", function () {
+      document.getElementById("activation-card").hidden = false;
+      activationRestoreBtn.hidden = true;
+      localStorage.removeItem(ACTIVATION_REDUITE_KEY);
+    });
+  }
+
   function loadDashboard(key, days) {
     dashLoading.hidden = false;
     dashContent.hidden = true;
@@ -2893,6 +2968,7 @@
       renderApiKey(key);
       loadCatalogs(key);
       loadAccountInfo();
+      majCarteActivation(usage, key);
       loadConversionData(key);
       loadBrowseCatalogs(key);
       wireBrowseForms(key);
@@ -3492,7 +3568,7 @@
       numero_tva: signupTva.value.trim() || null,
     })
       .then(function (data) {
-        startSession(data.session_token, data.key);
+        showPostSignupScreen(data.session_token, data.key, signupEmail.value.trim());
       })
       .catch(function (err) {
         signupError.textContent = (err && err.message) || L.loginErrorNetwork;
@@ -3500,9 +3576,46 @@
       })
       .then(function () {
         signupBtn.disabled = false;
-        signupBtn.textContent = T("Créer mon compte");
+        signupBtn.textContent = T("Créer mon compte et obtenir ma clé");
       });
   });
+
+  // ---------------- Écran clé (après inscription uniquement) ----------------
+  // N'intervient QUE juste après une inscription -- startSession() (donc
+  // showDashboard()) reste strictement inchangée pour la connexion
+  // normale. Cet écran ne fait que RETARDER de quelques secondes l'appel
+  // à startSession(), jamais le conditionner à quoi que ce soit : le
+  // bouton "continuer" l'appelle exactement comme le faisait l'ancien
+  // code directement après le POST /v1/auth/signup.
+  var postSignupScreen = document.getElementById("post-signup-screen");
+  var postSignupEmail = document.getElementById("post-signup-email");
+  var postSignupKeyValue = document.getElementById("post-signup-key-value");
+  var postSignupCopyBtn = document.getElementById("post-signup-copy-btn");
+  var postSignupCopyConfirm = document.getElementById("post-signup-copy-confirm");
+  var postSignupContinueBtn = document.getElementById("post-signup-continue-btn");
+
+  function showPostSignupScreen(sessionToken, key, email) {
+    AUTH_FORMS.forEach(function (f) { f.hidden = true; });
+    loginScreen.hidden = true;
+    authLinks.hidden = true;
+    authBack.hidden = true;
+    postSignupEmail.textContent = email;
+    postSignupKeyValue.textContent = key;
+    postSignupCopyConfirm.hidden = true;
+    postSignupScreen.hidden = false;
+    postSignupContinueBtn.onclick = function () {
+      postSignupScreen.hidden = true;
+      startSession(sessionToken, key);
+    };
+  }
+
+  if (postSignupCopyBtn) {
+    postSignupCopyBtn.addEventListener("click", function () {
+      navigator.clipboard.writeText(postSignupKeyValue.textContent).then(function () {
+        postSignupCopyConfirm.hidden = false;
+      });
+    });
+  }
 
   // ---------------- Acceptation d'une invitation d'équipe ----------------
   var inviteTokenFromUrl = new URLSearchParams(window.location.search).get("invite");
