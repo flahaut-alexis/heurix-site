@@ -98,6 +98,32 @@ ___TEMPLATE_PARAMETERS___
     ]
   },
   {
+    "type": "SELECT",
+    "name": "productsFormat",
+    "displayName": "Format des produits achetés",
+    "macrosInSelect": false,
+    "selectItems": [
+      {
+        "value": "heurix",
+        "displayValue": "Format Heurix : [{\"id\",\"amount\",\"margin\"}]"
+      },
+      {
+        "value": "ga4",
+        "displayValue": "Format GA4 standard : [{\"item_id\",\"price\",\"quantity\"}]"
+      }
+    ],
+    "simpleValueType": true,
+    "defaultValue": "heurix",
+    "help": "Si votre couche de donnees ecommerce suit deja le schema GA4 (evenement purchase avec ecommerce.items), choisissez GA4 -- reutilisez directement votre variable existante (ex. {{DLV - ecommerce.items}}) sans en construire une nouvelle. amount est calcule ici comme price x quantity (le total de la ligne, pas le prix unitaire) : c'est ce que Heurix additionne pour votre chiffre d'affaires.",
+    "enablingConditions": [
+      {
+        "paramName": "eventType",
+        "paramValue": "purchase",
+        "type": "EQUALS"
+      }
+    ]
+  },
+  {
     "type": "TEXT",
     "name": "productsJson",
     "displayName": "Produits achetés (JSON)",
@@ -153,13 +179,37 @@ if (data.eventType === 'search_click') {
   body.query = data.query;
   body.product_id = data.productId;
 } else {
-  var products;
+  var brut;
   try {
-    products = JSON.parse(data.productsJson);
+    brut = JSON.parse(data.productsJson);
   } catch (e) {
     logToConsole('Heurix - JSON invalide dans "Produits achetés" : ' + data.productsJson);
     data.gtmOnFailure();
     return;
+  }
+  var products;
+  if (data.productsFormat === 'ga4') {
+    // Traduction GA4 -> Heurix (3 aout, roadmap audit multi-marques) --
+    // amount = price x quantity (le TOTAL de la ligne, verifie cote
+    // moteur : EventProduct n'a pas de champ quantity separe, Heurix
+    // additionne amount directement pour le chiffre d'affaires -- un
+    // prix unitaire seul sous-evaluerait le CA de tout achat multi-
+    // exemplaires. margin n'a pas d'equivalent GA4 standard, reste
+    // absente comme elle est deja optionnelle cote Heurix.
+    products = [];
+    for (var i = 0; i < brut.length; i++) {
+      var item = brut[i];
+      if (!item || !item.item_id) {
+        logToConsole('Heurix - item GA4 sans item_id, ignore : ' + JSON.stringify(item));
+        continue;
+      }
+      products.push({
+        id: item.item_id,
+        amount: (Number(item.price) || 0) * (Number(item.quantity) || 1)
+      });
+    }
+  } else {
+    products = brut;
   }
   body.products = products;
 }
@@ -261,7 +311,8 @@ ___NOTES___
 
 Créé le 24 juillet 2026 pour le chantier "Conversion & ROI" de Heurix.
 Mis à jour le même jour (chantier "Tracker Heurix") pour le champ
-"Identifiant visiteur".
+"Identifiant visiteur". Mis à jour le 3 août 2026 (roadmap audit
+multi-marques) pour le champ "Format des produits achetés".
 
 Comment l'utiliser :
 1. Dans GTM, Modèles > Modèles de balises > Nouveau > (menu ⋮) > Importer,
@@ -273,6 +324,18 @@ Comment l'utiliser :
    depuis vos résultats de recherche, ou l'événement "purchase" de votre
    couche de données ecommerce).
 5. Publiez le conteneur.
+
+Si votre couche de données suit déjà le schéma GA4 e-commerce standard
+(evenement "purchase" avec ecommerce.items, chaque item portant item_id,
+price, quantity) : sur la balise d'achat, choisissez "Format GA4
+standard" dans "Format des produits achetés", et référencez directement
+votre variable existante (ex. {{DLV - ecommerce.items}}) dans "Produits
+achetés (JSON)" — pas besoin de construire une variable de traduction
+séparée. amount est calculé automatiquement comme price x quantity (le
+total de la ligne). Un item sans item_id est ignoré (avec un message en
+console en mode debug), les autres items valides partent normalement.
+Sans ce champ (par défaut "Format Heurix"), rien ne change par rapport
+au comportement existant.
 
 Pour une attribution précise (recommandé) : installez d'abord
 heurix-tracker.js sur votre site (une fois, site-wide — voir sa propre
