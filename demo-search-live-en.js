@@ -345,6 +345,7 @@
       limit: 9,
       offset: 0,
       facets: ["categories", "marque"],
+      exclude_description: true,
     };
     if (prismeActif) {
       corps.filters = [{ field: prismeActif.champ, value: prismeActif.valeur }];
@@ -404,7 +405,7 @@
     fetch(API + "/v1/public-demo/search?vertical=" + encodeURIComponent(verticale), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ q: "", limit: 9, offset: 0 }),
+      body: JSON.stringify({ q: "", limit: 9, offset: 0, exclude_description: true }),
     })
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (d) {
@@ -434,6 +435,7 @@
       limit: 9,
       offset: offsetEnCours,
       facets: ["categories", "marque"],
+      exclude_description: true,
     };
     if (prismeActif) {
       corpsPage.filters = [{ field: prismeActif.champ, value: prismeActif.valeur }];
@@ -526,7 +528,7 @@
     fetch(API + "/v1/public-demo/search?vertical=" + encodeURIComponent(verticale), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ q: "", limit: 8 }),
+      body: JSON.stringify({ q: "", limit: 8, exclude_description: true }),
     })
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (d) {

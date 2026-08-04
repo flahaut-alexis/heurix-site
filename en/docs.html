@@ -18,7 +18,7 @@
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="../favicon-32.png">
 <link rel="apple-touch-icon" href="../apple-touch-icon.png">
-<link rel="stylesheet" href="../styles.css?v=1785814228">
+<link rel="stylesheet" href="../styles.css?v=1785843074">
 <link rel="canonical" href="https://heurix.fr/en/docs.html">
 <script type="application/ld+json">
 {
@@ -313,6 +313,7 @@
         <tr><td><code class="docs-inline-code">filters</code></td><td>array of string</td><td>Exact annotations required, combined with AND (e.g. <code class="docs-inline-code">["PAYS_SE", "FORMAT_PO"]</code>).</td></tr>
         <tr><td><code class="docs-inline-code">in_stock_only</code></td><td>bool</td><td>Excludes out-of-stock products (default <code class="docs-inline-code">false</code> — some catalogs deliberately show out-of-stock items to signal a product exists).</td></tr>
         <tr><td><code class="docs-inline-code">lang</code></td><td>string</td><td>Filters by language if your products carry a <code class="docs-inline-code">lang</code> field (e.g. <code class="docs-inline-code">"fr"</code>, <code class="docs-inline-code">"en"</code>). A product without this field stays visible regardless of the requested language — useful for a mostly single-language catalog with a few bilingual entries. Omitted, no filtering is applied.</td></tr>
+        <tr><td><code class="docs-inline-code">exclude_description</code></td><td>bool</td><td>Omits the <code class="docs-inline-code">description</code> field from each product in the results (default <code class="docs-inline-code">false</code>, nothing changes). Useful if your descriptions are long: on a real catalog, this field alone accounts for 80%+ of each product's weight in the response — relevant for a mobile widget where every kilobyte counts.</td></tr>
       </table></div>
       <h3>Response</h3>
       <p><code class="docs-inline-code">total</code> (match count), <code class="docs-inline-code">hits</code> — each hit contains the full <code class="docs-inline-code">product</code> as indexed, its <code class="docs-inline-code">score</code>, <code class="docs-inline-code">in_stock</code>, and <code class="docs-inline-code">matched</code>: a readable list of why it matched (terms found, typos corrected, shared annotations) — useful for understanding and tuning relevance. If <code class="docs-inline-code">facets</code> was requested, an additional <code class="docs-inline-code">facets</code> field lists the counts per group.</p>
@@ -916,13 +917,13 @@ curl -X POST https://api.heurix.fr/v1/events \
       <div class="docs-endpoint"><span class="docs-method docs-method-get">JS</span><code>heurix-search.js</code></div>
       <h2>Ready-to-use search bar</h2>
       <p>Don't want to code the <code class="docs-inline-code">fetch</code> call, result rendering, and facet handling yourself? A standalone JavaScript library (zero dependencies) renders a complete search bar — input, live results, clickable facets, keyboard navigation — connected to your catalog in a few lines.</p>
-      <p class="regex-reassure">🚀 <a href="downloads/heurix-search.js?v=1785814228" download>Download heurix-search.js</a> — a single file, drop it wherever you want on your site.</p>
+      <p class="regex-reassure">🚀 <a href="downloads/heurix-search.js?v=1785843074" download>Download heurix-search.js</a> — a single file, drop it wherever you want on your site.</p>
 
       <p class="regex-reassure">🔑 Use a <a href="#authentification">public key</a> (<code class="docs-inline-code">hxp_</code>) — this script runs in the visitor's browser, where the key is readable by anyone. A server key would grant access to your billing.</p>
 
       <h3>Minimal integration</h3>
       <pre class="docs-code"><code>&lt;div id="my-search"&gt;&lt;/div&gt;
-&lt;script src="heurix-search.js?v=1785814228"&gt;&lt;/script&gt;
+&lt;script src="heurix-search.js?v=1785843074"&gt;&lt;/script&gt;
 &lt;script&gt;
   Heurix.searchBox({
     apiKey: "YOUR_PUBLIC_KEY",
@@ -1194,7 +1195,7 @@ VIS_M8X20  ──────────── match ────────�
     });
   })();
 </script>
-<script src="../search-en.js?v=1785814228"></script>
+<script src="../search-en.js?v=1785843074"></script>
 <script src="../nav-dropdown.js"></script>
 <script src="../mobile-nav.js?v=1785755445"></script>
 <div id="pricing-nudge" class="pricing-nudge">

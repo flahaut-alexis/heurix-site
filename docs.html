@@ -18,7 +18,7 @@
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css?v=1785814228">
+<link rel="stylesheet" href="styles.css?v=1785843074">
 <link rel="canonical" href="https://heurix.fr/docs.html">
 <script type="application/ld+json">
 {
@@ -327,6 +327,7 @@
         <tr><td><code class="docs-inline-code">filters</code></td><td>array de string</td><td>Annotations exactes exigées, combinées en ET (ex. <code class="docs-inline-code">["PAYS_SE", "FORMAT_PO"]</code>).</td></tr>
         <tr><td><code class="docs-inline-code">in_stock_only</code></td><td>bool</td><td>Exclut les produits en rupture (défaut <code class="docs-inline-code">false</code> — certains catalogues affichent volontairement les ruptures pour signaler qu'un produit existe).</td></tr>
         <tr><td><code class="docs-inline-code">lang</code></td><td>string</td><td>Filtre par langue si vos produits portent un champ <code class="docs-inline-code">lang</code> (ex. <code class="docs-inline-code">"fr"</code>, <code class="docs-inline-code">"en"</code>). Un produit sans ce champ reste visible quelle que soit la langue demandée — utile pour un catalogue majoritairement mono-langue avec quelques fiches bilingues. Omis, aucun filtrage n'est appliqué.</td></tr>
+        <tr><td><code class="docs-inline-code">exclude_description</code></td><td>bool</td><td>Omet le champ <code class="docs-inline-code">description</code> de chaque produit dans les résultats (défaut <code class="docs-inline-code">false</code>, rien ne change). Utile si vos descriptions sont longues : sur un catalogue réel, ce champ représente à lui seul 80%+ du poids de chaque produit dans la réponse — pertinent pour un widget mobile où chaque kilo-octet compte.</td></tr>
       </table></div>
       <h3>Réponse</h3>
       <p><code class="docs-inline-code">total</code> (nombre de correspondances), <code class="docs-inline-code">hits</code> — chaque hit contient le <code class="docs-inline-code">product</code> complet tel qu'indexé, son <code class="docs-inline-code">score</code>, <code class="docs-inline-code">in_stock</code>, et <code class="docs-inline-code">matched</code> : la liste lisible des raisons de la correspondance (termes trouvés, fautes corrigées, annotations partagées) — utile pour comprendre et régler la pertinence. Si <code class="docs-inline-code">facets</code> a été demandé, un champ <code class="docs-inline-code">facets</code> supplémentaire liste les décomptes par groupe.</p>
@@ -921,13 +922,13 @@ curl -X POST https://api.heurix.fr/v1/events \
       <div class="docs-endpoint"><span class="docs-method docs-method-get">JS</span><code>heurix-search.js</code></div>
       <h2>Barre de recherche prête à l'emploi</h2>
       <p>Pas envie de coder l'appel <code class="docs-inline-code">fetch</code>, le rendu des résultats et la gestion des facettes vous-même ? Une bibliothèque JavaScript autonome (zéro dépendance) affiche une barre de recherche complète — saisie, résultats en direct, facettes cliquables, navigation clavier — connectée à votre catalogue en quelques lignes.</p>
-      <p class="regex-reassure">🚀 <a href="downloads/heurix-search.js?v=1785814228" download>Téléchargez heurix-search.js</a> — un seul fichier, à poser où vous voulez sur votre site.</p>
+      <p class="regex-reassure">🚀 <a href="downloads/heurix-search.js?v=1785843074" download>Téléchargez heurix-search.js</a> — un seul fichier, à poser où vous voulez sur votre site.</p>
 
       <p class="regex-reassure">🔑 Utilisez une <a href="#authentification">clé publique</a> (<code class="docs-inline-code">hxp_</code>) — ce script tourne dans le navigateur du visiteur, où la clé est lisible par tous. Une clé serveur donnerait accès à votre facturation.</p>
 
       <h3>Intégration minimale</h3>
       <pre class="docs-code"><code>&lt;div id="ma-recherche"&gt;&lt;/div&gt;
-&lt;script src="heurix-search.js?v=1785814228"&gt;&lt;/script&gt;
+&lt;script src="heurix-search.js?v=1785843074"&gt;&lt;/script&gt;
 &lt;script&gt;
   Heurix.searchBox({
     apiKey: "VOTRE_CLE_PUBLIQUE",
@@ -1130,7 +1131,7 @@ VIS_M8X20  ────────── correspondance ──────  VIS
   </div>
 </footer>
 
-<script src="search.js?v=1785814228"></script>
+<script src="search.js?v=1785843074"></script>
 <script>
   document.getElementById('year').textContent = new Date().getFullYear();
 
