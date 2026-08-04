@@ -76,7 +76,7 @@ describe("heurix-tracker.js", () => {
     expect(appel.corps.products[0].id).toBe("V001");
   });
 
-  it("attribue un identifiant visiteur persistant et le reutilise", async () => {
+  it("attribue un identifiant coherent en memoire, sans consentement (comportement sur par defaut, 3 aout)", async () => {
     const ctx = chargerTracker();
     const api = ctx.window.Heurix ?? global.Heurix;
 
@@ -86,8 +86,27 @@ describe("heurix-tracker.js", () => {
 
     const ids = ctx.appels.map((a) => a.corps.visitor_id);
     expect(ids[0]).toBeTruthy();
-    expect(ids[0]).toBe(ids[1]); // meme visiteur = meme identifiant
-    expect(ctx.window.localStorage.getItem("heurix_visitor_id")).toBe(ids[0]);
+    expect(ids[0]).toBe(ids[1]); // meme visiteur = meme identifiant, meme sans consentement
+    // Sans consentement, RIEN n'est depose -- coeur du correctif RGPD/ePrivacy.
+    expect(ctx.window.localStorage.getItem("heurix_visitor_id")).toBeNull();
+  });
+
+  it("persiste l'identifiant dans localStorage seulement apres grantConsent() (3 aout)", async () => {
+    const ctx = chargerTracker();
+    const api = ctx.window.Heurix ?? global.Heurix;
+
+    api.trackClick("vis", "V001");
+    await new Promise((r) => setTimeout(r, 20));
+    expect(ctx.window.localStorage.getItem("heurix_visitor_id")).toBeNull();
+
+    api.grantConsent();
+    const idApresConsentement = ctx.window.localStorage.getItem("heurix_visitor_id");
+    expect(idApresConsentement).toBeTruthy();
+    expect(idApresConsentement).toBe(api.visitorId);
+
+    // Idempotent : un second appel ne doit rien changer.
+    api.grantConsent();
+    expect(ctx.window.localStorage.getItem("heurix_visitor_id")).toBe(idApresConsentement);
   });
 
   it("alerte si une cle SERVEUR est posee cote navigateur (chantier C1)", () => {
