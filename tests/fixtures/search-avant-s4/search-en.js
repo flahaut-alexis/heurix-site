@@ -1,7 +1,7 @@
 // Heurix Search — internal site search (English index)
-// Data only — shared logic lives in search-engine.js (S4 chantier, Aug 5 2026)
+// Static index, case- and accent-insensitive matching.
 
-window.HEURIX_SEARCH_INDEX = [
+const HEURIX_SEARCH_INDEX = [
   { title: "How it works", excerpt: "Up and running in 3 steps: index your catalog, the cascade annotates every product, your customers find.", path: "en/index.html#comment-ca-marche" },
   { title: "The problem", excerpt: "Internal search is the least-monitored conversion point on an online store.", path: "en/produit.html#probleme" },
   { title: "Our mission", excerpt: "Search should never be a burden. It's a conversion lever.", path: "en/produit.html#mission" },
@@ -58,8 +58,119 @@ window.HEURIX_SEARCH_INDEX = [
   { title: "Running your search day to day", excerpt: "Your catalog is indexed and search works. What comes after: reading what customers search for, fixing rankings.", path: "en/blog/guide-utilisation-console.html" }
 ];
 
-window.HEURIX_SEARCH_LATEST_PATHS = [
+// Latest blog articles — shown by default, before any typing.
+const HEURIX_LATEST_ARTICLES = [
   "en/blog/recherche-reference-sku-b2b.html",
   "en/blog/impact-ebitda-recherche-interne.html",
   "en/blog/5-signes-recherche-vous-coute-des-ventes.html"
-];
+].map((p) => HEURIX_SEARCH_INDEX.find((item) => item.path === p)).filter(Boolean);
+
+(function () {
+  function normalize(str) {
+    return str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  }
+
+  function highlight(text, query) {
+    if (!query) return text;
+    const nText = normalize(text);
+    const nQuery = normalize(query);
+    const idx = nText.indexOf(nQuery);
+    if (idx === -1) return text;
+    return text.slice(0, idx) + "<mark>" + text.slice(idx, idx + query.length) + "</mark>" + text.slice(idx + query.length);
+  }
+
+  function runSearch(query) {
+    const nQuery = normalize(query.trim());
+    if (!nQuery) return [];
+    return HEURIX_SEARCH_INDEX
+      .map((item) => {
+        const nTitle = normalize(item.title);
+        const nExcerpt = normalize(item.excerpt);
+        let score = -1;
+        if (nTitle.includes(nQuery)) score = nTitle.indexOf(nQuery) === 0 ? 2 : 1;
+        else if (nExcerpt.includes(nQuery)) score = 0;
+        return { item, score };
+      })
+      .filter((r) => r.score >= 0)
+      .sort((a, b) => b.score - a.score)
+      .map((r) => r.item)
+      .slice(0, 8);
+  }
+
+  function init() {
+    const depth = (window.location.pathname.match(/\/en\/blog\//) ? 2 : window.location.pathname.match(/\/en\//) ? 1 : 0);
+    const root = depth === 2 ? "../../" : depth === 1 ? "../" : "";
+
+    const btn = document.getElementById("heurix-search-btn");
+    const modal = document.getElementById("heurix-search-modal");
+    const backdrop = document.getElementById("heurix-search-backdrop");
+    const input = document.getElementById("heurix-search-input");
+    const resultsEl = document.getElementById("heurix-search-results");
+    const emptyEl = document.getElementById("heurix-search-empty");
+    const suggestLabel = document.getElementById("heurix-search-suggest-label");
+    if (!btn || !modal) return;
+
+    function renderItems(items, query) {
+      resultsEl.innerHTML = "";
+      items.forEach((item) => {
+        const a = document.createElement("a");
+        a.className = "search-result";
+        a.href = root + item.path;
+        a.innerHTML =
+          '<div class="search-result-title">' + highlight(item.title, query) + "</div>" +
+          '<div class="search-result-excerpt">' + highlight(item.excerpt, query) + "</div>";
+        resultsEl.appendChild(a);
+      });
+    }
+
+    function showDefaultSuggestions() {
+      emptyEl.hidden = true;
+      if (suggestLabel) suggestLabel.hidden = false;
+      renderItems(HEURIX_LATEST_ARTICLES, "");
+    }
+
+    function open() {
+      modal.classList.add("open");
+      document.body.style.overflow = "hidden";
+      input.value = "";
+      showDefaultSuggestions();
+      setTimeout(() => input.focus(), 10);
+      if (window.dataLayer) window.dataLayer.push({ event: "site_search_open" });
+    }
+    function close() {
+      modal.classList.remove("open");
+      document.body.style.overflow = "";
+    }
+
+    btn.addEventListener("click", open);
+    backdrop.addEventListener("click", close);
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && modal.classList.contains("open")) close();
+      if ((e.key === "/" || (e.ctrlKey && e.key === "k") || (e.metaKey && e.key === "k")) &&
+          document.activeElement.tagName !== "INPUT" && document.activeElement.tagName !== "TEXTAREA") {
+        e.preventDefault();
+        open();
+      }
+    });
+
+    input.addEventListener("input", () => {
+      const q = input.value;
+      if (!q.trim()) {
+        showDefaultSuggestions();
+        return;
+      }
+      if (suggestLabel) suggestLabel.hidden = true;
+      const results = runSearch(q);
+      emptyEl.hidden = results.length !== 0;
+      renderItems(results, q);
+    });
+
+    modal.querySelectorAll("[data-search-close]").forEach((el) => el.addEventListener("click", close));
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
