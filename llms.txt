@@ -8,7 +8,7 @@ Heurix is a regex-powered search & discovery engine for e-commerce, designed in 
 
 - [Accueil (FR)](https://heurix.fr/): présentation du moteur, démo interactive, simulateur ROI, FAQ
 - [Home (EN)](https://heurix.fr/en/): engine overview, live demo, ROI simulator, FAQ
-- [Tarifs Search API / Pricing](https://heurix.fr/pricing.html): plans Free (0 €), Growth (39 €/mois), Scale (149 €/mois), facturation à l'usage
+- [Tarifs Search API / Pricing](https://heurix.fr/pricing.html): plans Free (0 €), Growth (49 €/mois), Scale (139 €/mois), facturation à l'usage
 - [Documentation API (FR)](https://heurix.fr/docs.html): référence complète — authentification, indexation, recherche, synonymes, packs de règles, cascade d'annotations
 - [API Documentation (EN)](https://heurix.fr/en/docs.html): full reference — authentication, indexing, search, synonyms, rule packs, annotation cascade
 - [Intégrations / Integrations](https://heurix.fr/integrations.html): guides techniques Shopify, PrestaShop, WooCommerce, Magento (recherche + synchronisation catalogue)
@@ -20,7 +20,7 @@ Heurix is a regex-powered search & discovery engine for e-commerce, designed in 
 
 - Cascade d'annotations : documents et requêtes traversent le même pipeline de règles regex par niveaux ; « m8x20 » et « M8 x 20 — A2 » produisent les mêmes annotations (DIAM_M8, LONG_20, VIS_M8X20) et se retrouvent.
 - Tolérance aux fautes : distance de Damerau-Levenshtein bornée (1 faute dès 4 caractères, 2 dès 8).
-- Packs de règles fournis : outillage, mode, industrie. Packs sur mesure disponibles sur les plans Scale.
+- Packs de règles fournis : outillage, mode, industrie, livres, électronique, vins, automobile, électricité, plomberie, finance (dix au total). Packs sur mesure disponibles sur les plans Scale.
 - Base URL de l'API : https://api.heurix.fr — authentification par clé (Authorization: Bearer).
 
 ## Contact

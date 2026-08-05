@@ -2,9 +2,9 @@
  * heurix-search.js — barre de recherche prête à l'emploi, connectée à
  * l'API Heurix réelle. Aucune dépendance, aucun framework requis.
  *
- * Chantier Phase 5 de la roadmap (25 juillet 2026). Reprend les patterns
- * de rendu déjà éprouvés dans demo-search.js — regroupement des prismes
- * par préfixe, tri par fréquence, bascule au clic — mais branché sur de
+ * Chantier Phase 5 de la roadmap (25 juillet 2026). Reprend des patterns
+ * de rendu déjà éprouvés côté démo — regroupement des prismes par
+ * préfixe, tri par fréquence, bascule au clic — mais branché sur de
  * vrais appels fetch() vers l'API, pas un moteur simulé en local.
  *
  * Usage minimal :
@@ -34,9 +34,8 @@
   }
 
   // Libellé lisible pour un groupe de prisme SANS connaissance du secteur
-  // du client (contrairement a demo-search.js, qui a une table de
-  // libellés codee en dur par verticale) -- "DIAM" -> "Diam", generique
-  // mais toujours comprehensible.
+  // du client (contrairement a une table de libellés codee en dur par
+  // verticale) -- "DIAM" -> "Diam", generique mais toujours comprehensible.
   function humanizeGroup(code) {
     return code.charAt(0).toUpperCase() + code.slice(1).toLowerCase();
   }
@@ -234,11 +233,10 @@
       "</div></div>";
   };
 
-  // Regroupe les prismes par prefixe (avant le premier "_"), meme
-  // principe que demo-search.js -- mais les libelles sont generes
-  // automatiquement plutot que puises dans une table codee en dur par
-  // secteur, puisqu'un widget generique ne connait pas a l'avance le
-  // rulepack du client.
+  // Regroupe les prismes par prefixe (avant le premier "_") -- les
+  // libelles sont generes automatiquement plutot que puises dans une
+  // table codee en dur par secteur, puisqu'un widget generique ne
+  // connait pas a l'avance le rulepack du client.
   HeurixSearch.prototype._renderFacets = function (data) {
     var self = this;
     if (!data.facets) { this._facetsEl.innerHTML = ""; return; }

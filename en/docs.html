@@ -514,7 +514,7 @@ curl -X DELETE "https://api.heurix.fr/v1/browse/mycatalog/drills-drivers/attribu
       <div class="table-scroll"><table class="docs-params">
         <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
         <tr><td><code class="docs-inline-code">items</code></td><td>array <span class="docs-required">required</span></td><td>1 to 5,000 products per call. Every product must have an <code class="docs-inline-code">id</code>.</td></tr>
-        <tr><td><code class="docs-inline-code">rulepack</code></td><td>string</td><td>Rule pack to attach to the catalog (<code class="docs-inline-code">outillage</code>, <code class="docs-inline-code">mode</code>, <code class="docs-inline-code">industrie</code>). Changing the pack re-indexes the catalog.</td></tr>
+        <tr><td><code class="docs-inline-code">rulepack</code></td><td>string</td><td>Rule pack to attach to the catalog — ten available, see <a href="#ep-rulepacks">the full list</a> (<code class="docs-inline-code">outillage</code>, <code class="docs-inline-code">mode</code>, <code class="docs-inline-code">industrie</code>, etc.). Changing the pack re-indexes the catalog.</td></tr>
       </table></div>
       <h3>Response</h3>
       <pre class="docs-code"><code>{"indexed": 2, "catalog": {"catalog": "mycatalog", "products": 2, "terms": 11,
