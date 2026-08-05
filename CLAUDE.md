@@ -31,11 +31,17 @@ compter 1 à 2 minutes de propagation. **Toujours faire un hard refresh**
 (Cmd+Shift+R) pour vérifier, le cache navigateur masque souvent un
 déploiement pourtant réussi.
 
-**Cache-busting** : `styles.css` et `console.js` sont référencés avec un
-paramètre `?v=<timestamp>` dans les fichiers HTML. À chaque modification
-de l'un de ces deux fichiers, régénérer un timestamp frais
-(`date +%s`) et le propager dans tous les `.html` qui les référencent —
-sinon les visiteurs récupèrent une version en cache.
+**Cache-busting** : chaque asset statique (JS/CSS) référencé avec un
+paramètre `?v=<timestamp>` porte sa propre version, indépendante des
+autres. À chaque modification d'un de ces fichiers :
+```
+scripts/bust-cache.sh nom-du-fichier.js
+```
+Propage automatiquement un timestamp frais dans tous les `.html` qui le
+référencent (chantier S8, 5 août 2026 — remplace la propagation
+manuelle : un oubli page par page ne se voit pas tant qu'un visiteur ne
+signale pas un comportement en cache). Accepte plusieurs noms en un seul
+appel ; avertit si une incohérence existait déjà avant le lancement.
 
 ## Déploiement du moteur (`heurix-engine`)
 

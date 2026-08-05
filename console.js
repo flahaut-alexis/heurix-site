@@ -220,9 +220,9 @@
     document.getElementById("stat-usage").textContent = usage.requests.toLocaleString(LOCALE);
     // La comparaison est un appel distinct : elle ne doit pas retarder
     // l'affichage des chiffres principaux.
-    if (typeof activeKey !== "undefined" && activeKey) {
+    if (typeof session.activeKey !== "undefined" && session.activeKey) {
       var jours = (document.getElementById("period-select") || {}).value || 30;
-      apiFetch("/v1/analytics/comparison?days=" + jours, activeKey)
+      apiFetch("/v1/analytics/comparison?days=" + jours, session.activeKey)
         .then(afficherTendances)
         .catch(function () { /* les tendances sont un bonus */ });
     }
@@ -559,20 +559,41 @@
   // Le choix est desormais unique, porte par la barre du haut, et tous les
   // ecrans le lisent. Le Dashboard reste global : il agrege tous les
   // catalogues, un filtre y serait trompeur.
-  var catalogueActif = "";
-  var catalogueListe = [];
-  var catalogueSandbox = {};
+  //
+  // ETAT DE SESSION CENTRALISE (chantier S6, 5 aout 2026).
+  //
+  // Ces 9 valeurs vivaient en variables globales independantes, remises a
+  // zero UNE PAR UNE dans endSession() -- une liste a maintenir, et un
+  // oubli a chaque nouvel etat de session ajoute est une fuite silencieuse
+  // entre deux comptes sur un poste partage. Regroupees ici : la remise a
+  // zero devient `session = etatInitial();`, un seul bloc, impossible a
+  // oublier partiellement.
+  function etatInitial() {
+    return {
+      catalogueActif: "",
+      catalogueListe: [],
+      catalogueSandbox: {},
+      cleCourante: null,
+      soCurrentCatalog: "",
+      browseCurrentCatalog: "",
+      browseCurrentCategory: "",
+      soDraft: null,
+      brDraft: null,
+      activeKey: null
+    };
+  }
+  var session = etatInitial();
 
-  function catalogueCourant() { return catalogueActif; }
+  function catalogueCourant() { return session.catalogueActif; }
 
   function rechargerCatalogues(key) {
     var select = document.getElementById("global-catalog");
     if (!select) return;
     apiFetch("/v1/index/catalogs", key).then(function (data) {
-      catalogueSandbox = {};
-      (data.catalogs || []).forEach(function (c) { catalogueSandbox[c.catalog] = !!c.sandbox; });
+      session.catalogueSandbox = {};
+      (data.catalogs || []).forEach(function (c) { session.catalogueSandbox[c.catalog] = !!c.sandbox; });
       Array.prototype.forEach.call(select.options, function (opt) {
-        opt.textContent = opt.value + (catalogueSandbox[opt.value] ? " — " + T("bac à sable") : "");
+        opt.textContent = opt.value + (session.catalogueSandbox[opt.value] ? " — " + T("bac à sable") : "");
       });
       majBandeauSandbox();
     }).catch(function () {});
@@ -607,11 +628,11 @@
     if (!select) return;
 
     apiFetch("/v1/index/catalogs", key).then(function (data) {
-      catalogueListe = (data.catalogs || []).map(function (c) { return c.catalog; });
-      catalogueSandbox = {};
-      (data.catalogs || []).forEach(function (c) { catalogueSandbox[c.catalog] = !!c.sandbox; });
+      session.catalogueListe = (data.catalogs || []).map(function (c) { return c.catalog; });
+      session.catalogueSandbox = {};
+      (data.catalogs || []).forEach(function (c) { session.catalogueSandbox[c.catalog] = !!c.sandbox; });
 
-      if (!catalogueListe.length) {
+      if (!session.catalogueListe.length) {
         // Compte neuf : rien a choisir. On le dit plutot que d'afficher une
         // liste vide, qui laisserait croire a une panne.
         select.innerHTML = '<option value="">' + T("Aucun catalogue") + '</option>';
@@ -619,28 +640,28 @@
         return;
       }
       select.disabled = false;
-      select.innerHTML = catalogueListe.map(function (n) {
+      select.innerHTML = session.catalogueListe.map(function (n) {
         return "<option value='" + esc(n) + "'>" + esc(n) +
-          (catalogueSandbox[n] ? " — " + T("bac à sable") : "") + "</option>";
+          (session.catalogueSandbox[n] ? " — " + T("bac à sable") : "") + "</option>";
       }).join("");
 
       // La grande majorite des comptes n'a qu'un catalogue : on le
       // selectionne d'office plutot que d'imposer un choix sans alternative.
       var memoire = localStorage.getItem("heurix_catalogue_actif");
-      catalogueActif = (memoire && catalogueListe.indexOf(memoire) !== -1)
-        ? memoire : catalogueListe[0];
-      select.value = catalogueActif;
+      session.catalogueActif = (memoire && session.catalogueListe.indexOf(memoire) !== -1)
+        ? memoire : session.catalogueListe[0];
+      select.value = session.catalogueActif;
       appliquerCatalogue(key);
       // Un nouveau client ne devine pas que ce choix porte sur TOUTE la
       // console -- il peut le prendre pour un filtre local. On l'explique
       // une fois, s'il a plus d'un catalogue (avec un seul, le selecteur
       // n'a rien d'ambigu).
-      if (catalogueListe.length > 1) expliquerCatalogueGlobal();
+      if (session.catalogueListe.length > 1) expliquerCatalogueGlobal();
     }).catch(function () {});
 
     select.addEventListener("change", function () {
-      catalogueActif = select.value;
-      localStorage.setItem("heurix_catalogue_actif", catalogueActif);
+      session.catalogueActif = select.value;
+      localStorage.setItem("heurix_catalogue_actif", session.catalogueActif);
       appliquerCatalogue(key);
     });
   }
@@ -650,33 +671,32 @@
   // l'ecran, ce qui serait pire que l'ancien systeme.
   // Appelee a l'OUVERTURE d'un ecran. La cle n'est pas disponible dans
   // showPane, on la memorise au cablage.
-  var cleCourante = null;
   function appliquerCatalogueOuverture(paneId) {
-    if (!cleCourante || !catalogueActif) return;
+    if (!session.cleCourante || !session.catalogueActif) return;
     if (paneId === "pane-search-overrides") {
       var contenu = document.getElementById("so-content");
       if (contenu) contenu.hidden = false;
       soAnimerPlaceholder();
-      refreshSoTable(cleCourante);
-      refreshSoPreview(cleCourante);
-      chargerSynonymesEtRegles(cleCourante);
+      refreshSoTable(session.cleCourante);
+      refreshSoPreview(session.cleCourante);
+      chargerSynonymesEtRegles(session.cleCourante);
     } else if (paneId === "pane-browse") {
-      onBrowseCatalogChange(cleCourante);
+      onBrowseCatalogChange(session.cleCourante);
     }
   }
 
   function majBandeauSandbox() {
     var bandeau = document.getElementById("sandbox-banner");
-    if (bandeau) bandeau.hidden = !catalogueSandbox[catalogueActif];
+    if (bandeau) bandeau.hidden = !session.catalogueSandbox[session.catalogueActif];
   }
 
   function appliquerCatalogue(key) {
     majBandeauSandbox();
-    soCurrentCatalog = catalogueActif;
-    browseCurrentCatalog = catalogueActif;
-    browseCurrentCategory = "";
-    soDraft = null;
-    brDraft = null;
+    session.soCurrentCatalog = session.catalogueActif;
+    session.browseCurrentCatalog = session.catalogueActif;
+    session.browseCurrentCategory = "";
+    session.soDraft = null;
+    session.brDraft = null;
 
     var ouvert = ALL_PANE_IDS.filter(function (id) {
       var el = document.getElementById(id);
@@ -685,8 +705,8 @@
 
     if (ouvert === "pane-search-overrides") {
       var contenu = document.getElementById("so-content");
-      if (contenu) contenu.hidden = !catalogueActif;
-      if (catalogueActif) {
+      if (contenu) contenu.hidden = !session.catalogueActif;
+      if (session.catalogueActif) {
         soAnimerPlaceholder();
         refreshSoTable(key);
         refreshSoPreview(key);
@@ -1076,7 +1096,7 @@
     // Le catalogue etant global, ouvrir un ecran suffit a le charger : plus
     // besoin de resaisir le catalogue a chaque fois.
     if (typeof appliquerCatalogueOuverture === "function") appliquerCatalogueOuverture(paneId);
-    if (paneId === "pane-billing" && cleCourante) renderBilling(cleCourante);
+    if (paneId === "pane-billing" && session.cleCourante) renderBilling(session.cleCourante);
     // Consulter les erreurs les marque vues : le badge s'eteint.
     if (paneId === "pane-errors" && typeof _dernieresErreurs !== "undefined") {
       marquerErreursVues(_dernieresErreurs);
@@ -1157,8 +1177,8 @@
       // l'écran mais pas sur le bloc « Ajouter une règle » — `#so-content`,
       // qui héberge le formulaire, reste MASQUÉ tant que
       // `appliquerCatalogueOuverture` ne l'a pas explicitement révélé, et
-      // cette révélation dépend de conditions (`cleCourante`,
-      // `catalogueActif`) posées ailleurs dans le code. `scrollIntoView`
+      // cette révélation dépend de conditions (`session.cleCourante`,
+      // `session.catalogueActif`) posées ailleurs dans le code. `scrollIntoView`
       // sur un élément cependant masqué ne fait RIEN, silencieusement —
       // aucune erreur, juste un lien qui semble ne pas fonctionner.
       //
@@ -1321,21 +1341,18 @@
     if (!convSortWired) {
       convSortWired = true;
       document.getElementById("conv-sort-select").addEventListener("change", function () {
-        if (activeKey) loadConversionData(activeKey);
+        if (session.activeKey) loadConversionData(session.activeKey);
       });
     }
   }
 
   // ---------------- Browse & Discovery ----------------
   var browseCatalogsLoaded = false;
-  var browseCurrentCatalog = "";
-  var browseCurrentCategory = "";
   var browseAttributesCache = [];
   var browseFormsWired = false;
 
   // ---------------- Search : priorites de requete ----------------
   var soCatalogsLoaded = false;
-  var soCurrentCatalog = "";
   var soEditingKey = null; // {query, product_id} si en cours de modification, sinon null (ajout ou duplication)
   var soFormWired = false;
 
@@ -1419,7 +1436,6 @@
   // telles qu'elles seraient apres application. Le moteur remplace l'ensemble
   // persiste par cette liste, il ne fusionne pas -- c'est ce qui permet de
   // previsualiser aussi une suppression.
-  var soDraft = null;
   // Ordre des produits tel qu'AFFICHE au dernier rendu. C'est sur lui que
   // portent « monter » et « descendre » -- pas sur le seul bloc epingle.
   var soOrdreAffiche = [];
@@ -1474,7 +1490,7 @@
     var vide = document.getElementById("so-preview-empty");
     var grille = document.getElementById("so-preview-grid");
     var legende = document.getElementById("so-preview-caption");
-    if (!champ || !soCurrentCatalog) return;
+    if (!champ || !session.soCurrentCatalog) return;
 
     var q = champ.value.trim();
     // Requete vide = vue du catalogue. Le moteur accepte q="" (mode
@@ -1499,9 +1515,9 @@
     var grouper = document.getElementById("so-grouper");
     var enFamilles = !!(grouper && grouper.checked);
     if (enFamilles) corpsRequete.group_by = "auto";
-    if (soDraft) corpsRequete.simulate_overrides = soDraft;
+    if (session.soDraft) corpsRequete.simulate_overrides = session.soDraft;
 
-    apiFetch("/v1/index/" + encodeURIComponent(soCurrentCatalog) + "/search", key,
+    apiFetch("/v1/index/" + encodeURIComponent(session.soCurrentCatalog) + "/search", key,
              { method: "POST", body: corpsRequete })
       .then(function (data) {
         // La réponse groupée a une FORME DIFFÉRENTE : « groupes » au lieu de
@@ -1607,7 +1623,7 @@
 
 
   function refreshSoTable(key) {
-    apiFetch("/v1/index/" + encodeURIComponent(soCurrentCatalog) + "/search-overrides", key)
+    apiFetch("/v1/index/" + encodeURIComponent(session.soCurrentCatalog) + "/search-overrides", key)
       .then(function (data) {
         renderTable("so-table", "so-empty", data.overrides, soRowHtml);
         var compteur = document.getElementById("so-count");
@@ -1618,7 +1634,7 @@
         }
         // La table des regles est rechargee apres tout enregistrement : le
         // brouillon n'a plus lieu d'etre, l'apercu repasse sur le reel.
-        soDraft = null;
+        session.soDraft = null;
         // Un seul point de branchement : la table des regles est
         // rafraichie apres tout ajout, modification ou suppression, donc
         // l'apercu suit automatiquement.
@@ -1630,13 +1646,13 @@
   function onSoCatalogChange(key) {
     // Le catalogue vient desormais du choix global, plus d'un selecteur de
     // pave (chantier « catalogue global »).
-    soCurrentCatalog = catalogueCourant();
+    session.soCurrentCatalog = catalogueCourant();
     var content = document.getElementById("so-content");
-    if (!soCurrentCatalog) { content.hidden = true; return; }
+    if (!session.soCurrentCatalog) { content.hidden = true; return; }
     content.hidden = false;
     soAnimerPlaceholder();  // la barre devient visible maintenant
     resetSoForm();
-    soDraft = null;
+    session.soDraft = null;
     refreshSoTable(key);
     refreshSoPreview(key);  // vue catalogue immediate, pas d'ecran vide
   }
@@ -1705,7 +1721,7 @@
       var zone = btn.parentElement.querySelector(".zr-suggestions");
       btn.disabled = true;
       btn.textContent = "…";
-      apiFetch("/v1/index/" + encodeURIComponent(catalogueActif) +
+      apiFetch("/v1/index/" + encodeURIComponent(session.catalogueActif) +
                "/synonym-suggestions?q=" + encodeURIComponent(terme), key)
         .then(function (d) {
           var candidats = [];
@@ -1741,11 +1757,11 @@
       // Le PUT remplace la liste entière : on lit d'abord, on ajoute, on
       // renvoie. Les synonymes du pack ne sont pas dans cette liste — ils
       // se rechargent du YAML, on ne risque pas de les écraser.
-      apiFetch("/v1/index/" + encodeURIComponent(catalogueActif) + "/synonyms", key)
+      apiFetch("/v1/index/" + encodeURIComponent(session.catalogueActif) + "/synonyms", key)
         .then(function (d) {
           var groupes = (d.groups || []).slice();
           groupes.push([de, vers]);
-          return apiFetch("/v1/index/" + encodeURIComponent(catalogueActif) + "/synonyms",
+          return apiFetch("/v1/index/" + encodeURIComponent(session.catalogueActif) + "/synonyms",
                           key, { method: "PUT", body: { groups: groupes } });
         })
         .then(function () {
@@ -1793,9 +1809,9 @@
 
   function soConstruireBrouillon(key) {
     var enCours = soLireFormulaire();
-    if (!enCours) { soDraft = null; refreshSoPreview(key); return; }
+    if (!enCours) { session.soDraft = null; refreshSoPreview(key); return; }
 
-    apiFetch("/v1/index/" + encodeURIComponent(soCurrentCatalog) + "/search-overrides", key)
+    apiFetch("/v1/index/" + encodeURIComponent(session.soCurrentCatalog) + "/search-overrides", key)
       .then(function (data) {
         var existantes = (data.overrides || []).map(function (o) {
           return { query: o.query, product_id: o.product_id, action: o.action, position: o.position || undefined };
@@ -1808,10 +1824,10 @@
           if (cle && o.query === cle.query && o.product_id === cle.productId) return false;
           return !(o.query === enCours.query && o.product_id === enCours.product_id);
         });
-        soDraft = existantes.concat([enCours]);
+        session.soDraft = existantes.concat([enCours]);
         refreshSoPreview(key);
       })
-      .catch(function () { soDraft = null; });
+      .catch(function () { session.soDraft = null; });
   }
 
   // Enregistre le BROUILLON, pas le formulaire.
@@ -1828,8 +1844,8 @@
   // exactement la semantique de la simulation, ce qui garantit que
   // l'enregistrement produit bien ce que l'apercu montrait.
   function soAppliquerBrouillon(key) {
-    if (!soDraft) return;
-    var base = "/v1/index/" + encodeURIComponent(soCurrentCatalog) + "/search-overrides";
+    if (!session.soDraft) return;
+    var base = "/v1/index/" + encodeURIComponent(session.soCurrentCatalog) + "/search-overrides";
     var statut = document.getElementById("so-status");
     var bouton = document.getElementById("so-simu-apply");
     if (bouton) bouton.disabled = true;
@@ -1838,7 +1854,7 @@
     apiFetch(base, key)
       .then(function (data) {
         var existantes = data.overrides || [];
-        var voulues = soDraft.slice();
+        var voulues = session.soDraft.slice();
         var cle = function (o) { return o.query + "\u0000" + o.product_id; };
         var voulueParCle = {};
         voulues.forEach(function (r) { voulueParCle[cle(r)] = r; });
@@ -1865,7 +1881,7 @@
         }, Promise.resolve());
       })
       .then(function () {
-        soDraft = null;
+        session.soDraft = null;
         if (statut) { statut.textContent = T("Règles appliquées."); statut.className = "catalog-rule-status ok"; }
         resetSoForm();
         refreshSoTable(key);
@@ -1895,7 +1911,7 @@
 
     var abandonner = document.getElementById("so-simu-discard");
     if (abandonner) abandonner.addEventListener("click", function () {
-      soDraft = null;
+      session.soDraft = null;
       resetSoForm();
       refreshSoPreview(key);
     });
@@ -1919,29 +1935,29 @@
   // brouillon ne contenant qu'elle -- et l'application effacerait les
   // regles existantes, puisque la simulation remplace l'ensemble.
   function soAvecBrouillon(key, suite) {
-    if (soDraft) return suite();
-    apiFetch("/v1/index/" + encodeURIComponent(soCurrentCatalog) + "/search-overrides", key)
+    if (session.soDraft) return suite();
+    apiFetch("/v1/index/" + encodeURIComponent(session.soCurrentCatalog) + "/search-overrides", key)
       .then(function (data) {
-        soDraft = (data.overrides || []).map(function (o) {
+        session.soDraft = (data.overrides || []).map(function (o) {
           var r = { query: o.query, product_id: o.product_id, action: o.action };
           if (o.position) r.position = o.position;
           return r;
         });
         suite();
       })
-      .catch(function () { soDraft = []; suite(); });
+      .catch(function () { session.soDraft = []; suite(); });
   }
 
   function soTrouver(q, pid) {
-    if (!soDraft) return -1;
-    for (var i = 0; i < soDraft.length; i++) {
-      if (soDraft[i].query === q && soDraft[i].product_id === pid) return i;
+    if (!session.soDraft) return -1;
+    for (var i = 0; i < session.soDraft.length; i++) {
+      if (session.soDraft[i].query === q && session.soDraft[i].product_id === pid) return i;
     }
     return -1;
   }
 
   function soEpingles(q) {
-    return soDraft
+    return session.soDraft
       .filter(function (r) { return r.query === q && r.action === "pin"; })
       .sort(function (a, b) { return (a.position || 999) - (b.position || 999); });
   }
@@ -1960,10 +1976,10 @@
     soAvecBrouillon(key, function () {
       var i = soTrouver(q, pid);
       if (action === "retirer") {
-        if (i !== -1) soDraft.splice(i, 1);
+        if (i !== -1) session.soDraft.splice(i, 1);
       } else if (i !== -1) {
-        soDraft[i].action = action;
-        if (action === "bury") delete soDraft[i].position;
+        session.soDraft[i].action = action;
+        if (action === "bury") delete session.soDraft[i].position;
       } else {
         var regle = { query: q, product_id: pid, action: action };
         if (action === "pin") {
@@ -1973,7 +1989,7 @@
           soEpingles(q).forEach(function (r) { r.position = (r.position || 1) + 1; });
           regle.position = 1;
         }
-        soDraft.push(regle);
+        session.soDraft.push(regle);
       }
       soRenumeroter(q);
       refreshSoPreview(key);
@@ -2011,10 +2027,10 @@
     soAvecBrouillon(key, function () {
       // On retire une eventuelle regle existante sur ce produit, puis on
       // pose le rang voulu. Les autres produits ne sont pas touches.
-      soDraft = soDraft.filter(function (r) {
+      session.soDraft = session.soDraft.filter(function (r) {
         return !(r.query === q && r.product_id === pid);
       });
-      soDraft.push({ query: q, product_id: pid, action: "pin", position: cible + 1 });
+      session.soDraft.push({ query: q, product_id: pid, action: "pin", position: cible + 1 });
       refreshSoPreview(key);
     });
   }
@@ -2073,7 +2089,7 @@
       var vers = carte.getAttribute("data-pid");
       if (vers === depuis) return;
       var q = soRequeteCourante();
-      if (!q || !soDraft) return;
+      if (!q || !session.soDraft) return;
       // Reinsertion a la position de la cible, puis renumerotation --
       // plutot qu'un simple echange, qui donnerait un resultat surprenant
       // sur un deplacement de plusieurs rangs.
@@ -2087,10 +2103,10 @@
       var iD = soOrdreAffiche.indexOf(depuis);
       var iV = soOrdreAffiche.indexOf(vers);
       if (iD === -1 || iV === -1) return;
-      soDraft = soDraft.filter(function (r) {
+      session.soDraft = session.soDraft.filter(function (r) {
         return !(r.query === q && r.product_id === depuis);
       });
-      soDraft.push({ query: q, product_id: depuis, action: "pin", position: iV + 1 });
+      session.soDraft.push({ query: q, product_id: depuis, action: "pin", position: iV + 1 });
       refreshSoPreview(key);
     });
   }
@@ -2240,7 +2256,7 @@
       status.textContent = T("Enregistrement…"); status.className = "catalog-rule-status";
 
       var createOrUpdate = function () {
-        return apiFetch("/v1/index/" + encodeURIComponent(soCurrentCatalog) + "/search-overrides", key, { method: "POST", body: body });
+        return apiFetch("/v1/index/" + encodeURIComponent(session.soCurrentCatalog) + "/search-overrides", key, { method: "POST", body: body });
       };
 
       // Modification ou l'utilisateur a change la requete/le produit : l'ancienne
@@ -2248,7 +2264,7 @@
       // (sinon deux regles distinctes coexistent au lieu d'une seule modifiee).
       var needsCleanupFirst = soEditingKey && (soEditingKey.query !== query || soEditingKey.productId !== productId);
       var chain = needsCleanupFirst
-        ? apiFetch("/v1/index/" + encodeURIComponent(soCurrentCatalog) + "/search-overrides" +
+        ? apiFetch("/v1/index/" + encodeURIComponent(session.soCurrentCatalog) + "/search-overrides" +
             "?query=" + encodeURIComponent(soEditingKey.query) + "&product_id=" + encodeURIComponent(soEditingKey.productId),
             key, { method: "DELETE" }).then(createOrUpdate)
         : createOrUpdate();
@@ -2298,7 +2314,7 @@
       }
       if (delBtn) {
         delBtn.disabled = true;
-        var url = "/v1/index/" + encodeURIComponent(soCurrentCatalog) + "/search-overrides" +
+        var url = "/v1/index/" + encodeURIComponent(session.soCurrentCatalog) + "/search-overrides" +
           "?query=" + encodeURIComponent(delBtn.getAttribute("data-query")) +
           "&product_id=" + encodeURIComponent(delBtn.getAttribute("data-product-id"));
         apiFetch(url, key, { method: "DELETE" }).then(function () { refreshSoTable(key); }).catch(function () { delBtn.disabled = false; });
@@ -2315,7 +2331,7 @@
 
   function onBrowseCatalogChange(key) {
     var catalog = catalogueCourant();
-    browseCurrentCatalog = catalog; browseCurrentCategory = "";
+    session.browseCurrentCatalog = catalog; session.browseCurrentCategory = "";
     var categorySelect = document.getElementById("browse-category-select");
     // On masque les RESULTATS, pas le panneau : les selecteurs de catalogue
     // et de categorie y vivent desormais, les cacher rendrait impossible de
@@ -2361,10 +2377,10 @@
   }
 
   function onBrowseCategoryChange(key) {
-    browseCurrentCategory = document.getElementById("browse-category-select").value;
+    session.browseCurrentCategory = document.getElementById("browse-category-select").value;
     var resultats = document.getElementById("browse-results");
     var invite = document.getElementById("browse-hint");
-    if (!browseCurrentCategory) {
+    if (!session.browseCurrentCategory) {
       resultats.hidden = true;
       if (invite) invite.hidden = false;
       return;
@@ -2389,7 +2405,6 @@
   // Le moteur expose pour cela POST /v1/browse/{cat}/{categorie}/simulate,
   // avec les memes garanties (aucune ecriture, pas de quota Browse consomme,
   // cle serveur exigee).
-  var brDraft = null;
   var brOrdreAffiche = [];
 
   function brSimuBar(actif) {
@@ -2434,7 +2449,7 @@
     }).join("");
 
     if (legende) {
-      legende.textContent = T(hits.length > 1 ? "{0} produits dans « {1} »" : "{0} produit dans « {1} »", hits.length, browseCurrentCategory) +
+      legende.textContent = T(hits.length > 1 ? "{0} produits dans « {1} »" : "{0} produit dans « {1} »", hits.length, session.browseCurrentCategory) +
         (simule ? " — " + T("classement simulé") : "");
     }
     brSimuBar(!!simule);
@@ -2445,23 +2460,23 @@
   // « Appliquer » effacerait tout le reste -- la simulation remplacant
   // l'ensemble. Meme piege que cote Search.
   function brAvecBrouillon(key, suite) {
-    if (brDraft) return suite();
-    var url = "/v1/browse/" + encodeURIComponent(browseCurrentCatalog) + "/" +
-              encodeURIComponent(browseCurrentCategory) + "/overrides";
+    if (session.brDraft) return suite();
+    var url = "/v1/browse/" + encodeURIComponent(session.browseCurrentCatalog) + "/" +
+              encodeURIComponent(session.browseCurrentCategory) + "/overrides";
     apiFetch(url, key)
       .then(function (data) {
-        brDraft = (data.overrides || []).map(function (o) {
+        session.brDraft = (data.overrides || []).map(function (o) {
           var r = { product_id: o.product_id, action: o.action };
           if (o.position) r.position = o.position;
           return r;
         });
         suite();
       })
-      .catch(function () { brDraft = []; suite(); });
+      .catch(function () { session.brDraft = []; suite(); });
   }
 
   function brEpingles() {
-    return (brDraft || [])
+    return (session.brDraft || [])
       .filter(function (r) { return r.action === "pin"; })
       .sort(function (a, b) { return (a.position || 999) - (b.position || 999); });
   }
@@ -2469,21 +2484,21 @@
   function brAction(key, action, pid) {
     brAvecBrouillon(key, function () {
       var i = -1;
-      for (var k = 0; k < brDraft.length; k++) {
-        if (brDraft[k].product_id === pid) { i = k; break; }
+      for (var k = 0; k < session.brDraft.length; k++) {
+        if (session.brDraft[k].product_id === pid) { i = k; break; }
       }
       if (action === "retirer") {
-        if (i !== -1) brDraft.splice(i, 1);
+        if (i !== -1) session.brDraft.splice(i, 1);
       } else if (i !== -1) {
-        brDraft[i].action = action;
-        if (action !== "pin") delete brDraft[i].position;
+        session.brDraft[i].action = action;
+        if (action !== "pin") delete session.brDraft[i].position;
       } else {
         var regle = { product_id: pid, action: action };
         if (action === "pin") {
           brEpingles().forEach(function (r) { r.position = (r.position || 1) + 1; });
           regle.position = 1;
         }
-        brDraft.push(regle);
+        session.brDraft.push(regle);
       }
       brEpingles().forEach(function (r, n) { r.position = n + 1; });
       brSimuler(key);
@@ -2498,22 +2513,22 @@
     if (i === -1 || cible < 0 || cible >= brOrdreAffiche.length) return;
 
     brAvecBrouillon(key, function () {
-      brDraft = brDraft.filter(function (r) { return r.product_id !== pid; });
-      brDraft.push({ product_id: pid, action: "pin", position: cible + 1 });
+      session.brDraft = session.brDraft.filter(function (r) { return r.product_id !== pid; });
+      session.brDraft.push({ product_id: pid, action: "pin", position: cible + 1 });
       brSimuler(key);
     });
   }
 
 
   function brSimuler(key) {
-    if (!browseCurrentCatalog || !browseCurrentCategory) return;
+    if (!session.browseCurrentCatalog || !session.browseCurrentCategory) return;
     var champLim = document.getElementById("browse-preview-limit");
     var lim = champLim ? parseInt(champLim.value, 10) : 20;
     var sort = document.getElementById("browse-sort-select").value;
-    var url = "/v1/browse/" + encodeURIComponent(browseCurrentCatalog) + "/" +
-              encodeURIComponent(browseCurrentCategory) + "/simulate";
+    var url = "/v1/browse/" + encodeURIComponent(session.browseCurrentCatalog) + "/" +
+              encodeURIComponent(session.browseCurrentCategory) + "/simulate";
     apiFetch(url, key, { method: "POST", body: {
-      overrides: brDraft || [], sort: sort, limit: lim, offset: 0, filters: "", facets: "",
+      overrides: session.brDraft || [], sort: sort, limit: lim, offset: 0, filters: "", facets: "",
       // L'apercu simule doit montrer EXACTEMENT ce que verra le visiteur,
       // filtre de stock compris -- sinon il previsualise autre chose.
       in_stock_only: !!(document.getElementById("browse-in-stock") || {}).checked,
@@ -2523,9 +2538,9 @@
   }
 
   function brAppliquerBrouillon(key) {
-    if (!brDraft) return;
-    var base = "/v1/browse/" + encodeURIComponent(browseCurrentCatalog) + "/" +
-               encodeURIComponent(browseCurrentCategory) + "/overrides";
+    if (!session.brDraft) return;
+    var base = "/v1/browse/" + encodeURIComponent(session.browseCurrentCatalog) + "/" +
+               encodeURIComponent(session.browseCurrentCategory) + "/overrides";
     var bouton = document.getElementById("br-simu-apply");
     if (bouton) bouton.disabled = true;
 
@@ -2533,7 +2548,7 @@
       .then(function (data) {
         var existantes = data.overrides || [];
         var voulus = {};
-        (brDraft || []).forEach(function (r) { voulus[r.product_id] = r; });
+        (session.brDraft || []).forEach(function (r) { voulus[r.product_id] = r; });
         var suppressions = existantes
           .filter(function (o) { return !voulus[o.product_id]; })
           .map(function (o) {
@@ -2542,7 +2557,7 @@
         return Promise.all(suppressions);
       })
       .then(function () {
-        return (brDraft || []).reduce(function (chaine, r) {
+        return (session.brDraft || []).reduce(function (chaine, r) {
           return chaine.then(function () {
             var corps = { product_id: r.product_id, action: r.action };
             if (r.action === "pin" && r.position) corps.position = r.position;
@@ -2551,7 +2566,7 @@
         }, Promise.resolve());
       })
       .then(function () {
-        brDraft = null;
+        session.brDraft = null;
         refreshBrowseOverrides(key);
         refreshBrowsePreview(key);
       })
@@ -2609,8 +2624,8 @@
       var deplace = depuis;
 
       brAvecBrouillon(key, function () {
-        brDraft = brDraft.filter(function (r) { return !(r.product_id === deplace); });
-        brDraft.push({ product_id: deplace, action: "pin", position: iV + 1 });
+        session.brDraft = session.brDraft.filter(function (r) { return !(r.product_id === deplace); });
+        session.brDraft.push({ product_id: deplace, action: "pin", position: iV + 1 });
         brSimuler(key);
       });
     });
@@ -2632,7 +2647,7 @@
     if (appliquer) appliquer.addEventListener("click", function () { brAppliquerBrouillon(key); });
     var abandonner = document.getElementById("br-simu-discard");
     if (abandonner) abandonner.addEventListener("click", function () {
-      brDraft = null;
+      session.brDraft = null;
       refreshBrowsePreview(key);
     });
   }
@@ -2642,11 +2657,11 @@
     var champLim = document.getElementById("browse-preview-limit");
     var lim = champLim ? parseInt(champLim.value, 10) : 20;
     var horsStock = document.getElementById("browse-in-stock");
-    var url = "/v1/browse/" + encodeURIComponent(browseCurrentCatalog) + "/" + encodeURIComponent(browseCurrentCategory) +
+    var url = "/v1/browse/" + encodeURIComponent(session.browseCurrentCatalog) + "/" + encodeURIComponent(session.browseCurrentCategory) +
               "?sort=" + sort + "&limit=" + lim +
               (horsStock && horsStock.checked ? "&in_stock_only=true" : "");
     apiFetch(url, key).then(function (data) {
-      brDraft = null;
+      session.brDraft = null;
       brRenderGrille(data.hits || [], false);
       renderTable("browse-preview-table", "browse-preview-empty", data.hits, function (h) {
         var status = h.pinned ? "Épinglé" : h.boosted ? "Boosté" : h.buried ? "Relégué" : "—";
@@ -2660,7 +2675,7 @@
   var barEditingKey = null; // {field, value} en cours de modification (regles par attribut), null = ajout/duplication
 
   function refreshBrowseOverrides(key) {
-    var url = "/v1/browse/" + encodeURIComponent(browseCurrentCatalog) + "/" + encodeURIComponent(browseCurrentCategory) + "/overrides";
+    var url = "/v1/browse/" + encodeURIComponent(session.browseCurrentCatalog) + "/" + encodeURIComponent(session.browseCurrentCategory) + "/overrides";
     apiFetch(url, key).then(function (data) {
       renderTable("browse-overrides-table", "browse-overrides-empty", data.overrides, function (o) {
         return "<td class='mono'>" + esc(o.product_id) + "</td><td>" + T(o.action === "pin" ? "Épingler" : "Reléguer") +
@@ -2673,7 +2688,7 @@
   }
 
   function refreshBrowseAttributeRules(key) {
-    var url = "/v1/browse/" + encodeURIComponent(browseCurrentCatalog) + "/" + encodeURIComponent(browseCurrentCategory) + "/attribute-rules";
+    var url = "/v1/browse/" + encodeURIComponent(session.browseCurrentCatalog) + "/" + encodeURIComponent(session.browseCurrentCategory) + "/attribute-rules";
     apiFetch(url, key).then(function (data) {
       renderTable("browse-attribute-rules-table", "browse-attribute-rules-empty", data.rules, function (r) {
         return "<td class='mono'>" + esc(r.field) + "</td><td class='mono'>" + esc(r.value) + "</td><td>" +
@@ -2716,7 +2731,7 @@
     if (browseLim) browseLim.addEventListener("change", function () { refreshBrowsePreview(key); });
     var brStock = document.getElementById("browse-in-stock");
     if (brStock) brStock.addEventListener("change", function () {
-      if (brDraft) brSimuler(key); else refreshBrowsePreview(key);
+      if (session.brDraft) brSimuler(key); else refreshBrowsePreview(key);
     });
     document.getElementById("browse-sort-select").addEventListener("change", function () { refreshBrowsePreview(key); });
     document.getElementById("browse-attribute-field").addEventListener("input", onBrowseFieldInput);
@@ -2732,7 +2747,7 @@
       if (!productId) return;
       var body = { product_id: productId, action: action };
       if (positionInput) body.position = parseInt(positionInput, 10);
-      var base = "/v1/browse/" + encodeURIComponent(browseCurrentCatalog) + "/" + encodeURIComponent(browseCurrentCategory) + "/overrides";
+      var base = "/v1/browse/" + encodeURIComponent(session.browseCurrentCatalog) + "/" + encodeURIComponent(session.browseCurrentCategory) + "/overrides";
 
       // Modification en changeant l'identifiant produit : l'ancienne cle n'existe
       // plus sous ce nom, il faut la retirer avant de creer la nouvelle.
@@ -2771,7 +2786,7 @@
       }
       if (delBtn) {
         var pid = delBtn.getAttribute("data-remove-override");
-        var url = "/v1/browse/" + encodeURIComponent(browseCurrentCatalog) + "/" + encodeURIComponent(browseCurrentCategory) + "/overrides/" + encodeURIComponent(pid);
+        var url = "/v1/browse/" + encodeURIComponent(session.browseCurrentCatalog) + "/" + encodeURIComponent(session.browseCurrentCategory) + "/overrides/" + encodeURIComponent(pid);
         apiFetch(url, key, { method: "DELETE" }).then(function () { refreshBrowseOverrides(key); refreshBrowsePreview(key); }).catch(function () {});
       }
     });
@@ -2783,7 +2798,7 @@
       var value = document.getElementById("browse-attribute-value").value.trim();
       var action = document.getElementById("browse-attribute-action").value;
       if (!field || !value) return;
-      var base = "/v1/browse/" + encodeURIComponent(browseCurrentCatalog) + "/" + encodeURIComponent(browseCurrentCategory) + "/attribute-rules";
+      var base = "/v1/browse/" + encodeURIComponent(session.browseCurrentCatalog) + "/" + encodeURIComponent(session.browseCurrentCategory) + "/attribute-rules";
 
       var needsCleanup = barEditingKey && (barEditingKey.field !== field || barEditingKey.value !== value);
       var chain = needsCleanup
@@ -2820,7 +2835,7 @@
       }
       if (delBtn) {
         var field = delBtn.getAttribute("data-remove-attribute-field"), value = delBtn.getAttribute("data-remove-attribute-value");
-        var url = "/v1/browse/" + encodeURIComponent(browseCurrentCatalog) + "/" + encodeURIComponent(browseCurrentCategory) +
+        var url = "/v1/browse/" + encodeURIComponent(session.browseCurrentCatalog) + "/" + encodeURIComponent(session.browseCurrentCategory) +
           "/attribute-rules?field=" + encodeURIComponent(field) + "&value=" + encodeURIComponent(value);
         apiFetch(url, key, { method: "DELETE" }).then(function () { refreshBrowseAttributeRules(key); refreshBrowsePreview(key); }).catch(function () {});
       }
@@ -2982,7 +2997,7 @@
       wirePublicKeys(key);
       wireCategoryViews(key);
       wireTutoEditeur(["so-tuto", "br-tuto"]);
-      cleCourante = key;
+      session.cleCourante = key;
       // EXPOSITION POUR LES MODULES. L'import CSV est un module ES,
       // chargé séparément : il n'a pas accès aux variables de cette
       // fonction anonyme. Sans cela, il utilisait le jeton de SESSION,
@@ -2997,7 +3012,7 @@
     }).catch(function () {
       dashLoading.hidden = true;
       localStorage.removeItem(SESSION_STORAGE_KEY);
-      activeKey = null;
+      session.activeKey = null;
       setAuthMode("login");
       showLogin(L.loginErrorNetwork);
     });
@@ -3486,11 +3501,9 @@
     });
   }
 
-  var activeKey = null;
-
   function startSession(sessionToken, key) {
     localStorage.setItem(SESSION_STORAGE_KEY, sessionToken);
-    activeKey = key;
+    session.activeKey = key;
     showDashboard();
     loadDashboard(key, periodSelect.value);
     dashboard.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -3499,12 +3512,18 @@
   function endSession() {
     var token = localStorage.getItem(SESSION_STORAGE_KEY);
     localStorage.removeItem(SESSION_STORAGE_KEY);
-    activeKey = null;
     if (token) {
       fetch(API_BASE + "/v1/auth/logout", { method: "POST", headers: { Authorization: "Bearer " + token } }).catch(function () {});
     }
-    // REMISE A ZERO DE L'ETAT DE SESSION.
+    // REMISE A ZERO DE L'ETAT DE SESSION (chantier S6, 5 aout 2026).
     //
+    // Un seul bloc plutot qu'une liste de reaffectations individuelles :
+    // un nouvel etat de session ajoute a etatInitial() est remis a zero
+    // automatiquement ici, sans ligne supplementaire a se souvenir d'ecrire
+    // -- c'etait la fuite documentee (un oubli = etat du compte precedent
+    // visible par le suivant sur un poste partage).
+    session = etatInitial();
+
     // Le menu entreprise vit dans l'en-tete du SITE, pas dans la section
     // tableau de bord : masquer celle-ci ne le fait donc pas disparaitre. Il
     // continuait d'afficher la raison sociale apres deconnexion, ce qui
@@ -3514,18 +3533,6 @@
     var orgBtn = document.getElementById("console-org-btn");
     if (orgBtn) orgBtn.textContent = T("Mon compte");
 
-    // L'etat des catalogues appartient a la session : le laisser en place
-    // exposerait les noms de catalogues du compte precedent a la personne
-    // suivante sur le meme navigateur.
-    catalogueActif = "";
-    catalogueListe = [];
-    catalogueSandbox = {};
-    cleCourante = null;
-    soCurrentCatalog = "";
-    browseCurrentCatalog = "";
-    browseCurrentCategory = "";
-    soDraft = null;
-    brDraft = null;
     var globalSelect = document.getElementById("global-catalog");
     if (globalSelect) { globalSelect.innerHTML = ""; globalSelect.disabled = true; }
     var banniere = document.getElementById("sandbox-banner");
@@ -3714,7 +3721,7 @@
   logoutBtn.addEventListener("click", endSession);
 
   periodSelect.addEventListener("change", function () {
-    if (activeKey) loadDashboard(activeKey, periodSelect.value);
+    if (session.activeKey) loadDashboard(session.activeKey, periodSelect.value);
   });
 
   // ---------------- Point d'entrée ----------------
@@ -3743,9 +3750,9 @@
       apiFetch("/v1/auth/me", existingSession)
         .then(function (data) {
           if (!data.keys || !data.keys.length) { throw new Error("no_key"); }
-          activeKey = data.keys[0].key;
+          session.activeKey = data.keys[0].key;
           showDashboard();
-          loadDashboard(activeKey, periodSelect.value);
+          loadDashboard(session.activeKey, periodSelect.value);
         })
         .catch(function () {
           localStorage.removeItem(SESSION_STORAGE_KEY);
