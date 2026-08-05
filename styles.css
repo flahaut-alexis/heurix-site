@@ -2278,6 +2278,28 @@ h2{ font-size:clamp(26px,3.4vw,34px); font-weight:800; margin:0 0 18px; max-widt
   border-radius:10px; padding:12px 16px; margin-top:14px !important;
 }
 
+/* Composant Callout (chantier UX, 5 août 2026) -- remplace les
+   avertissements en emoji brut par un encadré sémantique, plus reperable
+   au scan visuel et porteur d'un role ARIA explicite pour les lecteurs
+   d'ecran (role="note" : informatif, pas une alerte bloquante). */
+.callout{
+  display:flex; align-items:flex-start; gap:10px;
+  border-radius:var(--radius); padding:14px 16px; margin:16px 0;
+  border:1px solid transparent;
+}
+.callout-icon{ flex:0 0 auto; margin-top:1px; }
+.callout-content{ font-size:13.5px; line-height:1.55; }
+.callout-content p{ margin:0; }
+.callout-warning{
+  background:var(--red-tint); border-color:#F5D6D1; color:var(--ink);
+}
+.callout-warning .callout-icon{ color:var(--red-muted); }
+.callout-info{
+  background:var(--blue-tint); border-color:#D9DEFB; color:var(--ink);
+}
+.callout-info .callout-icon{ color:var(--blue-deep); }
+.h4-warning-icon{ color:var(--red-muted); vertical-align:-3px; margin-right:4px; }
+
 /* CTA */
 .cta-section{
   text-align:center; padding:96px 0 88px;

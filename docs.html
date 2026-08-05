@@ -118,7 +118,7 @@
   <div class="search-panel">
     <div class="search-panel-head">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <input id="heurix-search-input" type="text" placeholder="Heurix Search..." autocomplete="off">
+      <input id="heurix-search-input" type="text" placeholder="Rechercher sur heurix.fr (articles, docs, pages)…" autocomplete="off">
       <button class="search-close" data-search-close type="button">Échap</button>
     </div>
     <p id="heurix-search-suggest-label" class="search-suggest-label" hidden>Derniers articles</p>
@@ -130,6 +130,7 @@
 <section class="docs-hero">
   <div class="wrap">
     <div class="badge">Documentation</div>
+    <div class="badge" style="margin-left:8px;">API v1</div>
     <h1>Search API — Référence</h1>
     <p class="lede">Tout ce qu'il faut pour indexer un catalogue et lancer une première recherche en quelques minutes. Base URL : <code class="docs-inline-code">https://api.heurix.fr</code></p>
     <p class="docs-hero-note">L'accès nécessite une clé API. <a href="pricing.html">Souscrivez en self-service</a> pour en obtenir une immédiatement, ou <a href="index.html#contact">contactez-nous</a> pour un besoin sur mesure.</p>
@@ -140,7 +141,7 @@
 
   <aside class="docs-sidebar">
     <div class="docs-page-search">
-      <input type="text" id="docs-page-search-input" placeholder="Rechercher dans la doc…" autocomplete="off">
+      <input type="text" id="docs-page-search-input" placeholder="Filtrer le sommaire de cette page…" autocomplete="off">
       <div id="docs-page-search-results" class="docs-page-search-results" hidden></div>
     </div>
     <nav aria-label="Sommaire de la documentation">
@@ -185,7 +186,7 @@
 
     <section id="introduction" class="docs-section">
       <h2>Introduction</h2>
-      <p>Le Search API expose le moteur Heurix : un moteur de recherche pensé pour les catalogues techniques, où les requêtes et les fiches produits traversent le même pipeline — normalisation (casse, accents), synonymes métier, tolérance aux fautes de frappe, puis une <strong>cascade de règles</strong> qui transforme le texte en annotations structurées. C'est cette cascade qui permet à <code class="docs-inline-code">m8x20</code> de retrouver une fiche enregistrée « M8 x 20 — A2 ».</p>
+      <p>Le Search API expose le moteur Heurix : un moteur de recherche pensé pour les catalogues techniques, où les requêtes et les fiches produits traversent le même pipeline — normalisation (casse, accents), synonymes métier, tolérance aux fautes de frappe, puis une <strong><a href="#cascade">cascade de règles</a></strong> qui transforme le texte en <a href="#gl-annotation">annotations</a> structurées. C'est cette cascade qui permet à <code class="docs-inline-code">m8x20</code> de retrouver une fiche enregistrée « M8 x 20 — A2 ».</p>
       <p>L'API est REST, en JSON, sur HTTPS uniquement. Toutes les réponses sont encodées en UTF-8.</p>
     </section>
 
@@ -193,7 +194,7 @@
       <h2>Démarrage rapide</h2>
       <p>Trois appels suffisent pour une première recherche fonctionnelle.</p>
 
-      <p class="docs-step"><span class="docs-step-num">1</span> Indexez vos produits (le catalogue est créé automatiquement au premier envoi) :</p>
+      <p class="docs-step"><span class="docs-step-num">1</span> Indexez vos produits (le <a href="#gl-catalogue">catalogue</a> est créé automatiquement au premier envoi) :</p>
       <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/index/moncatalogue/items \
   -H "Authorization: Bearer VOTRE_CLE_API" \
   -H "Content-Type: application/json" \
@@ -260,7 +261,10 @@
   -d '{"allowed_origins": "monsite.fr,www.monsite.fr"}'</code></pre>
       <p><code class="docs-inline-code">allowed_origins</code> est optionnel mais recommandé : la clé n'est alors acceptée que depuis les domaines listés, ce qui la rend inutilisable si quelqu'un la recopie sur un autre site. <code class="docs-inline-code">GET /v1/keys/public</code> les liste, <code class="docs-inline-code">DELETE /v1/keys/public/{clé}</code> en révoque une.</p>
 
-      <p class="regex-reassure">⚠️ <strong>Les clés existantes restent des clés serveur</strong> et continuent de fonctionner à l'identique — rien ne casse. Mais si vous en avez posé une dans le JavaScript de votre site (barre de recherche, tracker, widget Browse), remplacez-la par une clé publique : en l'état, n'importe quel visiteur peut la lire et accéder à votre facturation.</p>
+      <div class="callout callout-warning" role="note">
+        <svg class="callout-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <div class="callout-content"><p><strong>Les clés existantes restent des clés serveur</strong> et continuent de fonctionner à l'identique — rien ne casse. Mais si vous en avez posé une dans le JavaScript de votre site (barre de recherche, tracker, widget Browse), remplacez-la par une clé publique : en l'état, n'importe quel visiteur peut la lire et accéder à votre facturation.</p></div>
+      </div>
     </section>
 
     <section id="comptage" class="docs-section">
@@ -333,7 +337,7 @@
       <p><code class="docs-inline-code">total</code> (nombre de correspondances), <code class="docs-inline-code">hits</code> — chaque hit contient le <code class="docs-inline-code">product</code> complet tel qu'indexé, son <code class="docs-inline-code">score</code>, <code class="docs-inline-code">in_stock</code>, et <code class="docs-inline-code">matched</code> : la liste lisible des raisons de la correspondance (termes trouvés, fautes corrigées, annotations partagées) — utile pour comprendre et régler la pertinence. Si <code class="docs-inline-code">facets</code> a été demandé, un champ <code class="docs-inline-code">facets</code> supplémentaire liste les décomptes par groupe.</p>
       <h3>Simulation de règles côté Browse</h3>
       <div class="docs-endpoint"><span class="docs-method docs-method-post">POST</span><code>/v1/browse/{catalog}/{category}/simulate</code></div>
-      <p>Pendant du champ <code class="docs-inline-code">simulate_overrides</code> de la recherche, pour le merchandising de catégorie. Prévisualise un classement avec des règles <strong>non enregistrées</strong> :</p>
+      <p>Le pendant du champ <code class="docs-inline-code">simulate_overrides</code> de la recherche, pour le merchandising de catégorie. Prévisualise un classement avec des règles <strong>non enregistrées</strong> :</p>
       <pre class="docs-code"><code>{
   "overrides": [{"product_id": "PER-BOSCH-18V", "action": "pin", "position": 1}],
   "sort": "stock",
@@ -740,7 +744,7 @@ $collection->getSelect()->order(
 
       <p>Un contrôle affiche, avant l'envoi, combien de lignes seraient retenues — une correspondance fausse se voit immédiatement plutôt qu'après coup.</p>
 
-      <h4>⚠️ Un point à décider avant votre premier import</h4>
+      <h4><svg class="h4-warning-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Un point à décider avant votre premier import</h4>
       <p><strong>L'identifiant que vous indexez doit être celui que vous utiliserez partout ailleurs.</strong> C'est la seule décision difficile à revenir en arrière.</p>
 
       <p>Trois systèmes s'appuient sur cet identifiant :</p>
@@ -887,7 +891,10 @@ curl -X POST https://api.heurix.fr/v1/events \
         <li><a href="downloads/heurix-conversion-snippet.html" download>Snippet JavaScript simple</a>, sans identifiant persistant — pour une intégration minimale sans GTM ni tracker</li>
       </ul>
       <p><strong>Ne consomme pas votre quota de requêtes</strong> — ce n'est pas un appel moteur, c'est une remontée de données.</p>
-      <p class="regex-reassure">⚠️ À savoir avant de lire vos chiffres : même avec le tracker, l'attribution recherche → achat n'est <strong>pas une garantie à 100 %</strong>. Sans identifiant visiteur, Heurix agrège les clics et achats reçus sur une même période et un même compte (<code class="docs-inline-code">total_revenue</code>) — une corrélation, pas une preuve. Avec le tracker installé, un champ supplémentaire (<code class="docs-inline-code">attributed_revenue</code>) ne compte que les achats où le <strong>même visiteur</strong> a cliqué depuis une recherche dans les 24 heures précédentes — un lien réel, nettement plus fiable, mais qui dépend toujours de la qualité de votre implémentation.</p>
+      <div class="callout callout-warning" role="note">
+        <svg class="callout-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <div class="callout-content"><p>À savoir avant de lire vos chiffres : même avec le tracker, l'attribution recherche → achat n'est <strong>pas une garantie à 100 %</strong>. Sans identifiant visiteur, Heurix agrège les clics et achats reçus sur une même période et un même compte (<code class="docs-inline-code">total_revenue</code>) — une corrélation, pas une preuve. Avec le tracker installé, un champ supplémentaire (<code class="docs-inline-code">attributed_revenue</code>) ne compte que les achats où le <strong>même visiteur</strong> a cliqué depuis une recherche dans les 24 heures précédentes — un lien réel, nettement plus fiable, mais qui dépend toujours de la qualité de votre implémentation.</p></div>
+      </div>
 
       <div class="docs-endpoint" style="margin-top:22px;"><span class="docs-method docs-method-get">GET</span><code>/v1/analytics/conversion-summary</code></div>
       <p>Taux de clic, chiffre d'affaires et marge attribués sur la période (<code class="docs-inline-code">?days=30</code> par défaut). Renvoie aussi <code class="docs-inline-code">attributed_revenue</code> et <code class="docs-inline-code">attributed_products</code> — <code class="docs-inline-code">null</code> si aucun événement de la période ne porte d'identifiant visiteur (le tracker n'est pas installé), un chiffre réel sinon.</p>

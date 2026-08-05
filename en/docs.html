@@ -104,7 +104,7 @@
   <div class="search-panel">
     <div class="search-panel-head">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <input id="heurix-search-input" type="text" placeholder="Heurix Search..." autocomplete="off">
+      <input id="heurix-search-input" type="text" placeholder="Search heurix.fr (articles, docs, pages)…" autocomplete="off">
       <button class="search-close" data-search-close type="button">Esc</button>
     </div>
     <p id="heurix-search-suggest-label" class="search-suggest-label" hidden>Latest articles</p>
@@ -116,6 +116,7 @@
 <section class="docs-hero">
   <div class="wrap">
     <div class="badge">Documentation</div>
+    <div class="badge" style="margin-left:8px;">API v1</div>
     <h1>Search API — Reference</h1>
     <p class="lede">Everything you need to index a catalog and run a first search in minutes. Base URL: <code class="docs-inline-code">https://api.heurix.fr</code></p>
     <p class="docs-hero-note">Access requires an API key. <a href="pricing.html">Sign up self-service</a> to get one immediately, or <a href="index.html#contact">contact us</a> for custom needs.</p>
@@ -171,7 +172,7 @@
 
     <section id="introduction" class="docs-section">
       <h2>Introduction</h2>
-      <p>The Search API exposes the Heurix engine: a search engine built for technical catalogs, where queries and product records go through the same pipeline — normalization (case, accents), business synonyms, typo tolerance, then a <strong>rule cascade</strong> that turns text into structured annotations. That cascade is what lets <code class="docs-inline-code">m8x20</code> find a record stored as "M8 x 20 — A2".</p>
+      <p>The Search API exposes the Heurix engine: a search engine built for technical catalogs, where queries and product records go through the same pipeline — normalization (case, accents), business synonyms, typo tolerance, then a <strong><a href="#cascade">rule cascade</a></strong> that turns text into structured <a href="#gl-annotation">annotations</a>. That cascade is what lets <code class="docs-inline-code">m8x20</code> find a record stored as "M8 x 20 — A2".</p>
       <p>The API is REST, JSON, HTTPS only. All responses are UTF-8 encoded.</p>
     </section>
 
@@ -179,7 +180,7 @@
       <h2>Quickstart</h2>
       <p>Three calls are enough for a working first search.</p>
 
-      <p class="docs-step"><span class="docs-step-num">1</span> Index your products (the catalog is created automatically on first send):</p>
+      <p class="docs-step"><span class="docs-step-num">1</span> Index your products (the <a href="#gl-catalogue">catalog</a> is created automatically on first send):</p>
       <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/index/mycatalog/items \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
@@ -246,7 +247,10 @@
   -d '{"allowed_origins": "mysite.com,www.mysite.com"}'</code></pre>
       <p><code class="docs-inline-code">allowed_origins</code> is optional but recommended: the key is then only accepted from the listed domains, making it useless if someone copies it onto another site. <code class="docs-inline-code">GET /v1/keys/public</code> lists them, <code class="docs-inline-code">DELETE /v1/keys/public/{key}</code> revokes one.</p>
 
-      <p class="regex-reassure">⚠️ <strong>Existing keys remain server keys</strong> and keep working exactly as before — nothing breaks. But if you've placed one in your site's JavaScript (search bar, tracker, Browse widget), replace it with a public key: as it stands, any visitor can read it and reach your billing.</p>
+      <div class="callout callout-warning" role="note">
+        <svg class="callout-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <div class="callout-content"><p><strong>Existing keys remain server keys</strong> and keep working exactly as before — nothing breaks. But if you've placed one in your site's JavaScript (search bar, tracker, Browse widget), replace it with a public key: as it stands, any visitor can read it and reach your billing.</p></div>
+      </div>
     </section>
 
     <section id="comptage" class="docs-section">
@@ -736,7 +740,7 @@ $collection->getSelect()->order(
 
       <p>A check shows, before sending, how many rows would be kept — a wrong match is visible immediately rather than after the fact.</p>
 
-      <h4>⚠️ One decision to make before your first import</h4>
+      <h4><svg class="h4-warning-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> One decision to make before your first import</h4>
       <p><strong>The identifier you index with must be the one you use everywhere else.</strong> It's the one decision that's hard to walk back.</p>
 
       <p>Three systems rely on this identifier:</p>
@@ -873,7 +877,10 @@ curl -X POST https://api.heurix.fr/v1/events \
         <li><a href="downloads/heurix-conversion-snippet.html" download>Simple JavaScript snippet</a>, no persistent identifier — for a minimal integration with no GTM or tracker</li>
       </ul>
       <p><strong>Doesn't consume your request quota</strong> — it's not an engine call, it's a data report.</p>
-      <p class="regex-reassure">⚠️ Worth knowing before reading your numbers: even with the tracker, search → purchase attribution is <strong>not a 100% guarantee</strong>. Without a visitor identifier, Heurix aggregates clicks and purchases received over the same period and account (<code class="docs-inline-code">total_revenue</code>) — a correlation, not proof. With the tracker installed, an additional field (<code class="docs-inline-code">attributed_revenue</code>) only counts purchases where the <strong>same visitor</strong> clicked from a search within the previous 24 hours — a real link, notably more reliable, but still dependent on the quality of your implementation.</p>
+      <div class="callout callout-warning" role="note">
+        <svg class="callout-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <div class="callout-content"><p>Worth knowing before reading your numbers: even with the tracker, search → purchase attribution is <strong>not a 100% guarantee</strong>. Without a visitor identifier, Heurix aggregates clicks and purchases received over the same period and account (<code class="docs-inline-code">total_revenue</code>) — a correlation, not proof. With the tracker installed, an additional field (<code class="docs-inline-code">attributed_revenue</code>) only counts purchases where the <strong>same visitor</strong> clicked from a search within the previous 24 hours — a real link, notably more reliable, but still dependent on the quality of your implementation.</p></div>
+      </div>
 
       <div class="docs-endpoint" style="margin-top:22px;"><span class="docs-method docs-method-get">GET</span><code>/v1/analytics/conversion-summary</code></div>
       <p>Click-through rate, attributed revenue, and margin over the period (<code class="docs-inline-code">?days=30</code> by default). Also returns <code class="docs-inline-code">attributed_revenue</code> and <code class="docs-inline-code">attributed_products</code> — <code class="docs-inline-code">null</code> if no event in the period carries a visitor identifier (the tracker isn't installed), a real figure otherwise.</p>
