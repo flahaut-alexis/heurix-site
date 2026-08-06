@@ -1,9 +1,8 @@
 /* Homepage demo — connected to the REAL engine.
  *
  * ENGLISH VARIANT of demo-search-live.js — same logic, translated
- * user-facing text, English number formatting. Same reasoning as
- * search-en.js and guide-quiz-en.js: this script renders a lot of text
- * directly into the DOM (results, messages, example chips), so a
+ * user-facing text, English number formatting. This script renders a lot
+ * of text directly into the DOM (results, messages, example chips), so a
  * dedicated file is safer than branching every string on document
  * language inside one shared script.
  *
