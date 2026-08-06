@@ -9,6 +9,23 @@
 (function () {
   "use strict";
 
+  // LANG_EN (5 août 2026, découvert pendant le chantier TOC) : ce script
+  // n'était chargé que sur la page FR — jamais sur en/docs.html. Corrigé au
+  // passage ; le texte est maintenant paramétré pour fonctionner des deux
+  // côtés, même motif que console-i18n.js et guide-quiz.js.
+  var LANG_EN = document.documentElement.lang === "en";
+  var TXT = LANG_EN ? {
+    ariaLabel: "Copy code example",
+    copier: "Copy",
+    copie: "Copied",
+    repli: "Select then Cmd+C",
+  } : {
+    ariaLabel: "Copier l'exemple de code",
+    copier: "Copier",
+    copie: "Copié",
+    repli: "Sélectionnez puis Cmd+C",
+  };
+
   var ICONE_COPIE =
     "<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='currentColor' " +
     "stroke-width='2' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'>" +
@@ -44,8 +61,8 @@
     var bouton = document.createElement("button");
     bouton.type = "button";
     bouton.className = "docs-copy-btn";
-    bouton.setAttribute("aria-label", "Copier l'exemple de code");
-    bouton.innerHTML = ICONE_COPIE + "<span>Copier</span>";
+    bouton.setAttribute("aria-label", TXT.ariaLabel);
+    bouton.innerHTML = ICONE_COPIE + "<span>" + TXT.copier + "</span>";
     enveloppe.appendChild(bouton);
   }
 
@@ -85,7 +102,7 @@
     // de ne rien faire — un bouton qui ne réagit pas est pire qu'absent.
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(texte)
-        .then(function () { retour(bouton, true, "Copié"); })
+        .then(function () { retour(bouton, true, TXT.copie); })
         .catch(function () { repli(bouton, texte); });
     } else {
       repli(bouton, texte);
@@ -103,9 +120,9 @@
       zone.select();
       var ok = document.execCommand("copy");
       zone.remove();
-      retour(bouton, ok, ok ? "Copié" : "Sélectionnez puis Cmd+C");
+      retour(bouton, ok, ok ? TXT.copie : TXT.repli);
     } catch (e) {
-      retour(bouton, false, "Sélectionnez puis Cmd+C");
+      retour(bouton, false, TXT.repli);
     }
   }
 
