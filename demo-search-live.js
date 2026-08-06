@@ -28,6 +28,54 @@
 (function () {
   "use strict";
 
+  // SOURCE UNIQUE FR/EN (chantier S4, 5 août 2026) — fusion de
+  // demo-search-live.js et demo-search-live-en.js. Ils ne différaient PAS
+  // que par la traduction : demo-search-live-en.js avait perdu la fonction
+  // prixAvecRemise() (prix barré + pourcentage de réduction) en cours de
+  // route -- un vrai bug de divergence fonctionnelle, pas juste un texte
+  // non traduit. Un visiteur anglophone ne voyait donc jamais un prix en
+  // promotion. Cette fusion la restaure pour les deux langues, comme le
+  // reste de la logique qui, elle, n'avait jamais divergé.
+  //
+  // Même motif que console-i18n.js et guide-quiz.js : la langue se lit sur
+  // document.documentElement.lang, jamais supposée.
+  var LANG_EN = document.documentElement.lang === "en";
+
+  var TXT = LANG_EN ? {
+    rupture: "Out of stock",
+    enStock: "In stock",
+    packRecommande: "Recommended pack",
+    afficherPlus: function (n) { return "Show more results (" + n.toLocaleString("en-US") + " remaining)"; },
+    filtreEntre: function (min, max) { return "filter: between " + min + " and " + max; },
+    filtreMoins: function (max) { return "filter: under " + max; },
+    filtrePlus: function (min) { return "filter: over " + min; },
+    resultats: function (n) { return n.toLocaleString("en-US") + " results"; },
+    tropDeRecherches: "Too many searches in a row — please wait a second.",
+    indisponible: "Demo temporarily unavailable. The engine remains reachable via API.",
+    chargement: "Loading…",
+    reessayer: "Retry",
+    afficherPlusProduits: function (n) { return "Show more products (" + n.toLocaleString("en-US") + " total)"; },
+  } : {
+    rupture: "Rupture",
+    enStock: "En stock",
+    packRecommande: "Pack recommandé",
+    afficherPlus: function (n) { return "Afficher plus de résultats (" + n.toLocaleString("fr-FR") + " restants)"; },
+    filtreEntre: function (min, max) { return "filtre : entre " + min + " et " + max; },
+    filtreMoins: function (max) { return "filtre : moins de " + max; },
+    filtrePlus: function (min) { return "filtre : plus de " + min; },
+    resultats: function (n) { return n.toLocaleString("fr-FR") + " résultats"; },
+    tropDeRecherches: "Trop de recherches d'affilée — patientez une seconde.",
+    indisponible: "Démonstration momentanément indisponible. Le moteur reste joignable par API.",
+    chargement: "Chargement…",
+    reessayer: "Réessayer",
+    afficherPlusProduits: function (n) { return "Afficher plus de produits (" + n.toLocaleString("fr-FR") + " au total)"; },
+  };
+  function txtAucunResultat(requeteEchappee) {
+    return LANG_EN
+      ? "No results for \"" + requeteEchappee + "\"."
+      : "Aucun résultat pour « " + requeteEchappee + " ».";
+  }
+
   var API = "https://api.heurix.fr";
 
 
@@ -108,8 +156,8 @@
   }
 
   function euros(n) {
-    return n === undefined || n === null
-      ? "" : Number(n).toFixed(2).replace(".", ",") + " €";
+    if (n === undefined || n === null) return "";
+    return LANG_EN ? "€" + Number(n).toFixed(2) : Number(n).toFixed(2).replace(".", ",") + " €";
   }
 
   // Prix barré (3 août, roadmap compare_at_price) -- verifie deja
@@ -167,8 +215,8 @@
       visuel = "<div class='play-card-vign'>" + esc((p.ref || p.id || "").slice(0, 14)) + "</div>";
     }
     var etat = hit.in_stock === false
-      ? "<span class='play-rupture'>Rupture</span>"
-      : "<span class='play-stock'>En stock</span>";
+      ? "<span class='play-rupture'>" + TXT.rupture + "</span>"
+      : "<span class='play-stock'>" + TXT.enStock + "</span>";
 
     // TAGS D'ATTRIBUTS (2 août, refonte cartes) -- remplace la description
     // générique tronquée. Marque et catégorie : seuls champs fiables et
@@ -246,8 +294,7 @@
   function afficher(donnees, requete, ajouter, debutMs) {
     var hits = donnees.hits || [];
     if (!hits.length && !ajouter) {
-      grille.innerHTML = "<p class='play-vide'>Aucun résultat pour « " +
-                         esc(requete) + " ».</p>";
+      grille.innerHTML = "<p class='play-vide'>" + txtAucunResultat(esc(requete)) + "</p>";
       if (meta) meta.textContent = "";
       if (boutonPlus) boutonPlus.hidden = true;
       return;
@@ -272,7 +319,7 @@
     var idBundle = (!ajouter && donnees.highlighted_bundle)
       ? donnees.highlighted_bundle.product.id : null;
     if (!ajouter && donnees.highlighted_bundle) {
-      cartes.push(fiche(donnees.highlighted_bundle, "Pack recommandé"));
+      cartes.push(fiche(donnees.highlighted_bundle, TXT.packRecommande));
     }
     // ORDRE PAR DISPONIBILITÉ (2 août, retour Alexis après test réel) :
     // un produit en rupture ne doit jamais être en tête de liste, mais ne
@@ -305,8 +352,7 @@
       var reste = totalEnCours - offsetEnCours;
       if (reste > 0) {
         boutonPlus.hidden = false;
-        boutonPlus.textContent = "Afficher plus de résultats (" +
-          reste.toLocaleString("fr-FR") + " restants)";
+        boutonPlus.textContent = TXT.afficherPlus(reste);
         boutonPlus.disabled = false;
       } else {
         boutonPlus.hidden = true;
@@ -343,13 +389,12 @@
       if (donnees.price_filter) {
         var f = donnees.price_filter;
         filtre = " · " + (f.max !== null && f.min !== null
-          ? "filtre : entre " + euros(f.min) + " et " + euros(f.max)
-          : f.max !== null ? "filtre : moins de " + euros(f.max)
-          : "filtre : plus de " + euros(f.min));
+          ? TXT.filtreEntre(euros(f.min), euros(f.max))
+          : f.max !== null ? TXT.filtreMoins(euros(f.max))
+          : TXT.filtrePlus(euros(f.min)));
       }
       meta.innerHTML =
-        "<span class='play-meta-count'>" + donnees.total.toLocaleString("fr-FR") +
-        " résultats</span>" +
+        "<span class='play-meta-count'>" + TXT.resultats(donnees.total) + "</span>" +
         "<span class='play-meta-speed'>" +
           "<svg viewBox='0 0 24 24' aria-hidden='true'><path d='M13 2 3 14h7l-1 8 11-14h-7z'/></svg>" +
           "<b class='play-meta-ms' data-cible='" + ms + "'>" + ms + "</b> ms" +
@@ -455,15 +500,13 @@
         // Un 429 signifie que le visiteur tape très vite : la limitation de
         // débit du serveur a mordu. On le distingue d'une vraie panne.
         if (String(e.message).indexOf("429") !== -1) {
-          grille.innerHTML = "<p class='play-vide'>Trop de recherches d'affilée — " +
-                             "patientez une seconde.</p>";
+          grille.innerHTML = "<p class='play-vide'>" + TXT.tropDeRecherches + "</p>";
           return;
         }
         // MESSAGE HONNÊTE. Un écran vide laisserait croire à un produit
         // cassé ; dire que la démonstration est indisponible préserve la
         // crédibilité du moteur.
-        grille.innerHTML = "<p class='play-vide'>Démonstration momentanément " +
-                           "indisponible. Le moteur reste joignable par API.</p>";
+        grille.innerHTML = "<p class='play-vide'>" + TXT.indisponible + "</p>";
         if (meta) meta.textContent = "";
       });
   }
@@ -495,8 +538,7 @@
       })
       .catch(function () {
         if (id !== derniereRequete) return;
-        grille.innerHTML = "<p class='play-vide'>Démonstration momentanément " +
-                           "indisponible. Le moteur reste joignable par API.</p>";
+        grille.innerHTML = "<p class='play-vide'>" + TXT.indisponible + "</p>";
       });
   }
 
@@ -507,7 +549,7 @@
   function chargerPlus() {
     if (!requeteEnCours || !boutonPlus) return;
     boutonPlus.disabled = true;
-    boutonPlus.textContent = "Chargement…";
+    boutonPlus.textContent = TXT.chargement;
 
     var id = ++derniereRequete;
     var debut = performance.now();
@@ -538,7 +580,7 @@
       .catch(function () {
         if (id !== derniereRequete) return;
         boutonPlus.disabled = false;
-        boutonPlus.textContent = "Réessayer";
+        boutonPlus.textContent = TXT.reessayer;
       });
   }
   if (boutonPlus) boutonPlus.addEventListener("click", chargerPlus);
@@ -551,7 +593,10 @@
   // EXEMPLES PAR SECTEUR. Une suggestion « M8x20 » sur la verticale Mode
   // ne démontrerait rien : chaque secteur a son vocabulaire, et c'est
   // précisément ce que le sélecteur illustre.
-  var EXEMPLES = {
+  var EXEMPLES = LANG_EN ? {
+    outillage: ["M8x20 stainless", "stainless screws under $2", "DIN 933", "wahser"],
+    mode: ["red wool sweater size L", "slim jeans W32", "striped shirt"],
+  } : {
     outillage: ["M8x20 inox", "vis inox moins de 2 euros", "DIN 933", "rondele"],
     mode: ["pull laine rouge taille L", "jean slim W32", "chemise rayée"],
   };
@@ -562,7 +607,10 @@
   // "Perceuses" existe tel quel côté outillage (vu sur le vrai catalogue
   // Racetools), les intitulés mode reprennent les catégories du jeu de
   // données traduit le 1er août (T-Shirt, Dress, Jacket...).
-  var CATEGORIES = {
+  var CATEGORIES = LANG_EN ? {
+    outillage: ["Drills & drivers", "Sanders", "Measuring & marking", "Safety gear"],
+    mode: ["T-shirts", "Dresses", "Jackets", "Sweaters"],
+  } : {
     outillage: ["Perceuses & visseuses", "Ponceuses", "Mesure & traçage", "Protection & sécurité"],
     mode: ["T-shirts", "Robes", "Vestes", "Pulls"],
   };
@@ -628,8 +676,7 @@
         // Réutilise fiche() telle quelle : même rendu que les résultats
         // de recherche, aucune logique de carte dupliquée ici.
         var voirPlus = (d.total || 0) > d.hits.length
-          ? "<button type='button' class='play-categories-voirplus'>Afficher plus de produits (" +
-            d.total.toLocaleString("fr-FR") + " au total)</button>"
+          ? "<button type='button' class='play-categories-voirplus'>" + TXT.afficherPlusProduits(d.total) + "</button>"
           : "";
         zoneProduits.innerHTML = d.hits.map(function (h) { return fiche(h); }).join("") + voirPlus;
         var boutonVoirPlus = zoneProduits.querySelector(".play-categories-voirplus");
