@@ -2964,6 +2964,22 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
   border-color:var(--blue);
   box-shadow:0 0 0 4px color-mix(in srgb, var(--blue) 14%, transparent);
 }
+/* Chantier console "Produits associés" (7 août) -- liste de résultats
+   cliquables sous la barre de recherche, distincte de la grille
+   drag-and-drop de so-preview-grid : ici on ne fait que CHOISIR un
+   produit, jamais le réordonner. */
+.rp-search-list{
+  display:flex; flex-direction:column; gap:1px;
+  border:1px solid var(--line); border-radius:10px; overflow:hidden;
+  margin-top:2px;
+}
+.rp-search-result{
+  display:block; width:100%; text-align:left;
+  background:#fff; border:none; border-bottom:1px solid var(--line);
+  padding:10px 14px; cursor:pointer; font:inherit;
+}
+.rp-search-result:last-child{ border-bottom:none; }
+.rp-search-result:hover{ background:var(--bg-soft); }
 .so-searchbar-icon{
   width:20px; height:20px; flex:0 0 20px;
   color:var(--blue); pointer-events:none;

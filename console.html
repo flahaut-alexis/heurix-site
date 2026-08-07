@@ -229,6 +229,7 @@
             <button type="button" class="console-sidebar-item" data-pane="pane-errors">Erreurs<span class="nav-badge" id="nav-badge-erreurs" hidden></span></button>
             <div class="console-sidebar-sublabel">Ranking</div>
             <button type="button" class="console-sidebar-item" data-pane="pane-category-views">Produits les plus vus</button>
+            <button type="button" class="console-sidebar-item" data-pane="pane-related-products">Produits associés</button>
           </div>
         </div>
 
@@ -683,6 +684,46 @@
               <select id="cv-catalog" style="margin:6px 0 16px;"></select>
               <div id="cv-content"></div>
               <p class="console-empty" id="cv-empty" hidden>Aucune vue de page de catégorie remontée. Cette donnée nécessite l'appel <code class="docs-inline-code">Heurix.trackCategoryView()</code> depuis vos pages de catégorie — voir <a href="docs.html#ep-category-views">la documentation</a>.</p>
+            </div>
+          </div>
+
+          <div id="pane-related-products" class="console-pane" hidden>
+            <h2 class="console-pane-title">Produits associés</h2>
+
+            <div class="console-panel console-panel-warn">
+              <p class="console-panel-note" style="margin:0;">Produits fréquemment achetés dans le <strong>même panier</strong>, par comptage réel des commandes — pas un modèle prédictif. Nécessite un minimum de 5 achats du produit choisi sur la période pour être fiable.</p>
+            </div>
+
+            <div class="console-panel">
+              <div class="so-searchbar">
+                <svg class="so-searchbar-icon" width="20" height="20" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+                  <g stroke="currentColor" stroke-linecap="round">
+                    <circle cx="27" cy="27" r="17" stroke-width="6"/>
+                    <path d="M19 21h16M19 27h16M19 33h16" stroke-width="4"/>
+                    <path d="M40 40 L54 54" stroke-width="7"/>
+                  </g>
+                </svg>
+                <input type="text" id="rp-search" placeholder="Rechercher un produit par nom ou référence…" aria-label="Rechercher un produit">
+              </div>
+              <div id="rp-search-results"></div>
+            </div>
+
+            <div class="console-panel" id="rp-result-panel" hidden>
+              <div class="catalog-card-row" style="margin-bottom:14px; align-items:flex-start;">
+                <div style="flex:1;">
+                  <div style="font-size:11px; font-weight:700; color:var(--ink-muted); text-transform:uppercase; letter-spacing:.03em; margin-bottom:4px;">Produit choisi</div>
+                  <div id="rp-chosen-product"></div>
+                </div>
+                <div style="text-align:right;">
+                  <div style="font-size:11px; font-weight:700; color:var(--ink-muted); text-transform:uppercase; letter-spacing:.03em; margin-bottom:4px;">Achats (période)</div>
+                  <strong style="font-size:20px; color:var(--blue-deep);" id="rp-target-purchases">–</strong>
+                </div>
+              </div>
+              <div class="table-scroll"><table class="console-table" id="rp-related-table">
+                <thead><tr><th>Produit associé</th><th>Achetés ensemble</th><th>Sur les paniers observés</th></tr></thead>
+                <tbody></tbody>
+              </table></div>
+              <p class="console-empty" id="rp-related-empty" hidden>Pas assez d'achats sur ce produit pour un signal fiable (minimum 5 sur la période).</p>
             </div>
           </div>
 

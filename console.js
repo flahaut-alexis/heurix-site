@@ -345,6 +345,97 @@
     select.addEventListener("change", charger);
   }
 
+  // ---------------- Produits associés (Analytics > Ranking) ----------------
+  //
+  // Contrairement à category-views (une vue d'ensemble automatique), cette
+  // section porte une SÉLECTION -- un produit choisi par recherche, pas un
+  // catalogue dans un select. Réutilise donc le catalogue GLOBAL actif
+  // (comme top-products, zero-results...) plutôt qu'un select dédié.
+  var rpSearchTimer = null;
+
+  function wireRelatedProducts(key) {
+    var input = document.getElementById("rp-search");
+    var resultsBox = document.getElementById("rp-search-results");
+    if (!input || input.dataset.rpWired) return;
+    input.dataset.rpWired = "1";
+
+    input.addEventListener("input", function () {
+      clearTimeout(rpSearchTimer);
+      var q = input.value.trim();
+      if (!q) { resultsBox.innerHTML = ""; return; }
+      rpSearchTimer = setTimeout(function () { rpChercherProduits(key, q); }, 300);
+    });
+
+    resultsBox.addEventListener("click", function (e) {
+      var item = e.target.closest("[data-rp-pid]");
+      if (!item) return;
+      rpChoisirProduit(
+        key, item.getAttribute("data-rp-pid"), item.getAttribute("data-rp-name"),
+        item.getAttribute("data-rp-price")
+      );
+    });
+  }
+
+  function rpChercherProduits(key, q) {
+    var catalogue = catalogueCourant();
+    var resultsBox = document.getElementById("rp-search-results");
+    if (!catalogue) return;
+    apiFetch("/v1/index/" + encodeURIComponent(catalogue) + "/search", key,
+             { method: "POST", body: { q: q, limit: 8 } })
+      .then(function (data) {
+        var hits = data.hits || [];
+        if (!hits.length) {
+          resultsBox.innerHTML = "<p class='console-empty' style='margin:8px 0 0;'>" + T("Aucun produit ne correspond.") + "</p>";
+          return;
+        }
+        resultsBox.innerHTML = "<div class='rp-search-list'>" + hits.map(function (h) {
+          var p = h.product;
+          var prix = p.price != null ? p.price : "";
+          return "<button type='button' class='rp-search-result' data-rp-pid='" + esc(p.id) +
+            "' data-rp-name='" + esc(p.name || "") + "' data-rp-price='" + prix + "'>" +
+            produitCell(p.id, p.name, p.price) + "</button>";
+        }).join("") + "</div>";
+      })
+      .catch(function () { resultsBox.innerHTML = ""; });
+  }
+
+  function rpChoisirProduit(key, pid, name, price) {
+    var catalogue = catalogueCourant();
+    document.getElementById("rp-search-results").innerHTML = "";
+    document.getElementById("rp-search").value = name || pid;
+    document.getElementById("rp-result-panel").hidden = false;
+    document.getElementById("rp-chosen-product").innerHTML = produitCell(pid, name, price ? Number(price) : null);
+    document.getElementById("rp-target-purchases").textContent = "…";
+    document.getElementById("rp-related-empty").hidden = true;
+    document.querySelector("#rp-related-table tbody").innerHTML = "";
+
+    apiFetch("/v1/analytics/related-products/" + encodeURIComponent(catalogue) + "/" + encodeURIComponent(pid), key)
+      .then(function (data) {
+        document.getElementById("rp-target-purchases").textContent = data.target_purchases.toLocaleString(LOCALE);
+        var tbody = document.querySelector("#rp-related-table tbody");
+        var empty = document.getElementById("rp-related-empty");
+        if (!data.related.length) {
+          empty.hidden = false;
+          return;
+        }
+        tbody.innerHTML = data.related.map(function (r) {
+          var pct = data.target_purchases ? Math.round((r.co_purchases / data.target_purchases) * 100) : 0;
+          return "<tr><td>" + produitCell(r.product_id, r.name, r.price) + "</td>" +
+            "<td class='num' style='font-weight:700;'>" + r.co_purchases + "</td>" +
+            "<td class='num'>" + pct + "%</td></tr>";
+        }).join("");
+      })
+      .catch(function () {});
+  }
+
+  function rpReinitialiser() {
+    var input = document.getElementById("rp-search");
+    if (!input) return;
+    input.value = "";
+    document.getElementById("rp-search-results").innerHTML = "";
+    document.getElementById("rp-result-panel").hidden = true;
+  }
+
   function renderApiKey(key) {
     var valueEl = document.getElementById("account-key-value");
     var toggleBtn = document.getElementById("account-key-toggle");
@@ -519,7 +610,7 @@
     }).catch(function () {});
   }
 
-  var ALL_PANE_IDS = ["pane-overview", "pane-guides", "pane-top-queries", "pane-zero-results", "pane-errors", "pane-search-overrides", "pane-category-views",
+  var ALL_PANE_IDS = ["pane-overview", "pane-guides", "pane-top-queries", "pane-zero-results", "pane-errors", "pane-search-overrides", "pane-category-views", "pane-related-products",
     "pane-browse", "pane-catalog-help", "pane-catalog-list", "pane-billing", "pane-company", "pane-team", "pane-key", "pane-feedback",
     // Ajoute le 29 juillet. Cette liste est une LISTE BLANCHE : un pave
     // absent d'ici s'affiche vide, sans erreur en console -- symptome
@@ -716,6 +807,8 @@
       onBrowseCatalogChange(key);
     } else if (ouvert === "pane-category-views") {
       wireCategoryViews(key);
+    } else if (ouvert === "pane-related-products") {
+      rpReinitialiser();
     }
   }
 
@@ -2996,6 +3089,7 @@
       wireSearchOverridesPane(key);
       wirePublicKeys(key);
       wireCategoryViews(key);
+      wireRelatedProducts(key);
       wireTutoEditeur(["so-tuto", "br-tuto"]);
       session.cleCourante = key;
       // EXPOSITION POUR LES MODULES. L'import CSV est un module ES,
