@@ -99,7 +99,16 @@
     });
   }
 
-  window.Heurix = {
+  window.Heurix = window.Heurix || {};
+  // FUSION, jamais une reaffectation complete (corrige le 7 aout 2026).
+  // heurix-search.js s'attache lui aussi a window.Heurix (searchBox) --
+  // si ce script chargeait APRES lui avec `window.Heurix = {...}` plein,
+  // il effacait silencieusement searchBox, sans la moindre erreur
+  // console : la barre de recherche disparaissait, seulement si les deux
+  // scripts etaient charges dans cet ordre precis. Object.assign prend
+  // le contraire : ce script AJOUTE ses proprietes, n'en efface jamais
+  // aucune posee par un autre script deja charge.
+  Object.assign(window.Heurix, {
     visitorId: visitorId,
 
     // Appelez ceci quand un visiteur clique sur un produit depuis vos
@@ -141,7 +150,7 @@
       window.Heurix.visitorId = visitorId;
       window.heurixVisitorId = visitorId;
     }
-  };
+  });
 
   // Alias à plat, pour compatibilité avec l'ancien snippet sans tracker —
   // si vous avez déjà du code appelant heurixTrackClick/heurixTrackPurchase,

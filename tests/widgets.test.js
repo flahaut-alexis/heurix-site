@@ -382,3 +382,78 @@ describe("renvoi vers les synonymes depuis Sans resultat", () => {
     expect(css).toMatch(/\.zr-vers-synonymes\{[^}]*cursor:pointer/);
   });
 });
+
+// ---------------------------------------------------------------------------
+// Chantier "score d'intention" (7 aout 2026) -- heurix-search.js transmet
+// visitor_id quand heurix-tracker.js est charge sur la meme page. A revele
+// au passage un bug preexistant (window.Heurix reaffecte en entier par le
+// tracker, effacant searchBox si le widget chargeait en premier) : les
+// deux scripts communiquant vraiment pour la premiere fois ici, ce test
+// protege LES DEUX -- le nouveau comportement ET la correction du bug.
+//
+// runScripts: "dangerously" + de vrais <script> injectes dans le DOM,
+// PAS window.eval() : le pattern UMD des deux fichiers repose sur
+// `typeof self !== "undefined" ? self : this`, qui ne resout pas vers
+// window depuis un eval() JSDOM -- fidele a un vrai navigateur ici,
+// contrairement a l'approche eval() utilisee ailleurs dans ce fichier.
+// ---------------------------------------------------------------------------
+describe("heurix-search.js + heurix-tracker.js — chantier score d'intention", () => {
+  async function chargerLesDeux(ordre) {
+    const dom = new JSDOM("<div id='cible'></div>", {
+      url: "http://localhost/", runScripts: "dangerously", resources: "usable",
+    });
+    const { window } = dom;
+    const appels = [];
+    window.fetch = async (url, opts) => {
+      appels.push({ url: String(url), corps: opts && opts.body ? JSON.parse(opts.body) : null });
+      return { ok: true, json: async () => ({ hits: [], total: 0 }) };
+    };
+    for (const fichier of ordre) {
+      const script = window.document.createElement("script");
+      script.textContent = fs.readFileSync(path.join(RACINE, fichier), "utf8");
+      window.document.body.appendChild(script);
+    }
+    await new Promise((r) => setTimeout(r, 20));
+    return { window, appels };
+  }
+
+  it("BUG CORRIGE : le tracker ne doit plus ecraser window.Heurix.searchBox, peu importe l'ordre de chargement", async () => {
+    const { window: w1 } = await chargerLesDeux(["downloads/heurix-search.js", "downloads/heurix-tracker.js"]);
+    expect(typeof w1.Heurix.searchBox).toBe("function");
+    expect(typeof w1.Heurix.visitorId).toBe("string");
+
+    const { window: w2 } = await chargerLesDeux(["downloads/heurix-tracker.js", "downloads/heurix-search.js"]);
+    expect(typeof w2.Heurix.searchBox).toBe("function");
+    expect(typeof w2.Heurix.visitorId).toBe("string");
+  });
+
+  it("une recherche transmet automatiquement visitor_id quand le tracker est charge", async () => {
+    const { window, appels } = await chargerLesDeux(["downloads/heurix-tracker.js", "downloads/heurix-search.js"]);
+    window.Heurix.searchBox({ apiKey: "hxp_test", catalog: "demo", containerId: "cible" });
+    const idAttendu = window.Heurix.visitorId;
+
+    const input = window.document.querySelector(".hx-search-input");
+    input.value = "vis m8";
+    input.dispatchEvent(new window.Event("input", { bubbles: true }));
+    await new Promise((r) => setTimeout(r, 400));
+
+    const appelRecherche = appels.find((a) => a.url.includes("/search"));
+    expect(appelRecherche).toBeTruthy();
+    expect(appelRecherche.corps.visitor_id).toBe(idAttendu);
+  });
+
+  it("sans tracker charge, la recherche continue de fonctionner exactement comme avant -- pas de visitor_id, pas d'erreur", async () => {
+    const { window, appels } = await chargerLesDeux(["downloads/heurix-search.js"]);
+    window.Heurix.searchBox({ apiKey: "hxp_test", catalog: "demo", containerId: "cible" });
+
+    const input = window.document.querySelector(".hx-search-input");
+    input.value = "vis m8";
+    input.dispatchEvent(new window.Event("input", { bubbles: true }));
+    await new Promise((r) => setTimeout(r, 400));
+
+    const appelRecherche = appels.find((a) => a.url.includes("/search"));
+    expect(appelRecherche).toBeTruthy();
+    expect(appelRecherche.corps.visitor_id).toBeUndefined();
+    expect(appelRecherche.corps.q).toBe("vis m8"); // le reste du corps est intact
+  });
+});

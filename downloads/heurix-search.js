@@ -261,6 +261,13 @@
     function runSearch(query) {
       var requestId = ++lastRequestId;
       var body = { q: query, limit: limit, filters: activeFilters };
+      // Chantier "score d'intention" (7 aout 2026). Lu depuis
+      // heurix-tracker.js SI il est charge sur la meme page -- jamais une
+      // dependance obligatoire, ce widget continue de fonctionner
+      // exactement comme avant si le tracker est absent (window.Heurix
+      // alors undefined, visitorId reste undefined, non transmis).
+      var visitorId = (window.Heurix && window.Heurix.visitorId) || window.heurixVisitorId || undefined;
+      if (visitorId) body.visitor_id = visitorId;
       // Le regroupement se decide sur le TOTAL, qu'on ne connait qu'apres
       // la reponse. On demande donc le mode plat, et on relance en groupe
       // si le seuil est franchi. Le second appel est servi par le cache du
@@ -287,6 +294,7 @@
           if (seuilActif && (data.total || 0) >= groupThreshold) {
             var corpsGroupe = { q: query, limit: limit, filters: activeFilters,
                                 group_by: groupBy };
+            if (visitorId) corpsGroupe.visitor_id = visitorId;
             return fetch(baseUrl + "/v1/index/" + encodeURIComponent(config.catalog) + "/search", {
               method: "POST",
               headers: { Authorization: "Bearer " + config.apiKey, "Content-Type": "application/json" },
