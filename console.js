@@ -3623,12 +3623,24 @@
       var catalogs = results[0].catalogs;
       AVAILABLE_RULEPACKS = results[1].rulepacks.map(function (r) { return r.name; });
       loading.hidden = true;
-      if (!catalogs.length) { empty.hidden = false; return; }
+      if (!catalogs.length) {
+        empty.hidden = false;
+        var sidebarSublabelVide = document.getElementById("sidebar-catalog-sublabel");
+        if (sidebarSublabelVide) sidebarSublabelVide.hidden = true;
+        return;
+      }
       list.innerHTML = catalogs.map(catalogCardHtml).join("");
       var cardEls = list.querySelectorAll(".catalog-card");
       catalogs.forEach(function (c, i) { wireCatalogCard(cardEls[i], c, key); });
 
       var sidebarItems = document.getElementById("sidebar-catalog-items");
+      var sidebarSublabel = document.getElementById("sidebar-catalog-sublabel");
+      // Chantier navigation (8 août 2026) : separation visuelle entre
+      // "Importer un fichier" (une action ponctuelle) et cette liste (une
+      // vraie navigation vers chaque catalogue) -- jamais affiche sans
+      // catalogue derriere, sinon un titre de section flotterait sans rien
+      // dessous.
+      if (sidebarSublabel) sidebarSublabel.hidden = false;
       sidebarItems.innerHTML = catalogs.map(function (c, i) {
         return '<button type="button" class="console-sidebar-item' + (i === 0 ? ' console-sidebar-item-on' : '') +
           '" data-pane="pane-catalog-list" data-catalog="' + esc(c.catalog) + '">' + esc(c.catalog) + '</button>';

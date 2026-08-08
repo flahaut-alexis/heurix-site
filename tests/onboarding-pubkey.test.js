@@ -17,12 +17,13 @@ const RACINE = path.resolve(__dirname, "..");
 const REPONSE_LOGIN = { session_token: "tok-test", keys: [{ key: "cle-test" }] };
 const REPONSE_CATALOGS = { catalogs: [{ catalog: "outillage-demo" }] };
 
-function construireFetchMock(cleGenereeAvecSucces = { ok: true }) {
+function construireFetchMock(cleGenereeAvecSucces = { ok: true }, catalogues = REPONSE_CATALOGS) {
   let clePubliqueExiste = false;
   return vi.fn(async (url, options) => {
     const chemin = String(url).replace(/^https?:\/\/[^/]+/, "");
     if (chemin === "/v1/auth/login") return { ok: true, json: async () => REPONSE_LOGIN };
-    if (chemin === "/v1/index/catalogs") return { ok: true, json: async () => REPONSE_CATALOGS };
+    if (chemin === "/v1/index/catalogs") return { ok: true, json: async () => catalogues };
+    if (chemin.startsWith("/v1/rulepacks")) return { ok: true, json: async () => ({ rulepacks: ["outillage"] }) };
     if (chemin.startsWith("/v1/analytics/summary")) {
       return { ok: true, json: async () => ({ total_searches: 0, zero_result_rate: 0, total_errors: 0, daily_searches: [] }) };
     }
@@ -52,7 +53,7 @@ function construireFetchMock(cleGenereeAvecSucces = { ok: true }) {
   });
 }
 
-function chargerConsole(cleGenereeAvecSucces) {
+function chargerConsole(cleGenereeAvecSucces, catalogues) {
   const html = fs.readFileSync(path.join(RACINE, "console.html"), "utf8");
   const dom = new JSDOM(html, { url: "http://localhost/console.html", runScripts: "outside-only", pretendToBeVisual: true });
   const { window } = dom;
@@ -66,7 +67,7 @@ function chargerConsole(cleGenereeAvecSucces) {
   });
   window.Chart = function () { return { destroy: () => {} }; };
 
-  const fetchMock = construireFetchMock(cleGenereeAvecSucces);
+  const fetchMock = construireFetchMock(cleGenereeAvecSucces, catalogues);
   global.fetch = fetchMock;
   window.fetch = fetchMock;
 
@@ -105,21 +106,46 @@ describe("console.js — puce d'onboarding clé publique", () => {
   });
 });
 
+describe("console.js — sous-label dynamique Catalogues (8 août 2026)", () => {
+  it("apparaît quand des catalogues existent, pour séparer visuellement l'action 'Importer' de la liste à naviguer", async () => {
+    const { window, document } = chargerConsole(undefined, { catalogs: [{ catalog: "outillage-demo" }] });
+    await connecter(window, document);
+
+    await vi.waitFor(() => {
+      expect(document.getElementById("sidebar-catalog-sublabel").hidden).toBe(false);
+    });
+  });
+
+  it("reste caché quand la liste de catalogues est vide -- jamais un titre de section sans rien dessous", async () => {
+    const { window, document } = chargerConsole(undefined, { catalogs: [] });
+    await connecter(window, document);
+
+    // Laisse le temps a la promesse /v1/index/catalogs de se resoudre,
+    // meme dans le cas vide -- sans quoi le test pourrait passer par
+    // coincidence (etat initial deja hidden, jamais vraiment verifie
+    // apres coup).
+    await vi.waitFor(() => {
+      expect(document.getElementById("catalogs-empty").hidden).toBe(false);
+    });
+    expect(document.getElementById("sidebar-catalog-sublabel").hidden).toBe(true);
+  });
+});
+
 describe("console.html — navigation en trois piliers (8 août 2026)", () => {
-  it("Configurer regroupe Catalogues et Règles (déplacée depuis Personnalisation)", () => {
+  it("Configurer ne contient plus que Catalogues -- Règles a déménagé sous Optimiser", () => {
     const html = fs.readFileSync(path.join(RACINE, "console.html"), "utf8");
-    const dom = new JSDOM(html);
+    const dom = new JSDOM(html, { url: "http://localhost/console.html" });
     const doc = dom.window.document;
 
     const groupe = doc.querySelector('[data-section-items="configurer"]');
     expect(groupe).not.toBeNull();
     expect(groupe.querySelector('[data-pane="pane-import-csv"]')).not.toBeNull();
-    expect(groupe.querySelector('[data-pane="pane-search-overrides"]')).not.toBeNull();
+    expect(groupe.querySelector('[data-pane="pane-search-overrides"]'), "Règles ne doit plus être sous Configurer").toBeNull();
   });
 
   it("Observer regroupe Search, Ranking et Audience -- mêmes data-pane qu'avant, juste réorganisés", () => {
     const html = fs.readFileSync(path.join(RACINE, "console.html"), "utf8");
-    const dom = new JSDOM(html);
+    const dom = new JSDOM(html, { url: "http://localhost/console.html" });
     const doc = dom.window.document;
 
     const groupe = doc.querySelector('[data-section-items="observer"]');
@@ -129,19 +155,27 @@ describe("console.html — navigation en trois piliers (8 août 2026)", () => {
     }
   });
 
-  it("Optimiser regroupe Merchandising", () => {
+  it("Optimiser regroupe Search (Règles) et Ranking (Merchandising), Règles au-dessus", () => {
     const html = fs.readFileSync(path.join(RACINE, "console.html"), "utf8");
-    const dom = new JSDOM(html);
+    const dom = new JSDOM(html, { url: "http://localhost/console.html" });
     const doc = dom.window.document;
 
     const groupe = doc.querySelector('[data-section-items="optimiser"]');
     expect(groupe).not.toBeNull();
-    expect(groupe.querySelector('[data-pane="pane-browse"]')).not.toBeNull();
+    const regles = groupe.querySelector('[data-pane="pane-search-overrides"]');
+    const merchandising = groupe.querySelector('[data-pane="pane-browse"]');
+    expect(regles, "Règles doit être sous Optimiser maintenant").not.toBeNull();
+    expect(merchandising).not.toBeNull();
+
+    // Ordre reel dans le document : Regles avant Merchandising, pas juste
+    // les deux presents quelque part dans le groupe.
+    const position = regles.compareDocumentPosition(merchandising);
+    expect(position & dom.window.Node.DOCUMENT_POSITION_FOLLOWING, "Règles doit précéder Merchandising dans le document").toBeTruthy();
   });
 
   it("Dashboard reste hors pilier, en tête de menu", () => {
     const html = fs.readFileSync(path.join(RACINE, "console.html"), "utf8");
-    const dom = new JSDOM(html);
+    const dom = new JSDOM(html, { url: "http://localhost/console.html" });
     const doc = dom.window.document;
     const dashboard = doc.querySelector('[data-pane="pane-overview"]');
     expect(dashboard.closest('[data-section-items]')).toBeNull();
@@ -149,7 +183,7 @@ describe("console.html — navigation en trois piliers (8 août 2026)", () => {
 
   it("Comment ça marche n'est plus un bouton de sidebar, mais reste une pane valide et accessible", () => {
     const html = fs.readFileSync(path.join(RACINE, "console.html"), "utf8");
-    const dom = new JSDOM(html);
+    const dom = new JSDOM(html, { url: "http://localhost/console.html" });
     const doc = dom.window.document;
 
     const boutonSidebar = doc.querySelector('.console-sidebar-items [data-pane="pane-catalog-help"]');
@@ -166,7 +200,7 @@ describe("console.html — navigation en trois piliers (8 août 2026)", () => {
 
   it("les tranches de segmentation portent les nouveaux libellés, mêmes IDs qu'avant", () => {
     const html = fs.readFileSync(path.join(RACINE, "console.html"), "utf8");
-    const dom = new JSDOM(html);
+    const dom = new JSDOM(html, { url: "http://localhost/console.html" });
     const doc = dom.window.document;
 
     expect(doc.getElementById("seg-stat-fort")).not.toBeNull();
@@ -185,7 +219,7 @@ describe("console.html — navigation en trois piliers (8 août 2026)", () => {
 
   it("chacun des trois piliers porte une icône distincte", () => {
     const html = fs.readFileSync(path.join(RACINE, "console.html"), "utf8");
-    const dom = new JSDOM(html);
+    const dom = new JSDOM(html, { url: "http://localhost/console.html" });
     const doc = dom.window.document;
 
     for (const section of ["configurer", "observer", "optimiser"]) {

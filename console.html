@@ -212,11 +212,9 @@
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="console-sidebar-chevron"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
           <div class="console-sidebar-items" data-section-items="configurer" hidden>
-            <div class="console-sidebar-sublabel">Catalogues</div>
             <button type="button" class="console-sidebar-item" data-pane="pane-import-csv">Importer un fichier</button>
+            <div class="console-sidebar-sublabel" id="sidebar-catalog-sublabel" hidden>Catalogues</div>
             <div id="sidebar-catalog-items"></div>
-            <div class="console-sidebar-sublabel">Règles</div>
-            <button type="button" class="console-sidebar-item" data-pane="pane-search-overrides">Gestion des règles</button>
           </div>
         </div>
 
@@ -246,6 +244,9 @@
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="console-sidebar-chevron"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
           <div class="console-sidebar-items" data-section-items="optimiser" hidden>
+            <div class="console-sidebar-sublabel">Search</div>
+            <button type="button" class="console-sidebar-item" data-pane="pane-search-overrides">Gestion des règles</button>
+            <div class="console-sidebar-sublabel">Ranking</div>
             <button type="button" class="console-sidebar-item" data-pane="pane-browse">Merchandising</button>
           </div>
         </div>
