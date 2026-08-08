@@ -273,6 +273,12 @@
           status.textContent = T("Clé publique générée."); status.className = "catalog-rule-status ok";
           document.getElementById("public-key-origins").value = "";
           refreshPublicKeys(key);
+          // Chantier onboarding (8 août 2026) : refreshPublicKeys() rafraîchit
+          // le tableau, mais la puce "Générez une clé publique" de la carte
+          // d'activation dépend de majCarteActivation() -- jamais rappelée
+          // ici avant ce correctif, donc la puce restait "en attente" malgré
+          // une génération réussie, jusqu'au prochain rechargement de page.
+          apiFetch("/v1/usage", key).then(function (usage) { majCarteActivation(usage, key); });
         })
         .catch(function (err) {
           status.textContent = (err && err.message) || T("Échec de la génération.");
@@ -3557,7 +3563,7 @@
         '<span class="catalog-sandbox-status catalog-rule-status"></span>' +
       '</div>' +
       '<div class="catalog-synonyms-label" style="margin-top:22px;">' + T("Synonymes et règles personnalisées") + '</div>' +
-      '<p class="console-panel-note" style="margin:6px 0 0;">' + T("Gérés depuis") + ' <button type="button" class="catalog-goto-rules" data-goto-pane="pane-search-overrides">' + T("Personnalisation → Gestion des règles") + '</button>.</p>' +
+      '<p class="console-panel-note" style="margin:6px 0 0;">' + T("Gérés depuis") + ' <button type="button" class="catalog-goto-rules" data-goto-pane="pane-search-overrides">' + T("Configurer → Règles") + '</button>.</p>' +
       '<div class="catalog-card-danger">' +
         '<button type="button" class="catalog-delete">' + T("Supprimer ce catalogue") + '</button>' +
       '</div>' +
