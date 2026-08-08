@@ -155,6 +155,8 @@
       <a href="#ep-top-products">Top products</a>
       <a href="#ep-category-views">Category views</a>
       <a href="#ep-related-products">Related products</a>
+      <a href="#ep-intent-score">Intent score</a>
+      <a href="#ep-segmentation">Segmentation</a>
       <a href="#ep-search-widget">Ready-to-use search bar</a>
       <a href="#ep-client-js">JS/TypeScript client</a>
       <a href="#ep-mcp">MCP server</a>
@@ -318,6 +320,7 @@
         <tr><td><code class="docs-inline-code">in_stock_only</code></td><td>bool</td><td>Excludes out-of-stock products (default <code class="docs-inline-code">false</code> — some catalogs deliberately show out-of-stock items to signal a product exists).</td></tr>
         <tr><td><code class="docs-inline-code">lang</code></td><td>string</td><td>Filters by language if your products carry a <code class="docs-inline-code">lang</code> field (e.g. <code class="docs-inline-code">"fr"</code>, <code class="docs-inline-code">"en"</code>). A product without this field stays visible regardless of the requested language — useful for a mostly single-language catalog with a few bilingual entries. Omitted, no filtering is applied.</td></tr>
         <tr><td><code class="docs-inline-code">exclude_description</code></td><td>bool</td><td>Omits the <code class="docs-inline-code">description</code> field from each product in the results (default <code class="docs-inline-code">false</code>, nothing changes). Useful if your descriptions are long: on a real catalog, this field alone accounts for 80%+ of each product's weight in the response — relevant for a mobile widget where every kilobyte counts.</td></tr>
+        <tr><td><code class="docs-inline-code">visitor_id</code></td><td>string</td><td>Optional (64 chars max). Sent automatically by <code class="docs-inline-code">heurix-search.js</code> when <a href="#ep-events">the Tracker</a> is loaded on the same page — no glue code to write. Feeds the <a href="#ep-intent-score">intent score</a> and <a href="#ep-segmentation">segmentation</a>; without it, both stay empty for that visitor, nothing else changes.</td></tr>
       </table></div>
       <h3>Response</h3>
       <p><code class="docs-inline-code">total</code> (match count), <code class="docs-inline-code">hits</code> — each hit contains the full <code class="docs-inline-code">product</code> as indexed, its <code class="docs-inline-code">score</code>, <code class="docs-inline-code">in_stock</code>, and <code class="docs-inline-code">matched</code>: a readable list of why it matched (terms found, typos corrected, shared annotations) — useful for understanding and tuning relevance. If <code class="docs-inline-code">facets</code> was requested, an additional <code class="docs-inline-code">facets</code> field lists the counts per group.</p>
@@ -396,6 +399,12 @@
  }}</code></pre>
       <p><code class="docs-inline-code">hits</code> doesn't change: it's still the natural ranking, standalone products included — it's up to your interface to decide how to present the two zones (for example, a visually distinct highlight above the regular results list).</p>
       <p><strong>Detection via the <code class="docs-inline-code">category</code> field</strong>: the response treats a product as a bundle if its category contains "pack," "kit," or "bundle" (case-insensitive) — no extra data to supply, it works with a catalog you've already indexed. The trade-off, knowingly accepted: it depends on the vocabulary already present in your categories, not an explicit declaration. <strong>Respects stock</strong>: an out-of-stock bundle is never chosen, even if it's the best match among matching products — selection moves on to the next one. If no matching, in-stock product contains one of these words, the field is simply absent from the response.</p>
+
+      <h3>Popularity on search</h3>
+      <p>When several products answer a query equally well, the one that actually sells moves up — not a plain text-relevance sort. The principle: never strong enough to overturn a real relevance gap, only to break a near-tie. A product with an <strong>exact match</strong> on the name always stays ahead, whatever the other product's popularity.</p>
+      <pre class="docs-code"><code>final_score = text_score × (1 + boost_max × normalized_popularity)</code></pre>
+      <p><code class="docs-inline-code">normalized_popularity</code> compares each product against the most popular one in the <strong>entire catalog</strong> (not just this query's results) — a stable scale that doesn't shift from one search to the next depending on what matches. <code class="docs-inline-code">boost_max</code> defaults to 10%: even the catalog's single most popular product can never lift its score by more than a tenth.</p>
+      <p>Popularity itself combines search clicks and purchases, weighting a purchase (5) more heavily than a click (1) — a signal aggregated over 90 days, recalculated hourly, never on every search. Requires the <a href="#ep-events">Heurix Tracker</a>: without it, this behavior stays off and ranking is identical to before this feature existed.</p>
     </section>
 
     <section id="ep-search-overrides" class="docs-section">
@@ -904,11 +913,31 @@ curl -X POST https://api.heurix.fr/v1/events \
 
       <div id="ep-related-products" class="docs-endpoint" style="margin-top:14px;"><span class="docs-method docs-method-get">GET</span><code>/v1/analytics/related-products/{catalog}/{product_id}</code></div>
       <p>Products frequently purchased in the same cart as <code class="docs-inline-code">{product_id}</code> — a counted co-occurrence, not machine learning. Useful for an "often bought with" section on a product page.</p>
-      <pre class="docs-code"><code>{"product_id": "sku-123", "related": [
-  {"product_id": "sku-456", "co_purchases": 12},
-  {"product_id": "sku-789", "co_purchases": 4}
+      <pre class="docs-code"><code>{"product_id": "sku-123", "target_purchases": 47, "related": [
+  {"product_id": "sku-456", "co_purchases": 12, "name": "M8 flat washer, stainless", "price": 0.12},
+  {"product_id": "sku-789", "co_purchases": 4, "name": "13mm open-end wrench", "price": 4.90}
 ]}</code></pre>
+      <p><code class="docs-inline-code">target_purchases</code> gives the total purchases of the requested product over the period — enough to compute a percentage instead of showing an isolated count ("12 out of 47 purchases", clearer than "12" alone). <code class="docs-inline-code">name</code> and <code class="docs-inline-code">price</code> are resolved from your current catalog; <code class="docs-inline-code">null</code> if the related product has since been removed.</p>
       <p>Empty list if fewer than 5 purchases are recorded for that specific product — not enough signal to be reliable, never an error. Requires the <a href="#ep-events">Heurix Tracker</a> for a meaningful result on a high-traffic site: without a visitor identifier, two different customers' purchases occurring almost simultaneously can, rarely, be mistaken for a single cart.</p>
+
+      <div id="ep-intent-score" class="docs-endpoint" style="margin-top:14px;"><span class="docs-method docs-method-get">GET</span><code>/v1/analytics/intent-score/{catalog}/{visitor_id}</code></div>
+      <p>An intent score <strong>per visitor</strong> — distinct from popularity-boosted search, which is per product. Explainable by design: every component is returned separately, never collapsed into a single number you couldn't justify.</p>
+      <pre class="docs-code"><code>{"score": 0.72, "nb_recherches": 12, "nb_achats": 2,
+ "composantes": {
+   "precision_recherche": 0.83,
+   "taux_clic": 0.58,
+   "panier_moyen": 45.20
+ }}</code></pre>
+      <p><code class="docs-inline-code">precision_recherche</code>: share of this visitor's searches carrying a numeric reference ("M8x20") rather than a generic word ("bolt"). <code class="docs-inline-code">taux_clic</code>: share of those same searches that led to a click on a result. <code class="docs-inline-code">score</code> is their average — the only two signals it's made of, on the same 0-to-1 scale. <code class="docs-inline-code">panier_moyen</code> (average basket, in euros, <code class="docs-inline-code">null</code> with no purchase) is returned separately, for context: no obvious common scale with the other two signals, folding it in arbitrarily would have been an unjustifiable call.</p>
+      <p>Visitor never seen, or no search over the period: <code class="docs-inline-code">score</code> at <code class="docs-inline-code">0.0</code>, never an error. Doesn't consume your quota.</p>
+
+      <div id="ep-segmentation" class="docs-endpoint" style="margin-top:14px;"><span class="docs-method docs-method-get">GET</span><code>/v1/analytics/segmentation/{catalog}?days=30</code></div>
+      <p>Splits <strong>every</strong> active visitor of a catalog into three intent tiers (same formula as the intent score above), compared against the previous period of equal length.</p>
+      <pre class="docs-code"><code>{"period_days": 30,
+ "courant": {"total_visiteurs": 142, "repartition": {"fort": 38, "moyen": 71, "faible": 33}},
+ "precedent": {"total_visiteurs": 98, "repartition": {"fort": 19, "moyen": 58, "faible": 21}},
+ "variations": {"total_visiteurs": 44.9, "fort": 100.0, "moyen": 22.4, "faible": 57.1}}</code></pre>
+      <p><code class="docs-inline-code">variations</code> is <code class="docs-inline-code">null</code> rather than a percentage when the previous period was empty — going from 0 to 5 isn't a "500% increase", it's a start; better to show nothing than a misleading figure. Counts are <strong>aggregated</strong>, never a nominal list: Heurix only knows a visitor by a pseudonymous identifier, never a name or an email. Recalculated at most once an hour — an aggregated behavior signal that doesn't need to be any fresher than that.</p>
     </section>
 
     <section id="ep-health" class="docs-section">

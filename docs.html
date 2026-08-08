@@ -169,6 +169,8 @@
       <a href="#ep-top-products">Top produits</a>
       <a href="#ep-category-views">Vues par catégorie</a>
       <a href="#ep-related-products">Produits liés</a>
+      <a href="#ep-intent-score">Score d'intention</a>
+      <a href="#ep-segmentation">Segmentation</a>
       <a href="#ep-search-widget">Barre de recherche prête à l'emploi</a>
       <a href="#ep-client-js">Client JS/TypeScript</a>
       <a href="#ep-mcp">Serveur MCP</a>
@@ -332,6 +334,7 @@
         <tr><td><code class="docs-inline-code">in_stock_only</code></td><td>bool</td><td>Exclut les produits en rupture (défaut <code class="docs-inline-code">false</code> — certains catalogues affichent volontairement les ruptures pour signaler qu'un produit existe).</td></tr>
         <tr><td><code class="docs-inline-code">lang</code></td><td>string</td><td>Filtre par langue si vos produits portent un champ <code class="docs-inline-code">lang</code> (ex. <code class="docs-inline-code">"fr"</code>, <code class="docs-inline-code">"en"</code>). Un produit sans ce champ reste visible quelle que soit la langue demandée — utile pour un catalogue majoritairement mono-langue avec quelques fiches bilingues. Omis, aucun filtrage n'est appliqué.</td></tr>
         <tr><td><code class="docs-inline-code">exclude_description</code></td><td>bool</td><td>Omet le champ <code class="docs-inline-code">description</code> de chaque produit dans les résultats (défaut <code class="docs-inline-code">false</code>, rien ne change). Utile si vos descriptions sont longues : sur un catalogue réel, ce champ représente à lui seul 80%+ du poids de chaque produit dans la réponse — pertinent pour un widget mobile où chaque kilo-octet compte.</td></tr>
+        <tr><td><code class="docs-inline-code">visitor_id</code></td><td>string</td><td>Optionnel (64 caractères max). Transmis automatiquement par <code class="docs-inline-code">heurix-search.js</code> quand <a href="#ep-events">le Tracker</a> est chargé sur la même page — aucun code de liaison à écrire. Alimente le <a href="#ep-intent-score">score d'intention</a> et la <a href="#ep-segmentation">segmentation</a> ; sans lui, ces deux fonctionnalités restent vides pour ce visiteur, rien d'autre ne change.</td></tr>
       </table></div>
       <h3>Réponse</h3>
       <p><code class="docs-inline-code">total</code> (nombre de correspondances), <code class="docs-inline-code">hits</code> — chaque hit contient le <code class="docs-inline-code">product</code> complet tel qu'indexé, son <code class="docs-inline-code">score</code>, <code class="docs-inline-code">in_stock</code>, et <code class="docs-inline-code">matched</code> : la liste lisible des raisons de la correspondance (termes trouvés, fautes corrigées, annotations partagées) — utile pour comprendre et régler la pertinence. Si <code class="docs-inline-code">facets</code> a été demandé, un champ <code class="docs-inline-code">facets</code> supplémentaire liste les décomptes par groupe.</p>
@@ -409,6 +412,12 @@
  }}</code></pre>
       <p><code class="docs-inline-code">hits</code> ne change pas : c'est toujours le classement naturel, produits seuls compris — c'est à votre interface de choisir comment présenter les deux zones (par exemple, une mise en avant visuelle distincte au-dessus de la liste de résultats classique).</p>
       <p><strong>Détection par le champ <code class="docs-inline-code">category</code></strong> : la réponse considère un produit comme un bundle si sa catégorie contient « pack », « kit » ou « bundle » (insensible à la casse) — aucune donnée supplémentaire à fournir, ça fonctionne avec un catalogue déjà indexé. La contrepartie, assumée : ça dépend du vocabulaire déjà présent dans vos catégories, pas d'une déclaration explicite. <strong>Respecte le stock</strong> : un bundle épuisé n'est jamais choisi, même s'il est le mieux classé parmi les produits correspondants — la sélection continue vers le suivant. Si aucun produit correspondant et en stock ne contient l'un de ces mots, le champ est simplement absent de la réponse.</p>
+
+      <h3>Popularité sur la recherche</h3>
+      <p>Quand plusieurs produits répondent également bien à une requête, celui qui se vend vraiment remonte — pas un simple tri par pertinence texte. Le principe : jamais assez fort pour inverser un vrai écart de pertinence, seulement pour départager une quasi-égalité. Un produit avec un <strong>match exact</strong> sur le nom reste toujours devant, quelle que soit la popularité de l'autre.</p>
+      <pre class="docs-code"><code>score_final = score_texte × (1 + boost_max × popularité_normalisée)</code></pre>
+      <p><code class="docs-inline-code">popularité_normalisée</code> compare chaque produit au plus populaire de <strong>tout le catalogue</strong> (pas seulement les résultats de cette requête) — une échelle stable, qui ne change pas d'une recherche à l'autre selon qui matche. <code class="docs-inline-code">boost_max</code> vaut 10&nbsp;% par défaut : même le produit le plus populaire du catalogue ne peut jamais faire remonter son score de plus d'un dixième.</p>
+      <p>La popularité elle-même combine clics depuis la recherche et achats, avec un poids plus fort pour l'achat (5) que pour le clic (1) — un signal agrégé sur 90 jours, recalculé toutes les heures, jamais à chaque recherche. Nécessite le <a href="#ep-events">Heurix Tracker</a> : sans lui, ce comportement reste désactivé et le classement est identique à avant cette fonctionnalité.</p>
     </section>
 
     <section id="ep-search-overrides" class="docs-section">
@@ -918,11 +927,31 @@ curl -X POST https://api.heurix.fr/v1/events \
 
       <div id="ep-related-products" class="docs-endpoint" style="margin-top:14px;"><span class="docs-method docs-method-get">GET</span><code>/v1/analytics/related-products/{catalog}/{product_id}</code></div>
       <p>Produits fréquemment achetés dans le même panier que <code class="docs-inline-code">{product_id}</code> — une co-occurrence comptée, pas du machine learning. Utile pour une section « souvent acheté avec » sur une fiche produit.</p>
-      <pre class="docs-code"><code>{"product_id": "sku-123", "related": [
-  {"product_id": "sku-456", "co_purchases": 12},
-  {"product_id": "sku-789", "co_purchases": 4}
+      <pre class="docs-code"><code>{"product_id": "sku-123", "target_purchases": 47, "related": [
+  {"product_id": "sku-456", "co_purchases": 12, "name": "Rondelle plate M8 inox", "price": 0.12},
+  {"product_id": "sku-789", "co_purchases": 4, "name": "Clé plate 13mm", "price": 4.90}
 ]}</code></pre>
+      <p><code class="docs-inline-code">target_purchases</code> donne le total d'achats du produit demandé sur la période — de quoi calculer un pourcentage plutôt que d'afficher un compte isolé (« 12 sur 47 achats », plus lisible que « 12 »). <code class="docs-inline-code">name</code> et <code class="docs-inline-code">price</code> sont résolus depuis votre catalogue actuel ; <code class="docs-inline-code">null</code> si le produit associé a été retiré du catalogue depuis.</p>
       <p>Liste vide si moins de 5 achats sont enregistrés pour ce produit précis — pas assez de signal pour être fiable, jamais une erreur. Nécessite le <a href="#ep-events">Heurix Tracker</a> pour un résultat pertinent sur un site à trafic élevé : sans identifiant visiteur, deux achats de clients différents survenus presque au même instant peuvent, rarement, être confondus avec un seul panier.</p>
+
+      <div id="ep-intent-score" class="docs-endpoint" style="margin-top:14px;"><span class="docs-method docs-method-get">GET</span><code>/v1/analytics/intent-score/{catalog}/{visitor_id}</code></div>
+      <p>Un score d'intention <strong>par visiteur</strong> — à distinguer de la <a href="#ep-search">popularité sur la recherche</a>, qui est par produit. Explicable par conception : chaque composante est renvoyée séparément, jamais fondue dans un seul nombre qu'on ne pourrait pas justifier.</p>
+      <pre class="docs-code"><code>{"score": 0.72, "nb_recherches": 12, "nb_achats": 2,
+ "composantes": {
+   "precision_recherche": 0.83,
+   "taux_clic": 0.58,
+   "panier_moyen": 45.20
+ }}</code></pre>
+      <p><code class="docs-inline-code">precision_recherche</code> : proportion des recherches de ce visiteur qui portent une référence chiffrée (« M8x20 ») plutôt qu'un mot générique (« vis »). <code class="docs-inline-code">taux_clic</code> : proportion de ces mêmes recherches ayant mené à un clic sur un résultat. <code class="docs-inline-code">score</code> est leur moyenne — les deux seuls signaux qui le composent, sur la même échelle 0 à 1. <code class="docs-inline-code">panier_moyen</code> (en euros, <code class="docs-inline-code">null</code> sans achat) est renvoyé à part, à titre de contexte : aucune échelle commune évidente avec les deux autres signaux, le fondre arbitrairement dans le score aurait été une décision impossible à justifier.</p>
+      <p>Visiteur jamais vu, ou sans recherche sur la période : <code class="docs-inline-code">score</code> à <code class="docs-inline-code">0.0</code>, jamais une erreur. Ne consomme pas votre quota.</p>
+
+      <div id="ep-segmentation" class="docs-endpoint" style="margin-top:14px;"><span class="docs-method docs-method-get">GET</span><code>/v1/analytics/segmentation/{catalog}?days=30</code></div>
+      <p>Répartit <strong>tous</strong> les visiteurs actifs d'un catalogue en trois tranches d'intention (même formule que le score d'intention ci-dessus), comparée à la période précédente de même durée.</p>
+      <pre class="docs-code"><code>{"period_days": 30,
+ "courant": {"total_visiteurs": 142, "repartition": {"fort": 38, "moyen": 71, "faible": 33}},
+ "precedent": {"total_visiteurs": 98, "repartition": {"fort": 19, "moyen": 58, "faible": 21}},
+ "variations": {"total_visiteurs": 44.9, "fort": 100.0, "moyen": 22.4, "faible": 57.1}}</code></pre>
+      <p><code class="docs-inline-code">variations</code> vaut <code class="docs-inline-code">null</code> plutôt qu'un pourcentage quand la période précédente était vide — passer de 0 à 5 n'est pas une progression de "500&nbsp;%", c'est un démarrage ; mieux vaut ne rien afficher qu'un chiffre trompeur. Les comptes sont <strong>agrégés</strong>, jamais une liste nominative : Heurix ne connaît le visiteur que par un identifiant pseudonyme, jamais un nom ni un email. Recalculé au maximum une fois par heure — un signal de comportement agrégé qui n'a pas besoin d'être plus frais que ça.</p>
     </section>
 
     <section id="ep-search-widget" class="docs-section">
