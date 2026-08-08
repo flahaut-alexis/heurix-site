@@ -230,6 +230,8 @@
             <div class="console-sidebar-sublabel">Ranking</div>
             <button type="button" class="console-sidebar-item" data-pane="pane-category-views">Produits les plus vus</button>
             <button type="button" class="console-sidebar-item" data-pane="pane-related-products">Produits associés</button>
+            <div class="console-sidebar-sublabel">Visiteurs</div>
+            <button type="button" class="console-sidebar-item" data-pane="pane-segmentation">Segmentation</button>
           </div>
         </div>
 
@@ -725,6 +727,38 @@
               </table></div>
               <p class="console-empty" id="rp-related-empty" hidden>Pas assez d'achats sur ce produit pour un signal fiable (minimum 5 sur la période).</p>
             </div>
+          </div>
+
+          <div id="pane-segmentation" class="console-pane" hidden>
+            <h2 class="console-pane-title">Segmentation</h2>
+
+            <div class="console-panel console-panel-warn">
+              <p class="console-panel-note" style="margin:0;">Répartition des visiteurs par intention, déduite de leur style de recherche (précision) et de leur taux de clic — jamais de leur identité : Heurix ne connaît qu'un identifiant pseudonyme, pas un nom ni un email. Les seuils par défaut n'ont pas encore été calibrés sur de vraies données de conversion.</p>
+            </div>
+
+            <div class="console-stats">
+              <div class="console-stat">
+                <div class="icn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+                <div class="console-stat-num" id="seg-stat-total">–</div><span class="kpi-tendance" id="trend-seg-total" hidden></span>
+                <div class="console-stat-label">Visiteurs actifs</div>
+              </div>
+              <div class="console-stat">
+                <div class="icn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><circle cx="12" cy="12" r="10"/></svg></div>
+                <div class="console-stat-num" id="seg-stat-fort">–</div><span class="kpi-tendance" id="trend-seg-fort" hidden></span>
+                <div class="console-stat-label">Intention forte</div>
+              </div>
+              <div class="console-stat">
+                <div class="icn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="8" y1="12" x2="16" y2="12"/></svg></div>
+                <div class="console-stat-num" id="seg-stat-moyen">–</div><span class="kpi-tendance" id="trend-seg-moyen" hidden></span>
+                <div class="console-stat-label">Intention moyenne</div>
+              </div>
+              <div class="console-stat">
+                <div class="icn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+                <div class="console-stat-num" id="seg-stat-faible">–</div><span class="kpi-tendance" id="trend-seg-faible" hidden></span>
+                <div class="console-stat-label">Intention faible</div>
+              </div>
+            </div>
+            <p class="console-empty" id="seg-empty" hidden>Aucun visiteur identifié sur cette période — nécessite le <a href="docs.html#ep-events">Heurix Tracker</a> installé sur votre site.</p>
           </div>
 
           <div id="pane-guides" class="console-pane" hidden>

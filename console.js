@@ -172,12 +172,22 @@
     "usage": "neutre",            // consommer son quota n'est ni bon ni mauvais
     "zero-rate": "hausse_mauvaise",
     "errors": "hausse_mauvaise",
+    // Chantier "segmentation" (7 aout 2026).
+    "seg-total": "neutre",        // plus de visiteurs actifs n'est ni bon ni mauvais en soi
+    "seg-fort": "hausse_bonne",
+    "seg-moyen": "neutre",
+    "seg-faible": "hausse_mauvaise",
   };
 
-  function afficherTendances(comparaison) {
+  function afficherTendances(comparaison, correspondancePersonnalisee) {
     if (!comparaison || !comparaison.variations) return;
     var v = comparaison.variations;
-    var correspondance = {
+    // Chantier "segmentation" (7 aout 2026) : un second appelant (la
+    // segmentation) a une forme de variations differente (total_visiteurs/
+    // fort/moyen/faible, pas recherches/zero-rate/...) -- parametrable
+    // plutot que duplique, le reste de la fonction (garde-fous null,
+    // seuil "stable", rendu) reste identique pour les deux.
+    var correspondance = correspondancePersonnalisee || {
       "searches": v.recherches,
       "zero-rate": v.taux_sans_resultat,
       "errors": v.erreurs,
@@ -436,6 +446,30 @@
     document.getElementById("rp-result-panel").hidden = true;
   }
 
+  // ---------------- Segmentation (Analytics > Visiteurs) ----------------
+  function chargerSegmentation(key) {
+    var catalogue = catalogueCourant();
+    if (!catalogue) return;
+    apiFetch("/v1/analytics/segmentation/" + encodeURIComponent(catalogue) + "?days=" + periodSelect.value, key)
+      .then(function (data) {
+        var vide = document.getElementById("seg-empty");
+        vide.hidden = !!data.courant.total_visiteurs;
+
+        document.getElementById("seg-stat-total").textContent = data.courant.total_visiteurs.toLocaleString(LOCALE);
+        document.getElementById("seg-stat-fort").textContent = data.courant.repartition.fort.toLocaleString(LOCALE);
+        document.getElementById("seg-stat-moyen").textContent = data.courant.repartition.moyen.toLocaleString(LOCALE);
+        document.getElementById("seg-stat-faible").textContent = data.courant.repartition.faible.toLocaleString(LOCALE);
+
+        afficherTendances(data, {
+          "seg-total": data.variations.total_visiteurs,
+          "seg-fort": data.variations.fort,
+          "seg-moyen": data.variations.moyen,
+          "seg-faible": data.variations.faible,
+        });
+      })
+      .catch(function () {});
+  }
+
   function renderApiKey(key) {
     var valueEl = document.getElementById("account-key-value");
     var toggleBtn = document.getElementById("account-key-toggle");
@@ -610,7 +644,7 @@
     }).catch(function () {});
   }
 
-  var ALL_PANE_IDS = ["pane-overview", "pane-guides", "pane-top-queries", "pane-zero-results", "pane-errors", "pane-search-overrides", "pane-category-views", "pane-related-products",
+  var ALL_PANE_IDS = ["pane-overview", "pane-guides", "pane-top-queries", "pane-zero-results", "pane-errors", "pane-search-overrides", "pane-category-views", "pane-related-products", "pane-segmentation",
     "pane-browse", "pane-catalog-help", "pane-catalog-list", "pane-billing", "pane-company", "pane-team", "pane-key", "pane-feedback",
     // Ajoute le 29 juillet. Cette liste est une LISTE BLANCHE : un pave
     // absent d'ici s'affiche vide, sans erreur en console -- symptome
@@ -793,6 +827,14 @@
       var el = document.getElementById(id);
       return el && !el.hidden;
     })[0];
+
+    // Chantier "segmentation" (7 aout 2026) : INCONDITIONNEL, pas dans le
+    // bloc ci-dessous conditionne par le pane ouvert -- au tout premier
+    // chargement, "Vue d'ensemble" est affiche, jamais "Segmentation".
+    // Un bloc conditionne ne se serait donc jamais declenche avant que
+    // l'utilisateur ait deja visite ce pane une fois. chargerSegmentation
+    // gere elle-meme son propre etat vide/absence de catalogue.
+    chargerSegmentation(key);
 
     if (ouvert === "pane-search-overrides") {
       var contenu = document.getElementById("so-content");
