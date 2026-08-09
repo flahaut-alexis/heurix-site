@@ -152,21 +152,30 @@
     // configuration supplementaire de sa part.
     //
     // PRIX BARRE (3 aout, roadmap compare_at_price) -- meme logique que
-    // le widget de demo (voir demo-search-live.js), format different :
-    // pas de virgule/toFixed force ici, cette bibliotheque part chez
-    // n'importe quel client, pas seulement des catalogues FR -- reste
-    // fidele au style existant de ce fichier (esc(p.price) tel quel).
+    // le widget de demo (voir demo-search-live.js).
+    //
+    // MISE A JOUR BUG-001 (audit QA/UX/A11Y, 8 aout) -- utilise maintenant
+    // fmtPrix() (virgule, deux decimales), pas esc(p.price) tel quel comme
+    // avant. Le commentaire d'origine ici justifiait explicitement esc()
+    // brut par le fait que cette bibliotheque part chez n'importe quel
+    // client, pas seulement des catalogues FR -- une vraie tension encore
+    // valable si Heurix sert un jour des clients non-francophones : le
+    // symbole "€" est deja fixe en dur dans tout ce fichier (aucune vraie
+    // internationalisation de la devise), donc ce correctif reste centre
+    // sur le format numerique (virgule vs point) pour la base de clients
+    // actuelle, pas une resolution definitive de la question devise/locale
+    // pour une hypothetique base internationale future.
     var prixHtml;
     if (p.price != null && p.compare_at_price != null && Number(p.compare_at_price) > Number(p.price)) {
       var pourcentage = Math.round((1 - Number(p.price) / Number(p.compare_at_price)) * 100);
       prixHtml = '<span class="hx-search-hit-price-remise">' +
-        '<span class="hx-search-hit-price-barre">' + esc(p.compare_at_price) + " €</span>" +
-        '<span class="hx-search-hit-price">' + esc(p.price) + " €</span>" +
+        '<span class="hx-search-hit-price-barre">' + fmtPrix(p.compare_at_price) + "</span>" +
+        '<span class="hx-search-hit-price">' + fmtPrix(p.price) + "</span>" +
         '<span class="hx-search-hit-price-pct">−' + pourcentage + "%</span>" +
       "</span>";
     } else {
       prixHtml = p.price != null
-        ? '<span class="hx-search-hit-price">' + esc(p.price) + " €</span>"
+        ? '<span class="hx-search-hit-price">' + fmtPrix(p.price) + "</span>"
         : "";
     }
     if (stockKnown && !hit.in_stock) metaBits.push('<span class="hx-search-hit-oos">Rupture</span>');
@@ -231,13 +240,22 @@
 
     injectStyles(config.accentColor);
 
+    // Chantier A11Y-001 (audit QA/UX/A11Y, 8 août 2026) -- ids derives de
+    // containerId (deja unique, garanti par le marchand) plutot que des
+    // valeurs fixes : plusieurs instances du widget peuvent coexister sur
+    // une meme page, aria-controls/aria-activedescendant ont besoin d'ids
+    // qui ne collisionnent jamais entre elles.
+    var idBase = String(config.containerId);
     container.classList.add("hx-search");
     container.innerHTML =
-      '<input type="text" class="hx-search-input" placeholder="' + esc(config.placeholder || "Rechercher…") + '" autocomplete="off" aria-label="Rechercher un produit">' +
-      '<div class="hx-search-panel" hidden></div>';
+      '<input type="text" id="' + esc(idBase) + '-input" class="hx-search-input" placeholder="' + esc(config.placeholder || "Rechercher…") + '" autocomplete="off" aria-label="Rechercher un produit"' +
+      ' role="combobox" aria-autocomplete="list" aria-haspopup="listbox" aria-expanded="false" aria-controls="' + esc(idBase) + '-panel">' +
+      '<div class="hx-search-panel" id="' + esc(idBase) + '-panel" role="listbox" hidden></div>' +
+      '<div class="hx-search-live" aria-live="polite" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;"></div>';
 
     var input = container.querySelector(".hx-search-input");
     var panel = container.querySelector(".hx-search-panel");
+    var liveRegion = container.querySelector(".hx-search-live");
     var debounceTimer = null;
     var activeFilters = [];
     var lastRequestId = 0;
@@ -247,15 +265,23 @@
     function closePanel() {
       panel.hidden = true;
       activeIndex = -1;
+      input.setAttribute("aria-expanded", "false");
+      input.removeAttribute("aria-activedescendant");
     }
 
     function openPanel() {
       panel.hidden = false;
+      input.setAttribute("aria-expanded", "true");
+    }
+
+    function annoncer(texte) {
+      liveRegion.textContent = texte;
     }
 
     function setState(html) {
       panel.innerHTML = '<div class="hx-search-state">' + html + "</div>";
       openPanel();
+      annoncer(html);
     }
 
     function runSearch(query) {
@@ -347,7 +373,8 @@
       }).join("");
 
       panel.innerHTML = html;
-      panel.hidden = false;
+      openPanel();
+      annoncer(String(data.total) + " résultats, choisissez une famille");
 
       panel.querySelectorAll(".hx-group").forEach(function (el) {
         el.addEventListener("click", function (e) {
@@ -446,7 +473,7 @@
         var href = resultHref ? resultHref(hit) : null;
         var tag = href ? "a" : "div";
         var hrefAttr = href ? ' href="' + esc(href) + '"' : "";
-        return "<" + tag + ' class="hx-search-hit" data-index="' + i + '"' + hrefAttr + ">" + inner + "</" + tag + ">";
+        return "<" + tag + ' class="hx-search-hit" role="option" id="' + esc(idBase) + '-option-' + i + '" data-index="' + i + '"' + hrefAttr + ">" + inner + "</" + tag + ">";
       }).join("");
 
       // "VOIR TOUS LES RESULTATS" -- affiché seulement s'il existe
@@ -466,6 +493,7 @@
 
       panel.innerHTML = html;
       openPanel();
+      annoncer(currentHits.length + (currentHits.length > 1 ? " résultats trouvés" : " résultat trouvé"));
 
       panel.querySelectorAll(".hx-search-hit").forEach(function (el) {
         el.addEventListener("click", function (e) {
@@ -513,7 +541,12 @@
         el.classList.toggle("hx-hit-active", i === activeIndex);
       });
       var activeEl = panel.querySelector(".hx-search-hit.hx-hit-active");
-      if (activeEl) activeEl.scrollIntoView({ block: "nearest" });
+      if (activeEl) {
+        activeEl.scrollIntoView({ block: "nearest" });
+        input.setAttribute("aria-activedescendant", activeEl.id);
+      } else {
+        input.removeAttribute("aria-activedescendant");
+      }
     }
 
     input.addEventListener("input", function () {

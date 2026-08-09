@@ -145,6 +145,25 @@ describe("heurix-search.js — rendu", () => {
     expect(panneau).toContain("−30%");
   });
 
+  it("BUG-001 (audit QA/UX/A11Y, 8 aout) -- le prix normal est au format francais, pas '5.9 €' brut", async () => {
+    // Le test precedent ne revele jamais ce bug : 39.00 devient "39" en JS
+    // meme sans fmtPrix (le zero disparait naturellement), donc "39 €"
+    // passait deja avec ou sans le defaut. 5.90 est la valeur qui revele
+    // vraiment la difference : "5.9 €" (brut, esc(p.price)) vs "5,90 €"
+    // (fmtPrix, le format francais attendu).
+    const hitPrixDecimal = {
+      ...CONTRAT.search_avec_facettes,
+      hits: [{ ...CONTRAT.search_avec_facettes.hits[0], product: {
+        ...CONTRAT.search_avec_facettes.hits[0].product, price: 5.90, compare_at_price: null,
+      } }],
+    };
+    const ctx = chargerWidget({ reponses: { defaut: hitPrixDecimal } });
+    await taper(ctx, "vis");
+    const panneau = ctx.document.querySelector(".hx-search-panel").innerHTML;
+    expect(panneau).toContain("5,90 €");
+    expect(panneau).not.toContain("5.9 €");
+  });
+
   it("n'affiche jamais de prix barre si compare_at_price est absent ou inferieur au prix (retrocompatibilite)", async () => {
     const ctx = chargerWidget();
     await taper(ctx, "vis");

@@ -1264,6 +1264,7 @@
     var sectionBtn = e.target.closest(".console-sidebar-section");
     if (sectionBtn) {
       var expanded = sectionBtn.classList.toggle("console-sidebar-section-on");
+      sectionBtn.setAttribute("aria-expanded", String(expanded));
       sectionBtn.nextElementSibling.hidden = !expanded;
       return;
     }
@@ -1301,7 +1302,10 @@
     if (section && section.hasAttribute("hidden")) {
       section.hidden = false;
       var sectionBtn = section.previousElementSibling;
-      if (sectionBtn) sectionBtn.classList.add("console-sidebar-section-on");
+      if (sectionBtn) {
+        sectionBtn.classList.add("console-sidebar-section-on");
+        sectionBtn.setAttribute("aria-expanded", "true");
+      }
     }
 
     // PRÉ-REMPLISSAGE DU FORMULAIRE D'ARRIVÉE. Sans lui, le lien amène le
@@ -1378,6 +1382,13 @@
   });
 
   function renderChart(daily) {
+    // Chantier UX-003 (audit QA/UX/A11Y, 8 août 2026) : Chart.js vient
+    // d'un CDN externe -- un bloqueur de publicite, un pare-feu
+    // d'entreprise ou une panne passagere du CDN ne doivent jamais
+    // faire echouer tout le chargement du tableau de bord (l'exception
+    // remonterait sinon a travers la chaine de promesses de
+    // loadDashboard et deconnecterait silencieusement l'utilisateur).
+    if (typeof Chart === "undefined") return;
     var canvas = document.getElementById("searches-chart");
     var ctx = canvas.getContext("2d");
     var labels = daily.map(function (d) {
@@ -3737,7 +3748,7 @@
         showPostSignupScreen(data.session_token, data.key, signupEmail.value.trim());
       })
       .catch(function (err) {
-        signupError.textContent = (err && err.message) || L.loginErrorNetwork;
+        signupError.textContent = (err && err.status) ? err.message : L.loginErrorNetwork;
         signupError.hidden = false;
       })
       .then(function () {
@@ -3782,7 +3793,7 @@
       var secteur = segSecteur && segSecteur.value ? segSecteur.value : null;
       var plateforme = segPlateforme && segPlateforme.value ? segPlateforme.value : null;
       if (secteur || plateforme) {
-        apiPost("/v1/auth/segmentation", { secteur: secteur, plateforme: plateforme })
+        apiPost("/v1/auth/onboarding-profile", { secteur: secteur, plateforme: plateforme })
           .catch(function () { /* tache de fond : un echec ici n'affecte jamais l'acces au tableau de bord */ });
       }
       postSignupScreen.hidden = true;
@@ -3812,7 +3823,7 @@
         startSession(data.session_token, data.keys[0].key);
       })
       .catch(function (err) {
-        acceptInviteError.textContent = (err && err.message) || L.loginErrorNetwork;
+        acceptInviteError.textContent = (err && err.status) ? err.message : L.loginErrorNetwork;
         acceptInviteError.hidden = false;
       })
       .then(function () {
@@ -3858,7 +3869,7 @@
         loginError.hidden = false;
       })
       .catch(function (err) {
-        resetConfirmError.textContent = (err && err.message) || L.loginErrorNetwork;
+        resetConfirmError.textContent = (err && err.status) ? err.message : L.loginErrorNetwork;
         resetConfirmError.hidden = false;
       })
       .then(function () {
