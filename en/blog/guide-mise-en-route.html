@@ -128,11 +128,51 @@
     <p class="post-lede">Three steps to get working search. Then three independent modules, to activate as needed — none is required for the engine to answer your customers.</p>
 
     <div class="post-body">
-      <img src="../img/prisme-mise-en-route.svg?v=1784918437" alt="Four-level pyramid diagram: at the base, the required foundation (sign-up, API key, first catalog); above it, three stacked optional modules — Heurix Tracker, front-end integration, MCP server" style="width:100%; max-width:560px; margin:8px 0 28px;">
+      <div class="setup-stepper">
+        <div class="setup-step">
+          <div class="setup-step-marker marker-required">1</div>
+          <div class="setup-step-card">
+            <div class="setup-step-header">
+              <h3>Foundations</h3>
+              <span class="setup-badge setup-badge-required">Required</span>
+            </div>
+            <p>Sign-up · API key · first catalog indexed</p>
+          </div>
+        </div>
+        <div class="setup-step">
+          <div class="setup-step-marker">2</div>
+          <div class="setup-step-card">
+            <div class="setup-step-header">
+              <h3>Heurix Tracker</h3>
+              <span class="setup-badge setup-badge-optional">Optional</span>
+            </div>
+            <p>Conversion tracking — clicks and purchases tied to a search</p>
+          </div>
+        </div>
+        <div class="setup-step">
+          <div class="setup-step-marker">3</div>
+          <div class="setup-step-card">
+            <div class="setup-step-header">
+              <h3>Front-end integration</h3>
+              <span class="setup-badge setup-badge-optional">Optional</span>
+            </div>
+            <p>A ready-to-use search bar for your site</p>
+          </div>
+        </div>
+        <div class="setup-step">
+          <div class="setup-step-marker">4</div>
+          <div class="setup-step-card">
+            <div class="setup-step-header">
+              <h3>MCP server</h3>
+              <span class="setup-badge setup-badge-optional">Optional</span>
+            </div>
+            <p>Connect Heurix directly to an AI agent</p>
+          </div>
+        </div>
+      </div>
 
       <h2 id="etape-1">Step 1 — Sign up</h2>
       <p>Choose a plan on the <a href="../pricing.html">pricing page</a> — the 14-day trial requires no credit card. Once you've signed up, your API key (<code class="docs-inline-code">hx_...</code>) is immediately available in <a href="../console.html">your console</a>, under "My info."</p>
-      <p><em>[Screenshot to add: the API key shown in the console, My info section]</em></p>
 
       <h2 id="etape-2">Step 2 — Index your first catalog</h2>
       <p>One call is enough — the catalog is created automatically on first import, no prior setup needed:</p>
@@ -146,7 +186,6 @@
       <h2 id="etape-3">Step 3 — Confirm search works</h2>
       <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/index/mycatalog/search   -H "Authorization: Bearer YOUR_API_KEY"   -H "Content-Type: application/json"   -d '{"q": "bosch drill"}'</code></pre>
       <p>A response with your product in <code class="docs-inline-code">hits</code> confirms everything works. At this point, search is fully operational — everything below is optional.</p>
-      <p><em>[Screenshot to add: the console's "Overview" dashboard once the first catalog is indexed]</em></p>
 
       <div class="guide-quiz" id="guide-quiz">
         <h2 style="margin-top:0;">Build your own path</h2>
@@ -180,7 +219,10 @@
         <button type="button" class="btn btn-ghost" id="guide-quiz-tout">See the full guide</button>
       </div>
       <h2 id="modules-optionnels">From here, three independent modules</h2>
-      <p class="regex-reassure">🔑 <strong>Two of the three modules run in the browser</strong> (Tracker and front-end integration). First generate a <strong>public key</strong> from your console (My info → My API key): it starts with <code class="docs-inline-code">hxp_</code> and can only search, browse, and report events. Your server key (<code class="docs-inline-code">hx_</code>) should never appear in a web page — it grants access to your billing. <a href="../docs.html#authentification">Details on both key types</a>.</p>
+      <div class="callout callout-info" role="note">
+        <svg class="callout-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="14.5" r="4.5"/><path d="M10.8 11.2 20 2"/><path d="M16.5 5.5 19 8"/><path d="M13.5 8.5 15.3 10.3"/></svg>
+        <div class="callout-content"><p><strong>Two of the three modules run in the browser</strong> (Tracker and front-end integration). First generate a <strong>public key</strong> from your console (My info → My API key): it starts with <code class="docs-inline-code">hxp_</code> and can only search, browse, and report events. Your server key (<code class="docs-inline-code">hx_</code>) should never appear in a web page — it grants access to your billing. <a href="../docs.html#authentification">Details on both key types</a>.</p></div>
+      </div>
       <p>Each answers a different need. Activate what's relevant to you, ignore the rest — nothing is required for the other two, and nothing is required for search itself to keep working.</p>
 
       <div class="guide-module" data-module="tracker">
@@ -191,7 +233,6 @@ var HEURIX_CATALOG = "mycatalog";</code></pre>
       <p>Then drop the script once, site-wide:</p>
       <pre class="docs-code"><code>&lt;script src="heurix-tracker.js"&gt;&lt;/script&gt;</code></pre>
       <p>Then call <code class="docs-inline-code">Heurix.trackClick(query, productId)</code> on a click from your search results, and <code class="docs-inline-code">Heurix.trackPurchase([{id, amount, margin}])</code> when an order is confirmed — full details in <a href="../docs.html#ep-events">the Conversion &amp; ROI documentation</a>.</p>
-      <p><em>[Screenshot to add: the console's Conversion &amp; ROI panel with initial data]</em></p>
 
       </div>
       <div class="guide-module" data-module="frontend">
@@ -215,7 +256,6 @@ const client = new HeurixClient({ apiKey: "YOUR_API_KEY", catalog: "mycatalog" }
 const results = await client.search("bosch drill");</code></pre>
       </div>
       <p>Full details on both options: <a href="../docs.html#ep-search-widget">heurix-search.js</a> and <a href="../docs.html#ep-search">the API reference</a> to build your own call.</p>
-      <p><em>[Screenshot to add: heurix-search.js in action on a test page, results shown]</em></p>
 
       </div>
       <div class="guide-module" data-module="mcp">
@@ -277,6 +317,7 @@ const results = await client.search("bosch drill");</code></pre>
   <a href="../pricing.html" class="btn">See pricing</a>
 </div>
 <script src="../../guide-quiz.js"></script>
+<script src="../../docs-copy.js"></script>
 <script src="../../pricing-nudge.js"></script>
 <script>window.HEURIX_RACINE='../../';</script><script src="../../consent.js?v=1785150583"></script>
 </body>

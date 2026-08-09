@@ -2329,6 +2329,126 @@ h2{ font-size:clamp(26px,3.4vw,34px); font-weight:800; margin:0 0 18px; max-widt
 .callout-info .callout-icon{ color:var(--blue-deep); }
 .h4-warning-icon{ color:var(--red-muted); vertical-align:-3px; margin-right:4px; }
 
+/* Stepper de mise en route (chantier UX, 9 août 2026) -- remplace le
+   schema pyramide en SVG (prisme-mise-en-route.svg, effet biseau/degrades
+   dates, palette arbitraire hors charte). Meme esprit flat que .callout
+   ci-dessus : marqueur plein pour l'etape obligatoire, marqueurs et badges
+   attenues pour les etapes optionnelles -- la hierarchie se lit par la
+   couleur, pas par une silhouette qui retrecit. */
+.setup-stepper{ position:relative; padding-left:8px; margin:8px 0 28px; }
+.setup-step{ position:relative; padding-left:44px; padding-bottom:22px; }
+.setup-step:last-child{ padding-bottom:0; }
+.setup-step:not(:last-child)::before{
+  content:""; position:absolute; left:15px; top:34px; bottom:-2px;
+  width:2px; background:var(--line);
+}
+.setup-step-marker{
+  position:absolute; left:0; top:0; width:32px; height:32px;
+  border-radius:50%; display:flex; align-items:center; justify-content:center;
+  font-weight:800; font-size:14px; background:var(--blue-tint); color:var(--blue-deep);
+  border:1.5px solid var(--blue-tint);
+}
+.setup-step-marker.marker-required{ background:var(--blue); color:#fff; border-color:var(--blue); }
+.setup-step-card{
+  background:#fff; border:1px solid var(--line); border-radius:var(--radius);
+  padding:16px 18px;
+}
+.setup-step-header{
+  display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:4px;
+}
+.setup-step-header h3{ margin:0; font-size:15.5px; font-weight:700; color:var(--ink); }
+.setup-step-card p{ margin:0; font-size:13px; color:var(--ink-muted); line-height:1.5; }
+.setup-badge{
+  font-size:10.5px; font-weight:800; letter-spacing:0.03em; text-transform:uppercase;
+  padding:3px 9px; border-radius:100px; white-space:nowrap; flex:0 0 auto;
+}
+.setup-badge-required{ background:var(--blue); color:#fff; }
+.setup-badge-optional{ background:var(--blue-tint); color:var(--blue-deep); }
+
+/* Fond docs.html (chantier UX, 9 août 2026) -- scopé sous body.docs-dark,
+   ne touche RIEN sur les autres pages qui partagent .callout/.docs-code/
+   .docs-toc/etc (notamment blog/guide-mise-en-route.html, cablé cette
+   meme session). Palette calculee par contraste WCAG reel contre les
+   trois points du degrade (voir le calcul complet donne en reponse) --
+   pas choisie a l'oeil. Header et footer restent visuellement distincts
+   du contenu : le header garde son fond blanc (convention deja en place
+   sur toutes les pages, meme au-dessus du hero sombre de la page
+   d'accueil) ; le footer, lui, n'a jamais eu de fond propre -- il herite
+   du corps de la page, donc du degrade, coherent avec "l'ensemble de la
+   doc" demande. */
+body.docs-dark{
+  background: radial-gradient(ellipse 1400px 900px at 50% 0%, #4C3FE0 0%, #3648A8 45%, #101B4D 100%);
+}
+body.docs-dark .docs-hero{ background:transparent; border-bottom-color:rgba(255,255,255,0.14); }
+body.docs-dark .docs-hero h1,
+body.docs-dark .docs-section h2,
+body.docs-dark .docs-section h3{ color:#F5F6FF; }
+body.docs-dark .docs-hero p,
+body.docs-dark .docs-section p,
+body.docs-dark .docs-section li{ color:#C7CCF0; }
+body.docs-dark .docs-section a:not(.btn){ color:#AEB9FF; }
+body.docs-dark .docs-section{ border-bottom-color:rgba(255,255,255,0.14); }
+
+body.docs-dark .callout-info{ background:rgba(255,255,255,0.06); border-color:rgba(174,185,255,0.35); color:#E4E7FF; }
+body.docs-dark .callout-info .callout-icon{ color:#AEB9FF; }
+body.docs-dark .callout-warning{ background:rgba(255,255,255,0.06); border-color:rgba(255,180,160,0.35); color:#E4E7FF; }
+body.docs-dark .callout-warning .callout-icon{ color:#FFB4A0; }
+
+/* Sidebar gauche (sommaire + recherche) et TOC droite (docs-toc.js) */
+body.docs-dark .docs-sidebar-group{ color:#9BA3DE; }
+body.docs-dark .docs-page-search input{
+  background:rgba(255,255,255,0.08); color:#F5F6FF; border-color:rgba(255,255,255,0.2);
+}
+body.docs-dark .docs-page-search input::placeholder{ color:#9BA3DE; }
+body.docs-dark .docs-toc{ border-left-color:rgba(255,255,255,0.14); }
+body.docs-dark .docs-toc-titre{ color:#9BA3DE; }
+body.docs-dark .docs-toc a{ color:#9BA3DE; }
+body.docs-dark .docs-toc a:hover{ color:#F5F6FF; }
+body.docs-dark .docs-toc a.active{ color:#F5F6FF; border-left-color:#AEB9FF; }
+
+/* Endpoints, parametres, tableaux -- les badges de methode (GET/POST/...)
+   sont deja des pastilles pleines blanc-sur-couleur, autonomes, laissees
+   telles quelles. */
+body.docs-dark .docs-endpoint code{ color:#F5F6FF; }
+body.docs-dark .docs-params th{ color:#9BA3DE; border-bottom-color:rgba(255,255,255,0.2); }
+body.docs-dark .docs-params td{ color:#C7CCF0; border-bottom-color:rgba(255,255,255,0.14); }
+body.docs-dark .docs-required{ color:#FFB4A0; }
+body.docs-dark .icp-table td{ border-bottom-color:rgba(255,255,255,0.14); color:#C7CCF0; }
+body.docs-dark .icp-table td:first-child{ color:#9BA3DE; }
+body.docs-dark .table-scroll{
+  background:
+    linear-gradient(to right, #101B4D 30%, rgba(16,27,77,0)) left / 44px 100% no-repeat,
+    linear-gradient(to left,  #101B4D 30%, rgba(16,27,77,0)) right / 44px 100% no-repeat;
+}
+
+/* Footer : jamais eu de fond propre, herite du degrade -- seuls le
+   texte et les liens ont besoin d'un retraitement. */
+body.docs-dark footer{ border-top-color:rgba(255,255,255,0.14); }
+body.docs-dark .foot-legal,
+body.docs-dark .foot-links a,
+body.docs-dark .foot-social-label{ color:#9BA3DE; }
+body.docs-dark .foot-links a:hover{ color:#F5F6FF; }
+
+/* Exemple interactif "Demarrage rapide" (chantier UX, 9 août 2026) --
+   champs editables qui regenerent la commande curl en temps reel, sans
+   jamais faire de vrai appel reseau. Concu specifiquement pour le fond
+   sombre de docs.html (sa seule vraie utilisation), pas scope sous
+   body.docs-dark comme le reste : ce composant n'a pas de raison d'
+   exister sur une page claire. */
+.docs-live-example{ margin:0 0 16px; }
+.docs-live-fields{ display:flex; gap:12px; flex-wrap:wrap; margin-bottom:10px; }
+.docs-live-fields label{
+  flex:1 1 180px; font-size:11.5px; font-weight:700; color:#9BA3DE;
+  text-transform:uppercase; letter-spacing:0.04em;
+}
+.docs-live-input{
+  display:block; width:100%; box-sizing:border-box; margin-top:5px;
+  background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.2);
+  border-radius:8px; padding:9px 12px; font-size:13.5px; color:#F5F6FF;
+  font-family:'IBM Plex Mono', monospace;
+}
+.docs-live-input:focus{ outline:2px solid #AEB9FF; outline-offset:1px; border-color:transparent; }
+
 /* CTA */
 .cta-section{
   text-align:center; padding:96px 0 88px;

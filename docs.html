@@ -48,7 +48,7 @@
 }
 </script>
 </head>
-<body>
+<body class="docs-dark">
 <header>
   <div class="header-top">
     <nav class="header-top-inner">
@@ -208,11 +208,14 @@
     ]
   }'</code></pre>
 
-      <p class="docs-step"><span class="docs-step-num">2</span> Cherchez — les fautes de frappe sont tolérées :</p>
-      <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/index/moncatalogue/search \
-  -H "Authorization: Bearer VOTRE_CLE_API" \
-  -H "Content-Type: application/json" \
-  -d '{"q": "m8x20 inox"}'</code></pre>
+      <p class="docs-step"><span class="docs-step-num">2</span> Cherchez — les fautes de frappe sont tolérées. Modifiez les champs pour voir la commande changer :</p>
+      <div class="docs-live-example">
+        <div class="docs-live-fields">
+          <label>Catalogue<input type="text" class="docs-live-input" data-field="catalog" value="moncatalogue" autocomplete="off" spellcheck="false"></label>
+          <label>Recherche<input type="text" class="docs-live-input" data-field="query" value="m8x20 inox" autocomplete="off" spellcheck="false"></label>
+        </div>
+        <pre class="docs-code"><code class="docs-live-output"></code></pre>
+      </div>
 
       <p class="docs-step"><span class="docs-step-num">3</span> Lisez la réponse — chaque résultat explique pourquoi il correspond :</p>
       <pre class="docs-code"><code>{
@@ -960,7 +963,10 @@ curl -X POST https://api.heurix.fr/v1/events \
       <p>Pas envie de coder l'appel <code class="docs-inline-code">fetch</code>, le rendu des résultats et la gestion des facettes vous-même ? Une bibliothèque JavaScript autonome (zéro dépendance) affiche une barre de recherche complète — saisie, résultats en direct, facettes cliquables, navigation clavier — connectée à votre catalogue en quelques lignes.</p>
       <p class="regex-reassure">🚀 <a href="downloads/heurix-search.js?v=1785843074" download>Téléchargez heurix-search.js</a> — un seul fichier, à poser où vous voulez sur votre site.</p>
 
-      <p class="regex-reassure">🔑 Utilisez une <a href="#authentification">clé publique</a> (<code class="docs-inline-code">hxp_</code>) — ce script tourne dans le navigateur du visiteur, où la clé est lisible par tous. Une clé serveur donnerait accès à votre facturation.</p>
+      <div class="callout callout-info" role="note">
+        <svg class="callout-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="14.5" r="4.5"/><path d="M10.8 11.2 20 2"/><path d="M16.5 5.5 19 8"/><path d="M13.5 8.5 15.3 10.3"/></svg>
+        <div class="callout-content"><p>Utilisez une <a href="#authentification">clé publique</a> (<code class="docs-inline-code">hxp_</code>) — ce script tourne dans le navigateur du visiteur, où la clé est lisible par tous. Une clé serveur donnerait accès à votre facturation.</p></div>
+      </div>
 
       <h3>Intégration minimale</h3>
       <pre class="docs-code"><code>&lt;div id="ma-recherche"&gt;&lt;/div&gt;
@@ -1029,7 +1035,10 @@ console.log(results.hits);</code></pre>
   import { HeurixClient } from "https://cdn.jsdelivr.net/npm/@heurix-site/client@latest/dist/index.js";
 &lt;/script&gt;</code></pre>
 
-      <p class="regex-reassure">🔑 Même règle que partout ailleurs côté navigateur : une <a href="#authentification">clé publique</a> (<code class="docs-inline-code">hxp_</code>), jamais votre clé serveur, dans du code qui s'exécute chez le visiteur.</p>
+      <div class="callout callout-info" role="note">
+        <svg class="callout-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="14.5" r="4.5"/><path d="M10.8 11.2 20 2"/><path d="M16.5 5.5 19 8"/><path d="M13.5 8.5 15.3 10.3"/></svg>
+        <div class="callout-content"><p>Même règle que partout ailleurs côté navigateur : une <a href="#authentification">clé publique</a> (<code class="docs-inline-code">hxp_</code>), jamais votre clé serveur, dans du code qui s'exécute chez le visiteur.</p></div>
+      </div>
 
       <p><strong>Un seul nom à retenir</strong> : <code class="docs-inline-code">@heurix-site/client</code>. Le paquet <code class="docs-inline-code">heurix-client</code> (sans organisation) a existé brièvement pendant la mise au point et est aujourd'hui déprécié — s'il apparaît dans un résultat de recherche npm plus ancien, ignorez-le.</p>
     </section>
@@ -1259,6 +1268,7 @@ VIS_M8X20  ────────── correspondance ──────  VIS
 </div>
 <script src="pricing-nudge.js"></script>
 <script src="docs-copy.js?v=1785060993"></script>
+<script src="docs-live-example.js"></script>
 <script src="docs-toc.js"></script>
 <script src="consent.js?v=1785150583"></script>
 </body>
