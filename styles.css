@@ -46,6 +46,7 @@
   --ink-muted:#5B5E76;
   --blue:#5468FF;
   --blue-deep:#3F52E8;
+  --blue-deeper:#2A3CD1;
   --blue-tint:#EEF1FF;
   --line:#E7E9F2;
   --green:#1FAA6B;
@@ -185,7 +186,7 @@ header{
 .nav-links a:hover{ color:var(--blue-deep); }
 .btn{
   display:inline-flex; align-items:center; gap:8px;
-  background:var(--blue);
+  background:var(--blue-deep); /* corrige un contraste texte blanc insuffisant (4.37:1, audit Lighthouse du 10 août) -- var(--blue) restait sous le seuil WCAG AA de 4.5:1 */
   color:#fff;
   font-weight:600;
   font-size:14.5px;
@@ -198,7 +199,7 @@ header{
   font-family:'Plus Jakarta Sans', sans-serif;
   transition:transform .15s ease, background .15s ease;
 }
-.btn:hover{ background:var(--blue-deep); transform:translateY(-1px); }
+.btn:hover{ background:var(--blue-deeper); transform:translateY(-1px); }
 .btn-ghost{ background:transparent; color:var(--ink); border:1px solid var(--line); }
 .btn-ghost:hover{ background:var(--bg-soft); }
 @media (max-width:760px){ .nav-links{display:none;} }
@@ -1071,7 +1072,7 @@ h2{ font-size:clamp(26px,3.4vw,34px); font-weight:800; margin:0 0 18px; max-widt
   display:flex; align-items:center; justify-content:center;
   margin-bottom:14px;
 }
-.mission-pillar h4{ font-size:15.5px; margin:0 0 8px; font-weight:700; }
+.mission-pillar h3{ font-size:15.5px; margin:0 0 8px; font-weight:700; }
 .mission-pillar p{ margin:0; font-size:13.5px; color:var(--ink-muted); line-height:1.55; }
 
 /* A PROPOS */
@@ -1232,7 +1233,7 @@ h2{ font-size:clamp(26px,3.4vw,34px); font-weight:800; margin:0 0 18px; max-widt
   background:var(--blue-tint);
   padding:32px;
 }
-.roi-inputs h4{ font-size:20px; margin:0 0 4px; font-weight:800; color:var(--ink); }
+.roi-inputs h3{ font-size:20px; margin:0 0 4px; font-weight:800; color:var(--ink); }
 .roi-inputs-intro{ font-size:13.5px; color:var(--ink-muted); margin:0 0 26px; }
 
 .roi-field{ margin-bottom:22px; }

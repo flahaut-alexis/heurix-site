@@ -146,7 +146,7 @@
         <button type="button" class="play-more" hidden>Show more results</button>
       </div>
 
-      <button type="button" class="play-view-tab play-view-tab-discret" data-view="api" role="tab" aria-selected="false">API preview for developers →</button>
+      <button type="button" class="play-view-tab play-view-tab-discret" data-view="api">API preview for developers →</button>
 
       <div class="play-view play-view-api" data-view-panel="api" hidden>
         <p class="play-api-label">What a developer sees — the real API response, on the "m8x20 stainless" example:</p>
@@ -188,17 +188,17 @@
     <div class="mission-pillars reveal">
       <div class="mission-pillar">
         <div class="icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 17l6-6-4-4-6 6"/><path d="M14 7l6 6-6 6-6-6z"/></svg></div>
-        <h4>Understanding, not just indexing</h4>
+        <h3>Understanding, not just indexing</h3>
         <p>Our engine relies on regular expressions capable of recognizing the structure of a product reference, where most engines only compare text.</p>
       </div>
       <div class="mission-pillar">
         <div class="icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0116 0v1"/></svg></div>
-        <h4>Accessible to technical SMEs</h4>
+        <h3>Accessible to technical SMEs</h3>
         <p>Search platforms are built for the enterprise. Heurix is built for large catalogs that have neither the means nor the need for a dedicated data team.</p>
       </div>
       <div class="mission-pillar">
         <div class="icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M18 9l-5 5-4-4-4 4"/></svg></div>
-        <h4>A measurable result</h4>
+        <h3>A measurable result</h3>
         <p>Every improvement translates into a quantifiable conversion gain — not a quarter-long development project.</p>
       </div>
     </div>
@@ -277,7 +277,7 @@
         <p class="regex-reassure">⚡ This diagram runs on the real Heurix engine, not a mockup — it's exactly the logic that processes your catalog from the moment you index it.</p>
       </div>
       <div class="demo-video" style="padding:24px 20px; display:flex; align-items:center; justify-content:center;">
-        <img src="img/prisme-marketing.svg?v=1784819296" alt="Diagram: the reference M8 x 20 - Stainless A2 passes through the Heurix lens and comes out decomposed into three pieces of information: diameter, length, material" style="width:100%; max-width:520px;">
+        <img src="img/prisme-marketing.svg?v=1784819296" width="680" height="420" alt="Diagram: the reference M8 x 20 - Stainless A2 passes through the Heurix lens and comes out decomposed into three pieces of information: diameter, length, material" style="width:100%; max-width:520px;">
       </div>
     </div>
 
@@ -455,10 +455,10 @@
         Sector benchmarks — to help calibrate your sliders
       </div>
       <div class="copilot-pills" role="tablist">
-        <button type="button" class="copilot-pill active" data-industry="outillage">Tools &amp; Industry</button>
-        <button type="button" class="copilot-pill" data-industry="mode">Fashion &amp; Retail</button>
-        <button type="button" class="copilot-pill" data-industry="sport">Sport &amp; Outdoor</button>
-        <button type="button" class="copilot-pill" data-industry="maison">Home &amp; Living</button>
+        <button type="button" class="copilot-pill active" data-industry="outillage" role="tab" aria-selected="true">Tools &amp; Industry</button>
+        <button type="button" class="copilot-pill" data-industry="mode" role="tab" aria-selected="false">Fashion &amp; Retail</button>
+        <button type="button" class="copilot-pill" data-industry="sport" role="tab" aria-selected="false">Sport &amp; Outdoor</button>
+        <button type="button" class="copilot-pill" data-industry="maison" role="tab" aria-selected="false">Home &amp; Living</button>
       </div>
       <div class="copilot-bubble">
         <div class="copilot-bubble-tail"></div>
@@ -471,7 +471,7 @@
     <div class="roi-simulator reveal">
 
       <div class="roi-inputs">
-        <h4>Configure your assumptions</h4>
+        <h3>Configure your assumptions</h3>
         <p class="roi-inputs-intro">Adjust the sliders to reflect your e-commerce situation.</p>
 
         <div class="roi-field roi-slider">
@@ -793,7 +793,6 @@
       const ouvrir = panelCible.hidden;
       panelCible.hidden = !ouvrir;
       panelDemo.hidden = ouvrir;
-      tab.setAttribute('aria-selected', ouvrir ? 'true' : 'false');
       tab.classList.toggle('active', ouvrir);
     });
   });
@@ -851,7 +850,11 @@
   function setCopilotIndustry(key){
     const data = COPILOT_DATA[key];
     if (!data) return;
-    document.querySelectorAll('.copilot-pill').forEach(p => p.classList.toggle('active', p.dataset.industry === key));
+    document.querySelectorAll('.copilot-pill').forEach(p => {
+      const actif = p.dataset.industry === key;
+      p.classList.toggle('active', actif);
+      p.setAttribute('aria-selected', actif ? 'true' : 'false');
+    });
     const pointsEl = document.getElementById('copilot-points');
     pointsEl.innerHTML = data.points.map(p => `<li>${p}</li>`).join('');
     document.getElementById('copilot-source').innerHTML = data.source;

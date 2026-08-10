@@ -201,7 +201,7 @@
            JS générique (data-view/data-view-panel) reste identique, ne
            dépend pas d'un bouton "demo" pour révéler le panneau démo
            (jamais caché par défaut). -->
-      <button type="button" class="play-view-tab play-view-tab-discret" data-view="api" role="tab" aria-selected="false">Aperçu API pour développeurs →</button>
+      <button type="button" class="play-view-tab play-view-tab-discret" data-view="api">Aperçu API pour développeurs →</button>
 
       <div class="play-view play-view-api" data-view-panel="api" hidden>
         <p class="play-api-label">Ce que voit un développeur — la vraie réponse de l'API, sur l'exemple « m8x20 inox » :</p>
@@ -271,17 +271,17 @@
     <div class="mission-pillars reveal">
       <div class="mission-pillar">
         <div class="icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div>
-        <h4>Expert de votre secteur avant même votre premier import</h4>
+        <h3>Expert de votre secteur avant même votre premier import</h3>
         <p>Dix secteurs ont déjà leur pack de règles prêt à l'emploi. Vous choisissez le vôtre, vos références sont comprises immédiatement — pas de moteur générique à qui tout expliquer depuis zéro.</p>
       </div>
       <div class="mission-pillar">
         <div class="icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0116 0v1"/></svg></div>
-        <h4>Accessible aux PME techniques</h4>
+        <h3>Accessible aux PME techniques</h3>
         <p>Les plateformes de search sont pensées pour l'enterprise. Heurix est pensé pour les catalogues volumineux qui n'ont ni les moyens ni le besoin d'une équipe data dédiée.</p>
       </div>
       <div class="mission-pillar">
         <div class="icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M18 9l-5 5-4-4-4 4"/></svg></div>
-        <h4>Un résultat mesurable</h4>
+        <h3>Un résultat mesurable</h3>
         <p>Chaque amélioration se traduit en gain de conversion chiffrable — pas en trimestre de développement.</p>
       </div>
     </div>
@@ -340,7 +340,7 @@
         <p class="regex-reassure">⚡ Ce schéma tourne sur le vrai moteur Heurix, pas une maquette — c'est exactement la logique qui traite votre catalogue dès l'indexation.</p>
       </div>
       <div class="demo-video" style="padding:24px 20px; display:flex; align-items:center; justify-content:center;">
-        <img src="img/prisme-marketing.svg?v=1784819296" alt="Schéma : la référence M8 x 20 - Inox A2 traverse la loupe Heurix et ressort décomposée en trois informations : diamètre, longueur, matière" style="width:100%; max-width:520px;">
+        <img src="img/prisme-marketing.svg?v=1784819296" width="680" height="420" alt="Schéma : la référence M8 x 20 - Inox A2 traverse la loupe Heurix et ressort décomposée en trois informations : diamètre, longueur, matière" style="width:100%; max-width:520px;">
       </div>
     </div>
 
@@ -489,10 +489,10 @@
         Repères sectoriels observés chez d'autres éditeurs de recherche — pour calibrer vos curseurs
       </div>
       <div class="copilot-pills" role="tablist">
-        <button type="button" class="copilot-pill active" data-industry="outillage"><span class="copilot-pill-complet">Outillage &amp; Industrie</span><span class="copilot-pill-court">Outillage</span></button>
-        <button type="button" class="copilot-pill" data-industry="mode"><span class="copilot-pill-complet">Mode &amp; Retail</span><span class="copilot-pill-court">Mode</span></button>
-        <button type="button" class="copilot-pill" data-industry="sport"><span class="copilot-pill-complet">Sport &amp; Outdoor</span><span class="copilot-pill-court">Sport</span></button>
-        <button type="button" class="copilot-pill" data-industry="maison"><span class="copilot-pill-complet">Maison &amp; Équipement</span><span class="copilot-pill-court">Maison</span></button>
+        <button type="button" class="copilot-pill active" data-industry="outillage" role="tab" aria-selected="true"><span class="copilot-pill-complet">Outillage &amp; Industrie</span><span class="copilot-pill-court">Outillage</span></button>
+        <button type="button" class="copilot-pill" data-industry="mode" role="tab" aria-selected="false"><span class="copilot-pill-complet">Mode &amp; Retail</span><span class="copilot-pill-court">Mode</span></button>
+        <button type="button" class="copilot-pill" data-industry="sport" role="tab" aria-selected="false"><span class="copilot-pill-complet">Sport &amp; Outdoor</span><span class="copilot-pill-court">Sport</span></button>
+        <button type="button" class="copilot-pill" data-industry="maison" role="tab" aria-selected="false"><span class="copilot-pill-complet">Maison &amp; Équipement</span><span class="copilot-pill-court">Maison</span></button>
       </div>
       <div class="copilot-bubble">
         <div class="copilot-bubble-tail"></div>
@@ -505,7 +505,7 @@
     <div class="roi-simulator reveal">
 
       <div class="roi-inputs">
-        <h4>Configurez vos hypothèses</h4>
+        <h3>Configurez vos hypothèses</h3>
         <p class="roi-inputs-intro">Ajustez les curseurs pour refléter la situation de votre e-commerce.</p>
 
         <div class="roi-field roi-slider">
@@ -798,7 +798,6 @@
       const ouvrir = panelCible.hidden; // etat AVANT le clic
       panelCible.hidden = !ouvrir;
       panelDemo.hidden = ouvrir; // l'un ou l'autre, jamais aucun des deux
-      tab.setAttribute('aria-selected', ouvrir ? 'true' : 'false');
       tab.classList.toggle('active', ouvrir);
     });
   });
@@ -856,7 +855,11 @@
   function setCopilotIndustry(key){
     const data = COPILOT_DATA[key];
     if (!data) return;
-    document.querySelectorAll('.copilot-pill').forEach(p => p.classList.toggle('active', p.dataset.industry === key));
+    document.querySelectorAll('.copilot-pill').forEach(p => {
+      const actif = p.dataset.industry === key;
+      p.classList.toggle('active', actif);
+      p.setAttribute('aria-selected', actif ? 'true' : 'false');
+    });
     const pointsEl = document.getElementById('copilot-points');
     // Mention visible par point (2 août, demande UX writer) -- pas
     // seulement le disclaimer général en bas du bloc (.copilot-disclaimer,
