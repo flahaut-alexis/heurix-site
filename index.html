@@ -775,7 +775,6 @@
   </div>
 </footer>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="heurix-pictos.js?v=1785366412"></script>
 <script src="demo-search-live.js?v=1785843074"></script>
 <script>
@@ -1002,6 +1001,22 @@
     pdfToggle.style.display = pdfForm.hidden ? 'block' : 'none';
   });
 
+  // jsPDF charge a la demande (10 aout, audit Lighthouse -- 93 KiB dont 77
+  // inutilises sur toute page qui ne genere jamais de rapport) : le script
+  // n'est injecte qu'au moment ou un visiteur soumet vraiment ce formulaire,
+  // pas au chargement initial de la page. window.jspdf deja present -> pas
+  // de second chargement si un visiteur genere plusieurs rapports.
+  function chargerJsPDF() {
+    if (window.jspdf) return Promise.resolve();
+    return new Promise(function (resolve, reject) {
+      var script = document.createElement('script');
+      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+      script.onload = resolve;
+      script.onerror = reject;
+      document.head.appendChild(script);
+    });
+  }
+
   pdfForm.addEventListener('submit', async function(e){
     e.preventDefault();
     const name = document.getElementById('roi-pdf-name').value;
@@ -1009,6 +1024,15 @@
 
     pdfSubmit.disabled = true;
     pdfSubmit.textContent = "Génération en cours…";
+
+    try {
+      await chargerJsPDF();
+    } catch (err) {
+      pdfSubmit.disabled = false;
+      pdfSubmit.textContent = "Générer mon rapport PDF";
+      alert("Le générateur de PDF n'a pas pu se charger. Vérifiez votre connexion et réessayez.");
+      return;
+    }
 
     // Envoi du lead vers contact@heurix.fr (même mécanisme que le formulaire principal)
     try {
