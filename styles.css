@@ -4618,3 +4618,54 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
   font-size:16px; line-height:1;
 }
 .pdf-modal-close:hover{ background:var(--line); color:var(--ink); }
+
+/* Extension du theme sombre docs-dark au guide de mise en route et a la
+   page integrations (chantier UX, 10 aout 2026) -- meme classe de body,
+   meme fond en degrade, reutilise directement toutes les regles
+   body.docs-dark deja ecrites pour docs.html (callout, docs-code,
+   docs-sidebar, docs-hero...) sans rien dupliquer. Seuls les elements
+   propres a ces deux pages, absents de docs.html, ont besoin d'un
+   nouveau traitement ici. Meme palette deja calculee au contraste WCAG
+   reel contre les trois points du degrade : #F5F6FF pour les titres,
+   #CDD2F0 pour le texte courant/liens/accents. */
+
+/* Guide de mise en route -- article structure comme une page de doc */
+body.docs-dark .post-lede,
+body.docs-dark .post-body,
+body.docs-dark .console-panel-note{ color:#CDD2F0; }
+body.docs-dark .post-body h2,
+body.docs-dark .post-body h3{ color:#F5F6FF; }
+body.docs-dark .kicker,
+body.docs-dark .back-link{ color:#CDD2F0; }
+body.docs-dark .post-footer-cta,
+body.docs-dark .guide-quiz{
+  background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.14);
+}
+body.docs-dark .post-footer-cta p{ color:#CDD2F0; }
+
+/* Le stepper (chantier du 9 aout) avait ses cartes en blanc fixe -- sur
+   .post-body, la regle h3 generique ci-dessus les rendait illisibles
+   (texte clair sur fond reste blanc). Traitement dedie, coherent avec
+   les callout : fond translucide plutot que blanc opaque. */
+body.docs-dark .setup-step-card{
+  background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.14);
+}
+body.docs-dark .setup-step-card h3{ color:#F5F6FF; }
+body.docs-dark .setup-step-card p{ color:#CDD2F0; }
+
+/* Page Integrations -- onglets et encarts specifiques */
+body.docs-dark .integ-tab{ color:#CDD2F0; }
+body.docs-dark .integ-tab:hover{ color:#F5F6FF; }
+body.docs-dark .integ-tab.active{ color:#F5F6FF; }
+body.docs-dark .integ-tabs{ border-bottom-color:rgba(255,255,255,0.14); }
+body.docs-dark .integ-notice{
+  background:rgba(255,255,255,0.06); border-color:rgba(174,185,255,0.35); color:#E4E7FF;
+}
+body.docs-dark .integ-notice strong{ color:#F5F6FF; }
+body.docs-dark .integ-panel h2{ color:#F5F6FF; }
+body.docs-dark .integ-panel p{ color:#CDD2F0; }
+
+/* .badge et .setup-step-marker (pastille inactive) restent inchanges :
+   fond clair + texte fonce, un contraste interne autonome deja verifie,
+   qui ne depend jamais du fond de page environnant -- meme raisonnement
+   que la pastille active de la sidebar docs.html. */
