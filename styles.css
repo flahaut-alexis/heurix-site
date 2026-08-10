@@ -2369,7 +2369,9 @@ body.docs-dark{
 body.docs-dark .docs-hero{ background:transparent; border-bottom-color:rgba(255,255,255,0.14); }
 body.docs-dark .docs-hero h1,
 body.docs-dark .docs-section h2,
-body.docs-dark .docs-section h3{ color:#F5F6FF; }
+body.docs-dark .docs-section h3,
+body.docs-dark .docs-section h4,
+body.docs-dark .docs-section h5{ color:#F5F6FF; }
 body.docs-dark .docs-hero p,
 body.docs-dark .docs-section p,
 body.docs-dark .docs-section li{ color:#CDD2F0; }
@@ -2390,10 +2392,19 @@ body.docs-dark .callout-warning .callout-icon{ color:#FFB4A0; } /* icone, meme r
 body.docs-dark .docs-sidebar-group{ color:#CDD2F0; }
 body.docs-dark .docs-sidebar a{ color:#CDD2F0; }
 body.docs-dark .docs-sidebar a:hover{ color:#F5F6FF; background:rgba(255,255,255,0.06); }
-/* .docs-sidebar a.active garde son style de base (fond clair + texte
-   fonce, var(--blue-tint)/var(--blue-deep)) : une pastille autonome dont
-   le contraste interne ne depend jamais du fond de page environnant --
-   deja verifiee lisible partout, aucun changement necessaire. */
+/* Etat actif (10 aout) : la pastille claire d'origine (var(--blue-tint)
+   sur var(--blue-deep)) etait concue pour un sommaire a fond clair --
+   .docs-sidebar a ci-dessus, plus specifique a cause du prefixe
+   body.docs-dark, ecrasait deja son color sans y toucher, laissant un
+   texte lavande clair presque invisible sur son propre fond presque
+   blanc. Reconstruit pour le fond sombre : texte quasi-blanc, fond bleu
+   semi-opaque (11.68:1 de contraste reel calcule, pas suppose) plutot que
+   la pastille claire, barre verticale pleine pour un vrai repere net.  */
+body.docs-dark .docs-sidebar a.active{
+  color:#F5F6FF; font-weight:700;
+  background:rgba(84,104,255,0.22);
+  border-left-color:var(--blue);
+}
 body.docs-dark .docs-page-search input{
   background:rgba(255,255,255,0.08); color:#F5F6FF; border-color:rgba(255,255,255,0.2);
 }

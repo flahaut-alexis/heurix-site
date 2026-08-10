@@ -76,17 +76,35 @@
   var actif = null;
   function activer(id) {
     if (id === actif) return;
+    // Un H3 interne sans sa propre entrée dans la sidebar (ex. "Corps de
+    // la requête" sous "Recherche") ne doit JAMAIS désactiver le lien de
+    // la vraie section parente pour ne rien réactiver à la place -- bug
+    // corrigé (10 août) qui laissait le scrollspy bloqué sur "aucun lien
+    // actif" dès qu'un tel H3 sans lien devenait la cible active.
+    if (!liensSidebarParId[id]) return;
     if (actif && liensSidebarParId[actif]) liensSidebarParId[actif].classList.remove("active");
     actif = id;
-    if (liensSidebarParId[actif]) liensSidebarParId[actif].classList.add("active");
+    liensSidebarParId[actif].classList.add("active");
   }
 
   // rootMargin resserre la zone de déclenchement vers le haut du viewport :
   // un titre est considéré "en cours de lecture" dès qu'il franchit le
   // quart supérieur de l'écran, pas seulement quand il touche le tout haut.
+  //
+  // BUG CORRIGÉ (10 août) : se fier uniquement à isIntersecting laissait
+  // une longue zone morte sur toute section dépassant la hauteur de cette
+  // bande étroite (ex. #ep-search, ~5000px, sans sous-titre à l'intérieur)
+  // -- une fois le titre sorti par le haut, plus aucun titre n'entrait
+  // dans la bande avant le suivant, donc plus aucun lien actif pendant
+  // tout ce trajet. Un titre sorti PAR LE HAUT (son propre haut est passé
+  // au-dessus du viewport, boundingClientRect.top < 0) reste "en cours de
+  // lecture" jusqu'à ce que le titre suivant prenne le relais -- sorti par
+  // le bas (on remonte), il redevient inactif normalement.
   var observateur = new IntersectionObserver(function (entrees) {
     entrees.forEach(function (entree) {
-      if (entree.isIntersecting) activer(entree.target.id);
+      if (entree.isIntersecting || entree.boundingClientRect.top < 0) {
+        activer(entree.target.id);
+      }
     });
   }, { rootMargin: "-15% 0px -70% 0px" });
 
