@@ -1,11 +1,8 @@
-// Sommaire "Sur cette page" (audit UX Algolia/Meilisearch, 5 août 2026).
-//
-// SCRIPT UNIQUE dès le départ, pas une paire FR/EN à dupliquer -- la
-// génération de sommaire et le scrollspy sont entièrement langue-agnostiques
-// (ils lisent la structure des titres, jamais leur contenu textuel). Après
-// le chantier S4 du même jour (trois paires de scripts fusionnées, dont une
-// où la version anglaise avait perdu une vraie fonctionnalité en route),
-// autant ne jamais créer la paire plutôt que la corriger plus tard.
+// Scrollspy de la sidebar de gauche (audit UX Algolia/Meilisearch, 5 août
+// 2026 -- panneau "Sur cette page" retiré le 9 août : doublon quasi total
+// avec cette même sidebar une fois son contraste corrigé, sur une page qui
+// n'a jamais été paginée. Le scrollspy lui-même reste intact, seule la
+// génération du panneau de droite a été retirée.
 //
 // PAS DE POLLING AU SCROLL : IntersectionObserver, pas d'écouteur "scroll"
 // avec throttle/debounce à la main -- l'API existe précisément pour ce
@@ -15,18 +12,17 @@
   "use strict";
 
   var contenu = document.querySelector(".docs-content");
-  var conteneurToc = document.querySelector(".docs-layout");
-  if (!contenu || !conteneurToc) return;
+  if (!contenu) return;
 
   var titres = Array.prototype.slice.call(contenu.querySelectorAll("h2, h3"));
-  // Sous un seuil, une TOC n'apporte rien qu'un visiteur ne voie déjà d'un
-  // coup d'œil -- pas de coût, mais pas la peine d'encombrer le DOM non plus.
-  if (titres.length < 6) return;
+  if (!titres.length) return;
 
   // SLUGS POUR LES H3 SANS ID. La plupart des H2 ont déjà un id (porté par
   // leur <section> parente) ; les H3, eux, n'en ont pour la plupart aucun.
-  // Générés ici plutôt que codés en dur dans les 59 titres existants --
+  // Générés ici plutôt que codés en dur dans les titres existants --
   // minimise le risque sur un fichier qui n'est pas celui de ce chantier.
+  // Toujours nécessaire même sans panneau : l'IntersectionObserver a besoin
+  // d'un id stable par titre pour retrouver le bon lien de sidebar.
   var slugsVus = {};
   function slug(texte) {
     var base = texte.toLowerCase()
@@ -39,15 +35,6 @@
     return candidat;
   }
 
-  var toc = document.createElement("aside");
-  toc.className = "docs-toc";
-  toc.setAttribute("aria-label", "Sur cette page");
-  var titreToc = document.createElement("div");
-  titreToc.className = "docs-toc-titre";
-  titreToc.textContent = document.documentElement.lang === "en" ? "On this page" : "Sur cette page";
-  toc.appendChild(titreToc);
-
-  var liensParId = {};
   titres.forEach(function (titre) {
     if (!titre.id) {
       // Les H2 sont presque toujours SANS id propre : leur <section>
@@ -65,19 +52,11 @@
       titre.id = section ? section.id : slug(titre.textContent || "");
     }
     if (!slugsVus[titre.id]) slugsVus[titre.id] = true; // évite qu'un futur slug généré ne collisionne avec un id déjà posé en dur, réutilisé ou non
-    var lien = document.createElement("a");
-    lien.href = "#" + titre.id;
-    lien.textContent = titre.textContent;
-    if (titre.tagName === "H3") lien.className = "docs-toc-h3";
-    toc.appendChild(lien);
-    liensParId[titre.id] = lien;
   });
 
-  conteneurToc.appendChild(toc);
-
-  // Sidebar de GAUCHE existante : son CSS (.docs-sidebar a.active) était déjà
-  // en place mais jamais alimenté par aucun script -- le même scrollspy
-  // l'anime maintenant aussi, sans code supplémentaire dédié.
+  // Sidebar de GAUCHE : son CSS (.docs-sidebar a.active) était déjà en place
+  // mais jamais alimenté par aucun script avant le chantier du 5 août -- le
+  // scrollspy l'anime, sans dépendre d'un panneau de droite pour exister.
   var liensSidebarParId = {};
   document.querySelectorAll(".docs-sidebar a[href^='#']").forEach(function (a) {
     liensSidebarParId[a.getAttribute("href").slice(1)] = a;
@@ -85,25 +64,20 @@
 
   // La sidebar de gauche liste aussi des ENDPOINTS individuels (ex.
   // #ep-top-products), portés par des <div class="docs-endpoint">, pas des
-  // H2/H3 -- absents de LA TOC DE DROITE (qui resterait sinon trop dense
-  // pour rester lisible d'un coup d'œil), mais leur scrollspy doit
-  // fonctionner puisque la sidebar de gauche les liste déjà.
+  // H2/H3 -- leur scrollspy doit fonctionner puisque la sidebar de gauche
+  // les liste déjà.
   var elementsObserves = titres.concat(
     Array.prototype.slice.call(document.querySelectorAll(".docs-endpoint[id]"))
       .filter(function (el) { return liensSidebarParId[el.id]; })
   );
 
-  if (typeof IntersectionObserver === "undefined") return; // pas de scrollspy, la TOC reste utilisable au clic
+  if (typeof IntersectionObserver === "undefined") return; // pas de scrollspy, la sidebar reste utilisable au clic
 
   var actif = null;
   function activer(id) {
     if (id === actif) return;
-    if (actif) {
-      if (liensParId[actif]) liensParId[actif].classList.remove("active");
-      if (liensSidebarParId[actif]) liensSidebarParId[actif].classList.remove("active");
-    }
+    if (actif && liensSidebarParId[actif]) liensSidebarParId[actif].classList.remove("active");
     actif = id;
-    if (liensParId[actif]) liensParId[actif].classList.add("active");
     if (liensSidebarParId[actif]) liensSidebarParId[actif].classList.add("active");
   }
 
@@ -116,6 +90,5 @@
     });
   }, { rootMargin: "-15% 0px -70% 0px" });
 
-  titres.forEach(function (titre) { observateur.observe(titre); });
-  elementsObserves.slice(titres.length).forEach(function (el) { observateur.observe(el); });
+  elementsObserves.forEach(function (el) { observateur.observe(el); });
 })();

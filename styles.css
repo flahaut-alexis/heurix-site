@@ -1513,8 +1513,7 @@ h2{ font-size:clamp(26px,3.4vw,34px); font-weight:800; margin:0 0 18px; max-widt
   border-radius:5px; padding:2px 6px;
 }
 
-.docs-layout{ display:grid; grid-template-columns:225px 1fr 200px; gap:44px; padding-top:36px; padding-bottom:72px; align-items:start; }
-@media (max-width:1220px){ .docs-layout{ grid-template-columns:225px 1fr; } }
+.docs-layout{ display:grid; grid-template-columns:225px 1fr; gap:44px; padding-top:36px; padding-bottom:72px; align-items:start; }
 @media (max-width:900px){ .docs-layout{ grid-template-columns:1fr; gap:8px; } }
 
 .docs-sidebar{
@@ -1559,32 +1558,10 @@ h2{ font-size:clamp(26px,3.4vw,34px); font-weight:800; margin:0 0 18px; max-widt
 
 .docs-content{ min-width:0; }
 
-/* Sommaire "Sur cette page" (audit UX, 5 août 2026) -- génère depuis les
-   H2/H3 de .docs-content, scrollspy via IntersectionObserver. Masqué sous
-   1220px (voir @media plus haut, grid-template-columns) : sur cette
-   largeur, la grille n'a plus que 2 colonnes, et un 3e enfant resterait
-   sinon dans le flux sur une ligne en dessous, hors de propos. */
-.docs-toc{
-  position:sticky; top:84px;
-  max-height:calc(100vh - 108px);
-  overflow-y:auto;
-  font-size:12.5px;
-  border-left:1px solid var(--line);
-  padding-left:16px;
-}
-@media (max-width:1220px){ .docs-toc{ display:none; } }
-.docs-toc-titre{
-  font-size:11px; font-weight:700; color:var(--ink-muted);
-  text-transform:uppercase; letter-spacing:0.05em; margin-bottom:10px;
-}
-.docs-toc a{
-  display:block; color:var(--ink-muted); text-decoration:none;
-  padding:4px 0 4px 10px; border-left:2px solid transparent;
-  line-height:1.4;
-}
-.docs-toc a.docs-toc-h3{ padding-left:20px; font-size:12px; }
-.docs-toc a:hover{ color:var(--blue-deep); }
-.docs-toc a.active{ color:var(--blue-deep); border-left-color:var(--blue); font-weight:600; }
+/* Sommaire "Sur cette page" retiré le 10 août -- doublon quasi total de la
+   sidebar de gauche une fois son contraste corrigé, sur une page qui n'a
+   jamais été paginée (voir docs-toc.js, qui ne garde que le scrollspy de
+   cette même sidebar). Bloc CSS retiré avec lui : plus jamais généré. */
 
 .docs-section{ padding:26px 0 30px; border-bottom:1px solid var(--line); scroll-margin-top:84px; }
 .docs-section:first-child{ padding-top:0; }
@@ -2365,17 +2342,26 @@ h2{ font-size:clamp(26px,3.4vw,34px); font-weight:800; margin:0 0 18px; max-widt
 .setup-badge-required{ background:var(--blue); color:#fff; }
 .setup-badge-optional{ background:var(--blue-tint); color:var(--blue-deep); }
 
-/* Fond docs.html (chantier UX, 9 août 2026) -- scopé sous body.docs-dark,
-   ne touche RIEN sur les autres pages qui partagent .callout/.docs-code/
-   .docs-toc/etc (notamment blog/guide-mise-en-route.html, cablé cette
-   meme session). Palette calculee par contraste WCAG reel contre les
-   trois points du degrade (voir le calcul complet donne en reponse) --
-   pas choisie a l'oeil. Header et footer restent visuellement distincts
-   du contenu : le header garde son fond blanc (convention deja en place
-   sur toutes les pages, meme au-dessus du hero sombre de la page
-   d'accueil) ; le footer, lui, n'a jamais eu de fond propre -- il herite
-   du corps de la page, donc du degrade, coherent avec "l'ensemble de la
-   doc" demande. */
+/* Fond docs.html (chantier UX, 9 août 2026, revu le 10 août) -- scopé sous
+   body.docs-dark, ne touche RIEN sur les autres pages qui partagent
+   .callout/.docs-code/etc (notamment blog/guide-mise-en-route.html, cablé
+   cette meme session). Palette calculee par contraste WCAG reel contre les
+   TROIS points du degrade (centre #4C3FE0, intermediaire #3648A8, fin
+   #101B4D), pas seulement le pire cas comme le premier passage du 9 aout
+   l'avait fait a tort -- #C7CCF0/#9BA3DE y semblaient conformes mais
+   echouaient en realite sur le centre du degrade (4.31:1 et 2.81:1,
+   sous le seuil AA de 4.5:1). #CDD2F0 est la teinte la plus sombre qui
+   passe vraiment partout ; texte courant, texte secondaire (labels,
+   footer) et liens la partagent desormais -- au niveau de ce plancher,
+   il ne reste plus de marge pour differencier ces trois roles par la
+   seule luminosite sans routir sous la barre AA quelque part sur la
+   page. La hierarchie visuelle vient de la typographie deja en place
+   (liens en gras, labels en petites capitales), pas de la couleur seule.
+   Header et footer restent visuellement distincts du contenu : le header
+   garde son fond blanc (convention deja en place sur toutes les pages,
+   meme au-dessus du hero sombre de la page d'accueil) ; le footer, lui,
+   n'a jamais eu de fond propre -- il herite du degrade, coherent avec
+   "l'ensemble de la doc" demande. */
 body.docs-dark{
   background: radial-gradient(ellipse 1400px 900px at 50% 0%, #4C3FE0 0%, #3648A8 45%, #101B4D 100%);
 }
@@ -2385,36 +2371,42 @@ body.docs-dark .docs-section h2,
 body.docs-dark .docs-section h3{ color:#F5F6FF; }
 body.docs-dark .docs-hero p,
 body.docs-dark .docs-section p,
-body.docs-dark .docs-section li{ color:#C7CCF0; }
-body.docs-dark .docs-section a:not(.btn){ color:#AEB9FF; }
+body.docs-dark .docs-section li{ color:#CDD2F0; }
+body.docs-dark .docs-section p strong{ color:#CDD2F0; } /* bug corrige (10 aout) : cette regle de base (color:var(--ink), tres sombre) l'emportait sur l'heritage du <p> parent -- seuls les <strong> directement enfants d'un <p> etaient touches, jamais ceux des <li> */
+body.docs-dark .docs-section a:not(.btn){ color:#CDD2F0; font-weight:700; } /* deja en gras par defaut (.docs-section a) ; le poids fait deja la distinction visuelle du lien, la couleur n'a plus a s'en charger seule */
 body.docs-dark .docs-section{ border-bottom-color:rgba(255,255,255,0.14); }
 
 body.docs-dark .callout-info{ background:rgba(255,255,255,0.06); border-color:rgba(174,185,255,0.35); color:#E4E7FF; }
-body.docs-dark .callout-info .callout-icon{ color:#AEB9FF; }
+body.docs-dark .callout-info .callout-icon{ color:#AEB9FF; } /* icone, pas du texte : seuil WCAG non-text (3:1) deja depasse, pas 4.5:1 */
 body.docs-dark .callout-warning{ background:rgba(255,255,255,0.06); border-color:rgba(255,180,160,0.35); color:#E4E7FF; }
-body.docs-dark .callout-warning .callout-icon{ color:#FFB4A0; }
+body.docs-dark .callout-warning .callout-icon{ color:#FFB4A0; } /* icone, meme regle */
 
-/* Sidebar gauche (sommaire + recherche) et TOC droite (docs-toc.js) */
-body.docs-dark .docs-sidebar-group{ color:#9BA3DE; }
+/* Sidebar gauche (sommaire + recherche). Le panneau "Sur cette page" a
+   ete retire le 10 aout (docs-toc.js ne le genere plus) : doublon quasi
+   total de cette meme sidebar sur une page qui n'a jamais ete paginee.
+   Le scrollspy qui anime .active ici est toujours actif, juste plus
+   couple a un panneau de droite pour exister. */
+body.docs-dark .docs-sidebar-group{ color:#CDD2F0; }
+body.docs-dark .docs-sidebar a{ color:#CDD2F0; }
+body.docs-dark .docs-sidebar a:hover{ color:#F5F6FF; background:rgba(255,255,255,0.06); }
+/* .docs-sidebar a.active garde son style de base (fond clair + texte
+   fonce, var(--blue-tint)/var(--blue-deep)) : une pastille autonome dont
+   le contraste interne ne depend jamais du fond de page environnant --
+   deja verifiee lisible partout, aucun changement necessaire. */
 body.docs-dark .docs-page-search input{
   background:rgba(255,255,255,0.08); color:#F5F6FF; border-color:rgba(255,255,255,0.2);
 }
-body.docs-dark .docs-page-search input::placeholder{ color:#9BA3DE; }
-body.docs-dark .docs-toc{ border-left-color:rgba(255,255,255,0.14); }
-body.docs-dark .docs-toc-titre{ color:#9BA3DE; }
-body.docs-dark .docs-toc a{ color:#9BA3DE; }
-body.docs-dark .docs-toc a:hover{ color:#F5F6FF; }
-body.docs-dark .docs-toc a.active{ color:#F5F6FF; border-left-color:#AEB9FF; }
+body.docs-dark .docs-page-search input::placeholder{ color:#CDD2F0; }
 
 /* Endpoints, parametres, tableaux -- les badges de methode (GET/POST/...)
    sont deja des pastilles pleines blanc-sur-couleur, autonomes, laissees
    telles quelles. */
 body.docs-dark .docs-endpoint code{ color:#F5F6FF; }
-body.docs-dark .docs-params th{ color:#9BA3DE; border-bottom-color:rgba(255,255,255,0.2); }
-body.docs-dark .docs-params td{ color:#C7CCF0; border-bottom-color:rgba(255,255,255,0.14); }
-body.docs-dark .docs-required{ color:#FFB4A0; }
-body.docs-dark .icp-table td{ border-bottom-color:rgba(255,255,255,0.14); color:#C7CCF0; }
-body.docs-dark .icp-table td:first-child{ color:#9BA3DE; }
+body.docs-dark .docs-params th{ color:#CDD2F0; border-bottom-color:rgba(255,255,255,0.2); }
+body.docs-dark .docs-params td{ color:#CDD2F0; border-bottom-color:rgba(255,255,255,0.14); }
+body.docs-dark .docs-required{ color:#FFCEC1; } /* texte reel ("REQUIS"), pas une icone : #FFB4A0 (3.97:1) ne suffisait pas pour du texte, #FFCEC1 (4.8:1) si */
+body.docs-dark .icp-table td{ border-bottom-color:rgba(255,255,255,0.14); color:#CDD2F0; }
+body.docs-dark .icp-table td:first-child{ color:#CDD2F0; }
 body.docs-dark .table-scroll{
   background:
     linear-gradient(to right, #101B4D 30%, rgba(16,27,77,0)) left / 44px 100% no-repeat,
@@ -2426,7 +2418,7 @@ body.docs-dark .table-scroll{
 body.docs-dark footer{ border-top-color:rgba(255,255,255,0.14); }
 body.docs-dark .foot-legal,
 body.docs-dark .foot-links a,
-body.docs-dark .foot-social-label{ color:#9BA3DE; }
+body.docs-dark .foot-social-label{ color:#CDD2F0; }
 body.docs-dark .foot-links a:hover{ color:#F5F6FF; }
 
 /* Exemple interactif "Demarrage rapide" (chantier UX, 9 août 2026) --
