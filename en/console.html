@@ -158,6 +158,9 @@
             <button type="button" class="console-sidebar-item" data-pane="pane-errors">Errors<span class="nav-badge" id="nav-badge-erreurs" hidden></span></button>
             <div class="console-sidebar-sublabel">Ranking</div>
             <button type="button" class="console-sidebar-item" data-pane="pane-category-views">Most-viewed products</button>
+            <button type="button" class="console-sidebar-item" data-pane="pane-related-products">Related products</button>
+            <div class="console-sidebar-sublabel">Audience</div>
+            <button type="button" class="console-sidebar-item" data-pane="pane-segmentation">Segmentation</button>
           </div>
         </div>
 
@@ -568,6 +571,78 @@
               <div id="cv-content"></div>
               <p class="console-empty" id="cv-empty" hidden>No category page views reported yet. This data needs the <code class="docs-inline-code">Heurix.trackCategoryView()</code> call from your category pages — see <a href="../docs.html#ep-category-views">the documentation</a>.</p>
             </div>
+          </div>
+
+          <div id="pane-related-products" class="console-pane" hidden>
+            <h2 class="console-pane-title">Related products</h2>
+
+            <div class="console-panel console-panel-warn">
+              <p class="console-panel-note" style="margin:0;">Products frequently bought in the <strong>same basket</strong>, from actual order counts — not a predictive model. Requires at least 5 purchases of the chosen product over the period to be reliable.</p>
+            </div>
+
+            <div class="console-panel">
+              <div class="so-searchbar">
+                <svg class="so-searchbar-icon" width="20" height="20" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+                  <g stroke="currentColor" stroke-linecap="round">
+                    <circle cx="27" cy="27" r="17" stroke-width="6"/>
+                    <path d="M19 21h16M19 27h16M19 33h16" stroke-width="4"/>
+                    <path d="M40 40 L54 54" stroke-width="7"/>
+                  </g>
+                </svg>
+                <input type="text" id="rp-search" placeholder="Search for a product by name or reference…" aria-label="Search for a product">
+              </div>
+              <div id="rp-search-results"></div>
+            </div>
+
+            <div class="console-panel" id="rp-result-panel" hidden>
+              <div class="catalog-card-row" style="margin-bottom:14px; align-items:flex-start;">
+                <div style="flex:1;">
+                  <div style="font-size:11px; font-weight:700; color:var(--ink-muted); text-transform:uppercase; letter-spacing:.03em; margin-bottom:4px;">Chosen product</div>
+                  <div id="rp-chosen-product"></div>
+                </div>
+                <div style="text-align:right;">
+                  <div style="font-size:11px; font-weight:700; color:var(--ink-muted); text-transform:uppercase; letter-spacing:.03em; margin-bottom:4px;">Purchases (period)</div>
+                  <strong style="font-size:20px; color:var(--blue-deep);" id="rp-target-purchases">–</strong>
+                </div>
+              </div>
+              <div class="table-scroll"><table class="console-table" id="rp-related-table">
+                <thead><tr><th>Related product</th><th>Bought together</th><th>Of observed baskets</th></tr></thead>
+                <tbody></tbody>
+              </table></div>
+              <p class="console-empty" id="rp-related-empty" hidden>Not enough purchases on this product for a reliable signal (minimum 5 over the period).</p>
+            </div>
+          </div>
+
+          <div id="pane-segmentation" class="console-pane" hidden>
+            <h2 class="console-pane-title">Segmentation</h2>
+
+            <div class="console-panel console-panel-warn">
+              <p class="console-panel-note" style="margin:0;">Visitor breakdown by intent, inferred from their search style (precision) and click-through rate — never from their identity: Heurix only knows a pseudonymous identifier, never a name or email. Default thresholds haven't been calibrated against real conversion data yet.</p>
+            </div>
+
+            <div class="console-stats">
+              <div class="console-stat">
+                <div class="icn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+                <div class="console-stat-num" id="seg-stat-total">–</div><span class="kpi-tendance" id="trend-seg-total" hidden></span>
+                <div class="console-stat-label">Active visitors</div>
+              </div>
+              <div class="console-stat">
+                <div class="icn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><circle cx="12" cy="12" r="10"/></svg></div>
+                <div class="console-stat-num" id="seg-stat-fort">–</div><span class="kpi-tendance" id="trend-seg-fort" hidden></span>
+                <div class="console-stat-label">Intent</div>
+              </div>
+              <div class="console-stat">
+                <div class="icn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="8" y1="12" x2="16" y2="12"/></svg></div>
+                <div class="console-stat-num" id="seg-stat-moyen">–</div><span class="kpi-tendance" id="trend-seg-moyen" hidden></span>
+                <div class="console-stat-label">Consideration</div>
+              </div>
+              <div class="console-stat">
+                <div class="icn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+                <div class="console-stat-num" id="seg-stat-faible">–</div><span class="kpi-tendance" id="trend-seg-faible" hidden></span>
+                <div class="console-stat-label">Discovery</div>
+              </div>
+            </div>
+            <p class="console-empty" id="seg-empty" hidden>No visitors identified over this period — requires the <a href="docs.html#ep-events">Heurix Tracker</a> installed on your site.</p>
           </div>
 
           <div id="pane-guides" class="console-pane" hidden>
