@@ -115,10 +115,10 @@
     <p class="post-lede">A French SIRET number has 14 digits, a SIREN has 9, and both identify the same company. You need to know which one you're searching for.</p>
 
     <div class="post-body">
-      <h2>The problem, specifically in this industry</h2>
+      <h2>Exact match, never approximate</h2>
       <p>In a ledger of accounting records or a business directory, the user is looking for an exact identifier — not something approximate. A SIRET typed with spaces, an IBAN copied from a bank slip, a VAT number: each has its own structure, and an approximate match has no value here. You want the right invoice, not one that merely resembles it.</p>
 
-      <h2>What Heurix understands in your references</h2>
+      <h2>Each identifier, its own structure</h2>
       <p>The <code class="docs-inline-code">finance</code> rule pack activates when you pick this industry, at indexing time. It produces these annotations, each becoming a usable filter:</p>
       <div class="table-scroll"><table class="docs-params">
         <tr><th>Annotation</th><th>What it isolates</th></tr>
@@ -129,7 +129,7 @@
         <tr><td><code class="docs-inline-code">DOC_FACTURE</code></td><td>the document type</td></tr>
       </table></div>
 
-      <h2>On real references</h2>
+      <h2>Three accounting records, as they are</h2>
       <div class="table-scroll"><table class="docs-params">
         <tr><th>Indexed reference</th><th>What the engine extracts</th></tr>
         <tr><td class="mono">Invoice SIRET 552 100 554 00021</td><td><code class="docs-inline-code">SIRET_55210055400021 · DOC_FACTURE</code></td></tr>
@@ -137,14 +137,14 @@
         <tr><td class="mono">Transfer FR76 3000 6000 0112 3456 7890 189</td><td><code class="docs-inline-code">IBAN_fr7630006000011234567890189</code></td></tr>
       </table></div>
 
-      <h2>The trap a generalist engine falls into</h2>
+      <h2>Two spellings, one same company</h2>
       <p>The same SIRET is written “552 100 554 00021” on one document and “55210055400021” in your accounting export. Both must lead to the same record — and the first 9 digits must never be mistaken for a separate SIREN.</p>
 
-      <h2>Why the pack changes the outcome</h2>
+      <h2>Reliable even when miscopied</h2>
       <p>The finance pack recognizes each identifier by its own structure, regardless of formatting. A generalist engine would treat these numbers as plain text: exact-identifier search becomes fragile there, even though it's the only use case that matters in this field.</p>
       <p class="regex-reassure">🔧 A term specific to your catalog that the pack still misses? Add your own <a href="../docs.html#ep-custom-rules">Custom Rule</a> from the console, simply describing what it should recognize — no regex required.</p>
 
-      <h2>Going further</h2>
+      <h2>Index your accounting records</h2>
       <p>The <a href="../blog/guide-mise-en-route.html">getting started guide</a> covers the full setup, from sign-up to your first indexed catalog. The <a href="../docs.html">documentation</a> details every endpoint.</p>
     </div>
 

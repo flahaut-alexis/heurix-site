@@ -113,10 +113,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <p class="post-lede">Un SIRET fait 14 chiffres, un SIREN 9, et les deux désignent la même entreprise. Il faut savoir lequel on cherche.</p>
 
     <div class="post-body">
-      <h2>Le problème, dans ce secteur précisément</h2>
+      <h2>L'exactitude, jamais l'approximation</h2>
       <p>Dans une base de pièces comptables ou un annuaire d'entreprises, l'utilisateur cherche un identifiant exact — pas quelque chose d'approchant. Un SIRET saisi avec des espaces, un IBAN recopié depuis un RIB, un numéro de TVA : chacun a sa structure, et une correspondance approximative n'a aucune valeur ici. On veut la bonne facture, pas une facture qui ressemble.</p>
 
-      <h2>Ce que Heurix comprend de vos références</h2>
+      <h2>Chaque identifiant à sa structure</h2>
       <p>Le pack de règles <code class="docs-inline-code">finance</code> s'active au choix du secteur, à l'indexation. Il produit ces annotations, qui deviennent autant de filtres exploitables :</p>
       <div class="table-scroll"><table class="docs-params">
         <tr><th>Annotation</th><th>Ce qu'elle isole</th></tr>
@@ -127,7 +127,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <tr><td><code class="docs-inline-code">DOC_FACTURE</code></td><td>le type de document</td></tr>
       </table></div>
 
-      <h2>Sur de vraies références</h2>
+      <h2>Trois pièces comptables, telles quelles</h2>
       <div class="table-scroll"><table class="docs-params">
         <tr><th>Référence indexée</th><th>Ce que le moteur en extrait</th></tr>
         <tr><td class="mono">Facture SIRET 552 100 554 00021</td><td><code class="docs-inline-code">SIRET_55210055400021 · DOC_FACTURE</code></td></tr>
@@ -135,14 +135,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <tr><td class="mono">Virement FR76 3000 6000 0112 3456 7890 189</td><td><code class="docs-inline-code">IBAN_fr7630006000011234567890189</code></td></tr>
       </table></div>
 
-      <h2>Le piège que rate un moteur généraliste</h2>
+      <h2>Deux écritures, une même entreprise</h2>
       <p>Le même SIRET s'écrit « 552 100 554 00021 » sur un document et « 55210055400021 » dans votre export comptable. Les deux doivent mener à la même pièce — et les 9 premiers chiffres ne doivent pas être pris pour un SIREN distinct.</p>
 
-      <h2>Pourquoi le pack change la donne</h2>
+      <h2>Fiable même mal recopié</h2>
       <p>Le pack finance reconnaît chaque identifiant à sa structure propre, quelle que soit la mise en forme. Un moteur généraliste, lui, traiterait ces nombres comme du texte : la recherche par identifiant exact y est fragile, alors que c'est le seul usage qui compte dans ce domaine.</p>
       <p class="regex-reassure">🔧 Un terme propre à votre catalogue échappe encore au pack ? Ajoutez votre propre <a href="../docs.html#ep-custom-rules">Custom Rule</a> depuis la console, en décrivant ce qu'elle doit reconnaître — sans écrire de regex.</p>
 
-      <h2>Pour aller plus loin</h2>
+      <h2>Indexer vos pièces comptables</h2>
       <p>Le <a href="../blog/guide-mise-en-route.html">guide de mise en route</a> couvre l'installation complète, de la souscription au premier catalogue indexé. La <a href="../docs.html">documentation</a> détaille chaque endpoint.</p>
     </div>
 

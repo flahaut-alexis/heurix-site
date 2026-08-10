@@ -113,10 +113,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <p class="post-lede">Deux éditions du même roman portent le même titre et deux ISBN différents. Vos clients cherchent parfois l'un, parfois l'autre.</p>
 
     <div class="post-body">
-      <h2>Le problème, dans ce secteur précisément</h2>
+      <h2>Un titre, quatre produits distincts</h2>
       <p>Un catalogue de librairie superpose plusieurs axes : le titre, l'auteur, le genre, le format, l'édition, la langue. Un même ouvrage existe en poche, en grand format, en collector et en audio — quatre produits, quatre prix, un seul titre. Un moteur qui indexe le titre seul les confond ; un moteur qui indexe l'ISBN seul rate la recherche par titre.</p>
 
-      <h2>Ce que Heurix comprend de vos références</h2>
+      <h2>ISBN, format et édition démêlés</h2>
       <p>Le pack de règles <code class="docs-inline-code">livres</code> s'active au choix du secteur, à l'indexation. Il produit ces annotations, qui deviennent autant de filtres exploitables :</p>
       <div class="table-scroll"><table class="docs-params">
         <tr><th>Annotation</th><th>Ce qu'elle isole</th></tr>
@@ -127,22 +127,22 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <tr><td><code class="docs-inline-code">LANG_EN</code></td><td>la langue de l'ouvrage</td></tr>
       </table></div>
 
-      <h2>Sur de vraies références</h2>
+      <h2>Trois ouvrages, tels que catalogués</h2>
       <div class="table-scroll"><table class="docs-params">
         <tr><th>Référence indexée</th><th>Ce que le moteur en extrait</th></tr>
-        <tr><td class="mono">978-2-07-041311-9 · Le Petit Prince, poche</td><td><code class="docs-inline-code">ISBN_9782070413119 · FORMAT_POCHE · GENRE_CLASSIQUE</code></td></tr>
-        <tr><td class="mono">Polar scandinave grand format collector</td><td><code class="docs-inline-code">GENRE_POLAR · FORMAT_GF · ED_COLLECTOR · COLLECTOR_GRAND_FORMAT</code></td></tr>
-        <tr><td class="mono">Essai bilingue FR/EN</td><td><code class="docs-inline-code">GENRE_ESSAI · ED_BILINGUE · LANG_FR · LANG_EN</code></td></tr>
+        <tr><td class="mono">978-2-07-041311-9 · Le Petit Prince, poche</td><td><code class="docs-inline-code">ISBN_9782070413119 · FORMAT_POCHE · GENRE_CLASSIQUE</code><span class="docs-params-plain">ISBN reconnu, édition poche, classique</span></td></tr>
+        <tr><td class="mono">Polar scandinave grand format collector</td><td><code class="docs-inline-code">GENRE_POLAR · FORMAT_GF · ED_COLLECTOR · COLLECTOR_GRAND_FORMAT</code><span class="docs-params-plain">polar, grand format, édition collector</span></td></tr>
+        <tr><td class="mono">Essai bilingue FR/EN</td><td><code class="docs-inline-code">GENRE_ESSAI · ED_BILINGUE · LANG_FR · LANG_EN</code><span class="docs-params-plain">essai, édition bilingue français-anglais</span></td></tr>
       </table></div>
 
-      <h2>Le piège que rate un moteur généraliste</h2>
+      <h2>Trois formes pour un même identifiant</h2>
       <p>Un client tape un ISBN avec les tirets, un autre sans, un troisième colle un ISBN-10 alors que vous indexez en ISBN-13. Trois formes du même identifiant, et un seul doit suffire à trouver le livre.</p>
 
-      <h2>Pourquoi le pack change la donne</h2>
+      <h2>Le même titre, la bonne édition</h2>
       <p>Le pack livres reconnaît l'ISBN quelle que soit sa ponctuation, et croise genre, format et édition — ce qui permet de proposer « le même titre en poche » plutôt qu'un résultat vide sur une édition épuisée.</p>
       <p class="regex-reassure">🔧 Un terme propre à votre catalogue échappe encore au pack ? Ajoutez votre propre <a href="../docs.html#ep-custom-rules">Custom Rule</a> depuis la console, en décrivant ce qu'elle doit reconnaître — sans écrire de regex.</p>
 
-      <h2>Pour aller plus loin</h2>
+      <h2>Indexer votre catalogue librairie</h2>
       <p>Le <a href="../blog/guide-mise-en-route.html">guide de mise en route</a> couvre l'installation complète, de la souscription au premier catalogue indexé. La <a href="../docs.html">documentation</a> détaille chaque endpoint.</p>
     </div>
 

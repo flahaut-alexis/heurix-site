@@ -115,10 +115,10 @@
     <p class="post-lede">“Wool turtleneck sweater size 38”: four pieces of information in four different vocabularies. One single query.</p>
 
     <div class="post-body">
-      <h2>The problem, specifically in this industry</h2>
+      <h2>Six attributes, no fixed order</h2>
       <p>Fashion vocabulary mixes product family, cut, material, color, size, and season — often in no fixed order and with brand-specific abbreviations. An engine that treats the phrase as a bag of words doesn't know that “UK 10” is a size and not a reference, or that “turtleneck” is a cut attribute and not a distinct product.</p>
 
-      <h2>What Heurix understands in your references</h2>
+      <h2>Size, cut and material recognized</h2>
       <p>The <code class="docs-inline-code">mode</code> rule pack activates when you pick this industry, at indexing time. It produces these annotations, each becoming a usable filter:</p>
       <div class="table-scroll"><table class="docs-params">
         <tr><th>Annotation</th><th>What it isolates</th></tr>
@@ -129,22 +129,22 @@
         <tr><td><code class="docs-inline-code">JEAN_T38_W30</code></td><td>clothing size and jean size reconciled</td></tr>
       </table></div>
 
-      <h2>On real references</h2>
+      <h2>Three items, as indexed</h2>
       <div class="table-scroll"><table class="docs-params">
         <tr><th>Indexed reference</th><th>What the engine extracts</th></tr>
-        <tr><td class="mono">Merino wool turtleneck sweater, size 38</td><td><code class="docs-inline-code">FAM_PULL · COL_ROULE · MAT_LAINE · TAILLE_38</code></td></tr>
-        <tr><td class="mono">Slim faded jeans W30 L32</td><td><code class="docs-inline-code">FAM_PANTALON · COUPE_SLIM · FINITION_DELAVE · TAILLE_30_32</code></td></tr>
-        <tr><td class="mono">Striped cotton shirt AW25</td><td><code class="docs-inline-code">FAM_CHEMISE · MOTIF_RAYURES · MAT_COTON · SAISON_AW25</code></td></tr>
+        <tr><td class="mono">Merino wool turtleneck sweater, size 38</td><td><code class="docs-inline-code">FAM_PULL · COL_ROULE · MAT_LAINE · TAILLE_38</code><span class="docs-params-plain">turtleneck sweater, wool, size 38</span></td></tr>
+        <tr><td class="mono">Slim faded jeans W30 L32</td><td><code class="docs-inline-code">FAM_PANTALON · COUPE_SLIM · FINITION_DELAVE · TAILLE_30_32</code><span class="docs-params-plain">slim-fit faded jeans, size 30/32</span></td></tr>
+        <tr><td class="mono">Striped cotton shirt AW25</td><td><code class="docs-inline-code">FAM_CHEMISE · MOTIF_RAYURES · MAT_COTON · SAISON_AW25</code><span class="docs-params-plain">striped cotton shirt, fall-winter 25 collection</span></td></tr>
       </table></div>
 
-      <h2>The trap a generalist engine falls into</h2>
+      <h2>Three vocabulary gaps, one customer</h2>
       <p>A customer searches “red sweater size 38”. Your listings say “burgundy”, “size UK 10”, and “knit”. Three vocabulary gaps, and an empty result on a product you have in stock.</p>
 
-      <h2>Why the pack changes the outcome</h2>
+      <h2>Your brand's vocabulary, already known</h2>
       <p>The fashion pack handles these vocabulary equivalences natively, and you add your own — house color names, collection abbreviations — via Custom Rules, with no regex to write.</p>
       <p class="regex-reassure">🔧 A term specific to your catalog that the pack still misses? Add your own <a href="../docs.html#ep-custom-rules">Custom Rule</a> from the console, simply describing what it should recognize — no regex required.</p>
 
-      <h2>Going further</h2>
+      <h2>Index your fashion catalog</h2>
       <p>The <a href="../blog/guide-mise-en-route.html">getting started guide</a> covers the full setup, from sign-up to your first indexed catalog. The <a href="../docs.html">documentation</a> details every endpoint.</p>
     </div>
 

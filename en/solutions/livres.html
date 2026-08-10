@@ -115,10 +115,10 @@
     <p class="post-lede">Two editions of the same novel share the same title and have two different ISBNs. Your customers sometimes search for one, sometimes the other.</p>
 
     <div class="post-body">
-      <h2>The problem, specifically in this industry</h2>
+      <h2>One title, four distinct products</h2>
       <p>A bookstore catalog stacks several axes: title, author, genre, format, edition, language. The same work exists in paperback, hardcover, collector's, and audio — four products, four prices, one title. An engine that indexes the title alone confuses them; one that indexes only the ISBN misses title search entirely.</p>
 
-      <h2>What Heurix understands in your references</h2>
+      <h2>ISBN, format and edition untangled</h2>
       <p>The <code class="docs-inline-code">livres</code> rule pack activates when you pick this industry, at indexing time. It produces these annotations, each becoming a usable filter:</p>
       <div class="table-scroll"><table class="docs-params">
         <tr><th>Annotation</th><th>What it isolates</th></tr>
@@ -129,22 +129,22 @@
         <tr><td><code class="docs-inline-code">LANG_EN</code></td><td>the book's language</td></tr>
       </table></div>
 
-      <h2>On real references</h2>
+      <h2>Three books, as cataloged</h2>
       <div class="table-scroll"><table class="docs-params">
         <tr><th>Indexed reference</th><th>What the engine extracts</th></tr>
-        <tr><td class="mono">978-2-07-041311-9 · The Little Prince, paperback</td><td><code class="docs-inline-code">ISBN_9782070413119 · FORMAT_POCHE · GENRE_CLASSIQUE</code></td></tr>
-        <tr><td class="mono">Scandinavian noir, hardcover collector's edition</td><td><code class="docs-inline-code">GENRE_POLAR · FORMAT_GF · ED_COLLECTOR · COLLECTOR_GRAND_FORMAT</code></td></tr>
-        <tr><td class="mono">Bilingual essay FR/EN</td><td><code class="docs-inline-code">GENRE_ESSAI · ED_BILINGUE · LANG_FR · LANG_EN</code></td></tr>
+        <tr><td class="mono">978-2-07-041311-9 · The Little Prince, paperback</td><td><code class="docs-inline-code">ISBN_9782070413119 · FORMAT_POCHE · GENRE_CLASSIQUE</code><span class="docs-params-plain">ISBN recognized, paperback, classic</span></td></tr>
+        <tr><td class="mono">Scandinavian noir, hardcover collector's edition</td><td><code class="docs-inline-code">GENRE_POLAR · FORMAT_GF · ED_COLLECTOR · COLLECTOR_GRAND_FORMAT</code><span class="docs-params-plain">crime novel, hardcover, collector's edition</span></td></tr>
+        <tr><td class="mono">Bilingual essay FR/EN</td><td><code class="docs-inline-code">GENRE_ESSAI · ED_BILINGUE · LANG_FR · LANG_EN</code><span class="docs-params-plain">essay, bilingual French-English edition</span></td></tr>
       </table></div>
 
-      <h2>The trap a generalist engine falls into</h2>
+      <h2>Three forms of one identifier</h2>
       <p>One customer types an ISBN with hyphens, another without, a third pastes an ISBN-10 while you index in ISBN-13. Three forms of the same identifier, and any one of them should be enough to find the book.</p>
 
-      <h2>Why the pack changes the outcome</h2>
+      <h2>The same title, the right edition</h2>
       <p>The books pack recognizes the ISBN regardless of punctuation, and cross-references genre, format, and edition — letting you offer “the same title in paperback” instead of an empty result on an out-of-print edition.</p>
       <p class="regex-reassure">🔧 A term specific to your catalog that the pack still misses? Add your own <a href="../docs.html#ep-custom-rules">Custom Rule</a> from the console, simply describing what it should recognize — no regex required.</p>
 
-      <h2>Going further</h2>
+      <h2>Index your bookstore catalog</h2>
       <p>The <a href="../blog/guide-mise-en-route.html">getting started guide</a> covers the full setup, from sign-up to your first indexed catalog. The <a href="../docs.html">documentation</a> details every endpoint.</p>
     </div>
 

@@ -113,10 +113,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <p class="post-lede">Un chargeur 65W et un 45W se ressemblent dans le texte. Pas dans l'usage.</p>
 
     <div class="post-body">
-      <h2>Le problème, dans ce secteur précisément</h2>
+      <h2>Une unité confondue avec une autre</h2>
       <p>Les caractéristiques électroniques sont des grandeurs chiffrées avec unité : watts, heures d'autonomie, volts, gigaoctets, indice de protection. Un moteur textuel traite « 65W » comme une chaîne, donc « 65W » et « 45W » lui paraissent voisins. Pour l'acheteur, l'un recharge son ordinateur et l'autre non.</p>
 
-      <h2>Ce que Heurix comprend de vos références</h2>
+      <h2>Puissance, connectique et capacité lues</h2>
       <p>Le pack de règles <code class="docs-inline-code">electronique</code> s'active au choix du secteur, à l'indexation. Il produit ces annotations, qui deviennent autant de filtres exploitables :</p>
       <div class="table-scroll"><table class="docs-params">
         <tr><th>Annotation</th><th>Ce qu'elle isole</th></tr>
@@ -127,7 +127,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <tr><td><code class="docs-inline-code">CAPACITE_512GO</code></td><td>la capacité de stockage</td></tr>
       </table></div>
 
-      <h2>Sur de vraies références</h2>
+      <h2>Trois produits, fiche telle quelle</h2>
       <div class="table-scroll"><table class="docs-params">
         <tr><th>Référence indexée</th><th>Ce que le moteur en extrait</th></tr>
         <tr><td class="mono">Chargeur USB-C 65W GaN</td><td><code class="docs-inline-code">CHARGEUR_65W · CONN_USBC · FAM_CHARGEUR</code></td></tr>
@@ -135,14 +135,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <tr><td class="mono">Câble HDMI 2.1 - 2m</td><td><code class="docs-inline-code">CONN_HDMI · FAM_CABLE</code></td></tr>
       </table></div>
 
-      <h2>Le piège que rate un moteur généraliste</h2>
+      <h2>Quatre écritures d'un même connecteur</h2>
       <p>« USB C », « USB-C », « Type-C » et « USBC » désignent le même connecteur. Un client qui tape l'une des quatre formes doit trouver l'ensemble de votre gamme, pas le quart.</p>
 
-      <h2>Pourquoi le pack change la donne</h2>
+      <h2>Un filtre par grandeur, pas un mot</h2>
       <p>Le pack électronique reconnaît les unités et les variantes d'écriture des connectiques dès l'indexation. Il permet aussi de filtrer par grandeur — « chargeurs de plus de 60W » — ce qu'un index purement textuel ne sait pas faire.</p>
       <p class="regex-reassure">🔧 Un terme propre à votre catalogue échappe encore au pack ? Ajoutez votre propre <a href="../docs.html#ep-custom-rules">Custom Rule</a> depuis la console, en décrivant ce qu'elle doit reconnaître — sans écrire de regex.</p>
 
-      <h2>Pour aller plus loin</h2>
+      <h2>Indexer votre catalogue électronique</h2>
       <p>Le <a href="../blog/guide-mise-en-route.html">guide de mise en route</a> couvre l'installation complète, de la souscription au premier catalogue indexé. La <a href="../docs.html">documentation</a> détaille chaque endpoint.</p>
     </div>
 

@@ -113,10 +113,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <p class="post-lede">Un roulement 6204-2RS et un 6204-ZZ portent le même numéro. Ils ne sont pas interchangeables.</p>
 
     <div class="post-body">
-      <h2>Le problème, dans ce secteur précisément</h2>
+      <h2>Le suffixe qui change la pièce</h2>
       <p>Dans les pièces techniques, le suffixe porte l'essentiel : le type d'étanchéité, la classe de pression, le diamètre nominal. Un moteur textuel voit une variation de deux caractères et considère les références équivalentes. Votre acheteur, lui, monte la mauvaise pièce sur une machine en production.</p>
 
-      <h2>Ce que Heurix comprend de vos références</h2>
+      <h2>Numéro de pièce et variante technique</h2>
       <p>Le pack de règles <code class="docs-inline-code">industrie</code> s'active au choix du secteur, à l'indexation. Il produit ces annotations, qui deviennent autant de filtres exploitables :</p>
       <div class="table-scroll"><table class="docs-params">
         <tr><th>Annotation</th><th>Ce qu'elle isole</th></tr>
@@ -127,7 +127,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <tr><td><code class="docs-inline-code">DN50</code></td><td>le diamètre nominal</td></tr>
       </table></div>
 
-      <h2>Sur de vraies références</h2>
+      <h2>Trois pièces, prises telles quelles</h2>
       <div class="table-scroll"><table class="docs-params">
         <tr><th>Référence indexée</th><th>Ce que le moteur en extrait</th></tr>
         <tr><td class="mono">Roulement 6204-2RS SKF</td><td><code class="docs-inline-code">RLT_6204 · ETANCH_2RS · MARQUE_SKF · FAM_ROULEMENT</code></td></tr>
@@ -135,14 +135,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <tr><td class="mono">Raccord laiton PN16 DN50</td><td><code class="docs-inline-code">PN16 · DN50 · FAM_RACCORD</code></td></tr>
       </table></div>
 
-      <h2>Le piège que rate un moteur généraliste</h2>
+      <h2>Quatre écritures, une seule pièce</h2>
       <p>La même pièce se commande sous quatre écritures : « 6204 2RS », « 6204-2RS », « 6204RS », « 6204 2 RS ». Sans reconnaissance de structure, chaque écriture donne un résultat différent — et votre catalogue paraît incomplet alors qu'il ne l'est pas.</p>
 
-      <h2>Pourquoi le pack change la donne</h2>
+      <h2>Le numéro séparé de la variante</h2>
       <p>Le pack industrie sépare le numéro de la variante d'étanchéité, ce qui permet à la fois de retrouver la référence exacte et de proposer les variantes voisines en connaissance de cause. Un moteur généraliste ne distingue pas les deux : il les mélange ou les rate.</p>
       <p class="regex-reassure">🔧 Un terme propre à votre catalogue échappe encore au pack ? Ajoutez votre propre <a href="../docs.html#ep-custom-rules">Custom Rule</a> depuis la console, en décrivant ce qu'elle doit reconnaître — sans écrire de regex.</p>
 
-      <h2>Pour aller plus loin</h2>
+      <h2>Indexer votre catalogue technique</h2>
       <p>Le <a href="../blog/guide-mise-en-route.html">guide de mise en route</a> couvre l'installation complète, de la souscription au premier catalogue indexé. La <a href="../docs.html">documentation</a> détaille chaque endpoint.</p>
     </div>
 

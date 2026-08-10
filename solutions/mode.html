@@ -113,10 +113,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <p class="post-lede">« Pull col roulé laine T38 » : quatre informations dans quatre vocabulaires différents. Une seule requête.</p>
 
     <div class="post-body">
-      <h2>Le problème, dans ce secteur précisément</h2>
+      <h2>Six attributs, aucun ordre fixe</h2>
       <p>Le vocabulaire de la mode mélange famille de produit, coupe, matière, couleur, taille et saison — souvent sans ordre fixe et avec des abréviations propres à chaque marque. Un moteur qui traite la phrase comme un sac de mots ne sait pas que « T38 » est une taille et non une référence, ni que « col roulé » est un attribut de coupe et pas un produit distinct.</p>
 
-      <h2>Ce que Heurix comprend de vos références</h2>
+      <h2>Taille, coupe et matière reconnues</h2>
       <p>Le pack de règles <code class="docs-inline-code">mode</code> s'active au choix du secteur, à l'indexation. Il produit ces annotations, qui deviennent autant de filtres exploitables :</p>
       <div class="table-scroll"><table class="docs-params">
         <tr><th>Annotation</th><th>Ce qu'elle isole</th></tr>
@@ -127,22 +127,22 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <tr><td><code class="docs-inline-code">JEAN_T38_W30</code></td><td>taille de confection et taille jean rapprochées</td></tr>
       </table></div>
 
-      <h2>Sur de vraies références</h2>
+      <h2>Trois articles, tels qu'indexés</h2>
       <div class="table-scroll"><table class="docs-params">
         <tr><th>Référence indexée</th><th>Ce que le moteur en extrait</th></tr>
-        <tr><td class="mono">Pull col roulé laine mérinos T38</td><td><code class="docs-inline-code">FAM_PULL · COL_ROULE · MAT_LAINE · TAILLE_38</code></td></tr>
-        <tr><td class="mono">Jean slim délavé W30 L32</td><td><code class="docs-inline-code">FAM_PANTALON · COUPE_SLIM · FINITION_DELAVE · TAILLE_30_32</code></td></tr>
-        <tr><td class="mono">Chemise rayures coton AW25</td><td><code class="docs-inline-code">FAM_CHEMISE · MOTIF_RAYURES · MAT_COTON · SAISON_AW25</code></td></tr>
+        <tr><td class="mono">Pull col roulé laine mérinos T38</td><td><code class="docs-inline-code">FAM_PULL · COL_ROULE · MAT_LAINE · TAILLE_38</code><span class="docs-params-plain">pull à col roulé, en laine, taille 38</span></td></tr>
+        <tr><td class="mono">Jean slim délavé W30 L32</td><td><code class="docs-inline-code">FAM_PANTALON · COUPE_SLIM · FINITION_DELAVE · TAILLE_30_32</code><span class="docs-params-plain">jean coupe slim délavée, taille 30/32</span></td></tr>
+        <tr><td class="mono">Chemise rayures coton AW25</td><td><code class="docs-inline-code">FAM_CHEMISE · MOTIF_RAYURES · MAT_COTON · SAISON_AW25</code><span class="docs-params-plain">chemise à rayures en coton, collection automne-hiver 25</span></td></tr>
       </table></div>
 
-      <h2>Le piège que rate un moteur généraliste</h2>
+      <h2>Trois écarts de vocabulaire, un client</h2>
       <p>Une cliente cherche « pull rouge 38 ». Vos fiches disent « bordeaux », « T38 » et « maille ». Trois écarts de vocabulaire, et un résultat vide sur un produit que vous avez en stock.</p>
 
-      <h2>Pourquoi le pack change la donne</h2>
+      <h2>Le vocabulaire de marque déjà connu</h2>
       <p>Le pack mode traite ces équivalences de vocabulaire nativement, et vous ajoutez les vôtres — vos noms de couleurs maison, vos abréviations de collection — via les Custom Rules, sans écrire de regex.</p>
       <p class="regex-reassure">🔧 Un terme propre à votre catalogue échappe encore au pack ? Ajoutez votre propre <a href="../docs.html#ep-custom-rules">Custom Rule</a> depuis la console, en décrivant ce qu'elle doit reconnaître — sans écrire de regex.</p>
 
-      <h2>Pour aller plus loin</h2>
+      <h2>Indexer votre catalogue mode</h2>
       <p>Le <a href="../blog/guide-mise-en-route.html">guide de mise en route</a> couvre l'installation complète, de la souscription au premier catalogue indexé. La <a href="../docs.html">documentation</a> détaille chaque endpoint.</p>
     </div>
 

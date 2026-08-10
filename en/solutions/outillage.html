@@ -115,10 +115,10 @@
     <p class="post-lede">An M8x20 screw and an M8x25 screw have nothing in common for your customer. They look nearly identical to a generalist search engine.</p>
 
     <div class="post-body">
-      <h2>The problem, specifically in this industry</h2>
+      <h2>Two references, one character apart</h2>
       <p>Your references encode a dimension, a material, a standard, and a head type into one compact string: “M8 x 20 - Stainless A2, DIN 933.” An engine that compares characters judges “M8x20” very close to “M8x25” — two products no one confuses on the shop floor. The error doesn't show up in your search stats: it shows up as a return.</p>
 
-      <h2>What Heurix understands in your references</h2>
+      <h2>Dimensions, material and standard isolated</h2>
       <p>The <code class="docs-inline-code">outillage</code> rule pack activates when you pick this industry, at indexing time. It produces these annotations, each becoming a usable filter:</p>
       <div class="table-scroll"><table class="docs-params">
         <tr><th>Annotation</th><th>What it isolates</th></tr>
@@ -129,7 +129,7 @@
         <tr><td><code class="docs-inline-code">NORME_DIN933</code></td><td>the standard, recognized with or without spaces</td></tr>
       </table></div>
 
-      <h2>On real references</h2>
+      <h2>Three real references, broken down</h2>
       <div class="table-scroll"><table class="docs-params">
         <tr><th>Indexed reference</th><th>What the engine extracts</th></tr>
         <tr><td class="mono">M8 x 20 - Stainless A2</td><td><code class="docs-inline-code">DIAM_M8 · LONG_20 · MAT_INOX · FAM_VIS</code></td></tr>
@@ -137,14 +137,14 @@
         <tr><td class="mono">Hex nut M10 brass</td><td><code class="docs-inline-code">DIAM_M10 · MAT_LAITON · TETE_HEX · FAM_ECROU</code></td></tr>
       </table></div>
 
-      <h2>The trap a generalist engine falls into</h2>
+      <h2>Three spellings, one single product</h2>
       <p>A customer types “screw m8 20 stainless” with no hyphen or “x”. Another types “M8X20” in solid capitals. A third searches “DIN933” with no space. All three mean the same product — and an unprepared engine returns three different results, or none at all.</p>
 
-      <h2>Why the pack changes the outcome</h2>
+      <h2>Recognized from the first import</h2>
       <p>The hardware pack recognizes these variants from the very first import, with no rule for you to write. On a generalist engine, you'd have to define the pattern for each reference family yourself, test it, and maintain it with every new product line.</p>
       <p class="regex-reassure">🔧 A term specific to your catalog that the pack still misses? Add your own <a href="../docs.html#ep-custom-rules">Custom Rule</a> from the console, simply describing what it should recognize — no regex required.</p>
 
-      <h2>Going further</h2>
+      <h2>Index your tools catalog</h2>
       <p>The <a href="../blog/guide-mise-en-route.html">getting started guide</a> covers the full setup, from sign-up to your first indexed catalog. The <a href="../docs.html">documentation</a> details every endpoint.</p>
     </div>
 
