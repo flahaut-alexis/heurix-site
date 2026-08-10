@@ -116,9 +116,9 @@
 
     <div class="post-body">
       <h2>Exact match, never approximate</h2>
-      <p>In a ledger of accounting records or a business directory, the user is looking for an exact identifier — not something approximate. A SIRET typed with spaces, an IBAN copied from a bank slip, a VAT number: each has its own structure, and an approximate match has no value here. You want the right invoice, not one that merely resembles it.</p>
+      <p>In a ledger of accounting records or a business directory, the user is looking for an exact identifier — not something approximate. SIRET, IBAN, VAT number: each has its own structure (<a href="#annotations">the detail of each identifier</a>). You want the right invoice, not one that merely resembles it.</p>
 
-      <h2>Each identifier, its own structure</h2>
+      <h2 id="annotations">Each identifier, its own structure</h2>
       <p>The <code class="docs-inline-code">finance</code> rule pack activates when you pick this industry, at indexing time. It produces these annotations, each becoming a usable filter:</p>
       <div class="table-scroll"><table class="docs-params">
         <tr><th>Annotation</th><th>What it isolates</th></tr>
@@ -141,7 +141,7 @@
       <p>The same SIRET is written “552 100 554 00021” on one document and “55210055400021” in your accounting export. Both must lead to the same record — and the first 9 digits must never be mistaken for a separate SIREN.</p>
 
       <h2>Reliable even when miscopied</h2>
-      <p>The finance pack recognizes each identifier by its own structure, regardless of formatting. A generalist engine would treat these numbers as plain text: exact-identifier search becomes fragile there, even though it's the only use case that matters in this field.</p>
+      <p>The finance pack recognizes each identifier by its own structure, regardless of formatting. A generalist engine would treat these numbers as plain text, even though exact-identifier search is the only use case that matters in this field.</p>
       <p class="regex-reassure">🧾 A term specific to your catalog that the pack still misses (an internal document type, for example)? Add your own <a href="../docs.html#ep-custom-rules">Custom Rule</a> from the console, simply describing what it should recognize — no regex required.</p>
 
       <h2>Index your accounting records</h2>

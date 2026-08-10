@@ -114,9 +114,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     <div class="post-body">
       <h2>Deux références à un caractère près</h2>
-      <p>Vos références encodent des dimensions, une matière, une norme et un type de tête dans une chaîne compacte : « M8 x 20 - Inox A2, DIN 933 ». Un moteur qui compare des caractères juge « M8x20 » très proche de « M8x25 » — deux produits que personne ne confond en atelier. L'erreur ne se voit pas dans les statistiques de recherche : elle se voit au retour de marchandise.</p>
+      <p>Vos références encodent dimension, matière, norme et type de tête en une seule chaîne : « M8 x 20 - Inox A2, DIN 933 » (<a href="#annotations">le détail de chaque attribut</a>). Pour un moteur textuel, « M8x20 » et « M8x25 » sont presque identiques — deux produits que personne ne confond en atelier. L'erreur ne se voit pas dans les statistiques de recherche : elle se voit au retour de marchandise.</p>
 
-      <h2>Dimensions, matière et norme isolées</h2>
+      <h2 id="annotations">Dimensions, matière et norme isolées</h2>
       <p>Le pack de règles <code class="docs-inline-code">outillage</code> s'active au choix du secteur, à l'indexation. Il produit ces annotations, qui deviennent autant de filtres exploitables :</p>
       <div class="table-scroll"><table class="docs-params">
         <tr><th>Annotation</th><th>Ce qu'elle isole</th></tr>
@@ -139,7 +139,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <p>Un client tape « vis m8 20 inox » sans tiret ni « x ». Un autre tape « M8X20 » en majuscules collées. Un troisième cherche « DIN933 » sans espace. Les trois désignent le même produit — et un moteur non préparé en trouve trois résultats différents, voire aucun.</p>
 
       <h2>Reconnu dès le premier import</h2>
-      <p>Le pack outillage reconnaît ces variantes dès le premier import, sans que vous écriviez une règle. Sur un moteur généraliste, il faudrait définir vous-même le motif de chaque famille de référence, le tester, et le maintenir à chaque nouvelle gamme.</p>
+      <p>Le pack outillage reconnaît ces variantes dès le premier import, sans configuration de votre part. Un moteur généraliste exigerait d'écrire et de maintenir cette logique vous-même, gamme après gamme.</p>
       <p class="regex-reassure">🔧 Un terme propre à votre catalogue échappe encore au pack (une référence fournisseur non standard, par exemple) ? Ajoutez votre propre <a href="../docs.html#ep-custom-rules">Custom Rule</a> depuis la console, en décrivant ce qu'elle doit reconnaître — sans écrire de regex.</p>
 
       <h2>Indexer votre catalogue outillage</h2>

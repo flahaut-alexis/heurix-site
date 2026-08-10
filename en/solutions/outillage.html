@@ -116,9 +116,9 @@
 
     <div class="post-body">
       <h2>Two references, one character apart</h2>
-      <p>Your references encode a dimension, a material, a standard, and a head type into one compact string: “M8 x 20 - Stainless A2, DIN 933.” An engine that compares characters judges “M8x20” very close to “M8x25” — two products no one confuses on the shop floor. The error doesn't show up in your search stats: it shows up as a return.</p>
+      <p>Your references encode dimension, material, standard, and head type into one compact string: “M8 x 20 - Stainless A2, DIN 933” (<a href="#annotations">the detail of each attribute</a>). For a text-matching engine, “M8x20” and “M8x25” are nearly identical — two products no one confuses on the shop floor. The error doesn't show up in your search stats: it shows up as a return.</p>
 
-      <h2>Dimensions, material and standard isolated</h2>
+      <h2 id="annotations">Dimensions, material and standard isolated</h2>
       <p>The <code class="docs-inline-code">outillage</code> rule pack activates when you pick this industry, at indexing time. It produces these annotations, each becoming a usable filter:</p>
       <div class="table-scroll"><table class="docs-params">
         <tr><th>Annotation</th><th>What it isolates</th></tr>
@@ -141,7 +141,7 @@
       <p>A customer types “screw m8 20 stainless” with no hyphen or “x”. Another types “M8X20” in solid capitals. A third searches “DIN933” with no space. All three mean the same product — and an unprepared engine returns three different results, or none at all.</p>
 
       <h2>Recognized from the first import</h2>
-      <p>The hardware pack recognizes these variants from the very first import, with no rule for you to write. On a generalist engine, you'd have to define the pattern for each reference family yourself, test it, and maintain it with every new product line.</p>
+      <p>The hardware pack recognizes these variants from the very first import, with no configuration on your part. A generalist engine would require you to write and maintain this logic yourself, product line after product line.</p>
       <p class="regex-reassure">🔧 A term specific to your catalog that the pack still misses (a non-standard supplier reference, for example)? Add your own <a href="../docs.html#ep-custom-rules">Custom Rule</a> from the console, simply describing what it should recognize — no regex required.</p>
 
       <h2>Index your tools catalog</h2>

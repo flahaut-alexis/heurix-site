@@ -116,9 +116,9 @@
 
     <div class="post-body">
       <h2>Six attributes, no fixed order</h2>
-      <p>Fashion vocabulary mixes product family, cut, material, color, size, and season — often in no fixed order and with brand-specific abbreviations. An engine that treats the phrase as a bag of words doesn't know that “UK 10” is a size and not a reference, or that “turtleneck” is a cut attribute and not a distinct product.</p>
+      <p>Fashion vocabulary mixes product family, cut, material, color, size, and season (<a href="#annotations">the detail of each attribute</a>), often in no fixed order. An engine that treats the phrase as a bag of words doesn't know that “UK 10” is a size, not a reference — or that “turtleneck” is a cut, not a distinct product.</p>
 
-      <h2>Size, cut and material recognized</h2>
+      <h2 id="annotations">Size, cut and material recognized</h2>
       <p>The <code class="docs-inline-code">mode</code> rule pack activates when you pick this industry, at indexing time. It produces these annotations, each becoming a usable filter:</p>
       <div class="table-scroll"><table class="docs-params">
         <tr><th>Annotation</th><th>What it isolates</th></tr>
@@ -141,7 +141,7 @@
       <p>A customer searches “red sweater size 38”. Your listings say “burgundy”, “size UK 10”, and “knit”. Three vocabulary gaps, and an empty result on a product you have in stock.</p>
 
       <h2>Your brand's vocabulary, already known</h2>
-      <p>The fashion pack handles these vocabulary equivalences natively, and you add your own — house color names, collection abbreviations — via Custom Rules, with no regex to write.</p>
+      <p>The fashion pack handles these vocabulary equivalences natively. You add your own — house color names, collection abbreviations — via Custom Rules, with no regex to write.</p>
       <p class="regex-reassure">🧵 A term specific to your catalog that the pack still misses (an in-house collection abbreviation, for example)? Add your own <a href="../docs.html#ep-custom-rules">Custom Rule</a> from the console, simply describing what it should recognize — no regex required.</p>
 
       <h2>Index your fashion catalog</h2>

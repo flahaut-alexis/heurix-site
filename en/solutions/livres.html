@@ -116,9 +116,9 @@
 
     <div class="post-body">
       <h2>One title, four distinct products</h2>
-      <p>A bookstore catalog stacks several axes: title, author, genre, format, edition, language. The same work exists in paperback, hardcover, collector's, and audio — four products, four prices, one title. An engine that indexes the title alone confuses them; one that indexes only the ISBN misses title search entirely.</p>
+      <p>A bookstore catalog stacks several axes — title, author, genre, format, edition, language (<a href="#annotations">the detail of each attribute</a>). The same work exists in paperback, hardcover, collector's, and audio: four products, four prices, one title. Indexing just one of these axes misses half the searches.</p>
 
-      <h2>ISBN, format and edition untangled</h2>
+      <h2 id="annotations">ISBN, format and edition untangled</h2>
       <p>The <code class="docs-inline-code">livres</code> rule pack activates when you pick this industry, at indexing time. It produces these annotations, each becoming a usable filter:</p>
       <div class="table-scroll"><table class="docs-params">
         <tr><th>Annotation</th><th>What it isolates</th></tr>
@@ -141,7 +141,7 @@
       <p>One customer types an ISBN with hyphens, another without, a third pastes an ISBN-10 while you index in ISBN-13. Three forms of the same identifier, and any one of them should be enough to find the book.</p>
 
       <h2>The same title, the right edition</h2>
-      <p>The books pack recognizes the ISBN regardless of punctuation, and cross-references genre, format, and edition — letting you offer “the same title in paperback” instead of an empty result on an out-of-print edition.</p>
+      <p>The books pack recognizes the ISBN regardless of punctuation. It also cross-references genre, format, and edition, letting you offer “the same title in paperback” instead of an empty result on an out-of-print edition.</p>
       <p class="regex-reassure">🔖 A term specific to your catalog that the pack still misses (a publisher-specific collection mention, for example)? Add your own <a href="../docs.html#ep-custom-rules">Custom Rule</a> from the console, simply describing what it should recognize — no regex required.</p>
 
       <h2>Index your bookstore catalog</h2>

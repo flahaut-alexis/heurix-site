@@ -114,9 +114,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     <div class="post-body">
       <h2>L'exactitude, jamais l'approximation</h2>
-      <p>Dans une base de pièces comptables ou un annuaire d'entreprises, l'utilisateur cherche un identifiant exact — pas quelque chose d'approchant. Un SIRET saisi avec des espaces, un IBAN recopié depuis un RIB, un numéro de TVA : chacun a sa structure, et une correspondance approximative n'a aucune valeur ici. On veut la bonne facture, pas une facture qui ressemble.</p>
+      <p>Dans une base de pièces comptables ou un annuaire d'entreprises, l'utilisateur cherche un identifiant exact — pas quelque chose d'approchant. SIRET, IBAN, numéro de TVA : chacun a sa propre structure (<a href="#annotations">le détail de chaque identifiant</a>). On veut la bonne facture, pas une facture qui ressemble.</p>
 
-      <h2>Chaque identifiant à sa structure</h2>
+      <h2 id="annotations">Chaque identifiant à sa structure</h2>
       <p>Le pack de règles <code class="docs-inline-code">finance</code> s'active au choix du secteur, à l'indexation. Il produit ces annotations, qui deviennent autant de filtres exploitables :</p>
       <div class="table-scroll"><table class="docs-params">
         <tr><th>Annotation</th><th>Ce qu'elle isole</th></tr>
@@ -139,7 +139,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <p>Le même SIRET s'écrit « 552 100 554 00021 » sur un document et « 55210055400021 » dans votre export comptable. Les deux doivent mener à la même pièce — et les 9 premiers chiffres ne doivent pas être pris pour un SIREN distinct.</p>
 
       <h2>Fiable même mal recopié</h2>
-      <p>Le pack finance reconnaît chaque identifiant à sa structure propre, quelle que soit la mise en forme. Un moteur généraliste, lui, traiterait ces nombres comme du texte : la recherche par identifiant exact y est fragile, alors que c'est le seul usage qui compte dans ce domaine.</p>
+      <p>Le pack finance reconnaît chaque identifiant à sa structure propre, quelle que soit la mise en forme. Un moteur généraliste traiterait ces nombres comme du texte, alors que l'identifiant exact est le seul usage qui compte dans ce domaine.</p>
       <p class="regex-reassure">🧾 Un terme propre à votre catalogue échappe encore au pack (un type de pièce interne à votre organisation, par exemple) ? Ajoutez votre propre <a href="../docs.html#ep-custom-rules">Custom Rule</a> depuis la console, en décrivant ce qu'elle doit reconnaître — sans écrire de regex.</p>
 
       <h2>Indexer vos pièces comptables</h2>
