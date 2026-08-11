@@ -1669,6 +1669,52 @@ body.docs-dark .breadcrumb-current{ color:#F5F6FF; }
 body.docs-dark .solutions-see-also{ border-top-color:rgba(255,255,255,0.14); }
 body.docs-dark .solutions-see-also h2{ color:#F5F6FF; }
 
+/* produit.html (11 aout 2026) -- page jamais harmonisee en sombre avant
+   ce chantier, structure entierement differente des articles de blog
+   (pas de .post-body/.post-wrap : composants marketing dedies). */
+body.docs-dark #probleme h1{ color:#F5F6FF; }
+/* Filet de securite : h2 generique n'a jamais de couleur propre (herite
+   de --ink), donc invisible sur fond sombre partout ou aucune regle
+   plus specifique n'existe deja -- plus fiable que de chasser chaque
+   nouveau titre oublie un par un (pb-titre, le h2 "Notre mission", etc,
+   tous decouverts un par un avant ce filet). Verifie sur produit.html
+   et fonctionnalites.html : aucun h2 ne vit dans un composant a fond
+   clair autonome (.demo-video/.vertical-card-cta/etc.), donc sans
+   danger ici. h3 reste traite composant par composant : trop souvent
+   utilise dans de petits blocs a fond variable pour une regle
+   generique sans risque.*/
+body.docs-dark h2{ color:#F5F6FF; }
+body.docs-dark section.soft{ background:transparent; }
+body.docs-dark .mission-section{ background:transparent; }
+body.docs-dark .mission-pillar{ background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.14); }
+body.docs-dark .mission-pillar h3{ color:#F5F6FF; }
+body.docs-dark .mission-pillar p{ color:#CDD2F0; }
+
+body.docs-dark .pb-carte{ background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.14); }
+body.docs-dark .pb-carte h3{ color:#F5F6FF; }
+body.docs-dark .pb-carte p{ color:#CDD2F0; }
+body.docs-dark .pb-sortie{ color:#F5F6FF; }
+
+body.docs-dark .regex-copy h3{ color:#F5F6FF; }
+body.docs-dark .regex-copy p{ color:#CDD2F0; }
+/* .regex-copy code et .regex-reassure gardent leur fond clair propre
+   (var(--blue-tint) + texte var(--blue-deep)) -- contraste interne
+   autonome, meme raisonnement que les badges/pastilles deja traites. */
+
+body.docs-dark .vertical-card{ background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.14); }
+body.docs-dark .vertical-card h4{ color:#F5F6FF; }
+body.docs-dark .vertical-card p{ color:#CDD2F0; }
+/* .vertical-card-cta garde un fond clair distinct (var(--blue-tint)) --
+   ne doit jamais heriter du texte clair de la regle generique
+   .vertical-card ci-dessus, ce serait illisible sur son propre fond. */
+body.docs-dark .vertical-card-cta h4,
+body.docs-dark .vertical-card-cta p{ color:var(--ink); }
+body.docs-dark .vertical-card-cta p a{ color:var(--blue-deep); }
+
+body.docs-dark .why-card{ background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.14); }
+body.docs-dark .why-card h3{ color:#F5F6FF; }
+body.docs-dark .why-card p{ color:#CDD2F0; }
+
 .docs-params{
   width:100%; max-width:720px; border-collapse:collapse; margin:0 0 16px;
   font-size:13.5px;
@@ -4712,10 +4758,12 @@ body.docs-dark .post-body h2,
 body.docs-dark .post-body h3{ color:#F5F6FF; }
 body.docs-dark .docs-layout h1{ color:#F5F6FF; }
 body.docs-dark .post-wrap h1{ color:#F5F6FF; }
+body.docs-dark .section .wrap h1{ color:#F5F6FF; }
+body.docs-dark .blog-hero h1{ color:#F5F6FF; }
 body.docs-dark .guide-quiz p{ color:#CDD2F0; }
-body.docs-dark .guide-quiz strong{ color:#F5F6FF; }
 body.docs-dark .kicker,
 body.docs-dark .back-link{ color:#CDD2F0; }
+body.docs-dark .why-num{ color:#F5F6FF; }
 body.docs-dark .post-footer-cta,
 body.docs-dark .guide-quiz{
   background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.14);
@@ -4793,3 +4841,59 @@ body.docs-dark .integ-panel p{ color:#CDD2F0; }
 .solutions-see-also-grid{
   display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:14px;
 }
+
+/* Harmonisation sombre de fonctionnalites.html (11 aout 2026) -- les
+   cartes feat-card restaient sur leur fond clair d'origine, seule page
+   du menu Produit jamais passee en docs-dark jusqu'ici. Meme traitement
+   translucide que .callout/.solutions-hub-card, avec une nuance pour
+   feat-card-highlight (legerement plus opaque + bordure teintee bleue)
+   pour conserver la distinction visuelle avec les cartes normales. */
+body.docs-dark .feat-card{
+  background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.14);
+}
+body.docs-dark .feat-card-highlight{
+  background:rgba(84,104,255,0.12); border-color:rgba(84,104,255,0.4);
+}
+body.docs-dark .feat-card h3{ color:#F5F6FF; }
+body.docs-dark .feat-card p{ color:#CDD2F0; }
+body.docs-dark .feat-card a{ color:#AEB9FF; }
+body.docs-dark .feat-group-title{ color:#CDD2F0; }
+body.docs-dark .section-lede{ color:#CDD2F0; }
+
+/* Harmonisation sombre des pages d'integration -- prestashop/woocommerce/
+   shopify.html (11 aout 2026). Meme gabarit sur les 3 (classes identiques
+   confirmees), meme traitement translucide deja etabli. */
+body.docs-dark .int-card{
+  background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.14);
+}
+body.docs-dark .int-card h3{ color:#F5F6FF; }
+body.docs-dark .int-card p{ color:#CDD2F0; }
+
+/* Articles de blog (11 aout 2026) -- .table-scroll a une seconde
+   definition plus bas dans ce fichier (tableaux de la console), qui
+   l'emporte partout ou la classe apparait (meme selecteur, regle plus
+   recente) : un degrade vers du blanc fixe (#fff en repli, --bg-card
+   n'etant jamais definie) aux deux bords des tableaux larges, visible
+   sur le fond de page ici, qui n'est jamais uni (degrade radial) --
+   aucune couleur de repli ne coinciderait partout. Le degrade est donc
+   simplement retire en contexte sombre ; overflow-x:auto (propriete
+   distincte, premiere regle) continue de fonctionner normalement. */
+body.docs-dark .table-scroll{ background:none; }
+
+/* .post-body strong reste sombre par defaut (texte courant, correct hors
+   contexte sombre) -- mais un tableau docs-params peut placer un strong
+   dans sa premiere colonne (guide-utilisation-console.html), jamais
+   couvert par le correctif du guide-quiz de ce matin, contexte different.
+   Correctif cible, ne touche pas le strong generique du texte courant. */
+body.docs-dark .docs-params strong{ color:#F5F6FF; }
+
+/* Correctif global (11 aout 2026) -- .post-body strong reste sombre par
+   defaut, correct hors contexte sombre (texte courant). Decouvert sur
+   trois contextes distincts au fil du chantier (guide-quiz, docs-params,
+   un simple paragraphe) -- plutot que de continuer a corriger chaque
+   nouveau contexte au cas par cas sur les 24 articles restants, une
+   seule regle globale couvre tout ce qui vit dans .post-body (le quiz et
+   docs-params y sont deja inclus, leurs regles specifiques ci-dessus
+   restent neanmoins necessaires pour docs.html, qui n'utilise jamais
+   post-body). */
+body.docs-dark .post-body strong{ color:#F5F6FF; }
