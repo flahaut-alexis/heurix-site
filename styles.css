@@ -1630,6 +1630,45 @@ h2{ font-size:clamp(26px,3.4vw,34px); font-weight:800; margin:0 0 18px; max-widt
   border-radius:0 12px 12px 0; pointer-events:none;
 }
 
+/* Harmonisation sombre du pavé Solutions (10 aout 2026) -- meme fond
+   docs-dark que docs.html/le blog/integrations.html. Les sept couleurs
+   d'accent des kickers avaient ete calculees pour un contraste WCAG sur
+   fond BLANC (chantier precedent) -- posees telles quelles sur ce fond
+   sombre, du texte deja sombre sur un fond encore plus sombre aurait ete
+   illisible. Recalculees ici : memes teintes exactes (memes hues, memes
+   ecarts d'au moins 25 degres deja verifies entre secteurs voisins),
+   luminosite augmentee au minimum necessaire pour retrouver >=4.5:1 sur
+   le point le plus clair du degrade -- pas une nouvelle palette
+   arbitraire, une adaptation de la meme logique au nouveau fond. */
+body.docs-dark .kicker-outillage{ color:#EFCCB3; }
+body.docs-dark .kicker-finance{ color:#E6E6A8; }
+body.docs-dark .kicker-electronique{ color:#A8E6E6; }
+body.docs-dark .kicker-industrie{ color:#C4D5E9; }
+body.docs-dark .kicker-livres{ color:#E1CBEB; }
+body.docs-dark .kicker-mode{ color:#EFC8E2; }
+body.docs-dark .kicker-vins{ color:#F2CAD1; }
+
+/* Hub Solutions + fil d'Ariane + voir-aussi : classes creees apres le
+   dernier chantier docs-dark, jamais encore couvertes. Meme traitement
+   translucide que .callout/.setup-step-card/.integ-notice. */
+body.docs-dark .solutions-hub-card,
+body.docs-dark .solutions-hub-fallback{
+  background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.14);
+}
+body.docs-dark .solutions-hub-card h2{ color:#F5F6FF; }
+body.docs-dark .solutions-hub-card p,
+body.docs-dark .solutions-hub-fallback p{ color:#CDD2F0; }
+body.docs-dark .solutions-hub-card-link{ color:#AEB9FF; }
+
+body.docs-dark .breadcrumb{ color:#CDD2F0; }
+body.docs-dark .breadcrumb a{ color:#CDD2F0; }
+body.docs-dark .breadcrumb a:hover{ color:#F5F6FF; }
+body.docs-dark .breadcrumb-sep{ color:rgba(255,255,255,0.25); }
+body.docs-dark .breadcrumb-current{ color:#F5F6FF; }
+
+body.docs-dark .solutions-see-also{ border-top-color:rgba(255,255,255,0.14); }
+body.docs-dark .solutions-see-also h2{ color:#F5F6FF; }
+
 .docs-params{
   width:100%; max-width:720px; border-collapse:collapse; margin:0 0 16px;
   font-size:13.5px;
@@ -4672,6 +4711,7 @@ body.docs-dark .console-panel-note{ color:#CDD2F0; }
 body.docs-dark .post-body h2,
 body.docs-dark .post-body h3{ color:#F5F6FF; }
 body.docs-dark .docs-layout h1{ color:#F5F6FF; }
+body.docs-dark .post-wrap h1{ color:#F5F6FF; }
 body.docs-dark .guide-quiz p{ color:#CDD2F0; }
 body.docs-dark .guide-quiz strong{ color:#F5F6FF; }
 body.docs-dark .kicker,
