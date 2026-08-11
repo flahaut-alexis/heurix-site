@@ -955,6 +955,24 @@ h1 span{ color:var(--blue); }
 section{ padding:80px 0; }
 section.soft{ background:var(--bg-soft); }
 .kicker{ font-size:13px; font-weight:700; color:var(--blue-deep); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:14px; }
+
+/* Accents sectoriels -- pages Solutions (10 aout 2026). Teintes calculees
+   pour un ecart d'au moins 25 degres entre secteurs voisins et un
+   contraste WCAG AA (>=4.5:1) sur fond blanc, en evitant les zones deja
+   utilisees ailleurs sur le site a des fins semantiques (--green succes,
+   --red-muted erreur) et la zone du bleu de marque lui-meme. Usage
+   volontairement limite au kicker, pour rester une variation discrete
+   au sein d'une identite dominee par le bleu/indigo, pas une refonte.
+   Un pictogramme distinct par secteur (deja etabli au callout Custom
+   Rule) est ajoute dans le texte du kicker lui-meme, pas via ce CSS. */
+.kicker-outillage{ color:#7E4A25; }
+.kicker-finance{ color:#737326; }
+.kicker-electronique{ color:#1D7272; }
+.kicker-industrie{ color:#495F79; }
+.kicker-livres{ color:#5D3B6D; }
+.kicker-mode{ color:#883A6E; }
+.kicker-vins{ color:#682732; }
+
 h2{ font-size:clamp(26px,3.4vw,34px); font-weight:800; margin:0 0 18px; max-width:640px; letter-spacing:-0.01em; }
 .section-lede{ color:var(--ink-muted); font-size:16.5px; max-width:600px; margin-bottom:44px; }
 
