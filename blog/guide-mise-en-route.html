@@ -200,24 +200,24 @@
         <div class="guide-quiz-q">
           <p><strong>Souhaitez-vous mesurer les ventes générées par la recherche ?</strong></p>
           <div class="guide-quiz-opts" data-question="tracker">
-            <button type="button" data-value="oui">Oui</button>
-            <button type="button" data-value="non">Non</button>
+            <button type="button" data-value="oui" aria-pressed="false">Oui</button>
+            <button type="button" data-value="non" aria-pressed="false">Non</button>
           </div>
         </div>
 
         <div class="guide-quiz-q">
           <p><strong>Vos équipes doivent-elles interroger le catalogue via un agent IA ?</strong></p>
           <div class="guide-quiz-opts" data-question="mcp">
-            <button type="button" data-value="oui">Oui</button>
-            <button type="button" data-value="non">Non</button>
+            <button type="button" data-value="oui" aria-pressed="false">Oui</button>
+            <button type="button" data-value="non" aria-pressed="false">Non</button>
           </div>
         </div>
 
         <div class="guide-quiz-q">
           <p><strong>Disposez-vous déjà d'une interface de recherche sur votre site ?</strong></p>
           <div class="guide-quiz-opts" data-question="frontend">
-            <button type="button" data-value="non">Non, je part de zéro</button>
-            <button type="button" data-value="oui">Oui, j'ai déjà une interface</button>
+            <button type="button" data-value="non" aria-pressed="false">Non, je part de zéro</button>
+            <button type="button" data-value="oui" aria-pressed="false">Oui, j'ai déjà une interface</button>
           </div>
         </div>
 
@@ -325,6 +325,7 @@ const results = await client.search("perceuse bosch");</code></pre>
 </div>
 <script src="../guide-quiz.js"></script>
 <script src="../docs-copy.js"></script>
+<script src="../guide-ux.js"></script>
 <script src="../pricing-nudge.js"></script>
 <script>window.HEURIX_RACINE='../';</script><script src="../consent.js?v=1785150583"></script>
 </body>

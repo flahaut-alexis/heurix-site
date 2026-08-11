@@ -60,8 +60,12 @@
     var question = groupe.getAttribute("data-question");
     groupe.querySelectorAll("button").forEach(function (btn) {
       btn.addEventListener("click", function () {
-        groupe.querySelectorAll("button").forEach(function (b) { b.classList.remove("on"); });
+        groupe.querySelectorAll("button").forEach(function (b) {
+          b.classList.remove("on");
+          b.setAttribute("aria-pressed", "false"); // accessibilite (audit du 10 aout) -- le style visuel .on existait deja, seul l'etat lecteur d'ecran manquait
+        });
         btn.classList.add("on");
+        btn.setAttribute("aria-pressed", "true");
         // Sur la question front-end, "oui"/"yes" signifie « j'ai deja une
         // interface » : le module reste utile, seule la variante change.
         reponses[question] = btn.getAttribute("data-value");
@@ -74,7 +78,10 @@
   if (tout) {
     tout.addEventListener("click", function () {
       reponses = {};
-      quiz.querySelectorAll(".guide-quiz-opts button").forEach(function (b) { b.classList.remove("on"); });
+      quiz.querySelectorAll(".guide-quiz-opts button").forEach(function (b) {
+        b.classList.remove("on");
+        b.setAttribute("aria-pressed", "false");
+      });
       document.querySelectorAll(".masque").forEach(function (e) { e.classList.remove("masque"); });
       recap.hidden = true;
     });

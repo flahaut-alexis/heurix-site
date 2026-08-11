@@ -194,24 +194,24 @@
         <div class="guide-quiz-q">
           <p><strong>Do you want to measure the sales search generates?</strong></p>
           <div class="guide-quiz-opts" data-question="tracker">
-            <button type="button" data-value="yes">Yes</button>
-            <button type="button" data-value="no">No</button>
+            <button type="button" data-value="yes" aria-pressed="false">Yes</button>
+            <button type="button" data-value="no" aria-pressed="false">No</button>
           </div>
         </div>
 
         <div class="guide-quiz-q">
           <p><strong>Do your teams need to query the catalog through an AI agent?</strong></p>
           <div class="guide-quiz-opts" data-question="mcp">
-            <button type="button" data-value="yes">Yes</button>
-            <button type="button" data-value="no">No</button>
+            <button type="button" data-value="yes" aria-pressed="false">Yes</button>
+            <button type="button" data-value="no" aria-pressed="false">No</button>
           </div>
         </div>
 
         <div class="guide-quiz-q">
           <p><strong>Do you already have a search interface on your site?</strong></p>
           <div class="guide-quiz-opts" data-question="frontend">
-            <button type="button" data-value="no">No, starting from scratch</button>
-            <button type="button" data-value="yes">Yes, I already have an interface</button>
+            <button type="button" data-value="no" aria-pressed="false">No, starting from scratch</button>
+            <button type="button" data-value="yes" aria-pressed="false">Yes, I already have an interface</button>
           </div>
         </div>
 
@@ -318,6 +318,7 @@ const results = await client.search("bosch drill");</code></pre>
 </div>
 <script src="../../guide-quiz.js"></script>
 <script src="../../docs-copy.js"></script>
+<script src="../../guide-ux.js"></script>
 <script src="../../pricing-nudge.js"></script>
 <script>window.HEURIX_RACINE='../../';</script><script src="../../consent.js?v=1785150583"></script>
 </body>

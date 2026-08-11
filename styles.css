@@ -1610,10 +1610,24 @@ h2{ font-size:clamp(26px,3.4vw,34px); font-weight:800; margin:0 0 18px; max-widt
 .docs-code{
   background:var(--ink); border-radius:12px; padding:16px 18px;
   overflow-x:auto; margin:0 0 16px; max-width:720px;
+  position:relative; /* ancre le pseudo-element du fondu de defilement */
 }
 .docs-code code{
   font-family:'IBM Plex Mono', monospace; font-size:12.5px; line-height:1.65;
   color:rgba(255,255,255,0.88); white-space:pre;
+}
+/* Indice visuel de defilement horizontal (audit UX du 10 aout) -- un
+   bloc de code avec overflow-x:auto n'a autrement aucun signal montrant
+   qu'il cache du contenu a droite. Fondu applique UNIQUEMENT quand du
+   contenu est vraiment cache (classe posee par guide-ux.js apres mesure
+   reelle de scrollWidth vs clientWidth, jamais de facon uniforme --
+   verifie empiriquement que seuls 3 blocs sur 7 debordent vraiment sur
+   cette page). Le degrade va vers la meme couleur que le fond du bloc
+   (var(--ink)) pour rester discret, pas une bordure ou une ombre.*/
+.docs-code.a-defilement::after{
+  content:""; position:absolute; top:0; right:0; bottom:0; width:36px;
+  background:linear-gradient(to right, transparent, var(--ink));
+  border-radius:0 12px 12px 0; pointer-events:none;
 }
 
 .docs-params{
@@ -4657,6 +4671,9 @@ body.docs-dark .post-body,
 body.docs-dark .console-panel-note{ color:#CDD2F0; }
 body.docs-dark .post-body h2,
 body.docs-dark .post-body h3{ color:#F5F6FF; }
+body.docs-dark .docs-layout h1{ color:#F5F6FF; }
+body.docs-dark .guide-quiz p{ color:#CDD2F0; }
+body.docs-dark .guide-quiz strong{ color:#F5F6FF; }
 body.docs-dark .kicker,
 body.docs-dark .back-link{ color:#CDD2F0; }
 body.docs-dark .post-footer-cta,
