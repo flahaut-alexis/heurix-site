@@ -4691,3 +4691,48 @@ body.docs-dark .integ-panel p{ color:#CDD2F0; }
    fond clair + texte fonce, un contraste interne autonome deja verifie,
    qui ne depend jamais du fond de page environnant -- meme raisonnement
    que la pastille active de la sidebar docs.html. */
+
+/* Hub Solutions + maillage inter-secteurs (10 aout 2026) */
+.breadcrumb{
+  display:flex; align-items:center; gap:6px; font-size:13px;
+  color:var(--ink-muted); margin-bottom:18px; flex-wrap:wrap;
+}
+.breadcrumb a{ color:var(--ink-muted); text-decoration:none; }
+.breadcrumb a:hover{ color:var(--blue-deep); text-decoration:underline; }
+.breadcrumb-sep{ color:var(--line); }
+.breadcrumb-current{ color:var(--ink); font-weight:600; }
+
+.solutions-hub-grid{
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+  gap:20px; margin:36px 0;
+}
+.solutions-hub-card{
+  display:block; background:#fff; border:1px solid var(--line); border-radius:14px;
+  padding:24px; text-decoration:none; color:inherit;
+  transition:border-color .15s ease, transform .15s ease;
+}
+.solutions-hub-card:hover{ border-color:var(--blue); transform:translateY(-2px); }
+.solutions-hub-card-icon{
+  width:40px; height:40px; border-radius:10px; background:var(--blue-tint);
+  display:flex; align-items:center; justify-content:center; font-size:19px;
+  margin-bottom:14px;
+}
+.solutions-hub-card h2{
+  font-size:16.5px; font-weight:700; margin:0 0 8px; letter-spacing:0; max-width:none;
+}
+.solutions-hub-card p{ margin:0 0 14px; font-size:13.5px; color:var(--ink-muted); line-height:1.55; }
+.solutions-hub-card-link{ font-size:13.5px; font-weight:600; color:var(--blue-deep); }
+
+.solutions-hub-fallback{
+  background:var(--bg-soft); border:1px solid var(--line); border-radius:14px;
+  padding:28px; text-align:center; margin:36px 0 0;
+}
+.solutions-hub-fallback p{ margin:0 0 14px; color:var(--ink-muted); }
+
+.solutions-see-also{
+  border-top:1px solid var(--line); margin-top:48px; padding-top:32px;
+}
+.solutions-see-also h2{ font-size:16.5px; margin:0 0 16px; }
+.solutions-see-also-grid{
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:14px;
+}
