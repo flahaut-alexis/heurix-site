@@ -489,7 +489,7 @@ h1 span{ color:var(--blue); }
   transition:all .15s ease;
 }
 .play-vertical-pill:hover{ color:var(--ink); }
-.play-vertical-on{ background:#fff; color:var(--blue-deep); box-shadow:0 1px 4px rgba(18,20,43,0.1); }
+.play-vertical-on{ background:#fff; color:var(--blue-deep); box-shadow:0 3px 10px -2px rgba(63,82,232,0.35); border-bottom:2px solid var(--blue-deep); }
 .play-vertical-on:hover{ color:var(--blue-deep); }
 .play-thumb-icon svg{ display:block; border-radius:8px; }
 /* Mise en avant du champ de recherche démo (1er août) — les 7 points
@@ -521,7 +521,7 @@ h1 span{ color:var(--blue); }
 .play-bar:hover{ box-shadow:0 5px 24px rgba(91,95,239,0.22); }
 .play-bar:focus-within{
   box-shadow:0 6px 28px rgba(91,95,239,0.32);
-  background-image: linear-gradient(#fff, #fff), linear-gradient(135deg, var(--blue-deep), #7C3AED);
+  background-image: linear-gradient(#fff, #fff), linear-gradient(135deg, var(--blue-deep), var(--blue-deep));
 }
 /* Anneau dédié au clavier : :focus-within seul ne distingue pas un focus
    clavier d'un simple clic. Un input texte est presque toujours pertinent
@@ -546,7 +546,7 @@ h1 span{ color:var(--blue); }
 /* Contraste vérifié : #5B5E76 sur fond blanc = 6,34:1, au-delà du seuil
    AA (4,5:1) pour du texte normal. Le fond blanc du point 5 ne fragilise
    donc pas la lisibilité du placeholder — rien à changer ici. */
-.play-input::placeholder{ color:var(--ink-muted); }
+.play-input::placeholder{ color:#5B5B5B; }
 
 /* Pulse discret tant que le champ n'a jamais été utilisé — retiré
    DÉFINITIVEMENT au premier clic ou à la première frappe par JS (voir
@@ -656,7 +656,7 @@ h1 span{ color:var(--blue); }
 .play-chips{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:12px; }
 .play-chips-label{ font-size:12px; font-weight:600; color:var(--ink-muted); }
 .play-chip{
-  font-family:'IBM Plex Mono', monospace; font-size:12px; color:var(--blue-deep);
+  font-family:'IBM Plex Mono', monospace; font-size:13px; font-weight:600; color:#2E3FBF;
   background:var(--blue-tint); border:none; border-radius:100px; padding:5px 11px;
   cursor:pointer; transition:background .15s ease, color .15s ease;
 }
