@@ -796,7 +796,17 @@ h1 span{ color:var(--blue); }
   display:flex; flex-direction:column;
   background:var(--bg-soft); border:1px solid var(--line); border-radius:12px;
   padding:14px; position:relative; overflow:hidden;
-  opacity:0; transform:translateY(4px); animation:rise .3s ease forwards;
+  /* opacity retiree du depart (12 aout 2026) -- cette carte comptait
+     entierement sur l'animation ci-dessous pour devenir visible. Signale
+     par Alexis : sur Chrome reel, avec de vraies donnees issues de
+     l'API, l'animation ne se declenchait jamais -- opacity restait
+     coincee a 0, invisible en permanence, jamais reproduit dans mon
+     propre environnement de test malgre plusieurs tentatives fideles.
+     Cause exacte non confirmee (React/vanilla JS re-render, timing
+     navigateur precis...), mais le vrai contenu ne doit plus jamais
+     dependre d'une animation pour etre lisible. La transform reste
+     seule a piloter l'effet, jamais l'opacite. */
+  transform:translateY(4px); animation:rise .3s ease forwards;
   transition:box-shadow .15s ease, border-color .15s ease, transform .15s ease;
 }
 .play-card:hover{
@@ -927,7 +937,7 @@ h1 span{ color:var(--blue); }
 .play-card-etiquette-bestseller{ background:linear-gradient(135deg, #10B981, #059669); }
 .play-card-etiquette-stocklimite{ background:linear-gradient(135deg, #EF4444, #DC2626); }
 
-@keyframes rise{ to{ opacity:1; transform:translateY(0); } }
+@keyframes rise{ to{ transform:translateY(0); } }
 .result .name{ color:var(--ink); }
 .result .name mark{ background:var(--blue-tint); color:var(--blue-deep); font-weight:700; padding:1px 3px; border-radius:3px; }
 .result .tag{ font-family:'IBM Plex Mono', monospace; font-size:11.5px; color:var(--ink-muted); }
