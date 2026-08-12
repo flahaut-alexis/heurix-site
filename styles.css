@@ -5032,3 +5032,30 @@ body.docs-dark .cta-section{
     radial-gradient(ellipse 900px 480px at 50% 0%, rgba(84,104,255,0.12) 0%, rgba(84,104,255,0) 70%),
     transparent;
 }
+
+/* Signale par Alexis (11 aout 2026), confirme empiriquement sur FR et EN
+   -- .blog-hero n'avait jamais recu le meme correctif que .hero .lede
+   pour ce meme fond sombre. .docs-hero, lui, verifie a la meme occasion,
+   etait deja correct. */
+body.docs-dark .blog-hero .lede{ color:rgba(255,255,255,0.88); }
+
+/* Signale par Alexis (11 aout 2026), confirme empiriquement. Le titre de
+   section .verticals h3 n'a jamais eu de correctif propre. La carte
+   .vertical-card-cta : le fond a bien change (deja gagne par
+   specificite via le correctif .vertical-card existant), mais son h4 et
+   son p heritaient toujours du texte sombre d'origine, jamais adaptes
+   pour cette variante ; son lien utilise le meme bleu (--blue-deep) que
+   why-num, meme insuffisance de contraste. */
+body.docs-dark .verticals h3{ color:#F5F6FF; }
+body.docs-dark .vertical-card-cta h4{ color:#F5F6FF; }
+body.docs-dark .vertical-card-cta p{ color:#CDD2F0; }
+body.docs-dark .vertical-card-cta a{ color:#AEB9FF; }
+
+/* Meme oubli que vertical-card-cta juste au-dessus : le fond de
+   .how-step et .feature-card avait deja ete assombri, mais leur vrai
+   texte interieur (h3, p) jamais verifie ni corrige separement. */
+body.docs-dark .how-step h3{ color:#F5F6FF; }
+body.docs-dark .how-step p{ color:#CDD2F0; }
+body.docs-dark .feature-card h3{ color:#F5F6FF; }
+body.docs-dark .feature-card p{ color:#CDD2F0; }
+body.docs-dark .feature-card a{ color:#AEB9FF; }
