@@ -4897,3 +4897,61 @@ body.docs-dark .docs-params strong{ color:#F5F6FF; }
    restent neanmoins necessaires pour docs.html, qui n'utilise jamais
    post-body). */
 body.docs-dark .post-body strong{ color:#F5F6FF; }
+
+/* cgv.html (11 aout 2026) -- bloc mis en avant, jamais dans post-body,
+   pas couvert par le correctif global ci-dessus. Meme traitement
+   translucide deja etabli. */
+body.docs-dark .cgv-notice{
+  background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.3);
+  color:#CDD2F0;
+}
+body.docs-dark .cgv-notice strong{ color:#F5F6FF; }
+
+/* faq.html (11 aout 2026) -- jamais dans post-body, pas couvert par le
+   correctif global strong. Bordure de separation adaptee au fond sombre
+   (var(--line) restait un gris clair invisible ici). */
+body.docs-dark .faq-item{ border-bottom-color:rgba(255,255,255,0.14); }
+body.docs-dark .faq-item summary{ color:#F5F6FF; }
+body.docs-dark .faq-answer p{ color:#CDD2F0; }
+body.docs-dark .faq-answer strong{ color:#F5F6FF; }
+body.docs-dark .faq-answer a{ color:#AEB9FF; }
+
+/* about.html (11 aout 2026) -- recit personnel, jamais dans post-body. */
+body.docs-dark .about-text p{ color:#CDD2F0; }
+body.docs-dark .about-text strong{ color:#F5F6FF; }
+body.docs-dark .about-text p:first-child{ color:#F5F6FF; }
+body.docs-dark .about-signature{ color:#CDD2F0; }
+
+/* Widget de demo en direct (play-*), genere dynamiquement par
+   demo-search-live.js -- PARTAGE avec index.html (meme script, deux
+   pages), donc ce meme correctif couvrira aussi le futur chantier
+   index.html sans rien refaire. Verifie empiriquement (play-vide et
+   play-rupture injectes directement, le vrai widget etant inutilisable
+   en local sans acces reseau -- CORS bloque les appels file:// vers
+   l'API) plutot que suppose depuis le seul code source. */
+body.docs-dark .play-card-name{ color:#F5F6FF; }
+body.docs-dark .play-card-ref-bas{ color:#CDD2F0; }
+body.docs-dark .play-meta-count{ color:#CDD2F0; }
+body.docs-dark .play-meta-filtre{ color:#CDD2F0; }
+body.docs-dark .play-card-price-barre{ color:#CDD2F0; }
+body.docs-dark .play-vide{ color:#CDD2F0; }
+body.docs-dark .play-rupture{ color:#CDD2F0; }
+body.docs-dark .play-card-out .play-card-name,
+body.docs-dark .play-card-out .play-card-ref-bas{ color:#CDD2F0; }
+/* var(--blue-deep), memes valeurs et meme insuffisance de contraste que
+   why-num deja corrige ce matin (1.16:1 sur le point le plus clair du
+   degrade) -- meme correctif. */
+body.docs-dark .play-card-price{ color:#F5F6FF; }
+body.docs-dark .play-meta-ms{ color:#F5F6FF; }
+/* Fond blanc ecrit en dur, jamais une variable -- ne suit donc aucun
+   theme. Meme traitement translucide deja etabli pour les badges/tags
+   sur fond sombre. */
+body.docs-dark .play-card-tag{ background:rgba(255,255,255,0.1); border-color:rgba(255,255,255,0.25); color:#CDD2F0; }
+
+/* .btn-ghost (11 aout 2026) -- bouton secondaire jamais traite malgre sa
+   presence sur plusieurs pages deja livrees aujourd'hui (fonctionnalites,
+   guide-mise-en-route, prestashop) -- discret, rate visuellement jusqu'ici.
+   Correctif global : s'applique retroactivement partout ou la classe
+   apparait deja, sans rien modifier sur ces pages individuellement. */
+body.docs-dark .btn-ghost{ color:#F5F6FF; border-color:rgba(255,255,255,0.35); }
+body.docs-dark .btn-ghost:hover{ background:rgba(255,255,255,0.08); }
