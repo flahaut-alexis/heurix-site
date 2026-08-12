@@ -4757,9 +4757,15 @@ body.docs-dark .console-panel-note{ color:#CDD2F0; }
 body.docs-dark .post-body h2,
 body.docs-dark .post-body h3{ color:#F5F6FF; }
 body.docs-dark .docs-layout h1{ color:#F5F6FF; }
-body.docs-dark .post-wrap h1{ color:#F5F6FF; }
-body.docs-dark .section .wrap h1{ color:#F5F6FF; }
-body.docs-dark .blog-hero h1{ color:#F5F6FF; }
+/* Simplifie (11 aout 2026) -- trois regles specifiques a des conteneurs
+   differents (post-wrap, section.wrap, blog-hero) remplacees par une
+   seule regle globale. Trouvees une par une au fil du chantier, chacune
+   pour un vrai conteneur different jamais anticipe -- la derniere en
+   date (.soft .wrap h1, faq.html FR+EN) confirme qu'il valait mieux
+   couvrir tous les h1 sans restriction de parent des le depart. Aucun
+   h1 ne vit jamais dans une carte volontairement restee claire (price-
+   tier-card etc.) -- pas de risque de sur-couverture identifie. */
+body.docs-dark h1{ color:#F5F6FF; }
 body.docs-dark .guide-quiz p{ color:#CDD2F0; }
 body.docs-dark .kicker,
 body.docs-dark .back-link{ color:#CDD2F0; }
