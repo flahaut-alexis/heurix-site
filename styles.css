@@ -4938,32 +4938,6 @@ body.docs-dark .about-text strong{ color:#F5F6FF; }
 body.docs-dark .about-text p:first-child{ color:#F5F6FF; }
 body.docs-dark .about-signature{ color:#CDD2F0; }
 
-/* Widget de demo en direct (play-*), genere dynamiquement par
-   demo-search-live.js -- PARTAGE avec index.html (meme script, deux
-   pages), donc ce meme correctif couvrira aussi le futur chantier
-   index.html sans rien refaire. Verifie empiriquement (play-vide et
-   play-rupture injectes directement, le vrai widget etant inutilisable
-   en local sans acces reseau -- CORS bloque les appels file:// vers
-   l'API) plutot que suppose depuis le seul code source. */
-body.docs-dark .play-card-name{ color:#F5F6FF; }
-body.docs-dark .play-card-ref-bas{ color:#CDD2F0; }
-body.docs-dark .play-meta-count{ color:#CDD2F0; }
-body.docs-dark .play-meta-filtre{ color:#CDD2F0; }
-body.docs-dark .play-card-price-barre{ color:#CDD2F0; }
-body.docs-dark .play-vide{ color:#CDD2F0; }
-body.docs-dark .play-rupture{ color:#CDD2F0; }
-body.docs-dark .play-card-out .play-card-name,
-body.docs-dark .play-card-out .play-card-ref-bas{ color:#CDD2F0; }
-/* var(--blue-deep), memes valeurs et meme insuffisance de contraste que
-   why-num deja corrige ce matin (1.16:1 sur le point le plus clair du
-   degrade) -- meme correctif. */
-body.docs-dark .play-card-price{ color:#F5F6FF; }
-body.docs-dark .play-meta-ms{ color:#F5F6FF; }
-/* Fond blanc ecrit en dur, jamais une variable -- ne suit donc aucun
-   theme. Meme traitement translucide deja etabli pour les badges/tags
-   sur fond sombre. */
-body.docs-dark .play-card-tag{ background:rgba(255,255,255,0.1); border-color:rgba(255,255,255,0.25); color:#CDD2F0; }
-
 /* .btn-ghost (11 aout 2026) -- bouton secondaire jamais traite malgre sa
    presence sur plusieurs pages deja livrees aujourd'hui (fonctionnalites,
    guide-mise-en-route, prestashop) -- discret, rate visuellement jusqu'ici.
@@ -5070,18 +5044,13 @@ body.docs-dark .feature-card h3{ color:#F5F6FF; }
 body.docs-dark .feature-card p{ color:#CDD2F0; }
 body.docs-dark .feature-card a{ color:#AEB9FF; }
 
-/* Signale par Alexis via capture d'ecran, 12 aout 2026 -- fond blanc,
-   texte invisible sur la vraie grille de resultats du widget de demo.
-   Vraie cause trouvee empiriquement : .play-card-name/.play-card-price
-   etaient deja bien blancs (verifie via console navigateur sur le site
-   reel), mais .play-card elle-meme (le conteneur) n'avait jamais recu
-   de correctif -- texte blanc sur fond reste clair, invisible. Jamais
-   vu aujourd'hui car mon sandbox n'a pas d'acces reseau vers l'API
-   reelle : tous mes tests du widget aujourd'hui ne montraient que
-   l'etat "vide" (CORS bloque), jamais une vraie grille peuplee. */
-body.docs-dark .play-card{
-  background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.14);
-}
-body.docs-dark .play-card-vign{ background:rgba(255,255,255,0.08); color:#CDD2F0; }
-body.docs-dark .play-card-picto{ background:rgba(255,255,255,0.08); }
-body.docs-dark .play-card-img{ background:rgba(255,255,255,0.08); }
+/* .demo/.play-card (11 aout, correction) -- annule les correctifs
+   ci-dessus, ecrits plus tot aujourd'hui sur une fausse supposition de
+   fond sombre. .demo porte deja son propre commentaire, ecrit avant ce
+   chantier : "Fond blanc et elements internes deja corrects tels
+   quels, comme demande : rien a changer dedans." Le widget entier
+   reste blanc en permanence, meme en contexte docs-dark -- meme
+   logique que .price-tier-card sur pricing.html. Signale par Alexis
+   (texte devenu illisible : blanc sur fond reste blanc) apres que mon
+   propre test sur index.html, ou .play-card vit reellement sur fond
+   sombre, m'a fait supposer a tort que c'etait le cas partout. */
