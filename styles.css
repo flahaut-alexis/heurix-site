@@ -5059,3 +5059,19 @@ body.docs-dark .how-step p{ color:#CDD2F0; }
 body.docs-dark .feature-card h3{ color:#F5F6FF; }
 body.docs-dark .feature-card p{ color:#CDD2F0; }
 body.docs-dark .feature-card a{ color:#AEB9FF; }
+
+/* Signale par Alexis via capture d'ecran, 12 aout 2026 -- fond blanc,
+   texte invisible sur la vraie grille de resultats du widget de demo.
+   Vraie cause trouvee empiriquement : .play-card-name/.play-card-price
+   etaient deja bien blancs (verifie via console navigateur sur le site
+   reel), mais .play-card elle-meme (le conteneur) n'avait jamais recu
+   de correctif -- texte blanc sur fond reste clair, invisible. Jamais
+   vu aujourd'hui car mon sandbox n'a pas d'acces reseau vers l'API
+   reelle : tous mes tests du widget aujourd'hui ne montraient que
+   l'etat "vide" (CORS bloque), jamais une vraie grille peuplee. */
+body.docs-dark .play-card{
+  background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.14);
+}
+body.docs-dark .play-card-vign{ background:rgba(255,255,255,0.08); color:#CDD2F0; }
+body.docs-dark .play-card-picto{ background:rgba(255,255,255,0.08); }
+body.docs-dark .play-card-img{ background:rgba(255,255,255,0.08); }
