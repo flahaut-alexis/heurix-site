@@ -4955,3 +4955,29 @@ body.docs-dark .play-card-tag{ background:rgba(255,255,255,0.1); border-color:rg
    apparait deja, sans rien modifier sur ces pages individuellement. */
 body.docs-dark .btn-ghost{ color:#F5F6FF; border-color:rgba(255,255,255,0.35); }
 body.docs-dark .btn-ghost:hover{ background:rgba(255,255,255,0.08); }
+
+/* pricing.html (11 aout 2026). price-tier-card, calc-results, integration-
+   code, icp-table, .addon-row (deuxieme definition, deja vue sur fond
+   clair de la carte) restent volontairement inchanges -- deja sombres ou
+   deja traites ailleurs, voir la revue complete avant ce commit. */
+body.docs-dark .roi-field label{ color:#CDD2F0; }
+body.docs-dark .calc-inputs{ background:rgba(255,255,255,0.06); }
+body.docs-dark .integration-card{
+  background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.14);
+}
+body.docs-dark .integration-card-desc{ color:#CDD2F0; }
+body.docs-dark .integration-card-label{ color:#F5F6FF; }
+/* billing-toggle vit deja dans pricing-hero-etendu (fond sombre depuis
+   le 2 aout), mais n'avait jamais recu son propre correctif -- oubli,
+   pas un choix comme price-tier-card qui, lui, est explicitement
+   documente. L'option active (.on) garde son fond blanc existant, meme
+   logique que price-tier-card : du blanc reserve aux elements cles pour
+   qu'ils ressortent, pas une regle uniforme. */
+body.docs-dark .billing-toggle{ background:rgba(255,255,255,0.08); border-color:rgba(255,255,255,0.18); }
+body.docs-dark .billing-toggle-opt{ color:#CDD2F0; }
+body.docs-dark .billing-toggle-opt:hover{ color:#F5F6FF; }
+/* Meme vert clair (#8FE3BC) deja utilise en style inline sur cette page
+   (kicker "Estimation") -- legerement eclairci (#A3E8C8) pour vraiment
+   depasser 4.5:1 sur le point le plus clair du degrade (8FE3BC seul
+   n'atteignait que 4.49:1, insuffisant de peu). */
+body.docs-dark .billing-annual-note{ color:#A3E8C8; }
