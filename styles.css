@@ -4981,3 +4981,48 @@ body.docs-dark .billing-toggle-opt:hover{ color:#F5F6FF; }
    depasser 4.5:1 sur le point le plus clair du degrade (8FE3BC seul
    n'atteignait que 4.49:1, insuffisant de peu). */
 body.docs-dark .billing-annual-note{ color:#A3E8C8; }
+
+/* index.html (11 aout 2026). Le hero (fond + h1 + lede + span) est deja
+   sombre depuis le 1er aout, aucun correctif necessaire. why-num,
+   vertical-card-cta, pb-carte, mission-pillar, index-card, regex-block,
+   hero-code, docs-inline-code, roi-results, roi-slider-badge deja
+   couverts ailleurs (produit.html/about.html/pricing.html) ou deja
+   sombres par construction -- pas repris ici. */
+body.docs-dark .vertical-card{
+  background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.14);
+}
+body.docs-dark .why-card{
+  background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.14);
+}
+body.docs-dark .how-step{
+  background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.14);
+}
+body.docs-dark .feature-card{
+  background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.14);
+}
+body.docs-dark .copilot-label{ color:#CDD2F0; }
+body.docs-dark .copilot-pill{ background:rgba(255,255,255,0.08); border-color:rgba(255,255,255,0.18); color:#CDD2F0; }
+body.docs-dark .copilot-pill:hover{ color:#F5F6FF; }
+body.docs-dark .copilot-bubble{ background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.18); }
+body.docs-dark .copilot-points li{ color:#CDD2F0; }
+body.docs-dark .copilot-source{ color:rgba(255,255,255,0.55); border-top-color:rgba(255,255,255,0.14); }
+body.docs-dark .copilot-disclaimer{ color:rgba(255,255,255,0.55); }
+/* .roi-inputs assombri pour rester coherent avec le meme traitement deja
+   applique a .calc-inputs sur pricing.html (meme fonction, meme fond
+   clair d'origine). */
+body.docs-dark .roi-inputs{ background:rgba(255,255,255,0.06); }
+body.docs-dark .roi-inputs h3{ color:#F5F6FF; }
+body.docs-dark .roi-inputs-intro{ color:#CDD2F0; }
+body.docs-dark .roi-range-hint{ color:rgba(255,255,255,0.55); }
+
+/* cta-section (formulaire de contact, juste avant le footer) restait
+   entierement claire malgre le reste de la page devenu sombre --
+   creait une vraie rupture visuelle juste avant la fin. Fond assombri
+   pour rester coherent ; le formulaire cta-form reste blanc (meme
+   logique que price-tier-card sur pricing.html), ses labels et champs
+   ont deja leur propre contraste interne correct sur fond blanc. */
+body.docs-dark .cta-section{
+  background:
+    radial-gradient(ellipse 900px 480px at 50% 0%, rgba(84,104,255,0.12) 0%, rgba(84,104,255,0) 70%),
+    transparent;
+}
