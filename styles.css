@@ -5054,3 +5054,29 @@ body.docs-dark .feature-card a{ color:#AEB9FF; }
    (texte devenu illisible : blanc sur fond reste blanc) apres que mon
    propre test sur index.html, ou .play-card vit reellement sur fond
    sombre, m'a fait supposer a tort que c'etait le cas partout. */
+
+/* Signale par Alexis (13 aout 2026), confirme empiriquement sur les
+   trois boutons concernes (Starter, Scale, Enterprise) -- .btn-ghost a
+   deja une regle docs-dark globale (color:#F5F6FF), pensee pour un vrai
+   fond sombre. Exactement le meme piege que .play-card ci-dessus :
+   .price-tier-card reste volontairement blanche, donc ce texte blanc y
+   devient invisible. Specificite superieure necessaire pour l'emporter
+   sur la regle globale (0,0,3,1 contre 0,0,2,1), pas une simple
+   reecriture qui, elle, perdrait dans la cascade. var(--blue-deep)
+   reutilise ici : deja la couleur de texte-sur-blanc etablie partout
+   ailleurs sur cette meme page (integration-badge, roi-slider-badge). */
+body.docs-dark .price-tier-card .btn-ghost{
+  color:var(--blue-deep); border-color:var(--blue-deep);
+}
+body.docs-dark .price-tier-card .btn-ghost:hover{
+  background:var(--blue-tint);
+}
+
+/* Meme signalement -- .integration-doclist li n'avait jamais recu de
+   correctif docs-dark : var(--ink) (#12142B) sur le degrade sombre
+   descend a 1.11:1 sur le point le plus fonce, tres loin du seuil AA
+   (4.5:1). Plus grave que ce que le rapport initial decrivait ("bleu-
+   gris sombre, contraste possiblement limite") -- vraiment illisible,
+   pas juste limite. */
+body.docs-dark .integration-doclist li{ color:#CDD2F0; border-top-color:rgba(255,255,255,0.14); }
+
