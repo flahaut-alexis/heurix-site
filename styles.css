@@ -5080,3 +5080,41 @@ body.docs-dark .price-tier-card .btn-ghost:hover{
    pas juste limite. */
 body.docs-dark .integration-doclist li{ color:#CDD2F0; border-top-color:rgba(255,255,255,0.14); }
 
+/* Demande directe d'Alexis (13 aout 2026) -- vrai choix de design
+   general, pas specifique au theme sombre : les entetes de cartes
+   tarifaires (Starter/Growth/Scale/Enterprise, reutilise aussi pour
+   Ranking Starter/Growth/Scale, meme classe) passent en bleu de marque
+   et sont centres. */
+.price-tier-name{ color:var(--blue-deep); text-align:center; }
+
+/* Kicker "Ranking seul" (pricing.html) -- vraie classe dediee,
+   .kicker generique intouchee (utilisee ailleurs pour de vrais petits
+   kickers). Taille/graisse alignees sur le vrai h2 juste en dessous
+   ("Besoin de Ranking sans le moteur de recherche ?"), confirme par
+   Alexis. Encadrement ajoute pour signaler une vraie option
+   supplementaire, pas juste un titre de section comme les autres
+   kickers du site. */
+.kicker-ranking-seul{
+  font-size:clamp(26px,3.4vw,34px); font-weight:800; letter-spacing:-0.01em;
+  text-transform:none; color:#fff;
+  display:inline-block; padding:6px 20px; border-radius:100px;
+  background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.35);
+}
+
+/* Texte legal (.pricing-note) trop peu contraste en theme sombre --
+   0.75 d'opacite donnait 4.53:1 sur le point le plus clair du degrade,
+   techniquement conforme AA (4.5:1) mais sans aucune marge reelle.
+   0.88 (deja la valeur utilisee pour .hero .lede ailleurs) donne une
+   vraie marge confortable. */
+body.docs-dark .pricing-note{ color:rgba(255,255,255,0.88); }
+body.docs-dark .pricing-note a{ color:#AEB9FF; }
+
+/* .billing-toggle-opt.on avait deja son propre contraste interne
+   autonome (fond blanc + texte bleu), casse par ma propre regle
+   globale docs-dark .billing-toggle-opt de ce matin -- meme
+   specificite que .on (0,0,2,1 contre 0,0,2,0), la mienne l'emportait
+   a tort dans la cascade. Regle plus specifique necessaire pour
+   vraiment proteger .on, confirme empiriquement avant ce correctif
+   (rgb(205,210,240) mesure au lieu de var(--blue-deep) attendu). */
+body.docs-dark .billing-toggle-opt.on{ color:var(--blue-deep); }
+
