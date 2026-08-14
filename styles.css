@@ -5145,3 +5145,27 @@ body.docs-dark .addon-row-desc{ color:#CDD2F0; }
 body.docs-dark .addon-row-price{ color:#F5F6FF; }
 body.docs-dark .addon-row-price em{ color:#CDD2F0; }
 
+/* Point 3, suite (13 aout 2026) -- signale par Alexis apres deploiement.
+   Ces quatre elements sont generes/reveles dynamiquement par JS
+   (facturation annuelle, prix barre, detail Ranking) -- jamais vus lors
+   de mes propres verifications, qui ne declenchaient jamais le vrai
+   bouton "Annuel". var(--ink-muted) partout, jamais adapte pour
+   docs-dark, meme si la carte parente l'est desormais. */
+body.docs-dark .prix-plein{ color:#CDD2F0; }
+body.docs-dark .price-tier-period{ color:#CDD2F0; }
+body.docs-dark .prix-facture{ color:#CDD2F0; }
+body.docs-dark .addon-breakdown{ color:#CDD2F0; }
+/* var(--blue-deep) pour le chiffre en gras : 2.78:1 sur fond desormais
+   sombre, mesure, tres insuffisant -- jamais signale par Alexis mais
+   corrige par coherence, meme famille de bleu clair que le reste. */
+body.docs-dark .addon-breakdown strong{ color:#AEB9FF; }
+
+/* Titre principal de pricing.html : tenait sur deux lignes a cause d'un
+   max-width laisse a 720px, bien en dessous des 1044px reellement
+   necessaires pour "Le moteur Heurix, en self-service." sur une seule
+   ligne (mesure empiriquement). Sur ecran etroit, le texte revient
+   naturellement a la ligne via le clamp() deja en place -- ce
+   correctif ne fait que retirer une limite artificielle sur grand
+   ecran, pas forcer une seule ligne partout. */
+.pricing-hero h1{ max-width:1100px; }
+
