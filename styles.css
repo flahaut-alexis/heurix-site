@@ -5055,21 +5055,18 @@ body.docs-dark .feature-card a{ color:#AEB9FF; }
    propre test sur index.html, ou .play-card vit reellement sur fond
    sombre, m'a fait supposer a tort que c'etait le cas partout. */
 
-/* Signale par Alexis (13 aout 2026), confirme empiriquement sur les
-   trois boutons concernes (Starter, Scale, Enterprise) -- .btn-ghost a
-   deja une regle docs-dark globale (color:#F5F6FF), pensee pour un vrai
-   fond sombre. Exactement le meme piege que .play-card ci-dessus :
-   .price-tier-card reste volontairement blanche, donc ce texte blanc y
-   devient invisible. Specificite superieure necessaire pour l'emporter
-   sur la regle globale (0,0,3,1 contre 0,0,2,1), pas une simple
-   reecriture qui, elle, perdrait dans la cascade. var(--blue-deep)
-   reutilise ici : deja la couleur de texte-sur-blanc etablie partout
-   ailleurs sur cette meme page (integration-badge, roi-slider-badge). */
+/* Point 3 de l'audit UX/UI (13 aout 2026) -- .price-tier-card passe en
+   sombre, maquette approuvee par Alexis. Le correctif precedent
+   (juste au-dessus dans l'historique git, plus visible ici) rendait
+   .btn-ghost bleu-sur-blanc specifiquement parce que la carte restait
+   blanche -- desormais fausse, la carte est sombre. Retour vers la
+   regle globale docs-dark deja etablie ailleurs (blanc sur fond
+   sombre), pas besoin de surcharge specifique a cette carte. */
 body.docs-dark .price-tier-card .btn-ghost{
-  color:var(--blue-deep); border-color:var(--blue-deep);
+  color:#F5F6FF; border-color:rgba(255,255,255,0.35);
 }
 body.docs-dark .price-tier-card .btn-ghost:hover{
-  background:var(--blue-tint);
+  background:rgba(255,255,255,0.08);
 }
 
 /* Meme signalement -- .integration-doclist li n'avait jamais recu de
@@ -5118,4 +5115,33 @@ body.docs-dark .pricing-note a{ color:#AEB9FF; }
    vraiment proteger .on, confirme empiriquement avant ce correctif
    (rgb(205,210,240) mesure au lieu de var(--blue-deep) attendu). */
 body.docs-dark .billing-toggle-opt.on{ color:var(--blue-deep); }
+
+/* Point 3 de l'audit UX/UI (13 aout 2026) -- reste des correctifs pour
+   .price-tier-card en sombre, maquette approuvee par Alexis. Meme motif
+   de carte translucide deja etabli sur des dizaines de composants
+   aujourd'hui (rgba(255,255,255,0.06) fond, rgba(255,255,255,0.14)
+   bordure), pas une nouvelle identite visuelle. */
+body.docs-dark .price-tier-card{
+  background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.14);
+}
+/* var(--blue-deep), deja applique globalement (point 1/2, plus tot
+   aujourd'hui), serait quasi invisible sur fond desormais sombre. */
+body.docs-dark .price-tier-name{ color:#AEB9FF; }
+body.docs-dark .price-tier-amount{ color:#F5F6FF; }
+body.docs-dark .price-tier-desc{ color:#CDD2F0; }
+body.docs-dark .price-tier-features li{
+  color:#CDD2F0; border-top-color:rgba(255,255,255,0.14);
+}
+body.docs-dark .price-tier-overage{ color:#CDD2F0; }
+/* Coche : reste verte, perimetre du point 4 deja convenu avec Alexis. */
+
+/* Toggle Ranking (addon-row) : meme fond blanc, meme traitement. */
+body.docs-dark .addon-row{
+  background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.14);
+}
+body.docs-dark .addon-row-name{ color:#F5F6FF; }
+body.docs-dark .addon-row-name strong{ color:#AEB9FF; }
+body.docs-dark .addon-row-desc{ color:#CDD2F0; }
+body.docs-dark .addon-row-price{ color:#F5F6FF; }
+body.docs-dark .addon-row-price em{ color:#CDD2F0; }
 
