@@ -5169,3 +5169,13 @@ body.docs-dark .addon-breakdown strong{ color:#AEB9FF; }
    ecran, pas forcer une seule ligne partout. */
 .pricing-hero h1{ max-width:1100px; }
 
+/* Point 3, suite (13 aout 2026) -- .addon-ref/.addon-net, generes par
+   billing-toggle.js dans [data-addon-pricing], jamais vus (memes
+   raisons que le lot precedent). .addon-ref restait visible sur les
+   captures d'Alexis par contraste relatif avec .addon-net, encore plus
+   sombre -- mesure empiriquement : les deux sont en realite sombres
+   (var(--ink-muted) et var(--ink)), aucun des deux vraiment correct en
+   valeur absolue. Corrige les deux par coherence. */
+body.docs-dark .addon-ref{ color:#CDD2F0; }
+body.docs-dark .addon-net{ color:#F5F6FF; }
+
