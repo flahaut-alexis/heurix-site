@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tolérance aux fautes de frappe : pourquoi une seule stratégie ne suffit jamais — Heurix</title>
+<meta name="description" content="Un algorithme optimal sur 500 produits devient un frein sur 50 000, et l'inverse est tout aussi vrai. Pourquoi la bonne réponse dépend d'une mesure, jamais d'une intuition.">
+<link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/tolerance-fautes-frappe-taille-catalogue.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Tolérance aux fautes de frappe : pourquoi une seule stratégie ne suffit jamais — Heurix">
+<meta property="og:description" content="Un algorithme optimal sur 500 produits devient un frein sur 50 000, et l'inverse est tout aussi vrai. Pourquoi la bonne réponse dépend d'une mesure, jamais d'une intuition.">
+<meta property="og:image" content="https://heurix.fr/og-image.png">
+<meta property="og:url" content="https://heurix.fr/blog/tolerance-fautes-frappe-taille-catalogue.html">
+<meta property="og:locale" content="fr_FR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Tolérance aux fautes de frappe : pourquoi une seule stratégie ne suffit jamais — Heurix">
+<meta name="twitter:description" content="Un algorithme optimal sur 500 produits devient un frein sur 50 000, et l'inverse est tout aussi vrai. Pourquoi la bonne réponse dépend d'une mesure, jamais d'une intuition.">
+<meta name="twitter:image" content="https://heurix.fr/og-image.png">
+<link rel="icon" type="image/png" href="../favicon-32.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<link rel="stylesheet" href="../styles.css?v=1786700271">
+<link rel="canonical" href="https://heurix.fr/blog/tolerance-fautes-frappe-taille-catalogue.html">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Heurix",
+  "url": "https://heurix.fr",
+  "logo": "https://heurix.fr/logo.svg?v=1784985918",
+  "image": "https://heurix.fr/og-image.png",
+  "description": "Moteur de recherche et search & discovery pour sites e-commerce, basé sur des expressions régulières, conçu en France.",
+  "email": "contact@heurix.fr",
+  "sameAs": ["https://www.linkedin.com/company/heurix-search/"],
+  "founder": {"@type": "Person", "name": "Alexis Flahaut"},
+  "areaServed": "FR"
+}
+</script>
+</head>
+<body class="docs-dark">
+<header>
+  <div class="header-top">
+    <nav class="header-top-inner">
+      <a href="../index.html" class="logo"><img src="../logo.svg?v=1784985918" alt="Heurix"> <span class="wordmark">Heurix</span></a>
+      <div class="nav-links">
+        <div class="nav-drop">
+          <button type="button" class="nav-drop-btn" aria-expanded="false" aria-haspopup="true">Produit</button>
+          <div class="nav-drop-panel">
+            <a href="../index.html#probleme">Le problème</a>
+            <a href="../index.html#mission">Notre mission</a>
+            <a href="../index.html#moteur">Le moteur</a>
+            <a href="../fonctionnalites.html">Fonctionnalités</a>
+            <a href="../index.html#tarifs">Simulateur ROI</a>
+          </div>
+        </div>
+        <div class="nav-drop">
+          <button type="button" class="nav-drop-btn" aria-expanded="false" aria-haspopup="true">Solutions</button>
+          <div class="nav-drop-panel">
+          <a href="../solutions/outillage.html">Quincaillerie & outillage</a>
+          <a href="../solutions/industrie.html">Pièces détachées & industrie</a>
+          <a href="../solutions/mode.html">Mode & retail</a>
+          <a href="../solutions/electronique.html">Électronique & high-tech</a>
+          <a href="../solutions/livres.html">Librairie & édition</a>
+          <a href="../solutions/vins.html">Vins & spiritueux</a>
+          <a href="../solutions/finance.html">Finance & comptabilité</a>
+          </div>
+        </div>
+        <div class="nav-drop">
+          <button type="button" class="nav-drop-btn" aria-expanded="false" aria-haspopup="true">Developers</button>
+          <div class="nav-drop-panel">
+            <a href="../docs.html">Documentation</a>
+            <a href="../integrations.html">Intégrations</a>
+            <a href="../blog/guide-mise-en-route.html">Guide de mise en route</a>
+          </div>
+        </div>
+        <a href="../blog.html">Blog</a>
+      </div>
+      <div class="header-search">
+        <button id="heurix-search-btn" class="search-trigger" aria-label="Heurix Search — rechercher sur le site" type="button">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <span class="search-trigger-text">Heurix Search</span>
+          <span class="search-trigger-kbd">Ctrl K</span>
+        </button>
+      </div>
+      <div class="header-utility">
+        <button type="button" id="mobile-nav-toggle" class="mobile-nav-toggle" aria-label="Menu" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+        <a href="../console.html" class="header-signin">Se connecter</a>
+        <a href="../en/blog.html" class="lang-switch">EN</a>
+        <a href="../pricing.html" class="btn">Démarrer l'essai gratuit</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<div id="heurix-search-modal" class="search-modal">
+  <div id="heurix-search-backdrop" class="search-backdrop" data-search-close></div>
+  <div class="search-panel">
+    <div class="search-panel-head">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input id="heurix-search-input" type="text" placeholder="Rechercher sur heurix.fr (articles, docs, pages)…" autocomplete="off">
+      <button class="search-close" data-search-close type="button">Échap</button>
+    </div>
+    <p id="heurix-search-suggest-label" class="search-suggest-label" hidden>Derniers articles</p>
+    <div id="heurix-search-results" class="search-results"></div>
+    <p id="heurix-search-empty" class="search-empty" hidden>Aucun résultat pour cette recherche. Essayez un autre terme.</p>
+  </div>
+</div>
+
+<article class="post">
+  <div class="wrap post-wrap">
+    <a href="../blog.html" class="back-link">← Tous les articles</a>
+    <div class="kicker">Analyse · Août 2026</div>
+    <h1>Tolérance aux fautes de frappe : pourquoi une seule stratégie ne suffit jamais</h1>
+    <p class="post-lede">Un algorithme optimal sur 500 produits devient un frein sur 50 000 — et l'inverse est tout aussi vrai. Voici pourquoi la bonne réponse dépend d'une mesure, jamais d'une intuition.</p>
+
+    <div class="post-body">
+      <h2>Un problème invisible tant qu'on n'a pas mesuré</h2>
+      <p>Tolérer une faute de frappe suppose de comparer ce que l'acheteur a tapé à chaque mot connu du catalogue, pour trouver les plus proches. Sur un petit catalogue, ce travail est trivial : quelques centaines de comparaisons, aucune latence perceptible. Sur un gros catalogue, ce même travail, fait naïvement, devient le vrai goulot d'étranglement de la recherche — pas l'indexation, pas le classement, la simple tolérance à la faute de frappe elle-même.</p>
+      <p><strong>Le problème n'est donc pas l'algorithme. C'est son adéquation à la taille réelle de ce qu'il doit traiter.</strong></p>
+
+      <h2>Deux stratégies, deux profils de coût opposés</h2>
+      <p>Il existe grosso modo deux familles d'approches pour tolérer une faute de frappe à l'échelle d'un vocabulaire entier :</p>
+      <div class="table-scroll"><table class="docs-params">
+        <tr><th>Approche</th><th>Coût sur un petit vocabulaire</th><th>Coût sur un gros vocabulaire</th></tr>
+        <tr><td>Comparaison directe, mot par mot</td><td>Négligeable</td><td>Croît avec la taille du vocabulaire — devient le facteur dominant</td></tr>
+        <tr><td>Automate compilé à l'avance</td><td>Coût de construction inutile, pour un gain qui ne se voit pas</td><td>Quasi constant, quelle que soit la taille du vocabulaire</td></tr>
+      </table></div>
+      <p>Ces deux profils sont à l'opposé l'un de l'autre. Choisir l'automate partout pénalise inutilement les petits catalogues d'un coût de construction qui ne sert à rien à cette échelle. Choisir la comparaison directe partout pénalise les gros catalogues d'une lenteur qui, elle, se voit — et se paie en abandons de recherche.</p>
+
+      <h2>Mesurer plutôt que deviner</h2>
+      <p>C'est le même principe qui nous a fait <a href="recherche-vectorielle-catalogues-techniques.html">écarter la recherche vectorielle</a> pour Heurix : la bonne réponse dépend de ce qu'il y a réellement à traiter, jamais d'une préférence pour une technique qu'on trouve élégante. Nous avons mesuré, sur nos propres catalogues, le point exact où chaque approche devient plus rapide que l'autre — pas supposé, pas extrapolé depuis un benchmark générique trouvé ailleurs, qui n'aurait mesuré ni le même matériel, ni le même vocabulaire, ni la même distribution de fautes réelles.</p>
+      <p>Ce point de croisement se situe à plusieurs dizaines de milliers de mots distincts dans le vocabulaire du catalogue — un ordre de grandeur que la grande majorité des catalogues e-commerce, même volumineux en nombre de produits, n'atteint jamais sur leur vocabulaire propre (le nombre de mots <em>distincts</em>, pas le nombre de produits, qui répètent largement les mêmes termes).</p>
+
+      <h2>Ce que ça change concrètement chez Heurix</h2>
+      <p>En dessous de ce seuil, Heurix compare directement — c'est déjà instantané, et construire un automate coûterait plus cher que ce qu'il ferait gagner. Au-dessus, le moteur bascule automatiquement sur l'automate compilé, qui garde un temps de réponse quasi constant même quand le vocabulaire continue de grandir.</p>
+      <p>Vous n'avez rien à configurer : la bascule se fait catalogue par catalogue, de façon transparente, réévaluée à chaque changement de taille de vocabulaire. C'est la même logique que la <a href="../fonctionnalites.html">tolérance aux fautes</a> et les <a href="../fonctionnalites.html">résultats explicables</a> déjà décrits sur la page fonctionnalités : le moteur choisit sa stratégie sur la base d'une mesure, jamais d'un principe appliqué sans le vérifier.</p>
+
+      <h2>Pour aller plus loin</h2>
+      <p>Le même raisonnement — mesurer avant de choisir un outil, plutôt que de généraliser une préférence — sous-tend aussi notre choix d'écarter la <a href="recherche-vectorielle-catalogues-techniques.html">recherche vectorielle sur les catalogues techniques</a>. Les <a href="../index.html#moteur">principes du moteur</a> sont détaillés sur la page d'accueil.</p>
+    </div>
+
+    <div class="post-footer-cta">
+      <p>Testez la tolérance aux fautes sur votre propre catalogue</p>
+      <a href="../pricing.html" class="btn">Essayer gratuitement — 14 jours</a>
+    </div>
+  </div>
+</article>
+
+<footer>
+  <div class="wrap foot-grid">
+    <a href="../index.html" class="logo" style="font-size:15px;"><img src="../logo.svg?v=1784985918" alt="Heurix" style="height:22px;width:22px;"> <span class="wordmark">Heurix</span></a>
+    <div class="foot-links">
+      <a href="../blog.html">Blog</a>
+      <a href="../docs.html">Documentation API</a>
+      <a href="../fonctionnalites.html">Fonctionnalités</a>
+      <a href="../integrations.html">Intégrations</a>
+      <a href="../console.html">Console</a>
+      <a href="../about.html">À propos</a>
+      <a href="../index.html#faq">FAQ</a>
+      <a href="../cgv.html">CGV</a>
+      <a href="../mentions-legales.html">Mentions légales</a>
+          <a href="#" data-rouvrir-consentement>Gérer les cookies</a>
+        <a href="../confidentialite.html">Confidentialité</a>
+      <a href="mailto:contact@heurix.fr">contact@heurix.fr</a>
+    </div>
+    <div class="foot-social">
+      <span class="foot-social-label">Réseaux sociaux</span>
+      <a href="https://www.linkedin.com/company/heurix-search/" target="_blank" rel="noopener" aria-label="LinkedIn" class="foot-social-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+      </a>
+    </div>
+    <div class="foot-legal">
+      Heurix — Entreprise individuelle (micro-entreprise). SIRET 107 681 900 00018. Conseil en systèmes et logiciels informatiques.<br>
+      © <span id="year">2026</span> Heurix. Tous droits réservés.
+    </div>
+  </div>
+</footer>
+
+<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+
+<script src="../search.js?v=1785843074"></script>
+<script src="../search-engine.js"></script>
+<script src="../nav-dropdown.js"></script>
+<script src="../mobile-nav.js?v=1785755445"></script>
+<div id="pricing-nudge" class="pricing-nudge">
+  <button type="button" class="pricing-nudge-close" aria-label="Fermer">&times;</button>
+  <div class="pricing-nudge-kicker">Essai gratuit 14 jours</div>
+  <p>Testez le Search API sur votre catalogue, sans carte bancaire.</p>
+  <a href="../pricing.html" class="btn">Voir les tarifs</a>
+</div>
+<script src="../pricing-nudge.js"></script>
+<script>window.HEURIX_RACINE='../';</script><script src="../consent.js?v=1785150583"></script>
+</body>
+</html>
