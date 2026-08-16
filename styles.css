@@ -3104,6 +3104,7 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 }
 .so-card-name{ font-size:13.5px; font-weight:700; line-height:1.35; padding-right:34px; margin-bottom:4px; }
 .so-card-ref{ font-family:IBM Plex Mono, monospace; font-size:11px; color:var(--ink-muted); margin-bottom:8px; }
+.so-card-name mark, .so-card-ref mark{ background:var(--blue-tint); color:var(--blue-deep); font-weight:700; padding:1px 3px; border-radius:3px; }
 .so-card-foot{ margin-top:auto; display:flex; align-items:baseline; justify-content:space-between; gap:8px; }
 .so-card-price{ font-size:15px; font-weight:800; color:var(--blue-deep); }
 .so-card-stock{ font-size:11.5px; color:var(--ink-muted); }

@@ -37,6 +37,51 @@
 
   function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;"); }
 
+  // Chantier highlighting (16 aout 2026). Fusionne des empans qui se
+  // chevauchent partiellement (ex. "M8X" et "M8X20" sur la meme
+  // reference, tres courant : plusieurs regles peuvent matcher des
+  // fragments imbriques du meme terme) -- deja tries par position cote
+  // serveur, donc un seul passage suffit.
+  function fusionnerEmpans(empans) {
+    if (!empans || empans.length < 2) return empans || [];
+    var fusionnes = [empans[0].slice()];
+    for (var i = 1; i < empans.length; i++) {
+      var dernier = fusionnes[fusionnes.length - 1];
+      var courant = empans[i];
+      if (courant[0] <= dernier[1]) {
+        dernier[1] = Math.max(dernier[1], courant[1]);
+      } else {
+        fusionnes.push(courant.slice());
+      }
+    }
+    return fusionnes;
+  }
+
+  // Positions en CODEPOINTS Unicode (coherent avec l'API, cote Rust) --
+  // Array.from() itere par codepoint, pas par unite UTF-16 comme le
+  // ferait un simple texte[i]. Identique pour la quasi-totalite des
+  // titres produits reels ; un emoji ou caractere hors plan de base
+  // introduirait un decalage, non gere ici.
+  function surlignerTexte(texte, empans) {
+    if (!texte) return "";
+    if (!empans || !empans.length) return esc(texte);
+
+    var empansFusionnes = fusionnerEmpans(empans);
+    var caracteres = Array.from(texte);
+    var resultat = "";
+    var curseur = 0;
+
+    empansFusionnes.forEach(function (empan) {
+      var debut = empan[0], fin = empan[1];
+      if (debut < curseur || fin > caracteres.length || debut >= fin) return;
+      resultat += esc(caracteres.slice(curseur, debut).join(""));
+      resultat += "<mark>" + esc(caracteres.slice(debut, fin).join("")) + "</mark>";
+      curseur = fin;
+    });
+    resultat += esc(caracteres.slice(curseur).join(""));
+    return resultat;
+  }
+
   function apiFetch(path, token, options) {
     options = options || {};
     var headers = { Authorization: "Bearer " + token };
@@ -1711,6 +1756,7 @@
       // Part AUSSI en simulation : sinon l'apercu simule montrerait autre
       // chose que ce que verra le visiteur.
       in_stock_only: !!(horsStock && horsStock.checked),
+      include_highlights: true,
     };
     // REGROUPEMENT PAR FAMILLE. Mesuré sur un catalogue de 10 000 produits :
     // « vis M8 inox » renvoie 6 582 résultats dont les premiers ne diffèrent
@@ -1810,8 +1856,8 @@
           return "<div class='" + classes + "'" + " draggable='true' data-pid='" + pid + "'" + ">" +
             (q ? "<span class='so-card-rank'>" + (i + 1) + "</span>" : "") +
             badge +
-            "<div class='so-card-name'>" + esc(p.name || p.id) + "</div>" +
-            "<div class='so-card-ref'>" + esc(p.ref || p.id) + "</div>" +
+            "<div class='so-card-name'>" + surlignerTexte(p.name || p.id, h.highlights && h.highlights.name) + "</div>" +
+            "<div class='so-card-ref'>" + surlignerTexte(p.ref || p.id, h.highlights && h.highlights.ref) + "</div>" +
             "<div class='so-card-foot'>" + prix + stock + "</div>" +
             pourquoi + actions +
             "</div>";
