@@ -396,7 +396,13 @@
           </div>
 
           <div id="pane-top-queries" class="console-pane" hidden>
-            <h2 class="console-pane-title">Recherches populaires</h2>
+            <div class="catalog-card-row" style="margin-bottom:0;">
+              <h2 class="console-pane-title" style="margin:0; flex:1;">Recherches populaires</h2>
+              <button type="button" class="export-csv-btn" data-export-table="top-queries-table" data-export-nom="recherches-populaires">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Exporter (CSV)
+              </button>
+            </div>
             <div class="console-panel">
               <div class="table-scroll"><table class="console-table" id="top-queries-table">
                 <thead><tr><th>Requête</th><th>Nb</th><th>Résultats (moy.)</th></tr></thead>
@@ -407,7 +413,13 @@
           </div>
 
           <div id="pane-zero-results" class="console-pane" hidden>
-            <h2 class="console-pane-title">Recherches sans résultat</h2>
+            <div class="catalog-card-row" style="margin-bottom:0;">
+              <h2 class="console-pane-title" style="margin:0; flex:1;">Recherches sans résultat</h2>
+              <button type="button" class="export-csv-btn" data-export-table="zero-results-table" data-export-nom="recherches-sans-resultat">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Exporter (CSV)
+              </button>
+            </div>
             <div class="console-panel console-panel-warn">
               <p class="console-panel-note">Ce que vos clients cherchent sans jamais rien trouver — des ventes potentiellement manquées. Chaque ligne est un candidat pour un synonyme ou une règle à ajouter.</p>
               <div class="table-scroll"><table class="console-table" id="zero-results-table">
@@ -419,7 +431,13 @@
           </div>
 
           <div id="pane-errors" class="console-pane" hidden>
-            <h2 class="console-pane-title">Erreurs récentes</h2>
+            <div class="catalog-card-row" style="margin-bottom:0;">
+              <h2 class="console-pane-title" style="margin:0; flex:1;">Erreurs récentes</h2>
+              <button type="button" class="export-csv-btn" data-export-table="errors-table" data-export-nom="erreurs">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Exporter (CSV)
+              </button>
+            </div>
             <div class="console-panel">
               <div class="err-bilan" id="err-bilan" hidden></div>
               <div class="table-scroll"><table class="console-table" id="errors-table">
@@ -686,7 +704,7 @@
             <h2 class="console-pane-title">Produits les plus vus</h2>
             <div class="console-panel">
               <p class="console-panel-note">Produits affichés sur vos pages de catégorie, croisés avec leurs clics depuis la recherche. Un produit beaucoup montré et peu cliqué est un candidat à la relégation ; l'inverse, à l'épinglage.</p>
-              <label for="cv-catalog" style="font-size:12.5px; font-weight:700; color:var(--ink-muted);">Catalogue</label>
+              <label for="cv-catalog" style="font-size:12.5px; font-weight:700; color:var(--ink-muted);">Comparer avec un autre catalogue <span style="font-weight:400; color:var(--ink-muted);">(indépendant du sélecteur global en haut de page)</span></label>
               <select id="cv-catalog" style="margin:6px 0 16px;"></select>
               <div id="cv-content"></div>
               <p class="console-empty" id="cv-empty" hidden>Aucune vue de page de catégorie remontée. Cette donnée nécessite l'appel <code class="docs-inline-code">Heurix.trackCategoryView()</code> depuis vos pages de catégorie — voir <a href="docs.html#ep-category-views">la documentation</a>.</p>

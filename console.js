@@ -305,6 +305,61 @@
     refreshPublicKeys(key);
   }
 
+  // ---------------- Export CSV des tableaux Observer ----------------
+  //
+  // Lit directement le DOM du tableau deja rendu (pas un second appel API) :
+  // les donnees affichees et exportees sont donc toujours identiques, aucun
+  // risque de decalage entre les deux.
+  function echapperCSV(valeur) {
+    var v = String(valeur == null ? "" : valeur);
+    if (/[",\r\n]/.test(v)) {
+      return '"' + v.replace(/"/g, '""') + '"';
+    }
+    return v;
+  }
+
+  function exporterTableauCSV(tableId, nomFichier) {
+    var table = document.getElementById(tableId);
+    if (!table) return;
+    var lignes = [];
+    var entetes = Array.prototype.map.call(table.querySelectorAll("thead th"), function (th) {
+      return th.textContent.trim();
+    });
+    lignes.push(entetes);
+    Array.prototype.forEach.call(table.querySelectorAll("tbody tr"), function (tr) {
+      var cellules = Array.prototype.map.call(tr.querySelectorAll("td"), function (td) {
+        // Retire boutons/actions (ex: "Corriger" sur zero-results) -- ne
+        // garde que le texte utile pour l'export.
+        var clone = td.cloneNode(true);
+        Array.prototype.forEach.call(clone.querySelectorAll("button, .zr-suggestions"), function (n) { n.remove(); });
+        return clone.textContent.trim();
+      });
+      lignes.push(cellules);
+    });
+    var csv = lignes.map(function (ligne) {
+      return ligne.map(echapperCSV).join(",");
+    }).join("\r\n");
+    // BOM UTF-8 : Excel sous Windows detecte mal l'encodage sans lui,
+    // les caracteres accentues s'affichent alors casses.
+    var blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = nomFichier + "-" + new Date().toISOString().slice(0, 10) + ".csv";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  function wireExportsCSV() {
+    Array.prototype.forEach.call(document.querySelectorAll("[data-export-table]"), function (btn) {
+      btn.addEventListener("click", function () {
+        exporterTableauCSV(btn.getAttribute("data-export-table"), btn.getAttribute("data-export-nom"));
+      });
+    });
+  }
+
   // ---------------- Produits les plus vus (Analytics > Ranking) ----------------
   function wireCategoryViews(key) {
     var select = document.getElementById("cv-catalog");
@@ -3890,6 +3945,8 @@
   });
 
   // ---------------- Point d'entrée ----------------
+  wireExportsCSV();
+
   if (inviteTokenFromUrl) {
     // Une invitation prime aussi — quelqu'un qui clique un lien d'équipe
     // ne doit jamais retomber sur un vieux formulaire de connexion.
