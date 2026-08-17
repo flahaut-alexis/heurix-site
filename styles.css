@@ -3070,18 +3070,48 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 /* Bandeau de simulation : il doit etre impossible de confondre un apercu
    simule avec le classement reellement actif. Fond ambre, distinct du bleu
    Heurix employe partout ailleurs. */
+/* Correctif Lot 2 (audit UX console, 17 aout 2026) : barre collante,
+   visible des le premier changement, meme en scrollant -- brief §4.1.
+   Couleurs harmonisees sur les vraies variables ambre officielles
+   (--amber/--amber-tint/--amber-line, ajoutees pour B3), plus les
+   valeurs en dur precedentes (#FFFBF3, #F0DDB8, #E0930C). */
 .so-simu-bar{
   display:flex; align-items:center; gap:12px; flex-wrap:wrap;
   margin-top:14px; padding:12px 16px;
-  background:#FFFBF3; border:1px solid #F0DDB8; border-radius:10px;
+  background:var(--amber-tint); border:1px solid var(--amber-line); border-radius:10px;
   font-size:13px; color:var(--ink);
+  position:sticky; top:8px; z-index:20;
+  box-shadow:0 4px 14px rgba(178,106,0,0.12);
 }
 .so-simu-bar[hidden]{ display:none; }
 .so-simu-tag{
   font-size:11px; font-weight:800; letter-spacing:0.05em; text-transform:uppercase;
-  background:#E0930C; color:#fff; padding:3px 9px; border-radius:100px; flex-shrink:0;
+  background:var(--amber); color:#fff; padding:3px 9px; border-radius:100px; flex-shrink:0;
 }
-#so-simu-text{ flex:1; min-width:220px; line-height:1.5; }
+#so-simu-text, #br-simu-text{ flex:1; min-width:220px; line-height:1.5; }
+.so-simu-actions{ display:flex; gap:8px; flex-shrink:0; }
+
+/* Correctif Lot 2 (audit UX console, 17 aout 2026) : toast d'annulation
+   avec retour arriere. Fixe en bas de viewport, au-dessus de tout le
+   reste (z-index eleve) -- doit rester visible meme si l'action qui l'a
+   declenche a fait defiler la page. */
+.undo-toast{
+  position:fixed; left:50%; bottom:24px; transform:translateX(-50%);
+  z-index:100;
+  display:flex; align-items:center; gap:16px;
+  padding:12px 18px;
+  background:var(--ink); color:#fff;
+  border-radius:10px; box-shadow:0 8px 24px rgba(18,20,43,0.28);
+  font-size:13.5px;
+}
+.undo-toast[hidden]{ display:none; }
+#undo-toast-btn{
+  font:inherit; font-weight:700; color:var(--blue-tint);
+  background:none; border:none; cursor:pointer; padding:0;
+  text-decoration:underline; flex-shrink:0;
+}
+#undo-toast-btn:hover{ color:#fff; }
+#undo-toast-btn:focus-visible{ outline:2px solid var(--blue-tint); outline-offset:3px; border-radius:3px; }
 /* La ligne teintee de l apercu prend la meme teinte ambre quand elle vient
    d une regle SIMULEE, pour rester coherent avec le bandeau. */
 .so-row-simulated{ background:#FFFBF3; }

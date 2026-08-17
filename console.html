@@ -512,11 +512,21 @@
                 <p class="so-grid-caption" id="so-preview-caption"></p>
                 <div class="so-grid" id="so-preview-grid"></div>
                 <p class="console-empty" id="so-preview-empty" hidden>Aucun résultat pour cette requête.</p>
+                <!-- Correctif Lot 2 (audit UX console, 17 aout 2026) : barre de
+                     brouillon collante, visible des le premier changement.
+                     "Simulation" -> "BROUILLON" (§4.7 -- ce n'est pas une
+                     simulation, c'est un vrai etat en attente de
+                     publication). "Voir le detail" ouvre le recapitulatif
+                     (§4.4). "Abandonner" -> "Tout annuler" + retour
+                     arriere 10s (regle 4, partie 5 du brief). -->
                 <div class="so-simu-bar" id="so-simu-bar" hidden>
-                  <span class="so-simu-tag">Simulation</span>
-                  <span id="so-simu-text">Ces résultats intègrent votre brouillon. Rien n'est encore enregistré — vos visiteurs voient toujours le classement actuel.</span>
-                  <button type="button" class="catalog-rule-add-btn" id="so-simu-apply">Appliquer</button>
-                  <button type="button" class="btn btn-ghost" id="so-simu-discard">Abandonner</button>
+                  <span class="so-simu-tag">Brouillon</span>
+                  <span id="so-simu-text"></span>
+                  <div class="so-simu-actions">
+                    <button type="button" class="btn btn-ghost" id="so-simu-detail">Voir le détail</button>
+                    <button type="button" class="catalog-rule-add-btn" id="so-simu-apply">Publier</button>
+                    <button type="button" class="btn btn-ghost" id="so-simu-discard">Tout annuler</button>
+                  </div>
                 </div>
               </div>
 
@@ -657,11 +667,15 @@
                 <!-- Meme correctif Lot 1 que Search Overrides. -->
                 <p class="so-grid-caption" id="br-caption"></p>
                 <div class="so-grid" id="br-grid"></div>
+                <!-- Meme correctif Lot 2 que Search Overrides. -->
                 <div class="so-simu-bar" id="br-simu-bar" hidden>
-                  <span class="so-simu-tag">Simulation</span>
-                  <span>Ce classement intègre votre brouillon. Rien n'est encore enregistré — vos visiteurs voient toujours l'ordre actuel.</span>
-                  <button type="button" class="catalog-rule-add-btn" id="br-simu-apply">Appliquer</button>
-                  <button type="button" class="btn btn-ghost" id="br-simu-discard">Abandonner</button>
+                  <span class="so-simu-tag">Brouillon</span>
+                  <span id="br-simu-text"></span>
+                  <div class="so-simu-actions">
+                    <button type="button" class="btn btn-ghost" id="br-simu-detail">Voir le détail</button>
+                    <button type="button" class="catalog-rule-add-btn" id="br-simu-apply">Publier</button>
+                    <button type="button" class="btn btn-ghost" id="br-simu-discard">Tout annuler</button>
+                  </div>
                 </div>
                 <details class="br-attrs" style="margin-top:18px;">
                   <summary>Priorités par produit (liste détaillée)</summary>
@@ -1110,5 +1124,15 @@
 <script src="nav-dropdown.js"></script>
 <script src="mobile-nav.js?v=1785755445"></script>
 <script src="consent.js?v=1785150583"></script>
+
+<!-- Correctif Lot 2 (audit UX console, 17 aout 2026) : toast d'annulation
+     avec retour arriere 10s (regle 4, partie 5 du brief -- toute action
+     destructive laisse 10 secondes pour revenir). Un seul exemplaire,
+     partage par Search Overrides et Browse & Discovery, cohérent avec la
+     regle 2 (un composant par concept partage). -->
+<div id="undo-toast" class="undo-toast" hidden role="status" aria-live="polite">
+  <span id="undo-toast-message"></span>
+  <button type="button" id="undo-toast-btn">Annuler</button>
+</div>
 </body>
 </html>

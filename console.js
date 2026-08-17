@@ -1710,9 +1710,50 @@
   // le rendu des fiches.
   var soFiltres = [];
 
+  function simuBarUpdate(prefix, draft) {
+    var bar = document.getElementById(prefix + "-simu-bar");
+    var texte = document.getElementById(prefix + "-simu-text");
+    var n = (draft || []).length;
+    if (bar) bar.hidden = !draft || n === 0;
+    if (texte) {
+      texte.textContent = T(n > 1 ? "{0} changements non publiés. Vos visiteurs voient toujours le classement actuel." : "{0} changement non publié. Vos visiteurs voient toujours le classement actuel.", n);
+    }
+  }
+
+  // Correctif Lot 2 (audit UX console, 17 aout 2026) : annulation avec
+  // retour arriere (regle 4, partie 5 du brief -- toute action
+  // destructive laisse 10 secondes pour revenir). L'action se produit
+  // IMMEDIATEMENT (pas de confirmation prealable, remplace le
+  // window.confirm() de B6) ; le toast propose ensuite de revenir en
+  // arriere en restaurant onRestore(). Un seul minuteur global : un
+  // second appel avant expiration remplace le precedent plutot que
+  // d'empiler deux toasts.
+  var undoTimer = null;
+  function showUndoToast(message, onRestore) {
+    var toast = document.getElementById("undo-toast");
+    var msgEl = document.getElementById("undo-toast-message");
+    var btn = document.getElementById("undo-toast-btn");
+    if (!toast || !msgEl || !btn) return;
+
+    clearTimeout(undoTimer);
+    msgEl.textContent = message;
+    toast.hidden = false;
+
+    var restaure = false;
+    var nouveauBtn = btn.cloneNode(true);
+    btn.parentNode.replaceChild(nouveauBtn, btn);
+    nouveauBtn.addEventListener("click", function () {
+      if (restaure) return;
+      restaure = true;
+      clearTimeout(undoTimer);
+      toast.hidden = true;
+      onRestore();
+    });
+
+    undoTimer = setTimeout(function () { toast.hidden = true; }, 10000);
+  }
   function soSimuBar(actif) {
-    var bar = document.getElementById("so-simu-bar");
-    if (bar) bar.hidden = !actif;
+    simuBarUpdate("so", actif ? session.soDraft : null);
   }
 
   function soRenderFacettes(facets, key) {
@@ -2233,16 +2274,19 @@
     if (appliquer) appliquer.addEventListener("click", function () { soAppliquerBrouillon(key); });
 
     var abandonner = document.getElementById("so-simu-discard");
-    // Correctif B6 (audit UX console, 17 aout 2026) : suppression sans
-    // confirmation ni annulation possible -- confirmation minimale pour
-    // ce lot, le mecanisme complet (bouton Tout annuler + toast avec
-    // retour arriere 10s) vient avec le lot 2 et la refonte de la barre
-    // de brouillon.
+    // Correctif Lot 2 (audit UX console, 17 aout 2026) : remplace la
+    // confirmation prealable de B6 par le vrai mecanisme complet --
+    // action immediate, retour arriere 10s via le toast partage.
     if (abandonner) abandonner.addEventListener("click", function () {
-      if (!window.confirm("Abandonner les modifications non enregistrees ?")) return;
+      var precedent = session.soDraft ? session.soDraft.slice() : null;
       session.soDraft = null;
       resetSoForm();
-      refreshSoPreview(key);
+      refreshSoTable(key);
+      showUndoToast(T("Toutes les modifications ont été annulées."), function () {
+        session.soDraft = precedent;
+        soRenderReglesTable(session.soDraft, true);
+        refreshSoPreview(key);
+      });
     });
   }
 
@@ -2743,8 +2787,7 @@
   var brOrdreAffiche = [];
 
   function brSimuBar(actif) {
-    var bar = document.getElementById("br-simu-bar");
-    if (bar) bar.hidden = !actif;
+    simuBarUpdate("br", actif ? session.brDraft : null);
   }
 
   function brRenderGrille(hits, simule) {
@@ -2999,11 +3042,18 @@
     var appliquer = document.getElementById("br-simu-apply");
     if (appliquer) appliquer.addEventListener("click", function () { brAppliquerBrouillon(key); });
     var abandonner = document.getElementById("br-simu-discard");
-    // Meme correctif B6 que Search Overrides.
+    // Correctif Lot 2 (audit UX console, 17 aout 2026) : meme mecanisme
+    // que Search Overrides -- action immediate, retour arriere 10s.
     if (abandonner) abandonner.addEventListener("click", function () {
-      if (!window.confirm("Abandonner les modifications non enregistrees ?")) return;
+      var precedent = session.brDraft ? session.brDraft.slice() : null;
       session.brDraft = null;
+      refreshBrowseOverrides(key);
       refreshBrowsePreview(key);
+      showUndoToast(T("Toutes les modifications ont été annulées."), function () {
+        session.brDraft = precedent;
+        brRenderReglesTable(session.brDraft, true);
+        brSimuler(key);
+      });
     });
   }
 
