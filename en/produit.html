@@ -185,6 +185,7 @@
         <div class="line"><span class="k">custom_rules</span><span class="v">self-service, no regex</span></div>
         <div class="line"><span class="k">annotations</span><span class="v">2-level cascade</span></div>
         <div class="line"><span class="k">ranking</span><span class="v">relevance &gt; stock</span></div>
+        <div class="line"><span class="k">group_by</span><span class="v">6,582 results → 52 families</span></div>
         <div class="line"><span class="k">conversion_roi</span><span class="v">Heurix Tracker — real visitor attribution</span></div>
         <div class="line"><span class="k">browse_discovery</span><span class="v">price, margin, popularity, manual merchandising</span></div>
       </div>
@@ -197,15 +198,16 @@
         <p>Heurix recognizes the components of a reference — family, dimension, material, standard — and turns them into usable attributes.</p>
 
         <h3 class="pt-sous">Then combines them into concepts</h3>
-        <p>A second layer assembles these attributes: <strong>M8 diameter + stainless material</strong> becomes a searchable combination, which the customer can ask for however they phrase it.</p>
+        <p>A second layer assembles these attributes into a searchable combination, which the customer can ask for however they phrase it — whatever your sector.</p>
         <p class="regex-reassure">⚡ You never write a single regex yourself. Our rule packs — hardware, fashion, industry, books, electronics, wine &amp; spirits, finance &amp; accounting — are pre-configured and activate when you pick your industry, at indexing time. A term specific to your catalog that we don't cover yet? Add your own <strong>Custom Rule</strong> from the console, simply describing what it should recognize.</p>
       </div>
-      <div class="demo-video">
-        <video autoplay muted loop playsinline poster="heurix-demo-poster.jpg" aria-label="Demo: searching for an M8x20 screw with a native engine, then with Heurix">
-          <source src="heurix-demo-outillage.webm" type="video/webm">
-          <source src="heurix-demo-outillage.mp4" type="video/mp4">
-        </video>
-        <div class="demo-video-caption">Hardware industry example: searching "M8x20 stainless"</div>
+      <div class="demo-video" style="padding:24px 20px; display:flex; align-items:center; justify-content:center;">
+        <pre class="docs-code" style="margin:0; width:100%;"><code>// The cascade, two levels, whatever the sector
+"m8" → DIAM_M8        "jeans" → FAM_TROUSERS
+"stainless" → MAT_SS  "w32/l34" → SIZE_32_34
+
+DIAM_M8 + MAT_SS → SCREW_M8_SS
+FAM_TROUSERS + SIZE_32_34 → JEANS_T32_34</code></pre>
       </div>
     </div>
 
@@ -213,12 +215,12 @@
       <div class="regex-copy">
         <h3>The Heurix prism: one reference, several pieces of information</h3>
         <h3 class="pt-sous">One reference, several pieces of information</h3>
-        <p><code class="hero-code">M8 x 20 — Stainless A2</code> isn't a string of letters: it's a diameter, a length, and a material compressed into one string. Most engines compare characters and fail as soon as the format changes.</p>
+        <p>A product reference is never a random string of letters: it's several pieces of information compressed into one string — whatever your sector. Most engines compare characters and fail as soon as the format changes.</p>
         <p>Heurix works like a <strong>prism</strong>: the reference goes in as a single beam, comes out decomposed into searchable attributes — and your customer finds it by any fragment, in any order, with or without a typo.</p>
-        <p class="regex-reassure">⚡ This diagram runs on the real Heurix engine, not a mockup — it's exactly the logic that processes your catalog from the moment you index it.</p>
+        <p class="regex-reassure">⚡ These two diagrams run on the real Heurix engine, not a mockup — the same mechanic, applied to two different sectors. Explore the <a href="docs.html#ep-rulepacks">ten rule packs</a> or <a href="docs.html#ep-custom-rules">build your own</a>.</p>
       </div>
       <div class="demo-video" style="padding:24px 20px; display:flex; align-items:center; justify-content:center;">
-        <img src="img/prisme-marketing.svg?v=1784819296" width="680" height="420" alt="Diagram: the reference M8 x 20 - Stainless A2 passes through the Heurix lens and comes out decomposed into three pieces of information: diameter, length, material" style="width:100%; max-width:520px;">
+        <img src="img/prisme-marketing-double.svg?v=1786012900" width="680" height="600" alt="Diagram: two references, one hardware (M8 x 20 - Stainless A2) and one fashion (Jeans W32/L34 - Raw denim), each pass through the Heurix lens and come out decomposed into three pieces of information: two dimensions and a material" style="width:100%; max-width:420px;">
       </div>
     </div>
 
