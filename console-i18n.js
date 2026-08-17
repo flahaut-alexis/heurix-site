@@ -718,6 +718,8 @@
     "pour épingler ou reléguer : une règle se déclenche sur une recherche précise, elle n'existe pas en dehors d'une requête.": "to pin or bury: a rule triggers on a specific search, it doesn't exist outside a query.",
     "Échec de la création.": "Creation failed.",
     "Épingler un produit": "Pin a product",
+
+    "Sélectionnez un produit dans la liste des suggestions.": "Select a product from the suggestion list.",
   };
 
   // Attributs porteurs de texte visible ou annoncé aux lecteurs d'écran.

@@ -410,7 +410,12 @@
                 <form id="so-form" class="catalog-rule-add">
                   <div class="catalog-rule-add-row">
                     <input type="text" placeholder="Trigger query, e.g. promo" id="so-query" required>
-                    <input type="text" placeholder="Product identifier" id="so-product-id" required>
+                    <!-- Correctif Lot 3 -- parite EN avec console.html. -->
+                    <div class="so-autocomplete" style="position:relative; flex:1;">
+                      <input type="text" placeholder="Product name or reference" id="so-product-search" autocomplete="off" required>
+                      <input type="hidden" id="so-product-id">
+                      <div class="so-autocomplete-panel" id="so-product-panel" hidden></div>
+                    </div>
                   </div>
                   <div class="catalog-rule-add-row">
                     <select id="so-action">

@@ -563,7 +563,11 @@
                 <form id="so-form" class="catalog-rule-add">
                   <div class="catalog-rule-add-row">
                     <input type="text" placeholder="Requête déclenchante, ex. promo" id="so-query" required>
-                    <input type="text" placeholder="Identifiant du produit" id="so-product-id" required>
+                    <div class="so-autocomplete" style="position:relative; flex:1;">
+                      <input type="text" placeholder="Nom ou référence du produit" id="so-product-search" autocomplete="off" required>
+                      <input type="hidden" id="so-product-id">
+                      <div class="so-autocomplete-panel" id="so-product-panel" hidden></div>
+                    </div>
                   </div>
                   <div class="catalog-rule-add-row">
                     <select id="so-action">

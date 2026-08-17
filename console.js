@@ -1633,6 +1633,10 @@
     soEditingKey = null;
     document.getElementById("so-query").value = "";
     document.getElementById("so-product-id").value = "";
+    // Correctif Lot 3 (audit UX console, 17-18 aout 2026) : autocompletion
+    // produit (C3) -- so-product-search est le nouveau champ visible,
+    // synchronise avec so-product-id (cache, garde sa semantique existante).
+    document.getElementById("so-product-search").value = "";
     document.getElementById("so-action").value = "pin";
     document.getElementById("so-position").hidden = false;
     document.getElementById("so-position").value = "";
@@ -1645,6 +1649,12 @@
   function fillSoForm(o) {
     document.getElementById("so-query").value = o.query;
     document.getElementById("so-product-id").value = o.productId;
+    // Meme correctif Lot 3 : le vrai nom n'est pas connu a ce point (la
+    // regle deja publiee, via data.overrides, ne porte pas product_name
+    // -- verifie avant de supposer). L'id seul reste acceptable ici,
+    // l'utilisateur vient de voir le vrai nom dans la colonne "Produit"
+    // du tableau juste avant de cliquer "Modifier".
+    document.getElementById("so-product-search").value = o.productId;
     document.getElementById("so-action").value = o.action;
     document.getElementById("so-position").hidden = o.action !== "pin";
     document.getElementById("so-position").value = o.position || "";
@@ -2263,7 +2273,10 @@
     var pinBtn = document.getElementById("so-empty-pin-btn");
     if (pinBtn) pinBtn.addEventListener("click", function () {
       var champQuery = document.getElementById("so-query");
-      var champProduit = document.getElementById("so-product-id");
+      // Correctif Lot 3 : cible desormais le vrai champ visible
+      // (so-product-search), pas so-product-id (cache depuis
+      // l'autocompletion produit).
+      var champProduit = document.getElementById("so-product-search");
       if (champQuery) champQuery.value = q;
       if (champProduit) { champProduit.focus(); champProduit.scrollIntoView({ behavior: "smooth", block: "center" }); }
     });
@@ -2303,6 +2316,71 @@
           submitBtn.disabled = false;
           if (status) { status.textContent = (e && e.message) || T("Échec de la création."); status.style.color = "#C0392B"; }
         });
+    });
+  }
+
+  function wireSoProductAutocomplete(key) {
+    var champ = document.getElementById("so-product-search");
+    var idCache = document.getElementById("so-product-id");
+    var panneau = document.getElementById("so-product-panel");
+    if (!champ || !idCache || !panneau) return;
+
+    var debounceTimer = null;
+    var lastRequestId = 0;
+
+    function fermerPanneau() {
+      panneau.hidden = true;
+      panneau.innerHTML = "";
+    }
+
+    function afficherSuggestions(hits) {
+      if (!hits.length) {
+        panneau.innerHTML = "<div class='so-autocomplete-empty'>" + T("Aucun produit ne correspond.") + "</div>";
+        panneau.hidden = false;
+        return;
+      }
+      panneau.innerHTML = hits.map(function (h) {
+        var p = h.product;
+        var prix = (p.price !== undefined && p.price !== null)
+          ? Number(p.price).toLocaleString(LOCALE, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €" : "";
+        var stock = h.in_stock === false ? "<span class='so-autocomplete-oos'>" + T("Rupture") + "</span>" : T("En stock");
+        return "<button type='button' class='so-autocomplete-item' data-id='" + esc(p.id) + "' data-name='" + esc(p.name || p.id) + "'>" +
+          "<span class='so-autocomplete-name'>" + esc(p.name || p.id) + "</span>" +
+          "<span class='so-autocomplete-meta'>" + esc(p.ref || p.id) + (prix ? " · " + prix : "") + " · " + stock + "</span>" +
+        "</button>";
+      }).join("");
+      panneau.hidden = false;
+    }
+
+    champ.addEventListener("input", function () {
+      idCache.value = "";
+      var q = champ.value.trim();
+      clearTimeout(debounceTimer);
+      if (q.length < 2) { fermerPanneau(); return; }
+      debounceTimer = setTimeout(function () {
+        var requestId = ++lastRequestId;
+        apiFetch("/v1/index/" + encodeURIComponent(session.soCurrentCatalog) + "/search", key, {
+          method: "POST", body: { q: q, limit: 8 }
+        }).then(function (data) {
+          if (requestId !== lastRequestId) return;
+          afficherSuggestions(data.hits || []);
+        }).catch(function () {
+          if (requestId !== lastRequestId) return;
+          fermerPanneau();
+        });
+      }, 200);
+    });
+
+    panneau.addEventListener("click", function (e) {
+      var item = e.target.closest(".so-autocomplete-item");
+      if (!item) return;
+      idCache.value = item.getAttribute("data-id");
+      champ.value = item.getAttribute("data-name");
+      fermerPanneau();
+    });
+
+    document.addEventListener("click", function (e) {
+      if (!champ.contains(e.target) && !panneau.contains(e.target)) fermerPanneau();
     });
   }
 
@@ -2822,6 +2900,7 @@
     wireSoPreview(key);
     wireSoDraft(key);
     wireSoGridActions(key);
+    wireSoProductAutocomplete(key);
     if (soFormWired) return;
     soFormWired = true;
 
@@ -2846,7 +2925,18 @@
       var status = document.getElementById("so-status");
       var query = document.getElementById("so-query").value.trim();
       var productId = document.getElementById("so-product-id").value.trim();
-      if (!query || !productId) return;
+      if (!query) return;
+      // Correctif Lot 3 (autocompletion produit, C3) : productId reste
+      // vide si l'utilisateur a tape du texte sans jamais cliquer une
+      // suggestion -- le "required" HTML5 (sur le champ visible) ne le
+      // detecte pas, message explicite necessaire ici plutot qu'un
+      // retour silencieux.
+      if (!productId) {
+        status.textContent = T("Sélectionnez un produit dans la liste des suggestions.");
+        status.className = "catalog-rule-status err";
+        document.getElementById("so-product-search").focus();
+        return;
+      }
       if (document.getElementById("so-action").value === "pin" && !document.getElementById("so-position").value) {
         document.getElementById("so-position").focus();
         return;

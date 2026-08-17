@@ -3144,6 +3144,27 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 .recap-modal-row-remove:hover{ color:#C0392B; background:var(--red-tint); }
 .recap-modal-note{ font-size:12.5px; color:var(--ink-muted); margin:18px 0 0; }
 .recap-modal-actions{ display:flex; justify-content:flex-end; gap:10px; margin-top:20px; }
+
+/* Correctif Lot 3 (audit UX console, 17-18 aout 2026) : autocompletion
+   produit (C3). */
+.so-autocomplete-panel{
+  position:absolute; top:calc(100% + 4px); left:0; right:0; z-index:30;
+  background:#fff; border:1px solid var(--line); border-radius:var(--radius);
+  box-shadow:0 8px 20px rgba(20,22,45,0.12);
+  max-height:280px; overflow-y:auto;
+}
+.so-autocomplete-panel[hidden]{ display:none; }
+.so-autocomplete-item{
+  display:flex; flex-direction:column; gap:2px; width:100%;
+  text-align:left; padding:8px 12px; border:none; border-bottom:1px solid var(--line);
+  background:#fff; cursor:pointer; font:inherit;
+}
+.so-autocomplete-item:last-child{ border-bottom:none; }
+.so-autocomplete-item:hover{ background:var(--blue-tint); }
+.so-autocomplete-name{ font-size:13px; font-weight:600; color:var(--ink); }
+.so-autocomplete-meta{ font-size:11.5px; color:var(--ink-muted); }
+.so-autocomplete-oos{ color:#C0392B; }
+.so-autocomplete-empty{ padding:12px; font-size:13px; color:var(--ink-muted); text-align:center; }
 /* La ligne teintee de l apercu prend la meme teinte ambre quand elle vient
    d une regle SIMULEE, pour rester coherent avec le bandeau. */
 .so-row-simulated{ background:#FFFBF3; }
