@@ -390,7 +390,7 @@
                   <thead><tr><th>Trigger</th><th>Product</th><th>Action</th><th>Position</th><th></th></tr></thead>
                   <tbody></tbody>
                 </table></div>
-                <p class="console-empty" id="so-empty" hidden>No priority set on this catalog.</p>
+                <p class="console-empty" id="so-empty" hidden>No rule set on this catalog.</p>
               </div>
 
               
@@ -404,9 +404,9 @@
               </div>
 
               <details class="br-attrs">
-                <summary>Add a priority manually — for a product missing from results</summary>
+                <summary>Add a rule manually — for a product missing from results</summary>
                 <div style="padding-top:12px;">
-                <h2 id="so-form-title">Add a priority</h2>
+                <h2 id="so-form-title">Add a rule</h2>
                 <form id="so-form" class="catalog-rule-add">
                   <div class="catalog-rule-add-row">
                     <input type="text" placeholder="Trigger query, e.g. promo" id="so-query" required>
@@ -419,7 +419,7 @@
                     </select>
                     <input type="number" min="1" max="100" placeholder="Position (pin only)" id="so-position">
                   </div>
-                  <button type="submit" class="catalog-rule-add-btn" id="so-submit-btn">Add priority</button>
+                  <button type="submit" class="catalog-rule-add-btn" id="so-submit-btn">Add rule</button>
                   <button type="button" class="btn btn-ghost" id="so-cancel-edit-btn" hidden style="margin-left:8px;">Cancel edit</button>
                   <span class="catalog-rule-status" id="so-status"></span>
                 </form>
@@ -530,16 +530,16 @@
                   </div>
                 </div>
                 <details class="br-attrs" style="margin-top:18px;">
-                  <summary>Per-product priorities (detailed list)</summary>
+                  <summary>Per-product rules (detailed list)</summary>
                   <div style="padding-top:12px;" id="bo-rules-panel">
-                <h2>Per-product priorities</h2>
+                <h2>Per-product rules</h2>
                 <p class="console-panel-note">Pin a product to an exact position, or bury it at the end of the list — regardless of the sort chosen above.</p>
                 <div class="table-scroll"><table class="console-table" id="browse-overrides-table">
                   <thead><tr><th>Product</th><th>Action</th><th>Position</th><th></th></tr></thead>
                   <tbody></tbody>
                 </table></div>
-                <p class="console-empty" id="browse-overrides-empty" hidden>No priority set on this category.</p>
-                <h2 id="bo-form-title" style="margin-top:18px;">Add a priority</h2>
+                <p class="console-empty" id="browse-overrides-empty" hidden>No rule set on this category.</p>
+                <h2 id="bo-form-title" style="margin-top:18px;">Add a rule</h2>
                 <form id="browse-override-form" class="catalog-rule-add">
                   <div class="catalog-rule-add-row">
                     <input type="text" placeholder="Product identifier" id="browse-override-product-id" required>
@@ -549,7 +549,7 @@
                     </select>
                   </div>
                   <input type="number" min="1" max="100" placeholder="Position (1 = first pinned)" id="browse-override-position">
-                  <button type="submit" class="catalog-rule-add-btn" id="bo-submit-btn">Add priority</button>
+                  <button type="submit" class="catalog-rule-add-btn" id="bo-submit-btn">Add rule</button>
                   <button type="button" class="btn btn-ghost" id="bo-cancel-edit-btn" hidden style="margin-left:8px;">Cancel edit</button>
                   <span class="catalog-rule-status" id="browse-override-status"></span>
                 </form>

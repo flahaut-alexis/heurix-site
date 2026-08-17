@@ -1636,8 +1636,8 @@
     document.getElementById("so-action").value = "pin";
     document.getElementById("so-position").hidden = false;
     document.getElementById("so-position").value = "";
-    document.getElementById("so-form-title").textContent = T("Ajouter une priorité");
-    document.getElementById("so-submit-btn").textContent = T("Ajouter la priorité");
+    document.getElementById("so-form-title").textContent = T("Ajouter une règle");
+    document.getElementById("so-submit-btn").textContent = T("Ajouter la règle");
     document.getElementById("so-cancel-edit-btn").hidden = true;
     document.getElementById("so-status").textContent = "";
   }
@@ -2546,7 +2546,7 @@
     var legende = document.getElementById("so-preview-caption");
     if (legende && !soRequeteCourante()) {
       legende.innerHTML = "<strong>" + T("Saisissez d'abord une requête") + "</strong> " +
-        T("pour épingler ou reléguer : une priorité se déclenche sur une recherche précise, elle n'existe pas en dehors d'une requête.");
+        T("pour épingler ou reléguer : une règle se déclenche sur une recherche précise, elle n'existe pas en dehors d'une requête.");
       legende.classList.add("so-caption-warn");
       setTimeout(function () { legende.classList.remove("so-caption-warn"); }, 2600);
       return false;
@@ -2798,7 +2798,7 @@
           query: editBtn.getAttribute("data-query"), productId: editBtn.getAttribute("data-product-id"),
           action: editBtn.getAttribute("data-action"), position: editBtn.getAttribute("data-position"),
         });
-        document.getElementById("so-form-title").textContent = T("Modifier la priorité");
+        document.getElementById("so-form-title").textContent = T("Modifier la règle");
         document.getElementById("so-submit-btn").textContent = T("Enregistrer les modifications");
         document.getElementById("so-cancel-edit-btn").hidden = false;
         document.getElementById("so-query").scrollIntoView({ behavior: "smooth", block: "center" });
@@ -2810,8 +2810,8 @@
           query: dupBtn.getAttribute("data-query"), productId: dupBtn.getAttribute("data-product-id"),
           action: dupBtn.getAttribute("data-action"), position: dupBtn.getAttribute("data-position"),
         });
-        document.getElementById("so-form-title").textContent = T("Dupliquer une priorité — modifiez au moins un champ");
-        document.getElementById("so-submit-btn").textContent = T("Créer cette priorité");
+        document.getElementById("so-form-title").textContent = T("Dupliquer une règle — modifiez au moins un champ");
+        document.getElementById("so-submit-btn").textContent = T("Créer cette règle");
         document.getElementById("so-cancel-edit-btn").hidden = false;
         document.getElementById("so-query").focus();
         document.getElementById("so-query").select();
@@ -3291,8 +3291,8 @@
     document.getElementById("browse-override-product-id").value = "";
     document.getElementById("browse-override-action").value = "pin";
     document.getElementById("browse-override-position").value = "";
-    document.getElementById("bo-form-title").textContent = T("Ajouter une priorité");
-    document.getElementById("bo-submit-btn").textContent = T("Ajouter la priorité");
+    document.getElementById("bo-form-title").textContent = T("Ajouter une règle");
+    document.getElementById("bo-submit-btn").textContent = T("Ajouter la règle");
     document.getElementById("bo-cancel-edit-btn").hidden = true;
   }
 
@@ -3380,8 +3380,8 @@
         document.getElementById("browse-override-product-id").value = src.getAttribute("data-product-id");
         document.getElementById("browse-override-action").value = src.getAttribute("data-action");
         document.getElementById("browse-override-position").value = src.getAttribute("data-position") || "";
-        document.getElementById("bo-form-title").textContent = editBtn ? T("Modifier la priorité") : T("Dupliquer — modifiez au moins un champ");
-        document.getElementById("bo-submit-btn").textContent = editBtn ? T("Enregistrer les modifications") : T("Créer cette priorité");
+        document.getElementById("bo-form-title").textContent = editBtn ? T("Modifier la règle") : T("Dupliquer — modifiez au moins un champ");
+        document.getElementById("bo-submit-btn").textContent = editBtn ? T("Enregistrer les modifications") : T("Créer cette règle");
         document.getElementById("bo-cancel-edit-btn").hidden = false;
         document.getElementById("browse-override-product-id").scrollIntoView({ behavior: "smooth", block: "center" });
         if (dupBtn) { document.getElementById("browse-override-product-id").focus(); document.getElementById("browse-override-product-id").select(); }
