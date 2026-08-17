@@ -165,6 +165,14 @@
         <a href="docs.html#ep-rulepacks">Endpoint /v1/rulepacks →</a>
       </div>
 
+      <div class="feat-card">
+        <h3>Automatic pack suggestion</h3>
+        <p>A fashion catalog left on the hardware pack never finds out on its own. The endpoint annotates a sample of your catalog with every available pack and compares the real coverage — actual content decides, not the vertical declared at signup. Never changes anything: the suggestion is shown, the decision stays yours.</p>
+        <pre class="docs-code"><code>GET /v1/index/{catalog}/rulepack-suggestion
+→ {"recommande": "fashion", "raison": "..."}</code></pre>
+        <a href="docs.html#ep-rulepack-suggestion">Suggestion endpoint →</a>
+      </div>
+
       <div class="feat-card feat-card-highlight">
         <h3>Custom Rules</h3>
         <p>Add your own recognition rules on top of an existing pack, with no regex to write, directly from the console. A keyword that should always point to the same label ("drywall anchor", "molly bolt" → a single concept), or a prefix followed by a number (RAL codes, DIN standards, shades). Immediate effect on your search, specific to each catalog — never shared with other Heurix accounts.</p>
@@ -180,6 +188,14 @@
         <pre class="docs-code"><code>PUT /v1/index/{catalog}/synonyms
 {"groups": [["screw", "bolt", "fastener"]]}</code></pre>
         <a href="docs.html#ep-synonyms">Synonyms endpoint →</a>
+      </div>
+
+      <div class="feat-card">
+        <h3>Synonym suggestions</h3>
+        <p>Every search that returns nothing is already a signal: a customer who didn't find it. The endpoint compares that term to your catalog's real vocabulary using the same typo tolerance as search itself — never AI, never guessed. Numeric references are excluded by design: pairing two different products would be the worst possible false synonym, invisible precisely because it looks plausible. You decide; nothing is created without approval.</p>
+        <pre class="docs-code"><code>GET /v1/index/{catalog}/synonym-suggestions?q=washr
+→ {"suggestions": [{"jeton": "washr", "candidats": [...]}]}</code></pre>
+        <a href="docs.html#ep-synonym-suggestions">Suggestions endpoint →</a>
       </div>
 
       <div class="feat-card">

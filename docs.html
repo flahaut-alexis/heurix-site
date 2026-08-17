@@ -856,6 +856,20 @@ done</code></pre>
   -d '{"groups": [["vis", "boulon", "visserie"], ["ecrou", "nut"]]}'</code></pre>
     </section>
 
+    <section id="ep-synonym-suggestions" class="docs-section">
+      <div class="docs-endpoint"><span class="docs-method docs-method-get">GET</span><code>/v1/index/{catalog}/synonym-suggestions</code></div>
+      <h2>Suggestions de synonymes</h2>
+      <p>Propose des rapprochements pour un terme qui n'a rien trouvé, à partir du vocabulaire réel de votre catalogue — même distance d'édition que la tolérance aux fautes de la recherche elle-même, jamais une IA. Les jetons déjà trouvés, les références chiffrées (rapprocher deux produits différents serait le pire faux synonyme possible) et les mots de moins de 4 lettres sont exclus d'office. <strong>Ne crée jamais rien automatiquement</strong> — vous validez chaque candidat avant qu'il n'atterrisse dans <a href="#ep-synonyms">l'endpoint synonymes</a>.</p>
+      <pre class="docs-code"><code>curl -X GET "https://api.heurix.fr/v1/index/moncatalogue/synonym-suggestions?q=rondele" \
+  -H "Authorization: Bearer VOTRE_CLE_API"
+
+→ {"query": "rondele", "suggestions": [
+     {"jeton": "rondele", "candidats": [
+       {"terme": "rondelle", "distance": 1, "produits": 340}
+     ]}
+   ]}</code></pre>
+    </section>
+
     <section id="ep-stats" class="docs-section">
       <div class="docs-endpoint"><span class="docs-method docs-method-get">GET</span><code>/v1/index/{catalog}/stats</code></div>
       <h2>Statistiques</h2>
@@ -880,6 +894,19 @@ done</code></pre>
         <strong>industrie</strong> (roulements, références normalisées),
         <strong>électronique</strong>, <strong>mode</strong> (tailles, coloris, matières),
         <strong>vins</strong>, <strong>livres</strong> et <strong>finance</strong>. Des packs sur mesure pour votre catalogue peuvent être conçus en mission <a href="index.html#tarifs">Simulateur ROI</a>.</p>
+    </section>
+
+    <section id="ep-rulepack-suggestion" class="docs-section">
+      <div class="docs-endpoint"><span class="docs-method docs-method-get">GET</span><code>/v1/index/{catalog}/rulepack-suggestion</code></div>
+      <h2>Suggestion de pack automatique</h2>
+      <p>Recommande le pack le plus adapté d'après le contenu réel de votre catalogue, pas le secteur déclaré à l'inscription — un catalogue de vêtements resté sur le pack outillage ne le sait jamais tout seul autrement. Annote un échantillon du catalogue avec chaque pack disponible et compare la couverture obtenue. <strong>Ne modifie jamais rien</strong> : la suggestion est renvoyée, changer de pack reste une action volontaire via <a href="#ep-items">l'endpoint d'indexation</a>. Ne compte pas dans le quota — une consultation de compte, comme <a href="#ep-usage">/v1/usage</a>.</p>
+      <pre class="docs-code"><code>curl -X GET https://api.heurix.fr/v1/index/moncatalogue/rulepack-suggestion \
+  -H "Authorization: Bearer VOTRE_CLE_API"
+
+→ {"classement": [
+     {"pack": "mode", "annotations_distinctes": 42, "produits_annotes": 380, "couverture_pct": 95.0},
+     {"pack": "outillage", "annotations_distinctes": 3, "produits_annotes": 12, "couverture_pct": 3.0}
+   ], "recommande": "mode", "raison": "..."}</code></pre>
     </section>
 
     <section id="ep-custom-rules" class="docs-section">

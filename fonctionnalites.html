@@ -167,6 +167,14 @@
         <a href="docs.html#ep-rulepacks">Endpoint /v1/rulepacks →</a>
       </div>
 
+      <div class="feat-card">
+        <h3>Suggestion de pack automatique</h3>
+        <p>Un catalogue de vêtements resté sur le pack outillage ne le sait jamais tout seul. L'endpoint annote un échantillon de votre catalogue avec chaque pack disponible et compare la couverture réelle — le vrai contenu tranche, pas le secteur déclaré à l'inscription. Ne modifie jamais rien : la suggestion est affichée, la décision reste la vôtre.</p>
+        <pre class="docs-code"><code>GET /v1/index/{catalog}/rulepack-suggestion
+→ {"recommande": "mode", "raison": "..."}</code></pre>
+        <a href="docs.html#ep-rulepack-suggestion">Endpoint suggestion de pack →</a>
+      </div>
+
       <div class="feat-card feat-card-highlight">
         <h3>Custom Rules</h3>
         <p>Ajoutez vos propres règles de reconnaissance par-dessus un pack existant, sans écrire la moindre regex, directement depuis la console. Un mot-clé qui doit toujours pointer vers la même étiquette (« placo », « cheville », « molly » → une seule notion), ou un préfixe suivi d'un nombre (codes RAL, normes DIN, teintes). Effet immédiat sur votre recherche, propre à chaque catalogue — jamais partagé avec les autres comptes Heurix.</p>
@@ -182,6 +190,14 @@
         <pre class="docs-code"><code>PUT /v1/index/{catalog}/synonyms
 {"groups": [["vis", "boulon", "visserie"]]}</code></pre>
         <a href="docs.html#ep-synonyms">Endpoint synonymes →</a>
+      </div>
+
+      <div class="feat-card">
+        <h3>Synonymes suggérés automatiquement</h3>
+        <p>Chaque recherche sans résultat est déjà un signal : un client qui n'a pas trouvé. L'endpoint compare ce terme au vocabulaire réel de votre catalogue par la même tolérance aux fautes que la recherche elle-même — jamais par IA, jamais deviné. Les références chiffrées sont exclues d'office : rapprocher deux produits différents serait le pire synonyme possible, invisible parce que plausible. Vous décidez ; rien n'est créé sans validation.</p>
+        <pre class="docs-code"><code>GET /v1/index/{catalog}/synonym-suggestions?q=rondele
+→ {"suggestions": [{"jeton": "rondele", "candidats": [...]}]}</code></pre>
+        <a href="docs.html#ep-synonym-suggestions">Endpoint suggestions →</a>
       </div>
 
       <div class="feat-card">

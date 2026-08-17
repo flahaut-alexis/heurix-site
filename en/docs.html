@@ -842,6 +842,20 @@ done</code></pre>
   -d '{"groups": [["screw", "bolt"], ["nut", "ecrou"]]}'</code></pre>
     </section>
 
+    <section id="ep-synonym-suggestions" class="docs-section">
+      <div class="docs-endpoint"><span class="docs-method docs-method-get">GET</span><code>/v1/index/{catalog}/synonym-suggestions</code></div>
+      <h2>Synonym suggestions</h2>
+      <p>Suggests matches for a term that returned nothing, drawn from your catalog's real vocabulary — the same edit-distance tolerance already used by search itself, never AI. Terms already found, numeric references (pairing two different products would be the worst possible false synonym), and words under 4 letters are excluded by design. <strong>Never creates anything automatically</strong> — you approve each candidate before it lands in <a href="#ep-synonyms">the synonyms endpoint</a>.</p>
+      <pre class="docs-code"><code>curl -X GET "https://api.heurix.fr/v1/index/mycatalog/synonym-suggestions?q=washr" \
+  -H "Authorization: Bearer YOUR_API_KEY"
+
+→ {"query": "washr", "suggestions": [
+     {"jeton": "washr", "candidats": [
+       {"terme": "washer", "distance": 1, "produits": 340}
+     ]}
+   ]}</code></pre>
+    </section>
+
     <section id="ep-stats" class="docs-section">
       <div class="docs-endpoint"><span class="docs-method docs-method-get">GET</span><code>/v1/index/{catalog}/stats</code></div>
       <h2>Statistics</h2>
@@ -866,6 +880,19 @@ done</code></pre>
         <strong>industrial</strong> (bearings, standardized references),
         <strong>electronics</strong>, <strong>fashion</strong> (sizes, colors, materials),
         <strong>wine</strong>, <strong>books</strong>, and <strong>finance</strong>. Custom packs for your catalog can be designed as a <a href="index.html#tarifs">ROI Simulator</a> mission.</p>
+    </section>
+
+    <section id="ep-rulepack-suggestion" class="docs-section">
+      <div class="docs-endpoint"><span class="docs-method docs-method-get">GET</span><code>/v1/index/{catalog}/rulepack-suggestion</code></div>
+      <h2>Automatic pack suggestion</h2>
+      <p>Recommends the best-fitting pack based on your catalog's actual content, not the vertical declared at signup — a fashion catalog left on the hardware pack never finds out on its own otherwise. Annotates a sample of the catalog with every available pack and compares the resulting coverage. <strong>Never changes anything</strong>: the suggestion is returned, switching packs stays a deliberate action via <a href="#ep-items">the indexing endpoint</a>. Doesn't count against quota — an account lookup, like <a href="#ep-usage">/v1/usage</a>.</p>
+      <pre class="docs-code"><code>curl -X GET https://api.heurix.fr/v1/index/mycatalog/rulepack-suggestion \
+  -H "Authorization: Bearer YOUR_API_KEY"
+
+→ {"classement": [
+     {"pack": "fashion", "annotations_distinctes": 42, "produits_annotes": 380, "couverture_pct": 95.0},
+     {"pack": "hardware", "annotations_distinctes": 3, "produits_annotes": 12, "couverture_pct": 3.0}
+   ], "recommande": "fashion", "raison": "..."}</code></pre>
     </section>
 
     <section id="ep-custom-rules" class="docs-section">
