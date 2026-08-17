@@ -3191,11 +3191,17 @@
       document.getElementById("overview-stats-content").hidden = false;
     });
 
+    // Correctif B5 (audit UX console, 17 aout 2026) : le catalogue actif
+    // n'etait jamais transmis a ces trois endpoints -- toutes les
+    // recherches/erreurs d'un compte se melangeaient entre catalogues,
+    // quel que soit le catalogue selectionne ici. session.catalogueActif
+    // sert deja pour d'autres appels (synonymes) plus bas dans ce fichier.
+    var catalogQS = "&catalog=" + encodeURIComponent(session.catalogueActif);
     Promise.all([
       apiFetch("/v1/analytics/summary?days=" + days, key),
-      apiFetch("/v1/analytics/top-queries?days=" + days + "&limit=15", key),
-      apiFetch("/v1/analytics/zero-results?days=" + days + "&limit=15", key),
-      apiFetch("/v1/analytics/errors?days=" + days + "&limit=10", key),
+      apiFetch("/v1/analytics/top-queries?days=" + days + "&limit=15" + catalogQS, key),
+      apiFetch("/v1/analytics/zero-results?days=" + days + "&limit=15" + catalogQS, key),
+      apiFetch("/v1/analytics/errors?days=" + days + "&limit=10" + catalogQS, key),
       apiFetch("/v1/usage", key),
     ]).then(function (results) {
       var summary = results[0], topQueries = results[1].queries, zeroResults = results[2].queries,
