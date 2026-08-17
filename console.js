@@ -2758,7 +2758,14 @@
       var pid = esc(p.id);
       var regle = h.pinned || h.buried || h.boosted;
       var classes = "so-card" + (regle ? (simule ? " so-card-simulated" : " so-card-ruled") : "");
-      var badge = h.pinned ? "<span class='so-card-badge so-card-badge-pin'>" + T("Épinglé") + " · " + (i + 1) + "</span>"
+      // Correctif C4 (audit UX console, 17 aout 2026) : meme cause que
+      // Search Overrides -- (i+1) duplique entre le badge et .so-card-rank
+      // juste en dessous, verifie identique. Encore plus net ici :
+      // so-card-rank n'est meme pas conditionnee par une requete (parcours
+      // par categorie, pas de recherche textuelle) -- source unique du
+      // numero sans exception. "Booste" n'avait deja pas de numero, non
+      // concerne.
+      var badge = h.pinned ? "<span class='so-card-badge so-card-badge-pin'>" + T("Épinglé") + "</span>"
         : h.boosted ? "<span class='so-card-badge so-card-badge-pin'>" + T("Boosté") + "</span>"
         : h.buried ? "<span class='so-card-badge so-card-badge-bury'>" + T("Relégué") + "</span>" : "";
       // Correctif B1 (audit UX console, 17 aout 2026). Meme correctif que
@@ -2871,6 +2878,15 @@
       in_stock_only: !!(document.getElementById("browse-in-stock") || {}).checked,
     }}).then(function (data) {
       brRenderGrille(data.hits || [], true);
+      // Correctif B3 (audit UX console, 17 aout 2026) : "Priorites par
+      // produit" reflete desormais le brouillon en cours, pas seulement
+      // la grille d'apercu. brSimuler etant le vrai point central unique
+      // appele par tous les points de mutation (brAction, brDeplacer,
+      // glisser-depose, formulaire manuel), un seul appel ici suffit --
+      // pas besoin de modifier chaque point d'appel individuellement,
+      // contrairement a Search Overrides qui n'avait pas cette fonction
+      // centrale equivalente.
+      brRenderReglesTable(session.brDraft, true);
     }).catch(function () {});
   }
 
@@ -3013,16 +3029,29 @@
   var boEditingProductId = null; // produit en cours de modification (priorites par produit), null = ajout/duplication
   var barEditingKey = null; // {field, value} en cours de modification (regles par attribut), null = ajout/duplication
 
+  // Correctif B3 (audit UX console, 17 aout 2026) : meme cause que
+  // Search Overrides -- "Priorites par produit" n'etait jamais rafraichie
+  // pendant qu'un brouillon etait en cours (brAction, brDeplacer,
+  // browse-override-form), seulement au chargement initial et apres
+  // publication reussie. Fonction de rendu PURE extraite (aucun appel
+  // reseau), reutilisee par refreshBrowseOverrides (donnees serveur) et
+  // tous les points de mutation du brouillon (donnees de session.brDraft).
+  function brRenderReglesTable(liste, enBrouillon) {
+    renderTable("browse-overrides-table", "browse-overrides-empty", liste, function (o) {
+      return "<td class='mono'>" + esc(o.product_id) + "</td><td>" + T(o.action === "pin" ? "Épingler" : "Reléguer") +
+        "</td><td>" + (o.position || "–") + "</td><td style='white-space:nowrap;'>" +
+        "<button type='button' class='catalog-rule-remove' data-edit-override='1' data-product-id='" + esc(o.product_id) + "' data-action='" + esc(o.action) + "' data-position='" + (o.position || "") + "' aria-label='" + T("Modifier") + "' title='" + T("Modifier") + "' style='margin-right:6px;'>&#9998;</button>" +
+        "<button type='button' class='catalog-rule-remove' data-duplicate-override='1' data-product-id='" + esc(o.product_id) + "' data-action='" + esc(o.action) + "' data-position='" + (o.position || "") + "' aria-label='" + T("Dupliquer") + "' title='" + T("Dupliquer") + "' style='margin-right:6px;'>&#10697;</button>" +
+        "<button type='button' class='catalog-rule-remove' data-remove-override='" + esc(o.product_id) + "' aria-label='" + T("Retirer") + "'>&times;</button></td>";
+    });
+    var panneau = document.getElementById("bo-rules-panel");
+    if (panneau) panneau.classList.toggle("so-rules-draft", !!enBrouillon);
+  }
+
   function refreshBrowseOverrides(key) {
     var url = "/v1/browse/" + encodeURIComponent(session.browseCurrentCatalog) + "/" + encodeURIComponent(session.browseCurrentCategory) + "/overrides";
     apiFetch(url, key).then(function (data) {
-      renderTable("browse-overrides-table", "browse-overrides-empty", data.overrides, function (o) {
-        return "<td class='mono'>" + esc(o.product_id) + "</td><td>" + T(o.action === "pin" ? "Épingler" : "Reléguer") +
-          "</td><td>" + (o.position || "–") + "</td><td style='white-space:nowrap;'>" +
-          "<button type='button' class='catalog-rule-remove' data-edit-override='1' data-product-id='" + esc(o.product_id) + "' data-action='" + esc(o.action) + "' data-position='" + (o.position || "") + "' aria-label='" + T("Modifier") + "' title='" + T("Modifier") + "' style='margin-right:6px;'>&#9998;</button>" +
-          "<button type='button' class='catalog-rule-remove' data-duplicate-override='1' data-product-id='" + esc(o.product_id) + "' data-action='" + esc(o.action) + "' data-position='" + (o.position || "") + "' aria-label='" + T("Dupliquer") + "' title='" + T("Dupliquer") + "' style='margin-right:6px;'>&#10697;</button>" +
-          "<button type='button' class='catalog-rule-remove' data-remove-override='" + esc(o.product_id) + "' aria-label='" + T("Retirer") + "'>&times;</button></td>";
-      });
+      brRenderReglesTable(data.overrides, false);
     }).catch(function () {});
   }
 
