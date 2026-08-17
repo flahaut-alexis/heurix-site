@@ -2119,7 +2119,7 @@
     return regle;
   }
 
-  function soConstruireBrouillon(key) {
+  function soConstruireBrouillon(key, onDone, onErr) {
     var enCours = soLireFormulaire();
     // Correctif B3 (audit UX console, 17 aout 2026) : formulaire vide ->
     // retour aux vraies regles serveur, table re-synchronisee comme le
@@ -2144,8 +2144,13 @@
         // en cours, pas seulement la grille (refreshSoPreview).
         soRenderReglesTable(session.soDraft, true);
         refreshSoPreview(key);
+        // Correctif C9 (audit UX console, 17 aout 2026) : callback
+        // optionnel, utilise par le formulaire "Ajouter une priorite"
+        // (so-form) pour confirmer/reinitialiser une fois le brouillon
+        // reellement a jour -- jamais avant, cette fonction est async.
+        if (onDone) onDone();
       })
-      .catch(function () { session.soDraft = null; });
+      .catch(function (err) { session.soDraft = null; if (onErr) onErr(err); });
   }
 
   // Enregistre le BROUILLON, pas le formulaire.
@@ -2571,47 +2576,40 @@
 
     document.getElementById("so-form").addEventListener("submit", function (e) {
       e.preventDefault();
+      // Correctif C9 (audit UX console, 17 aout 2026) : ce formulaire
+      // faisait auparavant un POST direct, totalement ignore de
+      // session.soDraft. Si un brouillon etait deja actif (manipulation
+      // depuis la grille) au moment de la soumission, le prochain clic
+      // sur "Publier sur {catalogue}" comparait le brouillon (qui ignorait
+      // cet ajout) aux vraies donnees serveur re-fetchees (qui, elles, le
+      // contenaient) -- et le supprimait automatiquement, silencieusement.
+      // Meme cause que le bug C9 du brief cote Browse & Discovery, jamais
+      // signale explicitement ici mais verifie identique au code.
+      // Desormais : ce formulaire ajoute au brouillon comme la grille,
+      // plus jamais de second chemin d'ecriture parallele.
       var status = document.getElementById("so-status");
       var query = document.getElementById("so-query").value.trim();
       var productId = document.getElementById("so-product-id").value.trim();
-      var action = document.getElementById("so-action").value;
       if (!query || !productId) return;
-      var body = { query: query, product_id: productId, action: action };
-      if (action === "pin") {
-        var pos = parseInt(document.getElementById("so-position").value, 10);
-        if (!pos) { document.getElementById("so-position").focus(); return; }
-        body.position = pos;
+      if (document.getElementById("so-action").value === "pin" && !document.getElementById("so-position").value) {
+        document.getElementById("so-position").focus();
+        return;
       }
 
       var submitBtn = document.getElementById("so-submit-btn");
       submitBtn.disabled = true;
-      status.textContent = T("Enregistrement…"); status.className = "catalog-rule-status";
+      status.textContent = T("Ajout au brouillon…"); status.className = "catalog-rule-status";
 
-      var createOrUpdate = function () {
-        return apiFetch("/v1/index/" + encodeURIComponent(session.soCurrentCatalog) + "/search-overrides", key, { method: "POST", body: body });
-      };
-
-      // Modification ou l'utilisateur a change la requete/le produit : l'ancienne
-      // cle n'existe plus sous ce nom, il faut la retirer avant de creer la nouvelle
-      // (sinon deux regles distinctes coexistent au lieu d'une seule modifiee).
-      var needsCleanupFirst = soEditingKey && (soEditingKey.query !== query || soEditingKey.productId !== productId);
-      var chain = needsCleanupFirst
-        ? apiFetch("/v1/index/" + encodeURIComponent(session.soCurrentCatalog) + "/search-overrides" +
-            "?query=" + encodeURIComponent(soEditingKey.query) + "&product_id=" + encodeURIComponent(soEditingKey.productId),
-            key, { method: "DELETE" }).then(createOrUpdate)
-        : createOrUpdate();
-
-      chain
-        .then(function () {
-          status.textContent = T("Priorité enregistrée."); status.className = "catalog-rule-status ok";
-          resetSoForm();
-          refreshSoTable(key);
-        })
-        .catch(function (err) {
-          status.textContent = (err && err.message) || T("Échec de l'enregistrement.");
-          status.className = "catalog-rule-status err";
-        })
-        .then(function () { submitBtn.disabled = false; });
+      soConstruireBrouillon(key, function () {
+        status.textContent = T("Ajoutée au brouillon — publiez pour l'appliquer.");
+        status.className = "catalog-rule-status ok";
+        resetSoForm();
+        submitBtn.disabled = false;
+      }, function (err) {
+        status.textContent = (err && err.message) || T("Échec de l'ajout au brouillon.");
+        status.className = "catalog-rule-status err";
+        submitBtn.disabled = false;
+      });
     });
 
     document.querySelector("#so-table tbody").addEventListener("click", function (e) {
@@ -3081,29 +3079,47 @@
 
     document.getElementById("browse-override-form").addEventListener("submit", function (e) {
       e.preventDefault();
+      // Correctif C9 (audit UX console, 17 aout 2026, meme cause que
+      // so-form) : ce formulaire faisait un POST direct, totalement
+      // ignore de session.brDraft -- silencieusement supprime au
+      // prochain "Publier sur {catalogue}" si un brouillon etait deja
+      // actif. Ajoute desormais au brouillon, meme mecanisme que brAction
+      // (grille) : brAvecBrouillon amorce session.brDraft si besoin, puis
+      // la regle y est fusionnee -- plus jamais de second chemin
+      // d'ecriture parallele.
       var status = document.getElementById("browse-override-status");
       var productId = document.getElementById("browse-override-product-id").value.trim();
       var action = document.getElementById("browse-override-action").value;
       var positionInput = document.getElementById("browse-override-position").value;
       if (!productId) return;
-      var body = { product_id: productId, action: action };
-      if (positionInput) body.position = parseInt(positionInput, 10);
-      var base = "/v1/browse/" + encodeURIComponent(session.browseCurrentCatalog) + "/" + encodeURIComponent(session.browseCurrentCategory) + "/overrides";
 
-      // Modification en changeant l'identifiant produit : l'ancienne cle n'existe
-      // plus sous ce nom, il faut la retirer avant de creer la nouvelle.
-      var needsCleanup = boEditingProductId && boEditingProductId !== productId;
-      var chain = needsCleanup
-        ? apiFetch(base + "/" + encodeURIComponent(boEditingProductId), key, { method: "DELETE" })
-            .then(function () { return apiFetch(base, key, { method: "POST", body: body }); })
-        : apiFetch(base, key, { method: "POST", body: body });
+      var submitBtn = document.getElementById("bo-submit-btn");
+      submitBtn.disabled = true;
+      status.textContent = T("Ajout au brouillon…"); status.className = "catalog-rule-status";
 
-      chain.then(function () {
-        status.textContent = T("Priorité de catégorie enregistrée."); status.className = "catalog-rule-status ok";
+      brAvecBrouillon(key, function () {
+        // Meme cle de fusion que le nettoyage manuel (identifiant produit
+        // change en cours de modification) que l'ancien POST direct gerait.
+        var ancienId = boEditingProductId && boEditingProductId !== productId ? boEditingProductId : null;
+        session.brDraft = session.brDraft.filter(function (r) {
+          if (ancienId && r.product_id === ancienId) return false;
+          return r.product_id !== productId;
+        });
+        var regle = { product_id: productId, action: action };
+        if (positionInput) regle.position = parseInt(positionInput, 10);
+        session.brDraft.push(regle);
+        brSimuler(key);
+        status.textContent = T("Ajoutée au brouillon — publiez pour l'appliquer.");
+        status.className = "catalog-rule-status ok";
         resetBrowseOverrideForm();
-        refreshBrowseOverrides(key); refreshBrowsePreview(key);
-      }).catch(function (err) {
-        status.textContent = (err && err.message) || T("Échec."); status.className = "catalog-rule-status err";
+        submitBtn.disabled = false;
+        // Pas de second callback d'erreur ici : brAvecBrouillon() a son
+        // propre .catch() interne qui appelle toujours suite() (avec un
+        // brouillon vide en cas d'echec reseau) -- jamais de vraie
+        // propagation d'erreur possible, contrairement a
+        // soConstruireBrouillon(). Un onErr ici ne serait donc jamais
+        // reellement appele -- retire plutot que de garder du code
+        // trompeur qui laisserait croire a une gestion d'erreur reelle.
       });
     });
 
