@@ -1896,19 +1896,42 @@
   }
 
 
+  // Correctif B3 (audit UX console, 17 aout 2026 -- "defaut le plus grave
+  // de l'audit") : apres un epinglage/relegation, "Regles en place"
+  // restait affiche tel qu'avant -- seule refreshSoPreview (la grille de
+  // cartes) etait rafraichie a chaque modification du brouillon, jamais ce
+  // tableau. Fonction de rendu PURE extraite ici (aucun appel reseau) pour
+  // etre appelee a la fois par refreshSoTable ci-dessous (donnees serveur)
+  // et par soConstruireBrouillon (donnees du brouillon, sans refaire
+  // d'appel reseau a chaque frappe -- session.soDraft contient deja
+  // l'etat complet voulu, voir soAppliquerBrouillon).
+  function soRenderReglesTable(liste, enBrouillon) {
+    // Note : renderTable() cree elle-meme la balise <tr>, soRowHtml() ne
+    // construit que son contenu interieur -- pas de vraie classe par
+    // ligne possible sans modifier renderTable(), vraie fonction
+    // generique reutilisee ailleurs. L'indicateur visuel "brouillon"
+    // s'appuie donc uniquement sur .so-rules-draft, posee plus bas sur
+    // le panneau parent -- suffisant, pas besoin de toucher chaque ligne.
+    renderTable("so-table", "so-empty", liste, soRowHtml);
+    var compteur = document.getElementById("so-count");
+    if (compteur) {
+      var n = (liste || []).length;
+      compteur.hidden = n === 0;
+      compteur.textContent = enBrouillon
+        ? T(n > 1 ? "{0} règles en brouillon" : "{0} règle en brouillon", n)
+        : T(n > 1 ? "{0} règles actives" : "{0} règle active", n);
+    }
+    var panneau = document.getElementById("so-rules-panel");
+    if (panneau) panneau.classList.toggle("so-rules-draft", !!enBrouillon);
+  }
+
   function refreshSoTable(key) {
     apiFetch("/v1/index/" + encodeURIComponent(session.soCurrentCatalog) + "/search-overrides", key)
       .then(function (data) {
-        renderTable("so-table", "so-empty", data.overrides, soRowHtml);
-        var compteur = document.getElementById("so-count");
-        if (compteur) {
-          var n = (data.overrides || []).length;
-          compteur.hidden = n === 0;
-          compteur.textContent = T(n > 1 ? "{0} règles actives" : "{0} règle active", n);
-        }
         // La table des regles est rechargee apres tout enregistrement : le
         // brouillon n'a plus lieu d'etre, l'apercu repasse sur le reel.
         session.soDraft = null;
+        soRenderReglesTable(data.overrides, false);
         // Un seul point de branchement : la table des regles est
         // rafraichie apres tout ajout, modification ou suppression, donc
         // l'apercu suit automatiquement.
@@ -2091,7 +2114,10 @@
 
   function soConstruireBrouillon(key) {
     var enCours = soLireFormulaire();
-    if (!enCours) { session.soDraft = null; refreshSoPreview(key); return; }
+    // Correctif B3 (audit UX console, 17 aout 2026) : formulaire vide ->
+    // retour aux vraies regles serveur, table re-synchronisee comme le
+    // reste (refreshSoTable fait le fetch + le rendu en un seul appel).
+    if (!enCours) { session.soDraft = null; refreshSoTable(key); return; }
 
     apiFetch("/v1/index/" + encodeURIComponent(session.soCurrentCatalog) + "/search-overrides", key)
       .then(function (data) {
@@ -2107,6 +2133,9 @@
           return !(o.query === enCours.query && o.product_id === enCours.product_id);
         });
         session.soDraft = existantes.concat([enCours]);
+        // Correctif B3 : "Regles en place" reflete desormais le brouillon
+        // en cours, pas seulement la grille (refreshSoPreview).
+        soRenderReglesTable(session.soDraft, true);
         refreshSoPreview(key);
       })
       .catch(function () { session.soDraft = null; });
@@ -2280,6 +2309,10 @@
         session.soDraft.push(regle);
       }
       soRenumeroter(q);
+      // Correctif B3 : "Regles en place" reflete la manipulation directe
+      // depuis la grille (epingler/releguer/retirer), pas seulement
+      // l'apercu.
+      soRenderReglesTable(session.soDraft, true);
       refreshSoPreview(key);
     });
   }
@@ -2319,6 +2352,8 @@
         return !(r.query === q && r.product_id === pid);
       });
       session.soDraft.push({ query: q, product_id: pid, action: "pin", position: cible + 1 });
+      // Meme correctif B3 que soAction.
+      soRenderReglesTable(session.soDraft, true);
       refreshSoPreview(key);
     });
   }
@@ -2395,6 +2430,8 @@
         return !(r.query === q && r.product_id === depuis);
       });
       session.soDraft.push({ query: q, product_id: depuis, action: "pin", position: iV + 1 });
+      // Meme correctif B3 que soAction/deplacement -- glisser-deposer.
+      soRenderReglesTable(session.soDraft, true);
       refreshSoPreview(key);
     });
   }

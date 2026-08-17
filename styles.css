@@ -53,6 +53,12 @@
   --green-tint:#E8F8F0;
   --red-muted:#D6584B;
   --red-tint:#FCEDEB;
+  /* Etat "brouillon" -- ajoutees par le brief de refonte console (§1.3,
+     17 aout 2026), absentes jusqu'ici. Valeurs exactes du brief, jamais
+     inventees. */
+  --amber:#B26A00;
+  --amber-tint:#FFF6E6;
+  --amber-line:#F0D5A3;
   --radius:10px;
 }
 *{box-sizing:border-box;}
@@ -3151,6 +3157,22 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
   transition:all .12s ease;
 }
 .so-card-actions button:hover{ border-color:var(--blue); color:var(--blue-deep); background:var(--blue-tint); }
+
+/* Correctif B3 (audit UX console, 17 aout 2026) : indicateur visuel
+   quand "Regles en place" affiche le brouillon en cours plutot que les
+   vraies regles deja publiees -- classe posee par soRenderReglesTable()
+   sur #so-rules-panel. */
+.so-rules-draft{
+  border-color:var(--amber-line);
+  background:var(--amber-tint);
+}
+.so-rules-draft h2::after{
+  content:"Brouillon, pas encore publié";
+  display:inline-block; margin-left:10px; font-size:11px; font-weight:700;
+  letter-spacing:.03em; text-transform:uppercase; color:var(--amber);
+  background:#fff; border:1px solid var(--amber-line); border-radius:100px;
+  padding:2px 9px; vertical-align:middle;
+}
 .so-card-actions button:focus-visible{
   outline:none; border-color:var(--blue);
   box-shadow:0 0 0 3px color-mix(in srgb, var(--blue) 18%, transparent);
