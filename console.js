@@ -1952,6 +1952,35 @@
         if (!hits.length) {
           grille.innerHTML = "";
           legende.textContent = "";
+          // Correctif Lot 2 (audit UX console, 17 aout 2026) : etat zero
+          // resultat actionnable (brief §4.1). Seulement quand q est
+          // renseignee -- sans requete, c'est l'apercu alphabetique du
+          // catalogue entier, "creer un synonyme" n'aurait aucun sens
+          // (rien a rapprocher).
+          if (q) {
+            vide.innerHTML =
+              "<p style='font-size:16px; font-weight:500; color:var(--ink); margin:0 0 4px;'>" +
+                T("Aucun produit ne sort sur « {0} »", esc(q)) +
+              "</p>" +
+              "<p style='font-size:13px; color:var(--ink-muted); margin:0 0 20px;'>" +
+                T("Cette recherche est un cul-de-sac pour vos visiteurs.") +
+              "</p>" +
+              "<div id='so-empty-synonym-form' hidden style='background:var(--surface-2); border:0.5px solid var(--line); border-radius:var(--radius); padding:14px; text-align:left; margin:0 auto 12px; max-width:320px;'>" +
+                "<p style='font-size:13px; margin:0 0 8px;'>" + T("Rapprocher <strong>{0}</strong> de :", esc(q)) + "</p>" +
+                "<div style='display:flex; gap:8px;'>" +
+                  "<input type='text' id='so-empty-synonym-input' placeholder='" + T("ex. plaque de plâtre") + "' style='flex:1; font-size:13px;'>" +
+                  "<button type='button' id='so-empty-synonym-submit' style='flex-shrink:0; font-size:13px;'>" + T("Créer") + "</button>" +
+                "</div>" +
+                "<p id='so-empty-synonym-status' style='font-size:12px; margin:6px 0 0;'></p>" +
+              "</div>" +
+              "<div style='display:flex; gap:10px; justify-content:center;'>" +
+                "<button type='button' id='so-empty-synonym-btn' style='font-size:13px;'>" + T("Créer un synonyme") + "</button>" +
+                "<button type='button' id='so-empty-pin-btn' style='font-size:13px;'>" + T("Épingler un produit") + "</button>" +
+              "</div>";
+            wireSoEmptyState(key, q);
+          } else {
+            vide.innerHTML = "<p>" + T("Ce catalogue ne contient aucun produit.") + "</p>";
+          }
           vide.hidden = false;
           soSimuBar(!!data.simulated);
           return;
@@ -2223,6 +2252,58 @@
           window.alert(T("Création impossible : {0}", e.message || e));
         });
     }
+  }
+
+  // Correctif Lot 2 (audit UX console, 17 aout 2026) : etat zero resultat
+  // actionnable (brief §4.1). Le contenu de #so-preview-empty est
+  // reconstruit a chaque appel de refreshSoPreview (innerHTML), donc ces
+  // listeners doivent etre re-cables a chaque fois -- appele depuis
+  // refreshSoPreview juste apres l'injection du HTML, pas au chargement.
+  function wireSoEmptyState(key, q) {
+    var pinBtn = document.getElementById("so-empty-pin-btn");
+    if (pinBtn) pinBtn.addEventListener("click", function () {
+      var champQuery = document.getElementById("so-query");
+      var champProduit = document.getElementById("so-product-id");
+      if (champQuery) champQuery.value = q;
+      if (champProduit) { champProduit.focus(); champProduit.scrollIntoView({ behavior: "smooth", block: "center" }); }
+    });
+
+    var synBtn = document.getElementById("so-empty-synonym-btn");
+    var synForm = document.getElementById("so-empty-synonym-form");
+    if (synBtn && synForm) synBtn.addEventListener("click", function () {
+      synForm.hidden = false;
+      synBtn.hidden = true;
+      var input = document.getElementById("so-empty-synonym-input");
+      if (input) input.focus();
+    });
+
+    var submitBtn = document.getElementById("so-empty-synonym-submit");
+    if (submitBtn) submitBtn.addEventListener("click", function () {
+      var input = document.getElementById("so-empty-synonym-input");
+      var status = document.getElementById("so-empty-synonym-status");
+      var vers = input ? input.value.trim() : "";
+      if (!vers) { if (status) { status.textContent = T("Entrez un mot."); status.style.color = "#C0392B"; } return; }
+      submitBtn.disabled = true;
+      // Meme logique que creerSynonyme (panneau Sans resultat, chantier
+      // score d'intention) : le PUT remplace la liste entiere, on lit
+      // d'abord, on ajoute, on renvoie.
+      apiFetch("/v1/index/" + encodeURIComponent(session.catalogueActif) + "/synonyms", key)
+        .then(function (d) {
+          var groupes = (d.groups || []).slice();
+          groupes.push([q, vers]);
+          return apiFetch("/v1/index/" + encodeURIComponent(session.catalogueActif) + "/synonyms",
+                          key, { method: "PUT", body: { groups: groupes } });
+        })
+        .then(function () {
+          if (status) { status.textContent = T("« {0} » trouvera désormais « {1} »", q, vers); status.style.color = "#0F7A3D"; }
+          submitBtn.disabled = true;
+          if (input) input.disabled = true;
+        })
+        .catch(function (e) {
+          submitBtn.disabled = false;
+          if (status) { status.textContent = (e && e.message) || T("Échec de la création."); status.style.color = "#C0392B"; }
+        });
+    });
   }
 
   function wireSoPreview(key) {

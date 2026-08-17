@@ -511,7 +511,13 @@
                      cibler le meme id). -->
                 <p class="so-grid-caption" id="so-preview-caption"></p>
                 <div class="so-grid" id="so-preview-grid"></div>
-                <p class="console-empty" id="so-preview-empty" hidden>Aucun résultat pour cette requête.</p>
+                <!-- Correctif Lot 2 (audit UX console, 17 aout 2026) : etat zero
+                     resultat actionnable (brief §4.1) -- remplace le simple
+                     texte cul-de-sac par un titre dynamique (inclut la
+                     requete), une explication, et deux vraies issues
+                     ("Creer un synonyme", "Epingler un produit"). Contenu
+                     construit dynamiquement par JS, voir refreshSoPreview. -->
+                <div class="console-empty" id="so-preview-empty" hidden></div>
                 <!-- Correctif Lot 2 (audit UX console, 17 aout 2026) : barre de
                      brouillon collante, visible des le premier changement.
                      "Simulation" -> "BROUILLON" (§4.7 -- ce n'est pas une

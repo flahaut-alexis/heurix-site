@@ -705,6 +705,19 @@
     "sur cet échantillon. Vos produits ne bénéficient d'aucune annotation — vérifiez que le pack correspond bien à votre secteur, ou créez des reconnaissances personnalisées.": "on this sample. Your products have no annotations — check that the pack matches your sector, or create custom recognitions.",
     "Échec de l'ajout au brouillon.": "Failed to add to the draft.",
     "Épinglé en position {0}": "Pinned at position {0}",
+
+    // --------------------------------------------- etat zero resultat actionnable + rattrapage lexique volet 2
+    "Aucun produit ne sort sur « {0} »": "No product matches \u201c{0}\u201d",
+    "Ce catalogue ne contient aucun produit.": "This catalog has no products.",
+    "Cette recherche est un cul-de-sac pour vos visiteurs.": "This search is a dead end for your visitors.",
+    "Créer un synonyme": "Create a synonym",
+    "Dupliquer une règle — modifiez au moins un champ": "Duplicate a rule — change at least one field",
+    "Entrez un mot.": "Enter a word.",
+    "Rapprocher <strong>{0}</strong> de :": "Link <strong>{0}</strong> to:",
+    "ex. plaque de plâtre": "e.g. drywall",
+    "pour épingler ou reléguer : une règle se déclenche sur une recherche précise, elle n'existe pas en dehors d'une requête.": "to pin or bury: a rule triggers on a specific search, it doesn't exist outside a query.",
+    "Échec de la création.": "Creation failed.",
+    "Épingler un produit": "Pin a product",
   };
 
   // Attributs porteurs de texte visible ou annoncé aux lecteurs d'écran.
