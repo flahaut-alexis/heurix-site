@@ -1841,8 +1841,15 @@
           var p = h.product;
           var regle = h.pinned || h.buried;
           var classes = "so-card" + (regle ? (data.simulated ? " so-card-simulated" : " so-card-ruled") : "");
+          // Correctif C4 (audit UX console, 17 aout 2026) : double
+          // numerotation -- le meme (i+1) apparaissait a la fois ici et
+          // dans .so-card-rank juste en dessous, verifie identique dans
+          // les deux cas, jamais deux valeurs differentes. so-card-rank
+          // est deja conditionnee par `q` (contexte ou le rang a un sens
+          // : "3e resultat pour cette recherche") -- source unique du
+          // numero, le badge reste juste "Epingle" sans le repeter.
           var badge = h.pinned
-            ? "<span class='so-card-badge so-card-badge-pin'>" + T("Épinglé") + " · " + (i + 1) + "</span>"
+            ? "<span class='so-card-badge so-card-badge-pin'>" + T("Épinglé") + "</span>"
             : h.buried ? "<span class='so-card-badge so-card-badge-bury'>" + T("Relégué") + "</span>" : "";
           // Correctif B1 (audit UX console, 17 aout 2026). p.stock === 0
           // ne fonctionnait jamais : stock, cote catalogue, est un vrai
