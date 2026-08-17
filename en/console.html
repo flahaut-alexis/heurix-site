@@ -365,18 +365,25 @@
                 </div>
                 <div class="so-facets" id="so-facets" hidden></div>
                 <p class="so-facet-warn" id="so-facet-warn" hidden>Active filter: the arrows are disabled. They lock the positions of the <strong>displayed</strong> list — on a filtered list, the resulting rules would no longer make sense once the filter is removed. Pinning, however, remains possible.</p>
-                <div class="so-grid" id="so-preview-grid"></div>
+                <!-- Correctif Lot 1 : compte de resultats au-dessus de la
+                     grille, pas en dessous. Correctif Lot 2 : barre
+                     collante, texte dynamique, "Voir le detail" + "Tout
+                     annuler" -- parite avec console.html (FR). -->
                 <p class="so-grid-caption" id="so-preview-caption"></p>
+                <div class="so-grid" id="so-preview-grid"></div>
                 <p class="console-empty" id="so-preview-empty" hidden>No results for this query.</p>
                 <div class="so-simu-bar" id="so-simu-bar" hidden>
-                  <span class="so-simu-tag">Simulation</span>
-                  <span id="so-simu-text">These results include your draft. Nothing is saved yet — your visitors still see the current ranking.</span>
-                  <button type="button" class="catalog-rule-add-btn" id="so-simu-apply">Apply</button>
-                  <button type="button" class="btn btn-ghost" id="so-simu-discard">Discard</button>
+                  <span class="so-simu-tag">Draft</span>
+                  <span id="so-simu-text"></span>
+                  <div class="so-simu-actions">
+                    <button type="button" class="btn btn-ghost" id="so-simu-detail">See details</button>
+                    <button type="button" class="catalog-rule-add-btn" id="so-simu-apply">Publish</button>
+                    <button type="button" class="btn btn-ghost" id="so-simu-discard">Undo all</button>
+                  </div>
                 </div>
               </div>
 
-              <div class="console-panel">
+              <div class="console-panel" id="so-rules-panel">
                 <h2>Active rules <span class="so-count" id="so-count" hidden></span></h2>
                 <p class="console-panel-note">The <strong>position</strong> is the product's final rank: position 3 places it 3rd, other products filling the remaining slots. <strong>Buried</strong> products always go to the end of the list.</p>
                 <div class="table-scroll"><table class="console-table" id="so-table">
@@ -390,7 +397,7 @@
 
               <div class="console-panel">
                 <h2>Synonyms and custom rules</h2>
-                <p class="console-panel-note">Synonyms link the words your customers use to the ones in your catalog. Custom rules teach the engine a term specific to your business, with no regex to write.</p>
+                <p class="console-panel-note">Synonyms link the words your customers use to the ones in your catalog. Teach the engine a word from your business, in a few words and with no code.</p>
                 
                 <div id="cr-host"></div>
                 <p class="console-empty" id="cr-hint">Choose a catalog to manage its synonyms and rules.</p>
@@ -434,8 +441,9 @@
               <div class="console-panel">
                 <div class="catalog-card-row" style="margin-bottom:14px;">
                   <h2 style="margin:0; flex:1;">Ranking preview</h2>
-                  <select id="browse-sort-select">
-                    <option value="stock">Available stock</option>
+                  <label for="browse-sort-select" style="font-size:12.5px; font-weight:700; color:var(--ink-muted);">Base ranking</label>
+                  <select id="browse-sort-select" aria-label="Base ranking">
+                    <option value="stock">In-stock products first</option>
                     <option value="recent">Most recent</option>
                     <option value="alphabetical">Alphabetical</option>
                     <option value="price_asc">Price ascending</option>
@@ -511,15 +519,19 @@
                 </div>
                 <div class="so-grid" id="br-grid"></div>
                 <p class="so-grid-caption" id="br-caption"></p>
+                <!-- Meme correctif Lot 2 que Search Overrides -- parite EN. -->
                 <div class="so-simu-bar" id="br-simu-bar" hidden>
-                  <span class="so-simu-tag">Simulation</span>
-                  <span>This ranking includes your draft. Nothing is saved yet — your visitors still see the current order.</span>
-                  <button type="button" class="catalog-rule-add-btn" id="br-simu-apply">Apply</button>
-                  <button type="button" class="btn btn-ghost" id="br-simu-discard">Discard</button>
+                  <span class="so-simu-tag">Draft</span>
+                  <span id="br-simu-text"></span>
+                  <div class="so-simu-actions">
+                    <button type="button" class="btn btn-ghost" id="br-simu-detail">See details</button>
+                    <button type="button" class="catalog-rule-add-btn" id="br-simu-apply">Publish</button>
+                    <button type="button" class="btn btn-ghost" id="br-simu-discard">Undo all</button>
+                  </div>
                 </div>
                 <details class="br-attrs" style="margin-top:18px;">
                   <summary>Per-product priorities (detailed list)</summary>
-                  <div style="padding-top:12px;">
+                  <div style="padding-top:12px;" id="bo-rules-panel">
                 <h2>Per-product priorities</h2>
                 <p class="console-panel-note">Pin a product to an exact position, or bury it at the end of the list — regardless of the sort chosen above.</p>
                 <div class="table-scroll"><table class="console-table" id="browse-overrides-table">
@@ -768,7 +780,7 @@
               <h3 class="console-help-h3" style="margin-top:0;">What a rule pack does</h3>
               <p class="console-panel-note" style="margin:4px 0 14px;">A rule pack reads your product references and automatically recognizes what they contain — as in the diagram above. Ten packs currently exist, covering the most common industries (hardware, fashion, industry, books, electronics, wine &amp; spirits, automotive, electrical, plumbing, finance).</p>
               <h3 class="console-help-h3">Create a custom rule</h3>
-              <p class="console-panel-note" style="margin:4px 0 14px;">Possible directly from each catalog card, with no regex to write — two formats to choose from. Here's exactly what to fill in:</p>
+              <p class="console-panel-note" style="margin:4px 0 14px;">Possible directly from each catalog card, with no code to write — two formats to choose from. Here's exactly what to fill in:</p>
 
               <div class="console-help-example">
                 <div class="console-help-example-title">Example — Keyword → label</div>
@@ -961,5 +973,25 @@
 <script src="../nav-dropdown.js"></script>
 <script src="../mobile-nav.js?v=1785755445"></script>
 <script src="../consent.js?v=1785150583"></script>
+
+<!-- Correctif Lot 2 -- parite EN avec console.html. -->
+<div id="undo-toast" class="undo-toast" hidden role="status" aria-live="polite">
+  <span id="undo-toast-message"></span>
+  <button type="button" id="undo-toast-btn">Undo</button>
+</div>
+
+<div id="recap-modal" class="recap-modal" hidden role="dialog" aria-modal="true" aria-labelledby="recap-modal-title">
+  <div class="recap-modal-backdrop"></div>
+  <div class="recap-modal-box">
+    <h2 id="recap-modal-title">What you're about to publish</h2>
+    <p id="recap-modal-summary" class="recap-modal-summary"></p>
+    <div id="recap-modal-groups" class="recap-modal-groups"></div>
+    <p class="recap-modal-note">You'll be able to edit or disable each rule after publishing.</p>
+    <div class="recap-modal-actions">
+      <button type="button" class="btn btn-ghost" id="recap-modal-close">Close</button>
+      <button type="button" class="catalog-rule-add-btn" id="recap-modal-publish">Publish</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>

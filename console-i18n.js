@@ -670,6 +670,41 @@
     "Compris": "Got it",
     "Aucun catalogue": "No catalog",
     "bac à sable": "sandbox",
+
+    // --------------------------------------------- audit UX console (17 aout 2026)
+    // Lot 0 a lexique unifie -- nouvelles chaines apparues au fil de ce
+    // chantier, jamais dans DICT jusqu'ici (verifie avec un vrai script
+    // de comparaison, 30 manquantes exactement sur 224 templates T()).
+    "Ajout au brouillon…": "Adding to draft…",
+    "Ajouter une reconnaissance": "Add a recognition",
+    "Ajoutée au brouillon — publiez pour l'appliquer.": "Added to the draft — publish to apply it.",
+    "Aucun produit ne correspond.": "No matching product.",
+    "Aucune reconnaissance personnalisée pour l'instant.": "No custom recognition yet.",
+    "Créer cette reconnaissance": "Create this recognition",
+    "Créer la reconnaissance": "Create the recognition",
+    "En stock": "In stock",
+    "Favorisé": "Favored",
+    "Modifier la reconnaissance": "Edit the recognition",
+    "Nom de la reconnaissance, ex. Cheville": "Recognition name, e.g. Anchor",
+    "Reconnaissance personnalisée enregistrée.": "Custom recognition saved.",
+    "Reconnaissances": "Recognitions",
+    "Reconnaître un mot métier": "Recognize a business term",
+    "Reconnaître une référence (ex. M8, DN20)": "Recognize a reference (e.g. M8, DN20)",
+    "Relégué en fin de liste": "Buried at the end of the list",
+    "Retirer cette reconnaissance": "Remove this recognition",
+    "Retirer l'épingle": "Remove the pin",
+    "Retirer l'épingle de {0}": "Remove the pin from {0}",
+    "Règle supprimée.": "Rule deleted.",
+    "Supprimer cette règle": "Delete this rule",
+    "Supprimer le catalogue <strong>{0}</strong> et ses {1} produits ?<br>Les règles, reconnaissances personnalisées et synonymes seront perdus. <strong>Cette action est irréversible.</strong>": "Delete the catalog <strong>{0}</strong> and its {1} products?<br>Rules, custom recognitions and synonyms will be lost. <strong>This action is irreversible.</strong>",
+    "Sur la catégorie « {0} »": "On category \u201c{0}\u201d",
+    "Sur la recherche « {0} »": "On search \u201c{0}\u201d",
+    "Synonymes et reconnaissances personnalisées": "Synonyms and custom recognitions",
+    "Toutes les modifications ont été annulées.": "All changes have been undone.",
+    "classement en brouillon": "ranking in draft",
+    "sur cet échantillon. Vos produits ne bénéficient d'aucune annotation — vérifiez que le pack correspond bien à votre secteur, ou créez des reconnaissances personnalisées.": "on this sample. Your products have no annotations — check that the pack matches your sector, or create custom recognitions.",
+    "Échec de l'ajout au brouillon.": "Failed to add to the draft.",
+    "Épinglé en position {0}": "Pinned at position {0}",
   };
 
   // Attributs porteurs de texte visible ou annoncé aux lecteurs d'écran.
