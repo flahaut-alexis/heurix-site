@@ -1134,5 +1134,23 @@
   <span id="undo-toast-message"></span>
   <button type="button" id="undo-toast-btn">Annuler</button>
 </div>
+
+<!-- Correctif Lot 2 (audit UX console, 17 aout 2026) : recapitulatif avant
+     publication (§4.4 -- "corrige le defaut le plus grave (B3) :
+     aujourd'hui, on publie sans pouvoir relire"). Un seul exemplaire,
+     partage par Search Overrides et Browse & Discovery (regle 2). -->
+<div id="recap-modal" class="recap-modal" hidden role="dialog" aria-modal="true" aria-labelledby="recap-modal-title">
+  <div class="recap-modal-backdrop"></div>
+  <div class="recap-modal-box">
+    <h2 id="recap-modal-title">Ce que vous vous apprêtez à publier</h2>
+    <p id="recap-modal-summary" class="recap-modal-summary"></p>
+    <div id="recap-modal-groups" class="recap-modal-groups"></div>
+    <p class="recap-modal-note">Vous pourrez modifier ou désactiver chaque règle après publication.</p>
+    <div class="recap-modal-actions">
+      <button type="button" class="btn btn-ghost" id="recap-modal-close">Fermer</button>
+      <button type="button" class="catalog-rule-add-btn" id="recap-modal-publish">Publier</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>

@@ -1752,6 +1752,95 @@
 
     undoTimer = setTimeout(function () { toast.hidden = true; }, 10000);
   }
+
+  // Correctif Lot 2 (audit UX console, 17 aout 2026) : recapitulatif
+  // avant publication (§4.4 -- "corrige le defaut le plus grave (B3) :
+  // aujourd'hui, on publie sans pouvoir relire"). Fonction generique,
+  // partagee par Search Overrides et Browse & Discovery (regle 2).
+  //
+  // Perimetre : regles pin/bury uniquement (session.soDraft/brDraft).
+  // Les synonymes ne sont PAS couverts -- systeme d'ecriture immediate
+  // completement separe (creerSynonyme, PUT direct sur /synonyms, vecu
+  // sur l'onglet Observer plutot Que Optimiser), chantier distinct.
+  //
+  // groupBy(entree) -> cle de regroupement (query pour Search Overrides,
+  // chaine fixe unique pour Browse & Discovery -- pas de requete la-bas,
+  // parcours par categorie). groupLabel(cle) -> titre du groupe affiche.
+  function openRecapModal(catalogName, draft, groupBy, groupLabel, onRemove, onPublish) {
+    var modal = document.getElementById("recap-modal");
+    var summary = document.getElementById("recap-modal-summary");
+    var groupsEl = document.getElementById("recap-modal-groups");
+    var closeBtn = document.getElementById("recap-modal-close");
+    var publishBtn = document.getElementById("recap-modal-publish");
+    if (!modal || !summary || !groupsEl || !closeBtn || !publishBtn) return;
+
+    function ligneTexte(r) {
+      if (r.action === "pin") {
+        return "📌 " + esc(r.product_name || r.product_id) +
+          (r.position ? " — " + T("Épinglé en position {0}", r.position) : " — " + T("Épinglé")) +
+          " — " + esc(r.product_id);
+      }
+      return "⤓ " + esc(r.product_name || r.product_id) + " — " + T("Relégué en fin de liste") +
+        " — " + esc(r.product_id);
+    }
+
+    function render() {
+      var n = (draft || []).length;
+      if (n === 0) { modal.hidden = true; return; }
+
+      summary.textContent = T(n > 1 ? "{0} changements sur le catalogue {1}. Vos visiteurs ne voient encore rien." : "{0} changement sur le catalogue {1}. Vos visiteurs ne voient encore rien.", n, catalogName);
+
+      var groupes = {};
+      var ordreGroupes = [];
+      draft.forEach(function (r) {
+        var cle = groupBy(r);
+        if (!groupes[cle]) { groupes[cle] = []; ordreGroupes.push(cle); }
+        groupes[cle].push(r);
+      });
+
+      groupsEl.innerHTML = ordreGroupes.map(function (cle) {
+        return "<p class='recap-modal-group-title'>" + esc(groupLabel(cle)) + "</p>" +
+          groupes[cle].map(function (r, idx) {
+            return "<div class='recap-modal-row' data-recap-key='" + esc(cle) + "::" + idx + "'>" +
+              "<span class='recap-modal-row-text'>" + ligneTexte(r) + "</span>" +
+              "<button type='button' class='recap-modal-row-remove' data-recap-remove='" + esc(r.product_id) + "' data-recap-query='" + esc(r.query || "") + "' aria-label='" + T("Supprimer cette règle") + "'>&times;</button>" +
+            "</div>";
+          }).join("");
+      }).join("");
+    }
+
+    render();
+    modal.hidden = false;
+
+    groupsEl.onclick = function (e) {
+      var btn = e.target.closest("[data-recap-remove]");
+      if (!btn) return;
+      var pid = btn.getAttribute("data-recap-remove");
+      var query = btn.getAttribute("data-recap-query");
+      // Correctif regle 4 (partie 5 du brief) : toute suppression laisse
+      // un retour arriere, y compris celles faites depuis ce
+      // recapitulatif -- pas seulement "Tout annuler".
+      // ES5 plutot que .findIndex() (ES6) : coherence avec le reste du
+      // fichier, qui n'utilise ni let/const ni arrow functions.
+      var idx = -1;
+      for (var iRecap = 0; iRecap < draft.length; iRecap++) {
+        if (draft[iRecap].product_id === pid && (draft[iRecap].query || "") === query) { idx = iRecap; break; }
+      }
+      if (idx === -1) return;
+      var supprime = draft[idx];
+      draft.splice(idx, 1);
+      render();
+      onRemove(draft);
+      showUndoToast(T("Règle supprimée."), function () {
+        draft.splice(idx, 0, supprime);
+        render();
+        onRemove(draft);
+      });
+    };
+
+    closeBtn.onclick = function () { modal.hidden = true; };
+    publishBtn.onclick = function () { modal.hidden = true; onPublish(); };
+  }
   function soSimuBar(actif) {
     simuBarUpdate("so", actif ? session.soDraft : null);
   }
@@ -1913,16 +2002,25 @@
           var ICONE = ICONES_FICHE;
           var actions = "<div class='so-card-actions'>";
           var bloque = soFiltres.length ? " disabled" : "";
-          actions += "<button type='button'" + bloque + " data-so-act='up' data-pid='" + pid + "' title='" + escAttr(T("Monter d'une place")) + "' aria-label='" + T("Monter {0}", esc(p.name || p.id)) + "'>" + ICONE.up + "</button>" +
-                     "<button type='button'" + bloque + " data-so-act='down' data-pid='" + pid + "' title='" + escAttr(T("Descendre d'une place")) + "' aria-label='" + T("Descendre {0}", esc(p.name || p.id)) + "'>" + ICONE.down + "</button>";
+          // Correctif Lot 2 (audit UX console, 17 aout 2026) : data-name
+          // ajoute pour que le recapitulatif (§4.4) puisse afficher le
+          // vrai nom du produit ("Pince a sertir les cosses"), pas
+          // seulement son identifiant -- session.soDraft ne stockait
+          // jusqu'ici que product_id, jamais le nom.
+          var nomAttr = " data-name='" + esc(p.name || "") + "'";
+          actions += "<button type='button'" + bloque + nomAttr + " data-so-act='up' data-pid='" + pid + "' title='" + escAttr(T("Monter d'une place")) + "' aria-label='" + T("Monter {0}", esc(p.name || p.id)) + "'>" + ICONE.up + "</button>" +
+                     "<button type='button'" + bloque + nomAttr + " data-so-act='down' data-pid='" + pid + "' title='" + escAttr(T("Descendre d'une place")) + "' aria-label='" + T("Descendre {0}", esc(p.name || p.id)) + "'>" + ICONE.down + "</button>";
           if (h.pinned) {
-            actions += "<button type='button' data-so-act='retirer' data-pid='" + pid + "' title='" + escAttr(T("Retirer l'épinglage")) + "' aria-label='" + T("Retirer l'épinglage de {0}", esc(p.name || p.id)) + "'>" + ICONE.off + "</button>";
+            actions += "<button type='button' data-so-act='retirer'" + nomAttr + " data-pid='" + pid + "' title='" + escAttr(T("Retirer l'épinglage")) + "' aria-label='" + T("Retirer l'épinglage de {0}", esc(p.name || p.id)) + "'>" + ICONE.off + "</button>";
           } else {
-            actions += "<button type='button' data-so-act='pin' data-pid='" + pid + "' title='" + T("Mettre en tête") + "' aria-label='" + T("Mettre {0} en tête", esc(p.name || p.id)) + "'>" + ICONE.pin + "</button>";
+            actions += "<button type='button' data-so-act='pin'" + nomAttr + " data-pid='" + pid + "' title='" + T("Mettre en tête") + "' aria-label='" + T("Mettre {0} en tête", esc(p.name || p.id)) + "'>" + ICONE.pin + "</button>";
           }
           actions += "</div>";
 
-          return "<div class='" + classes + "'" + " draggable='true' data-pid='" + pid + "'" + ">" +
+          // Correctif Lot 2 : data-name aussi sur la carte, lue par le
+          // glisser-depose (wireSoDragDrop) qui n'a pas de bouton
+          // individuel a interroger.
+          return "<div class='" + classes + "'" + " draggable='true' data-pid='" + pid + "' data-name='" + esc(p.name || "") + "'" + ">" +
             (q ? "<span class='so-card-rank'>" + (i + 1) + "</span>" : "") +
             badge +
             "<div class='so-card-name'>" + surlignerTexte(p.name || p.id, h.highlights && h.highlights.name) + "</div>" +
@@ -2273,6 +2371,20 @@
     var appliquer = document.getElementById("so-simu-apply");
     if (appliquer) appliquer.addEventListener("click", function () { soAppliquerBrouillon(key); });
 
+    // Correctif Lot 2 (audit UX console, 17 aout 2026) : "Voir le detail"
+    // ouvre le recapitulatif avant publication (§4.4).
+    var detailBtn = document.getElementById("so-simu-detail");
+    if (detailBtn) detailBtn.addEventListener("click", function () {
+      openRecapModal(
+        session.soCurrentCatalog,
+        session.soDraft || [],
+        function (r) { return r.query; },
+        function (cle) { return T("Sur la recherche « {0} »", cle); },
+        function (nouveauDraft) { session.soDraft = nouveauDraft; soRenderReglesTable(session.soDraft, true); refreshSoPreview(key); },
+        function () { soAppliquerBrouillon(key); }
+      );
+    });
+
     var abandonner = document.getElementById("so-simu-discard");
     // Correctif Lot 2 (audit UX console, 17 aout 2026) : remplace la
     // confirmation prealable de B6 par le vrai mecanisme complet --
@@ -2342,7 +2454,7 @@
     soEpingles(q).forEach(function (r, i) { r.position = i + 1; });
   }
 
-  function soAction(key, action, pid) {
+  function soAction(key, action, pid, productName) {
     var q = soRequeteCourante();
     if (!q) return;  // garde-fou : voir soVerifierRequete
 
@@ -2353,8 +2465,13 @@
       } else if (i !== -1) {
         session.soDraft[i].action = action;
         if (action === "bury") delete session.soDraft[i].position;
+        // Correctif Lot 2 (audit UX console, 17 aout 2026) : complete le
+        // nom s'il manquait encore (ex. regle creee depuis le formulaire
+        // manuel, sans nom connu a ce moment-la).
+        if (productName && !session.soDraft[i].product_name) session.soDraft[i].product_name = productName;
       } else {
         var regle = { query: q, product_id: pid, action: action };
+        if (productName) regle.product_name = productName;
         if (action === "pin") {
           // « Epingler » signifie tete de gondole : position 1, les autres
           // epingles descendent d'un rang. C'est l'usage attendu -- on
@@ -2394,7 +2511,7 @@
   // les rangs jusqu'au produit deplace -- jusqu'a 90 regles pour un seul
   // geste -- parce que la `position` n'ordonnait que les epingles entre eux.
   // Elle designe desormais le rang FINAL : une regle suffit.
-  function soDeplacer(key, pid, sens) {
+  function soDeplacer(key, pid, sens, productName) {
     var q = soRequeteCourante();
     if (!q || !soOrdreAffiche.length) return;
     var i = soOrdreAffiche.indexOf(pid);
@@ -2404,10 +2521,17 @@
     soAvecBrouillon(key, function () {
       // On retire une eventuelle regle existante sur ce produit, puis on
       // pose le rang voulu. Les autres produits ne sont pas touches.
+      var regle = { query: q, product_id: pid, action: "pin", position: cible + 1 };
+      // Meme correctif Lot 2 que soAction : propage le nom pour le
+      // recapitulatif (§4.4), completant celui d'une entree existante si
+      // absent.
+      var existante = session.soDraft.filter(function (r) { return r.query === q && r.product_id === pid; })[0];
+      if (productName) regle.product_name = productName;
+      else if (existante && existante.product_name) regle.product_name = existante.product_name;
       session.soDraft = session.soDraft.filter(function (r) {
         return !(r.query === q && r.product_id === pid);
       });
-      session.soDraft.push({ query: q, product_id: pid, action: "pin", position: cible + 1 });
+      session.soDraft.push(regle);
       // Meme correctif B3 que soAction.
       soRenderReglesTable(session.soDraft, true);
       refreshSoPreview(key);
@@ -2437,11 +2561,13 @@
     var grille = document.getElementById("so-preview-grid");
     if (!grille) return;
     var depuis = null;
+    var depuisNom = null;
 
     grille.addEventListener("dragstart", function (e) {
       var carte = e.target.closest(".so-card[draggable='true']");
       if (!carte) return;
       depuis = carte.getAttribute("data-pid");
+      depuisNom = carte.getAttribute("data-name");
       carte.classList.add("so-card-dragging");
       if (e.dataTransfer) e.dataTransfer.effectAllowed = "move";
     });
@@ -2485,7 +2611,11 @@
       session.soDraft = session.soDraft.filter(function (r) {
         return !(r.query === q && r.product_id === depuis);
       });
-      session.soDraft.push({ query: q, product_id: depuis, action: "pin", position: iV + 1 });
+      var regleDrop = { query: q, product_id: depuis, action: "pin", position: iV + 1 };
+      var existanteDrop = session.soDraft.filter(function (r) { return r.query === q && r.product_id === depuis; })[0];
+      if (depuisNom) regleDrop.product_name = depuisNom;
+      else if (existanteDrop && existanteDrop.product_name) regleDrop.product_name = existanteDrop.product_name;
+      session.soDraft.push(regleDrop);
       // Meme correctif B3 que soAction/deplacement -- glisser-deposer.
       soRenderReglesTable(session.soDraft, true);
       refreshSoPreview(key);
@@ -2502,9 +2632,10 @@
       if (!soVerifierRequete()) return;
       var act = btn.getAttribute("data-so-act");
       var pid = btn.getAttribute("data-pid");
-      if (act === "up") soDeplacer(key, pid, -1);
-      else if (act === "down") soDeplacer(key, pid, 1);
-      else soAction(key, act, pid);
+      var nom = btn.getAttribute("data-name");
+      if (act === "up") soDeplacer(key, pid, -1, nom);
+      else if (act === "down") soDeplacer(key, pid, 1, nom);
+      else soAction(key, act, pid, nom);
     });
   }
 
@@ -2820,15 +2951,18 @@
       var prix = (p.price !== undefined && p.price !== null)
         ? "<span class='so-card-price'>" + Number(p.price).toLocaleString(LOCALE, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €</span>" : "";
 
+      // Correctif Lot 2 : data-name (boutons et carte), meme raison que
+      // Search Overrides -- le recapitulatif (§4.4) a besoin du nom.
+      var nomAttrBr = " data-name='" + esc(p.name || "") + "'";
       var actions = "<div class='so-card-actions'>" +
-        "<button type='button' data-br-act='up' data-pid='" + pid + "' title='" + escAttr(T("Monter d'une place")) + "' aria-label='" + T("Monter {0}", esc(p.name || p.id)) + "'>" + ICONES_FICHE.up + "</button>" +
-        "<button type='button' data-br-act='down' data-pid='" + pid + "' title='" + escAttr(T("Descendre d'une place")) + "' aria-label='" + T("Descendre {0}", esc(p.name || p.id)) + "'>" + ICONES_FICHE.down + "</button>" +
+        "<button type='button'" + nomAttrBr + " data-br-act='up' data-pid='" + pid + "' title='" + escAttr(T("Monter d'une place")) + "' aria-label='" + T("Monter {0}", esc(p.name || p.id)) + "'>" + ICONES_FICHE.up + "</button>" +
+        "<button type='button'" + nomAttrBr + " data-br-act='down' data-pid='" + pid + "' title='" + escAttr(T("Descendre d'une place")) + "' aria-label='" + T("Descendre {0}", esc(p.name || p.id)) + "'>" + ICONES_FICHE.down + "</button>" +
         (h.pinned
-          ? "<button type='button' data-br-act='retirer' data-pid='" + pid + "' title='" + escAttr(T("Retirer l'épinglage")) + "' aria-label='" + T("Retirer l'épinglage") + "'>" + ICONES_FICHE.off + "</button>"
-          : "<button type='button' data-br-act='pin' data-pid='" + pid + "' title='" + T("Mettre en tête") + "' aria-label='" + T("Mettre en tête") + "'>" + ICONES_FICHE.pin + "</button>") +
+          ? "<button type='button'" + nomAttrBr + " data-br-act='retirer' data-pid='" + pid + "' title='" + escAttr(T("Retirer l'épinglage")) + "' aria-label='" + T("Retirer l'épinglage") + "'>" + ICONES_FICHE.off + "</button>"
+          : "<button type='button'" + nomAttrBr + " data-br-act='pin' data-pid='" + pid + "' title='" + T("Mettre en tête") + "' aria-label='" + T("Mettre en tête") + "'>" + ICONES_FICHE.pin + "</button>") +
         "</div>";
 
-      return "<div class='" + classes + "'" + " draggable='true' data-pid='" + pid + "'" + ">" +
+      return "<div class='" + classes + "'" + " draggable='true' data-pid='" + pid + "'" + nomAttrBr + ">" +
         "<span class='so-card-rank'>" + (i + 1) + "</span>" + badge +
         "<div class='so-card-name'>" + esc(p.name || p.id) + "</div>" +
         "<div class='so-card-ref'>" + esc(p.ref || p.id) + "</div>" +
@@ -2868,7 +3002,7 @@
       .sort(function (a, b) { return (a.position || 999) - (b.position || 999); });
   }
 
-  function brAction(key, action, pid) {
+  function brAction(key, action, pid, productName) {
     brAvecBrouillon(key, function () {
       var i = -1;
       for (var k = 0; k < session.brDraft.length; k++) {
@@ -2879,8 +3013,13 @@
       } else if (i !== -1) {
         session.brDraft[i].action = action;
         if (action !== "pin") delete session.brDraft[i].position;
+        // Correctif Lot 2 (audit UX console, 17 aout 2026), meme cause
+        // que Search Overrides : le recapitulatif (§4.4) a besoin du nom
+        // du produit, pas seulement de son identifiant.
+        if (productName && !session.brDraft[i].product_name) session.brDraft[i].product_name = productName;
       } else {
         var regle = { product_id: pid, action: action };
+        if (productName) regle.product_name = productName;
         if (action === "pin") {
           brEpingles().forEach(function (r) { r.position = (r.position || 1) + 1; });
           regle.position = 1;
@@ -2893,15 +3032,19 @@
   }
 
   // Meme simplification que soDeplacer : une regle, plus N.
-  function brDeplacer(key, pid, sens) {
+  function brDeplacer(key, pid, sens, productName) {
     if (!brOrdreAffiche.length) return;
     var i = brOrdreAffiche.indexOf(pid);
     var cible = i + sens;
     if (i === -1 || cible < 0 || cible >= brOrdreAffiche.length) return;
 
     brAvecBrouillon(key, function () {
+      var regle = { product_id: pid, action: "pin", position: cible + 1 };
+      var existante = session.brDraft.filter(function (r) { return r.product_id === pid; })[0];
+      if (productName) regle.product_name = productName;
+      else if (existante && existante.product_name) regle.product_name = existante.product_name;
       session.brDraft = session.brDraft.filter(function (r) { return r.product_id !== pid; });
-      session.brDraft.push({ product_id: pid, action: "pin", position: cible + 1 });
+      session.brDraft.push(regle);
       brSimuler(key);
     });
   }
@@ -2978,11 +3121,13 @@
     var grille = document.getElementById("br-grid");
     if (!grille) return;
     var depuis = null;
+    var depuisNom = null;
 
     grille.addEventListener("dragstart", function (e) {
       var carte = e.target.closest(".so-card[draggable='true']");
       if (!carte) return;
       depuis = carte.getAttribute("data-pid");
+      depuisNom = carte.getAttribute("data-name");
       carte.classList.add("so-card-dragging");
       if (e.dataTransfer) e.dataTransfer.effectAllowed = "move";
     });
@@ -3020,8 +3165,12 @@
       var deplace = depuis;
 
       brAvecBrouillon(key, function () {
+        var regleDrop = { product_id: deplace, action: "pin", position: iV + 1 };
+        var existanteDrop = session.brDraft.filter(function (r) { return r.product_id === deplace; })[0];
+        if (depuisNom) regleDrop.product_name = depuisNom;
+        else if (existanteDrop && existanteDrop.product_name) regleDrop.product_name = existanteDrop.product_name;
         session.brDraft = session.brDraft.filter(function (r) { return !(r.product_id === deplace); });
-        session.brDraft.push({ product_id: deplace, action: "pin", position: iV + 1 });
+        session.brDraft.push(regleDrop);
         brSimuler(key);
       });
     });
@@ -3035,12 +3184,30 @@
       if (!btn) return;
       var act = btn.getAttribute("data-br-act");
       var pid = btn.getAttribute("data-pid");
-      if (act === "up") brDeplacer(key, pid, -1);
-      else if (act === "down") brDeplacer(key, pid, 1);
-      else brAction(key, act, pid);
+      var nom = btn.getAttribute("data-name");
+      if (act === "up") brDeplacer(key, pid, -1, nom);
+      else if (act === "down") brDeplacer(key, pid, 1, nom);
+      else brAction(key, act, pid, nom);
     });
     var appliquer = document.getElementById("br-simu-apply");
     if (appliquer) appliquer.addEventListener("click", function () { brAppliquerBrouillon(key); });
+
+    // Correctif Lot 2 : "Voir le detail" ouvre le recapitulatif (§4.4).
+    // Un seul groupe implicite ici -- Browse & Discovery n'a pas de
+    // requete textuelle (parcours par categorie), contrairement a
+    // Search Overrides.
+    var detailBtnBr = document.getElementById("br-simu-detail");
+    if (detailBtnBr) detailBtnBr.addEventListener("click", function () {
+      openRecapModal(
+        session.browseCurrentCatalog,
+        session.brDraft || [],
+        function () { return "categorie"; },
+        function () { return T("Sur la catégorie « {0} »", session.browseCurrentCategory); },
+        function (nouveauDraft) { session.brDraft = nouveauDraft; brRenderReglesTable(session.brDraft, true); brSimuler(key); },
+        function () { brAppliquerBrouillon(key); }
+      );
+    });
+
     var abandonner = document.getElementById("br-simu-discard");
     // Correctif Lot 2 (audit UX console, 17 aout 2026) : meme mecanisme
     // que Search Overrides -- action immediate, retour arriere 10s.
