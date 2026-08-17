@@ -673,7 +673,7 @@
       <details class="faq-item">
         <summary>Does the demo on this page really use the engine?</summary>
         <div class="faq-answer">
-          <p>Yes — it's the Heurix engine logic, ported to JavaScript and embedded in the page with a generated demo catalog: same normalization, same typo tolerance, same annotation cascade, same scoring. Developers can query it from the console: <code>window.heurixDemo.search("...")</code>.</p>
+          <p>Yes — every keystroke queries the real Heurix engine through the public demo endpoint (<code>/v1/public-demo/search</code>), on two real catalogs (hardware, fashion): same normalization, same typo tolerance, same annotation cascade, same scoring, same result highlighting as any production integration. The <code>description</code> field is omitted from each response to keep the widget fast on mobile — everything else is the genuine article, not a mock.</p>
         </div>
       </details>
     </div>

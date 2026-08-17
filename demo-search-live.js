@@ -155,6 +155,46 @@
       .replace(/'/g, "&#39;").replace(/"/g, "&quot;");
   }
 
+  // Chantier highlighting (17 aout 2026). Fusionne des empans qui se
+  // chevauchent partiellement (ex. "M8X" et "M8X20" sur la meme
+  // reference) -- deja tries par position cote serveur.
+  function fusionnerEmpans(empans) {
+    if (!empans || empans.length < 2) return empans || [];
+    var fusionnes = [empans[0].slice()];
+    for (var i = 1; i < empans.length; i++) {
+      var dernier = fusionnes[fusionnes.length - 1];
+      var courant = empans[i];
+      if (courant[0] <= dernier[1]) {
+        dernier[1] = Math.max(dernier[1], courant[1]);
+      } else {
+        fusionnes.push(courant.slice());
+      }
+    }
+    return fusionnes;
+  }
+
+  // Positions en CODEPOINTS Unicode (coherent avec l'API) -- Array.from()
+  // itere par codepoint, pas par unite UTF-16 comme texte[i]. Reutilise
+  // la esc() de ce fichier (plus complete que celle de la console --
+  // widget public, catalogues clients tiers non controles).
+  function surlignerTexte(texte, empans) {
+    if (!texte) return "";
+    if (!empans || !empans.length) return esc(texte);
+    var empansFusionnes = fusionnerEmpans(empans);
+    var caracteres = Array.from(texte);
+    var resultat = "";
+    var curseur = 0;
+    empansFusionnes.forEach(function (empan) {
+      var debut = empan[0], fin = empan[1];
+      if (debut < curseur || fin > caracteres.length || debut >= fin) return;
+      resultat += esc(caracteres.slice(curseur, debut).join(""));
+      resultat += "<mark>" + esc(caracteres.slice(debut, fin).join("")) + "</mark>";
+      curseur = fin;
+    });
+    resultat += esc(caracteres.slice(curseur).join(""));
+    return resultat;
+  }
+
   function euros(n) {
     if (n === undefined || n === null) return "";
     return LANG_EN ? "€" + Number(n).toFixed(2) : Number(n).toFixed(2).replace(".", ",") + " €";
@@ -242,9 +282,9 @@
       "<div class='play-card-top'>" +
         visuel +
         "<div class='play-card-details'>" +
-          "<div class='play-card-name'>" + esc(p.name || p.id) + "</div>" +
+          "<div class='play-card-name'>" + surlignerTexte(p.name || p.id, hit.highlights && hit.highlights.name) + "</div>" +
           tagsHtml +
-          (p.ref ? "<div class='play-card-ref-bas'>" + esc(p.ref) + "</div>" : "") +
+          (p.ref ? "<div class='play-card-ref-bas'>" + surlignerTexte(p.ref, hit.highlights && hit.highlights.ref) + "</div>" : "") +
         "</div>" +
       "</div>" +
       "<div class='play-card-prix-ligne'>" +
@@ -470,6 +510,7 @@
       // d'environ 80% sans rien changer visuellement (4 aout, widget
       // teste sur 4G, temps ressenti en hausse).
       exclude_description: true,
+      include_highlights: true,
     };
     if (prismeActif) {
       corps.filters = [{ field: prismeActif.champ, value: prismeActif.valeur }];
@@ -559,6 +600,7 @@
       offset: offsetEnCours,
       facets: ["categories", "marque"],
       exclude_description: true,
+      include_highlights: true,
     };
     if (prismeActif) {
       corpsPage.filters = [{ field: prismeActif.champ, value: prismeActif.valeur }];
