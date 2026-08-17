@@ -37,6 +37,20 @@
 
   function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;"); }
 
+  // Correctif B2 (audit UX console, 17 aout 2026) : plusieurs libelles
+  // fixes contiennent une vraie apostrophe francaise ("Monter d'une
+  // place", "Retirer l'epinglage") -- inseres tels quels dans des
+  // attributs title='...' entre guillemets SIMPLES, jamais echappes.
+  // Le navigateur interprete l'apostrophe comme la fin de l'attribut :
+  // title='Monter d'une place' devient title="Monter d", suivi de
+  // "une place'" qui flotte comme du texte HTML invalide -- exactement
+  // le titre tronque "Monter d" signale dans l'audit. esc() existante
+  // n'echappe pas l'apostrophe (elle protege &/< uniquement, pas les
+  // attributs entre guillemets simples) -- fonction dediee plutot que
+  // modifier esc() globalement, pour ne rien risquer sur ses autres
+  // usages deja en place ailleurs dans ce fichier.
+  function escAttr(s) { return esc(s).replace(/'/g, "&#39;"); }
+
   // Chantier highlighting (16 aout 2026). Fusionne des empans qui se
   // chevauchent partiellement (ex. "M8X" et "M8X20" sur la meme
   // reference, tres courant : plusieurs regles peuvent matcher des
@@ -1830,10 +1844,17 @@
           var badge = h.pinned
             ? "<span class='so-card-badge so-card-badge-pin'>" + T("Épinglé") + " · " + (i + 1) + "</span>"
             : h.buried ? "<span class='so-card-badge so-card-badge-bury'>" + T("Relégué") + "</span>" : "";
-          var enRupture = p.stock === 0;
-          var stock = p.stock === undefined ? "" :
+          // Correctif B1 (audit UX console, 17 aout 2026). p.stock === 0
+          // ne fonctionnait jamais : stock, cote catalogue, est un vrai
+          // booleen (voir heurix-engine, ItemsBody), jamais une quantite
+          // numerique -- true !== 0 en JS, enRupture etait donc toujours
+          // faux, et le texte affichait la valeur brute "true en stock".
+          // h.in_stock (deja calcule par le moteur, voir _in_stock() cote
+          // search.py) est le vrai champ fiable ici, pas p.stock.
+          var enRupture = h.in_stock === false;
+          var stock = h.in_stock === undefined ? "" :
             "<span class='so-card-stock" + (enRupture ? " rupture" : "") + "'>" +
-            (enRupture ? T("Rupture") : T("{0} en stock", p.stock)) + "</span>";
+            (enRupture ? T("Rupture") : T("En stock")) + "</span>";
           var prix = (p.price !== undefined && p.price !== null)
             ? "<span class='so-card-price'>" + Number(p.price).toLocaleString(LOCALE, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €</span>" : "";
           var pourquoi = (q && (h.matched || []).length)
@@ -1844,10 +1865,10 @@
           var ICONE = ICONES_FICHE;
           var actions = "<div class='so-card-actions'>";
           var bloque = soFiltres.length ? " disabled" : "";
-          actions += "<button type='button'" + bloque + " data-so-act='up' data-pid='" + pid + "' title='" + T("Monter d'une place") + "' aria-label='" + T("Monter {0}", esc(p.name || p.id)) + "'>" + ICONE.up + "</button>" +
-                     "<button type='button'" + bloque + " data-so-act='down' data-pid='" + pid + "' title='" + T("Descendre d'une place") + "' aria-label='" + T("Descendre {0}", esc(p.name || p.id)) + "'>" + ICONE.down + "</button>";
+          actions += "<button type='button'" + bloque + " data-so-act='up' data-pid='" + pid + "' title='" + escAttr(T("Monter d'une place")) + "' aria-label='" + T("Monter {0}", esc(p.name || p.id)) + "'>" + ICONE.up + "</button>" +
+                     "<button type='button'" + bloque + " data-so-act='down' data-pid='" + pid + "' title='" + escAttr(T("Descendre d'une place")) + "' aria-label='" + T("Descendre {0}", esc(p.name || p.id)) + "'>" + ICONE.down + "</button>";
           if (h.pinned) {
-            actions += "<button type='button' data-so-act='retirer' data-pid='" + pid + "' title='" + T("Retirer l'épinglage") + "' aria-label='" + T("Retirer l'épinglage de {0}", esc(p.name || p.id)) + "'>" + ICONE.off + "</button>";
+            actions += "<button type='button' data-so-act='retirer' data-pid='" + pid + "' title='" + escAttr(T("Retirer l'épinglage")) + "' aria-label='" + T("Retirer l'épinglage de {0}", esc(p.name || p.id)) + "'>" + ICONE.off + "</button>";
           } else {
             actions += "<button type='button' data-so-act='pin' data-pid='" + pid + "' title='" + T("Mettre en tête") + "' aria-label='" + T("Mettre {0} en tête", esc(p.name || p.id)) + "'>" + ICONE.pin + "</button>";
           }
@@ -1900,6 +1921,14 @@
     // Le catalogue vient desormais du choix global, plus d'un selecteur de
     // pave (chantier « catalogue global »).
     session.soCurrentCatalog = catalogueCourant();
+    // Correctif Lot 1 (audit UX console, 17 aout 2026) : "Appliquer" ne
+    // disait pas que la publication devient visible par les vrais
+    // visiteurs. Huit catalogues aux noms proches existent sur un compte
+    // -- publier sur le mauvais doit devenir difficile (brief §4.1).
+    var boutonAppliquer = document.getElementById("so-simu-apply");
+    if (boutonAppliquer && session.soCurrentCatalog) {
+      boutonAppliquer.textContent = "Publier sur " + session.soCurrentCatalog;
+    }
     var content = document.getElementById("so-content");
     if (!session.soCurrentCatalog) { content.hidden = true; return; }
     content.hidden = false;
@@ -2163,7 +2192,13 @@
     if (appliquer) appliquer.addEventListener("click", function () { soAppliquerBrouillon(key); });
 
     var abandonner = document.getElementById("so-simu-discard");
+    // Correctif B6 (audit UX console, 17 aout 2026) : suppression sans
+    // confirmation ni annulation possible -- confirmation minimale pour
+    // ce lot, le mecanisme complet (bouton Tout annuler + toast avec
+    // retour arriere 10s) vient avec le lot 2 et la refonte de la barre
+    // de brouillon.
     if (abandonner) abandonner.addEventListener("click", function () {
+      if (!window.confirm("Abandonner les modifications non enregistrees ?")) return;
       session.soDraft = null;
       resetSoForm();
       refreshSoPreview(key);
@@ -2585,6 +2620,11 @@
   function onBrowseCatalogChange(key) {
     var catalog = catalogueCourant();
     session.browseCurrentCatalog = catalog; session.browseCurrentCategory = "";
+    // Meme correctif Lot 1 que Search Overrides.
+    var boutonAppliquerBr = document.getElementById("br-simu-apply");
+    if (boutonAppliquerBr && catalog) {
+      boutonAppliquerBr.textContent = "Publier sur " + catalog;
+    }
     var categorySelect = document.getElementById("browse-category-select");
     // On masque les RESULTATS, pas le panneau : les selecteurs de catalogue
     // et de categorie y vivent desormais, les cacher rendrait impossible de
@@ -2679,18 +2719,20 @@
       var badge = h.pinned ? "<span class='so-card-badge so-card-badge-pin'>" + T("Épinglé") + " · " + (i + 1) + "</span>"
         : h.boosted ? "<span class='so-card-badge so-card-badge-pin'>" + T("Boosté") + "</span>"
         : h.buried ? "<span class='so-card-badge so-card-badge-bury'>" + T("Relégué") + "</span>" : "";
-      var enRupture = p.stock === 0;
-      var stock = p.stock === undefined ? "" :
+      // Correctif B1 (audit UX console, 17 aout 2026). Meme correctif que
+      // Search Overrides : h.in_stock plutot que p.stock === 0.
+      var enRupture = h.in_stock === false;
+      var stock = h.in_stock === undefined ? "" :
         "<span class='so-card-stock" + (enRupture ? " rupture" : "") + "'>" +
-        (enRupture ? T("Rupture") : T("{0} en stock", p.stock)) + "</span>";
+        (enRupture ? T("Rupture") : T("En stock")) + "</span>";
       var prix = (p.price !== undefined && p.price !== null)
         ? "<span class='so-card-price'>" + Number(p.price).toLocaleString(LOCALE, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €</span>" : "";
 
       var actions = "<div class='so-card-actions'>" +
-        "<button type='button' data-br-act='up' data-pid='" + pid + "' title='" + T("Monter d'une place") + "' aria-label='" + T("Monter {0}", esc(p.name || p.id)) + "'>" + ICONES_FICHE.up + "</button>" +
-        "<button type='button' data-br-act='down' data-pid='" + pid + "' title='" + T("Descendre d'une place") + "' aria-label='" + T("Descendre {0}", esc(p.name || p.id)) + "'>" + ICONES_FICHE.down + "</button>" +
+        "<button type='button' data-br-act='up' data-pid='" + pid + "' title='" + escAttr(T("Monter d'une place")) + "' aria-label='" + T("Monter {0}", esc(p.name || p.id)) + "'>" + ICONES_FICHE.up + "</button>" +
+        "<button type='button' data-br-act='down' data-pid='" + pid + "' title='" + escAttr(T("Descendre d'une place")) + "' aria-label='" + T("Descendre {0}", esc(p.name || p.id)) + "'>" + ICONES_FICHE.down + "</button>" +
         (h.pinned
-          ? "<button type='button' data-br-act='retirer' data-pid='" + pid + "' title='" + T("Retirer l'épinglage") + "' aria-label='" + T("Retirer l'épinglage") + "'>" + ICONES_FICHE.off + "</button>"
+          ? "<button type='button' data-br-act='retirer' data-pid='" + pid + "' title='" + escAttr(T("Retirer l'épinglage")) + "' aria-label='" + T("Retirer l'épinglage") + "'>" + ICONES_FICHE.off + "</button>"
           : "<button type='button' data-br-act='pin' data-pid='" + pid + "' title='" + T("Mettre en tête") + "' aria-label='" + T("Mettre en tête") + "'>" + ICONES_FICHE.pin + "</button>") +
         "</div>";
 
@@ -2899,7 +2941,9 @@
     var appliquer = document.getElementById("br-simu-apply");
     if (appliquer) appliquer.addEventListener("click", function () { brAppliquerBrouillon(key); });
     var abandonner = document.getElementById("br-simu-discard");
+    // Meme correctif B6 que Search Overrides.
     if (abandonner) abandonner.addEventListener("click", function () {
+      if (!window.confirm("Abandonner les modifications non enregistrees ?")) return;
       session.brDraft = null;
       refreshBrowsePreview(key);
     });

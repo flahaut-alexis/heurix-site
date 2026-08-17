@@ -503,8 +503,14 @@
                 </div>
                 <div class="so-facets" id="so-facets" hidden></div>
                 <p class="so-facet-warn" id="so-facet-warn" hidden>Filtre actif : les flèches sont désactivées. Elles figent les positions de la liste <strong>affichée</strong> — sur une liste filtrée, les règles produites n'auraient plus de sens une fois le filtre retiré. L'épinglage, lui, reste possible.</p>
-                <div class="so-grid" id="so-preview-grid"></div>
+                <!-- Correctif Lot 1 (audit UX console, 17 aout 2026) : le
+                     compte de resultats etait lu apres la grille, jamais
+                     avant -- brief : "au-dessus de la grille, pas en
+                     dessous". Inversion simple de l'ordre, aucune vraie
+                     logique JS a toucher (legende.textContent continue de
+                     cibler le meme id). -->
                 <p class="so-grid-caption" id="so-preview-caption"></p>
+                <div class="so-grid" id="so-preview-grid"></div>
                 <p class="console-empty" id="so-preview-empty" hidden>Aucun résultat pour cette requête.</p>
                 <div class="so-simu-bar" id="so-simu-bar" hidden>
                   <span class="so-simu-tag">Simulation</span>
@@ -528,7 +534,7 @@
 
               <div class="console-panel">
                 <h2>Synonymes et règles personnalisées</h2>
-                <p class="console-panel-note">Les synonymes rapprochent les mots que vos clients emploient de ceux de votre catalogue. Les règles personnalisées apprennent au moteur un terme propre à votre métier, sans écrire de regex.</p>
+                <p class="console-panel-note">Les synonymes rapprochent les mots que vos clients emploient de ceux de votre catalogue. Apprenez au moteur un mot de votre métier, en quelques mots et sans code.</p>
                 
                 <div id="cr-host"></div>
                 <p class="console-empty" id="cr-hint">Choisissez un catalogue pour gérer ses synonymes et ses règles.</p>
@@ -545,8 +551,8 @@
                   </div>
                   <div class="catalog-rule-add-row">
                     <select id="so-action">
-                      <option value="pin">Épingler (pin)</option>
-                      <option value="bury">Reléguer (bury)</option>
+                      <option value="pin">Épingler en tête</option>
+                      <option value="bury">Reléguer en fin de liste</option>
                     </select>
                     <input type="number" min="1" max="100" placeholder="Position (pin uniquement)" id="so-position">
                   </div>
@@ -572,7 +578,8 @@
               <div class="console-panel">
                 <div class="catalog-card-row" style="margin-bottom:14px;">
                   <h2 style="margin:0; flex:1;">Aperçu du classement</h2>
-                  <select id="browse-sort-select">
+                  <label for="browse-sort-select" style="font-size:12.5px; font-weight:700; color:var(--ink-muted);">Classement de base</label>
+                  <select id="browse-sort-select" aria-label="Classement de base">
                     <option value="stock">Stock disponible</option>
                     <option value="recent">Plus récent</option>
                     <option value="alphabetical">Alphabétique</option>
@@ -614,7 +621,7 @@
                   <datalist id="browse-known-values"></datalist>
                   <select id="browse-attribute-action" style="margin-top:8px;">
                     <option value="boost">Booster (boost)</option>
-                    <option value="bury">Reléguer (bury)</option>
+                    <option value="bury">Reléguer en fin de liste</option>
                   </select>
                   <button type="submit" class="catalog-rule-add-btn" id="bar-submit-btn">Ajouter la règle</button>
                   <button type="button" class="btn btn-ghost" id="bar-cancel-edit-btn" hidden style="margin-left:8px;">Annuler la modification</button>
@@ -647,8 +654,9 @@
                   </ol>
                   <p class="so-tuto-note">Déplacer un produit fige aussi les positions au-dessus de lui : plusieurs règles apparaissent donc d'un seul clic. Rien n'est enregistré tant que vous n'avez pas cliqué sur Appliquer.</p>
                 </div>
-                <div class="so-grid" id="br-grid"></div>
+                <!-- Meme correctif Lot 1 que Search Overrides. -->
                 <p class="so-grid-caption" id="br-caption"></p>
+                <div class="so-grid" id="br-grid"></div>
                 <div class="so-simu-bar" id="br-simu-bar" hidden>
                   <span class="so-simu-tag">Simulation</span>
                   <span>Ce classement intègre votre brouillon. Rien n'est encore enregistré — vos visiteurs voient toujours l'ordre actuel.</span>
@@ -670,8 +678,8 @@
                   <div class="catalog-rule-add-row">
                     <input type="text" placeholder="Identifiant du produit" id="browse-override-product-id" required>
                     <select id="browse-override-action">
-                      <option value="pin">Épingler (pin)</option>
-                      <option value="bury">Reléguer (bury)</option>
+                      <option value="pin">Épingler en tête</option>
+                      <option value="bury">Reléguer en fin de liste</option>
                     </select>
                   </div>
                   <input type="number" min="1" max="100" placeholder="Position (1 = premier épinglé)" id="browse-override-position">
@@ -906,7 +914,7 @@
               <h3 class="console-help-h3" style="margin-top:0;">Ce que fait un pack de règles</h3>
               <p class="console-panel-note" style="margin:4px 0 14px;">Un pack de règles lit vos références produit et reconnaît automatiquement ce qu'elles contiennent — comme dans le schéma ci-dessus. Dix packs existent aujourd'hui, couvrant les secteurs les plus courants (outillage, mode, industrie, livres, électronique, vins &amp; spiritueux, automobile, électricité, plomberie, finance).</p>
               <h3 class="console-help-h3">Créer une règle personnalisée</h3>
-              <p class="console-panel-note" style="margin:4px 0 14px;">Possible directement dans chaque carte catalogue, sans écrire de regex — deux formats au choix. Voici exactement quoi remplir :</p>
+              <p class="console-panel-note" style="margin:4px 0 14px;">Possible directement dans chaque carte catalogue, sans code — deux formats au choix. Voici exactement quoi remplir :</p>
 
               <div class="console-help-example">
                 <div class="console-help-example-title">Exemple — Mot-clé → étiquette</div>
