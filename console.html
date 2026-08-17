@@ -421,7 +421,7 @@
               </button>
             </div>
             <div class="console-panel console-panel-warn">
-              <p class="console-panel-note">Ce que vos clients cherchent sans jamais rien trouver — des ventes potentiellement manquées. Chaque ligne est un candidat pour un synonyme ou une règle à ajouter.</p>
+              <p class="console-panel-note">Ce que vos clients cherchent sans jamais rien trouver — des ventes potentiellement manquées. Chaque ligne est un candidat pour un synonyme ou une reconnaissance à ajouter.</p>
               <div class="table-scroll"><table class="console-table" id="zero-results-table">
                 <thead><tr><th>Requête</th><th>Nb de fois</th><th>Corriger</th></tr></thead>
                 <tbody></tbody>
@@ -543,11 +543,11 @@
               
 
               <div class="console-panel">
-                <h2>Synonymes et règles personnalisées</h2>
+                <h2>Synonymes et reconnaissances personnalisées</h2>
                 <p class="console-panel-note">Les synonymes rapprochent les mots que vos clients emploient de ceux de votre catalogue. Apprenez au moteur un mot de votre métier, en quelques mots et sans code.</p>
                 
                 <div id="cr-host"></div>
-                <p class="console-empty" id="cr-hint">Choisissez un catalogue pour gérer ses synonymes et ses règles.</p>
+                <p class="console-empty" id="cr-hint">Choisissez un catalogue pour gérer ses synonymes et ses reconnaissances.</p>
               </div>
 
               <details class="br-attrs">
@@ -927,26 +927,26 @@
               <img src="img/cascade-annotations.svg?v=1784808273" alt="Schéma : la référence M8 x 20 - Inox A2 est reconnue par trois règles (diamètre, longueur, matière) qui se combinent en trois annotations" style="width:100%; max-width:640px; margin:0 0 16px;">
               <h3 class="console-help-h3" style="margin-top:0;">Ce que fait un pack de règles</h3>
               <p class="console-panel-note" style="margin:4px 0 14px;">Un pack de règles lit vos références produit et reconnaît automatiquement ce qu'elles contiennent — comme dans le schéma ci-dessus. Dix packs existent aujourd'hui, couvrant les secteurs les plus courants (outillage, mode, industrie, livres, électronique, vins &amp; spiritueux, automobile, électricité, plomberie, finance).</p>
-              <h3 class="console-help-h3">Créer une règle personnalisée</h3>
+              <h3 class="console-help-h3">Créer une reconnaissance personnalisée</h3>
               <p class="console-panel-note" style="margin:4px 0 14px;">Possible directement dans chaque carte catalogue, sans code — deux formats au choix. Voici exactement quoi remplir :</p>
 
               <div class="console-help-example">
-                <div class="console-help-example-title">Exemple — Mot-clé → étiquette</div>
+                <div class="console-help-example-title">Exemple — Reconnaître un mot métier</div>
                 <p class="console-help-example-context">Vos clients tapent « cheville », d'autres « molly » ou « placo » pour le même produit.</p>
                 <div class="console-help-example-fields">
-                  <div><span>Type</span><code>Mot-clé → étiquette</code></div>
-                  <div><span>Nom de la règle</span><code>Cheville</code></div>
+                  <div><span>Type</span><code>Reconnaître un mot métier</code></div>
+                  <div><span>Nom de la reconnaissance</span><code>Cheville</code></div>
                   <div><span>Mots équivalents</span><code>cheville, molly, plaquo, placo</code></div>
                 </div>
                 <p class="console-help-example-result">→ Une recherche sur n'importe lequel de ces mots retrouve tous les produits contenant l'un des trois autres.</p>
               </div>
 
               <div class="console-help-example">
-                <div class="console-help-example-title">Exemple — Préfixe + nombre → étiquette</div>
+                <div class="console-help-example-title">Exemple — Reconnaître une référence</div>
                 <p class="console-help-example-context">Vos références utilisent un code standardisé, comme un coloris RAL.</p>
                 <div class="console-help-example-fields">
-                  <div><span>Type</span><code>Préfixe + nombre → étiquette</code></div>
-                  <div><span>Nom de la règle</span><code>Coloris RAL</code></div>
+                  <div><span>Type</span><code>Reconnaître une référence (ex. M8, DN20)</code></div>
+                  <div><span>Nom de la reconnaissance</span><code>Coloris RAL</code></div>
                   <div><span>Préfixe à reconnaître</span><code>RAL</code></div>
                 </div>
                 <p class="console-help-example-result">→ « RAL 9010 » et « RAL9010 » (avec ou sans espace) sont désormais reconnus comme la même valeur.</p>
@@ -955,7 +955,7 @@
               <p class="console-panel-note" style="margin:14px 0 0;">D'autres exemples classés par secteur (bricolage, mode, beauté, ameublement…) : <a href="blog/custom-rules-personnaliser-moteur-recherche.html">consultez l'article de blog dédié</a>.</p>
               <p class="console-panel-note" style="margin:4px 0 14px;">Les cas plus complexes (deux nombres combinés, comme un diamètre × une longueur) ne sont pas encore couverts par ces deux formats. Un besoin de ce type ? <a href="mailto:contact@heurix.fr">Écrivez-nous</a>, c'est faisable côté moteur.</p>
               <h3 class="console-help-h3">Publier un changement</h3>
-              <p class="console-panel-note" style="margin:4px 0 0;">Il n'y a pas d'étape de publication séparée : changer de pack de règles, modifier un synonyme, ou créer une règle personnalisée prend effet <strong>immédiatement</strong> sur votre recherche en production, dès que vous validez.</p>
+              <p class="console-panel-note" style="margin:4px 0 0;">Il n'y a pas d'étape de publication séparée : changer de pack de règles, modifier un synonyme, ou créer une reconnaissance personnalisée prend effet <strong>immédiatement</strong> sur votre recherche en production, dès que vous validez.</p>
             </div>
           </div>
 

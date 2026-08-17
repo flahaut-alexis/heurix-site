@@ -2011,7 +2011,7 @@
           actions += "<button type='button'" + bloque + nomAttr + " data-so-act='up' data-pid='" + pid + "' title='" + escAttr(T("Monter d'une place")) + "' aria-label='" + T("Monter {0}", esc(p.name || p.id)) + "'>" + ICONE.up + "</button>" +
                      "<button type='button'" + bloque + nomAttr + " data-so-act='down' data-pid='" + pid + "' title='" + escAttr(T("Descendre d'une place")) + "' aria-label='" + T("Descendre {0}", esc(p.name || p.id)) + "'>" + ICONE.down + "</button>";
           if (h.pinned) {
-            actions += "<button type='button' data-so-act='retirer'" + nomAttr + " data-pid='" + pid + "' title='" + escAttr(T("Retirer l'épinglage")) + "' aria-label='" + T("Retirer l'épinglage de {0}", esc(p.name || p.id)) + "'>" + ICONE.off + "</button>";
+            actions += "<button type='button' data-so-act='retirer'" + nomAttr + " data-pid='" + pid + "' title='" + escAttr(T("Retirer l'épingle")) + "' aria-label='" + T("Retirer l'épingle de {0}", esc(p.name || p.id)) + "'>" + ICONE.off + "</button>";
           } else {
             actions += "<button type='button' data-so-act='pin'" + nomAttr + " data-pid='" + pid + "' title='" + T("Mettre en tête") + "' aria-label='" + T("Mettre {0} en tête", esc(p.name || p.id)) + "'>" + ICONE.pin + "</button>";
           }
@@ -2691,20 +2691,20 @@
         '<button type="button" class="catalog-synonym-add-btn">' + T("Ajouter un groupe") + '</button>' +
         '<span class="catalog-synonym-status catalog-rule-status"></span>' +
       '</div>' +
-      '<div class="catalog-synonyms-label" style="margin-top:22px;">' + T("Règles personnalisées") + '</div>' +
+      '<div class="catalog-synonyms-label" style="margin-top:22px;">' + T("Reconnaissances") + '</div>' +
       '<div class="catalog-rules-list"></div>' +
-      '<div class="catalog-synonyms-label catalog-rule-form-title" style="margin-top:14px; font-size:12.5px;">' + T("Ajouter une règle") + '</div>' +
+      '<div class="catalog-synonyms-label catalog-rule-form-title" style="margin-top:14px; font-size:12.5px;">' + T("Ajouter une reconnaissance") + '</div>' +
       '<div class="catalog-rule-add">' +
         '<div class="catalog-rule-add-row">' +
           '<select class="catalog-rule-type">' +
-            '<option value="keyword">' + T("Mot-clé → étiquette") + '</option>' +
-            '<option value="prefix_number">' + T("Préfixe + nombre → étiquette") + '</option>' +
+            '<option value="keyword">' + T("Reconnaître un mot métier") + '</option>' +
+            '<option value="prefix_number">' + T("Reconnaître une référence (ex. M8, DN20)") + '</option>' +
           '</select>' +
-          '<input type="text" placeholder="' + T("Nom de la règle, ex. Cheville") + '" class="catalog-rule-label">' +
+          '<input type="text" placeholder="' + T("Nom de la reconnaissance, ex. Cheville") + '" class="catalog-rule-label">' +
         '</div>' +
         '<input type="text" placeholder="' + T("Mots équivalents, ex. placo, cheville, molly") + '" class="catalog-rule-keywords">' +
         '<input type="text" placeholder="' + T("Préfixe à reconnaître, ex. M (pour M8, M10…)") + '" class="catalog-rule-prefix" hidden>' +
-        '<button type="button" class="catalog-rule-add-btn">' + T("Créer la règle") + '</button>' +
+        '<button type="button" class="catalog-rule-add-btn">' + T("Créer la reconnaissance") + '</button>' +
         '<button type="button" class="btn btn-ghost catalog-rule-cancel-edit-btn" hidden style="margin-left:8px;">' + T("Annuler la modification") + '</button>' +
         '<span class="catalog-rule-status"></span>' +
       '</div>';
@@ -2940,7 +2940,7 @@
       // numero sans exception. "Booste" n'avait deja pas de numero, non
       // concerne.
       var badge = h.pinned ? "<span class='so-card-badge so-card-badge-pin'>" + T("Épinglé") + "</span>"
-        : h.boosted ? "<span class='so-card-badge so-card-badge-pin'>" + T("Boosté") + "</span>"
+        : h.boosted ? "<span class='so-card-badge so-card-badge-pin'>" + T("Favorisé") + "</span>"
         : h.buried ? "<span class='so-card-badge so-card-badge-bury'>" + T("Relégué") + "</span>" : "";
       // Correctif B1 (audit UX console, 17 aout 2026). Meme correctif que
       // Search Overrides : h.in_stock plutot que p.stock === 0.
@@ -2958,7 +2958,7 @@
         "<button type='button'" + nomAttrBr + " data-br-act='up' data-pid='" + pid + "' title='" + escAttr(T("Monter d'une place")) + "' aria-label='" + T("Monter {0}", esc(p.name || p.id)) + "'>" + ICONES_FICHE.up + "</button>" +
         "<button type='button'" + nomAttrBr + " data-br-act='down' data-pid='" + pid + "' title='" + escAttr(T("Descendre d'une place")) + "' aria-label='" + T("Descendre {0}", esc(p.name || p.id)) + "'>" + ICONES_FICHE.down + "</button>" +
         (h.pinned
-          ? "<button type='button'" + nomAttrBr + " data-br-act='retirer' data-pid='" + pid + "' title='" + escAttr(T("Retirer l'épinglage")) + "' aria-label='" + T("Retirer l'épinglage") + "'>" + ICONES_FICHE.off + "</button>"
+          ? "<button type='button'" + nomAttrBr + " data-br-act='retirer' data-pid='" + pid + "' title='" + escAttr(T("Retirer l'épingle")) + "' aria-label='" + T("Retirer l'épingle") + "'>" + ICONES_FICHE.off + "</button>"
           : "<button type='button'" + nomAttrBr + " data-br-act='pin' data-pid='" + pid + "' title='" + T("Mettre en tête") + "' aria-label='" + T("Mettre en tête") + "'>" + ICONES_FICHE.pin + "</button>") +
         "</div>";
 
@@ -2971,7 +2971,7 @@
 
     if (legende) {
       legende.textContent = T(hits.length > 1 ? "{0} produits dans « {1} »" : "{0} produit dans « {1} »", hits.length, session.browseCurrentCategory) +
-        (simule ? " — " + T("classement simulé") : "");
+        (simule ? " — " + T("classement en brouillon") : "");
     }
     brSimuBar(!!simule);
   }
@@ -3236,7 +3236,7 @@
       session.brDraft = null;
       brRenderGrille(data.hits || [], false);
       renderTable("browse-preview-table", "browse-preview-empty", data.hits, function (h) {
-        var status = h.pinned ? "Épinglé" : h.boosted ? "Boosté" : h.buried ? "Relégué" : "—";
+        var status = h.pinned ? "Épinglé" : h.boosted ? "Favorisé" : h.buried ? "Relégué" : "—";
         return "<td>" + produitCell(h.product.id, h.product.name, h.product.price) + "</td><td class='num'>" +
           (h.product.stock !== undefined ? h.product.stock : "–") + "</td><td>" + status + "</td>";
       });
@@ -3730,7 +3730,7 @@
   }
 
   function customRulesListHtml(rules) {
-    if (!rules.length) return '<p class="catalog-rules-empty">' + T("Aucune règle personnalisée pour l'instant.") + '</p>';
+    if (!rules.length) return '<p class="catalog-rules-empty">' + T("Aucune reconnaissance personnalisée pour l'instant.") + '</p>';
     return rules.map(function (r) {
       var kw = (r.keywords || []).join(", ");
       return '<div class="catalog-rule-row" data-id="' + r.id + '">' +
@@ -3738,7 +3738,7 @@
         '<div style="white-space:nowrap;">' +
         '<button type="button" class="catalog-rule-remove" data-edit-rule="1" data-id="' + r.id + '" data-rule-type="' + esc(r.rule_type) + '" data-label="' + esc(r.label) + '" data-keywords="' + esc(kw) + '" data-prefix="' + esc(r.prefix || "") + '" aria-label="' + T("Modifier") + '" title="' + T("Modifier") + '" style="margin-right:6px;">&#9998;</button>' +
         '<button type="button" class="catalog-rule-remove" data-duplicate-rule="1" data-rule-type="' + esc(r.rule_type) + '" data-label="' + esc(r.label) + '" data-keywords="' + esc(kw) + '" data-prefix="' + esc(r.prefix || "") + '" aria-label="' + T("Dupliquer") + '" title="' + T("Dupliquer") + '" style="margin-right:6px;">&#10697;</button>' +
-        '<button type="button" class="catalog-rule-remove" data-id="' + r.id + '" aria-label="' + T("Retirer cette règle") + '">&times;</button>' +
+        '<button type="button" class="catalog-rule-remove" data-id="' + r.id + '" aria-label="' + T("Retirer cette reconnaissance") + '">&times;</button>' +
         '</div>' +
       '</div>';
     }).join("");
@@ -3762,8 +3762,8 @@
       typeSelect.value = "keyword";
       keywordsInput.hidden = false; prefixInput.hidden = true;
       labelInput.value = ""; keywordsInput.value = ""; prefixInput.value = "";
-      formTitle.textContent = T("Ajouter une règle");
-      addBtn.textContent = T("Créer la règle");
+      formTitle.textContent = T("Ajouter une reconnaissance");
+      addBtn.textContent = T("Créer la reconnaissance");
       cancelBtn.hidden = true;
       status.textContent = "";
     }
@@ -3790,8 +3790,8 @@
                 ruleType: btn.getAttribute("data-rule-type"), label: btn.getAttribute("data-label"),
                 keywords: btn.getAttribute("data-keywords"), prefix: btn.getAttribute("data-prefix"),
               });
-              formTitle.textContent = isEdit ? T("Modifier la règle") : T("Dupliquer — modifiez au moins un champ");
-              addBtn.textContent = isEdit ? T("Enregistrer les modifications") : T("Créer cette règle");
+              formTitle.textContent = isEdit ? T("Modifier la reconnaissance") : T("Dupliquer — modifiez au moins un champ");
+              addBtn.textContent = isEdit ? T("Enregistrer les modifications") : T("Créer cette reconnaissance");
               cancelBtn.hidden = false;
               labelInput.scrollIntoView({ behavior: "smooth", block: "center" });
               if (!isEdit) { labelInput.focus(); labelInput.select(); }
@@ -3844,7 +3844,7 @@
         : createNew();
 
       chain.then(function () {
-        status.textContent = T("Règle personnalisée enregistrée."); status.className = "catalog-rule-status ok";
+        status.textContent = T("Reconnaissance personnalisée enregistrée."); status.className = "catalog-rule-status ok";
         resetForm();
         loadRules();
         return apiFetch("/v1/index/" + encodeURIComponent(catalogName) + "/stats", key);
@@ -3881,7 +3881,7 @@
             zone.hidden = false;
             zone.className = "pack-suggestion pack-suggestion-alerte";
             zone.innerHTML = "<strong>" + T("Aucun attribut reconnu") + "</strong> " +
-              T("sur cet échantillon. Vos produits ne bénéficient d'aucune annotation — vérifiez que le pack correspond bien à votre secteur, ou créez des règles personnalisées.");
+              T("sur cet échantillon. Vos produits ne bénéficient d'aucune annotation — vérifiez que le pack correspond bien à votre secteur, ou créez des reconnaissances personnalisées.");
           } else {
             zone.hidden = true;
           }
@@ -3933,7 +3933,7 @@
       btnSupprimer.addEventListener("click", function () {
         var nom = catalog.catalog;
         confirmerSuppression(
-          T("Supprimer le catalogue <strong>{0}</strong> et ses {1} produits ?<br>Les priorités, règles personnalisées et synonymes seront perdus. <strong>Cette action est irréversible.</strong>",
+          T("Supprimer le catalogue <strong>{0}</strong> et ses {1} produits ?<br>Les règles, reconnaissances personnalisées et synonymes seront perdus. <strong>Cette action est irréversible.</strong>",
             esc(nom), catalog.products || 0),
           btnSupprimer,
           function () {
@@ -4030,7 +4030,7 @@
         '</label>' +
         '<span class="catalog-sandbox-status catalog-rule-status"></span>' +
       '</div>' +
-      '<div class="catalog-synonyms-label" style="margin-top:22px;">' + T("Synonymes et règles personnalisées") + '</div>' +
+      '<div class="catalog-synonyms-label" style="margin-top:22px;">' + T("Synonymes et reconnaissances personnalisées") + '</div>' +
       '<p class="console-panel-note" style="margin:6px 0 0;">' + T("Gérés depuis") + ' <button type="button" class="catalog-goto-rules" data-goto-pane="pane-search-overrides">' + T("Configurer → Règles") + '</button>.</p>' +
       '<div class="catalog-card-danger">' +
         '<button type="button" class="catalog-delete">' + T("Supprimer ce catalogue") + '</button>' +
