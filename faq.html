@@ -196,7 +196,7 @@
       <details class="faq-item">
         <summary>La démo sur cette page utilise-t-elle vraiment le moteur ?</summary>
         <div class="faq-answer">
-          <p>Oui — c'est la logique du moteur Heurix, portée en JavaScript et embarquée dans la page avec un catalogue de démonstration généré : même normalisation, même tolérance aux fautes, même cascade d'annotations, même scoring. Les développeurs peuvent l'interroger en console : <code>window.heurixDemo.search("...")</code>.</p>
+          <p>Oui — chaque frappe interroge le vrai moteur Heurix via l'endpoint de démo public (<code>/v1/public-demo/search</code>), sur deux vrais catalogues (outillage, mode) : même normalisation, même tolérance aux fautes, même cascade d'annotations, même scoring, même surlignage des résultats que n'importe quelle intégration en production. Le champ <code>description</code> est omis de chaque réponse pour garder le widget rapide sur mobile — tout le reste est authentique, pas une simulation.</p>
         </div>
       </details>
     </div>
