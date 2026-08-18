@@ -3190,7 +3190,11 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
   display:grid; grid-template-columns:1fr 340px; gap:20px;
   align-items:start;
 }
-@media (max-width:900px){
+/* Correctif (18 aout 2026, diagnostic Claude en Chrome) : 900px etait
+   trop bas -- mesure a scrollWidth 1101 sur un viewport de 1054px (panneau
+   lateral navigateur ouvert). 900px -> 1200px, seuil demande
+   explicitement par Alexis. */
+@media (max-width:1200px){
   .so-apercu-cols{ grid-template-columns:1fr; }
 }
 /* La ligne teintee de l apercu prend la meme teinte ambre quand elle vient
@@ -3877,6 +3881,32 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 .so-tri-fleche{ font-size:11px; width:10px; display:inline-block; }
 .so-tri-fleche.asc::after{ content:"▲"; }
 .so-tri-fleche.desc::after{ content:"▼"; }
+
+/* Correctif (18 aout 2026, diagnostic Claude en Chrome) : liste verticale
+   pour la colonne contextuelle -- tokens existants reutilises, pas de
+   nouvelle palette. */
+.so-liste-contextuelle{ display:flex; flex-direction:column; gap:2px; }
+.so-liste-item{
+  padding:10px 12px; border-radius:8px; background:var(--bg-soft);
+}
+.so-liste-item + .so-liste-item{ margin-top:2px; }
+.so-liste-trigger{
+  font-family:'IBM Plex Mono', monospace; font-size:12.5px; font-weight:600;
+  color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  max-width:100%;
+}
+.so-liste-chips{
+  display:flex; align-items:center; gap:8px; flex-wrap:wrap;
+  margin-top:4px; font-size:12px; color:var(--ink-muted);
+}
+.so-liste-produit{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:150px; }
+.so-liste-pos{ font-weight:600; }
+.so-liste-actions{ display:flex; justify-content:flex-end; margin-top:6px; }
+.so-liste-actions button{
+  width:28px; height:28px; border-radius:8px; border:1px solid var(--line);
+  background:#fff; cursor:pointer; display:inline-flex; align-items:center; justify-content:center;
+}
+.so-liste-actions button:hover{ background:var(--blue-tint); }
 
 /* Colonne d actions : alignee a droite, boutons en ligne plutot
    qu empiles -- ils apparaissaient les uns sous les autres. */

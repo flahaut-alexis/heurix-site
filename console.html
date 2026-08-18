@@ -562,10 +562,16 @@
               <div class="console-panel">
                 <h2>Règles sur cette recherche</h2>
                 <p class="console-panel-note">Vue rapide, sans quitter l'aperçu. Pour la liste complete et la gestion en masse, voir l'onglet <strong>Regles du catalogue</strong>.</p>
-                <div class="table-scroll"><table class="console-table" id="so-table-contextuel">
-                  <thead><tr><th>Déclencheur</th><th>Produit</th><th>Action</th><th>Position</th><th></th></tr></thead>
-                  <tbody></tbody>
-                </table></div>
+                <!-- Correctif (18 aout 2026, diagnostic Claude en Chrome --
+                     mesures reelles du DOM). Un tableau a 5 colonnes n'a pas
+                     sa place dans un rail de 340px : table-layout:fixed
+                     (deja necessaire ailleurs pour un tout autre probleme
+                     mobile, voir le commentaire du 3 aout sur
+                     .console-table) donne 56px par colonne, le libelle
+                     "DECLENCHEUR" (~75px) deborde et se superpose au
+                     suivant. Remplace par une liste verticale, construite
+                     dynamiquement par JS (voir soRafraichirColonneContextuelle). -->
+                <div id="so-liste-contextuelle" class="so-liste-contextuelle"></div>
                 <p class="console-empty" id="so-empty-contextuel" hidden>Aucune règle sur cette recherche.</p>
               </div>
               </div>

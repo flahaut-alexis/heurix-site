@@ -2239,17 +2239,52 @@
   // (_override_triggers, tokens contigus), decision prise avec Alexis :
   // ce tableau est un raccourci visuel, la source de verite reste
   // l'apercu lui-meme qui appelle vraiment /search.
+  // Correctif (18 aout 2026, diagnostic Claude en Chrome) : liste
+  // verticale plutot qu'un tableau -- un rail de 340px ne peut pas
+  // porter 5 colonnes lisibles. Reutilise les memes chips que
+  // soRowHtml (.cell-action-*) pour rester coherent visuellement avec
+  // le tableau principal.
+  function soRenderListeContextuelle(liste) {
+    var conteneur = document.getElementById("so-liste-contextuelle");
+    var vide = document.getElementById("so-empty-contextuel");
+    if (!conteneur) return;
+    if (!liste.length) {
+      conteneur.innerHTML = "";
+      if (vide) vide.hidden = false;
+      return;
+    }
+    if (vide) vide.hidden = true;
+    conteneur.innerHTML = liste.map(function (o) {
+      var pin = o.action === "pin";
+      var actionLabel = pin
+        ? "<span class='cell-action cell-action-pin'>&#9679; " + T("Épingler") + "</span>"
+        : "<span class='cell-action cell-action-bury'>&#9679; " + T("Reléguer") + "</span>";
+      var posLabel = pin && o.position
+        ? "<span class='so-liste-pos'>" + T("pos. {0}", o.position) + "</span>" : "";
+      return "<div class='so-liste-item'>" +
+        "<div class='so-liste-trigger' title='" + esc(o.query) + "'>" + esc(o.query) + "</div>" +
+        "<div class='so-liste-chips'>" + actionLabel +
+          "<span class='so-liste-produit'>" + esc(o.product_name || o.product_id) + "</span>" +
+          posLabel +
+        "</div>" +
+        "<div class='so-liste-actions'>" +
+          "<button type='button' class='catalog-rule-remove' data-so-edit='1' data-query='" + esc(o.query) + "' data-product-id='" + esc(o.product_id) + "' data-action='" + esc(o.action) + "' data-position='" + (o.position || "") + "' aria-label='" + T("Modifier") + "' title='" + T("Modifier") + "'>&#9998;</button>" +
+        "</div>" +
+      "</div>";
+    }).join("");
+  }
+
   function soRafraichirColonneContextuelle(key) {
     var champ = document.getElementById("so-preview-query");
-    var table = document.getElementById("so-table-contextuel");
-    if (!champ || !table) return;
+    var conteneur = document.getElementById("so-liste-contextuelle");
+    if (!champ || !conteneur) return;
     var q = champ.value.trim().toLowerCase();
 
     function rendre() {
       var liste = !q ? [] : (session.soDraft || []).filter(function (r) {
         return q.indexOf(r.query.toLowerCase()) !== -1;
       });
-      renderTable("so-table-contextuel", "so-empty-contextuel", liste, soRowHtml);
+      soRenderListeContextuelle(liste);
     }
 
     if (!q) { rendre(); return; }
@@ -3249,10 +3284,15 @@
       });
     });
 
-    document.querySelector("#so-table tbody").addEventListener("click", function (e) {
+    // Correctif (18 aout 2026) : delegue sur document plutot que
+    // #so-table tbody seul, pour couvrir aussi so-liste-contextuelle
+    // (colonne contextuelle, autre onglet) qui reutilise les memes
+    // boutons data-so-edit/duplicate/delete.
+    document.addEventListener("click", function (e) {
       var editBtn = e.target.closest("[data-so-edit]");
       var dupBtn = e.target.closest("[data-so-duplicate]");
       var delBtn = e.target.closest("[data-so-delete]");
+      if (!editBtn && !dupBtn && !delBtn) return;
 
       if (editBtn) {
         soEditingKey = { query: editBtn.getAttribute("data-query"), productId: editBtn.getAttribute("data-product-id") };
