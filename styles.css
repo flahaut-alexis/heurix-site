@@ -3195,7 +3195,15 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
    largeur en tete, colonnes reglages/resultats asymetriques (reglages
    etroite et fixe, resultats prend tout le reste), rail contextuel sorti
    en pleine largeur sous tout (ne comprime plus jamais la grille). */
-.so-apercu-searchbar-header{ margin-bottom:18px; }
+/* Correctif (18 aout 2026) : oubli repere -- la vraie maquette
+   originale (heurixmaquettemiseenavant.html) a bien .searchwrap en
+   position:sticky, jamais vraiment applique ici malgre la reference
+   dans le commit precedent. z-index superieur a so-simu-bar (top:8px,
+   z-index:20) pour que la searchbar reste toujours au-dessus. */
+.so-apercu-searchbar-header{
+  position:sticky; top:0; z-index:25; background:var(--bg-soft);
+  margin:0 0 18px; padding-top:4px;
+}
 .so-apercu-searchbar-header .so-searchbar{ margin-bottom:0; }
 .so-aide-btn{
   flex:0 0 auto; width:32px; height:32px; border-radius:100px;
