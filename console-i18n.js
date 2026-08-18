@@ -723,6 +723,8 @@
 
     "Ce produit est en rupture : il n'apparaîtra pas si votre boutique masque les ruptures.": "This product is out of stock: it won't appear if your store hides out-of-stock items.",
     "La position {0} est déjà réservée à « {1} ». Choisissez une autre position, ou l'ancienne règle sera remplacée.": "Position {0} is already taken by \u201c{1}\u201d. Choose another position, or the existing rule will be replaced.",
+    "Active": "Active",
+    "Épinglé pos. {0}": "Pinned pos. {0}",
   };
 
   // Attributs porteurs de texte visible ou annoncé aux lecteurs d'écran.

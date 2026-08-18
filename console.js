@@ -1698,6 +1698,36 @@
       "</td>";
   }
 
+  // Correctif Lot 3 (audit UX console, 18 aout 2026) : onglet "Regles du
+  // catalogue" (§4.6 du brief). Fonction dediee plutot que de faire
+  // diverger soRowHtml (partagee avec la colonne contextuelle, §3.4, qui
+  // garde sa propre structure plus simple -- "vue rapide" n'a pas besoin
+  // de statut ni de nom separe).
+  //
+  // 4 colonnes v1 : Nom (product_name, meme repli que produitCell), 
+  // Declencheur, Action (fusionne le pin/bury et la position, format du
+  // brief : "Epingle pos. 4" / "Relegue"), Statut (Active/Brouillon
+  // seulement -- Programmee et Inactive restent Lot 4, aucun mecanisme
+  // backend actuellement, voir roadmap).
+  function soRowHtmlCatalogue(o, enBrouillon) {
+    var pin = o.action === "pin";
+    var actionLabel = pin
+      ? "<span class='cell-action cell-action-pin'>&#128204; " + (o.position ? T("Épinglé pos. {0}", o.position) : T("Épinglé")) + "</span>"
+      : "<span class='cell-action cell-action-bury'>&#8595; " + T("Relégué") + "</span>";
+    var statutLabel = enBrouillon
+      ? "<span class='cell-statut cell-statut-brouillon'>" + T("Brouillon") + "</span>"
+      : "<span class='cell-statut cell-statut-active'>" + T("Active") + "</span>";
+    return "<td>" + produitCell(o.product_id, o.product_name) + "</td>" +
+      "<td><span class='cell-trigger' title='" + esc(o.query) + "'>" + esc(o.query) + "</span></td>" +
+      "<td>" + actionLabel + "</td>" +
+      "<td>" + statutLabel + "</td>" +
+      "<td class='cell-actions'>" +
+        "<button type='button' class='catalog-rule-remove' data-so-edit='1' data-query='" + esc(o.query) + "' data-product-id='" + esc(o.product_id) + "' data-action='" + esc(o.action) + "' data-position='" + (o.position || "") + "' aria-label='" + T("Modifier") + "' title='" + T("Modifier") + "'>&#9998;</button>" +
+        "<button type='button' class='catalog-rule-remove' data-so-duplicate='1' data-query='" + esc(o.query) + "' data-product-id='" + esc(o.product_id) + "' data-action='" + esc(o.action) + "' data-position='" + (o.position || "") + "' aria-label='" + T("Dupliquer") + "' title='" + T("Dupliquer comme nouvelle règle") + "'>&#10697;</button>" +
+        "<button type='button' class='catalog-rule-remove' data-so-delete='1' data-query='" + esc(o.query) + "' data-product-id='" + esc(o.product_id) + "' aria-label='" + T("Supprimer") + "'>&times;</button>" +
+      "</td>";
+  }
+
   // Presentation d'un produit dans les tableaux de la console. Un
   // identifiant nu ("VIS-M8-020-A2") ne dit rien a un marchand : le nom
   // passe en premier, l'identifiant devient une precision secondaire.
@@ -2112,7 +2142,12 @@
     // generique reutilisee ailleurs. L'indicateur visuel "brouillon"
     // s'appuie donc uniquement sur .so-rules-draft, posee plus bas sur
     // le panneau parent -- suffisant, pas besoin de toucher chaque ligne.
-    renderTable("so-table", "so-empty", liste, soRowHtml);
+    // Correctif Lot 3 : onglet "Regles du catalogue", fonction dediee
+    // (soRowHtmlCatalogue), closure pour lui passer enBrouillon puisque
+    // renderTable() appelle rowFn(row) avec un seul argument.
+    renderTable("so-table", "so-empty", liste, function (row) {
+      return soRowHtmlCatalogue(row, enBrouillon);
+    });
     var n = (liste || []).length;
     var compteur = document.getElementById("so-count");
     if (compteur) {

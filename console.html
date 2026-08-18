@@ -586,8 +586,13 @@
               <div class="console-panel" id="so-rules-panel">
                 <h2>Règles en place <span class="so-count" id="so-count" hidden></span></h2>
                 <p class="console-panel-note">La <strong>position</strong> est le rang final du produit : position 3 le place en 3ᵉ, les autres produits comblant les places libres. Les <strong>relégués</strong> passent toujours en fin de liste.</p>
+                <!-- Correctif Lot 3 (audit UX console, 18 aout 2026) : onglet
+                     "Regles du catalogue" (§4.6 du brief -- "n'existe pas
+                     aujourd'hui"). 4 colonnes v1 : Nom, Declencheur,
+                     Action (fusionne avec la position), Statut. Periode de
+                     diffusion / Priorite / Modifiee restent Lot 4. -->
                 <div class="table-scroll"><table class="console-table" id="so-table">
-                  <thead><tr><th>Déclencheur</th><th>Produit</th><th>Action</th><th>Position</th><th></th></tr></thead>
+                  <thead><tr><th>Nom</th><th>Déclencheur</th><th>Action</th><th>Statut</th><th></th></tr></thead>
                   <tbody></tbody>
                 </table></div>
                 <p class="console-empty" id="so-empty" hidden>Aucune règle posée sur ce catalogue.</p>

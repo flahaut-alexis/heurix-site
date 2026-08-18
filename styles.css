@@ -3840,6 +3840,17 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 .console-table .cell-action-bury{ color:#B4402F; }
 .console-table .cell-action-boost{ color:#0F7A3D; }
 
+/* Correctif Lot 3 (audit UX console, 18 aout 2026) : onglet "Regles du
+   catalogue" (§4.6 du brief). Statut -- meme pattern que cell-action
+   (texte colore simple), couleurs du brief : Active en bleu, Brouillon
+   en ambre (variables officielles deja etablies pour la barre de
+   brouillon). Programmee/Inactive restent Lot 4, pas de classe encore. */
+.console-table .cell-statut{
+  font-size:12.5px; font-weight:600; white-space:nowrap;
+}
+.console-table .cell-statut-active{ color:var(--blue-deep); }
+.console-table .cell-statut-brouillon{ color:var(--amber); }
+
 /* Colonne d actions : alignee a droite, boutons en ligne plutot
    qu empiles -- ils apparaissaient les uns sous les autres. */
 .console-table .cell-actions{
