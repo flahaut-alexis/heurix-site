@@ -3851,6 +3851,33 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 .console-table .cell-statut-active{ color:var(--blue-deep); }
 .console-table .cell-statut-brouillon{ color:var(--amber); }
 
+/* Correctif Lot 3 (audit UX console, 18 aout 2026) : onglet "Regles du
+   catalogue" (§4.6). Barre de controles + tri par en-tete de colonne. */
+.so-catalogue-controls{
+  display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+  margin:4px 0 14px;
+}
+.so-catalogue-controls .so-searchbar-compact{
+  flex:1; min-width:220px; margin:0;
+}
+.so-catalogue-controls select{
+  height:44px; border:1px solid var(--line); border-radius:12px;
+  padding:0 14px; font:inherit; font-size:14px; color:var(--ink);
+  background:#fff;
+}
+.so-catalogue-compteur{
+  font-size:13px; color:var(--ink-muted); white-space:nowrap;
+}
+.so-tri-th{
+  display:inline-flex; align-items:center; gap:4px;
+  font:inherit; font-weight:inherit; color:inherit;
+  background:none; border:none; padding:0; cursor:pointer;
+}
+.so-tri-th:hover{ color:var(--blue-deep); }
+.so-tri-fleche{ font-size:11px; width:10px; display:inline-block; }
+.so-tri-fleche.asc::after{ content:"▲"; }
+.so-tri-fleche.desc::after{ content:"▼"; }
+
 /* Colonne d actions : alignee a droite, boutons en ligne plutot
    qu empiles -- ils apparaissaient les uns sous les autres. */
 .console-table .cell-actions{

@@ -2135,6 +2135,56 @@
   // et par soConstruireBrouillon (donnees du brouillon, sans refaire
   // d'appel reseau a chaque frappe -- session.soDraft contient deja
   // l'etat complet voulu, voir soAppliquerBrouillon).
+  // Correctif Lot 3 (audit UX console, 18 aout 2026) : etat de tri de
+  // l'onglet "Regles du catalogue", persiste entre les re-rendus (meme
+  // pattern que les autres etats de session).
+  var soCatalogueTri = { colonne: null, sens: "asc" };
+  var soDerniereListe = [];
+  var soDerniereEnBrouillon = false;
+
+  // Rafraichit uniquement l'affichage (filtre/tri) avec la derniere liste
+  // deja recue -- pas de nouvel appel reseau. Appelee par les listeners
+  // de recherche/filtre/tri.
+  function soRafraichirCatalogueSeul() {
+    soRenderReglesTable(soDerniereListe, soDerniereEnBrouillon);
+  }
+
+  // Recherche + filtre statut + tri, appliques a la vraie liste avant
+  // affichage -- "n" (pour les badges de compte) reste calcule sur la
+  // liste COMPLETE plus bas, jamais sur le resultat filtre.
+  function soFiltrerEtTrierCatalogue(liste, enBrouillon) {
+    var champRecherche = document.getElementById("so-catalogue-search");
+    var champStatut = document.getElementById("so-catalogue-filtre-statut");
+    var q = champRecherche ? champRecherche.value.trim().toLowerCase() : "";
+    var statutVoulu = champStatut ? champStatut.value : "";
+    var statutReel = enBrouillon ? "brouillon" : "active";
+
+    var resultat = liste;
+    if (statutVoulu && statutVoulu !== statutReel) resultat = [];
+    if (q) {
+      resultat = resultat.filter(function (r) {
+        var nom = (r.product_name || r.product_id || "").toLowerCase();
+        return nom.indexOf(q) !== -1 || r.query.toLowerCase().indexOf(q) !== -1;
+      });
+    }
+    if (soCatalogueTri.colonne) {
+      resultat = resultat.slice().sort(function (a, b) {
+        var va, vb;
+        if (soCatalogueTri.colonne === "nom") {
+          va = (a.product_name || a.product_id || "").toLowerCase();
+          vb = (b.product_name || b.product_id || "").toLowerCase();
+        } else if (soCatalogueTri.colonne === "declencheur") {
+          va = a.query.toLowerCase(); vb = b.query.toLowerCase();
+        } else { // action : pin avant bury, puis par position
+          va = a.action + (a.position || 0); vb = b.action + (b.position || 0);
+        }
+        var cmp = va < vb ? -1 : va > vb ? 1 : 0;
+        return soCatalogueTri.sens === "asc" ? cmp : -cmp;
+      });
+    }
+    return resultat;
+  }
+
   function soRenderReglesTable(liste, enBrouillon) {
     // Note : renderTable() cree elle-meme la balise <tr>, soRowHtml() ne
     // construit que son contenu interieur -- pas de vraie classe par
@@ -2142,12 +2192,20 @@
     // generique reutilisee ailleurs. L'indicateur visuel "brouillon"
     // s'appuie donc uniquement sur .so-rules-draft, posee plus bas sur
     // le panneau parent -- suffisant, pas besoin de toucher chaque ligne.
+    soDerniereListe = liste || [];
+    soDerniereEnBrouillon = enBrouillon;
+    var listeFiltree = soFiltrerEtTrierCatalogue(liste || [], enBrouillon);
     // Correctif Lot 3 : onglet "Regles du catalogue", fonction dediee
     // (soRowHtmlCatalogue), closure pour lui passer enBrouillon puisque
     // renderTable() appelle rowFn(row) avec un seul argument.
-    renderTable("so-table", "so-empty", liste, function (row) {
+    renderTable("so-table", "so-empty", listeFiltree, function (row) {
       return soRowHtmlCatalogue(row, enBrouillon);
     });
+    var compteurCatalogue = document.getElementById("so-catalogue-compteur");
+    if (compteurCatalogue) {
+      var nFiltre = listeFiltree.length;
+      compteurCatalogue.textContent = T(nFiltre > 1 ? "{0} règles" : "{0} règle", nFiltre);
+    }
     var n = (liste || []).length;
     var compteur = document.getElementById("so-count");
     if (compteur) {
@@ -3090,6 +3148,39 @@
     soFormWired = true;
 
     wireConsoleTabs("so", ["apercu", "regles", "vocabulaire"]);
+
+    // Correctif Lot 3 (audit UX console, 18 aout 2026) : onglet "Regles
+    // du catalogue", barre de controles.
+    var soCatRecherche = document.getElementById("so-catalogue-search");
+    var soCatTimer = null;
+    if (soCatRecherche) soCatRecherche.addEventListener("input", function () {
+      clearTimeout(soCatTimer);
+      soCatTimer = setTimeout(soRafraichirCatalogueSeul, 200);
+    });
+    var soCatStatut = document.getElementById("so-catalogue-filtre-statut");
+    if (soCatStatut) soCatStatut.addEventListener("change", soRafraichirCatalogueSeul);
+
+    function soMettreAJourFlechesTri() {
+      document.querySelectorAll("[data-tri-fleche]").forEach(function (f) {
+        f.classList.remove("asc", "desc");
+        if (f.getAttribute("data-tri-fleche") === soCatalogueTri.colonne) {
+          f.classList.add(soCatalogueTri.sens);
+        }
+      });
+    }
+    document.querySelectorAll(".so-tri-th").forEach(function (bouton) {
+      bouton.addEventListener("click", function () {
+        var col = bouton.getAttribute("data-tri");
+        if (soCatalogueTri.colonne === col) {
+          soCatalogueTri.sens = soCatalogueTri.sens === "asc" ? "desc" : "asc";
+        } else {
+          soCatalogueTri.colonne = col;
+          soCatalogueTri.sens = "asc";
+        }
+        soMettreAJourFlechesTri();
+        soRafraichirCatalogueSeul();
+      });
+    });
 
     document.getElementById("so-action").addEventListener("change", function (e) {
       // Correctif Lot 3 (audit UX console, 17-18 aout 2026) : "desactivee",

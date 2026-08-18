@@ -421,8 +421,31 @@
                 <h2>Active rules <span class="so-count" id="so-count" hidden></span></h2>
                 <p class="console-panel-note">The <strong>position</strong> is the product's final rank: position 3 places it 3rd, other products filling the remaining slots. <strong>Buried</strong> products always go to the end of the list.</p>
                 <!-- Correctif Lot 3 -- parite EN avec console.html. -->
+                <div class="so-catalogue-controls">
+                  <div class="so-searchbar so-searchbar-compact">
+                    <svg class="so-searchbar-icon" width="18" height="18" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+                      <g stroke="currentColor" stroke-linecap="round">
+                        <circle cx="27" cy="27" r="17" stroke-width="6"/>
+                        <path d="M40 40 L54 54" stroke-width="7"/>
+                      </g>
+                    </svg>
+                    <input type="text" id="so-catalogue-search" placeholder="Search by name or trigger…" aria-label="Search rules">
+                  </div>
+                  <select id="so-catalogue-filtre-statut" aria-label="Filter by status">
+                    <option value="">All statuses</option>
+                    <option value="active">Active</option>
+                    <option value="brouillon">Draft</option>
+                  </select>
+                  <span class="so-catalogue-compteur" id="so-catalogue-compteur"></span>
+                </div>
                 <div class="table-scroll"><table class="console-table" id="so-table">
-                  <thead><tr><th>Name</th><th>Trigger</th><th>Action</th><th>Status</th><th></th></tr></thead>
+                  <thead><tr>
+                    <th><button type="button" class="so-tri-th" data-tri="nom">Name <span class="so-tri-fleche" data-tri-fleche="nom"></span></button></th>
+                    <th><button type="button" class="so-tri-th" data-tri="declencheur">Trigger <span class="so-tri-fleche" data-tri-fleche="declencheur"></span></button></th>
+                    <th><button type="button" class="so-tri-th" data-tri="action">Action <span class="so-tri-fleche" data-tri-fleche="action"></span></button></th>
+                    <th>Status</th>
+                    <th></th>
+                  </tr></thead>
                   <tbody></tbody>
                 </table></div>
                 <p class="console-empty" id="so-empty" hidden>No rule set on this catalog.</p>
