@@ -2132,6 +2132,35 @@
       badgeOnglet.hidden = n === 0;
       badgeOnglet.textContent = n === 0 ? "" : "(" + n + ")";
     }
+    // Correctif Lot 3 : colonne contextuelle, mise a jour au meme point
+    // que le tableau principal (regles modifiees). session.activeKey :
+    // meme valeur que le "key" recu par les autres fonctions de cette
+    // page, confirme en tracant son affectation (loadDashboard).
+    if (session.activeKey) soRafraichirColonneContextuelle(session.activeKey);
+  }
+
+  // Correctif Lot 3 (audit UX console, 18 aout 2026) : colonne
+  // contextuelle (§3.4 du brief). Filtrage cote client, approximation
+  // volontairement simple ("declencheur contenu dans la requete") --
+  // pas une reimplementation du vrai algorithme serveur
+  // (_override_triggers, tokens contigus), decision prise avec Alexis :
+  // ce tableau est un raccourci visuel, la source de verite reste
+  // l'apercu lui-meme qui appelle vraiment /search.
+  function soRafraichirColonneContextuelle(key) {
+    var champ = document.getElementById("so-preview-query");
+    var table = document.getElementById("so-table-contextuel");
+    if (!champ || !table) return;
+    var q = champ.value.trim().toLowerCase();
+
+    function rendre() {
+      var liste = !q ? [] : (session.soDraft || []).filter(function (r) {
+        return q.indexOf(r.query.toLowerCase()) !== -1;
+      });
+      renderTable("so-table-contextuel", "so-empty-contextuel", liste, soRowHtml);
+    }
+
+    if (!q) { rendre(); return; }
+    soAvecBrouillon(key, rendre);
   }
 
   function refreshSoTable(key) {
@@ -2475,7 +2504,13 @@
     if (!champ) return;
     champ.addEventListener("input", function () {
       clearTimeout(soPreviewTimer);
-      soPreviewTimer = setTimeout(function () { refreshSoPreview(key); }, 250);
+      soPreviewTimer = setTimeout(function () {
+        refreshSoPreview(key);
+        // Correctif Lot 3 : colonne contextuelle, mise a jour a chaque
+        // frappe (meme debounce que l'apercu principal, pas un second
+        // timer).
+        soRafraichirColonneContextuelle(key);
+      }, 250);
     });
   }
 

@@ -3182,6 +3182,17 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 .console-tab-count{ font-size:11px; font-weight:700; color:var(--ink-muted); }
 .console-tab-active .console-tab-count{ color:var(--blue-deep); }
 [role="tabpanel"][hidden]{ display:none; }
+
+/* Correctif Lot 3 (audit UX console, 18 aout 2026) : colonne
+   contextuelle (§3.4 du brief). Deux colonnes sur desktop, empile sur
+   mobile -- meme seuil que le reste du site (voir .br-grid etc). */
+.so-apercu-cols{
+  display:grid; grid-template-columns:1fr 340px; gap:20px;
+  align-items:start;
+}
+@media (max-width:900px){
+  .so-apercu-cols{ grid-template-columns:1fr; }
+}
 /* La ligne teintee de l apercu prend la meme teinte ambre quand elle vient
    d une regle SIMULEE, pour rester coherent avec le bandeau. */
 .so-row-simulated{ background:#FFFBF3; }

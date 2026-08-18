@@ -326,6 +326,9 @@
               </div>
 
               <div role="tabpanel" id="so-tabpanel-apercu" aria-labelledby="so-tab-apercu">
+              <!-- Correctif Lot 3 -- parite EN avec console.html. -->
+              <div class="so-apercu-cols">
+              <div class="so-apercu-col-principale">
               <div class="console-panel">
                 <h2>Results preview</h2>
                 <p class="console-panel-note">Type a query to see the real ranking, and <strong>why</strong> each product shows up. The arrows move a product one spot, the pin puts it at the top.</p>
@@ -390,6 +393,23 @@
                   </div>
                 </div>
               </div>
+              </div>
+              <!-- so-apercu-col-principale closes here. -->
+
+              <div class="so-apercu-col-contextuelle">
+              <div class="console-panel">
+                <h2>Rules on this search</h2>
+                <p class="console-panel-note">Quick view, without leaving the preview. For the full list and bulk management, see the <strong>Catalog rules</strong> tab.</p>
+                <div class="table-scroll"><table class="console-table" id="so-table-contextuel">
+                  <thead><tr><th>Trigger</th><th>Product</th><th>Action</th><th>Position</th><th></th></tr></thead>
+                  <tbody></tbody>
+                </table></div>
+                <p class="console-empty" id="so-empty-contextuel" hidden>No rule on this search.</p>
+              </div>
+              </div>
+              <!-- so-apercu-col-contextuelle closes here. -->
+              </div>
+              <!-- so-apercu-cols closes here. -->
 
               </div>
               <!-- so-tabpanel-apercu closes here -- corrected (see FR
