@@ -155,7 +155,7 @@ describe("console.html — navigation en trois piliers (8 août 2026)", () => {
     // pane-recherches avec des onglets internes -- test mis a jour pour
     // refleter la vraie structure, plutot que de revenir en arriere sur
     // le chantier ou de laisser un test casse.
-    for (const pane of ["pane-recherches", "pane-category-views", "pane-related-products", "pane-segmentation"]) {
+    for (const pane of ["pane-recherches", "pane-produits", "pane-segmentation"]) {
       expect(groupe.querySelector(`[data-pane="${pane}"]`), `${pane} doit rester sous Observer`).not.toBeNull();
     }
   });

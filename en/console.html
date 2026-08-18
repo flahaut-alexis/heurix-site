@@ -153,8 +153,7 @@
           </button>
           <div class="console-sidebar-items" data-section-items="observer" hidden>
             <button type="button" class="console-sidebar-item" data-pane="pane-recherches">Searches<span class="nav-badge" id="nav-badge-erreurs" hidden></span></button>
-            <button type="button" class="console-sidebar-item" data-pane="pane-category-views">Most-viewed products</button>
-            <button type="button" class="console-sidebar-item" data-pane="pane-related-products">Related products</button>
+            <button type="button" class="console-sidebar-item" data-pane="pane-produits">Products</button>
             <button type="button" class="console-sidebar-item" data-pane="pane-segmentation">Segmentation</button>
           </div>
         </div>
@@ -657,54 +656,60 @@
             </div>
           </div>
 
-          <div id="pane-category-views" class="console-pane" hidden>
-            <h2 class="console-pane-title">Most-viewed products</h2>
-            <div class="console-panel">
-              <p class="console-panel-note">Products shown on your category pages, cross-referenced with their clicks from search. A product shown a lot but rarely clicked is a candidate for demotion; the reverse, for pinning.</p>
-              <label for="cv-catalog" style="font-size:12.5px; font-weight:700; color:var(--ink-muted);">Catalog</label>
-              <select id="cv-catalog" style="margin:6px 0 16px;"></select>
-              <div id="cv-content"></div>
-              <p class="console-empty" id="cv-empty" hidden>No category page views reported yet. This data needs the <code class="docs-inline-code">Heurix.trackCategoryView()</code> call from your category pages — see <a href="../docs.html#ep-category-views">the documentation</a>.</p>
-            </div>
-          </div>
+          <div id="pane-produits" class="console-pane" hidden>
+            <h2 class="console-pane-title">Products</h2>
 
-          <div id="pane-related-products" class="console-pane" hidden>
-            <h2 class="console-pane-title">Related products</h2>
-
-            <div class="console-panel console-panel-warn">
-              <p class="console-panel-note" style="margin:0;">Products frequently bought in the <strong>same basket</strong>, from actual order counts — not a predictive model. Requires at least 5 purchases of the chosen product over the period to be reliable.</p>
+            <div class="console-tabs" role="tablist" aria-label="Sections of Products">
+              <button type="button" role="tab" id="obs-tab-vus" aria-selected="true" aria-controls="obs-tabpanel-vus" class="console-tab console-tab-active">Most-viewed</button>
+              <button type="button" role="tab" id="obs-tab-associes" aria-selected="false" aria-controls="obs-tabpanel-associes" class="console-tab" tabindex="-1">Bought together</button>
             </div>
 
-            <div class="console-panel">
-              <div class="so-searchbar">
-                <svg class="so-searchbar-icon" width="20" height="20" viewBox="0 0 64 64" fill="none" aria-hidden="true">
-                  <g stroke="currentColor" stroke-linecap="round">
-                    <circle cx="27" cy="27" r="17" stroke-width="6"/>
-                    <path d="M19 21h16M19 27h16M19 33h16" stroke-width="4"/>
-                    <path d="M40 40 L54 54" stroke-width="7"/>
-                  </g>
-                </svg>
-                <input type="text" id="rp-search" placeholder="Search for a product by name or reference…" aria-label="Search for a product">
+            <div role="tabpanel" id="obs-tabpanel-vus" aria-labelledby="obs-tab-vus">
+              <div class="console-panel" style="margin-top:14px;">
+                <p class="console-panel-note">Products shown on your category pages, cross-referenced with their clicks from search. A product shown a lot but rarely clicked is a candidate for demotion; the reverse, for pinning.</p>
+                <label for="cv-catalog" style="font-size:12.5px; font-weight:700; color:var(--ink-muted);">Catalog</label>
+                <select id="cv-catalog" style="margin:6px 0 16px;"></select>
+                <div id="cv-content"></div>
+                <p class="console-empty" id="cv-empty" hidden>No category page views reported yet. This data needs the <code class="docs-inline-code">Heurix.trackCategoryView()</code> call from your category pages — see <a href="../docs.html#ep-category-views">the documentation</a>.</p>
               </div>
-              <div id="rp-search-results"></div>
             </div>
 
-            <div class="console-panel" id="rp-result-panel" hidden>
-              <div class="catalog-card-row" style="margin-bottom:14px; align-items:flex-start;">
-                <div style="flex:1;">
-                  <div style="font-size:11px; font-weight:700; color:var(--ink-muted); text-transform:uppercase; letter-spacing:.03em; margin-bottom:4px;">Chosen product</div>
-                  <div id="rp-chosen-product"></div>
-                </div>
-                <div style="text-align:right;">
-                  <div style="font-size:11px; font-weight:700; color:var(--ink-muted); text-transform:uppercase; letter-spacing:.03em; margin-bottom:4px;">Purchases (period)</div>
-                  <strong style="font-size:20px; color:var(--blue-deep);" id="rp-target-purchases">–</strong>
-                </div>
+            <div role="tabpanel" id="obs-tabpanel-associes" aria-labelledby="obs-tab-associes" hidden>
+              <div class="console-panel console-panel-warn" style="margin-top:14px;">
+                <p class="console-panel-note" style="margin:0;">Products frequently bought in the <strong>same basket</strong>, from actual order counts — not a predictive model. Requires at least 5 purchases of the chosen product over the period to be reliable.</p>
               </div>
-              <div class="table-scroll"><table class="console-table" id="rp-related-table">
-                <thead><tr><th>Related product</th><th>Bought together</th><th>Of observed baskets</th></tr></thead>
-                <tbody></tbody>
-              </table></div>
-              <p class="console-empty" id="rp-related-empty" hidden>Not enough purchases on this product for a reliable signal (minimum 5 over the period).</p>
+
+              <div class="console-panel">
+                <div class="so-searchbar">
+                  <svg class="so-searchbar-icon" width="20" height="20" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+                    <g stroke="currentColor" stroke-linecap="round">
+                      <circle cx="27" cy="27" r="17" stroke-width="6"/>
+                      <path d="M19 21h16M19 27h16M19 33h16" stroke-width="4"/>
+                      <path d="M40 40 L54 54" stroke-width="7"/>
+                    </g>
+                  </svg>
+                  <input type="text" id="rp-search" placeholder="Search for a product by name or reference…" aria-label="Search for a product">
+                </div>
+                <div id="rp-search-results"></div>
+              </div>
+
+              <div class="console-panel" id="rp-result-panel" hidden>
+                <div class="catalog-card-row" style="margin-bottom:14px; align-items:flex-start;">
+                  <div style="flex:1;">
+                    <div style="font-size:11px; font-weight:700; color:var(--ink-muted); text-transform:uppercase; letter-spacing:.03em; margin-bottom:4px;">Chosen product</div>
+                    <div id="rp-chosen-product"></div>
+                  </div>
+                  <div style="text-align:right;">
+                    <div style="font-size:11px; font-weight:700; color:var(--ink-muted); text-transform:uppercase; letter-spacing:.03em; margin-bottom:4px;">Purchases (period)</div>
+                    <strong style="font-size:20px; color:var(--blue-deep);" id="rp-target-purchases">–</strong>
+                  </div>
+                </div>
+                <div class="table-scroll"><table class="console-table" id="rp-related-table">
+                  <thead><tr><th>Related product</th><th>Bought together</th><th>Of observed baskets</th></tr></thead>
+                  <tbody></tbody>
+                </table></div>
+                <p class="console-empty" id="rp-related-empty" hidden>Not enough purchases on this product for a reliable signal (minimum 5 over the period).</p>
+              </div>
             </div>
           </div>
 

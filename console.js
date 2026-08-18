@@ -764,7 +764,7 @@
     }).catch(function () {});
   }
 
-  var ALL_PANE_IDS = ["pane-overview", "pane-guides", "pane-recherches", "pane-search-overrides", "pane-category-views", "pane-related-products", "pane-segmentation",
+  var ALL_PANE_IDS = ["pane-overview", "pane-guides", "pane-recherches", "pane-search-overrides", "pane-produits", "pane-segmentation",
     "pane-browse", "pane-catalog-help", "pane-catalog-list", "pane-billing", "pane-company", "pane-team", "pane-key", "pane-feedback",
     // Ajoute le 29 juillet. Cette liste est une LISTE BLANCHE : un pave
     // absent d'ici s'affiche vide, sans erreur en console -- symptome
@@ -967,9 +967,14 @@
       }
     } else if (ouvert === "pane-browse") {
       onBrowseCatalogChange(key);
-    } else if (ouvert === "pane-category-views") {
+    } else if (ouvert === "pane-produits") {
+      // Correctif (18 aout 2026, brief §3.1) : "Produits les plus vus"
+      // et "Produits associes" fusionnes en un seul pane-produits --
+      // les deux conditions distinctes (jamais mises a jour vers le
+      // nouveau nom, sinon plus jamais declenchees) deviennent une
+      // seule, les deux actions restant necessaires quel que soit
+      // l'onglet actif au moment du changement de catalogue.
       wireCategoryViews(key);
-    } else if (ouvert === "pane-related-products") {
       rpReinitialiser();
     }
   }
@@ -3283,6 +3288,12 @@
     soFormWired = true;
 
     wireConsoleTabs("obs", ["populaires", "sans-resultat", "erreurs"]);
+    // Correctif (18 aout 2026, brief §3.1) : meme geste pour "Produits"
+    // (Les plus vus / Souvent achetes ensemble). Prefixe "obs" partage
+    // avec Recherches sans conflit -- les noms d'onglets differents
+    // (vus/associes vs populaires/sans-resultat/erreurs) donnent des
+    // id distincts.
+    wireConsoleTabs("obs", ["vus", "associes"]);
     // Correctif (18 aout 2026, brief §3.1) : fusion en onglets. Consulter
     // les erreurs les marque vues -- deplace de showPane() (qui ne
     // s'appliquera plus jamais, paneId ne vaut plus "pane-errors") vers

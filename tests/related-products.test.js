@@ -117,14 +117,21 @@ describe("console.js — Produits associés", () => {
   });
 
   it("le nouvel item de sidebar existe et ouvre le bon pane", () => {
-    const item = document.querySelector('[data-pane="pane-related-products"]');
+    // Correctif (18 aout 2026, brief §3.1) : "Produits les plus vus" et
+    // "Produits associes" fusionnes en un seul pane-produits avec deux
+    // onglets internes -- item et pane renommes, second clic sur
+    // l'onglet "Associes" pour refleter fidelement le vrai flux
+    // utilisateur (l'onglet par defaut est "Les plus vus").
+    const item = document.querySelector('[data-pane="pane-produits"]');
     expect(item).not.toBeNull();
     item.dispatchEvent(new window.Event("click", { bubbles: true }));
-    expect(document.getElementById("pane-related-products").hidden).toBe(false);
+    expect(document.getElementById("pane-produits").hidden).toBe(false);
+    document.getElementById("obs-tab-associes").dispatchEvent(new window.Event("click", { bubbles: true }));
   });
 
   it("chercher « vis » affiche le produit, le choisir affiche ses produits associés", async () => {
-    document.querySelector('[data-pane="pane-related-products"]').dispatchEvent(new window.Event("click", { bubbles: true }));
+    document.querySelector('[data-pane="pane-produits"]').dispatchEvent(new window.Event("click", { bubbles: true }));
+    document.getElementById("obs-tab-associes").dispatchEvent(new window.Event("click", { bubbles: true }));
 
     const input = document.getElementById("rp-search");
     input.value = "vis";
@@ -153,7 +160,8 @@ describe("console.js — Produits associés", () => {
   });
 
   it("un produit sans nom (supprimé depuis l'événement) dégrade proprement, pas d'erreur", async () => {
-    document.querySelector('[data-pane="pane-related-products"]').dispatchEvent(new window.Event("click", { bubbles: true }));
+    document.querySelector('[data-pane="pane-produits"]').dispatchEvent(new window.Event("click", { bubbles: true }));
+    document.getElementById("obs-tab-associes").dispatchEvent(new window.Event("click", { bubbles: true }));
     const input = document.getElementById("rp-search");
     input.value = "vis";
     input.dispatchEvent(new window.Event("input", { bubbles: true }));
@@ -172,7 +180,8 @@ describe("console.js — Produits associés", () => {
   });
 
   it("moins de 5 achats : message d'état vide, jamais un tableau vide silencieux", async () => {
-    document.querySelector('[data-pane="pane-related-products"]').dispatchEvent(new window.Event("click", { bubbles: true }));
+    document.querySelector('[data-pane="pane-produits"]').dispatchEvent(new window.Event("click", { bubbles: true }));
+    document.getElementById("obs-tab-associes").dispatchEvent(new window.Event("click", { bubbles: true }));
     // Force la sélection d'un produit qui tombera sur REPONSE_RELATED_VIDE
     // (product_id "AUTRE", tout id hors VIS-M8-20 dans le mock ci-dessus).
     fetchMock.mockImplementationOnce(async () => ({ ok: true, json: async () => ({ hits: [{ product: { id: "AUTRE", name: "Autre produit" } }] }) }));
@@ -190,7 +199,8 @@ describe("console.js — Produits associés", () => {
   });
 
   it("changer de catalogue global réinitialise la sélection en cours", async () => {
-    document.querySelector('[data-pane="pane-related-products"]').dispatchEvent(new window.Event("click", { bubbles: true }));
+    document.querySelector('[data-pane="pane-produits"]').dispatchEvent(new window.Event("click", { bubbles: true }));
+    document.getElementById("obs-tab-associes").dispatchEvent(new window.Event("click", { bubbles: true }));
     const input = document.getElementById("rp-search");
     input.value = "vis";
     input.dispatchEvent(new window.Event("input", { bubbles: true }));
