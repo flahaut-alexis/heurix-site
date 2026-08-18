@@ -318,6 +318,14 @@
             </div>
 
             <div id="so-content" hidden>
+              <!-- Correctif Lot 3 -- parite EN avec console.html. -->
+              <div class="console-tabs" role="tablist" aria-label="Sections of Highlight on search">
+                <button type="button" role="tab" id="so-tab-apercu" aria-selected="true" aria-controls="so-tabpanel-apercu" class="console-tab console-tab-active">Preview &amp; settings</button>
+                <button type="button" role="tab" id="so-tab-regles" aria-selected="false" aria-controls="so-tabpanel-regles" class="console-tab" tabindex="-1">Catalog rules <span class="console-tab-count" id="so-tab-regles-count"></span></button>
+                <button type="button" role="tab" id="so-tab-vocabulaire" aria-selected="false" aria-controls="so-tabpanel-vocabulaire" class="console-tab" tabindex="-1">Vocabulary</button>
+              </div>
+
+              <div role="tabpanel" id="so-tabpanel-apercu" aria-labelledby="so-tab-apercu">
               <div class="console-panel">
                 <h2>Results preview</h2>
                 <p class="console-panel-note">Type a query to see the real ranking, and <strong>why</strong> each product shows up. The arrows move a product one spot, the pin puts it at the top.</p>
@@ -392,15 +400,24 @@
                 </table></div>
                 <p class="console-empty" id="so-empty" hidden>No rule set on this catalog.</p>
               </div>
+              </div>
+              <!-- so-tabpanel-apercu closes here. -->
 
-              
+              <div role="tabpanel" id="so-tabpanel-regles" aria-labelledby="so-tab-regles" hidden>
+                <p class="console-panel-note">Full catalog rules management view -- under construction (next step of this build).</p>
+              </div>
 
+              <div role="tabpanel" id="so-tabpanel-vocabulaire" aria-labelledby="so-tab-vocabulaire" hidden>
               <div class="console-panel">
-                <h2>Synonyms and custom rules</h2>
+                <!-- Correctif lexique rattrape ici (§3.2, volet 1, jamais
+                     applique cote EN pour ce texte statique -- meme angle
+                     mort deja trouve pour "Add a rule manually", en dehors
+                     de la couverture du script T()). -->
+                <h2>Synonyms and custom recognitions</h2>
                 <p class="console-panel-note">Synonyms link the words your customers use to the ones in your catalog. Teach the engine a word from your business, in a few words and with no code.</p>
                 
                 <div id="cr-host"></div>
-                <p class="console-empty" id="cr-hint">Choose a catalog to manage its synonyms and rules.</p>
+                <p class="console-empty" id="cr-hint">Choose a catalog to manage its synonyms and recognitions.</p>
               </div>
 
               <!-- Correctif Lot 3 -- parite EN avec console.html. -->
@@ -433,6 +450,7 @@
                 </form>
                 <button type="button" class="btn btn-ghost" id="so-form-close-btn" style="margin-top:14px;">Close</button>
                 </div>
+              </div>
               </div>
             </div>
           </div>

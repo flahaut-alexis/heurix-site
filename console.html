@@ -456,6 +456,19 @@
             </div>
 
             <div id="so-content" hidden>
+              <!-- Correctif Lot 3 (audit UX console, 17-18 aout 2026) :
+                   structure en onglets (§3.4 du brief -- "Deux onglets et
+                   un bouton"). Cette premiere passe pose uniquement la
+                   structure (boutons + basculement JS), sans encore
+                   deplacer le contenu existant -- brique testable
+                   independamment avant la vraie migration. -->
+              <div class="console-tabs" role="tablist" aria-label="Sections de Mise en avant sur recherche">
+                <button type="button" role="tab" id="so-tab-apercu" aria-selected="true" aria-controls="so-tabpanel-apercu" class="console-tab console-tab-active">Aperçu &amp; réglages</button>
+                <button type="button" role="tab" id="so-tab-regles" aria-selected="false" aria-controls="so-tabpanel-regles" class="console-tab" tabindex="-1">Règles du catalogue <span class="console-tab-count" id="so-tab-regles-count"></span></button>
+                <button type="button" role="tab" id="so-tab-vocabulaire" aria-selected="false" aria-controls="so-tabpanel-vocabulaire" class="console-tab" tabindex="-1">Vocabulaire</button>
+              </div>
+
+              <div role="tabpanel" id="so-tabpanel-apercu" aria-labelledby="so-tab-apercu">
               <div class="console-panel">
                 <h2>Aperçu des résultats</h2>
                 <p class="console-panel-note">Tapez une requête pour voir le classement réel, et <strong>pourquoi</strong> chaque produit sort. Les flèches déplacent un produit d'une place, l'épingle le met en tête.</p>
@@ -545,9 +558,14 @@
                 </table></div>
                 <p class="console-empty" id="so-empty" hidden>Aucune règle posée sur ce catalogue.</p>
               </div>
+              </div>
+              <!-- so-tabpanel-apercu ferme ici. -->
 
-              
+              <div role="tabpanel" id="so-tabpanel-regles" aria-labelledby="so-tab-regles" hidden>
+                <p class="console-panel-note">Vue de gestion complete des regles du catalogue -- en construction (etape suivante de ce chantier).</p>
+              </div>
 
+              <div role="tabpanel" id="so-tabpanel-vocabulaire" aria-labelledby="so-tab-vocabulaire" hidden>
               <div class="console-panel">
                 <h2>Synonymes et reconnaissances personnalisées</h2>
                 <p class="console-panel-note">Les synonymes rapprochent les mots que vos clients emploient de ceux de votre catalogue. Apprenez au moteur un mot de votre métier, en quelques mots et sans code.</p>
@@ -592,6 +610,11 @@
                 </form>
                 <button type="button" class="btn btn-ghost" id="so-form-close-btn" style="margin-top:14px;">Fermer</button>
                 </div>
+              </div>
+              <!-- so-tabpanel-vocabulaire ferme ici -- vrai deseequilibre
+                   de balises ouvrantes/fermantes corrige, verifie par
+                   comptage precis plutot que suppose depuis le seul
+                   parsing HTML permissif. -->
               </div>
             </div>
           </div>

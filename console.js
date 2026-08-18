@@ -2967,6 +2967,41 @@
   }
 
 
+  // Correctif Lot 3 (audit UX console, 17-18 aout 2026) : structure en
+  // onglets (§3.4 du brief). Fonction generique, prend le prefixe des
+  // ids (ex. "so") -- reutilisable pour d'autres groupes d'onglets
+  // futurs sans dupliquer cette logique. Pattern ARIA tabs standard :
+  // aria-selected, tabindex roving (-1 sur les onglets inactifs, pour
+  // que Tab s'arrete une seule fois sur le groupe, les fleches
+  // naviguent entre onglets).
+  function wireConsoleTabs(prefix, onglets) {
+    var boutons = onglets.map(function (nom) { return document.getElementById(prefix + "-tab-" + nom); });
+    var panneaux = onglets.map(function (nom) { return document.getElementById(prefix + "-tabpanel-" + nom); });
+
+    function activer(index) {
+      boutons.forEach(function (b, i) {
+        if (!b) return;
+        var actif = i === index;
+        b.setAttribute("aria-selected", actif ? "true" : "false");
+        b.classList.toggle("console-tab-active", actif);
+        b.tabIndex = actif ? 0 : -1;
+      });
+      panneaux.forEach(function (p, i) { if (p) p.hidden = i !== index; });
+    }
+
+    boutons.forEach(function (b, i) {
+      if (!b) return;
+      b.addEventListener("click", function () { activer(i); });
+      b.addEventListener("keydown", function (e) {
+        if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+        e.preventDefault();
+        var suivant = (i + (e.key === "ArrowRight" ? 1 : -1) + boutons.length) % boutons.length;
+        activer(suivant);
+        boutons[suivant].focus();
+      });
+    });
+  }
+
   function wireSearchOverridesPane(key) {
     wireSoPreview(key);
     wireSoDraft(key);
@@ -2974,6 +3009,8 @@
     wireSoProductAutocomplete(key);
     if (soFormWired) return;
     soFormWired = true;
+
+    wireConsoleTabs("so", ["apercu", "regles", "vocabulaire"]);
 
     document.getElementById("so-action").addEventListener("change", function (e) {
       // Correctif Lot 3 (audit UX console, 17-18 aout 2026) : "desactivee",
