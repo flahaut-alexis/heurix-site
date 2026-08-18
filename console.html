@@ -464,7 +464,7 @@
                    independamment avant la vraie migration. -->
               <div class="console-tabs" role="tablist" aria-label="Sections de Mise en avant sur recherche">
                 <button type="button" role="tab" id="so-tab-apercu" aria-selected="true" aria-controls="so-tabpanel-apercu" class="console-tab console-tab-active">Aperçu &amp; réglages</button>
-                <button type="button" role="tab" id="so-tab-regles" aria-selected="false" aria-controls="so-tabpanel-regles" class="console-tab" tabindex="-1">Règles du catalogue <span class="console-tab-count" id="so-tab-regles-count"></span></button>
+                <button type="button" role="tab" id="so-tab-regles" aria-selected="false" aria-controls="so-tabpanel-regles" class="console-tab" tabindex="-1">Règles du catalogue <span class="console-tab-count" id="so-tab-regles-count" hidden></span></button>
                 <button type="button" role="tab" id="so-tab-vocabulaire" aria-selected="false" aria-controls="so-tabpanel-vocabulaire" class="console-tab" tabindex="-1">Vocabulaire</button>
               </div>
 
@@ -549,6 +549,16 @@
                 </div>
               </div>
 
+              </div>
+              <!-- so-tabpanel-apercu ferme ici -- corrige (17-18 aout,
+                   diagnostique par Claude en Chrome, verifie ici avant
+                   d'agir) : so-rules-panel et so-form-open-btn/modal
+                   n'avaient jamais ete vraiment migres hors de cet
+                   onglet, malgre le commentaire qui pretendait deja le
+                   faire. -->
+
+              <div role="tabpanel" id="so-tabpanel-regles" aria-labelledby="so-tab-regles" hidden>
+              <button type="button" class="btn btn-ghost" id="so-form-open-btn">Ajouter une règle à la main — pour un produit absent des résultats</button>
               <div class="console-panel" id="so-rules-panel">
                 <h2>Règles en place <span class="so-count" id="so-count" hidden></span></h2>
                 <p class="console-panel-note">La <strong>position</strong> est le rang final du produit : position 3 le place en 3ᵉ, les autres produits comblant les places libres. Les <strong>relégués</strong> passent toujours en fin de liste.</p>
@@ -559,11 +569,7 @@
                 <p class="console-empty" id="so-empty" hidden>Aucune règle posée sur ce catalogue.</p>
               </div>
               </div>
-              <!-- so-tabpanel-apercu ferme ici. -->
-
-              <div role="tabpanel" id="so-tabpanel-regles" aria-labelledby="so-tab-regles" hidden>
-                <p class="console-panel-note">Vue de gestion complete des regles du catalogue -- en construction (etape suivante de ce chantier).</p>
-              </div>
+              <!-- so-tabpanel-regles ferme ici. -->
 
               <div role="tabpanel" id="so-tabpanel-vocabulaire" aria-labelledby="so-tab-vocabulaire" hidden>
               <div class="console-panel">
@@ -573,15 +579,14 @@
                 <div id="cr-host"></div>
                 <p class="console-empty" id="cr-hint">Choisissez un catalogue pour gérer ses synonymes et ses reconnaissances.</p>
               </div>
+              </div>
+              <!-- so-tabpanel-vocabulaire ferme ici -- ne contient plus
+                   que le panneau synonymes, comme demande. -->
 
               <!-- Correctif Lot 3 (audit UX console, 17-18 aout 2026) :
-                   "Ajout d'un produit -- modale" (§4.5 du brief). Le
-                   contenu du formulaire est inchange (autocompletion,
-                   position desactivee, validations inline -- deja
-                   construits) ; seule la structure change, panneau
-                   toujours visible -> modale ouverte a la demande. Meme
-                   pattern que recap-modal, deja etabli ce soir. -->
-              <button type="button" class="btn btn-ghost" id="so-form-open-btn">Ajouter une règle à la main — pour un produit absent des résultats</button>
+                   "Ajout d'un produit -- modale" (§4.5 du brief). Hors de
+                   tout tabpanel des maintenant -- une modale ne doit
+                   dependre d'aucun onglet. -->
               <div id="so-form-modal" class="recap-modal" hidden role="dialog" aria-modal="true" aria-labelledby="so-form-title">
                 <div class="recap-modal-backdrop"></div>
                 <div class="recap-modal-box">
@@ -610,11 +615,6 @@
                 </form>
                 <button type="button" class="btn btn-ghost" id="so-form-close-btn" style="margin-top:14px;">Fermer</button>
                 </div>
-              </div>
-              <!-- so-tabpanel-vocabulaire ferme ici -- vrai deseequilibre
-                   de balises ouvrantes/fermantes corrige, verifie par
-                   comptage precis plutot que suppose depuis le seul
-                   parsing HTML permissif. -->
               </div>
             </div>
           </div>

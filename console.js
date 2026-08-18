@@ -2113,9 +2113,9 @@
     // s'appuie donc uniquement sur .so-rules-draft, posee plus bas sur
     // le panneau parent -- suffisant, pas besoin de toucher chaque ligne.
     renderTable("so-table", "so-empty", liste, soRowHtml);
+    var n = (liste || []).length;
     var compteur = document.getElementById("so-count");
     if (compteur) {
-      var n = (liste || []).length;
       compteur.hidden = n === 0;
       compteur.textContent = enBrouillon
         ? T(n > 1 ? "{0} règles en brouillon" : "{0} règle en brouillon", n)
@@ -2123,6 +2123,15 @@
     }
     var panneau = document.getElementById("so-rules-panel");
     if (panneau) panneau.classList.toggle("so-rules-draft", !!enBrouillon);
+    // Correctif structure en onglets (§3.4 du brief, corrige le 18 aout
+    // apres diagnostic Claude en Chrome) : badge de compte sur l'onglet,
+    // format compact coherent avec la maquette du brief ("Regles du
+    // catalogue (12)"), pas le libelle long de so-count.
+    var badgeOnglet = document.getElementById("so-tab-regles-count");
+    if (badgeOnglet) {
+      badgeOnglet.hidden = n === 0;
+      badgeOnglet.textContent = n === 0 ? "" : "(" + n + ")";
+    }
   }
 
   function refreshSoTable(key) {
