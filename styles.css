@@ -3934,6 +3934,19 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 .so-tri-fleche.asc::after{ content:"▲"; }
 .so-tri-fleche.desc::after{ content:"▼"; }
 
+/* Correctif Lot 3 (audit UX console, 18 aout 2026) : onglet "Regles du
+   catalogue" -- selection multiple, conflits, lignes cliquables (§4.6). */
+.console-table .so-cell-select{ width:36px; text-align:center; }
+.so-cell-cliquable{ cursor:pointer; }
+.so-cell-cliquable:hover{ background:var(--blue-tint); }
+.so-conflit-badge{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:20px; height:20px; margin-left:6px; border-radius:100px;
+  border:1px solid #E0930C; background:#FDF1DC; color:#B26A00;
+  font-size:12px; cursor:pointer; vertical-align:middle;
+}
+.so-conflit-badge:hover{ background:#FBE4C4; }
+
 /* Correctif (18 aout 2026, diagnostic Claude en Chrome) : liste verticale
    pour la colonne contextuelle -- tokens existants reutilises, pas de
    nouvelle palette. */

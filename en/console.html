@@ -438,9 +438,11 @@
                     <option value="brouillon">Draft</option>
                   </select>
                   <span class="so-catalogue-compteur" id="so-catalogue-compteur"></span>
+                  <button type="button" class="btn btn-ghost" id="so-catalogue-supprimer-selection" hidden>Delete selection (<span id="so-catalogue-selection-compte">0</span>)</button>
                 </div>
                 <div class="table-scroll"><table class="console-table" id="so-table">
                   <thead><tr>
+                    <th class="so-cell-select"><input type="checkbox" id="so-catalogue-select-tout" aria-label="Select all"></th>
                     <th><button type="button" class="so-tri-th" data-tri="nom">Name <span class="so-tri-fleche" data-tri-fleche="nom"></span></button></th>
                     <th><button type="button" class="so-tri-th" data-tri="declencheur">Trigger <span class="so-tri-fleche" data-tri-fleche="declencheur"></span></button></th>
                     <th><button type="button" class="so-tri-th" data-tri="action">Action <span class="so-tri-fleche" data-tri-fleche="action"></span></button></th>

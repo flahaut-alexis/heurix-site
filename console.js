@@ -1709,18 +1709,49 @@
   // brief : "Epingle pos. 4" / "Relegue"), Statut (Active/Brouillon
   // seulement -- Programmee et Inactive restent Lot 4, aucun mecanisme
   // backend actuellement, voir roadmap).
-  function soRowHtmlCatalogue(o, enBrouillon) {
+  // Correctif Lot 3 (audit UX console, 18 aout 2026) : detecte les
+  // conflits de position (§4.6 du brief -- "deux regles qui visent la
+  // meme position sur le meme declencheur"). Renvoie un Set de cles
+  // "query|position" en conflit, calcule une fois sur toute la liste
+  // avant le rendu -- pas recalcule par ligne.
+  function soDetecterConflits(liste) {
+    var comptes = {};
+    liste.forEach(function (r) {
+      if (r.action !== "pin" || !r.position) return;
+      var cle = r.query.toLowerCase() + "|" + r.position;
+      comptes[cle] = (comptes[cle] || 0) + 1;
+    });
+    var conflits = new Set();
+    Object.keys(comptes).forEach(function (cle) {
+      if (comptes[cle] > 1) conflits.add(cle);
+    });
+    return conflits;
+  }
+
+  // Correctif Lot 3 : lignes cliquables vers l'apercu (§4.6 du brief --
+  // "la liste et l'apercu ne doivent jamais etre deux mondes separes").
+  // data-so-aller-apercu sur les cellules non interactives seulement
+  // (pas la case a cocher, pas cell-actions) pour ne jamais interferer
+  // avec la selection multiple ni les boutons d'edition.
+  function soRowHtmlCatalogue(o, enBrouillon, conflits) {
     var pin = o.action === "pin";
+    var cleConflit = pin && o.position ? o.query.toLowerCase() + "|" + o.position : null;
+    var enConflit = cleConflit && conflits && conflits.has(cleConflit);
     var actionLabel = pin
       ? "<span class='cell-action cell-action-pin'>&#128204; " + (o.position ? T("Épinglé pos. {0}", o.position) : T("Épinglé")) + "</span>"
       : "<span class='cell-action cell-action-bury'>&#8595; " + T("Relégué") + "</span>";
+    if (enConflit) {
+      actionLabel += "<button type='button' class='so-conflit-badge' data-so-conflit-info='1' data-query='" + esc(o.query) + "' data-position='" + o.position + "' aria-label='" + T("Conflit de position — cliquer pour en savoir plus") + "' title='" + T("Une autre règle vise déjà la position {0} sur cette recherche.", o.position) + "'>&#9888;</button>";
+    }
     var statutLabel = enBrouillon
       ? "<span class='cell-statut cell-statut-brouillon'>" + T("Brouillon") + "</span>"
       : "<span class='cell-statut cell-statut-active'>" + T("Active") + "</span>";
-    return "<td>" + produitCell(o.product_id, o.product_name) + "</td>" +
-      "<td><span class='cell-trigger' title='" + esc(o.query) + "'>" + esc(o.query) + "</span></td>" +
-      "<td>" + actionLabel + "</td>" +
-      "<td>" + statutLabel + "</td>" +
+    var attrsLigne = "data-so-aller-apercu='1' data-query='" + esc(o.query) + "'";
+    return "<td class='so-cell-select'><input type='checkbox' class='so-row-check' data-so-select='1' data-query='" + esc(o.query) + "' data-product-id='" + esc(o.product_id) + "' aria-label='" + T("Sélectionner cette règle") + "'></td>" +
+      "<td " + attrsLigne + " class='so-cell-cliquable'>" + produitCell(o.product_id, o.product_name) + "</td>" +
+      "<td " + attrsLigne + " class='so-cell-cliquable'><span class='cell-trigger' title='" + esc(o.query) + "'>" + esc(o.query) + "</span></td>" +
+      "<td " + attrsLigne + " class='so-cell-cliquable'>" + actionLabel + "</td>" +
+      "<td " + attrsLigne + " class='so-cell-cliquable'>" + statutLabel + "</td>" +
       "<td class='cell-actions'>" +
         "<button type='button' class='catalog-rule-remove' data-so-edit='1' data-query='" + esc(o.query) + "' data-product-id='" + esc(o.product_id) + "' data-action='" + esc(o.action) + "' data-position='" + (o.position || "") + "' aria-label='" + T("Modifier") + "' title='" + T("Modifier") + "'>&#9998;</button>" +
         "<button type='button' class='catalog-rule-remove' data-so-duplicate='1' data-query='" + esc(o.query) + "' data-product-id='" + esc(o.product_id) + "' data-action='" + esc(o.action) + "' data-position='" + (o.position || "") + "' aria-label='" + T("Dupliquer") + "' title='" + T("Dupliquer comme nouvelle règle") + "'>&#10697;</button>" +
@@ -2195,11 +2226,16 @@
     soDerniereListe = liste || [];
     soDerniereEnBrouillon = enBrouillon;
     var listeFiltree = soFiltrerEtTrierCatalogue(liste || [], enBrouillon);
+    // Correctif Lot 3 (audit UX console, 18 aout 2026) : conflits
+    // calcules sur la vraie liste complete (liste), pas la liste
+    // filtree/triee -- un conflit doit rester signale meme si l'une des
+    // deux regles concernees sort du filtre/recherche actuel.
+    var conflits = soDetecterConflits(liste || []);
     // Correctif Lot 3 : onglet "Regles du catalogue", fonction dediee
     // (soRowHtmlCatalogue), closure pour lui passer enBrouillon puisque
     // renderTable() appelle rowFn(row) avec un seul argument.
     renderTable("so-table", "so-empty", listeFiltree, function (row) {
-      return soRowHtmlCatalogue(row, enBrouillon);
+      return soRowHtmlCatalogue(row, enBrouillon, conflits);
     });
     var compteurCatalogue = document.getElementById("so-catalogue-compteur");
     if (compteurCatalogue) {
@@ -3204,6 +3240,78 @@
       var ouvert = !soApercuAidePanel.hidden;
       soApercuAidePanel.hidden = ouvert;
       soApercuAideBtn.setAttribute("aria-expanded", ouvert ? "false" : "true");
+    });
+
+    // Correctif Lot 3 (audit UX console, 18 aout 2026) : onglet "Regles
+    // du catalogue" -- lignes cliquables, badge de conflit, selection
+    // multiple avec suppression groupee (§4.6 du brief).
+    var soCatalogueSelection = new Set();
+
+    function soCatalogueSelectionCle(query, productId) { return query + "||" + productId; }
+
+    function soCatalogueMajBoutonSelection() {
+      var btn = document.getElementById("so-catalogue-supprimer-selection");
+      var compte = document.getElementById("so-catalogue-selection-compte");
+      if (!btn) return;
+      btn.hidden = soCatalogueSelection.size === 0;
+      if (compte) compte.textContent = soCatalogueSelection.size;
+    }
+
+    var soTablePanel = document.getElementById("so-tabpanel-regles");
+    if (soTablePanel) soTablePanel.addEventListener("click", function (e) {
+      var conflitBtn = e.target.closest("[data-so-conflit-info]");
+      if (conflitBtn) {
+        e.stopPropagation();
+        alert(T("Une autre règle vise déjà la position {0} sur la recherche « {1} ». Seule l'une des deux s'appliquera — vérifiez laquelle dans l'onglet Aperçu.", conflitBtn.getAttribute("data-position"), conflitBtn.getAttribute("data-query")));
+        return;
+      }
+      var ligneBtn = e.target.closest("[data-so-aller-apercu]");
+      if (ligneBtn) {
+        var query = ligneBtn.getAttribute("data-query");
+        document.getElementById("so-tab-apercu").click();
+        var champ = document.getElementById("so-preview-query");
+        if (champ) { champ.value = query; refreshSoPreview(key); champ.focus(); }
+      }
+    });
+
+    if (soTablePanel) soTablePanel.addEventListener("change", function (e) {
+      var check = e.target.closest("[data-so-select]");
+      if (!check) return;
+      var cle = soCatalogueSelectionCle(check.getAttribute("data-query"), check.getAttribute("data-product-id"));
+      if (check.checked) soCatalogueSelection.add(cle); else soCatalogueSelection.delete(cle);
+      soCatalogueMajBoutonSelection();
+    });
+
+    var soSelectTout = document.getElementById("so-catalogue-select-tout");
+    if (soSelectTout) soSelectTout.addEventListener("change", function () {
+      var cases = document.querySelectorAll("#so-table [data-so-select]");
+      cases.forEach(function (c) {
+        c.checked = soSelectTout.checked;
+        var cle = soCatalogueSelectionCle(c.getAttribute("data-query"), c.getAttribute("data-product-id"));
+        if (soSelectTout.checked) soCatalogueSelection.add(cle); else soCatalogueSelection.delete(cle);
+      });
+      soCatalogueMajBoutonSelection();
+    });
+
+    var soSupprimerSelectionBtn = document.getElementById("so-catalogue-supprimer-selection");
+    if (soSupprimerSelectionBtn) soSupprimerSelectionBtn.addEventListener("click", function () {
+      var n = soCatalogueSelection.size;
+      if (n === 0) return;
+      if (!confirm(T("Supprimer {0} règle(s) ? Cette action est immédiate et ne passe pas par le brouillon.", n))) return;
+      soSupprimerSelectionBtn.disabled = true;
+      var appels = Array.from(soCatalogueSelection).map(function (cle) {
+        var parts = cle.split("||");
+        var url = "/v1/index/" + encodeURIComponent(session.soCurrentCatalog) + "/search-overrides" +
+          "?query=" + encodeURIComponent(parts[0]) + "&product_id=" + encodeURIComponent(parts[1]);
+        return apiFetch(url, key, { method: "DELETE" });
+      });
+      Promise.all(appels).then(function () {
+        soCatalogueSelection.clear();
+        if (soSelectTout) soSelectTout.checked = false;
+        soSupprimerSelectionBtn.disabled = false;
+        soCatalogueMajBoutonSelection();
+        refreshSoTable(key);
+      }).catch(function () { soSupprimerSelectionBtn.disabled = false; });
     });
 
     // Correctif Lot 3 (audit UX console, 18 aout 2026) : onglet "Regles

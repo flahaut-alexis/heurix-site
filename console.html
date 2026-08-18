@@ -606,9 +606,15 @@
                     <option value="brouillon">Brouillon</option>
                   </select>
                   <span class="so-catalogue-compteur" id="so-catalogue-compteur"></span>
+                  <!-- Correctif Lot 3 (audit UX console, 18 aout 2026) :
+                       selection multiple, seule "supprimer" est une
+                       vraie action groupee en v1 (activer/desactiver mis
+                       de cote, roadmap -- aucun mecanisme backend). -->
+                  <button type="button" class="btn btn-ghost" id="so-catalogue-supprimer-selection" hidden>Supprimer la sélection (<span id="so-catalogue-selection-compte">0</span>)</button>
                 </div>
                 <div class="table-scroll"><table class="console-table" id="so-table">
                   <thead><tr>
+                    <th class="so-cell-select"><input type="checkbox" id="so-catalogue-select-tout" aria-label="Tout sélectionner"></th>
                     <th><button type="button" class="so-tri-th" data-tri="nom">Nom <span class="so-tri-fleche" data-tri-fleche="nom"></span></button></th>
                     <th><button type="button" class="so-tri-th" data-tri="declencheur">Déclencheur <span class="so-tri-fleche" data-tri-fleche="declencheur"></span></button></th>
                     <th><button type="button" class="so-tri-th" data-tri="action">Action <span class="so-tri-fleche" data-tri-fleche="action"></span></button></th>
