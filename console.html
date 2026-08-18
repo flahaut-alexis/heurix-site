@@ -231,9 +231,7 @@
                  frontiere technique invisible pour l'utilisateur". La
                  vraie fusion en onglets (Recherches, Produits) est un
                  chantier separe, plus substantiel -- signale a part. -->
-            <button type="button" class="console-sidebar-item" data-pane="pane-top-queries">Recherches populaires</button>
-            <button type="button" class="console-sidebar-item" data-pane="pane-zero-results">Sans résultat</button>
-            <button type="button" class="console-sidebar-item" data-pane="pane-errors">Erreurs<span class="nav-badge" id="nav-badge-erreurs" hidden></span></button>
+            <button type="button" class="console-sidebar-item" data-pane="pane-recherches">Recherches<span class="nav-badge" id="nav-badge-erreurs" hidden></span></button>
             <button type="button" class="console-sidebar-item" data-pane="pane-category-views">Produits les plus vus</button>
             <button type="button" class="console-sidebar-item" data-pane="pane-related-products">Produits associés</button>
             <button type="button" class="console-sidebar-item" data-pane="pane-segmentation">Segmentation</button>
@@ -404,56 +402,68 @@
           
           </div>
 
-          <div id="pane-top-queries" class="console-pane" hidden>
-            <div class="catalog-card-row" style="margin-bottom:0;">
-              <h2 class="console-pane-title" style="margin:0; flex:1;">Recherches populaires</h2>
-              <button type="button" class="export-csv-btn" data-export-table="top-queries-table" data-export-nom="recherches-populaires">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                Exporter (CSV)
-              </button>
-            </div>
-            <div class="console-panel">
-              <div class="table-scroll"><table class="console-table" id="top-queries-table">
-                <thead><tr><th>Requête</th><th>Nb</th><th>Résultats (moy.)</th></tr></thead>
-                <tbody></tbody>
-              </table></div>
-              <p class="console-empty" id="top-queries-empty" hidden>Aucune recherche sur cette période.</p>
-            </div>
-          </div>
+          <!-- Correctif (18 aout 2026, brief §3.1) : fusion en onglets.
+               Trois panes distincts, memes donnees deja toutes chargees
+               ensemble par loadDashboard() (verifie avant de construire
+               -- aucun chargement paresseux a gerer, contrairement a ce
+               que la structure en trois panes separes laissait supposer). -->
+          <div id="pane-recherches" class="console-pane" hidden>
+            <h2 class="console-pane-title">Recherches</h2>
 
-          <div id="pane-zero-results" class="console-pane" hidden>
-            <div class="catalog-card-row" style="margin-bottom:0;">
-              <h2 class="console-pane-title" style="margin:0; flex:1;">Recherches sans résultat</h2>
-              <button type="button" class="export-csv-btn" data-export-table="zero-results-table" data-export-nom="recherches-sans-resultat">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                Exporter (CSV)
-              </button>
+            <div class="console-tabs" role="tablist" aria-label="Sections de Recherches">
+              <button type="button" role="tab" id="obs-tab-populaires" aria-selected="true" aria-controls="obs-tabpanel-populaires" class="console-tab console-tab-active">Populaires</button>
+              <button type="button" role="tab" id="obs-tab-sans-resultat" aria-selected="false" aria-controls="obs-tabpanel-sans-resultat" class="console-tab" tabindex="-1">Sans résultat</button>
+              <button type="button" role="tab" id="obs-tab-erreurs" aria-selected="false" aria-controls="obs-tabpanel-erreurs" class="console-tab" tabindex="-1">Erreurs<span class="nav-badge" id="nav-badge-erreurs-onglet" hidden></span></button>
             </div>
-            <div class="console-panel console-panel-warn">
-              <p class="console-panel-note">Ce que vos clients cherchent sans jamais rien trouver — des ventes potentiellement manquées. Chaque ligne est un candidat pour un synonyme ou une reconnaissance à ajouter.</p>
-              <div class="table-scroll"><table class="console-table" id="zero-results-table">
-                <thead><tr><th>Requête</th><th>Nb de fois</th><th>Corriger</th></tr></thead>
-                <tbody></tbody>
-              </table></div>
-              <p class="console-empty" id="zero-results-empty" hidden>Aucune recherche sans résultat sur cette période — bon signe.</p>
-            </div>
-          </div>
 
-          <div id="pane-errors" class="console-pane" hidden>
-            <div class="catalog-card-row" style="margin-bottom:0;">
-              <h2 class="console-pane-title" style="margin:0; flex:1;">Erreurs récentes</h2>
-              <button type="button" class="export-csv-btn" data-export-table="errors-table" data-export-nom="erreurs">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                Exporter (CSV)
-              </button>
+            <div role="tabpanel" id="obs-tabpanel-populaires" aria-labelledby="obs-tab-populaires">
+              <div class="catalog-card-row" style="margin:14px 0 0; justify-content:flex-end;">
+                <button type="button" class="export-csv-btn" data-export-table="top-queries-table" data-export-nom="recherches-populaires">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  Exporter (CSV)
+                </button>
+              </div>
+              <div class="console-panel">
+                <div class="table-scroll"><table class="console-table" id="top-queries-table">
+                  <thead><tr><th>Requête</th><th>Nb</th><th>Résultats (moy.)</th></tr></thead>
+                  <tbody></tbody>
+                </table></div>
+                <p class="console-empty" id="top-queries-empty" hidden>Aucune recherche sur cette période.</p>
+              </div>
             </div>
-            <div class="console-panel">
-              <div class="err-bilan" id="err-bilan" hidden></div>
-              <div class="table-scroll"><table class="console-table" id="errors-table">
-                <thead><tr><th>Ce qui s'est passé</th><th>Quand</th></tr></thead>
-                <tbody></tbody>
-              </table></div>
-              <p class="console-empty" id="errors-empty" hidden>Aucune erreur sur cette période.</p>
+
+            <div role="tabpanel" id="obs-tabpanel-sans-resultat" aria-labelledby="obs-tab-sans-resultat" hidden>
+              <div class="catalog-card-row" style="margin:14px 0 0; justify-content:flex-end;">
+                <button type="button" class="export-csv-btn" data-export-table="zero-results-table" data-export-nom="recherches-sans-resultat">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  Exporter (CSV)
+                </button>
+              </div>
+              <div class="console-panel console-panel-warn">
+                <p class="console-panel-note">Ce que vos clients cherchent sans jamais rien trouver — des ventes potentiellement manquées. Chaque ligne est un candidat pour un synonyme ou une reconnaissance à ajouter.</p>
+                <div class="table-scroll"><table class="console-table" id="zero-results-table">
+                  <thead><tr><th>Requête</th><th>Nb de fois</th><th>Corriger</th></tr></thead>
+                  <tbody></tbody>
+                </table></div>
+                <p class="console-empty" id="zero-results-empty" hidden>Aucune recherche sans résultat sur cette période — bon signe.</p>
+              </div>
+            </div>
+
+            <div role="tabpanel" id="obs-tabpanel-erreurs" aria-labelledby="obs-tab-erreurs" hidden>
+              <div class="catalog-card-row" style="margin:14px 0 0; justify-content:flex-end;">
+                <button type="button" class="export-csv-btn" data-export-table="errors-table" data-export-nom="erreurs">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  Exporter (CSV)
+                </button>
+              </div>
+              <div class="console-panel">
+                <div class="err-bilan" id="err-bilan" hidden></div>
+                <div class="table-scroll"><table class="console-table" id="errors-table">
+                  <thead><tr><th>Ce qui s'est passé</th><th>Quand</th></tr></thead>
+                  <tbody></tbody>
+                </table></div>
+                <p class="console-empty" id="errors-empty" hidden>Aucune erreur sur cette période.</p>
+              </div>
             </div>
           </div>
 

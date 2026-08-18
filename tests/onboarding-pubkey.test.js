@@ -150,7 +150,12 @@ describe("console.html — navigation en trois piliers (8 août 2026)", () => {
 
     const groupe = doc.querySelector('[data-section-items="observer"]');
     expect(groupe).not.toBeNull();
-    for (const pane of ["pane-top-queries", "pane-zero-results", "pane-errors", "pane-category-views", "pane-related-products", "pane-segmentation"]) {
+    // Correctif (18 aout 2026, brief §3.1) : pane-top-queries,
+    // pane-zero-results et pane-errors fusionnes en un seul
+    // pane-recherches avec des onglets internes -- test mis a jour pour
+    // refleter la vraie structure, plutot que de revenir en arriere sur
+    // le chantier ou de laisser un test casse.
+    for (const pane of ["pane-recherches", "pane-category-views", "pane-related-products", "pane-segmentation"]) {
       expect(groupe.querySelector(`[data-pane="${pane}"]`), `${pane} doit rester sous Observer`).not.toBeNull();
     }
   });

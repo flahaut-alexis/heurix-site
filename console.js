@@ -764,7 +764,7 @@
     }).catch(function () {});
   }
 
-  var ALL_PANE_IDS = ["pane-overview", "pane-guides", "pane-top-queries", "pane-zero-results", "pane-errors", "pane-search-overrides", "pane-category-views", "pane-related-products", "pane-segmentation",
+  var ALL_PANE_IDS = ["pane-overview", "pane-guides", "pane-recherches", "pane-search-overrides", "pane-category-views", "pane-related-products", "pane-segmentation",
     "pane-browse", "pane-catalog-help", "pane-catalog-list", "pane-billing", "pane-company", "pane-team", "pane-key", "pane-feedback",
     // Ajoute le 29 juillet. Cette liste est une LISTE BLANCHE : un pave
     // absent d'ici s'affiche vide, sans erreur en console -- symptome
@@ -1352,12 +1352,6 @@
     // besoin de resaisir le catalogue a chaque fois.
     if (typeof appliquerCatalogueOuverture === "function") appliquerCatalogueOuverture(paneId);
     if (paneId === "pane-billing" && session.cleCourante) renderBilling(session.cleCourante);
-    // Consulter les erreurs les marque vues : le badge s'eteint.
-    if (paneId === "pane-errors" && typeof _dernieresErreurs !== "undefined") {
-      marquerErreursVues(_dernieresErreurs);
-      var b = document.getElementById("nav-badge-erreurs");
-      if (b) b.hidden = true;
-    }
     // Remonte en haut du nouvel ecran. Sans cela, un utilisateur descendu
     // dans un pave long arrive sur le suivant deja defile, et ne voit pas
     // ce qu'il vient d'ouvrir -- on doit remonter a la main pour comprendre
@@ -3287,6 +3281,24 @@
     wireSoProductAutocomplete(key);
     if (soFormWired) return;
     soFormWired = true;
+
+    wireConsoleTabs("obs", ["populaires", "sans-resultat", "erreurs"]);
+    // Correctif (18 aout 2026, brief §3.1) : fusion en onglets. Consulter
+    // les erreurs les marque vues -- deplace de showPane() (qui ne
+    // s'appliquera plus jamais, paneId ne vaut plus "pane-errors") vers
+    // le vrai moment ou l'utilisateur bascule specifiquement sur cet
+    // onglet. Deux badges a eteindre : celui du bouton sidebar (premier
+    // point de contact, garde pour signaler "il y a des erreurs" sans
+    // avoir a ouvrir la page) et celui de l'onglet lui-meme.
+    var obsTabErreurs = document.getElementById("obs-tab-erreurs");
+    if (obsTabErreurs) obsTabErreurs.addEventListener("click", function () {
+      if (typeof _dernieresErreurs === "undefined") return;
+      marquerErreursVues(_dernieresErreurs);
+      var bSidebar = document.getElementById("nav-badge-erreurs");
+      var bOnglet = document.getElementById("nav-badge-erreurs-onglet");
+      if (bSidebar) bSidebar.hidden = true;
+      if (bOnglet) bOnglet.hidden = true;
+    });
 
     wireConsoleTabs("so", ["apercu", "regles", "vocabulaire"]);
 

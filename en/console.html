@@ -152,9 +152,7 @@
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="console-sidebar-chevron"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
           <div class="console-sidebar-items" data-section-items="observer" hidden>
-            <button type="button" class="console-sidebar-item" data-pane="pane-top-queries">Popular searches</button>
-            <button type="button" class="console-sidebar-item" data-pane="pane-zero-results">Zero results</button>
-            <button type="button" class="console-sidebar-item" data-pane="pane-errors">Errors<span class="nav-badge" id="nav-badge-erreurs" hidden></span></button>
+            <button type="button" class="console-sidebar-item" data-pane="pane-recherches">Searches<span class="nav-badge" id="nav-badge-erreurs" hidden></span></button>
             <button type="button" class="console-sidebar-item" data-pane="pane-category-views">Most-viewed products</button>
             <button type="button" class="console-sidebar-item" data-pane="pane-related-products">Related products</button>
             <button type="button" class="console-sidebar-item" data-pane="pane-segmentation">Segmentation</button>
@@ -270,38 +268,45 @@
           
           </div>
 
-          <div id="pane-top-queries" class="console-pane" hidden>
-            <h2 class="console-pane-title">Popular searches</h2>
-            <div class="console-panel">
-              <div class="table-scroll"><table class="console-table" id="top-queries-table">
-                <thead><tr><th>Query</th><th>Count</th><th>Results (avg.)</th></tr></thead>
-                <tbody></tbody>
-              </table></div>
-              <p class="console-empty" id="top-queries-empty" hidden>No searches in this period.</p>
-            </div>
-          </div>
+          <div id="pane-recherches" class="console-pane" hidden>
+            <h2 class="console-pane-title">Searches</h2>
 
-          <div id="pane-zero-results" class="console-pane" hidden>
-            <h2 class="console-pane-title">Zero-result searches</h2>
-            <div class="console-panel console-panel-warn">
-              <p class="console-panel-note">What your customers search for and never find — potentially missed sales. Each row is a candidate for a synonym or a rule to add.</p>
-              <div class="table-scroll"><table class="console-table" id="zero-results-table">
-                <thead><tr><th>Query</th><th># of times</th></tr></thead>
-                <tbody></tbody>
-              </table></div>
-              <p class="console-empty" id="zero-results-empty" hidden>No zero-result searches in this period — good sign.</p>
+            <div class="console-tabs" role="tablist" aria-label="Sections of Searches">
+              <button type="button" role="tab" id="obs-tab-populaires" aria-selected="true" aria-controls="obs-tabpanel-populaires" class="console-tab console-tab-active">Popular</button>
+              <button type="button" role="tab" id="obs-tab-sans-resultat" aria-selected="false" aria-controls="obs-tabpanel-sans-resultat" class="console-tab" tabindex="-1">Zero results</button>
+              <button type="button" role="tab" id="obs-tab-erreurs" aria-selected="false" aria-controls="obs-tabpanel-erreurs" class="console-tab" tabindex="-1">Errors<span class="nav-badge" id="nav-badge-erreurs-onglet" hidden></span></button>
             </div>
-          </div>
 
-          <div id="pane-errors" class="console-pane" hidden>
-            <h2 class="console-pane-title">Recent errors</h2>
-            <div class="console-panel">
-              <div class="err-bilan" id="err-bilan" hidden></div>
-              <div class="table-scroll"><table class="console-table" id="errors-table">
-                <thead><tr><th>What happened</th><th>When</th></tr></thead>
-                <tbody></tbody>
-              </table></div>
-              <p class="console-empty" id="errors-empty" hidden>No errors in this period.</p>
+            <div role="tabpanel" id="obs-tabpanel-populaires" aria-labelledby="obs-tab-populaires">
+              <div class="console-panel" style="margin-top:14px;">
+                <div class="table-scroll"><table class="console-table" id="top-queries-table">
+                  <thead><tr><th>Query</th><th>Count</th><th>Results (avg.)</th></tr></thead>
+                  <tbody></tbody>
+                </table></div>
+                <p class="console-empty" id="top-queries-empty" hidden>No searches in this period.</p>
+              </div>
+            </div>
+
+            <div role="tabpanel" id="obs-tabpanel-sans-resultat" aria-labelledby="obs-tab-sans-resultat" hidden>
+              <div class="console-panel console-panel-warn" style="margin-top:14px;">
+                <p class="console-panel-note">What your customers search for and never find — potentially missed sales. Each row is a candidate for a synonym or a rule to add.</p>
+                <div class="table-scroll"><table class="console-table" id="zero-results-table">
+                  <thead><tr><th>Query</th><th># of times</th></tr></thead>
+                  <tbody></tbody>
+                </table></div>
+                <p class="console-empty" id="zero-results-empty" hidden>No zero-result searches in this period — good sign.</p>
+              </div>
+            </div>
+
+            <div role="tabpanel" id="obs-tabpanel-erreurs" aria-labelledby="obs-tab-erreurs" hidden>
+              <div class="console-panel" style="margin-top:14px;">
+                <div class="err-bilan" id="err-bilan" hidden></div>
+                <div class="table-scroll"><table class="console-table" id="errors-table">
+                  <thead><tr><th>What happened</th><th>When</th></tr></thead>
+                  <tbody></tbody>
+                </table></div>
+                <p class="console-empty" id="errors-empty" hidden>No errors in this period.</p>
+              </div>
             </div>
           </div>
 
