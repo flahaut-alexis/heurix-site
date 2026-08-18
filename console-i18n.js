@@ -266,7 +266,7 @@
     "Priorité de catégorie enregistrée.": "Category priority saved.",
     "Comment ça marche": "How it works",
     "Produits les plus vus": "Most viewed products",
-    "Gestion des règles": "Rule management",
+
     "Classement &amp; merchandising": "Ranking & merchandising",
     "Classement & merchandising": "Ranking & merchandising",
     "Configurer la recherche": "Configure search",

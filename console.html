@@ -226,14 +226,16 @@
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="console-sidebar-chevron"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
           <div class="console-sidebar-items" data-section-items="observer" hidden>
-            <div class="console-sidebar-sublabel">Search</div>
+            <!-- Correctif (18 aout 2026, brief §3.1) : sous-labels
+                 SEARCH/RANKING/AUDIENCE retires -- "decoupent selon une
+                 frontiere technique invisible pour l'utilisateur". La
+                 vraie fusion en onglets (Recherches, Produits) est un
+                 chantier separe, plus substantiel -- signale a part. -->
             <button type="button" class="console-sidebar-item" data-pane="pane-top-queries">Recherches populaires</button>
             <button type="button" class="console-sidebar-item" data-pane="pane-zero-results">Sans résultat</button>
             <button type="button" class="console-sidebar-item" data-pane="pane-errors">Erreurs<span class="nav-badge" id="nav-badge-erreurs" hidden></span></button>
-            <div class="console-sidebar-sublabel">Ranking</div>
             <button type="button" class="console-sidebar-item" data-pane="pane-category-views">Produits les plus vus</button>
             <button type="button" class="console-sidebar-item" data-pane="pane-related-products">Produits associés</button>
-            <div class="console-sidebar-sublabel">Audience</div>
             <button type="button" class="console-sidebar-item" data-pane="pane-segmentation">Segmentation</button>
           </div>
         </div>
@@ -245,9 +247,16 @@
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="console-sidebar-chevron"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
           <div class="console-sidebar-items" data-section-items="optimiser" hidden>
-            <div class="console-sidebar-sublabel">Search</div>
-            <button type="button" class="console-sidebar-item" data-pane="pane-search-overrides">Gestion des règles</button>
-            <div class="console-sidebar-sublabel">Ranking</div>
+            <!-- Correctif (18 aout 2026, brief §3.1) : renommage "un nom,
+                 trois endroits" -- menu, h1 et tous les renvois
+                 identiques au caractere pres. Le renommage Merchandising
+                 -> "Mise en avant sur categorie" volontairement pas
+                 traite ici -- probablement a faire avec le vrai chantier
+                 merchandising dedie, pas isolement. Vocabulaire du
+                 moteur pas encore une entree separee -- vit aujourd'hui
+                 comme sous-onglet a l'interieur de Search, tension
+                 signalee separement plutot que tranchee unilateralement. -->
+            <button type="button" class="console-sidebar-item" data-pane="pane-search-overrides">Mise en avant sur recherche</button>
             <button type="button" class="console-sidebar-item" data-pane="pane-browse">Merchandising</button>
           </div>
         </div>
@@ -449,7 +458,7 @@
           </div>
 
           <div id="pane-search-overrides" class="console-pane" hidden>
-            <h2 class="console-pane-title">Gestion des règles</h2>
+            <h2 class="console-pane-title">Mise en avant sur recherche</h2>
 
             <div id="so-content" hidden>
               <!-- Correctif (18 aout 2026, retour Alexis apres captures reelles
