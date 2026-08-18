@@ -569,6 +569,18 @@
               <div class="console-panel">
                 <div class="so-facets" id="so-facets" hidden></div>
                 <p class="so-facet-warn" id="so-facet-warn" hidden>Filtre actif : les flèches sont désactivées. Elles figent les positions de la liste <strong>affichée</strong> — sur une liste filtrée, les règles produites n'auraient plus de sens une fois le filtre retiré. L'épinglage, lui, reste possible.</p>
+                <!-- Correctif (18 aout 2026, brief §"Etat initial, aucune
+                     recherche saisie -- ecran d'amorce") : remplace la
+                     vue alphabetique du catalogue complet des que
+                     q === "" (pas seulement au tout premier
+                     chargement). Alimente par les deux vrais endpoints
+                     analytics deja existants et deployes
+                     (/v1/analytics/top-queries, /v1/analytics/zero-results,
+                     verifies dans heurix-engine avant de construire) --
+                     "le chainon manquant entre observation et action",
+                     brief. Contenu construit dynamiquement par JS, voir
+                     soRafraichirAmorce. -->
+                <div class="so-preview-amorce" id="so-preview-amorce" hidden></div>
                 <p class="so-grid-caption" id="so-preview-caption"></p>
                 <div class="so-grid" id="so-preview-grid"></div>
                 <div class="console-empty" id="so-preview-empty" hidden></div>

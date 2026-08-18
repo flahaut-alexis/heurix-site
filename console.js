@@ -1967,17 +1967,57 @@
     });
   }
 
+  // Correctif (18 aout 2026, brief §"Etat initial, aucune recherche
+  // saisie -- ecran d'amorce") : "le chainon manquant entre observation
+  // et action". Deux vrais endpoints deja existants et deployes,
+  // charges en parallele -- pas de nouveau code backend necessaire.
+  function soRafraichirAmorce(key) {
+    var conteneur = document.getElementById("so-preview-amorce");
+    if (!conteneur || !session.soCurrentCatalog) return;
+    var catalog = encodeURIComponent(session.soCurrentCatalog);
+    Promise.all([
+      apiFetch("/v1/analytics/top-queries?catalog=" + catalog + "&limit=8", key).catch(function () { return { queries: [] }; }),
+      apiFetch("/v1/analytics/zero-results?catalog=" + catalog + "&limit=8", key).catch(function () { return { queries: [] }; }),
+    ]).then(function (resultats) {
+      var frequentes = resultats[0].queries || [];
+      var sansResultat = resultats[1].queries || [];
+      if (!frequentes.length && !sansResultat.length) { conteneur.hidden = true; return; }
+      conteneur.hidden = false;
+      function bloc(titre, icone, liste) {
+        if (!liste.length) return "";
+        return "<div class='so-amorce-bloc'>" +
+          "<span class='so-amorce-titre'>" + icone + " " + titre + "</span>" +
+          "<div class='so-amorce-chips'>" +
+            liste.map(function (r) {
+              return "<button type='button' class='so-amorce-chip' data-so-amorce-query='" + esc(r.query) + "'>" + esc(r.query) + "</button>";
+            }).join("") +
+          "</div>" +
+        "</div>";
+      }
+      conteneur.innerHTML =
+        "<p class='so-amorce-titre-principal'>" + T("Que tapent vos visiteurs ?") + "</p>" +
+        bloc(T("Recherches fréquentes"), "&#128200;", frequentes) +
+        bloc(T("Sans résultat"), "&#9888;", sansResultat);
+    }).catch(function () { conteneur.hidden = true; });
+  }
+
   function refreshSoPreview(key) {
     var champ = document.getElementById("so-preview-query");
     var vide = document.getElementById("so-preview-empty");
     var grille = document.getElementById("so-preview-grid");
     var legende = document.getElementById("so-preview-caption");
+    var amorce = document.getElementById("so-preview-amorce");
     if (!champ || !session.soCurrentCatalog) return;
 
     var q = champ.value.trim();
-    // Requete vide = vue du catalogue. Le moteur accepte q="" (mode
-    // parcours) et renvoie tout ; on trie alors par nom, ce qui donne une
-    // vue stable et lisible pour se reperer avant de tester quoi que ce soit.
+    if (!q) {
+      if (grille) grille.innerHTML = "";
+      if (legende) legende.textContent = "";
+      if (vide) vide.hidden = true;
+      soRafraichirAmorce(key);
+      return;
+    }
+    if (amorce) amorce.hidden = true;
     var champLimite = document.getElementById("so-preview-limit");
     var limite = champLimite ? parseInt(champLimite.value, 10) : 12;
     var horsStock = document.getElementById("so-in-stock");
@@ -3291,6 +3331,22 @@
       soReglagesPanel.hidden = true;
       soReglagesBtn.setAttribute("aria-expanded", "false");
       refreshSoPreview(key);
+    });
+
+    // Correctif (18 aout 2026, brief §"Etat initial, aucune recherche
+    // saisie -- ecran d'amorce") : clic sur une chip remplit le champ,
+    // exactement le comportement decrit dans le brief ("elles
+    // remplissent le champ au clic").
+    var soAmorceConteneur = document.getElementById("so-preview-amorce");
+    if (soAmorceConteneur) soAmorceConteneur.addEventListener("click", function (e) {
+      var chip = e.target.closest("[data-so-amorce-query]");
+      if (!chip) return;
+      var champ = document.getElementById("so-preview-query");
+      if (!champ) return;
+      champ.value = chip.getAttribute("data-so-amorce-query");
+      refreshSoPreview(key);
+      soRafraichirColonneContextuelle(key);
+      champ.focus();
     });
 
     // Correctif Lot 3 (audit UX console, 18 aout 2026) : onglet "Regles

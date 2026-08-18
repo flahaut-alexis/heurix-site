@@ -230,6 +230,8 @@
     "En stock uniquement": "In stock only",
     "Créer": "Create",
     "Modifier": "Edit",
+    "Que tapent vos visiteurs ?": "What are your visitors typing?",
+    "Recherches fréquentes": "Frequent searches",
     "Conflit de position — cliquer pour en savoir plus": "Position conflict — click for details",
     "Supprimer {0} règle(s) ? Cette action est immédiate et ne passe pas par le brouillon.": "Delete {0} rule(s)? This action is immediate and does not go through the draft.",
     "Sélectionner cette règle": "Select this rule",
