@@ -500,23 +500,43 @@
                   <p class="console-panel-note" style="margin:0;">Tapez une requête pour voir le classement réel, et <strong>pourquoi</strong> chaque produit sort. Les flèches déplacent un produit d'une place, l'épingle le met en tête.</p>
                   <p class="console-panel-note" style="margin:8px 0 0;">À savoir : déplacer un produit fige aussi les positions au-dessus de lui — plusieurs règles apparaissent donc d'un seul clic, c'est normal. Rien n'est enregistré avant « Appliquer ».</p>
                 </div>
-                <div class="console-field" style="max-width:170px;">
-                  <label for="so-preview-limit">Produits affichés</label>
-                  <select id="so-preview-limit">
-                    <option value="12">12</option>
-                    <option value="24">24</option>
-                    <option value="48">48</option>
-                    <option value="96">96</option>
-                  </select>
+                <!-- Correctif (18 aout 2026, brief §"Reglages d'apercu --
+                     popover") : les reglages, jusqu'ici toujours
+                     visibles au-dessus de la grille, passent derriere
+                     un bouton et un popover -- message explicatif en
+                     premiere ligne ("ne changent que cet ecran"), pour
+                     eviter la confusion frequente avec un reglage cote
+                     visiteurs. Nouveau reglage "Afficher les visuels" :
+                     le champ image/image_url existe deja au niveau du
+                     modele de donnees (verifie dans heurix-engine),
+                     jamais affiche cote frontend jusqu'ici. -->
+                <div class="so-apercu-reglages-wrap">
+                  <button type="button" class="btn btn-ghost so-apercu-reglages-btn" id="so-apercu-reglages-btn" aria-expanded="false" aria-controls="so-apercu-reglages-panel">&#9881; Affichage de l'aperçu</button>
+                  <div class="so-apercu-reglages-panel" id="so-apercu-reglages-panel" hidden>
+                    <p class="console-panel-note" style="margin:0 0 10px;">Ces réglages ne changent que cet écran. Ils n'affectent pas ce que voient vos visiteurs.</p>
+                    <div class="console-field" style="max-width:170px;">
+                      <label for="so-preview-limit">Produits affichés</label>
+                      <select id="so-preview-limit">
+                        <option value="12">12</option>
+                        <option value="24">24</option>
+                        <option value="48">48</option>
+                        <option value="96">96</option>
+                      </select>
+                    </div>
+                    <label class="br-stock-toggle" for="so-in-stock">
+                      <input type="checkbox" id="so-in-stock">
+                      <span>Masquer les produits en rupture</span>
+                    </label>
+                    <label class="br-stock-toggle" for="so-grouper">
+                      <input type="checkbox" id="so-grouper">
+                      <span>Regrouper par famille</span>
+                    </label>
+                    <label class="br-stock-toggle" for="so-visuels">
+                      <input type="checkbox" id="so-visuels">
+                      <span>Afficher les visuels</span>
+                    </label>
+                  </div>
                 </div>
-                <label class="br-stock-toggle" for="so-in-stock">
-                  <input type="checkbox" id="so-in-stock">
-                  <span>Masquer les produits en rupture</span>
-                </label>
-                <label class="br-stock-toggle" for="so-grouper">
-                  <input type="checkbox" id="so-grouper">
-                  <span>Regrouper par famille</span>
-                </label>
                 <div class="so-tuto" id="so-tuto" hidden>
                   <button type="button" class="so-tuto-close" aria-label="Fermer">&times;</button>
                   <p class="so-tuto-titre">Comment réordonner deux produits</p>

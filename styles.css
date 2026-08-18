@@ -3239,6 +3239,18 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 .so-apercu-titre-aide h2{ margin:0; }
 .so-apercu-rail-gauche{ margin-top:20px; padding-top:16px; border-top:1px solid var(--line); }
 .so-apercu-rail-gauche h2{ font-size:15px; }
+
+/* Correctif (18 aout 2026, brief §"Reglages d'apercu -- popover") :
+   bouton + panneau, meme pattern toggle que so-aide-panel mais style
+   distinct (bordure pleine plutot que fond uni, pour signaler des vrais
+   controles interactifs et pas seulement du texte). */
+.so-apercu-reglages-wrap{ position:relative; display:inline-block; margin-bottom:14px; }
+.so-apercu-reglages-btn{ font-size:13px; }
+.so-apercu-reglages-panel{
+  position:absolute; top:calc(100% + 6px); left:0; z-index:15; width:260px;
+  background:#fff; border:1px solid var(--line); border-radius:12px;
+  padding:14px 16px; box-shadow:0 8px 24px -8px rgba(18,20,43,0.18);
+}
 /* La ligne teintee de l apercu prend la meme teinte ambre quand elle vient
    d une regle SIMULEE, pour rester coherent avec le bandeau. */
 .so-row-simulated{ background:#FFFBF3; }
@@ -3277,6 +3289,10 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
   display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;
 }
 .so-card:has(.so-card-rank) .so-card-name{ padding-right:34px; }
+.so-card-visuel{
+  width:100%; aspect-ratio:1; object-fit:contain; background:var(--bg-soft);
+  border-radius:8px; margin-bottom:8px;
+}
 .so-card-ref{ font-family:IBM Plex Mono, monospace; font-size:11px; color:var(--ink-muted); margin-bottom:8px; }
 .so-card-name mark, .so-card-ref mark{ background:var(--blue-tint); color:var(--blue-deep); font-weight:700; padding:1px 3px; border-radius:3px; }
 .so-card-foot{ margin-top:auto; display:flex; align-items:baseline; justify-content:space-between; gap:8px; }

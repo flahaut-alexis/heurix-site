@@ -1999,6 +1999,11 @@
     var enFamilles = !!(grouper && grouper.checked);
     if (enFamilles) corpsRequete.group_by = "auto";
     if (session.soDraft) corpsRequete.simulate_overrides = session.soDraft;
+    // Correctif (18 aout 2026, brief §"Reglages d'apercu") : meme
+    // pattern que so-grouper -- lu directement depuis le DOM au moment
+    // du rendu, pas d'etat separe.
+    var visuelsBtn = document.getElementById("so-visuels");
+    var afficherVisuels = !!(visuelsBtn && visuelsBtn.checked);
 
     apiFetch("/v1/index/" + encodeURIComponent(session.soCurrentCatalog) + "/search", key,
              { method: "POST", body: corpsRequete })
@@ -2135,9 +2140,17 @@
           // Correctif Lot 2 : data-name aussi sur la carte, lue par le
           // glisser-depose (wireSoDragDrop) qui n'a pas de bouton
           // individuel a interroger.
+          // Correctif (18 aout 2026, brief §"Reglages d'apercu") :
+          // visuel optionnel -- p.image ou p.image_url selon le champ
+          // reellement indexe (verifie dans heurix-engine, les deux
+          // noms sont reconnus). Absent du produit -> pas de visuel,
+          // meme si le reglage est actif.
+          var imgSrc = p.image || p.image_url || "";
+          var visuel = (afficherVisuels && imgSrc)
+            ? "<img class='so-card-visuel' src='" + esc(imgSrc) + "' alt='' loading='lazy'>" : "";
           return "<div class='" + classes + "'" + " draggable='true' data-pid='" + pid + "' data-name='" + esc(p.name || "") + "'" + ">" +
             (q ? "<span class='so-card-rank'>" + (i + 1) + "</span>" : "") +
-            badge +
+            badge + visuel +
             "<div class='so-card-name'>" + surlignerTexte(p.name || p.id, h.highlights && h.highlights.name) + "</div>" +
             "<div class='so-card-ref'>" + surlignerTexte(p.ref || p.id, h.highlights && h.highlights.ref) + "</div>" +
             "<div class='so-card-foot'>" + prix + stock + "</div>" +
@@ -3257,6 +3270,27 @@
       var ouvert = !soApercuAidePanel.hidden;
       soApercuAidePanel.hidden = ouvert;
       soApercuAideBtn.setAttribute("aria-expanded", ouvert ? "false" : "true");
+    });
+
+    // Correctif (18 aout 2026, brief §"Reglages d'apercu") : meme
+    // pattern toggle. Rafraichit aussi l'apercu a la fermeture -- les
+    // reglages a l'interieur (limite, rupture, familles, visuels)
+    // n'ont d'effet qu'une fois le panneau referme, evite un
+    // rafraichissement par reglage individuel.
+    var soReglagesBtn = document.getElementById("so-apercu-reglages-btn");
+    var soReglagesPanel = document.getElementById("so-apercu-reglages-panel");
+    if (soReglagesBtn && soReglagesPanel) soReglagesBtn.addEventListener("click", function () {
+      var ouvert = !soReglagesPanel.hidden;
+      soReglagesPanel.hidden = ouvert;
+      soReglagesBtn.setAttribute("aria-expanded", ouvert ? "false" : "true");
+      if (ouvert) refreshSoPreview(key);
+    });
+    document.addEventListener("click", function (e) {
+      if (!soReglagesPanel || soReglagesPanel.hidden) return;
+      if (soReglagesPanel.contains(e.target) || e.target === soReglagesBtn) return;
+      soReglagesPanel.hidden = true;
+      soReglagesBtn.setAttribute("aria-expanded", "false");
+      refreshSoPreview(key);
     });
 
     // Correctif Lot 3 (audit UX console, 18 aout 2026) : onglet "Regles
