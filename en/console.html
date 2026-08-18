@@ -312,13 +312,9 @@
 
           <div id="pane-search-overrides" class="console-pane" hidden>
             <h2 class="console-pane-title">Rule management</h2>
-            <div class="console-panel">
-              <p class="console-panel-note" style="margin:0 0 14px;">Pin or bury a product when a search contains a specific word (e.g. "promo") — independent from Browse &amp; Discovery, which ranks <strong>categories</strong>, not search queries. <a href="../docs.html#ep-search-overrides">Full documentation</a>.</p>
-
-            </div>
 
             <div id="so-content" hidden>
-              <!-- Correctif Lot 3 -- parite EN avec console.html. -->
+              <!-- Correctif -- parite EN avec console.html. -->
               <div class="console-tabs" role="tablist" aria-label="Sections of Highlight on search">
                 <button type="button" role="tab" id="so-tab-apercu" aria-selected="true" aria-controls="so-tabpanel-apercu" class="console-tab console-tab-active">Preview &amp; settings</button>
                 <button type="button" role="tab" id="so-tab-regles" aria-selected="false" aria-controls="so-tabpanel-regles" class="console-tab" tabindex="-1">Catalog rules <span class="console-tab-count" id="so-tab-regles-count" hidden></span></button>
@@ -326,13 +322,8 @@
               </div>
 
               <div role="tabpanel" id="so-tabpanel-apercu" aria-labelledby="so-tab-apercu">
-              <!-- Correctif Lot 3 -- parite EN avec console.html. -->
-              <div class="so-apercu-cols">
-              <div class="so-apercu-col-principale">
-              <div class="console-panel">
-                <h2>Results preview</h2>
-                <p class="console-panel-note">Type a query to see the real ranking, and <strong>why</strong> each product shows up. The arrows move a product one spot, the pin puts it at the top.</p>
-                <p class="console-panel-note" style="margin-top:-8px;">Good to know: moving a product also locks the positions above it — several rules will appear from a single click, that's normal. Nothing is saved before "Apply."</p>
+
+              <div class="so-apercu-searchbar-header">
                 <div class="so-searchbar">
                   <svg class="so-searchbar-icon" width="20" height="20" viewBox="0 0 64 64" fill="none" aria-hidden="true">
                     <g stroke="currentColor" stroke-linecap="round">
@@ -342,7 +333,19 @@
                     </g>
                   </svg>
                   <input type="text" id="so-preview-query" placeholder="Type a query the way a visitor would…" aria-label="Query to test">
+                  <button type="button" class="so-aide-btn" id="so-aide-btn" aria-expanded="false" aria-controls="so-aide-panel" aria-label="Help on this page">?</button>
                 </div>
+                <div class="so-aide-panel" id="so-aide-panel" hidden>
+                  <p class="console-panel-note" style="margin:0;">Pin or bury a product when a search contains a specific word (e.g. "promo") — independent from Browse &amp; Discovery, which ranks <strong>categories</strong>, not search queries. <a href="../docs.html#ep-search-overrides">Full documentation</a>.</p>
+                </div>
+              </div>
+
+              <div class="so-apercu-cols">
+              <div class="so-apercu-col-principale">
+              <div class="console-panel">
+                <h2>Results preview</h2>
+                <p class="console-panel-note">Type a query to see the real ranking, and <strong>why</strong> each product shows up. The arrows move a product one spot, the pin puts it at the top.</p>
+                <p class="console-panel-note" style="margin-top:-8px;">Good to know: moving a product also locks the positions above it — several rules will appear from a single click, that's normal. Nothing is saved before "Apply."</p>
                 <div class="console-field" style="max-width:170px;">
                   <label for="so-preview-limit">Products shown</label>
                   <select id="so-preview-limit">
@@ -360,9 +363,6 @@
                   <input type="checkbox" id="so-grouper">
                   <span>Group by family</span>
                 </label>
-                <div class="console-field-row">
-                  
-                </div>
                 <div class="so-tuto" id="so-tuto" hidden>
                   <button type="button" class="so-tuto-close" aria-label="Close">&times;</button>
                   <p class="so-tuto-titre">How to reorder two products</p>
@@ -374,12 +374,14 @@
                   </ol>
                   <p class="so-tuto-note"><button type="button" class="so-tuto-lien" data-visite-demarrer>Take the guided tour</button> — or read below.<br>Moving a product also locks the positions above it: several rules therefore appear from a single click. Nothing is saved until you click Apply.</p>
                 </div>
+              </div>
+              </div>
+              <!-- so-apercu-col-principale closes here. -->
+
+              <div class="so-apercu-col-resultats">
+              <div class="console-panel">
                 <div class="so-facets" id="so-facets" hidden></div>
                 <p class="so-facet-warn" id="so-facet-warn" hidden>Active filter: the arrows are disabled. They lock the positions of the <strong>displayed</strong> list — on a filtered list, the resulting rules would no longer make sense once the filter is removed. Pinning, however, remains possible.</p>
-                <!-- Correctif Lot 1 : compte de resultats au-dessus de la
-                     grille, pas en dessous. Correctif Lot 2 : barre
-                     collante, texte dynamique, "Voir le detail" + "Tout
-                     annuler" -- parite avec console.html (FR). -->
                 <p class="so-grid-caption" id="so-preview-caption"></p>
                 <div class="so-grid" id="so-preview-grid"></div>
                 <p class="console-empty" id="so-preview-empty" hidden>No results for this query.</p>
@@ -394,20 +396,22 @@
                 </div>
               </div>
               </div>
-              <!-- so-apercu-col-principale closes here. -->
+              <!-- so-apercu-col-resultats closes here. -->
 
-              <div class="so-apercu-col-contextuelle">
+              </div>
+              <!-- so-apercu-cols closes here -- now only two columns
+                   (settings, results). The contextual rail moves below,
+                   full width. -->
+
+              <div class="so-apercu-rail-bas">
               <div class="console-panel">
                 <h2>Rules on this search</h2>
                 <p class="console-panel-note">Quick view, without leaving the preview. For the full list and bulk management, see the <strong>Catalog rules</strong> tab.</p>
-                <!-- Correctif -- parite EN avec console.html. -->
                 <div id="so-liste-contextuelle" class="so-liste-contextuelle"></div>
                 <p class="console-empty" id="so-empty-contextuel" hidden>No rule on this search.</p>
               </div>
               </div>
-              <!-- so-apercu-col-contextuelle closes here. -->
-              </div>
-              <!-- so-apercu-cols closes here. -->
+              <!-- so-apercu-rail-bas closes here. -->
 
               </div>
               <!-- so-tabpanel-apercu closes here -- corrected (see FR

@@ -3190,12 +3190,39 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
   display:grid; grid-template-columns:minmax(0, 1fr) 340px; gap:20px;
   align-items:start;
 }
-/* Correctif (18 aout 2026, diagnostic Claude en Chrome) : 900px etait
-   trop bas -- mesure a scrollWidth 1101 sur un viewport de 1054px (panneau
-   lateral navigateur ouvert). 900px -> 1200px, seuil demande
-   explicitement par Alexis. */
-@media (max-width:1200px){
+/* Correctif (18 aout 2026, retour Alexis apres captures reelles) :
+   restructuration complete de l'onglet Apercu -- searchbar pleine
+   largeur en tete, colonnes reglages/resultats asymetriques (reglages
+   etroite et fixe, resultats prend tout le reste), rail contextuel sorti
+   en pleine largeur sous tout (ne comprime plus jamais la grille). */
+.so-apercu-searchbar-header{ margin-bottom:18px; }
+.so-apercu-searchbar-header .so-searchbar{ margin-bottom:0; }
+.so-aide-btn{
+  flex:0 0 auto; width:32px; height:32px; border-radius:100px;
+  border:1px solid var(--line); background:var(--bg-soft);
+  color:var(--ink-muted); font-weight:800; font-size:14px;
+  cursor:pointer; display:flex; align-items:center; justify-content:center;
+}
+.so-aide-btn:hover, .so-aide-btn[aria-expanded="true"]{
+  background:var(--blue-tint); color:var(--blue-deep); border-color:var(--blue);
+}
+.so-aide-panel{
+  margin-top:10px; padding:14px 18px; background:var(--bg-soft);
+  border:1px solid var(--line); border-radius:12px;
+}
+
+.so-apercu-cols{
+  display:grid; grid-template-columns:300px minmax(0, 1fr); gap:20px;
+  align-items:start;
+}
+.so-apercu-col-principale{ min-width:0; }
+@media (max-width:900px){
   .so-apercu-cols{ grid-template-columns:1fr; }
+}
+
+.so-apercu-rail-bas{ margin-top:20px; }
+.so-apercu-rail-bas .so-liste-contextuelle{
+  display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:8px;
 }
 /* La ligne teintee de l apercu prend la meme teinte ambre quand elle vient
    d une regle SIMULEE, pour rester coherent avec le bandeau. */

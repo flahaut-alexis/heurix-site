@@ -450,18 +450,20 @@
 
           <div id="pane-search-overrides" class="console-pane" hidden>
             <h2 class="console-pane-title">Gestion des règles</h2>
-            <div class="console-panel">
-              <p class="console-panel-note" style="margin:0 0 14px;">Épinglez ou reléguez un produit quand une recherche contient un mot précis (ex. "promo") — indépendant de Browse &amp; Discovery, qui classe des <strong>catégories</strong>, pas des requêtes de recherche. <a href="docs.html#ep-search-overrides">Documentation complète</a>.</p>
-
-            </div>
 
             <div id="so-content" hidden>
-              <!-- Correctif Lot 3 (audit UX console, 17-18 aout 2026) :
-                   structure en onglets (§3.4 du brief -- "Deux onglets et
-                   un bouton"). Cette premiere passe pose uniquement la
-                   structure (boutons + basculement JS), sans encore
-                   deplacer le contenu existant -- brique testable
-                   independamment avant la vraie migration. -->
+              <!-- Correctif (18 aout 2026, retour Alexis apres captures reelles
+                   de la console en production) : restructuration complete de
+                   l'onglet Apercu. Le pavé explicatif qui vivait en en-tete de
+                   la page prenait trop de place sur la searchbar -- deplace
+                   derriere un bouton d'aide. Searchbar pleine largeur,
+                   collante, en tete de l'onglet -- plus dans la colonne
+                   reglages. Reglages et resultats deviennent deux vraies
+                   colonnes distinctes (reglages etroite a gauche, resultats
+                   large a droite, "deux colonnes visibles" demande
+                   explicitement). Rail "Regles sur cette recherche" sort de
+                   so-apercu-cols, passe sous tout en pleine largeur -- ne
+                   comprime plus jamais la grille de resultats. -->
               <div class="console-tabs" role="tablist" aria-label="Sections de Mise en avant sur recherche">
                 <button type="button" role="tab" id="so-tab-apercu" aria-selected="true" aria-controls="so-tabpanel-apercu" class="console-tab console-tab-active">Aperçu &amp; réglages</button>
                 <button type="button" role="tab" id="so-tab-regles" aria-selected="false" aria-controls="so-tabpanel-regles" class="console-tab" tabindex="-1">Règles du catalogue <span class="console-tab-count" id="so-tab-regles-count" hidden></span></button>
@@ -469,17 +471,8 @@
               </div>
 
               <div role="tabpanel" id="so-tabpanel-apercu" aria-labelledby="so-tab-apercu">
-              <!-- Correctif Lot 3 (audit UX console, 18 aout 2026) : colonne
-                   contextuelle (§3.4 du brief -- "les regles de la
-                   recherche en cours restent visibles dans l'onglet
-                   Apercu, en colonne de droite"). so-apercu-cols porte le
-                   layout deux colonnes, empile sur mobile (voir CSS). -->
-              <div class="so-apercu-cols">
-              <div class="so-apercu-col-principale">
-              <div class="console-panel">
-                <h2>Aperçu des résultats</h2>
-                <p class="console-panel-note">Tapez une requête pour voir le classement réel, et <strong>pourquoi</strong> chaque produit sort. Les flèches déplacent un produit d'une place, l'épingle le met en tête.</p>
-                <p class="console-panel-note" style="margin-top:-8px;">À savoir : déplacer un produit fige aussi les positions au-dessus de lui — plusieurs règles apparaissent donc d'un seul clic, c'est normal. Rien n'est enregistré avant « Appliquer ».</p>
+
+              <div class="so-apercu-searchbar-header">
                 <div class="so-searchbar">
                   <svg class="so-searchbar-icon" width="20" height="20" viewBox="0 0 64 64" fill="none" aria-hidden="true">
                     <g stroke="currentColor" stroke-linecap="round">
@@ -489,7 +482,19 @@
                     </g>
                   </svg>
                   <input type="text" id="so-preview-query" placeholder="Tapez une requête comme le ferait un visiteur…" aria-label="Requête à tester">
+                  <button type="button" class="so-aide-btn" id="so-aide-btn" aria-expanded="false" aria-controls="so-aide-panel" aria-label="Aide sur cette page">?</button>
                 </div>
+                <div class="so-aide-panel" id="so-aide-panel" hidden>
+                  <p class="console-panel-note" style="margin:0;">Épinglez ou reléguez un produit quand une recherche contient un mot précis (ex. "promo") — indépendant de Browse &amp; Discovery, qui classe des <strong>catégories</strong>, pas des requêtes de recherche. <a href="docs.html#ep-search-overrides">Documentation complète</a>.</p>
+                </div>
+              </div>
+
+              <div class="so-apercu-cols">
+              <div class="so-apercu-col-principale">
+              <div class="console-panel">
+                <h2>Aperçu des résultats</h2>
+                <p class="console-panel-note">Tapez une requête pour voir le classement réel, et <strong>pourquoi</strong> chaque produit sort. Les flèches déplacent un produit d'une place, l'épingle le met en tête.</p>
+                <p class="console-panel-note" style="margin-top:-8px;">À savoir : déplacer un produit fige aussi les positions au-dessus de lui — plusieurs règles apparaissent donc d'un seul clic, c'est normal. Rien n'est enregistré avant « Appliquer ».</p>
                 <div class="console-field" style="max-width:170px;">
                   <label for="so-preview-limit">Produits affichés</label>
                   <select id="so-preview-limit">
@@ -507,9 +512,6 @@
                   <input type="checkbox" id="so-grouper">
                   <span>Regrouper par famille</span>
                 </label>
-                <div class="console-field-row">
-                  
-                </div>
                 <div class="so-tuto" id="so-tuto" hidden>
                   <button type="button" class="so-tuto-close" aria-label="Fermer">&times;</button>
                   <p class="so-tuto-titre">Comment réordonner deux produits</p>
@@ -521,30 +523,20 @@
                   </ol>
                   <p class="so-tuto-note"><button type="button" class="so-tuto-lien" data-visite-demarrer>Faire la visite guidée</button> — ou lisez ci-dessous.<br>Déplacer un produit fige aussi les positions au-dessus de lui : plusieurs règles apparaissent donc d'un seul clic. Rien n'est enregistré tant que vous n'avez pas cliqué sur Appliquer.</p>
                 </div>
+              </div>
+              </div>
+              <!-- so-apercu-col-principale ferme ici -- ne contient plus
+                   que titre, explications et reglages ; grille et
+                   resultats vivent desormais dans une vraie colonne
+                   distincte, plus large. -->
+
+              <div class="so-apercu-col-resultats">
+              <div class="console-panel">
                 <div class="so-facets" id="so-facets" hidden></div>
                 <p class="so-facet-warn" id="so-facet-warn" hidden>Filtre actif : les flèches sont désactivées. Elles figent les positions de la liste <strong>affichée</strong> — sur une liste filtrée, les règles produites n'auraient plus de sens une fois le filtre retiré. L'épinglage, lui, reste possible.</p>
-                <!-- Correctif Lot 1 (audit UX console, 17 aout 2026) : le
-                     compte de resultats etait lu apres la grille, jamais
-                     avant -- brief : "au-dessus de la grille, pas en
-                     dessous". Inversion simple de l'ordre, aucune vraie
-                     logique JS a toucher (legende.textContent continue de
-                     cibler le meme id). -->
                 <p class="so-grid-caption" id="so-preview-caption"></p>
                 <div class="so-grid" id="so-preview-grid"></div>
-                <!-- Correctif Lot 2 (audit UX console, 17 aout 2026) : etat zero
-                     resultat actionnable (brief §4.1) -- remplace le simple
-                     texte cul-de-sac par un titre dynamique (inclut la
-                     requete), une explication, et deux vraies issues
-                     ("Creer un synonyme", "Epingler un produit"). Contenu
-                     construit dynamiquement par JS, voir refreshSoPreview. -->
                 <div class="console-empty" id="so-preview-empty" hidden></div>
-                <!-- Correctif Lot 2 (audit UX console, 17 aout 2026) : barre de
-                     brouillon collante, visible des le premier changement.
-                     "Simulation" -> "BROUILLON" (§4.7 -- ce n'est pas une
-                     simulation, c'est un vrai etat en attente de
-                     publication). "Voir le detail" ouvre le recapitulatif
-                     (§4.4). "Abandonner" -> "Tout annuler" + retour
-                     arriere 10s (regle 4, partie 5 du brief). -->
                 <div class="so-simu-bar" id="so-simu-bar" hidden>
                   <span class="so-simu-tag">Brouillon</span>
                   <span id="so-simu-text"></span>
@@ -556,28 +548,25 @@
                 </div>
               </div>
               </div>
-              <!-- so-apercu-col-principale ferme ici. -->
+              <!-- so-apercu-col-resultats ferme ici. -->
 
-              <div class="so-apercu-col-contextuelle">
+              </div>
+              <!-- so-apercu-cols ferme ici -- ne contient plus que deux
+                   colonnes (reglages, resultats). Le rail contextuel
+                   sort ci-dessous, pleine largeur, plutot que de
+                   comprimer la grille de resultats en 1 seule colonne
+                   des que les deux colonnes precedentes sont visibles
+                   (retour Alexis, captures reelles du 18 aout). -->
+
+              <div class="so-apercu-rail-bas">
               <div class="console-panel">
                 <h2>Règles sur cette recherche</h2>
                 <p class="console-panel-note">Vue rapide, sans quitter l'aperçu. Pour la liste complète et la gestion en masse, voir l'onglet <strong>Règles du catalogue</strong>.</p>
-                <!-- Correctif (18 aout 2026, diagnostic Claude en Chrome --
-                     mesures reelles du DOM). Un tableau a 5 colonnes n'a pas
-                     sa place dans un rail de 340px : table-layout:fixed
-                     (deja necessaire ailleurs pour un tout autre probleme
-                     mobile, voir le commentaire du 3 aout sur
-                     .console-table) donne 56px par colonne, le libelle
-                     "DECLENCHEUR" (~75px) deborde et se superpose au
-                     suivant. Remplace par une liste verticale, construite
-                     dynamiquement par JS (voir soRafraichirColonneContextuelle). -->
                 <div id="so-liste-contextuelle" class="so-liste-contextuelle"></div>
                 <p class="console-empty" id="so-empty-contextuel" hidden>Aucune règle sur cette recherche.</p>
               </div>
               </div>
-              <!-- so-apercu-col-contextuelle ferme ici. -->
-              </div>
-              <!-- so-apercu-cols ferme ici. -->
+              <!-- so-apercu-rail-bas ferme ici. -->
 
               </div>
               <!-- so-tabpanel-apercu ferme ici -- corrige (17-18 aout,

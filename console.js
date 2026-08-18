@@ -3184,6 +3184,16 @@
 
     wireConsoleTabs("so", ["apercu", "regles", "vocabulaire"]);
 
+    // Correctif (18 aout 2026, retour Alexis) : bouton d'aide, ouvre/ferme
+    // le pavé explicatif deplace depuis l'en-tete de la page.
+    var soAideBtn = document.getElementById("so-aide-btn");
+    var soAidePanel = document.getElementById("so-aide-panel");
+    if (soAideBtn && soAidePanel) soAideBtn.addEventListener("click", function () {
+      var ouvert = !soAidePanel.hidden;
+      soAidePanel.hidden = ouvert;
+      soAideBtn.setAttribute("aria-expanded", ouvert ? "false" : "true");
+    });
+
     // Correctif Lot 3 (audit UX console, 18 aout 2026) : onglet "Regles
     // du catalogue", barre de controles.
     var soCatRecherche = document.getElementById("so-catalogue-search");
