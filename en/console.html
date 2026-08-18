@@ -403,14 +403,15 @@
                 <p class="console-empty" id="cr-hint">Choose a catalog to manage its synonyms and rules.</p>
               </div>
 
-              <details class="br-attrs">
-                <summary>Add a rule manually — for a product missing from results</summary>
-                <div style="padding-top:12px;">
+              <!-- Correctif Lot 3 -- parite EN avec console.html. -->
+              <button type="button" class="btn btn-ghost" id="so-form-open-btn">Add a rule manually — for a product missing from results</button>
+              <div id="so-form-modal" class="recap-modal" hidden role="dialog" aria-modal="true" aria-labelledby="so-form-title">
+                <div class="recap-modal-backdrop"></div>
+                <div class="recap-modal-box">
                 <h2 id="so-form-title">Add a rule</h2>
                 <form id="so-form" class="catalog-rule-add">
                   <div class="catalog-rule-add-row">
                     <input type="text" placeholder="Trigger query, e.g. promo" id="so-query" required>
-                    <!-- Correctif Lot 3 -- parite EN avec console.html. -->
                     <div class="so-autocomplete" style="position:relative; flex:1;">
                       <input type="text" placeholder="Product name or reference" id="so-product-search" autocomplete="off" required>
                       <input type="hidden" id="so-product-id">
@@ -424,15 +425,15 @@
                     </select>
                     <input type="number" min="1" max="100" placeholder="Position, e.g. 3" id="so-position">
                   </div>
-                  <!-- Correctif Lot 3 -- parite EN avec console.html. -->
                   <p class="so-validation-warn" id="so-position-warn" hidden></p>
                   <p class="so-validation-warn" id="so-stock-warn" hidden></p>
                   <button type="submit" class="catalog-rule-add-btn" id="so-submit-btn">Add rule</button>
                   <button type="button" class="btn btn-ghost" id="so-cancel-edit-btn" hidden style="margin-left:8px;">Cancel edit</button>
                   <span class="catalog-rule-status" id="so-status"></span>
                 </form>
+                <button type="button" class="btn btn-ghost" id="so-form-close-btn" style="margin-top:14px;">Close</button>
+                </div>
               </div>
-              </details>
             </div>
           </div>
 

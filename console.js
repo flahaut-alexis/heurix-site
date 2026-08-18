@@ -1629,6 +1629,21 @@
     // seule fois par wireGlobalCatalog, pour toute la console.
   }
 
+  // Correctif Lot 3 (audit UX console, 17-18 aout 2026) : "Ajout d'un
+  // produit -- modale" (§4.5 du brief). Fonction unique, appelee par tous
+  // les points d'entree du formulaire (bouton principal, Modifier,
+  // Dupliquer, "Epingler un produit" depuis l'etat zero resultat) --
+  // evite de dupliquer la logique d'ouverture a chaque appelant.
+  function ouvrirSoFormModal() {
+    var modal = document.getElementById("so-form-modal");
+    if (modal) modal.hidden = false;
+  }
+
+  function fermerSoFormModal() {
+    var modal = document.getElementById("so-form-modal");
+    if (modal) modal.hidden = true;
+  }
+
   function resetSoForm() {
     soEditingKey = null;
     document.getElementById("so-query").value = "";
@@ -2272,13 +2287,14 @@
   function wireSoEmptyState(key, q) {
     var pinBtn = document.getElementById("so-empty-pin-btn");
     if (pinBtn) pinBtn.addEventListener("click", function () {
+      // Correctif Lot 3 : le formulaire vit desormais dans une modale --
+      // l'ouvrir avant le focus, un champ cache ne peut pas le recevoir.
+      resetSoForm();
+      ouvrirSoFormModal();
       var champQuery = document.getElementById("so-query");
-      // Correctif Lot 3 : cible desormais le vrai champ visible
-      // (so-product-search), pas so-product-id (cache depuis
-      // l'autocompletion produit).
       var champProduit = document.getElementById("so-product-search");
       if (champQuery) champQuery.value = q;
-      if (champProduit) { champProduit.focus(); champProduit.scrollIntoView({ behavior: "smooth", block: "center" }); }
+      if (champProduit) champProduit.focus();
     });
 
     var synBtn = document.getElementById("so-empty-synonym-btn");
@@ -2970,7 +2986,12 @@
     document.getElementById("so-position").addEventListener("input", function () {
       soVerifierPositionReservee(key);
     });
-    document.getElementById("so-cancel-edit-btn").addEventListener("click", resetSoForm);
+    // Correctif Lot 3 : ouverture/fermeture de la modale.
+    var openBtn = document.getElementById("so-form-open-btn");
+    if (openBtn) openBtn.addEventListener("click", function () { resetSoForm(); ouvrirSoFormModal(); });
+    var closeBtn2 = document.getElementById("so-form-close-btn");
+    if (closeBtn2) closeBtn2.addEventListener("click", function () { resetSoForm(); fermerSoFormModal(); });
+    document.getElementById("so-cancel-edit-btn").addEventListener("click", function () { resetSoForm(); fermerSoFormModal(); });
 
     document.getElementById("so-form").addEventListener("submit", function (e) {
       e.preventDefault();
@@ -3035,6 +3056,8 @@
         document.getElementById("so-form-title").textContent = T("Modifier la règle");
         document.getElementById("so-submit-btn").textContent = T("Enregistrer les modifications");
         document.getElementById("so-cancel-edit-btn").hidden = false;
+        // Correctif Lot 3 : le formulaire vit desormais dans une modale.
+        ouvrirSoFormModal();
         document.getElementById("so-query").scrollIntoView({ behavior: "smooth", block: "center" });
         return;
       }
@@ -3047,6 +3070,7 @@
         document.getElementById("so-form-title").textContent = T("Dupliquer une règle — modifiez au moins un champ");
         document.getElementById("so-submit-btn").textContent = T("Créer cette règle");
         document.getElementById("so-cancel-edit-btn").hidden = false;
+        ouvrirSoFormModal();
         document.getElementById("so-query").focus();
         document.getElementById("so-query").select();
         return;
