@@ -3224,6 +3224,13 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 .so-apercu-rail-bas .so-liste-contextuelle{
   display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:8px;
 }
+
+.so-apercu-titre-aide{
+  display:flex; align-items:flex-start; justify-content:space-between; gap:10px;
+}
+.so-apercu-titre-aide h2{ margin:0; }
+.so-apercu-rail-gauche{ margin-top:20px; padding-top:16px; border-top:1px solid var(--line); }
+.so-apercu-rail-gauche h2{ font-size:15px; }
 /* La ligne teintee de l apercu prend la meme teinte ambre quand elle vient
    d une regle SIMULEE, pour rester coherent avec le bandeau. */
 .so-row-simulated{ background:#FFFBF3; }
@@ -3239,7 +3246,7 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
    n'a plus la place -- titres sur 8-12 lignes a 1152/1280px. Le nombre
    de colonnes depend desormais de la largeur reellement disponible. */
 .so-grid{
-  display:grid; grid-template-columns:repeat(auto-fill, minmax(216px, 1fr)); gap:12px;
+  display:grid; grid-template-columns:repeat(auto-fill, minmax(190px, 1fr)); gap:12px;
   margin-top:4px;
 }
 .so-card{

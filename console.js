@@ -3194,6 +3194,18 @@
       soAideBtn.setAttribute("aria-expanded", ouvert ? "false" : "true");
     });
 
+    // Correctif (18 aout 2026, retour Alexis) : second bouton d'aide,
+    // meme pattern toggle, pour les explications de l'apercu (compresse
+    // les deux paragraphes derriere une puce plutot que de les laisser
+    // toujours visibles).
+    var soApercuAideBtn = document.getElementById("so-apercu-aide-btn");
+    var soApercuAidePanel = document.getElementById("so-apercu-aide-panel");
+    if (soApercuAideBtn && soApercuAidePanel) soApercuAideBtn.addEventListener("click", function () {
+      var ouvert = !soApercuAidePanel.hidden;
+      soApercuAidePanel.hidden = ouvert;
+      soApercuAideBtn.setAttribute("aria-expanded", ouvert ? "false" : "true");
+    });
+
     // Correctif Lot 3 (audit UX console, 18 aout 2026) : onglet "Regles
     // du catalogue", barre de controles.
     var soCatRecherche = document.getElementById("so-catalogue-search");

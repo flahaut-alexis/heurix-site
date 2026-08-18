@@ -343,9 +343,14 @@
               <div class="so-apercu-cols">
               <div class="so-apercu-col-principale">
               <div class="console-panel">
-                <h2>Results preview</h2>
-                <p class="console-panel-note">Type a query to see the real ranking, and <strong>why</strong> each product shows up. The arrows move a product one spot, the pin puts it at the top.</p>
-                <p class="console-panel-note" style="margin-top:-8px;">Good to know: moving a product also locks the positions above it — several rules will appear from a single click, that's normal. Nothing is saved before "Apply."</p>
+                <div class="so-apercu-titre-aide">
+                  <h2>Results preview</h2>
+                  <button type="button" class="so-aide-btn" id="so-apercu-aide-btn" aria-expanded="false" aria-controls="so-apercu-aide-panel" aria-label="How to read the preview">?</button>
+                </div>
+                <div class="so-aide-panel" id="so-apercu-aide-panel" hidden>
+                  <p class="console-panel-note" style="margin:0;">Type a query to see the real ranking, and <strong>why</strong> each product shows up. The arrows move a product one spot, the pin puts it at the top.</p>
+                  <p class="console-panel-note" style="margin:8px 0 0;">Good to know: moving a product also locks the positions above it — several rules will appear from a single click, that's normal. Nothing is saved before "Apply."</p>
+                </div>
                 <div class="console-field" style="max-width:170px;">
                   <label for="so-preview-limit">Products shown</label>
                   <select id="so-preview-limit">
@@ -374,6 +379,12 @@
                   </ol>
                   <p class="so-tuto-note"><button type="button" class="so-tuto-lien" data-visite-demarrer>Take the guided tour</button> — or read below.<br>Moving a product also locks the positions above it: several rules therefore appear from a single click. Nothing is saved until you click Apply.</p>
                 </div>
+                <div class="so-apercu-rail-gauche">
+                  <h2>Rules on this search</h2>
+                  <p class="console-panel-note">Quick view, without leaving the preview. For the full list and bulk management, see the <strong>Catalog rules</strong> tab.</p>
+                  <div id="so-liste-contextuelle" class="so-liste-contextuelle"></div>
+                  <p class="console-empty" id="so-empty-contextuel" hidden>No rule on this search.</p>
+                </div>
               </div>
               </div>
               <!-- so-apercu-col-principale closes here. -->
@@ -399,19 +410,7 @@
               <!-- so-apercu-col-resultats closes here. -->
 
               </div>
-              <!-- so-apercu-cols closes here -- now only two columns
-                   (settings, results). The contextual rail moves below,
-                   full width. -->
-
-              <div class="so-apercu-rail-bas">
-              <div class="console-panel">
-                <h2>Rules on this search</h2>
-                <p class="console-panel-note">Quick view, without leaving the preview. For the full list and bulk management, see the <strong>Catalog rules</strong> tab.</p>
-                <div id="so-liste-contextuelle" class="so-liste-contextuelle"></div>
-                <p class="console-empty" id="so-empty-contextuel" hidden>No rule on this search.</p>
-              </div>
-              </div>
-              <!-- so-apercu-rail-bas closes here. -->
+              <!-- so-apercu-cols closes here. -->
 
               </div>
               <!-- so-tabpanel-apercu closes here -- corrected (see FR
