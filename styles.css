@@ -3973,6 +3973,12 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 }
 .so-liste-actions button:hover{ background:var(--blue-tint); }
 
+/* Correctif (18 aout 2026) : regroupement des regles partageant un meme
+   declencheur (correctif 3 du prompt cartes produit) -- separateur fin
+   entre les lignes d'un meme groupe, distinct de l'espacement entre
+   groupes (.so-liste-item + .so-liste-item, deja existant). */
+.so-liste-sep{ border:0; border-top:1px dashed var(--line); margin:8px 0; }
+
 /* Colonne d actions : alignee a droite, boutons en ligne plutot
    qu empiles -- ils apparaissaient les uns sous les autres. */
 .console-table .cell-actions{

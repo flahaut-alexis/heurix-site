@@ -2290,22 +2290,39 @@
       return;
     }
     if (vide) vide.hidden = true;
-    conteneur.innerHTML = liste.map(function (o) {
-      var pin = o.action === "pin";
-      var actionLabel = pin
-        ? "<span class='cell-action cell-action-pin'>&#9679; " + T("Épingler") + "</span>"
-        : "<span class='cell-action cell-action-bury'>&#9679; " + T("Reléguer") + "</span>";
-      var posLabel = pin && o.position
-        ? "<span class='so-liste-pos'>" + T("pos. {0}", o.position) + "</span>" : "";
+    // Correctif (18 aout 2026, correctif 3 du prompt cartes produit --
+    // "trois cartes separees portent toutes le titre 'vis'. Regrouper :
+    // un seul en-tete suivi des trois actions"). Toutes les regles
+    // affichees ici partagent deja le meme declencheur exact (liste deja
+    // filtree en amont par soRafraichirColonneContextuelle) -- un seul
+    // groupe attendu en pratique, mais le regroupement reste ecrit de
+    // facon generique plutot que de supposer cette invariant.
+    var groupes = {};
+    var ordre = [];
+    liste.forEach(function (o) {
+      if (!groupes[o.query]) { groupes[o.query] = []; ordre.push(o.query); }
+      groupes[o.query].push(o);
+    });
+    conteneur.innerHTML = ordre.map(function (query) {
+      var regles = groupes[query];
+      var lignes = regles.map(function (o) {
+        var pin = o.action === "pin";
+        var actionLabel = pin
+          ? "<span class='cell-action cell-action-pin'>&#9679; " + T("Épingler") + "</span>"
+          : "<span class='cell-action cell-action-bury'>&#9679; " + T("Reléguer") + "</span>";
+        var posLabel = pin && o.position
+          ? "<span class='so-liste-pos'>" + T("pos. {0}", o.position) + "</span>" : "";
+        return "<div class='so-liste-chips'>" + actionLabel +
+            "<span class='so-liste-produit'>" + esc(o.product_name || o.product_id) + "</span>" +
+            posLabel +
+          "</div>" +
+          "<div class='so-liste-actions'>" +
+            "<button type='button' class='catalog-rule-remove' data-so-edit='1' data-query='" + esc(o.query) + "' data-product-id='" + esc(o.product_id) + "' data-action='" + esc(o.action) + "' data-position='" + (o.position || "") + "' aria-label='" + T("Modifier") + "' title='" + T("Modifier") + "'>&#9998;</button>" +
+          "</div>";
+      }).join("<hr class='so-liste-sep'>");
       return "<div class='so-liste-item'>" +
-        "<div class='so-liste-trigger' title='" + esc(o.query) + "'>" + esc(o.query) + "</div>" +
-        "<div class='so-liste-chips'>" + actionLabel +
-          "<span class='so-liste-produit'>" + esc(o.product_name || o.product_id) + "</span>" +
-          posLabel +
-        "</div>" +
-        "<div class='so-liste-actions'>" +
-          "<button type='button' class='catalog-rule-remove' data-so-edit='1' data-query='" + esc(o.query) + "' data-product-id='" + esc(o.product_id) + "' data-action='" + esc(o.action) + "' data-position='" + (o.position || "") + "' aria-label='" + T("Modifier") + "' title='" + T("Modifier") + "'>&#9998;</button>" +
-        "</div>" +
+        "<div class='so-liste-trigger' title='" + esc(query) + "'>" + esc(query) + "</div>" +
+        lignes +
       "</div>";
     }).join("");
   }
