@@ -1638,7 +1638,7 @@
     // synchronise avec so-product-id (cache, garde sa semantique existante).
     document.getElementById("so-product-search").value = "";
     document.getElementById("so-action").value = "pin";
-    document.getElementById("so-position").hidden = false;
+    document.getElementById("so-position").disabled = false;
     document.getElementById("so-position").value = "";
     document.getElementById("so-form-title").textContent = T("Ajouter une règle");
     document.getElementById("so-submit-btn").textContent = T("Ajouter la règle");
@@ -1656,7 +1656,7 @@
     // du tableau juste avant de cliquer "Modifier".
     document.getElementById("so-product-search").value = o.productId;
     document.getElementById("so-action").value = o.action;
-    document.getElementById("so-position").hidden = o.action !== "pin";
+    document.getElementById("so-position").disabled = o.action !== "pin";
     document.getElementById("so-position").value = o.position || "";
   }
 
@@ -2319,6 +2319,44 @@
     });
   }
 
+  // Correctif Lot 3 (audit UX console, 17-18 aout 2026) : validation
+  // inline "position deja reservee" (§4.5 du brief -- "La position 4 est
+  // deja reservee a 'Pince a sertir'. Choisissez une autre position, ou
+  // l'ancienne regle sera remplacee."). Reutilise soAvecBrouillon() :
+  // amorce session.soDraft depuis le serveur si pas deja actif, evite de
+  // dupliquer la logique d'amorce deja etablie pour B3/C9.
+  function soVerifierPositionReservee(key) {
+    var champPosition = document.getElementById("so-position");
+    var avertPosition = document.getElementById("so-position-warn");
+    var idCache = document.getElementById("so-product-id");
+    if (!champPosition || !avertPosition) return;
+
+    var q = soRequeteCourante();
+    var pos = parseInt(champPosition.value, 10);
+    var pidActuel = idCache ? idCache.value : "";
+    if (!q || !pos || document.getElementById("so-action").value !== "pin") {
+      avertPosition.hidden = true;
+      return;
+    }
+
+    soAvecBrouillon(key, function () {
+      var conflit = null;
+      for (var i = 0; i < session.soDraft.length; i++) {
+        var r = session.soDraft[i];
+        if (r.query === q && r.action === "pin" && r.position === pos && r.product_id !== pidActuel) {
+          conflit = r;
+          break;
+        }
+      }
+      if (conflit) {
+        avertPosition.textContent = T("La position {0} est déjà réservée à « {1} ». Choisissez une autre position, ou l'ancienne règle sera remplacée.", pos, conflit.product_name || conflit.product_id);
+        avertPosition.hidden = false;
+      } else {
+        avertPosition.hidden = true;
+      }
+    });
+  }
+
   function wireSoProductAutocomplete(key) {
     var champ = document.getElementById("so-product-search");
     var idCache = document.getElementById("so-product-id");
@@ -2344,7 +2382,11 @@
         var prix = (p.price !== undefined && p.price !== null)
           ? Number(p.price).toLocaleString(LOCALE, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €" : "";
         var stock = h.in_stock === false ? "<span class='so-autocomplete-oos'>" + T("Rupture") + "</span>" : T("En stock");
-        return "<button type='button' class='so-autocomplete-item' data-id='" + esc(p.id) + "' data-name='" + esc(p.name || p.id) + "'>" +
+        // Correctif Lot 3 : data-in-stock retenu pour la validation
+        // inline "produit en rupture" (§4.5 du brief), declenchee au
+        // moment de la selection -- reutilise ce qui est deja calcule
+        // ici, pas de second appel reseau.
+        return "<button type='button' class='so-autocomplete-item' data-id='" + esc(p.id) + "' data-name='" + esc(p.name || p.id) + "' data-in-stock='" + (h.in_stock === false ? "0" : "1") + "'>" +
           "<span class='so-autocomplete-name'>" + esc(p.name || p.id) + "</span>" +
           "<span class='so-autocomplete-meta'>" + esc(p.ref || p.id) + (prix ? " · " + prix : "") + " · " + stock + "</span>" +
         "</button>";
@@ -2377,6 +2419,19 @@
       idCache.value = item.getAttribute("data-id");
       champ.value = item.getAttribute("data-name");
       fermerPanneau();
+      // Correctif Lot 3 (§4.5 du brief) : validation inline "produit en
+      // rupture", au moment de la selection -- pas d'attente de la
+      // soumission.
+      var avertStock = document.getElementById("so-stock-warn");
+      if (avertStock) {
+        if (item.getAttribute("data-in-stock") === "0") {
+          avertStock.textContent = T("Ce produit est en rupture : il n'apparaîtra pas si votre boutique masque les ruptures.");
+          avertStock.hidden = false;
+        } else {
+          avertStock.hidden = true;
+        }
+      }
+      soVerifierPositionReservee(key);
     });
 
     document.addEventListener("click", function (e) {
@@ -2905,7 +2960,15 @@
     soFormWired = true;
 
     document.getElementById("so-action").addEventListener("change", function (e) {
-      document.getElementById("so-position").hidden = e.target.value !== "pin";
+      // Correctif Lot 3 (audit UX console, 17-18 aout 2026) : "desactivee",
+      // pas "masquee" -- le brief precise explicitement "jamais de
+      // mention pin uniquement" ni de champ qui disparait, le formulaire
+      // ne doit pas "sauter" quand on change d'action.
+      document.getElementById("so-position").disabled = e.target.value !== "pin";
+      soVerifierPositionReservee(key);
+    });
+    document.getElementById("so-position").addEventListener("input", function () {
+      soVerifierPositionReservee(key);
     });
     document.getElementById("so-cancel-edit-btn").addEventListener("click", resetSoForm);
 

@@ -422,8 +422,11 @@
                       <option value="pin">Pin</option>
                       <option value="bury">Bury</option>
                     </select>
-                    <input type="number" min="1" max="100" placeholder="Position (pin only)" id="so-position">
+                    <input type="number" min="1" max="100" placeholder="Position, e.g. 3" id="so-position">
                   </div>
+                  <!-- Correctif Lot 3 -- parite EN avec console.html. -->
+                  <p class="so-validation-warn" id="so-position-warn" hidden></p>
+                  <p class="so-validation-warn" id="so-stock-warn" hidden></p>
                   <button type="submit" class="catalog-rule-add-btn" id="so-submit-btn">Add rule</button>
                   <button type="button" class="btn btn-ghost" id="so-cancel-edit-btn" hidden style="margin-left:8px;">Cancel edit</button>
                   <span class="catalog-rule-status" id="so-status"></span>

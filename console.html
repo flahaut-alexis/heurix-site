@@ -574,8 +574,12 @@
                       <option value="pin">Épingler en tête</option>
                       <option value="bury">Reléguer en fin de liste</option>
                     </select>
-                    <input type="number" min="1" max="100" placeholder="Position (pin uniquement)" id="so-position">
+                    <input type="number" min="1" max="100" placeholder="Position, ex. 3" id="so-position">
                   </div>
+                  <!-- Correctif Lot 3 (audit UX console, 17-18 aout 2026) :
+                       validations inline (§4.5 du brief). -->
+                  <p class="so-validation-warn" id="so-position-warn" hidden></p>
+                  <p class="so-validation-warn" id="so-stock-warn" hidden></p>
                   <button type="submit" class="catalog-rule-add-btn" id="so-submit-btn">Ajouter la règle</button>
                   <button type="button" class="btn btn-ghost" id="so-cancel-edit-btn" hidden style="margin-left:8px;">Annuler la modification</button>
                   <span class="catalog-rule-status" id="so-status"></span>
