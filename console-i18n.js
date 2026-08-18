@@ -230,6 +230,8 @@
     "En stock uniquement": "In stock only",
     "Créer": "Create",
     "Modifier": "Edit",
+    "Mes catalogues": "My catalogs",
+    "Mon catalogue": "My catalog",
     "Que tapent vos visiteurs ?": "What are your visitors typing?",
     "Recherches fréquentes": "Frequent searches",
     "Conflit de position — cliquer pour en savoir plus": "Position conflict — click for details",

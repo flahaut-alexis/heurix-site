@@ -106,28 +106,38 @@ describe("console.js — puce d'onboarding clé publique", () => {
   });
 });
 
-describe("console.js — sous-label dynamique Catalogues (8 août 2026)", () => {
-  it("apparaît quand des catalogues existent, pour séparer visuellement l'action 'Importer' de la liste à naviguer", async () => {
+// Correctif (18 aout 2026, brief §3.1) : "les huit catalogues sortent de
+// la sidebar" -- sidebar-catalog-sublabel/sidebar-catalog-items retires
+// completement, remplaces par un seul bouton statique "Catalogues" et un
+// vrai selecteur (pills) sur la page pane-catalog-list elle-meme. Les
+// deux tests ci-dessous, obsoletes (l'element qu'ils testaient n'existe
+// plus), remplaces par deux equivalents testant le nouveau selecteur.
+describe("console.js — selecteur de catalogues sur la page (18 aout 2026)", () => {
+  it("le selecteur reste cache avec un seul catalogue -- rien a choisir", async () => {
     const { window, document } = chargerConsole(undefined, { catalogs: [{ catalog: "outillage-demo" }] });
     await connecter(window, document);
 
     await vi.waitFor(() => {
-      expect(document.getElementById("sidebar-catalog-sublabel").hidden).toBe(false);
+      expect(document.getElementById("catalog-list-selector").hidden).toBe(true);
     });
   });
 
-  it("reste caché quand la liste de catalogues est vide -- jamais un titre de section sans rien dessous", async () => {
-    const { window, document } = chargerConsole(undefined, { catalogs: [] });
+  it("le selecteur apparait avec plusieurs catalogues et bascule l'affichage au clic", async () => {
+    const { window, document } = chargerConsole(undefined, { catalogs: [{ catalog: "outillage-demo" }, { catalog: "quincaillerie-demo" }] });
     await connecter(window, document);
 
-    // Laisse le temps a la promesse /v1/index/catalogs de se resoudre,
-    // meme dans le cas vide -- sans quoi le test pourrait passer par
-    // coincidence (etat initial deja hidden, jamais vraiment verifie
-    // apres coup).
     await vi.waitFor(() => {
-      expect(document.getElementById("catalogs-empty").hidden).toBe(false);
+      expect(document.getElementById("catalog-list-selector").hidden).toBe(false);
     });
-    expect(document.getElementById("sidebar-catalog-sublabel").hidden).toBe(true);
+    const pills = document.querySelectorAll("[data-catalog-select]");
+    expect(pills.length).toBe(2);
+    expect(document.querySelector('[data-catalog-card="outillage-demo"]').hidden).toBe(false);
+    expect(document.querySelector('[data-catalog-card="quincaillerie-demo"]').hidden).toBe(true);
+
+    document.querySelector('[data-catalog-select="quincaillerie-demo"]').dispatchEvent(new window.Event("click", { bubbles: true }));
+
+    expect(document.querySelector('[data-catalog-card="outillage-demo"]').hidden).toBe(true);
+    expect(document.querySelector('[data-catalog-card="quincaillerie-demo"]').hidden).toBe(false);
   });
 });
 

@@ -212,10 +212,15 @@
             <span>Configurer</span>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="console-sidebar-chevron"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
+          <!-- Correctif (18 aout 2026, brief §3.1) : "les huit catalogues
+               sortent de la sidebar. Ils font doublon avec le selecteur
+               'Catalogue actif' du haut. Sidebar : de 20 entrees a 7."
+               La liste depliee devient un seul bouton statique vers la
+               page pane-catalog-list, ou vit desormais le vrai
+               selecteur (pills, cf. plus bas). -->
           <div class="console-sidebar-items" data-section-items="configurer" hidden>
             <button type="button" class="console-sidebar-item" data-pane="pane-import-csv">Importer un fichier</button>
-            <div class="console-sidebar-sublabel" id="sidebar-catalog-sublabel" hidden>Catalogues</div>
-            <div id="sidebar-catalog-items"></div>
+            <button type="button" class="console-sidebar-item" data-pane="pane-catalog-list">Catalogues</button>
           </div>
         </div>
 
@@ -1121,9 +1126,17 @@
           </div>
 
           <div id="pane-catalog-list" class="console-pane" hidden>
-            <h2 class="console-pane-title" id="catalog-pane-title">Mon catalogue</h2>
+            <h2 class="console-pane-title" id="catalog-pane-title">Mes catalogues</h2>
             <div id="catalogs-loading" class="console-loading">Chargement…</div>
             <div class="quota-alerte" id="catalogs-quota-alerte" hidden></div>
+            <!-- Correctif (18 aout 2026, brief §3.1) : le vrai selecteur,
+                 auparavant dans la sidebar (sidebar-catalog-items), vit
+                 desormais ici -- un seul catalogue reste affiche a la
+                 fois (chaque carte est un vrai bloc substantiel : pack
+                 de regles, bac a sable, synonymes, suppression -- les
+                 empiler toutes serait long a parcourir, surtout au-dela
+                 de 2-3 catalogues). -->
+            <div id="catalog-list-selector" class="catalog-list-selector" hidden></div>
             <div id="catalogs-list"></div>
             <p class="console-empty" id="catalogs-empty" hidden>Aucun catalogue indexé pour l'instant — <a href="docs.html">consultez la documentation</a> pour indexer votre premier catalogue.</p>
           </div>

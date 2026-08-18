@@ -3977,6 +3977,17 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 }
 .so-conflit-badge:hover{ background:#FBE4C4; }
 
+/* Correctif (18 aout 2026, brief §3.1) : selecteur de catalogues,
+   deplace de la sidebar vers la page pane-catalog-list elle-meme. */
+.catalog-list-selector{ display:flex; flex-wrap:wrap; gap:8px; margin:0 0 18px; }
+.catalog-list-pill{
+  font:inherit; font-size:13px; font-weight:600; color:var(--ink-muted);
+  background:var(--bg-soft); border:1px solid var(--line); border-radius:100px;
+  padding:7px 16px; cursor:pointer;
+}
+.catalog-list-pill:hover{ background:var(--blue-tint); color:var(--ink); }
+.catalog-list-pill-on{ background:var(--blue-tint); border-color:var(--blue); color:var(--blue-deep); }
+
 /* Correctif (18 aout 2026, diagnostic Claude en Chrome) : liste verticale
    pour la colonne contextuelle -- tokens existants reutilises, pas de
    nouvelle palette. */

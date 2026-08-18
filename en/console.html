@@ -140,8 +140,7 @@
           </button>
           <div class="console-sidebar-items" data-section-items="configurer" hidden>
             <button type="button" class="console-sidebar-item" data-pane="pane-import-csv">Import a file</button>
-            <div class="console-sidebar-sublabel" id="sidebar-catalog-sublabel" hidden>Catalogs</div>
-            <div id="sidebar-catalog-items"></div>
+            <button type="button" class="console-sidebar-item" data-pane="pane-catalog-list">Catalogs</button>
           </div>
         </div>
 
@@ -900,9 +899,10 @@
           </div>
 
           <div id="pane-catalog-list" class="console-pane" hidden>
-            <h2 class="console-pane-title" id="catalog-pane-title">My catalog</h2>
+            <h2 class="console-pane-title" id="catalog-pane-title">My catalogs</h2>
             <div id="catalogs-loading" class="console-loading">Loading…</div>
             <div class="quota-alerte" id="catalogs-quota-alerte" hidden></div>
+            <div id="catalog-list-selector" class="catalog-list-selector" hidden></div>
             <div id="catalogs-list"></div>
             <p class="console-empty" id="catalogs-empty" hidden>No catalog indexed yet — <a href="docs.html">see the documentation</a> to index your first catalog.</p>
           </div>

@@ -4858,29 +4858,40 @@
       loading.hidden = true;
       if (!catalogs.length) {
         empty.hidden = false;
-        var sidebarSublabelVide = document.getElementById("sidebar-catalog-sublabel");
-        if (sidebarSublabelVide) sidebarSublabelVide.hidden = true;
         return;
       }
       list.innerHTML = catalogs.map(catalogCardHtml).join("");
       var cardEls = list.querySelectorAll(".catalog-card");
       catalogs.forEach(function (c, i) { wireCatalogCard(cardEls[i], c, key); });
 
-      var sidebarItems = document.getElementById("sidebar-catalog-items");
-      var sidebarSublabel = document.getElementById("sidebar-catalog-sublabel");
-      // Chantier navigation (8 août 2026) : separation visuelle entre
-      // "Importer un fichier" (une action ponctuelle) et cette liste (une
-      // vraie navigation vers chaque catalogue) -- jamais affiche sans
-      // catalogue derriere, sinon un titre de section flotterait sans rien
-      // dessous.
-      if (sidebarSublabel) sidebarSublabel.hidden = false;
-      sidebarItems.innerHTML = catalogs.map(function (c, i) {
-        return '<button type="button" class="console-sidebar-item' + (i === 0 ? ' console-sidebar-item-on' : '') +
-          '" data-pane="pane-catalog-list" data-catalog="' + esc(c.catalog) + '">' + esc(c.catalog) + '</button>';
+      // Correctif (18 aout 2026, brief §3.1) : le vrai selecteur vit
+      // desormais sur la page elle-meme (catalog-list-selector), plus
+      // dans la sidebar (sidebar-catalog-items retire). Meme
+      // comportement "un seul catalogue visible a la fois" -- chaque
+      // carte est un vrai bloc substantiel, en empiler plusieurs serait
+      // long a parcourir.
+      var selecteur = document.getElementById("catalog-list-selector");
+      var titre = document.getElementById("catalog-pane-title");
+      selecteur.hidden = catalogs.length < 2;
+      selecteur.innerHTML = catalogs.map(function (c, i) {
+        return '<button type="button" class="catalog-list-pill' + (i === 0 ? ' catalog-list-pill-on' : '') +
+          '" data-catalog-select="' + esc(c.catalog) + '">' + esc(c.catalog) + '</button>';
       }).join("");
-      // Un seul catalogue visible par defaut (le premier) -- coherent avec
-      // le principe general "un pave a la fois", pas juste pour l'aide.
-      cardEls.forEach(function (card, i) { card.hidden = i !== 0; });
+      function afficherCatalogue(nom) {
+        cardEls.forEach(function (card) { card.hidden = card.getAttribute("data-catalog-card") !== nom; });
+        selecteur.querySelectorAll(".catalog-list-pill").forEach(function (p) {
+          p.classList.toggle("catalog-list-pill-on", p.getAttribute("data-catalog-select") === nom);
+        });
+        if (titre) titre.textContent = catalogs.length > 1 ? T("Mes catalogues") : T("Mon catalogue");
+      }
+      selecteur.addEventListener("click", function (e) {
+        var pill = e.target.closest("[data-catalog-select]");
+        if (pill) afficherCatalogue(pill.getAttribute("data-catalog-select"));
+      });
+      // Un catalogue specifique peut etre demande depuis ailleurs (ex.
+      // le catalogue actif du selecteur global) -- garde le comportement
+      // "premier catalogue par defaut" si aucun n'est precise.
+      afficherCatalogue(catalogs[0].catalog);
     }).catch(function () {
       loading.hidden = true;
       empty.hidden = false;
