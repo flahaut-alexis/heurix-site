@@ -255,11 +255,13 @@
                  -> "Mise en avant sur categorie" volontairement pas
                  traite ici -- probablement a faire avec le vrai chantier
                  merchandising dedie, pas isolement. Vocabulaire du
-                 moteur pas encore une entree separee -- vit aujourd'hui
-                 comme sous-onglet a l'interieur de Search, tension
-                 signalee separement plutot que tranchee unilateralement. -->
+                 moteur devient une vraie troisieme entree distincte
+                 (19 aout 2026) -- tension d'hier soir maintenant
+                 resolue, sortie de son sous-onglet a l'interieur de
+                 Search vers sa propre page (brief §4.3). -->
             <button type="button" class="console-sidebar-item" data-pane="pane-search-overrides">Mise en avant sur recherche</button>
             <button type="button" class="console-sidebar-item" data-pane="pane-browse">Merchandising</button>
+            <button type="button" class="console-sidebar-item" data-pane="pane-vocabulaire">Vocabulaire du moteur</button>
           </div>
         </div>
 </nav>
@@ -490,7 +492,6 @@
               <div class="console-tabs" role="tablist" aria-label="Sections de Mise en avant sur recherche">
                 <button type="button" role="tab" id="so-tab-apercu" aria-selected="true" aria-controls="so-tabpanel-apercu" class="console-tab console-tab-active">Aperçu &amp; réglages</button>
                 <button type="button" role="tab" id="so-tab-regles" aria-selected="false" aria-controls="so-tabpanel-regles" class="console-tab" tabindex="-1">Règles du catalogue <span class="console-tab-count" id="so-tab-regles-count" hidden></span></button>
-                <button type="button" role="tab" id="so-tab-vocabulaire" aria-selected="false" aria-controls="so-tabpanel-vocabulaire" class="console-tab" tabindex="-1">Vocabulaire</button>
               </div>
 
               <div role="tabpanel" id="so-tabpanel-apercu" aria-labelledby="so-tab-apercu">
@@ -683,17 +684,9 @@
               </div>
               <!-- so-tabpanel-regles ferme ici. -->
 
-              <div role="tabpanel" id="so-tabpanel-vocabulaire" aria-labelledby="so-tab-vocabulaire" hidden>
-              <div class="console-panel">
-                <h2>Synonymes et reconnaissances personnalisées</h2>
-                <p class="console-panel-note">Les synonymes rapprochent les mots que vos clients emploient de ceux de votre catalogue. Apprenez au moteur un mot de votre métier, en quelques mots et sans code.</p>
-                
-                <div id="cr-host"></div>
-                <p class="console-empty" id="cr-hint">Choisissez un catalogue pour gérer ses synonymes et ses reconnaissances.</p>
-              </div>
-              </div>
-              <!-- so-tabpanel-vocabulaire ferme ici -- ne contient plus
-                   que le panneau synonymes, comme demande. -->
+              <!-- Correctif (19 aout 2026, brief §4.3) : so-tabpanel-vocabulaire
+                   retire completement -- sorti vers sa propre page
+                   (pane-vocabulaire), plus un sous-onglet de Search. -->
 
               <!-- Correctif Lot 3 (audit UX console, 17-18 aout 2026) :
                    "Ajout d'un produit -- modale" (§4.5 du brief). Hors de
@@ -875,6 +868,40 @@
               
 
               
+            </div>
+          </div>
+
+          <!-- Correctif (19 aout 2026, brief §4.3 "Page 'Vocabulaire du
+               moteur'") : "extraite des pages Optimiser. Deux onglets."
+               Sortie de son sous-onglet a l'interieur de Search --
+               tension signalee hier soir, maintenant resolue. Reutilise
+               crMarkup(), separee en deux fonctions (crMarkupSynonymes,
+               crMarkupTermes) pour vivre dans deux vrais conteneurs
+               distincts plutot qu'un seul bloc. Distinction sens
+               unique/bidirectionnel volontairement pas traitee ici --
+               le backend ne stocke aujourd'hui que des groupes
+               symetriques (verifie dans heurix-engine avant de
+               construire), un vrai changement de modele de donnees. -->
+          <div id="pane-vocabulaire" class="console-pane" hidden>
+            <h2 class="console-pane-title">Vocabulaire du moteur</h2>
+
+            <div class="console-tabs" role="tablist" aria-label="Sections de Vocabulaire du moteur">
+              <button type="button" role="tab" id="voc-tab-synonymes" aria-selected="true" aria-controls="voc-tabpanel-synonymes" class="console-tab console-tab-active">Synonymes</button>
+              <button type="button" role="tab" id="voc-tab-termes" aria-selected="false" aria-controls="voc-tabpanel-termes" class="console-tab" tabindex="-1">Termes métier</button>
+            </div>
+
+            <div role="tabpanel" id="voc-tabpanel-synonymes" aria-labelledby="voc-tab-synonymes">
+              <div class="console-panel" style="margin-top:14px;">
+                <p class="console-panel-note">Les synonymes rapprochent les mots que vos clients emploient de ceux de votre catalogue. Apprenez au moteur un mot de votre métier, en quelques mots et sans code.</p>
+                <div id="cr-host-synonymes"></div>
+                <p class="console-empty" id="cr-hint" hidden>Choisissez un catalogue pour gérer ses synonymes et ses reconnaissances.</p>
+              </div>
+            </div>
+
+            <div role="tabpanel" id="voc-tabpanel-termes" aria-labelledby="voc-tab-termes" hidden>
+              <div class="console-panel" style="margin-top:14px;">
+                <div id="cr-host-termes"></div>
+              </div>
             </div>
           </div>
 

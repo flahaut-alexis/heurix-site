@@ -166,6 +166,7 @@
           <div class="console-sidebar-items" data-section-items="optimiser" hidden>
             <button type="button" class="console-sidebar-item" data-pane="pane-search-overrides">Highlight on search</button>
             <button type="button" class="console-sidebar-item" data-pane="pane-browse">Merchandising</button>
+            <button type="button" class="console-sidebar-item" data-pane="pane-vocabulaire">Engine vocabulary</button>
           </div>
         </div>
 </nav>
@@ -316,7 +317,6 @@
               <div class="console-tabs" role="tablist" aria-label="Sections of Highlight on search">
                 <button type="button" role="tab" id="so-tab-apercu" aria-selected="true" aria-controls="so-tabpanel-apercu" class="console-tab console-tab-active">Preview &amp; settings</button>
                 <button type="button" role="tab" id="so-tab-regles" aria-selected="false" aria-controls="so-tabpanel-regles" class="console-tab" tabindex="-1">Catalog rules <span class="console-tab-count" id="so-tab-regles-count" hidden></span></button>
-                <button type="button" role="tab" id="so-tab-vocabulaire" aria-selected="false" aria-controls="so-tabpanel-vocabulaire" class="console-tab" tabindex="-1">Vocabulary</button>
               </div>
 
               <div role="tabpanel" id="so-tabpanel-apercu" aria-labelledby="so-tab-apercu">
@@ -465,17 +465,7 @@
               </div>
               <!-- so-tabpanel-regles closes here. -->
 
-              <div role="tabpanel" id="so-tabpanel-vocabulaire" aria-labelledby="so-tab-vocabulaire" hidden>
-              <div class="console-panel">
-                <h2>Synonyms and custom recognitions</h2>
-                <p class="console-panel-note">Synonyms link the words your customers use to the ones in your catalog. Teach the engine a word from your business, in a few words and with no code.</p>
-                
-                <div id="cr-host"></div>
-                <p class="console-empty" id="cr-hint">Choose a catalog to manage its synonyms and recognitions.</p>
-              </div>
-              </div>
-              <!-- so-tabpanel-vocabulaire closes here -- now contains
-                   only the synonyms panel, as requested. -->
+              <!-- Correctif -- parite EN avec console.html. -->
 
               <div id="so-form-modal" class="recap-modal" hidden role="dialog" aria-modal="true" aria-labelledby="so-form-title">
                 <div class="recap-modal-backdrop"></div>
@@ -652,6 +642,29 @@
               
 
               
+            </div>
+          </div>
+
+          <div id="pane-vocabulaire" class="console-pane" hidden>
+            <h2 class="console-pane-title">Engine vocabulary</h2>
+
+            <div class="console-tabs" role="tablist" aria-label="Sections of Engine vocabulary">
+              <button type="button" role="tab" id="voc-tab-synonymes" aria-selected="true" aria-controls="voc-tabpanel-synonymes" class="console-tab console-tab-active">Synonyms</button>
+              <button type="button" role="tab" id="voc-tab-termes" aria-selected="false" aria-controls="voc-tabpanel-termes" class="console-tab" tabindex="-1">Business terms</button>
+            </div>
+
+            <div role="tabpanel" id="voc-tabpanel-synonymes" aria-labelledby="voc-tab-synonymes">
+              <div class="console-panel" style="margin-top:14px;">
+                <p class="console-panel-note">Synonyms bring the words your customers use closer to those in your catalog. Teach the engine a term from your business, in a few words and with no code.</p>
+                <div id="cr-host-synonymes"></div>
+                <p class="console-empty" id="cr-hint" hidden>Choose a catalog to manage its synonyms and recognitions.</p>
+              </div>
+            </div>
+
+            <div role="tabpanel" id="voc-tabpanel-termes" aria-labelledby="voc-tab-termes" hidden>
+              <div class="console-panel" style="margin-top:14px;">
+                <div id="cr-host-termes"></div>
+              </div>
             </div>
           </div>
 

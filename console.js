@@ -955,6 +955,12 @@
     // l'utilisateur ait deja visite ce pane une fois. chargerSegmentation
     // gere elle-meme son propre etat vide/absence de catalogue.
     chargerSegmentation(key);
+    // Correctif (19 aout 2026, brief §4.3) : meme raisonnement -- sorti
+    // vers sa propre page (pane-vocabulaire), chargerSynonymesEtRegles
+    // deplacee ici pour rester inconditionnelle plutot que de repeter
+    // le meme piege deja resolu pour la segmentation ("jamais declenche
+    // avant que l'utilisateur ait deja visite ce pane une fois").
+    chargerSynonymesEtRegles(key);
 
     if (ouvert === "pane-search-overrides") {
       var contenu = document.getElementById("so-content");
@@ -963,7 +969,6 @@
         soAnimerPlaceholder();
         refreshSoTable(key);
         refreshSoPreview(key);
-        chargerSynonymesEtRegles(key);
       }
     } else if (ouvert === "pane-browse") {
       onBrowseCatalogChange(key);
@@ -3190,15 +3195,21 @@
   // reconstruit donc le meme balisage (memes classes) dans un conteneur, et
   // on leur passe. Toute evolution du cablage profite aux deux endroits sans
   // duplication de logique.
-  function crMarkup() {
+  // Correctif (19 aout 2026, brief §4.3) : crMarkup() separee en deux
+  // fonctions -- Synonymes et Termes metier vivent desormais dans deux
+  // vrais conteneurs distincts (deux onglets), plutot qu'un seul bloc.
+  function crMarkupSynonymes() {
     return '<div class="catalog-synonyms-label">' + T("Synonymes") + '</div>' +
       '<div class="catalog-synonym-groups"></div>' +
       '<div class="catalog-synonym-add">' +
         '<input type="text" placeholder="' + T("ex. vis, boulon, screw") + '" class="catalog-synonym-input">' +
         '<button type="button" class="catalog-synonym-add-btn">' + T("Ajouter un groupe") + '</button>' +
         '<span class="catalog-synonym-status catalog-rule-status"></span>' +
-      '</div>' +
-      '<div class="catalog-synonyms-label" style="margin-top:22px;">' + T("Reconnaissances") + '</div>' +
+      '</div>';
+  }
+
+  function crMarkupTermes() {
+    return '<div class="catalog-synonyms-label">' + T("Reconnaissances") + '</div>' +
       '<div class="catalog-rules-list"></div>' +
       '<div class="catalog-synonyms-label catalog-rule-form-title" style="margin-top:14px; font-size:12.5px;">' + T("Ajouter une reconnaissance") + '</div>' +
       '<div class="catalog-rule-add">' +
@@ -3222,13 +3233,20 @@
     chargerSynonymesEtRegles(key);
   }
 
+  // Correctif (19 aout 2026, brief §4.3) : deux conteneurs distincts
+  // (Synonymes, Termes metier) plutot qu'un seul host -- chaque
+  // fonction de cablage recoit desormais son propre conteneur, pas le
+  // meme partage. Si un seul des deux existe (ex. l'ancien onglet de
+  // Search, si jamais reintroduit ailleurs), le code reste defensif.
   function chargerSynonymesEtRegles(key) {
-    var host = document.getElementById("cr-host");
+    var hostSynonymes = document.getElementById("cr-host-synonymes");
+    var hostTermes = document.getElementById("cr-host-termes");
     var invite = document.getElementById("cr-hint");
-    if (!host) return;
+    if (!hostSynonymes && !hostTermes) return;
     var catalogue = catalogueCourant();
     if (!catalogue) {
-      host.innerHTML = "";
+      if (hostSynonymes) hostSynonymes.innerHTML = "";
+      if (hostTermes) hostTermes.innerHTML = "";
       if (invite) invite.hidden = false;
       return;
     }
@@ -3236,11 +3254,15 @@
     // On reconstruit a chaque changement de catalogue : le cablage attache
     // ses ecouteurs aux elements, les recreer evite qu'ils pointent vers le
     // catalogue precedent.
-    host.innerHTML = crMarkup();
-    // Les deux fonctions lisent `catalog.catalog` : elles attendent un objet.
     var objetCatalogue = { catalog: catalogue };
-    wireSynonymControls(host, objetCatalogue, key);
-    wireCustomRuleControls(host, objetCatalogue, key);
+    if (hostSynonymes) {
+      hostSynonymes.innerHTML = crMarkupSynonymes();
+      wireSynonymControls(hostSynonymes, objetCatalogue, key);
+    }
+    if (hostTermes) {
+      hostTermes.innerHTML = crMarkupTermes();
+      wireCustomRuleControls(hostTermes, objetCatalogue, key);
+    }
   }
 
 
@@ -3311,7 +3333,11 @@
       if (bOnglet) bOnglet.hidden = true;
     });
 
-    wireConsoleTabs("so", ["apercu", "regles", "vocabulaire"]);
+    // Correctif (19 aout 2026, brief §4.3) : "vocabulaire" retire de
+    // cette liste -- sorti vers sa propre page (pane-vocabulaire),
+    // wireConsoleTabs("voc", ...) cablee separement plus bas.
+    wireConsoleTabs("so", ["apercu", "regles"]);
+    wireConsoleTabs("voc", ["synonymes", "termes"]);
 
     // Correctif (18 aout 2026, retour Alexis) : bouton d'aide, ouvre/ferme
     // le pavé explicatif deplace depuis l'en-tete de la page.
