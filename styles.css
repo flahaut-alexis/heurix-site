@@ -2327,6 +2327,9 @@ body.docs-dark .why-card p{ color:#CDD2F0; }
 .console-table td.num{ font-weight:700; color:var(--blue-deep); }
 .console-table tr:last-child td{ border-bottom:none; }
 .console-empty{ font-size:13px; color:var(--ink-muted); padding:14px 0 0; text-align:center; }
+/* Correctif (19 aout 2026, brief §4.2 "Etat vide avec issue" -- deux
+   boutons d'action plutot qu'un cul-de-sac). */
+.br-etat-vide-actions{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
 
 /* Chantier 3.1 : cartes catalogue (rulepack + synonymes) */
 .catalog-card{

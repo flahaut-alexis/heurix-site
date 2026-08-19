@@ -880,7 +880,17 @@
                 <div class="br-toolbar">
 
               <p class="console-panel-note" style="margin:0 0 14px;">Classez vos produits dans une page de catégorie de votre site, sans recherche — <a href="docs.html#ep-browse">documentation complète</a>. Choisissez un catalogue puis une catégorie pour commencer.</p>
-              <p class="console-empty" id="browse-no-categories" hidden>Aucune catégorie détectée sur ce catalogue — indexez vos produits avec un champ <code class="docs-inline-code">categories</code> ou <code class="docs-inline-code">category</code> pour en voir apparaître ici.</p>
+              <!-- Correctif (19 aout 2026, brief §4.2 "Etat vide avec
+                   issue" -- deux boutons d'action, pas un cul-de-sac).
+                   Message existant retenu tel quel (deja precis sur le
+                   champ attendu), deux boutons ajoutes. -->
+              <div class="console-empty br-etat-vide" id="browse-no-categories" hidden>
+                <p style="margin:0 0 12px;">Aucune catégorie détectée sur ce catalogue — indexez vos produits avec un champ <code class="docs-inline-code">categories</code> ou <code class="docs-inline-code">category</code> pour en voir apparaître ici.</p>
+                <div class="br-etat-vide-actions">
+                  <a href="docs.html#ep-browse" class="btn btn-ghost">Voir comment importer mes catégories</a>
+                  <button type="button" class="btn btn-ghost" id="browse-choisir-autre-catalogue-btn">Choisir un autre catalogue</button>
+                </div>
+              </div>
             
                 </div>
 

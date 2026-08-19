@@ -4476,6 +4476,20 @@
 
     document.getElementById("browse-category-select").addEventListener("change", function () { onBrowseCategoryChange(key); });
     wireBrowseEditeur(key);
+
+    // Correctif (19 aout 2026, brief §4.2 "Etat vide avec issue"). Le
+    // vrai selecteur de catalogue vit en haut de page (global-catalog,
+    // verifie avant de construire) -- scrollIntoView + focus, pas
+    // seulement focus, pour le cas ou l'utilisateur a deja scrolle vers
+    // le bas de la page Browse.
+    var boutonAutreCatalogue = document.getElementById("browse-choisir-autre-catalogue-btn");
+    if (boutonAutreCatalogue) boutonAutreCatalogue.addEventListener("click", function () {
+      var selecteur = document.getElementById("global-catalog");
+      if (selecteur) {
+        selecteur.scrollIntoView({ behavior: "smooth", block: "center" });
+        selecteur.focus();
+      }
+    });
     var browseLim = document.getElementById("browse-preview-limit");
     if (browseLim) browseLim.addEventListener("change", function () { refreshBrowsePreview(key); });
     var brStock = document.getElementById("browse-in-stock");
