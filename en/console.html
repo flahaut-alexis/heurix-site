@@ -543,9 +543,7 @@
 
           <div id="pane-browse" class="console-pane" hidden>
             <h2 class="console-pane-title">Browse &amp; Discovery</h2>
-            <div class="console-panel console-panel-warn">
-              <details class="br-attrs"><summary>In what order rules apply</summary><p class="console-panel-note" style="margin:10px 0 0;">A pin's <strong>position</strong> is its final rank: position 3 places the product 3rd, other products filling the remaining slots. Attribute <strong>boosts</strong> move up within the natural ranking, <strong>demotions</strong> go to the end of the list. A demotion always wins over a boost — a product explicitly hidden never resurfaces via a broader attribute rule.</p></details>
-            </div>
+            <!-- Correctif -- parite EN avec console.html. -->
             
 
             <div id="browse-content">
@@ -570,6 +568,12 @@
                       <option value="popular">Popularity (clicks + purchases)</option>
                     </select>
                   </div>
+                </div>
+                <div class="br-pipeline-titre-aide">
+                  <button type="button" class="so-aide-btn" id="br-pipeline-btn" aria-expanded="false" aria-controls="br-pipeline" aria-label="How this ranking is calculated" hidden>?</button>
+                </div>
+                <div class="so-pipeline-panel" id="br-pipeline" hidden>
+                  <div id="br-pipeline-contenu"></div>
                 </div>
                 <div class="br-toolbar">
 

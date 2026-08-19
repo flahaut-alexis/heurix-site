@@ -3645,6 +3645,15 @@
       soPipelineBtn.setAttribute("aria-expanded", ouvert ? "false" : "true");
     });
 
+    // Correctif (19 aout 2026, brief §4.2) : meme toggle, Browse.
+    var brPipelineBtn = document.getElementById("br-pipeline-btn");
+    var brPipelinePanel = document.getElementById("br-pipeline");
+    if (brPipelineBtn && brPipelinePanel) brPipelineBtn.addEventListener("click", function () {
+      var ouvert = !brPipelinePanel.hidden;
+      brPipelinePanel.hidden = ouvert;
+      brPipelineBtn.setAttribute("aria-expanded", ouvert ? "false" : "true");
+    });
+
     var soSynonymeForm = document.getElementById("so-synonyme-form");
     if (soSynonymeForm) soSynonymeForm.addEventListener("submit", function (e) {
       e.preventDefault();
@@ -4341,6 +4350,43 @@
     });
   }
 
+  // Correctif (19 aout 2026, brief §4.2 "Bloc pipeline contextuel").
+  // Meme composant visuel (bouton "?" + panneau) que soRafraichirPipeline
+  // (Search), mais un vrai contenu adapte -- Browse n'a ni requete
+  // textuelle ni "mots trouves", les quatre etapes du pipeline Search
+  // n'auraient aucun sens ici. Compte directement depuis data.hits
+  // (produits reellement AFFICHES), pas une variable de session separee
+  // pas toujours peuplee au bon moment.
+  function brRafraichirPipeline(data) {
+    var bouton = document.getElementById("br-pipeline-btn");
+    var conteneur = document.getElementById("br-pipeline-contenu");
+    if (!bouton || !conteneur) return;
+    var hits = data.hits || [];
+    if (!hits.length) { bouton.hidden = true; return; }
+    bouton.hidden = false;
+
+    var totalRegles = hits.filter(function (h) { return h.pinned || h.boosted || h.buried; }).length;
+    var texteResume = totalRegles > 0
+      ? T(totalRegles > 1 ? "{0} règles actives sur cette page" : "{0} règle active sur cette page", totalRegles)
+      : T("aucune règle active sur cette page");
+
+    // Correctif (19 aout 2026, brief §4.2) : "ce produit est relegue par
+    // la regle X. La favorisation n'aura aucun effet." -- favorisation_
+    // ignoree_par expose depuis cet apres-midi (heurix-engine, deploye).
+    // regle peut etre null (relegation par produit precis, pas par
+    // attribut, verifie et signale explicitement dans heurix-engine) --
+    // message plus generique dans ce cas plutot que d'afficher "null".
+    var conflitsHtml = hits.filter(function (h) { return "favorisation_ignoree_par" in h; }).map(function (h) {
+      var nom = h.product.name || h.product.id;
+      var regle = h.favorisation_ignoree_par;
+      var texteRegle = regle ? T("« {0} = {1} »", regle.field, regle.value) : T("une règle de relégation");
+      return "<p class='so-validation-warn' style='margin-top:6px;'>" +
+        T("« {0} » est relégué par {1}. La favorisation n'aura aucun effet.", esc(nom), texteRegle) + "</p>";
+    }).join("");
+
+    conteneur.innerHTML = "<p class='console-panel-note' style='margin:0;'>" + esc(texteResume) + "</p>" + conflitsHtml;
+  }
+
   function refreshBrowsePreview(key) {
     var sort = document.getElementById("browse-sort-select").value;
     var champLim = document.getElementById("browse-preview-limit");
@@ -4352,6 +4398,7 @@
     apiFetch(url, key).then(function (data) {
       session.brDraft = null;
       brRenderGrille(data.hits || [], false);
+      brRafraichirPipeline(data);
       renderTable("browse-preview-table", "browse-preview-empty", data.hits, function (h) {
         var status = h.pinned ? "Épinglé" : h.boosted ? "Favorisé" : h.buried ? "Relégué" : "—";
         return "<td>" + produitCell(h.product.id, h.product.name, h.product.price) + "</td><td class='num'>" +

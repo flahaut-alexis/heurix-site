@@ -3246,6 +3246,11 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
   display:flex; align-items:flex-start; justify-content:space-between; gap:10px;
 }
 .so-apercu-titre-aide h2{ margin:0; }
+/* Correctif (19 aout 2026, brief §4.2). Meme bouton "?" que Search, mais
+   sans texte a cote (pas de "12 resultats sur..." pour Browse) -- vraie
+   classe distincte : justify-content:space-between avec un seul enfant
+   pousserait le bouton a gauche, pas a droite comme voulu. */
+.br-pipeline-titre-aide{ display:flex; justify-content:flex-end; }
 .so-apercu-rail-gauche{ margin-top:20px; padding-top:16px; border-top:1px solid var(--line); }
 .so-apercu-rail-gauche h2{ font-size:15px; }
 

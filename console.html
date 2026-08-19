@@ -817,9 +817,12 @@
 
           <div id="pane-browse" class="console-pane" hidden>
             <h2 class="console-pane-title">Browse &amp; Discovery</h2>
-            <div class="console-panel console-panel-warn">
-              <details class="br-attrs"><summary>Dans quel ordre les règles s'appliquent</summary><p class="console-panel-note" style="margin:10px 0 0;">La <strong>position</strong> d'un épinglage est son rang final : position 3 place le produit en 3ᵉ, les autres comblant les places libres. Les <strong>boosts</strong> d'attribut remontent dans le classement naturel, les <strong>relégations</strong> passent en fin de liste. Une relégation gagne toujours sur un boost — un produit explicitement caché ne remonte jamais via une règle d'attribut plus large.</p></details>
-            </div>
+            <!-- Correctif (19 aout 2026, brief §4.2 "Bloc replie par defaut,
+                 deplace sous les controles, remplace par le pipeline
+                 contextuel peuple de donnees reelles"). Bloc statique
+                 retire d'ici -- deplace plus bas, sous la ligne de
+                 controles unifiee, et remplace par un vrai contenu
+                 dynamique (voir brRafraichirPipeline). -->
             
 
             <div id="browse-content">
@@ -857,6 +860,22 @@
                       <option value="popular">Popularité (clics + achats)</option>
                     </select>
                   </div>
+                </div>
+                <!-- Correctif (19 aout 2026, brief §4.2). Meme composant
+                     (bouton "?" + panneau) que le pipeline contextuel de
+                     Search, verifie et reutilise, mais un vrai contenu
+                     adapte : Browse n'a ni requete textuelle ni "mots
+                     trouves", le pipeline Search (Comprehension/
+                     Correspondance/Classement) n'aurait aucun sens ici.
+                     Resume des regles actives + l'avertissement inline
+                     sur conflit relegation/favorisation que le brief
+                     demande explicitement, remplace le bloc statique
+                     retire plus haut. -->
+                <div class="br-pipeline-titre-aide">
+                  <button type="button" class="so-aide-btn" id="br-pipeline-btn" aria-expanded="false" aria-controls="br-pipeline" aria-label="Comment ce classement est calculé" hidden>?</button>
+                </div>
+                <div class="so-pipeline-panel" id="br-pipeline" hidden>
+                  <div id="br-pipeline-contenu"></div>
                 </div>
                 <div class="br-toolbar">
 
