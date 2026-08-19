@@ -478,6 +478,7 @@
                     <th class="so-cell-select"><input type="checkbox" id="so-catalogue-select-tout" aria-label="Select all"></th>
                     <th><button type="button" class="so-tri-th" data-tri="nom">Name <span class="so-tri-fleche" data-tri-fleche="nom"></span></button></th>
                     <th><button type="button" class="so-tri-th" data-tri="declencheur">Trigger <span class="so-tri-fleche" data-tri-fleche="declencheur"></span></button></th>
+                    <th>Rule</th>
                     <th><button type="button" class="so-tri-th" data-tri="action">Action <span class="so-tri-fleche" data-tri-fleche="action"></span></button></th>
                     <th>Status</th>
                     <th></th>
@@ -510,6 +511,14 @@
                       <option value="bury">Bury</option>
                     </select>
                     <input type="number" min="1" max="100" placeholder="Position, e.g. 3" id="so-position">
+                  </div>
+                  <div class="catalog-rule-add-row">
+                    <input type="text" placeholder="Rule name, optional — e.g. Back-to-school promo" id="so-nom" maxlength="200">
+                    <select id="so-statut">
+                      <option value="active">Active</option>
+                      <option value="brouillon">Draft</option>
+                      <option value="inactive">Inactive</option>
+                    </select>
                   </div>
                   <p class="so-validation-warn" id="so-position-warn" hidden></p>
                   <p class="so-validation-warn" id="so-stock-warn" hidden></p>

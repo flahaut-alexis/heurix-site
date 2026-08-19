@@ -3975,6 +3975,11 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 }
 .console-table .cell-statut-active{ color:var(--blue-deep); }
 .console-table .cell-statut-brouillon{ color:var(--amber); }
+/* Correctif (19 aout 2026, brief §3.5, Lot 4 arrive) : Programmee en
+   orange (modele Adobe explicitement cite par le brief : "Active bleu /
+   Programmee orange / Inactive gris"), Inactive en gris neutre. */
+.console-table .cell-statut-programmee{ color:#C2760C; }
+.console-table .cell-statut-inactive{ color:var(--ink-muted); }
 
 /* Correctif Lot 3 (audit UX console, 18 aout 2026) : onglet "Regles du
    catalogue" (§4.6). Barre de controles + tri par en-tete de colonne. */

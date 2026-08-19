@@ -1659,6 +1659,8 @@
     document.getElementById("so-action").value = "pin";
     document.getElementById("so-position").disabled = false;
     document.getElementById("so-position").value = "";
+    document.getElementById("so-nom").value = "";
+    document.getElementById("so-statut").value = "active";
     document.getElementById("so-form-title").textContent = T("Ajouter une règle");
     document.getElementById("so-submit-btn").textContent = T("Ajouter la règle");
     document.getElementById("so-cancel-edit-btn").hidden = true;
@@ -1677,6 +1679,10 @@
     document.getElementById("so-action").value = o.action;
     document.getElementById("so-position").disabled = o.action !== "pin";
     document.getElementById("so-position").value = o.position || "";
+    // Correctif (19 aout 2026, brief §3.5) : nom/statut, propages depuis
+    // les data-attributs poses sur le bouton (soRowHtmlCatalogue).
+    document.getElementById("so-nom").value = o.nom || "";
+    document.getElementById("so-statut").value = o.statut || "active";
   }
 
   function soRowHtml(o) {
@@ -1747,18 +1753,27 @@
     if (enConflit) {
       actionLabel += "<button type='button' class='so-conflit-badge' data-so-conflit-info='1' data-query='" + esc(o.query) + "' data-position='" + o.position + "' aria-label='" + T("Conflit de position — cliquer pour en savoir plus") + "' title='" + T("Une autre règle vise déjà la position {0} sur cette recherche.", o.position) + "'>&#9888;</button>";
     }
-    var statutLabel = enBrouillon
-      ? "<span class='cell-statut cell-statut-brouillon'>" + T("Brouillon") + "</span>"
-      : "<span class='cell-statut cell-statut-active'>" + T("Active") + "</span>";
+    // Correctif (19 aout 2026, brief §3.5) : "Brouillon" (frontend, pas
+    // encore publie) prend le pas sur le vrai statut backend quand
+    // enBrouillon est vrai -- les deux concepts sont distincts (un
+    // brouillon local peut porter n'importe quel statut backend une fois
+    // publie), mais melanger les deux ici serait plus confus qu'utile.
+    var STATUTS_LABELS = {
+      active: T("Active"), brouillon: T("Brouillon"),
+      programmee: T("Programmée"), inactive: T("Inactive"),
+    };
+    var statutReel = enBrouillon ? "brouillon" : (o.statut || "active");
+    var statutLabel = "<span class='cell-statut cell-statut-" + statutReel + "'>" + (STATUTS_LABELS[statutReel] || statutReel) + "</span>";
     var attrsLigne = "data-so-aller-apercu='1' data-query='" + esc(o.query) + "'";
     return "<td class='so-cell-select'><input type='checkbox' class='so-row-check' data-so-select='1' data-query='" + esc(o.query) + "' data-product-id='" + esc(o.product_id) + "' aria-label='" + T("Sélectionner cette règle") + "'></td>" +
       "<td " + attrsLigne + " class='so-cell-cliquable'>" + produitCell(o.product_id, o.product_name) + "</td>" +
       "<td " + attrsLigne + " class='so-cell-cliquable'><span class='cell-trigger' title='" + esc(o.query) + "'>" + esc(o.query) + "</span></td>" +
+      "<td " + attrsLigne + " class='so-cell-cliquable'>" + (o.nom ? esc(o.nom) : "<span class='console-empty' style='font-size:12px;'>—</span>") + "</td>" +
       "<td " + attrsLigne + " class='so-cell-cliquable'>" + actionLabel + "</td>" +
       "<td " + attrsLigne + " class='so-cell-cliquable'>" + statutLabel + "</td>" +
       "<td class='cell-actions'>" +
-        "<button type='button' class='catalog-rule-remove' data-so-edit='1' data-query='" + esc(o.query) + "' data-product-id='" + esc(o.product_id) + "' data-action='" + esc(o.action) + "' data-position='" + (o.position || "") + "' aria-label='" + T("Modifier") + "' title='" + T("Modifier") + "'>&#9998;</button>" +
-        "<button type='button' class='catalog-rule-remove' data-so-duplicate='1' data-query='" + esc(o.query) + "' data-product-id='" + esc(o.product_id) + "' data-action='" + esc(o.action) + "' data-position='" + (o.position || "") + "' aria-label='" + T("Dupliquer") + "' title='" + T("Dupliquer comme nouvelle règle") + "'>&#10697;</button>" +
+        "<button type='button' class='catalog-rule-remove' data-so-edit='1' data-query='" + esc(o.query) + "' data-product-id='" + esc(o.product_id) + "' data-action='" + esc(o.action) + "' data-position='" + (o.position || "") + "' data-nom='" + escAttr(o.nom || "") + "' data-statut='" + escAttr(o.statut || "active") + "' aria-label='" + T("Modifier") + "' title='" + T("Modifier") + "'>&#9998;</button>" +
+        "<button type='button' class='catalog-rule-remove' data-so-duplicate='1' data-query='" + esc(o.query) + "' data-product-id='" + esc(o.product_id) + "' data-action='" + esc(o.action) + "' data-position='" + (o.position || "") + "' data-nom='" + escAttr(o.nom || "") + "' data-statut='" + escAttr(o.statut || "active") + "' aria-label='" + T("Dupliquer") + "' title='" + T("Dupliquer comme nouvelle règle") + "'>&#10697;</button>" +
         "<button type='button' class='catalog-rule-remove' data-so-delete='1' data-query='" + esc(o.query) + "' data-product-id='" + esc(o.product_id) + "' aria-label='" + T("Supprimer") + "'>&times;</button>" +
       "</td>";
   }
@@ -2840,6 +2855,12 @@
   // apres application : les regles deja enregistrees, plus (ou moins) celle en
   // cours d'edition. Le moteur remplace l'ensemble persiste par cette liste
   // pour l'appel de simulation -- sans rien ecrire.
+  // Correctif (19 aout 2026, brief §3.5) : nom et statut, premiers
+  // champs exposes cote interface. nom omis si vide (jamais une string
+  // vide envoyee) -- le backend garde deja son propre defaut (None) sur
+  // une nouvelle regle, et preserve la valeur existante sur une regle
+  // deja en base si ce champ n'est pas envoye (verifie dans
+  // heurix-engine avant de construire, Store.set()).
   function soLireFormulaire() {
     var q = document.getElementById("so-query").value.trim();
     var pid = document.getElementById("so-product-id").value.trim();
@@ -2848,6 +2869,10 @@
     var pos = document.getElementById("so-position").value;
     var regle = { query: q, product_id: pid, action: action };
     if (action === "pin" && pos) regle.position = parseInt(pos, 10);
+    var champNom = document.getElementById("so-nom");
+    if (champNom && champNom.value.trim()) regle.nom = champNom.value.trim();
+    var champStatut = document.getElementById("so-statut");
+    if (champStatut) regle.statut = champStatut.value;
     return regle;
   }
 
@@ -2860,8 +2885,12 @@
 
     apiFetch("/v1/index/" + encodeURIComponent(session.soCurrentCatalog) + "/search-overrides", key)
       .then(function (data) {
+        // Correctif (19 aout 2026, brief §3.5) : nom/statut propages ici
+        // aussi -- sinon ils disparaitraient visuellement des l'ouverture
+        // d'un brouillon, avant meme toute modification reelle.
         var existantes = (data.overrides || []).map(function (o) {
-          return { query: o.query, product_id: o.product_id, action: o.action, position: o.position || undefined };
+          return { query: o.query, product_id: o.product_id, action: o.action, position: o.position || undefined,
+                   nom: o.nom || undefined, statut: o.statut || undefined };
         });
         // Si on modifie une regle existante, l'ancienne version sort du
         // brouillon -- sinon les deux coexisteraient dans l'apercu alors
@@ -2931,6 +2960,13 @@
           return chaine.then(function () {
             var corps = { query: r.query, product_id: r.product_id, action: r.action };
             if (r.action === "pin" && r.position) corps.position = r.position;
+            // Correctif (19 aout 2026, brief §3.5) : propage nom/statut
+            // s'ils ont ete saisis -- sinon le backend garde deja la
+            // valeur existante sur une regle deja en base (verifie dans
+            // heurix-engine avant de construire), donc aucune regression
+            // pour les regles qui ne passent jamais par ces deux champs.
+            if (r.nom) corps.nom = r.nom;
+            if (r.statut) corps.statut = r.statut;
             return apiFetch(base, key, { method: "POST", body: corps });
           });
         }, Promise.resolve());
@@ -3751,6 +3787,7 @@
         fillSoForm({
           query: editBtn.getAttribute("data-query"), productId: editBtn.getAttribute("data-product-id"),
           action: editBtn.getAttribute("data-action"), position: editBtn.getAttribute("data-position"),
+          nom: editBtn.getAttribute("data-nom"), statut: editBtn.getAttribute("data-statut"),
         });
         document.getElementById("so-form-title").textContent = T("Modifier la règle");
         document.getElementById("so-submit-btn").textContent = T("Enregistrer les modifications");
@@ -3765,6 +3802,7 @@
         fillSoForm({
           query: dupBtn.getAttribute("data-query"), productId: dupBtn.getAttribute("data-product-id"),
           action: dupBtn.getAttribute("data-action"), position: dupBtn.getAttribute("data-position"),
+          nom: dupBtn.getAttribute("data-nom"), statut: dupBtn.getAttribute("data-statut"),
         });
         document.getElementById("so-form-title").textContent = T("Dupliquer une règle — modifiez au moins un champ");
         document.getElementById("so-submit-btn").textContent = T("Créer cette règle");

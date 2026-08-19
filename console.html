@@ -728,6 +728,13 @@
                     <th class="so-cell-select"><input type="checkbox" id="so-catalogue-select-tout" aria-label="Tout sélectionner"></th>
                     <th><button type="button" class="so-tri-th" data-tri="nom">Nom <span class="so-tri-fleche" data-tri-fleche="nom"></span></button></th>
                     <th><button type="button" class="so-tri-th" data-tri="declencheur">Déclencheur <span class="so-tri-fleche" data-tri-fleche="declencheur"></span></button></th>
+                    <!-- Correctif (19 aout 2026, brief §3.5) : "Nom" (colonne
+                         precedente) designe deja le nom du PRODUIT --
+                         verifie dans soFiltrerEtTrierCatalogue avant de
+                         construire (product_name). Nouvelle colonne "Règle"
+                         distincte pour ne pas creer d'ambiguite de
+                         vocabulaire entre les deux "noms". -->
+                    <th>Règle</th>
                     <th><button type="button" class="so-tri-th" data-tri="action">Action <span class="so-tri-fleche" data-tri-fleche="action"></span></button></th>
                     <th>Statut</th>
                     <th></th>
@@ -766,6 +773,19 @@
                       <option value="bury">Reléguer en fin de liste</option>
                     </select>
                     <input type="number" min="1" max="100" placeholder="Position, ex. 3" id="so-position">
+                  </div>
+                  <!-- Correctif (19 aout 2026, brief §3.5 "Modele de
+                       donnees des regles") : premiers champs exposes
+                       cote interface, exactement comme recommande --
+                       "meme si l'interface n'expose d'abord que le nom
+                       et le statut". Backend deja pret et deploye. -->
+                  <div class="catalog-rule-add-row">
+                    <input type="text" placeholder="Nom de la règle, facultatif — ex. Promo rentrée" id="so-nom" maxlength="200">
+                    <select id="so-statut">
+                      <option value="active">Active</option>
+                      <option value="brouillon">Brouillon</option>
+                      <option value="inactive">Inactive</option>
+                    </select>
                   </div>
                   <p class="so-validation-warn" id="so-position-warn" hidden></p>
                   <p class="so-validation-warn" id="so-stock-warn" hidden></p>
