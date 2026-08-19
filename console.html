@@ -787,6 +787,20 @@
                       <option value="inactive">Inactive</option>
                     </select>
                   </div>
+                  <!-- Correctif (19 aout 2026, brief §3.5, priorite avec
+                       vrai effet backend depuis ce matin). Champ date
+                       simple plutot que datetime-local : plus intuitif
+                       pour ce cas d'usage ("promo rentree"), converti en
+                       ISO complet cote JS avant l'envoi (le backend
+                       attend ce format exact, verifie dans heurix-engine
+                       avant de construire). -->
+                  <div class="catalog-rule-add-row">
+                    <input type="number" min="1" max="100000" placeholder="Priorité, facultatif — la plus basse gagne" id="so-priorite">
+                  </div>
+                  <div class="catalog-rule-add-row">
+                    <label class="so-diffusion-label">Du <input type="date" id="so-diffusion-debut"></label>
+                    <label class="so-diffusion-label">au <input type="date" id="so-diffusion-fin"></label>
+                  </div>
                   <p class="so-validation-warn" id="so-position-warn" hidden></p>
                   <p class="so-validation-warn" id="so-stock-warn" hidden></p>
                   <button type="submit" class="catalog-rule-add-btn" id="so-submit-btn">Ajouter la règle</button>

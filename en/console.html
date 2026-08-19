@@ -520,6 +520,13 @@
                       <option value="inactive">Inactive</option>
                     </select>
                   </div>
+                  <div class="catalog-rule-add-row">
+                    <input type="number" min="1" max="100000" placeholder="Priority, optional — lowest wins" id="so-priorite">
+                  </div>
+                  <div class="catalog-rule-add-row">
+                    <label class="so-diffusion-label">From <input type="date" id="so-diffusion-debut"></label>
+                    <label class="so-diffusion-label">to <input type="date" id="so-diffusion-fin"></label>
+                  </div>
                   <p class="so-validation-warn" id="so-position-warn" hidden></p>
                   <p class="so-validation-warn" id="so-stock-warn" hidden></p>
                   <button type="submit" class="catalog-rule-add-btn" id="so-submit-btn">Add rule</button>

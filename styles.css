@@ -3981,6 +3981,20 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 .console-table .cell-statut-programmee{ color:#C2760C; }
 .console-table .cell-statut-inactive{ color:var(--ink-muted); }
 
+/* Correctif (19 aout 2026, brief §3.5, priorite avec vrai effet backend
+   depuis ce matin). Indicateurs compacts (priorite, diffusion) accoles
+   au nom de la regle -- vraiment secondaires, jamais leur propre
+   colonne. Champs de la modale (priorite, dates de diffusion). */
+.so-regle-indicateur{
+  display:inline-block; margin-left:6px; font-size:10.5px; font-weight:700;
+  color:var(--ink-muted); background:var(--bg-soft); border-radius:100px;
+  padding:1px 6px; vertical-align:middle;
+}
+.so-diffusion-label{
+  display:flex; align-items:center; gap:6px; font-size:12.5px; color:var(--ink-muted);
+}
+.so-diffusion-label input[type="date"]{ font:inherit; }
+
 /* Correctif Lot 3 (audit UX console, 18 aout 2026) : onglet "Regles du
    catalogue" (§4.6). Barre de controles + tri par en-tete de colonne. */
 .so-catalogue-controls{

@@ -1661,6 +1661,9 @@
     document.getElementById("so-position").value = "";
     document.getElementById("so-nom").value = "";
     document.getElementById("so-statut").value = "active";
+    document.getElementById("so-priorite").value = "";
+    document.getElementById("so-diffusion-debut").value = "";
+    document.getElementById("so-diffusion-fin").value = "";
     document.getElementById("so-form-title").textContent = T("Ajouter une règle");
     document.getElementById("so-submit-btn").textContent = T("Ajouter la règle");
     document.getElementById("so-cancel-edit-btn").hidden = true;
@@ -1683,6 +1686,13 @@
     // les data-attributs poses sur le bouton (soRowHtmlCatalogue).
     document.getElementById("so-nom").value = o.nom || "";
     document.getElementById("so-statut").value = o.statut || "active";
+    // Correctif (19 aout 2026, brief §3.5, priorite avec vrai effet
+    // backend depuis ce matin). <input type="date"> attend "YYYY-MM-DD" :
+    // extrait des dix premiers caracteres de l'ISO complet renvoye par
+    // l'API (ex. "2026-09-01T00:00:00+00:00" -> "2026-09-01").
+    document.getElementById("so-priorite").value = o.priorite || "";
+    document.getElementById("so-diffusion-debut").value = o.diffusionDebut ? o.diffusionDebut.slice(0, 10) : "";
+    document.getElementById("so-diffusion-fin").value = o.diffusionFin ? o.diffusionFin.slice(0, 10) : "";
   }
 
   function soRowHtml(o) {
@@ -1765,15 +1775,26 @@
     var statutReel = enBrouillon ? "brouillon" : (o.statut || "active");
     var statutLabel = "<span class='cell-statut cell-statut-" + statutReel + "'>" + (STATUTS_LABELS[statutReel] || statutReel) + "</span>";
     var attrsLigne = "data-so-aller-apercu='1' data-query='" + esc(o.query) + "'";
+    // Correctif (19 aout 2026, brief §3.5, priorite avec vrai effet
+    // backend depuis ce matin). Affichage compact plutot que deux
+    // nouvelles colonnes pleines -- le tableau porte deja sept colonnes,
+    // priorite et diffusion restent secondaires face au nom de la regle,
+    // pas assez frequemment utilisees pour meriter leur propre colonne.
+    // Construit ICI, avant le return, plutot qu'au milieu de la chaine
+    // de concatenation -- un vrai bug de syntaxe repere par node -c au
+    // premier essai, corrige avant de continuer.
+    var indicateurs = "";
+    if (o.priorite && o.priorite !== 100) indicateurs += "<span class='so-regle-indicateur' title='" + T("Priorité") + " " + o.priorite + "'>#" + o.priorite + "</span>";
+    if (o.diffusion && (o.diffusion.debut || o.diffusion.fin)) indicateurs += "<span class='so-regle-indicateur' title='" + T("Période de diffusion définie") + "'>&#128197;</span>";
     return "<td class='so-cell-select'><input type='checkbox' class='so-row-check' data-so-select='1' data-query='" + esc(o.query) + "' data-product-id='" + esc(o.product_id) + "' aria-label='" + T("Sélectionner cette règle") + "'></td>" +
       "<td " + attrsLigne + " class='so-cell-cliquable'>" + produitCell(o.product_id, o.product_name) + "</td>" +
       "<td " + attrsLigne + " class='so-cell-cliquable'><span class='cell-trigger' title='" + esc(o.query) + "'>" + esc(o.query) + "</span></td>" +
-      "<td " + attrsLigne + " class='so-cell-cliquable'>" + (o.nom ? esc(o.nom) : "<span class='console-empty' style='font-size:12px;'>—</span>") + "</td>" +
+      "<td " + attrsLigne + " class='so-cell-cliquable'>" + (o.nom ? esc(o.nom) : "<span class='console-empty' style='font-size:12px;'>—</span>") + indicateurs + "</td>" +
       "<td " + attrsLigne + " class='so-cell-cliquable'>" + actionLabel + "</td>" +
       "<td " + attrsLigne + " class='so-cell-cliquable'>" + statutLabel + "</td>" +
       "<td class='cell-actions'>" +
-        "<button type='button' class='catalog-rule-remove' data-so-edit='1' data-query='" + esc(o.query) + "' data-product-id='" + esc(o.product_id) + "' data-action='" + esc(o.action) + "' data-position='" + (o.position || "") + "' data-nom='" + escAttr(o.nom || "") + "' data-statut='" + escAttr(o.statut || "active") + "' aria-label='" + T("Modifier") + "' title='" + T("Modifier") + "'>&#9998;</button>" +
-        "<button type='button' class='catalog-rule-remove' data-so-duplicate='1' data-query='" + esc(o.query) + "' data-product-id='" + esc(o.product_id) + "' data-action='" + esc(o.action) + "' data-position='" + (o.position || "") + "' data-nom='" + escAttr(o.nom || "") + "' data-statut='" + escAttr(o.statut || "active") + "' aria-label='" + T("Dupliquer") + "' title='" + T("Dupliquer comme nouvelle règle") + "'>&#10697;</button>" +
+        "<button type='button' class='catalog-rule-remove' data-so-edit='1' data-query='" + esc(o.query) + "' data-product-id='" + esc(o.product_id) + "' data-action='" + esc(o.action) + "' data-position='" + (o.position || "") + "' data-nom='" + escAttr(o.nom || "") + "' data-statut='" + escAttr(o.statut || "active") + "' data-priorite='" + (o.priorite || "") + "' data-diffusion-debut='" + escAttr((o.diffusion && o.diffusion.debut) || "") + "' data-diffusion-fin='" + escAttr((o.diffusion && o.diffusion.fin) || "") + "' aria-label='" + T("Modifier") + "' title='" + T("Modifier") + "'>&#9998;</button>" +
+        "<button type='button' class='catalog-rule-remove' data-so-duplicate='1' data-query='" + esc(o.query) + "' data-product-id='" + esc(o.product_id) + "' data-action='" + esc(o.action) + "' data-position='" + (o.position || "") + "' data-nom='" + escAttr(o.nom || "") + "' data-statut='" + escAttr(o.statut || "active") + "' data-priorite='" + (o.priorite || "") + "' data-diffusion-debut='" + escAttr((o.diffusion && o.diffusion.debut) || "") + "' data-diffusion-fin='" + escAttr((o.diffusion && o.diffusion.fin) || "") + "' aria-label='" + T("Dupliquer") + "' title='" + T("Dupliquer comme nouvelle règle") + "'>&#10697;</button>" +
         "<button type='button' class='catalog-rule-remove' data-so-delete='1' data-query='" + esc(o.query) + "' data-product-id='" + esc(o.product_id) + "' aria-label='" + T("Supprimer") + "'>&times;</button>" +
       "</td>";
   }
@@ -2873,6 +2894,16 @@
     if (champNom && champNom.value.trim()) regle.nom = champNom.value.trim();
     var champStatut = document.getElementById("so-statut");
     if (champStatut) regle.statut = champStatut.value;
+    // Correctif (19 aout 2026, brief §3.5, priorite avec vrai effet
+    // backend depuis ce matin). Champ date simple converti en ISO
+    // complet -- debut a minuit, fin a la derniere seconde du jour
+    // choisi, pour couvrir la journee entiere plutot que l'exclure.
+    var champPriorite = document.getElementById("so-priorite");
+    if (champPriorite && champPriorite.value) regle.priorite = parseInt(champPriorite.value, 10);
+    var champDebut = document.getElementById("so-diffusion-debut");
+    if (champDebut && champDebut.value) regle.diffusion_debut = champDebut.value + "T00:00:00Z";
+    var champFin = document.getElementById("so-diffusion-fin");
+    if (champFin && champFin.value) regle.diffusion_fin = champFin.value + "T23:59:59Z";
     return regle;
   }
 
@@ -2890,7 +2921,10 @@
         // d'un brouillon, avant meme toute modification reelle.
         var existantes = (data.overrides || []).map(function (o) {
           return { query: o.query, product_id: o.product_id, action: o.action, position: o.position || undefined,
-                   nom: o.nom || undefined, statut: o.statut || undefined };
+                   nom: o.nom || undefined, statut: o.statut || undefined,
+                   priorite: o.priorite || undefined,
+                   diffusion_debut: (o.diffusion && o.diffusion.debut) || undefined,
+                   diffusion_fin: (o.diffusion && o.diffusion.fin) || undefined };
         });
         // Si on modifie une regle existante, l'ancienne version sort du
         // brouillon -- sinon les deux coexisteraient dans l'apercu alors
@@ -2967,6 +3001,13 @@
             // pour les regles qui ne passent jamais par ces deux champs.
             if (r.nom) corps.nom = r.nom;
             if (r.statut) corps.statut = r.statut;
+            // Correctif (19 aout 2026, brief §3.5, priorite avec vrai
+            // effet backend depuis ce matin). Meme raisonnement que
+            // nom/statut : propage si saisi, sinon le backend garde deja
+            // la valeur existante sur une regle deja en base.
+            if (r.priorite) corps.priorite = r.priorite;
+            if (r.diffusion_debut) corps.diffusion_debut = r.diffusion_debut;
+            if (r.diffusion_fin) corps.diffusion_fin = r.diffusion_fin;
             return apiFetch(base, key, { method: "POST", body: corps });
           });
         }, Promise.resolve());
@@ -3788,6 +3829,8 @@
           query: editBtn.getAttribute("data-query"), productId: editBtn.getAttribute("data-product-id"),
           action: editBtn.getAttribute("data-action"), position: editBtn.getAttribute("data-position"),
           nom: editBtn.getAttribute("data-nom"), statut: editBtn.getAttribute("data-statut"),
+          priorite: editBtn.getAttribute("data-priorite"),
+          diffusionDebut: editBtn.getAttribute("data-diffusion-debut"), diffusionFin: editBtn.getAttribute("data-diffusion-fin"),
         });
         document.getElementById("so-form-title").textContent = T("Modifier la règle");
         document.getElementById("so-submit-btn").textContent = T("Enregistrer les modifications");
@@ -3803,6 +3846,8 @@
           query: dupBtn.getAttribute("data-query"), productId: dupBtn.getAttribute("data-product-id"),
           action: dupBtn.getAttribute("data-action"), position: dupBtn.getAttribute("data-position"),
           nom: dupBtn.getAttribute("data-nom"), statut: dupBtn.getAttribute("data-statut"),
+          priorite: dupBtn.getAttribute("data-priorite"),
+          diffusionDebut: dupBtn.getAttribute("data-diffusion-debut"), diffusionFin: dupBtn.getAttribute("data-diffusion-fin"),
         });
         document.getElementById("so-form-title").textContent = T("Dupliquer une règle — modifiez au moins un champ");
         document.getElementById("so-submit-btn").textContent = T("Créer cette règle");

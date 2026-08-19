@@ -230,6 +230,8 @@
     "En stock uniquement": "In stock only",
     "Créer": "Create",
     "Modifier": "Edit",
+    "Priorité": "Priority",
+    "Période de diffusion définie": "Diffusion period set",
     "Inactive": "Inactive",
     "Programmée": "Scheduled",
     "« {0} » rapproché de « {1} »": "\u201c{0}\u201d linked to \u201c{1}\u201d",
