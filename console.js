@@ -1619,6 +1619,7 @@
   // ---------------- Browse & Discovery ----------------
   var browseCatalogsLoaded = false;
   var browseAttributesCache = [];
+  var browseCategoriesCache = [];
   var browseFormsWired = false;
 
   // ---------------- Search : priorites de requete ----------------
@@ -3968,7 +3969,10 @@
     if (boutonAppliquerBr && catalog) {
       boutonAppliquerBr.textContent = "Publier sur " + catalog;
     }
-    var categorySelect = document.getElementById("browse-category-select");
+    var champCategorie = document.getElementById("browse-category-search");
+    var idCategorie = document.getElementById("browse-category-select");
+    champCategorie.value = "";
+    idCategorie.value = "";
     // On masque les RESULTATS, pas le panneau : les selecteurs de catalogue
     // et de categorie y vivent desormais, les cacher rendrait impossible de
     // choisir quoi que ce soit.
@@ -3976,31 +3980,38 @@
     document.getElementById("browse-hint").hidden = false;
     document.getElementById("browse-no-categories").hidden = true;
     if (!catalog) {
-      categorySelect.disabled = true;
-      categorySelect.innerHTML = '<option value="">' + T("— Choisir un catalogue d'abord —") + '</option>';
+      champCategorie.disabled = true;
+      champCategorie.placeholder = T("— Choisir un catalogue d'abord —");
       return;
     }
-    categorySelect.disabled = false;
-    categorySelect.innerHTML = '<option value="">' + T("Chargement…") + '</option>';
+    champCategorie.disabled = false;
+    champCategorie.placeholder = T("Chargement…");
     Promise.all([
       apiFetch("/v1/index/" + encodeURIComponent(catalog) + "/browse-categories", key),
       apiFetch("/v1/index/" + encodeURIComponent(catalog) + "/browse-attributes", key),
     ]).then(function (results) {
       var categories = results[0].categories;
       browseAttributesCache = results[1].attributes;
+      // Correctif (19 aout 2026, retour Alexis) : la liste vit desormais
+      // dans un cache plutot que dans les <option> d'un <select> --
+      // filtrage local par le champ recherchable, aucun appel reseau par
+      // frappe (contrairement a la recherche produit de Search, ou le
+      // volume l'impose).
+      browseCategoriesCache = categories;
       if (!categories.length) {
-        categorySelect.innerHTML = '<option value="">' + T("— Aucune catégorie —") + '</option>';
+        champCategorie.value = "";
+        champCategorie.placeholder = T("— Aucune catégorie —");
+        champCategorie.disabled = true;
         document.getElementById("browse-no-categories").hidden = false;
         return;
       }
-      categorySelect.innerHTML = '<option value="">' + T("— Choisir —") + '</option>' + categories.map(function (c) {
-        return "<option value='" + esc(c.category) + "'>" + esc(c.category) + " (" + c.products + ")</option>";
-      }).join("");
+      champCategorie.placeholder = T("Rechercher une catégorie…");
       document.getElementById("browse-known-fields").innerHTML = browseAttributesCache.map(function (a) {
         return "<option value='" + esc(a.field) + "'>";
       }).join("");
     }).catch(function () {
-      categorySelect.innerHTML = '<option value="">' + T("— Erreur de chargement —") + '</option>';
+      champCategorie.placeholder = T("— Erreur de chargement —");
+      champCategorie.disabled = true;
     });
   }
 
@@ -4010,6 +4021,73 @@
     document.getElementById("browse-known-values").innerHTML = entry
       ? entry.values.map(function (v) { return "<option value='" + esc(v.value) + "'>"; }).join("")
       : "";
+  }
+
+  // Correctif (19 aout 2026, retour Alexis) : champ recherchable plutot
+  // qu'un <select> natif. Meme markup et memes classes CSS que
+  // wireSoProductAutocomplete (verifie avant de construire), mais
+  // FILTRAGE LOCAL sur browseCategoriesCache -- pas de debounce ni de
+  // requete par frappe : les categories sont deja toutes en memoire
+  // depuis onBrowseCatalogChange, contrairement aux produits de Search
+  // (volume potentiellement enorme, d'ou l'appel reseau la-bas).
+  function wireBrowseCategorieAutocomplete(key) {
+    var champ = document.getElementById("browse-category-search");
+    var idCache = document.getElementById("browse-category-select");
+    var panneau = document.getElementById("browse-category-panel");
+    if (!champ || !idCache || !panneau) return;
+
+    function fermerPanneau() {
+      panneau.hidden = true;
+      panneau.innerHTML = "";
+    }
+
+    function afficherSuggestions(liste) {
+      if (!liste.length) {
+        panneau.innerHTML = "<div class='so-autocomplete-empty'>" + T("Aucune catégorie ne correspond.") + "</div>";
+        panneau.hidden = false;
+        return;
+      }
+      panneau.innerHTML = liste.map(function (c) {
+        return "<button type='button' class='so-autocomplete-item' data-categorie='" + esc(c.category) + "'>" +
+          "<span class='so-autocomplete-name'>" + esc(c.category) + "</span>" +
+          "<span class='so-autocomplete-meta'>" + T("{0} produits", c.products) + "</span>" +
+        "</button>";
+      }).join("");
+      panneau.hidden = false;
+    }
+
+    function filtrer() {
+      var q = champ.value.trim().toLowerCase();
+      var liste = q
+        ? browseCategoriesCache.filter(function (c) { return c.category.toLowerCase().indexOf(q) !== -1; })
+        : browseCategoriesCache;
+      // Plafonne l'affichage : un catalogue peut avoir beaucoup de
+      // categories, le panneau reste lisible et scrollable.
+      afficherSuggestions(liste.slice(0, 12));
+    }
+
+    champ.addEventListener("input", function () {
+      idCache.value = "";
+      filtrer();
+    });
+
+    // Ouvre la liste complete au focus, meme champ vide -- remplace le
+    // comportement d'un <select> qu'on deroule sans rien taper.
+    champ.addEventListener("focus", filtrer);
+
+    panneau.addEventListener("click", function (e) {
+      var item = e.target.closest(".so-autocomplete-item");
+      if (!item) return;
+      var categorie = item.getAttribute("data-categorie");
+      idCache.value = categorie;
+      champ.value = categorie;
+      fermerPanneau();
+      onBrowseCategoryChange(key);
+    });
+
+    document.addEventListener("click", function (e) {
+      if (!champ.contains(e.target) && !panneau.contains(e.target)) fermerPanneau();
+    });
   }
 
   function onBrowseCategoryChange(key) {
@@ -4474,7 +4552,11 @@
     if (browseFormsWired) return;
     browseFormsWired = true;
 
-    document.getElementById("browse-category-select").addEventListener("change", function () { onBrowseCategoryChange(key); });
+    // Correctif (19 aout 2026, retour Alexis) : l'ancien ecouteur
+    // "change" sur le <select> n'a plus lieu d'etre (champ cache
+    // desormais, jamais d'interaction directe) -- onBrowseCategoryChange
+    // est appele directement depuis la selection dans le panneau.
+    wireBrowseCategorieAutocomplete(key);
     wireBrowseEditeur(key);
 
     // Correctif (19 aout 2026, brief §4.2 "Etat vide avec issue"). Le

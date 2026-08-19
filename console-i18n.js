@@ -230,6 +230,8 @@
     "En stock uniquement": "In stock only",
     "Créer": "Create",
     "Modifier": "Edit",
+    "Aucune catégorie ne correspond.": "No category matches.",
+    "Rechercher une catégorie…": "Search for a category…",
     "aucune règle active sur cette page": "no rule active on this page",
     "une règle de relégation": "a demotion rule",
     "« {0} = {1} »": "\u201c{0} = {1}\u201d",

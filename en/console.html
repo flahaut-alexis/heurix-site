@@ -553,8 +553,12 @@
                 </div>
                 <div class="catalog-card-row br-controles-unifies">
                   <div class="br-controle-champ">
-                    <label for="browse-category-select">Category</label>
-                    <select id="browse-category-select" disabled><option value="">— Choose a catalog first —</option></select>
+                    <label for="browse-category-search">Category</label>
+                    <div class="so-autocomplete" style="position:relative;">
+                      <input type="text" id="browse-category-search" placeholder="Search for a category…" autocomplete="off" disabled>
+                      <input type="hidden" id="browse-category-select">
+                      <div class="so-autocomplete-panel" id="browse-category-panel" hidden></div>
+                    </div>
                   </div>
                   <div class="br-controle-champ">
                     <label for="browse-sort-select">Base ranking</label>

@@ -840,9 +840,27 @@
                      le JS existant). Modele Adobe Live Search cite par le
                      brief : colonnes "Category" et "Ranking Strategy". -->
                 <div class="catalog-card-row br-controles-unifies">
+                  <!-- Correctif (19 aout 2026, retour Alexis) : <select>
+                       natif remplace par un champ recherchable -- Heurix
+                       est une solution de search, coherence de produit
+                       en plus de l'UX (une categorie non trouvee au
+                       clavier dans un <select> long). Meme pattern deja
+                       existant (so-product-search/so-product-id/
+                       so-product-panel, verifie avant de construire),
+                       mais filtre LOCAL sur une liste deja chargee
+                       (browseCategoriesCache) plutot qu'un appel reseau
+                       par frappe -- les categories d'un catalogue sont
+                       deja toutes en memoire des le changement de
+                       catalogue, pas besoin de debounce/requete comme
+                       pour la recherche produit (potentiellement des
+                       dizaines de milliers de resultats). -->
                   <div class="br-controle-champ">
-                    <label for="browse-category-select">Catégorie</label>
-                    <select id="browse-category-select" disabled><option value="">— Choisir un catalogue d'abord —</option></select>
+                    <label for="browse-category-search">Catégorie</label>
+                    <div class="so-autocomplete" style="position:relative;">
+                      <input type="text" id="browse-category-search" placeholder="Rechercher une catégorie…" autocomplete="off" disabled>
+                      <input type="hidden" id="browse-category-select">
+                      <div class="so-autocomplete-panel" id="browse-category-panel" hidden></div>
+                    </div>
                   </div>
                   <div class="br-controle-champ">
                     <label for="browse-sort-select">Classement de base</label>
