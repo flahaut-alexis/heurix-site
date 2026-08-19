@@ -580,10 +580,36 @@
                      verticale (deja construite hier) est justement a
                      l'aise. -->
                 <div class="so-apercu-rail-gauche">
-                  <h2>Règles sur cette recherche</h2>
+                  <!-- Correctif (19 aout 2026, brief §4.3 "acces
+                       contextuel") : "depuis la colonne de droite de
+                       l'apercu, un bouton + cree un synonyme sans
+                       quitter la recherche en cours". Rail deplace
+                       hier soir vers la colonne gauche -- l'esprit du
+                       brief (creer sans quitter l'apercu) reste
+                       identique, seul l'emplacement physique du bouton
+                       a suivi le rail. -->
+                  <div class="so-apercu-titre-aide">
+                    <h2>Règles sur cette recherche</h2>
+                    <button type="button" class="so-aide-btn" id="so-rail-synonyme-btn" aria-label="Créer un synonyme pour cette recherche">+</button>
+                  </div>
                   <p class="console-panel-note">Vue rapide, sans quitter l'aperçu. Pour la liste complète et la gestion en masse, voir l'onglet <strong>Règles du catalogue</strong>.</p>
                   <div id="so-liste-contextuelle" class="so-liste-contextuelle"></div>
                   <p class="console-empty" id="so-empty-contextuel" hidden>Aucune règle sur cette recherche.</p>
+                </div>
+
+                <div id="so-synonyme-modal" class="recap-modal" hidden role="dialog" aria-modal="true" aria-labelledby="so-synonyme-title">
+                  <div class="recap-modal-backdrop"></div>
+                  <div class="recap-modal-box">
+                    <h2 id="so-synonyme-title">Créer un synonyme</h2>
+                    <p class="console-panel-note">Relie « <strong id="so-synonyme-requete-affichee"></strong> » à d'autres mots équivalents — vos clients trouveront les mêmes résultats en tapant l'un ou l'autre.</p>
+                    <form id="so-synonyme-form" class="catalog-rule-add">
+                      <input type="text" id="so-synonyme-requete" hidden>
+                      <input type="text" placeholder="Autres mots équivalents, séparés par une virgule — ex. cheville, molly" id="so-synonyme-mots" required>
+                      <button type="submit" class="catalog-rule-add-btn" id="so-synonyme-submit-btn">Créer le synonyme</button>
+                      <span class="catalog-rule-status" id="so-synonyme-status"></span>
+                    </form>
+                    <button type="button" class="btn btn-ghost" id="so-synonyme-close-btn" style="margin-top:14px;">Fermer</button>
+                  </div>
                 </div>
               </div>
               </div>

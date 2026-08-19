@@ -3361,6 +3361,78 @@
       soApercuAideBtn.setAttribute("aria-expanded", ouvert ? "false" : "true");
     });
 
+    // Correctif (19 aout 2026, brief §4.3 "acces contextuel") : "un
+    // bouton + cree un synonyme sans quitter la recherche en cours".
+    // Reutilise le vrai endpoint deja existant (GET puis PUT sur
+    // /v1/index/{catalog}/synonyms, verifie dans wireSynonymControls)
+    // plutot que d'en construire un nouveau -- meme contrat, meme
+    // validation minimale (au moins deux mots dans le groupe final).
+    var soRailSynonymeBtn = document.getElementById("so-rail-synonyme-btn");
+    var soSynonymeModal = document.getElementById("so-synonyme-modal");
+    var soSynonymeRequeteAffichee = document.getElementById("so-synonyme-requete-affichee");
+    var soSynonymeRequete = document.getElementById("so-synonyme-requete");
+    var soSynonymeMots = document.getElementById("so-synonyme-mots");
+    var soSynonymeStatus = document.getElementById("so-synonyme-status");
+    var soSynonymeSubmitBtn = document.getElementById("so-synonyme-submit-btn");
+
+    function fermerSoSynonymeModal() {
+      if (soSynonymeModal) soSynonymeModal.hidden = true;
+    }
+
+    if (soRailSynonymeBtn && soSynonymeModal) soRailSynonymeBtn.addEventListener("click", function () {
+      var champQuery = document.getElementById("so-preview-query");
+      var requete = champQuery ? champQuery.value.trim() : "";
+      if (!requete) {
+        alert(T("Tapez d'abord une requête dans l'aperçu — le synonyme se rattache à elle."));
+        return;
+      }
+      soSynonymeRequete.value = requete;
+      if (soSynonymeRequeteAffichee) soSynonymeRequeteAffichee.textContent = requete;
+      soSynonymeMots.value = "";
+      if (soSynonymeStatus) { soSynonymeStatus.className = "catalog-rule-status"; soSynonymeStatus.textContent = ""; }
+      soSynonymeModal.hidden = false;
+      soSynonymeMots.focus();
+    });
+
+    var soSynonymeCloseBtn = document.getElementById("so-synonyme-close-btn");
+    if (soSynonymeCloseBtn) soSynonymeCloseBtn.addEventListener("click", fermerSoSynonymeModal);
+
+    var soSynonymeForm = document.getElementById("so-synonyme-form");
+    if (soSynonymeForm) soSynonymeForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var mots = soSynonymeMots.value.split(",").map(function (t) { return t.trim(); }).filter(Boolean);
+      if (mots.length < 1) {
+        if (soSynonymeStatus) {
+          soSynonymeStatus.className = "catalog-rule-status err";
+          soSynonymeStatus.textContent = T("Saisissez au moins un mot équivalent.");
+        }
+        return;
+      }
+      var nouveauGroupe = [soSynonymeRequete.value].concat(mots);
+      var catalogue = catalogueCourant();
+      if (!catalogue) return;
+      soSynonymeSubmitBtn.disabled = true;
+      apiFetch("/v1/index/" + encodeURIComponent(catalogue) + "/synonyms", key)
+        .then(function (data) {
+          var groupes = (data.groups || []).concat([nouveauGroupe]);
+          return apiFetch("/v1/index/" + encodeURIComponent(catalogue) + "/synonyms", key, { method: "PUT", body: { groups: groupes } });
+        })
+        .then(function () {
+          soSynonymeSubmitBtn.disabled = false;
+          fermerSoSynonymeModal();
+          // Le nouveau synonyme peut changer les resultats affiches --
+          // rafraichit l'apercu pour le montrer immediatement.
+          refreshSoPreview(key);
+        })
+        .catch(function () {
+          soSynonymeSubmitBtn.disabled = false;
+          if (soSynonymeStatus) {
+            soSynonymeStatus.className = "catalog-rule-status err";
+            soSynonymeStatus.textContent = T("Erreur — réessayez.");
+          }
+        });
+    });
+
     // Correctif (18 aout 2026, brief §"Reglages d'apercu") : meme
     // pattern toggle. Rafraichit aussi l'apercu a la fermeture -- les
     // reglages a l'interieur (limite, rupture, familles, visuels)

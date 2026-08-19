@@ -388,10 +388,28 @@
                   <p class="so-tuto-note"><button type="button" class="so-tuto-lien" data-visite-demarrer>Take the guided tour</button> — or read below.<br>Moving a product also locks the positions above it: several rules therefore appear from a single click. Nothing is saved until you click Apply.</p>
                 </div>
                 <div class="so-apercu-rail-gauche">
-                  <h2>Rules on this search</h2>
+                  <div class="so-apercu-titre-aide">
+                    <h2>Rules on this search</h2>
+                    <button type="button" class="so-aide-btn" id="so-rail-synonyme-btn" aria-label="Create a synonym for this search">+</button>
+                  </div>
                   <p class="console-panel-note">Quick view, without leaving the preview. For the full list and bulk management, see the <strong>Catalog rules</strong> tab.</p>
                   <div id="so-liste-contextuelle" class="so-liste-contextuelle"></div>
                   <p class="console-empty" id="so-empty-contextuel" hidden>No rule on this search.</p>
+                </div>
+
+                <div id="so-synonyme-modal" class="recap-modal" hidden role="dialog" aria-modal="true" aria-labelledby="so-synonyme-title">
+                  <div class="recap-modal-backdrop"></div>
+                  <div class="recap-modal-box">
+                    <h2 id="so-synonyme-title">Create a synonym</h2>
+                    <p class="console-panel-note">Link "<strong id="so-synonyme-requete-affichee"></strong>" to other equivalent words — your customers will find the same results typing either one.</p>
+                    <form id="so-synonyme-form" class="catalog-rule-add">
+                      <input type="text" id="so-synonyme-requete" hidden>
+                      <input type="text" placeholder="Other equivalent words, separated by commas — e.g. anchor, molly" id="so-synonyme-mots" required>
+                      <button type="submit" class="catalog-rule-add-btn" id="so-synonyme-submit-btn">Create the synonym</button>
+                      <span class="catalog-rule-status" id="so-synonyme-status"></span>
+                    </form>
+                    <button type="button" class="btn btn-ghost" id="so-synonyme-close-btn" style="margin-top:14px;">Close</button>
+                  </div>
                 </div>
               </div>
               </div>
