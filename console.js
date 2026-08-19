@@ -2005,6 +2005,70 @@
     }).catch(function () { conteneur.hidden = true; });
   }
 
+  // Correctif (19 aout 2026, brief §4.1 "Pipeline contextuel").
+  // Comprehension parse le vrai texte brut deja present dans
+  // hits[].matched ("terme 'X' (depuis 'Y', x0.35)", verifie dans
+  // heurix-engine avant de construire) plutot que d'ajouter un nouveau
+  // champ backend -- exactement la reformulation demandee par le brief
+  // ("le facteur multiplicatif devient un pourcentage signe ; 'depuis'
+  // devient 'saisi' ; 'terme' disparait"), sans jamais afficher la
+  // forme brute. Deduplique sur l'ensemble des hits : la correction
+  // s'applique a la requete entiere, pas a un seul produit.
+  function soPipelineComprehension(q, hits) {
+    var corrections = {};
+    var ordre = [];
+    hits.forEach(function (h) {
+      (h.matched || []).forEach(function (m) {
+        var match = m.match(/terme '([^']+)' \(depuis '([^']+)', x([\d.]+)\)/);
+        if (match && match[1] !== match[2] && !corrections[match[2]]) {
+          corrections[match[2]] = match[1];
+          ordre.push(match[2]);
+        }
+      });
+    });
+    if (!ordre.length) return T("« {0} » — aucune correction", q);
+    var parties = ordre.map(function (saisi) {
+      return T("« {0} » saisi « {1} »", corrections[saisi], saisi);
+    });
+    return parties.join(" · ");
+  }
+
+  // Correctif (19 aout 2026, brief §4.1). Version textuelle simple pour
+  // la ligne "Classement" -- le vrai calcul pertinence/popularite en
+  // pourcentages n'existe pas cote backend (verifie dans heurix-engine
+  // avant de construire), jamais de faux pourcentage invente en
+  // attendant. Differencie seulement selon si la popularite intervient
+  // reellement (meme condition que popularity_boost cote backend :
+  // uniquement sur une vraie requete textuelle).
+  function soPipelineClassement(q) {
+    return q ? T("pertinence du mot + popularité récente") : T("ordre alphabétique");
+  }
+
+  function soRafraichirPipeline(q, data, hits) {
+    var pipeline = document.getElementById("so-pipeline");
+    var etapes = document.getElementById("so-pipeline-etapes");
+    if (!pipeline || !etapes) return;
+    if (!q) { pipeline.hidden = true; return; }
+    pipeline.hidden = false;
+
+    var nbRegles = (session.soDraft || []).filter(function (r) {
+      return q.toLowerCase().indexOf(r.query.toLowerCase()) !== -1;
+    }).length;
+    var texteRegles = nbRegles > 0
+      ? T(nbRegles > 1 ? "{0} règles appliquées — elles passent après le classement automatique" : "{0} règle appliquée — elle passe après le classement automatique", nbRegles)
+      : T("aucune règle sur cette recherche");
+
+    var etapesTexte = [
+      [T("Compréhension"), soPipelineComprehension(q, hits)],
+      [T("Correspondance"), T("{0} produits sur {1} contiennent ces mots", hits.length, data.total)],
+      [T("Classement"), soPipelineClassement(q)],
+      [T("Vos règles"), texteRegles],
+    ];
+    etapes.innerHTML = etapesTexte.map(function (e, i) {
+      return "<li><span class='so-pipeline-num'>" + (i + 1) + "</span><strong>" + esc(e[0]) + "</strong><span class='so-pipeline-detail'>" + esc(e[1]) + "</span></li>";
+    }).join("");
+  }
+
   function refreshSoPreview(key) {
     var champ = document.getElementById("so-preview-query");
     var vide = document.getElementById("so-preview-empty");
@@ -2131,6 +2195,7 @@
 
         soOrdreAffiche = hits.map(function (h) { return h.product.id; });
         soRenderFacettes(data.facets || {}, key);
+        soRafraichirPipeline(q, data, hits);
         grille.innerHTML = hits.map(function (h, i) {
           var p = h.product;
           var regle = h.pinned || h.buried;

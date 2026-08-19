@@ -632,6 +632,23 @@
                      soRafraichirAmorce. -->
                 <div class="so-preview-amorce" id="so-preview-amorce" hidden></div>
                 <p class="so-grid-caption" id="so-preview-caption"></p>
+                <!-- Correctif (19 aout 2026, brief §4.1 "Pipeline contextuel"
+                     -- "la fonctionnalite differenciante de toute la refonte").
+                     Accordeon replie par defaut, alimente par les vraies
+                     donnees de la recherche en cours -- jamais du texte
+                     generique. Trois des quatre lignes deja atteignables
+                     avec les donnees existantes (verifie dans heurix-engine
+                     avant de construire) : Comprehension parse le texte
+                     brut deja present dans hits[].matched, Correspondance
+                     vient de data.total, Vos regles du compte de regles deja
+                     affichees par le rail. La ligne Classement (pourcentages
+                     pertinence/popularite) n'existe pas cote backend --
+                     version textuelle simple en attendant, jamais de faux
+                     pourcentage invente. -->
+                <details class="so-pipeline" id="so-pipeline" hidden>
+                  <summary>Comment ce classement est calculé</summary>
+                  <ol class="so-pipeline-etapes" id="so-pipeline-etapes"></ol>
+                </details>
                 <div class="so-grid" id="so-preview-grid"></div>
                 <div class="console-empty" id="so-preview-empty" hidden></div>
                 <div class="so-simu-bar" id="so-simu-bar" hidden>
