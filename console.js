@@ -2027,8 +2027,15 @@
       });
     });
     if (!ordre.length) return T("« {0} » — aucune correction", q);
+    // Correctif (19 aout 2026, retour Alexis apres verification backend) :
+    // "saisi" implique a tort une faute de frappe -- verifie dans
+    // heurix-engine, synonymes et fautes partagent exactement le meme
+    // mecanisme et le meme texte brut (credit(), SYNONYM_PENALTY vs
+    // FUZZY_PENALTY), aucun signal explicite ne distingue les deux cas
+    // cote donnees. "rapproche de" reste vrai dans les deux cas plutot
+    // que de deviner.
     var parties = ordre.map(function (saisi) {
-      return T("« {0} » saisi « {1} »", corrections[saisi], saisi);
+      return T("« {0} » rapproché de « {1} »", saisi, corrections[saisi]);
     });
     return parties.join(" · ");
   }
@@ -2044,12 +2051,21 @@
     return q ? T("pertinence du mot + popularité récente") : T("ordre alphabétique");
   }
 
+  // Correctif (19 aout 2026, retour Alexis apres capture reelle) :
+  // bouton "?" gere en plus du panneau (remplace <details>, "casse la
+  // ligne de lecture" une fois ouvert -- signale par Alexis). Grille
+  // 2x2 plutot que liste verticale, demande explicitement.
   function soRafraichirPipeline(q, data, hits) {
     var pipeline = document.getElementById("so-pipeline");
     var etapes = document.getElementById("so-pipeline-etapes");
+    var bouton = document.getElementById("so-pipeline-btn");
     if (!pipeline || !etapes) return;
-    if (!q) { pipeline.hidden = true; return; }
-    pipeline.hidden = false;
+    if (!q) {
+      pipeline.hidden = true;
+      if (bouton) bouton.hidden = true;
+      return;
+    }
+    if (bouton) bouton.hidden = false;
 
     var nbRegles = (session.soDraft || []).filter(function (r) {
       return q.toLowerCase().indexOf(r.query.toLowerCase()) !== -1;
@@ -2065,7 +2081,7 @@
       [T("Vos règles"), texteRegles],
     ];
     etapes.innerHTML = etapesTexte.map(function (e, i) {
-      return "<li><span class='so-pipeline-num'>" + (i + 1) + "</span><strong>" + esc(e[0]) + "</strong><span class='so-pipeline-detail'>" + esc(e[1]) + "</span></li>";
+      return "<div class='so-pipeline-etape'><span class='so-pipeline-num'>" + (i + 1) + "</span><strong>" + esc(e[0]) + "</strong><span class='so-pipeline-detail'>" + esc(e[1]) + "</span></div>";
     }).join("");
   }
 
@@ -3461,6 +3477,19 @@
 
     var soSynonymeCloseBtn = document.getElementById("so-synonyme-close-btn");
     if (soSynonymeCloseBtn) soSynonymeCloseBtn.addEventListener("click", fermerSoSynonymeModal);
+
+    // Correctif (19 aout 2026, retour Alexis apres capture reelle) :
+    // toggle du panneau pipeline -- bouton hidden par soRafraichirPipeline
+    // quand q est vide, donc jamais cliquable dans ce cas ; le toggle
+    // lui-meme ne fait que basculer la vraie visibilite du panneau deja
+    // rempli, pas de logique de contenu ici.
+    var soPipelineBtn = document.getElementById("so-pipeline-btn");
+    var soPipelinePanel = document.getElementById("so-pipeline");
+    if (soPipelineBtn && soPipelinePanel) soPipelineBtn.addEventListener("click", function () {
+      var ouvert = !soPipelinePanel.hidden;
+      soPipelinePanel.hidden = ouvert;
+      soPipelineBtn.setAttribute("aria-expanded", ouvert ? "false" : "true");
+    });
 
     var soSynonymeForm = document.getElementById("so-synonyme-form");
     if (soSynonymeForm) soSynonymeForm.addEventListener("submit", function (e) {

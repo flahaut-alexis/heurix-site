@@ -420,11 +420,13 @@
                 <div class="so-facets" id="so-facets" hidden></div>
                 <p class="so-facet-warn" id="so-facet-warn" hidden>Active filter: the arrows are disabled. They lock the positions of the <strong>displayed</strong> list — on a filtered list, the resulting rules would no longer make sense once the filter is removed. Pinning, however, remains possible.</p>
                 <div class="so-preview-amorce" id="so-preview-amorce" hidden></div>
-                <p class="so-grid-caption" id="so-preview-caption"></p>
-                <details class="so-pipeline" id="so-pipeline" hidden>
-                  <summary>How this ranking is calculated</summary>
-                  <ol class="so-pipeline-etapes" id="so-pipeline-etapes"></ol>
-                </details>
+                <div class="so-apercu-titre-aide">
+                  <p class="so-grid-caption" id="so-preview-caption"></p>
+                  <button type="button" class="so-aide-btn" id="so-pipeline-btn" aria-expanded="false" aria-controls="so-pipeline" aria-label="How this ranking is calculated" hidden>?</button>
+                </div>
+                <div class="so-pipeline-panel" id="so-pipeline" hidden>
+                  <div class="so-pipeline-grille" id="so-pipeline-etapes"></div>
+                </div>
                 <div class="so-grid" id="so-preview-grid"></div>
                 <p class="console-empty" id="so-preview-empty" hidden>No results for this query.</p>
                 <div class="so-simu-bar" id="so-simu-bar" hidden>

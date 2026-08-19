@@ -3526,28 +3526,43 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 .so-tuto-close:hover{ background:#fff; }
 
 /* Correctif (19 aout 2026, brief §4.1 "Pipeline contextuel"). */
-.so-pipeline{
-  margin:8px 0 0; padding:0;
+/* Correctif (19 aout 2026, retour Alexis apres capture reelle) :
+   <details> remplace par un vrai bouton+panneau (meme pattern que les
+   autres boutons d'aide) -- <details> n'a pas de vrai bouton fermer
+   visible une fois ouvert, "casse la ligne de lecture" une fois cliquee.
+   Grille 2x2 plutot que liste verticale (4 etapes, 2 colonnes 2 lignes,
+   demande explicitement). Vrai bug corrige au meme geste : titre et
+   detail de chaque etape colles sans espace sur la version liste
+   (ex. "Correspondance12", visible sur la capture) -- resout de
+   lui-meme avec la nouvelle structure en bloc plutot qu'en ligne. */
+.so-apercu-titre-aide #so-preview-caption{ margin:0; }
+.so-pipeline-panel{
+  margin:10px 0 0; padding:14px 16px;
   border:1px solid var(--line); border-radius:10px; background:var(--bg-soft);
 }
-.so-pipeline[hidden]{ display:none; }
-.so-pipeline summary{
-  padding:9px 14px; font-size:12.5px; font-weight:600; color:var(--ink-muted);
-  cursor:pointer; list-style:none;
+.so-pipeline-panel[hidden]{ display:none; }
+.so-pipeline-grille{
+  display:grid; grid-template-columns:1fr 1fr; gap:14px 20px;
 }
-.so-pipeline summary::-webkit-details-marker{ display:none; }
-.so-pipeline summary::before{ content:"▸ "; }
-.so-pipeline[open] summary::before{ content:"▾ "; }
-.so-pipeline-etapes{
-  list-style:none; margin:0; padding:0 14px 12px;
-  display:grid; grid-template-columns:auto auto 1fr; gap:4px 10px; align-items:baseline;
+@media (max-width:640px){
+  .so-pipeline-grille{ grid-template-columns:1fr; }
+}
+/* Correctif : vrai bug repere en relisant mon propre code -- le HTML
+   genere place num/strong/detail en trois enfants freres directs de
+   so-pipeline-etape, pas imbriques -- display:flex doit donc vivre sur
+   le parent (num+strong alignes sur la premiere ligne), pas sur strong
+   lui-meme (qui n'aurait jamais contenu le badge). */
+.so-pipeline-etape{
+  display:grid; grid-template-columns:18px 1fr; gap:3px 8px;
 }
 .so-pipeline-num{
   width:18px; height:18px; border-radius:100px; background:var(--blue-tint); color:var(--blue-deep);
   font-size:10.5px; font-weight:800; display:inline-flex; align-items:center; justify-content:center;
 }
-.so-pipeline-etapes strong{ font-size:12px; color:var(--ink); }
-.so-pipeline-detail{ font-size:12px; color:var(--ink-muted); }
+.so-pipeline-etape strong{ font-size:12.5px; color:var(--ink); }
+.so-pipeline-detail{
+  grid-column:2; font-size:12px; color:var(--ink-muted); line-height:1.5;
+}
 
 
 /* Renvoi depuis la carte catalogue vers Personnalisation : un lien, pas un

@@ -631,7 +631,10 @@
                      brief. Contenu construit dynamiquement par JS, voir
                      soRafraichirAmorce. -->
                 <div class="so-preview-amorce" id="so-preview-amorce" hidden></div>
-                <p class="so-grid-caption" id="so-preview-caption"></p>
+                <div class="so-apercu-titre-aide">
+                  <p class="so-grid-caption" id="so-preview-caption"></p>
+                  <button type="button" class="so-aide-btn" id="so-pipeline-btn" aria-expanded="false" aria-controls="so-pipeline" aria-label="Comment ce classement est calculé" hidden>?</button>
+                </div>
                 <!-- Correctif (19 aout 2026, brief §4.1 "Pipeline contextuel"
                      -- "la fonctionnalite differenciante de toute la refonte").
                      Accordeon replie par defaut, alimente par les vraies
@@ -645,10 +648,19 @@
                      pertinence/popularite) n'existe pas cote backend --
                      version textuelle simple en attendant, jamais de faux
                      pourcentage invente. -->
-                <details class="so-pipeline" id="so-pipeline" hidden>
-                  <summary>Comment ce classement est calculé</summary>
-                  <ol class="so-pipeline-etapes" id="so-pipeline-etapes"></ol>
-                </details>
+                <!-- Correctif (19 aout 2026, retour Alexis apres capture reelle) :
+                     <details> remplace par le meme pattern bouton+panneau
+                     que les trois autres boutons d'aide deja construits
+                     aujourd'hui -- <details> n'a pas de vrai bouton fermer
+                     visible une fois ouvert, seul un clic sur le resume
+                     referme, mais le contenu a deja change la hauteur de
+                     la page a ce moment-la : "casse la ligne de lecture",
+                     signale par Alexis. Grille 2x2 plutot que la liste
+                     verticale (4 etapes, 2 colonnes 2 lignes, demande
+                     explicitement). -->
+                <div class="so-pipeline-panel" id="so-pipeline" hidden>
+                  <div class="so-pipeline-grille" id="so-pipeline-etapes"></div>
+                </div>
                 <div class="so-grid" id="so-preview-grid"></div>
                 <div class="console-empty" id="so-preview-empty" hidden></div>
                 <div class="so-simu-bar" id="so-simu-bar" hidden>
