@@ -5107,12 +5107,16 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
    Chaque ligne est un client qui n a pas trouve ; le bouton propose les
    mots proches du catalogue, un clic cree le synonyme. */
 .zr-action-cell{ white-space:normal; }
-.zr-suggerer{
+/* .zr-vers-regle (brief §4.5, 19 aout 2026) partage le style de
+   .zr-suggerer plutot que de le dupliquer -- meme registre, meme
+   colonne, souvent cote a cote. */
+.zr-suggerer, .zr-vers-regle{
   font:inherit; font-size:12.5px; padding:3px 10px; border-radius:7px;
   border:1px solid var(--line); background:#fff; cursor:pointer;
   color:var(--blue-deep);
 }
-.zr-suggerer:hover{ border-color:var(--blue-deep); }
+.zr-vers-regle{ margin-left:6px; }
+.zr-suggerer:hover, .zr-vers-regle:hover{ border-color:var(--blue-deep); }
 .zr-suggerer:disabled{ opacity:.55; cursor:default; }
 .zr-suggestions{ font-size:12.5px; line-height:2; }
 .zr-suggestions em{ color:var(--ink-muted); font-style:normal; }

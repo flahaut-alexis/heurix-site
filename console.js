@@ -377,16 +377,42 @@
     return v;
   }
 
+  // Brief §4.5 (19 aout 2026) : "compteur dans chaque onglet". Meme
+  // format compact que le badge deja en place sur "Regles du catalogue"
+  // (verifie avant d'ecrire), masque a zero plutot qu'affichant "(0)" --
+  // un onglet vide n'a pas besoin d'etre souligne.
+  function majCompteurOnglet(idBadge, n) {
+    var badge = document.getElementById(idBadge);
+    if (!badge) return;
+    badge.hidden = !n;
+    badge.textContent = n ? "(" + n + ")" : "";
+  }
+
   function exporterTableauCSV(tableId, nomFichier) {
     var table = document.getElementById(tableId);
     if (!table) return;
     var lignes = [];
-    var entetes = Array.prototype.map.call(table.querySelectorAll("thead th"), function (th) {
-      return th.textContent.trim();
+    // Correctif (19 aout 2026, defaut revele par la suite de tests en
+    // ajoutant une colonne d'action au tableau des recherches
+    // populaires) : une colonne SANS TITRE ne porte que des boutons,
+    // jamais de donnee -- l'inclure ajoutait une virgule orpheline en
+    // fin d'en-tetes. On releve les index a garder une seule fois, et on
+    // les applique aussi aux lignes pour que tout reste aligne.
+    var tousTh = Array.prototype.slice.call(table.querySelectorAll("thead th"));
+    var indexUtiles = [];
+    var entetes = [];
+    tousTh.forEach(function (th, i) {
+      var titre = th.textContent.trim();
+      if (!titre) return;
+      indexUtiles.push(i);
+      entetes.push(titre);
     });
     lignes.push(entetes);
     Array.prototype.forEach.call(table.querySelectorAll("tbody tr"), function (tr) {
-      var cellules = Array.prototype.map.call(tr.querySelectorAll("td"), function (td) {
+      var tds = Array.prototype.slice.call(tr.querySelectorAll("td"));
+      var cellules = indexUtiles.map(function (i) {
+        var td = tds[i];
+        if (!td) return "";
         // Retire boutons/actions (ex: "Corriger" sur zero-results) -- ne
         // garde que le texte utile pour l'export.
         var clone = td.cloneNode(true);
@@ -434,6 +460,10 @@
       apiFetch("/v1/analytics/category-views/" + encodeURIComponent(catalogue), key)
         .then(function (data) {
           var cats = data.categories || [];
+          // Brief §4.5 : compteur d'onglet. Ici le contenu n'est pas un
+          // tableau plat mais un regroupement par categorie -- on compte
+          // les CATEGORIES remontees, l'unite que l'ecran affiche.
+          majCompteurOnglet("obs-tab-vus-count", cats.length);
           if (!cats.length) {
             contenu.innerHTML = "";
             vide.hidden = false;
@@ -1469,6 +1499,50 @@
         champ.focus();
         var fin = champ.value.length;
         champ.setSelectionRange(fin, fin);
+      })();
+    }
+
+    // Brief §4.5 (19 aout 2026) : "chaque ligne de Sans resultat ouvre
+    // Mise en avant sur recherche PRE-REMPLIE avec la requete concernee
+    // -- le passage de l'observation a l'action, aujourd'hui inexistant."
+    //
+    // Attribut DISTINCT de data-prefill : celui-ci vise le champ
+    // synonyme (.catalog-synonym-input), pas la requete d'apercu. Deux
+    // chainages differents vers la meme page ; detourner l'existant
+    // aurait casse le parcours synonyme qui fonctionne.
+    //
+    // Meme sequence que le chainage interne deja en place depuis le
+    // tableau des regles (onglet Apercu, remplissage, refresh, focus),
+    // verifie avant d'ecrire plutot qu'invente. Reutilise la revelation
+    // forcee de #so-content ci-dessus -- sans elle, le champ n'existe pas
+    // encore dans le DOM au moment ou on le cherche.
+    var requete = link.getAttribute("data-prefill-query");
+    if (requete) {
+      var contenuSoQ = document.getElementById("so-content");
+      if (contenuSoQ) contenuSoQ.hidden = false;
+      if (typeof appliquerCatalogueOuverture === "function") {
+        appliquerCatalogueOuverture(paneId);
+      }
+      var ongletApercu = document.getElementById("so-tab-apercu");
+      if (ongletApercu) ongletApercu.click();
+
+      var essais = 0;
+      (function attendreEtChercher() {
+        var champQ = document.getElementById("so-preview-query");
+        if (!champQ) {
+          if (++essais < 12) { setTimeout(attendreEtChercher, 50); }
+          return;
+        }
+        champQ.value = requete;
+        // La cle peut ne pas etre encore posee si l'utilisateur vient
+        // d'arriver : on remplit quand meme le champ (l'essentiel du
+        // service rendu) et on laisse l'apercu se faire au premier
+        // geste, plutot que de planter sur un appel sans cle.
+        if (session.cleCourante && typeof refreshSoPreview === "function") {
+          refreshSoPreview(session.cleCourante);
+        }
+        champQ.scrollIntoView({ behavior: "smooth", block: "center" });
+        champQ.focus();
       })();
     }
   });
@@ -4904,14 +4978,26 @@
       renderStats(summary, usage);
       renderChart(summary.daily_searches);
 
+      majCompteurOnglet("obs-tab-populaires-count", (topQueries || []).length);
+      majCompteurOnglet("obs-tab-sans-resultat-count", (zeroResults || []).length);
       renderTable("top-queries-table", "top-queries-empty", topQueries, function (q) {
-        return "<td>" + esc(q.query) + "</td><td class='num'>" + q.count + "</td><td>" + q.avg_results + "</td>";
+        // Brief §4.5 : "idem depuis Recherches populaires". Colonne
+        // d'action ajoutee au tableau (il n'en avait aucune).
+        return "<td>" + esc(q.query) + "</td><td class='num'>" + q.count + "</td><td>" + q.avg_results + "</td>" +
+               "<td><button type='button' class='zr-vers-regle' data-goto-pane='pane-search-overrides' " +
+               "data-prefill-query='" + esc(q.query) + "'>" + T("Mettre en avant") + "</button></td>";
       });
       renderTable("zero-results-table", "zero-results-empty", zeroResults, function (q) {
         return "<td>" + esc(q.query) + "</td><td class='num'>" + q.count +
                "</td><td class='zr-action-cell'>" +
                "<button type='button' class='zr-suggerer' data-terme='" +
                esc(q.query) + "'>" + T("Corriger") + "</button>" +
+               // Brief §4.5 : le passage de l'observation a l'action.
+               // Complementaire de "Corriger", qui propose un synonyme :
+               // ici on va poser une regle de mise en avant sur cette
+               // requete precise, sans avoir a la retaper.
+               "<button type='button' class='zr-vers-regle' data-goto-pane='pane-search-overrides' " +
+               "data-prefill-query='" + esc(q.query) + "'>" + T("Mettre en avant") + "</button>" +
                "<span class='zr-suggestions' hidden></span></td>";
       });
       wireSuggestionsSynonymes(key);

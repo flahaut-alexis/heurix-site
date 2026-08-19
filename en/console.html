@@ -271,15 +271,15 @@
             <h2 class="console-pane-title">Searches</h2>
 
             <div class="console-tabs" role="tablist" aria-label="Sections of Searches">
-              <button type="button" role="tab" id="obs-tab-populaires" aria-selected="true" aria-controls="obs-tabpanel-populaires" class="console-tab console-tab-active">Popular</button>
-              <button type="button" role="tab" id="obs-tab-sans-resultat" aria-selected="false" aria-controls="obs-tabpanel-sans-resultat" class="console-tab" tabindex="-1">Zero results</button>
+              <button type="button" role="tab" id="obs-tab-populaires" aria-selected="true" aria-controls="obs-tabpanel-populaires" class="console-tab console-tab-active">Popular<span class="console-tab-count" id="obs-tab-populaires-count" hidden></span></button>
+              <button type="button" role="tab" id="obs-tab-sans-resultat" aria-selected="false" aria-controls="obs-tabpanel-sans-resultat" class="console-tab" tabindex="-1">Zero results<span class="console-tab-count" id="obs-tab-sans-resultat-count" hidden></span></button>
               <button type="button" role="tab" id="obs-tab-erreurs" aria-selected="false" aria-controls="obs-tabpanel-erreurs" class="console-tab" tabindex="-1">Errors<span class="nav-badge" id="nav-badge-erreurs-onglet" hidden></span></button>
             </div>
 
             <div role="tabpanel" id="obs-tabpanel-populaires" aria-labelledby="obs-tab-populaires">
               <div class="console-panel" style="margin-top:14px;">
                 <div class="table-scroll"><table class="console-table" id="top-queries-table">
-                  <thead><tr><th>Query</th><th>Count</th><th>Results (avg.)</th></tr></thead>
+                  <thead><tr><th>Query</th><th>Count</th><th>Results (avg.)</th><th></th></tr></thead>
                   <tbody></tbody>
                 </table></div>
                 <p class="console-empty" id="top-queries-empty" hidden>No searches in this period.</p>
@@ -740,7 +740,7 @@
             <h2 class="console-pane-title">Products</h2>
 
             <div class="console-tabs" role="tablist" aria-label="Sections of Products">
-              <button type="button" role="tab" id="obs-tab-vus" aria-selected="true" aria-controls="obs-tabpanel-vus" class="console-tab console-tab-active">Most-viewed</button>
+              <button type="button" role="tab" id="obs-tab-vus" aria-selected="true" aria-controls="obs-tabpanel-vus" class="console-tab console-tab-active">Most-viewed<span class="console-tab-count" id="obs-tab-vus-count" hidden></span></button>
               <button type="button" role="tab" id="obs-tab-associes" aria-selected="false" aria-controls="obs-tabpanel-associes" class="console-tab" tabindex="-1">Bought together</button>
             </div>
 
