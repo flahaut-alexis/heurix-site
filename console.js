@@ -4006,12 +4006,67 @@
         return;
       }
       champCategorie.placeholder = T("Rechercher une catégorie…");
-      document.getElementById("browse-known-fields").innerHTML = browseAttributesCache.map(function (a) {
-        return "<option value='" + esc(a.field) + "'>";
-      }).join("");
     }).catch(function () {
       champCategorie.placeholder = T("— Erreur de chargement —");
       champCategorie.disabled = true;
+    });
+  }
+
+  // Correctif (19 aout 2026, bug signale par Alexis). Meme composant
+  // recherchable que la categorie, mais fonction distincte : la
+  // structure de browseAttributesCache differe ({field, values} plutot
+  // que {category, products}), pas de factorisation forcee entre les
+  // deux au prix d'un parametrage tordu.
+  function wireBrowseAttributeFieldAutocomplete() {
+    var champ = document.getElementById("browse-attribute-field-search");
+    var idCache = document.getElementById("browse-attribute-field");
+    var panneau = document.getElementById("browse-attribute-field-panel");
+    if (!champ || !idCache || !panneau) return;
+
+    function fermerPanneau() {
+      panneau.hidden = true;
+      panneau.innerHTML = "";
+    }
+
+    function filtrer() {
+      var q = champ.value.trim().toLowerCase();
+      var liste = q
+        ? browseAttributesCache.filter(function (a) { return a.field.toLowerCase().indexOf(q) !== -1; })
+        : browseAttributesCache;
+      liste = liste.slice(0, 12);
+      if (!liste.length) {
+        panneau.innerHTML = "<div class='so-autocomplete-empty'>" + T("Aucun attribut ne correspond.") + "</div>";
+        panneau.hidden = false;
+        return;
+      }
+      panneau.innerHTML = liste.map(function (a) {
+        return "<button type='button' class='so-autocomplete-item' data-field='" + esc(a.field) + "'>" +
+          "<span class='so-autocomplete-name'>" + esc(a.field) + "</span>" +
+          "<span class='so-autocomplete-meta'>" + T("{0} valeurs", (a.values || []).length) + "</span>" +
+        "</button>";
+      }).join("");
+      panneau.hidden = false;
+    }
+
+    champ.addEventListener("input", function () { idCache.value = ""; filtrer(); });
+    champ.addEventListener("focus", filtrer);
+
+    panneau.addEventListener("click", function (e) {
+      var item = e.target.closest(".so-autocomplete-item");
+      if (!item) return;
+      var field = item.getAttribute("data-field");
+      idCache.value = field;
+      champ.value = field;
+      fermerPanneau();
+      // Le couplage avec le second champ (valeurs proposees selon
+      // l'attribut choisi) passait par l'evenement "input" du champ
+      // libre -- appel explicite desormais, sinon la liste des valeurs
+      // resterait vide apres une selection.
+      onBrowseFieldInput();
+    });
+
+    document.addEventListener("click", function (e) {
+      if (!champ.contains(e.target) && !panneau.contains(e.target)) fermerPanneau();
     });
   }
 
@@ -4541,6 +4596,7 @@
   function resetAttributeRuleForm() {
     barEditingKey = null;
     document.getElementById("browse-attribute-field").value = "";
+    document.getElementById("browse-attribute-field-search").value = "";
     document.getElementById("browse-attribute-value").value = "";
     document.getElementById("browse-attribute-action").value = "boost";
     document.getElementById("bar-form-title").textContent = T("Ajouter une règle");
@@ -4579,7 +4635,7 @@
       if (session.brDraft) brSimuler(key); else refreshBrowsePreview(key);
     });
     document.getElementById("browse-sort-select").addEventListener("change", function () { refreshBrowsePreview(key); });
-    document.getElementById("browse-attribute-field").addEventListener("input", onBrowseFieldInput);
+    wireBrowseAttributeFieldAutocomplete();
     document.getElementById("bo-cancel-edit-btn").addEventListener("click", resetBrowseOverrideForm);
     document.getElementById("bar-cancel-edit-btn").addEventListener("click", resetAttributeRuleForm);
 
@@ -4687,13 +4743,17 @@
         var src = editBtn || dupBtn;
         barEditingKey = editBtn ? { field: src.getAttribute("data-field"), value: src.getAttribute("data-value") } : null;
         document.getElementById("browse-attribute-field").value = src.getAttribute("data-field");
+        document.getElementById("browse-attribute-field-search").value = src.getAttribute("data-field");
         document.getElementById("browse-attribute-value").value = src.getAttribute("data-value");
         document.getElementById("browse-attribute-action").value = src.getAttribute("data-action");
         document.getElementById("bar-form-title").textContent = editBtn ? T("Modifier la règle") : T("Dupliquer — modifiez au moins un champ");
         document.getElementById("bar-submit-btn").textContent = editBtn ? T("Enregistrer les modifications") : T("Créer cette règle");
         document.getElementById("bar-cancel-edit-btn").hidden = false;
-        document.getElementById("browse-attribute-field").scrollIntoView({ behavior: "smooth", block: "center" });
-        if (dupBtn) { document.getElementById("browse-attribute-field").focus(); document.getElementById("browse-attribute-field").select(); }
+        // Correctif (19 aout 2026) : cible le champ VISIBLE -- l'ancien
+        // id porte desormais un <input type=hidden>, sur lequel
+        // scrollIntoView/focus/select n'ont aucun effet.
+        document.getElementById("browse-attribute-field-search").scrollIntoView({ behavior: "smooth", block: "center" });
+        if (dupBtn) { document.getElementById("browse-attribute-field-search").focus(); document.getElementById("browse-attribute-field-search").select(); }
         return;
       }
       if (delBtn) {

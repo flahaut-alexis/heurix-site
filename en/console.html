@@ -605,10 +605,13 @@
                 <h2 id="bar-form-title" style="margin-top:18px;">Add a rule</h2>
                 <form id="browse-attribute-rule-form" class="catalog-rule-add">
                   <div class="catalog-rule-add-row">
-                    <input type="text" placeholder="Field, e.g. brand" id="browse-attribute-field" list="browse-known-fields" required>
+                    <div class="so-autocomplete" style="position:relative; flex:1;">
+                      <input type="text" placeholder="Field, e.g. brand" id="browse-attribute-field-search" autocomplete="off" required>
+                      <input type="hidden" id="browse-attribute-field">
+                      <div class="so-autocomplete-panel" id="browse-attribute-field-panel" hidden></div>
+                    </div>
                     <input type="text" placeholder="Value, e.g. Makita" id="browse-attribute-value" list="browse-known-values" required>
                   </div>
-                  <datalist id="browse-known-fields"></datalist>
                   <datalist id="browse-known-values"></datalist>
                   <select id="browse-attribute-action" style="margin-top:8px;">
                     <option value="boost">Boost</option>
