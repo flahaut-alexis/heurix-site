@@ -230,6 +230,8 @@
     "En stock uniquement": "In stock only",
     "Créer": "Create",
     "Modifier": "Edit",
+    "pertinence du mot": "word relevance",
+    "popularité": "popularity",
     "Priorité": "Priority",
     "Période de diffusion définie": "Diffusion period set",
     "Inactive": "Inactive",

@@ -2077,14 +2077,21 @@
   }
 
   // Correctif (19 aout 2026, brief §4.1). Version textuelle simple pour
-  // la ligne "Classement" -- le vrai calcul pertinence/popularite en
-  // pourcentages n'existe pas cote backend (verifie dans heurix-engine
-  // avant de construire), jamais de faux pourcentage invente en
-  // attendant. Differencie seulement selon si la popularite intervient
-  // reellement (meme condition que popularity_boost cote backend :
-  // uniquement sur une vraie requete textuelle).
-  function soPipelineClassement(q) {
-    return q ? T("pertinence du mot + popularité récente") : T("ordre alphabétique");
+  // Correctif (19 aout 2026, brief §4.1). popularity_impact_pct
+  // desormais expose par le backend (verifie et deploye avant de
+  // construire) -- le vrai pourcentage remplace l'ancienne version
+  // textuelle. Affiche l'impact du PREMIER resultat (le mieux classe) :
+  // le pipeline reste global a la recherche, pas par carte, et le
+  // premier resultat illustre le mieux "pourquoi ce produit est en
+  // tete", coherent avec l'exemple du brief (un seul produit precis).
+  function soPipelineClassement(q, hits) {
+    if (!q) return T("ordre alphabétique");
+    var premier = hits && hits[0];
+    if (premier && typeof premier.popularity_impact_pct === "number") {
+      var signe = premier.popularity_impact_pct >= 0 ? "+" : "";
+      return T("pertinence du mot") + " · " + T("popularité") + " " + signe + premier.popularity_impact_pct + "%";
+    }
+    return T("pertinence du mot + popularité récente");
   }
 
   // Correctif (19 aout 2026, retour Alexis apres capture reelle) :
@@ -2113,7 +2120,7 @@
     var etapesTexte = [
       [T("Compréhension"), soPipelineComprehension(q, hits)],
       [T("Correspondance"), T("{0} produits sur {1} contiennent ces mots", hits.length, data.total)],
-      [T("Classement"), soPipelineClassement(q)],
+      [T("Classement"), soPipelineClassement(q, hits)],
       [T("Vos règles"), texteRegles],
     ];
     etapes.innerHTML = etapesTexte.map(function (e, i) {
