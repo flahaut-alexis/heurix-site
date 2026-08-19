@@ -764,7 +764,7 @@
     }).catch(function () {});
   }
 
-  var ALL_PANE_IDS = ["pane-overview", "pane-guides", "pane-recherches", "pane-search-overrides", "pane-produits", "pane-segmentation",
+  var ALL_PANE_IDS = ["pane-overview", "pane-guides", "pane-recherches", "pane-search-overrides", "pane-vocabulaire", "pane-produits", "pane-segmentation",
     "pane-browse", "pane-catalog-help", "pane-catalog-list", "pane-billing", "pane-company", "pane-team", "pane-key", "pane-feedback",
     // Ajoute le 29 juillet. Cette liste est une LISTE BLANCHE : un pave
     // absent d'ici s'affiche vide, sans erreur en console -- symptome
