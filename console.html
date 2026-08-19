@@ -826,25 +826,41 @@
               <div class="console-panel">
                 <div class="catalog-card-row" style="margin-bottom:14px;">
                   <h2 style="margin:0; flex:1;">Aperçu du classement</h2>
-                  <label for="browse-sort-select" style="font-size:12.5px; font-weight:700; color:var(--ink-muted);">Classement de base</label>
-                  <select id="browse-sort-select" aria-label="Classement de base">
-                    <option value="stock">Stock disponible</option>
-                    <option value="recent">Plus récent</option>
-                    <option value="alphabetical">Alphabétique</option>
-                    <option value="price_asc">Prix croissant</option>
-                    <option value="price_desc">Prix décroissant</option>
-                    <option value="margin">Marge</option>
-                    <option value="popular">Popularité (clics + achats)</option>
-                  </select>
+                </div>
+                <!-- Correctif (19 aout 2026, brief §4.2 "Ligne de controles
+                     unifiee -- les deux moities d'une meme decision, cote
+                     a cote, toutes deux nommees"). Fusionne les deux blocs
+                     Categorie/Classement, jusqu'ici l'un apres l'autre --
+                     structure d'imbrication verifiee avant de deplacer
+                     quoi que ce soit (Categorie vivait dans br-toolbar,
+                     Classement hors, aucun id touche pour ne pas casser
+                     le JS existant). Modele Adobe Live Search cite par le
+                     brief : colonnes "Category" et "Ranking Strategy". -->
+                <div class="catalog-card-row br-controles-unifies">
+                  <div class="br-controle-champ">
+                    <label for="browse-category-select">Catégorie</label>
+                    <select id="browse-category-select" disabled><option value="">— Choisir un catalogue d'abord —</option></select>
+                  </div>
+                  <div class="br-controle-champ">
+                    <label for="browse-sort-select">Classement de base</label>
+                    <select id="browse-sort-select" aria-label="Classement de base">
+                      <!-- Correctif (19 aout 2026, brief §4.2) : "c'est un
+                           tri, il se formule par un verbe ou un ordre, pas
+                           par un etat" -- se confondait avec la case
+                           "Masquer les produits en rupture" du meme ecran. -->
+                      <option value="stock">Produits en stock d'abord</option>
+                      <option value="recent">Plus récent</option>
+                      <option value="alphabetical">Alphabétique</option>
+                      <option value="price_asc">Prix croissant</option>
+                      <option value="price_desc">Prix décroissant</option>
+                      <option value="margin">Marge</option>
+                      <option value="popular">Popularité (clics + achats)</option>
+                    </select>
+                  </div>
                 </div>
                 <div class="br-toolbar">
 
               <p class="console-panel-note" style="margin:0 0 14px;">Classez vos produits dans une page de catégorie de votre site, sans recherche — <a href="docs.html#ep-browse">documentation complète</a>. Choisissez un catalogue puis une catégorie pour commencer.</p>
-              <div class="catalog-card-row">
-                
-                <label style="font-size:12.5px; font-weight:700; color:var(--ink-muted);">Catégorie</label>
-                <select id="browse-category-select" disabled><option value="">— Choisir un catalogue d'abord —</option></select>
-              </div>
               <p class="console-empty" id="browse-no-categories" hidden>Aucune catégorie détectée sur ce catalogue — indexez vos produits avec un champ <code class="docs-inline-code">categories</code> ou <code class="docs-inline-code">category</code> pour en voir apparaître ici.</p>
             
                 </div>

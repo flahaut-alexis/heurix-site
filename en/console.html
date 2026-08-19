@@ -552,25 +552,28 @@
               <div class="console-panel">
                 <div class="catalog-card-row" style="margin-bottom:14px;">
                   <h2 style="margin:0; flex:1;">Ranking preview</h2>
-                  <label for="browse-sort-select" style="font-size:12.5px; font-weight:700; color:var(--ink-muted);">Base ranking</label>
-                  <select id="browse-sort-select" aria-label="Base ranking">
-                    <option value="stock">In-stock products first</option>
-                    <option value="recent">Most recent</option>
-                    <option value="alphabetical">Alphabetical</option>
-                    <option value="price_asc">Price ascending</option>
-                    <option value="price_desc">Price descending</option>
-                    <option value="margin">Margin</option>
-                    <option value="popular">Popularity (clicks + purchases)</option>
-                  </select>
+                </div>
+                <div class="catalog-card-row br-controles-unifies">
+                  <div class="br-controle-champ">
+                    <label for="browse-category-select">Category</label>
+                    <select id="browse-category-select" disabled><option value="">— Choose a catalog first —</option></select>
+                  </div>
+                  <div class="br-controle-champ">
+                    <label for="browse-sort-select">Base ranking</label>
+                    <select id="browse-sort-select" aria-label="Base ranking">
+                      <option value="stock">In-stock products first</option>
+                      <option value="recent">Most recent</option>
+                      <option value="alphabetical">Alphabetical</option>
+                      <option value="price_asc">Price ascending</option>
+                      <option value="price_desc">Price descending</option>
+                      <option value="margin">Margin</option>
+                      <option value="popular">Popularity (clicks + purchases)</option>
+                    </select>
+                  </div>
                 </div>
                 <div class="br-toolbar">
 
               <p class="console-panel-note" style="margin:0 0 14px;">Rank your products on a category page on your site, with no search involved — <a href="../docs.html#ep-browse">full documentation</a>. Choose a catalog, then a category, to get started.</p>
-              <div class="catalog-card-row">
-                
-                <label style="font-size:12.5px; font-weight:700; color:var(--ink-muted);">Category</label>
-                <select id="browse-category-select" disabled><option value="">— Choose a catalog first —</option></select>
-              </div>
               <p class="console-empty" id="browse-no-categories" hidden>No category detected on this catalog — index your products with a <code class="docs-inline-code">categories</code> or <code class="docs-inline-code">category</code> field to see them appear here.</p>
             
                 </div>

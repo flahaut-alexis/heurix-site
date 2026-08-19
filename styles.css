@@ -2338,6 +2338,15 @@ body.docs-dark .why-card p{ color:#CDD2F0; }
 .catalog-card-meta{ font-size:12.5px; color:var(--ink-muted); margin-bottom:16px; }
 .catalog-card-row{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:14px; }
 .catalog-card-row label{ font-size:12.5px; font-weight:700; color:var(--ink-muted); white-space:nowrap; }
+
+/* Correctif (19 aout 2026, brief §4.2 "Ligne de controles unifiee").
+   .catalog-card-row (deja flex) aligne deja les deux champs cote a cote
+   -- chaque champ empile son propre label au-dessus de son select,
+   compact, plutot que le comportement bloc par defaut (l'un sous
+   l'autre a l'interieur du meme champ). */
+.br-controles-unifies{ align-items:flex-end; }
+.br-controle-champ{ display:flex; flex-direction:column; gap:4px; }
+.br-controle-champ label{ margin:0; }
 .catalog-rulepack-select{
   font-family:'Plus Jakarta Sans', sans-serif; font-size:13.5px; color:var(--ink);
   border:1.5px solid var(--line); border-radius:8px; padding:7px 10px; background:#fff;
