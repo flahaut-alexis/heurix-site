@@ -951,6 +951,20 @@
                     <option value="boost">Booster (boost)</option>
                     <option value="bury">Reléguer en fin de liste</option>
                   </select>
+                  <!-- Brief §4.2 (19 aout 2026) : "intensite en trois crans,
+                       jamais un score numerique". Masque sur une relegation
+                       -- la valeur serait stockee mais jamais lue cote
+                       moteur (une relegation gagne toujours, sans
+                       gradation), l'afficher promettrait un effet
+                       inexistant. -->
+                  <div id="bar-intensite-wrap" style="margin-top:8px;">
+                    <label for="browse-attribute-intensite" style="font-size:12.5px; font-weight:700; color:var(--ink-muted); display:block; margin-bottom:4px;">Intensité de la favorisation</label>
+                    <select id="browse-attribute-intensite">
+                      <option value="faible">Faible — devant le classement naturel</option>
+                      <option value="moyen" selected>Moyen</option>
+                      <option value="fort">Fort — devant les autres favorisés</option>
+                    </select>
+                  </div>
                   <button type="submit" class="catalog-rule-add-btn" id="bar-submit-btn">Ajouter la règle</button>
                   <button type="button" class="btn btn-ghost" id="bar-cancel-edit-btn" hidden style="margin-left:8px;">Annuler la modification</button>
                   <span class="catalog-rule-status" id="browse-attribute-rule-status"></span>

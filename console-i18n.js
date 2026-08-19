@@ -230,6 +230,8 @@
     "En stock uniquement": "In stock only",
     "Créer": "Create",
     "Modifier": "Edit",
+    "faible": "low",
+    "fort": "high",
     "Aucun attribut ne correspond.": "No attribute matches.",
     "{0} valeurs": "{0} values",
     "Aucune catégorie ne correspond.": "No category matches.",

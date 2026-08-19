@@ -4070,6 +4070,17 @@
     });
   }
 
+  // Brief §4.2 : l'intensite ne concerne QUE la favorisation. Sur une
+  // relegation, le moteur stocke la valeur mais ne la lit jamais (une
+  // relegation gagne toujours, sans gradation) -- laisser le champ
+  // visible promettrait un effet inexistant.
+  function majVisibiliteIntensite() {
+    var wrap = document.getElementById("bar-intensite-wrap");
+    var action = document.getElementById("browse-attribute-action");
+    if (!wrap || !action) return;
+    wrap.hidden = action.value !== "boost";
+  }
+
   function onBrowseFieldInput() {
     var field = document.getElementById("browse-attribute-field").value.trim();
     var entry = browseAttributesCache.filter(function (a) { return a.field === field; })[0];
@@ -4574,9 +4585,15 @@
     apiFetch(url, key).then(function (data) {
       renderTable("browse-attribute-rules-table", "browse-attribute-rules-empty", data.rules, function (r) {
         return "<td class='mono'>" + esc(r.field) + "</td><td class='mono'>" + esc(r.value) + "</td><td>" +
-          T(r.action === "boost" ? "Booster" : "Reléguer") + "</td><td style='white-space:nowrap;'>" +
-          "<button type='button' class='catalog-rule-remove' data-edit-attribute='1' data-field='" + esc(r.field) + "' data-value='" + esc(r.value) + "' data-action='" + esc(r.action) + "' aria-label='" + T("Modifier") + "' title='" + T("Modifier") + "' style='margin-right:6px;'>&#9998;</button>" +
-          "<button type='button' class='catalog-rule-remove' data-duplicate-attribute='1' data-field='" + esc(r.field) + "' data-value='" + esc(r.value) + "' data-action='" + esc(r.action) + "' aria-label='" + T("Dupliquer") + "' title='" + T("Dupliquer") + "' style='margin-right:6px;'>&#10697;</button>" +
+          // Brief §4.2 : l'intensite n'est affichee que sur un boost --
+          // stockee mais jamais lue sur une relegation, l'afficher
+          // laisserait croire a un effet inexistant.
+          T(r.action === "boost" ? "Booster" : "Reléguer") +
+          (r.action === "boost" && r.intensite && r.intensite !== "moyen"
+            ? " <span class='so-regle-indicateur'>" + esc(T(r.intensite)) + "</span>" : "") +
+          "</td><td style='white-space:nowrap;'>" +
+          "<button type='button' class='catalog-rule-remove' data-edit-attribute='1' data-field='" + esc(r.field) + "' data-value='" + esc(r.value) + "' data-action='" + esc(r.action) + "' data-intensite='" + esc(r.intensite || "moyen") + "' aria-label='" + T("Modifier") + "' title='" + T("Modifier") + "' style='margin-right:6px;'>&#9998;</button>" +
+          "<button type='button' class='catalog-rule-remove' data-duplicate-attribute='1' data-field='" + esc(r.field) + "' data-value='" + esc(r.value) + "' data-action='" + esc(r.action) + "' data-intensite='" + esc(r.intensite || "moyen") + "' aria-label='" + T("Dupliquer") + "' title='" + T("Dupliquer") + "' style='margin-right:6px;'>&#10697;</button>" +
           "<button type='button' class='catalog-rule-remove' " +
           "data-remove-attribute-field='" + esc(r.field) + "' data-remove-attribute-value='" + esc(r.value) + "' aria-label='" + T("Retirer") + "'>&times;</button></td>";
       });
@@ -4597,6 +4614,8 @@
     barEditingKey = null;
     document.getElementById("browse-attribute-field").value = "";
     document.getElementById("browse-attribute-field-search").value = "";
+    document.getElementById("browse-attribute-intensite").value = "moyen";
+    majVisibiliteIntensite();
     document.getElementById("browse-attribute-value").value = "";
     document.getElementById("browse-attribute-action").value = "boost";
     document.getElementById("bar-form-title").textContent = T("Ajouter une règle");
@@ -4636,6 +4655,8 @@
     });
     document.getElementById("browse-sort-select").addEventListener("change", function () { refreshBrowsePreview(key); });
     wireBrowseAttributeFieldAutocomplete();
+    document.getElementById("browse-attribute-action").addEventListener("change", majVisibiliteIntensite);
+    majVisibiliteIntensite();
     document.getElementById("bo-cancel-edit-btn").addEventListener("click", resetBrowseOverrideForm);
     document.getElementById("bar-cancel-edit-btn").addEventListener("click", resetAttributeRuleForm);
 
@@ -4716,14 +4737,15 @@
       var field = document.getElementById("browse-attribute-field").value.trim();
       var value = document.getElementById("browse-attribute-value").value.trim();
       var action = document.getElementById("browse-attribute-action").value;
+      var intensite = document.getElementById("browse-attribute-intensite").value;
       if (!field || !value) return;
       var base = "/v1/browse/" + encodeURIComponent(session.browseCurrentCatalog) + "/" + encodeURIComponent(session.browseCurrentCategory) + "/attribute-rules";
 
       var needsCleanup = barEditingKey && (barEditingKey.field !== field || barEditingKey.value !== value);
       var chain = needsCleanup
         ? apiFetch(base + "?field=" + encodeURIComponent(barEditingKey.field) + "&value=" + encodeURIComponent(barEditingKey.value), key, { method: "DELETE" })
-            .then(function () { return apiFetch(base, key, { method: "POST", body: { field: field, value: value, action: action } }); })
-        : apiFetch(base, key, { method: "POST", body: { field: field, value: value, action: action } });
+            .then(function () { return apiFetch(base, key, { method: "POST", body: { field: field, value: value, action: action, intensite: intensite } }); })
+        : apiFetch(base, key, { method: "POST", body: { field: field, value: value, action: action, intensite: intensite } });
 
       chain.then(function () {
         status.textContent = T("Règle d'attribut enregistrée."); status.className = "catalog-rule-status ok";
@@ -4746,6 +4768,8 @@
         document.getElementById("browse-attribute-field-search").value = src.getAttribute("data-field");
         document.getElementById("browse-attribute-value").value = src.getAttribute("data-value");
         document.getElementById("browse-attribute-action").value = src.getAttribute("data-action");
+        document.getElementById("browse-attribute-intensite").value = src.getAttribute("data-intensite") || "moyen";
+        majVisibiliteIntensite();
         document.getElementById("bar-form-title").textContent = editBtn ? T("Modifier la règle") : T("Dupliquer — modifiez au moins un champ");
         document.getElementById("bar-submit-btn").textContent = editBtn ? T("Enregistrer les modifications") : T("Créer cette règle");
         document.getElementById("bar-cancel-edit-btn").hidden = false;

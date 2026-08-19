@@ -617,6 +617,14 @@
                     <option value="boost">Boost</option>
                     <option value="bury">Bury</option>
                   </select>
+                  <div id="bar-intensite-wrap" style="margin-top:8px;">
+                    <label for="browse-attribute-intensite" style="font-size:12.5px; font-weight:700; color:var(--ink-muted); display:block; margin-bottom:4px;">Boost strength</label>
+                    <select id="browse-attribute-intensite">
+                      <option value="faible">Low — ahead of natural ranking</option>
+                      <option value="moyen" selected>Medium</option>
+                      <option value="fort">High — ahead of other boosted products</option>
+                    </select>
+                  </div>
                   <button type="submit" class="catalog-rule-add-btn" id="bar-submit-btn">Add rule</button>
                   <button type="button" class="btn btn-ghost" id="bar-cancel-edit-btn" hidden style="margin-left:8px;">Cancel edit</button>
                   <span class="catalog-rule-status" id="browse-attribute-rule-status"></span>
