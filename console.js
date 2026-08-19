@@ -2050,15 +2050,65 @@
   // devient 'saisi' ; 'terme' disparait"), sans jamais afficher la
   // forme brute. Deduplique sur l'ensemble des hits : la correction
   // s'applique a la requete entiere, pas a un seul produit.
+  // Correctif (19 aout 2026, brief §4.1 "Explication du classement" --
+  // tableau detaille par carte). Extrait de soPipelineComprehension pour
+  // devenir une vraie fonction partagee : le tableau detaille en a
+  // besoin aussi (variant, token ET penalty, cette derniere jusqu'ici
+  // capturee par le regex mais jamais lue), plutot que de dupliquer ce
+  // meme parsing une troisieme fois. Retourne null sur une ligne qui ne
+  // correspond pas a ce format (ex. "annotation #...").
+  function soParserLigneMatched(ligne) {
+    var m = ligne.match(/terme '([^']+)' \(depuis '([^']+)', x([\d.]+)\)/);
+    if (!m) return null;
+    return { variant: m[1], token: m[2], penalty: parseFloat(m[3]) };
+  }
+
+  // Correctif (19 aout 2026, brief §4.1 "Explication du classement" --
+  // "panneau deplie, tableau a trois colonnes"). Meme reformulation
+  // deja validee (soParserLigneMatched, "rapproche de") plutot qu'une
+  // deuxieme version divergente. Signe NEGATIF sur le pourcentage
+  // "Mot trouve" : (1-penalty) mesure combien un match imparfait
+  // contribue MOINS qu'un match exact, jamais un gain -- l'exemple du
+  // brief le montre explicitement ("-65%"), jamais positif sur cette
+  // ligne precise (contrairement a Popularite, qui peut vraiment
+  // augmenter le score).
+  function soCardTableauDetaille(h, i) {
+    var lignes = [];
+    (h.matched || []).forEach(function (m) {
+      var p = soParserLigneMatched(m);
+      if (!p) return;
+      var pct = Math.round((1 - p.penalty) * 100);
+      var texte = p.variant === p.token
+        ? T("« {0} »", p.token)
+        : T("« {0} » rapproché de « {1} »", p.token, p.variant);
+      lignes.push([T("Mot trouvé"), texte, pct === 0 ? "—" : ("-" + pct + "%")]);
+    });
+    if (typeof h.popularity_impact_pct === "number") {
+      var pctPop = h.popularity_impact_pct;
+      var signePop = pctPop >= 0 ? "+" : "";
+      lignes.push([T("Popularité"), "", signePop + pctPop + "%"]);
+    }
+    var texteRegle = h.pinned ? T("épinglé") : (h.buried ? T("relégué") : T("aucune"));
+    lignes.push([T("Règle"), texteRegle, "—"]);
+
+    var lignesHtml = lignes.map(function (l) {
+      return "<div class='so-card-detail-ligne'><span>" + esc(l[0]) + "</span><span>" + l[1] + "</span><span>" + esc(l[2]) + "</span></div>";
+    }).join("");
+
+    return "<div class='so-card-detail'>" + lignesHtml +
+      "<div class='so-card-detail-resultat'><span>" + T("Résultat") + "</span><span>" + T("score {0}", h.score) + "</span><span>" + T("position {0}", i + 1) + "</span></div>" +
+      "</div>";
+  }
+
   function soPipelineComprehension(q, hits) {
     var corrections = {};
     var ordre = [];
     hits.forEach(function (h) {
       (h.matched || []).forEach(function (m) {
-        var match = m.match(/terme '([^']+)' \(depuis '([^']+)', x([\d.]+)\)/);
-        if (match && match[1] !== match[2] && !corrections[match[2]]) {
-          corrections[match[2]] = match[1];
-          ordre.push(match[2]);
+        var p = soParserLigneMatched(m);
+        if (p && p.variant !== p.token && !corrections[p.token]) {
+          corrections[p.token] = p.variant;
+          ordre.push(p.token);
         }
       });
     });
@@ -2282,9 +2332,29 @@
             (enRupture ? T("Rupture") : T("En stock")) + "</span>";
           var prix = (p.price !== undefined && p.price !== null)
             ? "<span class='so-card-price'>" + Number(p.price).toLocaleString(LOCALE, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €</span>" : "";
-          var pourquoi = (q && (h.matched || []).length)
-            ? "<div class='so-card-why'>" + esc(h.matched.slice(0, 2).join(" · ")) + "</div>"
-            : (q && h.pinned ? "<div class='so-card-why'>" + T("Injecté par une règle") + "</div>" : "");
+          // Correctif (19 aout 2026, brief §4.1 "Explication du classement" --
+          // "ne jamais afficher la forme brute actuelle terme 'tournevis'
+          // (depuis 'tournevisse', x0.35)"). Vrai bug preexistant repere
+          // sur une capture reelle d'Alexis (texte brut visible sous les
+          // cartes epinglees) -- corrige au meme geste que la construction
+          // du tableau detaille, qui a besoin du meme parsing reformule.
+          // <details> plutot que le pattern bouton+panneau du pipeline :
+          // decalage reste LOCAL a la carte (pas toute la page), et
+          // jusqu'a 96 cartes affichees (reglages d'apercu) rendent un
+          // ecouteur JS separe par carte moins leger qu'un element natif.
+          var pourquoi = "";
+          if (q && (h.matched || []).length) {
+            var partiesWhy = (h.matched || []).map(soParserLigneMatched).filter(Boolean).map(function (p) {
+              return p.variant === p.token
+                ? T("« {0} »", p.token)
+                : T("« {0} » rapproché de « {1} »", p.token, p.variant);
+            });
+            var resumeWhy = partiesWhy.slice(0, 2).join(", ");
+            var detailWhy = soCardTableauDetaille(h, i);
+            pourquoi = "<details class='so-card-why'><summary>" + T("Trouvé sur {0}", esc(resumeWhy)) + "</summary>" + detailWhy + "</details>";
+          } else if (q && h.pinned) {
+            pourquoi = "<div class='so-card-why'>" + T("Injecté par une règle") + "</div>";
+          }
 
           var pid = esc(p.id);
           var ICONE = ICONES_FICHE;

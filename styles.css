@@ -3323,9 +3323,37 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 }
 .so-card-badge-pin{ background:var(--blue); color:#fff; }
 .so-card-badge-bury{ background:#FBE4E1; color:#C0392B; }
+/* Correctif (19 aout 2026, brief §4.1 "Explication du classement") :
+   so-card-why est desormais un <details> (le contenu deplie porte le
+   vrai tableau a trois colonnes), plus un simple <div> -- reste
+   visuellement identique au repos (aucune regle ci-dessous ne changeait
+   avec le display type), summary stylee separement pour le curseur et
+   le chevron. */
 .so-card-why{
   margin-top:8px; padding-top:8px; border-top:1px dashed var(--line);
   font-size:11px; color:var(--ink-muted); line-height:1.45;
+}
+.so-card-why summary{ cursor:pointer; list-style:none; }
+.so-card-why summary::-webkit-details-marker{ display:none; }
+.so-card-why summary::after{ content:" ▸"; }
+.so-card-why[open] summary::after{ content:" ▾"; }
+.so-card-detail{
+  margin-top:6px; padding-top:6px; border-top:1px dashed var(--line);
+  display:flex; flex-direction:column; gap:3px;
+}
+.so-card-detail-ligne, .so-card-detail-resultat{
+  display:grid; grid-template-columns:1fr 1.4fr auto; gap:6px; align-items:baseline;
+  font-size:11px; color:var(--ink-muted);
+}
+.so-card-detail-ligne span:first-child, .so-card-detail-resultat span:first-child{
+  font-weight:700; color:var(--ink);
+}
+.so-card-detail-ligne span:last-child, .so-card-detail-resultat span:last-child{
+  text-align:right; white-space:nowrap;
+}
+.so-card-detail-resultat{
+  margin-top:3px; padding-top:5px; border-top:1px solid var(--line);
+  font-weight:600;
 }
 .so-grid-caption{ font-size:12.5px; color:var(--ink-muted); margin:14px 0 0; }
 
