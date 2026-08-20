@@ -3141,13 +3141,12 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
      Centree sur la zone de contenu (sidebar 220px + gouttiere 32px a
      gauche) plutot que sur toute la fenetre, pour rester alignee avec la
      colonne qu'elle concerne. */
-  position:fixed; left:calc(50% + 126px); transform:translateX(-50%);
-  bottom:16px; width:min(760px, calc(100vw - 320px)); z-index:60;
+  /* left et width sont poses par simuBarAligner() depuis la position
+     REELLE de la grille : le CSS ne peut pas la connaitre (elle depend
+     de la sidebar, du rail et de la largeur d'ecran). Valeurs de depart
+     seulement, avant la premiere mesure. */
+  position:fixed; left:16px; right:16px; bottom:16px; z-index:60;
   box-shadow:0 -4px 24px rgba(178,106,0,0.22);
-}
-@media (max-width:900px){
-  /* Sidebar empilee : plus de decalage a compenser. */
-  .so-simu-bar{ left:50%; width:calc(100vw - 32px); }
 }
 .so-simu-bar[hidden]{ display:none; }
 .so-simu-tag{

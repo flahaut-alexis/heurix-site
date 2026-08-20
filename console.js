@@ -1938,6 +1938,27 @@
   // le rendu des fiches.
   var soFiltres = [];
 
+  // Correctif (20 aout 2026, retour Alexis : "aligner la barre sur la
+  // grille de resultats"). La barre est en position:fixed -- elle a donc
+  // quitte le flux et ne peut plus heriter de la largeur de la colonne.
+  // Un calcul en pourcentages ne peut pas tomber juste : la position de
+  // la grille depend de la sidebar, du rail contextuel et de la largeur
+  // d'ecran. Mesure faite en direct avec Alexis, l'ecart etait de 157px
+  // a gauche et 46px de trop en largeur.
+  //
+  // On lit donc la position reelle de la grille au moment de l'afficher,
+  // et on la reapplique au redimensionnement.
+  function simuBarAligner(prefix) {
+    var bar = document.getElementById(prefix + "-simu-bar");
+    var grille = document.getElementById(prefix === "so" ? "so-preview-grid" : "br-grid");
+    if (!bar || !grille || bar.hidden) return;
+    var r = grille.getBoundingClientRect();
+    if (!r.width) return;
+    bar.style.left = Math.round(r.left) + "px";
+    bar.style.width = Math.round(r.width) + "px";
+    bar.style.transform = "none";
+  }
+
   function simuBarUpdate(prefix, draft) {
     var bar = document.getElementById(prefix + "-simu-bar");
     var texte = document.getElementById(prefix + "-simu-text");
@@ -1946,7 +1967,15 @@
     if (texte) {
       texte.textContent = T(n > 1 ? "{0} changements non publiés. Vos visiteurs voient toujours le classement actuel." : "{0} changement non publié. Vos visiteurs voient toujours le classement actuel.", n);
     }
+    simuBarAligner(prefix);
   }
+
+  // Les deux barres suivent le redimensionnement. Un seul ecouteur pour
+  // les deux pages : celle qui est masquee sort d'elle-meme.
+  window.addEventListener("resize", function () {
+    simuBarAligner("so");
+    simuBarAligner("br");
+  });
 
   // Correctif Lot 2 (audit UX console, 17 aout 2026) : annulation avec
   // retour arriere (regle 4, partie 5 du brief -- toute action
