@@ -230,6 +230,8 @@
     "En stock uniquement": "In stock only",
     "Créer": "Create",
     "Modifier": "Edit",
+    "Cette recherche ne renvoie aucun résultat": "This search returns no results",
+    "Recherches récentes de vos visiteurs": "What your visitors searched for",
     "Optimiser → Vocabulaire du moteur": "Optimize → Engine vocabulary",
     "{0} règles affichées sur {1}": "{0} of {1} rules shown",
     "{0} sans conséquence": "{0} harmless",

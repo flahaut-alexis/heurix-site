@@ -2124,22 +2124,50 @@
       var frequentes = resultats[0].queries || [];
       var sansResultat = resultats[1].queries || [];
       if (!frequentes.length && !sansResultat.length) { conteneur.hidden = true; return; }
+
+      // Correctif (20 aout 2026, capture Alexis). Cette fonction est
+      // ASYNCHRONE : lancee quand le champ est vide, elle revenait apres
+      // que l'utilisateur ait tape et reaffichait l'amorce PAR-DESSUS
+      // les resultats. On revalide l'etat du champ au retour des appels
+      // plutot qu'a leur depart.
+      var champActuel = document.getElementById("so-preview-query");
+      if (champActuel && champActuel.value.trim()) { conteneur.hidden = true; return; }
+
       conteneur.hidden = false;
-      function bloc(titre, icone, liste) {
-        if (!liste.length) return "";
-        return "<div class='so-amorce-bloc'>" +
-          "<span class='so-amorce-titre'>" + icone + " " + titre + "</span>" +
-          "<div class='so-amorce-chips'>" +
-            liste.map(function (r) {
-              return "<button type='button' class='so-amorce-chip' data-so-amorce-query='" + esc(r.query) + "'>" + esc(r.query) + "</button>";
-            }).join("") +
-          "</div>" +
-        "</div>";
-      }
+
+      // Correctif (20 aout 2026, retour Alexis : "trop d'espace, trop de
+      // volume, on ne voit plus les resultats"). Une seule rangee au lieu
+      // de deux blocs titres : deux titres, deux paragraphes et deux
+      // marges pour montrer une dizaine de mots etait disproportionne.
+      // Les requetes sans resultat restent distinguees par un point
+      // ambre plutot que par un bloc separe.
+      //
+      // Six suggestions au lieu de huit par bloc : l'amorce suggere, elle
+      // n'enumere pas -- au-dela on lit une liste, plus un raccourci.
+      var LIMITE_CHIPS = 6;
+      var vues = {};
+      var chips = [];
+      sansResultat.slice(0, 3).forEach(function (r) {
+        vues[r.query] = true;
+        chips.push({ query: r.query, vide: true });
+      });
+      frequentes.forEach(function (r) {
+        if (chips.length >= LIMITE_CHIPS || vues[r.query]) return;
+        vues[r.query] = true;
+        chips.push({ query: r.query, vide: false });
+      });
+
       conteneur.innerHTML =
-        "<p class='so-amorce-titre-principal'>" + T("Que tapent vos visiteurs ?") + "</p>" +
-        bloc(T("Recherches fréquentes"), "&#128200;", frequentes) +
-        bloc(T("Sans résultat"), "&#9888;", sansResultat);
+        "<p class='so-amorce-titre-principal'>" + T("Recherches récentes de vos visiteurs") + "</p>" +
+        "<div class='so-amorce-chips'>" +
+          chips.map(function (c) {
+            return "<button type='button' class='so-amorce-chip" + (c.vide ? " so-amorce-chip-vide" : "") + "'" +
+              " data-so-amorce-query='" + esc(c.query) + "'" +
+              (c.vide ? " title='" + escAttr(T("Cette recherche ne renvoie aucun résultat")) + "'" : "") + ">" +
+              esc(c.query) +
+            "</button>";
+          }).join("") +
+        "</div>";
     }).catch(function () { conteneur.hidden = true; });
   }
 

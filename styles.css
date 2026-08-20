@@ -3349,11 +3349,24 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 
 /* Correctif (18 aout 2026, brief §"Etat initial, aucune recherche
    saisie -- ecran d'amorce"). */
-.so-preview-amorce{ padding:20px 0; }
-.so-amorce-titre-principal{ font-size:16px; font-weight:800; margin:0 0 16px; }
-.so-amorce-bloc{ margin-bottom:16px; }
-.so-amorce-titre{ font-size:12.5px; font-weight:700; color:var(--ink-muted); display:block; margin-bottom:8px; }
+/* Correctif (20 aout 2026, retour Alexis). L'amorce occupait ~400px
+   avant les resultats : titre en 16px, deux sous-blocs titres, marges
+   genereuses. Elle sert a suggerer quoi taper quand on ne sait pas --
+   pas a meubler. Ramenee a un titre discret et une rangee de pastilles.
+   .so-amorce-bloc et .so-amorce-titre n'ont plus d'usage (structure a
+   deux blocs supprimee), retirees plutot que laissees en CSS mort. */
+.so-preview-amorce{ padding:4px 0 14px; }
+.so-amorce-titre-principal{
+  font-size:12.5px; font-weight:700; color:var(--ink-muted); margin:0 0 8px;
+}
 .so-amorce-chips{ display:flex; flex-wrap:wrap; gap:8px; }
+/* Une requete sans resultat reste cliquable -- c'est justement celle
+   qu'on veut corriger -- mais signalee par un point ambre plutot que
+   reléguée dans un bloc separe. */
+.so-amorce-chip-vide::before{
+  content:""; display:inline-block; width:6px; height:6px; border-radius:50%;
+  background:#E0930C; margin-right:6px; vertical-align:middle;
+}
 .so-amorce-chip{
   font:inherit; font-size:13px; font-weight:600; color:var(--ink);
   background:var(--bg-soft); border:1px solid var(--line); border-radius:100px;
