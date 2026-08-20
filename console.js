@@ -1855,6 +1855,30 @@
   // data-so-aller-apercu sur les cellules non interactives seulement
   // (pas la case a cocher, pas cell-actions) pour ne jamais interferer
   // avec la selection multiple ni les boutons d'edition.
+  // Correctif (20 aout 2026, audit passe 3 §4). La colonne "Regle"
+  // affichait un tiret sur toutes les lignes -- aucune regle n'ayant ete
+  // nommee, le champ facultatif reste vide. L'audit proposait de
+  // supprimer la colonne ; c'est le brief §4.6 qui la demande, et il
+  // decrit lui-meme la vraie solution : "une regle sans nom devrait
+  // retomber sur une formulation lisible".
+  //
+  // Le libelle genere n'est PAS ecrit en base : c'est un affichage. Le
+  // champ nom reste vide tant que le marchand n'en saisit pas un, et la
+  // modale de modification continue de proposer un champ libre.
+  //
+  // Depend du nom de produit expose ce matin cote moteur : sans lui, le
+  // repli aurait produit "rt-47645602185510 -- epingle sur vis", moins
+  // lisible que le tiret qu'il remplace.
+  function soLibelleRegle(o) {
+    if (o.nom) return esc(o.nom);
+    var produit = o.product_name || o.product_id;
+    var geste = o.action === "pin"
+      ? (o.position ? T("épinglé en {0}", o.position) : T("épinglé"))
+      : T("relégué");
+    return "<span class='so-regle-auto' title='" + escAttr(T("Nom généré — vous pouvez en saisir un dans la règle")) + "'>" +
+      esc(produit) + " — " + esc(geste) + "</span>";
+  }
+
   function soRowHtmlCatalogue(o, enBrouillon, conflits) {
     var pin = o.action === "pin";
     var cleConflit = pin && o.position ? o.query.toLowerCase() + "|" + o.position : null;
@@ -1891,7 +1915,7 @@
     return "<td class='so-cell-select'><input type='checkbox' class='so-row-check' data-so-select='1' data-query='" + esc(o.query) + "' data-product-id='" + esc(o.product_id) + "' aria-label='" + T("Sélectionner cette règle") + "'></td>" +
       "<td " + attrsLigne + " class='so-cell-cliquable'>" + produitCell(o.product_id, o.product_name) + "</td>" +
       "<td " + attrsLigne + " class='so-cell-cliquable'><span class='cell-trigger' title='" + esc(o.query) + "'>" + esc(o.query) + "</span></td>" +
-      "<td " + attrsLigne + " class='so-cell-cliquable'>" + (o.nom ? esc(o.nom) : "<span class='console-empty' style='font-size:12px;'>—</span>") + indicateurs + "</td>" +
+      "<td " + attrsLigne + " class='so-cell-cliquable'>" + soLibelleRegle(o) + indicateurs + "</td>" +
       "<td " + attrsLigne + " class='so-cell-cliquable'>" + actionLabel + "</td>" +
       "<td " + attrsLigne + " class='so-cell-cliquable'>" + statutLabel + "</td>" +
       "<td class='cell-actions'>" +
