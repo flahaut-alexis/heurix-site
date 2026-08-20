@@ -3263,15 +3263,41 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
   margin:0 0 18px; padding-top:4px;
 }
 .so-apercu-searchbar-header .so-searchbar{ margin-bottom:0; }
+/* Correctif (20 aout 2026, audit passe 3 §6 et planche de composants).
+   Le bouton d'aide etait en gris neutre au repos : rien ne le
+   rattachait a la marque, et il se confondait avec un element inactif.
+   Valeurs reprises telles quelles de la planche fournie par Alexis.
+
+   focus-visible ajoute : le bouton etait atteignable au clavier sans
+   qu'on voie ou l'on se trouvait. */
 .so-aide-btn{
   flex:0 0 auto; width:32px; height:32px; border-radius:100px;
-  border:1px solid var(--line); background:var(--bg-soft);
-  color:var(--ink-muted); font-weight:800; font-size:14px;
+  border:1px solid #C6CEFF; background:#EEF1FF;
+  color:#3F52E8; font-weight:800; font-size:14px;
   cursor:pointer; display:flex; align-items:center; justify-content:center;
 }
 .so-aide-btn:hover, .so-aide-btn[aria-expanded="true"]{
+  background:#5468FF; color:#fff; border-color:#5468FF;
+}
+.so-aide-btn:focus-visible{
+  outline:2px solid #5468FF; outline-offset:2px;
+}
+
+/* Correctif (20 aout 2026) : le bouton "+" de creation de synonyme
+   portait .so-aide-btn -- il aurait pris les couleurs du bouton d'aide
+   alors que c'est une ACTION, pas une explication. Meme forme (rond de
+   32px, aligne sur le meme rail) mais registre neutre, pour ne pas
+   promettre une aide contextuelle. */
+.so-action-btn{
+  flex:0 0 auto; width:32px; height:32px; border-radius:100px;
+  border:1px solid var(--line); background:#fff;
+  color:var(--ink-muted); font-weight:800; font-size:16px; line-height:1;
+  cursor:pointer; display:flex; align-items:center; justify-content:center;
+}
+.so-action-btn:hover{
   background:var(--blue-tint); color:var(--blue-deep); border-color:var(--blue);
 }
+.so-action-btn:focus-visible{ outline:2px solid #5468FF; outline-offset:2px; }
 .so-aide-panel{
   margin-top:10px; padding:14px 18px; background:var(--bg-soft);
   border:1px solid var(--line); border-radius:12px;
