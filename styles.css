@@ -4230,8 +4230,13 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
    pour la colonne contextuelle -- tokens existants reutilises, pas de
    nouvelle palette. */
 .so-liste-contextuelle{ display:flex; flex-direction:column; gap:2px; }
+/* Padding resserre (20 aout 2026). PAS de display:flex ici : ce bloc
+   contient le titre du declencheur SUIVI de plusieurs regles -- les
+   passer en flex les aurait alignees horizontalement. Verifie dans le
+   rendu avant de livrer. C'est .so-liste-chips, un cran plus bas, qui
+   porte la ligne. */
 .so-liste-item{
-  padding:10px 12px; border-radius:8px; background:var(--bg-soft);
+  padding:7px 10px; border-radius:8px; background:var(--bg-soft);
 }
 .so-liste-item + .so-liste-item{ margin-top:2px; }
 .so-liste-trigger{
@@ -4239,9 +4244,19 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
   color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
   max-width:100%;
 }
+/* Correctif (20 aout 2026, planche de composants point 3 : "trois
+   regles occupent 400px, vise 48px par regle"). Le bouton d'edition
+   vivait dans un bloc separe sous la ligne, avec sa propre marge : il
+   forcait une seconde ligne pour un seul icone. Tout tient desormais
+   sur une ligne.
+
+   flex-wrap retire : c'est lui qui autorisait le passage a la ligne
+   quand le nom est long. Avec .so-liste-produit en flex:1 et
+   text-overflow, le nom se tronque proprement au lieu de pousser la
+   position en dessous. */
 .so-liste-chips{
-  display:flex; align-items:center; gap:8px; flex-wrap:wrap;
-  margin-top:4px; font-size:12px; color:var(--ink-muted);
+  display:flex; align-items:center; gap:8px;
+  margin-top:0; font-size:12px; color:var(--ink-muted);
 }
 /* Correctif (20 aout 2026) : 150px suffisaient pour un identifiant,
    pas pour un vrai nom de produit -- "Boite de 100 vis a bois FISCHER
@@ -4250,7 +4265,8 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
    servant que de garde-fou sur les noms tres longs. */
 .so-liste-produit{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1; min-width:0; }
 .so-liste-pos{ font-weight:600; }
-.so-liste-actions{ display:flex; justify-content:flex-end; margin-top:6px; }
+/* Le bouton rejoint la ligne : plus de bloc separe ni de marge. */
+.so-liste-actions{ display:flex; flex:0 0 auto; }
 .so-liste-actions button{
   width:28px; height:28px; border-radius:8px; border:1px solid var(--line);
   background:#fff; cursor:pointer; display:inline-flex; align-items:center; justify-content:center;
