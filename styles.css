@@ -3254,7 +3254,18 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 }
 .so-apercu-col-principale{ min-width:0; order:2; }
 .so-apercu-col-resultats{ min-width:0; order:1; }
-@media (max-width:900px){
+/* Seuil remonte de 900 a 1200px (20 aout 2026). Le rail coute 360px
+   (340 + gouttiere) quelle que soit la taille de l'ecran. En dessous de
+   ~1200px de fenetre, il ne reste plus assez de largeur pour deux
+   colonnes de cartes cote a cote : les resultats retombent a une carte
+   par ligne, ce que le correctif de largeur venait justement de
+   supprimer. Mieux vaut alors empiler -- les resultats prennent toute
+   la largeur et tiennent trois cartes, le rail passe dessous.
+
+   Calcul du seuil : fenetre - marges (56) - sidebar (220 + 32) - rail
+   (340 + 20) = colonne resultats. A 1200px de fenetre cela donne 532px,
+   soit deux cartes de 190px, la limite basse acceptable. */
+@media (max-width:1200px){
   .so-apercu-cols{ grid-template-columns:1fr; }
   /* Empile : les resultats d'abord, le rail dessous. */
   .so-apercu-col-principale{ order:2; }
