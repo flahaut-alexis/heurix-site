@@ -260,7 +260,7 @@
                  resolue, sortie de son sous-onglet a l'interieur de
                  Search vers sa propre page (brief §4.3). -->
             <button type="button" class="console-sidebar-item" data-pane="pane-search-overrides">Mise en avant sur recherche</button>
-            <button type="button" class="console-sidebar-item" data-pane="pane-browse">Merchandising</button>
+            <button type="button" class="console-sidebar-item" data-pane="pane-browse">Mise en avant sur catégorie</button>
             <button type="button" class="console-sidebar-item" data-pane="pane-vocabulaire">Vocabulaire du moteur</button>
           </div>
         </div>
@@ -826,7 +826,7 @@
           
 
           <div id="pane-browse" class="console-pane" hidden>
-            <h2 class="console-pane-title">Browse &amp; Discovery</h2>
+            <h2 class="console-pane-title">Mise en avant sur catégorie</h2>
             <!-- Correctif (19 aout 2026, brief §4.2 "Bloc replie par defaut,
                  deplace sous les controles, remplace par le pipeline
                  contextuel peuple de donnees reelles"). Bloc statique
@@ -907,7 +907,7 @@
                 </div>
                 <div class="br-toolbar">
 
-              <p class="console-panel-note" style="margin:0 0 14px;">Classez vos produits dans une page de catégorie de votre site, sans recherche — <a href="docs.html#ep-browse">documentation complète</a>. Choisissez un catalogue puis une catégorie pour commencer.</p>
+              <p class="console-panel-note" style="margin:0 0 14px;">Classez vos produits dans une page de catégorie de votre site, sans recherche — <a href="docs.html#ep-browse">documentation complète</a>.</p>
               <!-- Correctif (19 aout 2026, brief §4.2 "Etat vide avec
                    issue" -- deux boutons d'action, pas un cul-de-sac).
                    Message existant retenu tel quel (deja precis sur le
@@ -996,9 +996,14 @@
                 <div class="console-field" style="max-width:170px; margin-bottom:14px;">
                   <label for="browse-preview-limit">Produits affichés</label>
                   <select id="browse-preview-limit">
-                    <option value="20">20</option>
-                    <option value="50">50</option>
-                    <option value="100">100</option>
+                    <!-- Correctif (20 aout 2026, audit passe 3 §7) : meme
+                         echelle que Mise en avant sur recherche
+                         (12/24/48/96). Deux pages jumelles n'ont pas de
+                         raison d'offrir des paliers differents. -->
+                    <option value="12">12</option>
+                    <option value="24">24</option>
+                    <option value="48">48</option>
+                    <option value="96">96</option>
                   </select>
                 </div>
                 <div id="browse-results" hidden>
@@ -1063,7 +1068,7 @@
                 </details>
                 <p class="console-empty" id="browse-preview-empty" hidden>Aucun produit dans cette catégorie.</p>
                 </div>
-                <p class="console-empty" id="browse-hint">Choisissez un catalogue puis une catégorie pour voir le classement.</p>
+                <p class="console-empty" id="browse-hint">Choisissez une catégorie pour voir son classement.</p>
               </div>
 
               

@@ -165,7 +165,7 @@
           </button>
           <div class="console-sidebar-items" data-section-items="optimiser" hidden>
             <button type="button" class="console-sidebar-item" data-pane="pane-search-overrides">Highlight on search</button>
-            <button type="button" class="console-sidebar-item" data-pane="pane-browse">Merchandising</button>
+            <button type="button" class="console-sidebar-item" data-pane="pane-browse">Category merchandising</button>
             <button type="button" class="console-sidebar-item" data-pane="pane-vocabulaire">Engine vocabulary</button>
           </div>
         </div>
@@ -543,7 +543,7 @@
           
 
           <div id="pane-browse" class="console-pane" hidden>
-            <h2 class="console-pane-title">Browse &amp; Discovery</h2>
+            <h2 class="console-pane-title">Category merchandising</h2>
             <!-- Correctif -- parite EN avec console.html. -->
             
 
@@ -582,7 +582,7 @@
                 </div>
                 <div class="br-toolbar">
 
-              <p class="console-panel-note" style="margin:0 0 14px;">Rank your products on a category page on your site, with no search involved — <a href="../docs.html#ep-browse">full documentation</a>. Choose a catalog, then a category, to get started.</p>
+              <p class="console-panel-note" style="margin:0 0 14px;">Rank your products on a category page on your site, with no search involved — <a href="../docs.html#ep-browse">full documentation</a>.</p>
               <div class="console-empty br-etat-vide" id="browse-no-categories" hidden>
                 <p style="margin:0 0 12px;">No category detected on this catalog — index your products with a <code class="docs-inline-code">categories</code> or <code class="docs-inline-code">category</code> field to see them appear here.</p>
                 <div class="br-etat-vide-actions">
@@ -643,9 +643,14 @@
                 <div class="console-field" style="max-width:170px; margin-bottom:14px;">
                   <label for="browse-preview-limit">Products shown</label>
                   <select id="browse-preview-limit">
-                    <option value="20">20</option>
-                    <option value="50">50</option>
-                    <option value="100">100</option>
+                    <!-- Correctif (20 aout 2026, audit passe 3 §7) : meme
+                         echelle que Mise en avant sur recherche
+                         (12/24/48/96). Deux pages jumelles n'ont pas de
+                         raison d'offrir des paliers differents. -->
+                    <option value="12">12</option>
+                    <option value="24">24</option>
+                    <option value="48">48</option>
+                    <option value="96">96</option>
                   </select>
                 </div>
                 <div id="browse-results" hidden>
@@ -709,7 +714,7 @@
                 </details>
                 <p class="console-empty" id="browse-preview-empty" hidden>No product in this category.</p>
                 </div>
-                <p class="console-empty" id="browse-hint">Choose a catalog, then a category, to see the ranking.</p>
+                <p class="console-empty" id="browse-hint">Choose a category to see its ranking.</p>
               </div>
 
               

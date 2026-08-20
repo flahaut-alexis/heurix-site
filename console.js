@@ -4586,7 +4586,7 @@
   function brSimuler(key) {
     if (!session.browseCurrentCatalog || !session.browseCurrentCategory) return;
     var champLim = document.getElementById("browse-preview-limit");
-    var lim = champLim ? parseInt(champLim.value, 10) : 20;
+    var lim = champLim ? parseInt(champLim.value, 10) : 24;
     var sort = document.getElementById("browse-sort-select").value;
     var url = "/v1/browse/" + encodeURIComponent(session.browseCurrentCatalog) + "/" +
               encodeURIComponent(session.browseCurrentCategory) + "/simulate";
@@ -4797,7 +4797,7 @@
   function refreshBrowsePreview(key) {
     var sort = document.getElementById("browse-sort-select").value;
     var champLim = document.getElementById("browse-preview-limit");
-    var lim = champLim ? parseInt(champLim.value, 10) : 20;
+    var lim = champLim ? parseInt(champLim.value, 10) : 24;
     var horsStock = document.getElementById("browse-in-stock");
     var url = "/v1/browse/" + encodeURIComponent(session.browseCurrentCatalog) + "/" + encodeURIComponent(session.browseCurrentCategory) +
               "?sort=" + sort + "&limit=" + lim +
