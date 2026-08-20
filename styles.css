@@ -2077,6 +2077,19 @@ body.docs-dark .why-card p{ color:#CDD2F0; }
 .console-dash-actions{ display:flex; align-items:center; gap:10px; }
 .console-account-email{ font-size:13px; color:var(--ink-muted); margin-right:4px; white-space:nowrap; }
 
+/* Correctif (20 aout 2026, mesure en direct avec Alexis). La console
+   heritait du .wrap du site vitrine, plafonne a 1100px -- pertinent
+   pour une colonne de texte, handicapant pour un outil de travail :
+   sur un ecran de 1440px, plus de 300px etaient perdus en marges, et
+   l'apercu de recherche n'avait que 432px pour ses resultats, d'ou une
+   seule carte par ligne.
+
+   Surcharge CIBLEE a la console plutot que modification de .wrap, qui
+   sert toutes les pages marketing. Plafond conserve (pas de pleine
+   largeur) : au-dela de 1600px les lignes de tableau deviennent
+   difficiles a suivre d'un bout a l'autre. */
+.console-dash .wrap{ max-width:1600px; }
+
 .console-layout{ display:flex; align-items:flex-start; gap:32px; }
 
 .console-sidebar{
