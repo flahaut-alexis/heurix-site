@@ -4506,6 +4506,13 @@
       legende.textContent = T(hits.length > 1 ? "{0} produits dans « {1} »" : "{0} produit dans « {1} »", hits.length, session.browseCurrentCategory) +
         (simule ? " — " + T("classement en brouillon") : "");
     }
+    // Correctif (20 aout 2026) : l'etat vide etait affiche par
+    // renderTable, qui alimentait le tableau deplie "Voir le tableau
+    // detaille" -- supprime, car il listait les MEMES produits que la
+    // grille juste au-dessus. Le message reste donc necessaire, mais il
+    // doit venir d'ici.
+    var videBr = document.getElementById("browse-preview-empty");
+    if (videBr) videBr.hidden = hits.length > 0;
     brSimuBar(!!simule);
   }
 
@@ -4806,11 +4813,6 @@
       session.brDraft = null;
       brRenderGrille(data.hits || [], false);
       brRafraichirPipeline(data);
-      renderTable("browse-preview-table", "browse-preview-empty", data.hits, function (h) {
-        var status = h.pinned ? "Épinglé" : h.boosted ? "Favorisé" : h.buried ? "Relégué" : "—";
-        return "<td>" + produitCell(h.product.id, h.product.name, h.product.price) + "</td><td class='num'>" +
-          (h.product.stock !== undefined ? h.product.stock : "–") + "</td><td>" + status + "</td>";
-      });
     }).catch(function () {});
   }
 
