@@ -3330,6 +3330,16 @@
         session.soDraft = (data.overrides || []).map(function (o) {
           var r = { query: o.query, product_id: o.product_id, action: o.action };
           if (o.position) r.position = o.position;
+          // Correctif (20 aout 2026) : le rail affichait encore
+          // "rt-47645602185510" alors que le moteur renvoie desormais le
+          // nom du produit. Cause trouvee ici et non dans le rendu : la
+          // projection vers le brouillon ne recopiait que quatre champs
+          // et laissait tomber product_name. Le rail lit soDraft, pas la
+          // reponse -- corriger le backend seul ne suffisait pas.
+          //
+          // Absent si le produit n'est plus indexe : la cle reste alors
+          // absente ici aussi, et le repli sur l'identifiant s'applique.
+          if (o.product_name) r.product_name = o.product_name;
           return r;
         });
         suite();
