@@ -827,6 +827,18 @@
     up: "<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.2' stroke-linecap='round'><path d='M12 19V5'/><path d='M5 12l7-7 7 7'/></svg>",
     down: "<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.2' stroke-linecap='round'><path d='M12 5v14'/><path d='M19 12l-7 7-7-7'/></svg>",
     off: "<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.2' stroke-linecap='round'><path d='M18 6L6 18M6 6l12 12'/></svg>",
+    // Correctif (20 aout 2026, planche de composants point 8). Les emoji
+    // 📌 et 📅 changent d'aspect selon le systeme, ne suivent pas la
+    // couleur du texte et ne s'alignent pas sur la grille typographique.
+    // Versions pleines, taille reduite : elles servent d'indicateur dans
+    // un texte, pas de bouton.
+    //
+    // Les symboles typographiques du reste du fichier (croix, fleches,
+    // crayon, point) sont CONSERVES : ils heritent deja de la couleur et
+    // restent stables d'un systeme a l'autre -- ils ne posent pas le
+    // probleme que la planche decrit.
+    pinPlein: "<svg width='11' height='11' viewBox='0 0 24 24' fill='currentColor' aria-hidden='true' style='vertical-align:-1px'><path d='M9 4h6v6.8l2 3.2H7l2-3.2z'/><path d='M11 17h2v5h-2z'/></svg>",
+    calendrier: "<svg width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' aria-hidden='true' style='vertical-align:-2px'><rect x='3' y='5' width='18' height='16' rx='2'/><path d='M3 10h18M8 3v4M16 3v4'/></svg>",
   };
 
   // ---------------- Catalogue actif, choix GLOBAL ----------------
@@ -1890,7 +1902,7 @@
     var cleConflit = pin && o.position ? o.query.toLowerCase() + "|" + o.position : null;
     var enConflit = cleConflit && conflits && conflits.has(cleConflit);
     var actionLabel = pin
-      ? "<span class='cell-action cell-action-pin'>&#128204; " + (o.position ? T("Épinglé pos. {0}", o.position) : T("Épinglé")) + "</span>"
+      ? "<span class='cell-action cell-action-pin'>" + ICONES_FICHE.pinPlein + " " + (o.position ? T("Épinglé pos. {0}", o.position) : T("Épinglé")) + "</span>"
       : "<span class='cell-action cell-action-bury'>&#8595; " + T("Relégué") + "</span>";
     if (enConflit) {
       actionLabel += "<button type='button' class='so-conflit-badge' data-so-conflit-info='1' data-query='" + esc(o.query) + "' data-position='" + o.position + "' aria-label='" + T("Conflit de position — cliquer pour en savoir plus") + "' title='" + T("Une autre règle vise déjà la position {0} sur cette recherche.", o.position) + "'>&#9888;</button>";
@@ -1917,7 +1929,7 @@
     // premier essai, corrige avant de continuer.
     var indicateurs = "";
     if (o.priorite && o.priorite !== 100) indicateurs += "<span class='so-regle-indicateur' title='" + T("Priorité") + " " + o.priorite + "'>#" + o.priorite + "</span>";
-    if (o.diffusion && (o.diffusion.debut || o.diffusion.fin)) indicateurs += "<span class='so-regle-indicateur' title='" + T("Période de diffusion définie") + "'>&#128197;</span>";
+    if (o.diffusion && (o.diffusion.debut || o.diffusion.fin)) indicateurs += "<span class='so-regle-indicateur' title='" + T("Période de diffusion définie") + "'>" + ICONES_FICHE.calendrier + "</span>";
     return "<td class='so-cell-select'><input type='checkbox' class='so-row-check' data-so-select='1' data-query='" + esc(o.query) + "' data-product-id='" + esc(o.product_id) + "' aria-label='" + T("Sélectionner cette règle") + "'></td>" +
       "<td " + attrsLigne + " class='so-cell-cliquable'>" + produitCell(o.product_id, o.product_name) + "</td>" +
       "<td " + attrsLigne + " class='so-cell-cliquable'><span class='cell-trigger' title='" + esc(o.query) + "'>" + esc(o.query) + "</span></td>" +
@@ -2063,7 +2075,11 @@
 
     function ligneTexte(r) {
       if (r.action === "pin") {
-        return "📌 " + esc(r.product_name || r.product_id) +
+        // Ecart assume avec le brief §4.4, dont la maquette montre
+        // litteralement "📌" et "⤓" : meme raison que partout ailleurs,
+        // un emoji ne suit pas la couleur du texte et change d'aspect
+        // selon le systeme. Le geste decrit reste le meme.
+        return ICONES_FICHE.pinPlein + " " + esc(r.product_name || r.product_id) +
           (r.position ? " — " + T("Épinglé en position {0}", r.position) : " — " + T("Épinglé")) +
           " — " + esc(r.product_id);
       }
@@ -2588,7 +2604,7 @@
           return "<div class='" + classes + "'" + " draggable='true' data-pid='" + pid + "' data-name='" + esc(p.name || "") + "'" + ">" +
             (q ? "<span class='so-card-rank" + (h.pinned ? " so-card-rank-impose" : "") + "'" +
               (h.pinned ? " title='" + escAttr(T("Position imposée par une règle")) + "'" : "") + ">" +
-              (h.pinned ? "&#128204; " : "") + (i + 1) + "</span>" : "") +
+              (h.pinned ? ICONES_FICHE.pinPlein + " " : "") + (i + 1) + "</span>" : "") +
             badge + visuel +
             "<div class='so-card-name'>" + surlignerTexte(p.name || p.id, h.highlights && h.highlights.name) + "</div>" +
             "<div class='so-card-ref'>" + surlignerTexte(p.ref || p.id, h.highlights && h.highlights.ref) + "</div>" +
@@ -4480,7 +4496,7 @@
       return "<div class='" + classes + "'" + " draggable='true' data-pid='" + pid + "'" + nomAttrBr + ">" +
         "<span class='so-card-rank" + (h.pinned ? " so-card-rank-impose" : "") + "'" +
           (h.pinned ? " title='" + escAttr(T("Position imposée par une règle")) + "'" : "") + ">" +
-          (h.pinned ? "&#128204; " : "") + (i + 1) + "</span>" + badge + brVisuel +
+          (h.pinned ? ICONES_FICHE.pinPlein + " " : "") + (i + 1) + "</span>" + badge + brVisuel +
         "<div class='so-card-name'>" + esc(p.name || p.id) + "</div>" +
         "<div class='so-card-ref'>" + esc(p.ref || p.id) + "</div>" +
         "<div class='so-card-foot'>" + prix + stock + "</div>" + actions + "</div>";
