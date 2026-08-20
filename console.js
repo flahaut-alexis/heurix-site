@@ -1008,6 +1008,12 @@
       }
     } else if (ouvert === "pane-browse") {
       onBrowseCatalogChange(key);
+    } else if (ouvert === "pane-catalog-list") {
+      // Correctif (20 aout 2026) : la synchronisation doit aller dans les
+      // DEUX sens, sinon on deplace la desynchronisation au lieu de la
+      // corriger. Changer le catalogue actif repositionne la page si elle
+      // est ouverte.
+      loadCatalogs(key);
     } else if (ouvert === "pane-produits") {
       // Correctif (18 aout 2026, brief §3.1) : "Produits les plus vus"
       // et "Produits associes" fusionnes en un seul pane-produits --
@@ -5710,12 +5716,33 @@
       }
       selecteur.addEventListener("click", function (e) {
         var pill = e.target.closest("[data-catalog-select]");
-        if (pill) afficherCatalogue(pill.getAttribute("data-catalog-select"));
+        if (!pill) return;
+        var nom = pill.getAttribute("data-catalog-select");
+        afficherCatalogue(nom);
+        // Correctif (20 aout 2026, audit passe 3 §2). Cliquer une
+        // pastille ne mettait PAS a jour le selecteur du haut : les deux
+        // restaient visibles a l'ecran avec des valeurs differentes, sans
+        // le moindre signal. Risque concret -- editer le pack de regles
+        // du mauvais catalogue en croyant travailler sur l'autre.
+        //
+        // Un seul catalogue actif fait desormais foi. On passe par le
+        // selecteur global plutot que d'ecrire session.catalogueActif
+        // directement : son ecouteur "change" porte deja la memorisation
+        // et la propagation a tous les ecrans.
+        var global = document.getElementById("global-catalog");
+        if (global && global.value !== nom) {
+          global.value = nom;
+          global.dispatchEvent(new Event("change"));
+        }
       });
-      // Un catalogue specifique peut etre demande depuis ailleurs (ex.
-      // le catalogue actif du selecteur global) -- garde le comportement
-      // "premier catalogue par defaut" si aucun n'est precise.
-      afficherCatalogue(catalogs[0].catalog);
+      // Correctif (20 aout 2026) : la page ouvrait toujours sur le
+      // PREMIER catalogue, meme si le catalogue actif etait un autre --
+      // le commentaire precedent evoquait cette possibilite sans jamais
+      // l'implementer. Le catalogue actif fait foi ; repli sur le premier
+      // s'il n'est pas dans la liste (compte neuf, catalogue supprime).
+      var voulu = session.catalogueActif;
+      var connu = catalogs.some(function (c) { return c.catalog === voulu; });
+      afficherCatalogue(connu ? voulu : catalogs[0].catalog);
     }).catch(function () {
       loading.hidden = true;
       empty.hidden = false;
