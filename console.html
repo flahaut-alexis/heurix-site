@@ -985,6 +985,14 @@
                   <input type="checkbox" id="browse-in-stock">
                   <span>Masquer les produits en rupture</span>
                 </label>
+                <!-- Correctif (20 aout 2026, demande Alexis) : meme reglage
+                     que sur Mise en avant sur recherche. Pose a cote de la
+                     case existante plutot que dans un popover -- celui-ci
+                     n'existe pas encore sur cette page (lot F). -->
+                <label class="br-stock-toggle" for="br-visuels">
+                  <input type="checkbox" id="br-visuels">
+                  <span>Afficher les visuels</span>
+                </label>
                 <div class="console-field" style="max-width:170px; margin-bottom:14px;">
                   <label for="browse-preview-limit">Produits affichés</label>
                   <select id="browse-preview-limit">

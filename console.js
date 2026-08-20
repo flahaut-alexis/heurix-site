@@ -4324,6 +4324,11 @@
     var legende = document.getElementById("br-caption");
     if (!grille) return;
     brOrdreAffiche = hits.map(function (h) { return h.product.id; });
+    // Correctif (20 aout 2026, demande Alexis) : visuels sur les cartes,
+    // comme sur Mise en avant sur recherche. Meme lecture directe depuis
+    // le DOM au moment du rendu, pas d'etat separe.
+    var brVisuelsBtn = document.getElementById("br-visuels");
+    var brAfficherVisuels = !!(brVisuelsBtn && brVisuelsBtn.checked);
 
     grille.innerHTML = hits.map(function (h, i) {
       var p = h.product;
@@ -4360,8 +4365,14 @@
           : "<button type='button'" + nomAttrBr + " data-br-act='pin' data-pid='" + pid + "' title='" + T("Mettre en tête") + "' aria-label='" + T("Mettre en tête") + "'>" + ICONES_FICHE.pin + "</button>") +
         "</div>";
 
+      // Deux noms de champ reconnus a l'indexation (image, image_url).
+      // Produit sans visuel : rien plutot qu'un cadre vide.
+      var brImgSrc = p.image || p.image_url || "";
+      var brVisuel = (brAfficherVisuels && brImgSrc)
+        ? "<img class='so-card-visuel' src='" + esc(brImgSrc) + "' alt='' loading='lazy'>" : "";
+
       return "<div class='" + classes + "'" + " draggable='true' data-pid='" + pid + "'" + nomAttrBr + ">" +
-        "<span class='so-card-rank'>" + (i + 1) + "</span>" + badge +
+        "<span class='so-card-rank'>" + (i + 1) + "</span>" + badge + brVisuel +
         "<div class='so-card-name'>" + esc(p.name || p.id) + "</div>" +
         "<div class='so-card-ref'>" + esc(p.ref || p.id) + "</div>" +
         "<div class='so-card-foot'>" + prix + stock + "</div>" + actions + "</div>";
@@ -4777,6 +4788,8 @@
     });
     var browseLim = document.getElementById("browse-preview-limit");
     if (browseLim) browseLim.addEventListener("change", function () { refreshBrowsePreview(key); });
+    var brVisuels = document.getElementById("br-visuels");
+    if (brVisuels) brVisuels.addEventListener("change", function () { refreshBrowsePreview(key); });
     var brStock = document.getElementById("browse-in-stock");
     if (brStock) brStock.addEventListener("change", function () {
       if (session.brDraft) brSimuler(key); else refreshBrowsePreview(key);
