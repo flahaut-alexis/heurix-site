@@ -3689,11 +3689,6 @@
       '</div>';
   }
 
-  function wireCustomRulesPane(key) {
-    // Plus de selecteur local : le catalogue vient du choix global.
-    chargerSynonymesEtRegles(key);
-  }
-
   // Correctif (19 aout 2026, brief §4.3) : deux conteneurs distincts
   // (Synonymes, Termes metier) plutot qu'un seul host -- chaque
   // fonction de cablage recoit desormais son propre conteneur, pas le
@@ -5213,7 +5208,13 @@
       window.HEURIX_RECHARGER_CATALOGUES = function () { loadCatalogs(key); };
       wireGlobalCatalog(key);
       wireBilling(key);
-      wireCustomRulesPane(key);
+      // Correctif (20 aout 2026, mesure Network avec Alexis : synonyms,
+      // custom-rules, usage et catalogs partaient en double au
+      // changement de catalogue). wireCustomRulesPane ne faisait plus
+      // que rappeler chargerSynonymesEtRegles, deja declenchee par
+      // wireGlobalCatalog -> appliquerCatalogue juste au-dessus. La
+      // fonction n'avait plus de raison d'etre depuis que le selecteur
+      // local a disparu, comme son propre commentaire l'indiquait.
     }).catch(function () {
       dashLoading.hidden = true;
       localStorage.removeItem(SESSION_STORAGE_KEY);
