@@ -2565,6 +2565,21 @@
         var cmp = va < vb ? -1 : va > vb ? 1 : 0;
         return soCatalogueTri.sens === "asc" ? cmp : -cmp;
       });
+    } else {
+      // Correctif (20 aout 2026, audit passe 3 §4) : sans clic sur une
+      // colonne, la liste sortait dans l'ordre du serveur -- l'audit
+      // relevait des positions en 2, 3, 1. Tri par defaut : d'abord par
+      // declencheur (les regles d'une meme recherche restent groupees),
+      // puis par position croissante, ce qui est l'ordre dans lequel
+      // elles s'appliquent reellement. Une relegation n'a pas de
+      // position : elle passe en fin de groupe, comme dans le
+      // classement.
+      resultat = resultat.slice().sort(function (a, b) {
+        if (a.query !== b.query) return a.query < b.query ? -1 : 1;
+        var pa = a.action === "pin" ? (a.position || 0) : Infinity;
+        var pb = b.action === "pin" ? (b.position || 0) : Infinity;
+        return pa - pb;
+      });
     }
     return resultat;
   }
@@ -2590,19 +2605,24 @@
     renderTable("so-table", "so-empty", listeFiltree, function (row) {
       return soRowHtmlCatalogue(row, enBrouillon, conflits);
     });
+    // Correctif (20 aout 2026, audit passe 3 §4 -- "le compteur apparait
+    // trois fois sur le meme ecran"). Celui-ci est conserve, mais il dit
+    // desormais autre chose que l'onglet : il reflete le FILTRAGE en
+    // cours, la seule information que l'onglet ne donne pas. Formulation
+    // explicite des qu'un filtre retire des lignes.
     var compteurCatalogue = document.getElementById("so-catalogue-compteur");
     if (compteurCatalogue) {
       var nFiltre = listeFiltree.length;
-      compteurCatalogue.textContent = T(nFiltre > 1 ? "{0} règles" : "{0} règle", nFiltre);
+      var nTotal = (liste || []).length;
+      compteurCatalogue.textContent = nFiltre === nTotal
+        ? T(nFiltre > 1 ? "{0} règles" : "{0} règle", nFiltre)
+        : T("{0} règles affichées sur {1}", nFiltre, nTotal);
     }
     var n = (liste || []).length;
-    var compteur = document.getElementById("so-count");
-    if (compteur) {
-      compteur.hidden = n === 0;
-      compteur.textContent = enBrouillon
-        ? T(n > 1 ? "{0} règles en brouillon" : "{0} règle en brouillon", n)
-        : T(n > 1 ? "{0} règles actives" : "{0} règle active", n);
-    }
+    // so-count retire (20 aout 2026, audit passe 3 §4) : il repetait le
+    // nombre deja porte par l'onglet "Regles du catalogue (3)", juste au
+    // dessus. L'etat brouillon qu'il signalait reste visible autrement --
+    // la classe so-rules-draft sur le panneau, posee juste en dessous.
     var panneau = document.getElementById("so-rules-panel");
     if (panneau) panneau.classList.toggle("so-rules-draft", !!enBrouillon);
     // Correctif structure en onglets (§3.4 du brief, corrige le 18 aout
@@ -5489,7 +5509,7 @@
         '<span class="catalog-sandbox-status catalog-rule-status"></span>' +
       '</div>' +
       '<div class="catalog-synonyms-label" style="margin-top:22px;">' + T("Synonymes et reconnaissances personnalisées") + '</div>' +
-      '<p class="console-panel-note" style="margin:6px 0 0;">' + T("Gérés depuis") + ' <button type="button" class="catalog-goto-rules" data-goto-pane="pane-search-overrides">' + T("Configurer → Règles") + '</button>.</p>' +
+      '<p class="console-panel-note" style="margin:6px 0 0;">' + T("Gérés depuis") + ' <button type="button" class="catalog-goto-rules" data-goto-pane="pane-vocabulaire">' + T("Optimiser → Vocabulaire du moteur") + '</button>.</p>' +
       '<div class="catalog-card-danger">' +
         '<button type="button" class="catalog-delete">' + T("Supprimer ce catalogue") + '</button>' +
       '</div>' +

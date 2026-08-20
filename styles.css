@@ -4093,9 +4093,20 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 .so-catalogue-compteur{
   font-size:13px; color:var(--ink-muted); white-space:nowrap;
 }
+/* Correctif (20 aout 2026, audit passe 3 §4 -- "casse des en-tetes
+   melangee"). Cause trouvee ici : le raccourci `font:inherit`
+   REINITIALISE text-transform et letter-spacing au passage. Les
+   colonnes triables (Nom, Declencheur, Action) revenaient donc en casse
+   normale, tandis que les colonnes simples (Regle, Statut) restaient en
+   majuscules via .console-table th.
+
+   On retablit l'heritage sur le bouton plutot que de retirer les
+   majuscules du tableau : le style des en-tetes reste le meme partout
+   dans la console. */
 .so-tri-th{
   display:inline-flex; align-items:center; gap:4px;
   font:inherit; font-weight:inherit; color:inherit;
+  text-transform:inherit; letter-spacing:inherit;
   background:none; border:none; padding:0; cursor:pointer;
 }
 .so-tri-th:hover{ color:var(--blue-deep); }
