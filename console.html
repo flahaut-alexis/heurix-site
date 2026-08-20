@@ -516,14 +516,6 @@
               <div class="so-apercu-cols">
               <div class="so-apercu-col-principale">
               <div class="console-panel">
-                <div class="so-apercu-titre-aide">
-                  <h2>Aperçu des résultats</h2>
-                  <button type="button" class="so-aide-btn" id="so-apercu-aide-btn" aria-expanded="false" aria-controls="so-apercu-aide-panel" aria-label="Comment lire l'aperçu">?</button>
-                </div>
-                <div class="so-aide-panel" id="so-apercu-aide-panel" hidden>
-                  <p class="console-panel-note" style="margin:0;">Tapez une requête pour voir le classement réel, et <strong>pourquoi</strong> chaque produit sort. Les flèches déplacent un produit d'une place, l'épingle le met en tête.</p>
-                  <p class="console-panel-note" style="margin:8px 0 0;">À savoir : déplacer un produit fige aussi les positions au-dessus de lui — plusieurs règles apparaissent donc d'un seul clic, c'est normal. Rien n'est enregistré avant « Appliquer ».</p>
-                </div>
                 <!-- Correctif (18 aout 2026, brief §"Reglages d'apercu --
                      popover") : les reglages, jusqu'ici toujours
                      visibles au-dessus de la grille, passent derriere
@@ -617,6 +609,17 @@
 
               <div class="so-apercu-col-resultats">
               <div class="console-panel">
+              <!-- Correctif (20 aout 2026, audit passe 3 §1) : le titre
+                   coiffait le rail, donc le mauvais contenu. Il decrit
+                   les resultats, il vit desormais au-dessus d'eux. -->
+                <div class="so-apercu-titre-aide">
+                  <h2>Aperçu des résultats</h2>
+                  <button type="button" class="so-aide-btn" id="so-apercu-aide-btn" aria-expanded="false" aria-controls="so-apercu-aide-panel" aria-label="Comment lire l'aperçu">?</button>
+                </div>
+                <div class="so-aide-panel" id="so-apercu-aide-panel" hidden>
+                  <p class="console-panel-note" style="margin:0;">Tapez une requête pour voir le classement réel, et <strong>pourquoi</strong> chaque produit sort. Les flèches déplacent un produit d'une place, l'épingle le met en tête.</p>
+                  <p class="console-panel-note" style="margin:8px 0 0;">À savoir : déplacer un produit fige aussi les positions au-dessus de lui — plusieurs règles apparaissent donc d'un seul clic, c'est normal. Rien n'est enregistré avant « Appliquer ».</p>
+                </div>
                 <div class="so-facets" id="so-facets" hidden></div>
                 <p class="so-facet-warn" id="so-facet-warn" hidden>Filtre actif : les flèches sont désactivées. Elles figent les positions de la liste <strong>affichée</strong> — sur une liste filtrée, les règles produites n'auraient plus de sens une fois le filtre retiré. L'épinglage, lui, reste possible.</p>
                 <!-- Correctif (18 aout 2026, brief §"Etat initial, aucune

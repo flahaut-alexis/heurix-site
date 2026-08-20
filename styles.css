@@ -3195,13 +3195,6 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 .console-tab-active .console-tab-count{ color:var(--blue-deep); }
 [role="tabpanel"][hidden]{ display:none; }
 
-/* Correctif Lot 3 (audit UX console, 18 aout 2026) : colonne
-   contextuelle (§3.4 du brief). Deux colonnes sur desktop, empile sur
-   mobile -- meme seuil que le reste du site (voir .br-grid etc). */
-.so-apercu-cols{
-  display:grid; grid-template-columns:minmax(0, 1fr) 340px; gap:20px;
-  align-items:start;
-}
 /* Correctif (18 aout 2026, retour Alexis apres captures reelles) :
    restructuration complete de l'onglet Apercu -- searchbar pleine
    largeur en tete, colonnes reglages/resultats asymetriques (reglages
@@ -3231,13 +3224,28 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
   border:1px solid var(--line); border-radius:12px;
 }
 
+/* Correctif (20 aout 2026, audit passe 3 §1). Les resultats sont la
+   raison d'etre de la page : ils prennent la colonne large, le rail
+   passe a droite en largeur fixe. L'inversion se fait par `order`
+   plutot qu'en deplacant ~160 lignes de HTML -- le rail et les
+   resultats gardent leur ordre de lecture au clavier et sur mobile,
+   ou la grille s'empile de toute facon.
+
+   Nommage trompeur assume et laisse tel quel pour ce correctif :
+   .so-apercu-col-principale designe en realite la colonne SECONDAIRE
+   (reglages + rail). A renommer lors d'une passe dediee, pas ici --
+   la classe est referencee ailleurs. */
 .so-apercu-cols{
-  display:grid; grid-template-columns:300px minmax(0, 1fr); gap:20px;
+  display:grid; grid-template-columns:minmax(0, 1fr) 340px; gap:20px;
   align-items:start;
 }
-.so-apercu-col-principale{ min-width:0; }
+.so-apercu-col-principale{ min-width:0; order:2; }
+.so-apercu-col-resultats{ min-width:0; order:1; }
 @media (max-width:900px){
   .so-apercu-cols{ grid-template-columns:1fr; }
+  /* Empile : les resultats d'abord, le rail dessous. */
+  .so-apercu-col-principale{ order:2; }
+  .so-apercu-col-resultats{ order:1; }
 }
 
 .so-apercu-rail-bas{ margin-top:20px; }
