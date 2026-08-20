@@ -190,6 +190,20 @@ header{
 .nav-links a{ text-decoration:none; }
 .nav-links > a.nav-link-mobile-seul{ display:none; }
 .nav-links a:hover{ color:var(--blue-deep); }
+/* Correctif (20 aout 2026, mesure Claude en Chrome). L'attribut HTML
+   `hidden` n'applique display:none que via la feuille du navigateur :
+   toute regle d'auteur qui pose `display` l'ecrase. Six boutons .btn
+   portaient `hidden` sans effet, dont "Supprimer la selection (0)",
+   signale a chaque passe d'audit depuis trois semaines -- le JS posait
+   bien btn.hidden = true, verifie plusieurs fois, mais le style calque
+   restait inline-flex.
+
+   Regle GENERALE plutot qu'une sixieme rustine : le fichier contenait
+   deja cinq corrections ponctuelles du meme piege (.play-categories,
+   .play-more, .console-login, .console-login-form,
+   .console-sidebar-items), chacune ajoutee apres l'avoir rencontre. */
+[hidden]{ display:none !important; }
+
 .btn{
   display:inline-flex; align-items:center; gap:8px;
   background:var(--blue-deep); /* corrige un contraste texte blanc insuffisant (4.37:1, audit Lighthouse du 10 août) -- var(--blue) restait sous le seuil WCAG AA de 4.5:1 */
@@ -4287,8 +4301,12 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
    servant que de garde-fou sur les noms tres longs. */
 .so-liste-produit{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1; min-width:0; }
 .so-liste-pos{ font-weight:600; }
-/* Le bouton rejoint la ligne : plus de bloc separe ni de marge. */
-.so-liste-actions{ display:flex; flex:0 0 auto; }
+/* Le bouton rejoint la ligne. Ce flex:0 0 auto ne servait a rien tant
+   que .so-liste-actions restait un FRERE de .so-liste-chips (mesure
+   Claude en Chrome, 20 aout) : il suppose un parent flex. Le bloc est
+   desormais imbrique DANS la ligne, le nom en flex:1 le pousse a
+   droite. */
+.so-liste-actions{ display:flex; flex:0 0 auto; margin-left:auto; }
 .so-liste-actions button{
   width:28px; height:28px; border-radius:8px; border:1px solid var(--line);
   background:#fff; cursor:pointer; display:inline-flex; align-items:center; justify-content:center;

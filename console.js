@@ -2803,10 +2803,21 @@
         return "<div class='so-liste-chips'>" + actionLabel +
             "<span class='so-liste-produit'>" + esc(o.product_name || o.product_id) + "</span>" +
             posLabel +
-          "</div>" +
+          // Correctif (20 aout 2026, mesure Claude en Chrome). Le bloc
+          // d'actions etait un FRERE de la ligne, pas un enfant : le
+          // bouton tombait donc systematiquement en dessous, doublant la
+          // hauteur de chaque regle. Mon correctif CSS precedent
+          // (flex:0 0 auto) ne pouvait rien y faire -- il supposait un
+          // parent flex, or .so-liste-item reste en bloc a dessein (il
+          // contient le titre du declencheur SUIVI des regles).
+          //
+          // Le bloc rentre dans .so-liste-chips, qui est bien en flex :
+          // le bouton rejoint la ligne, pousse a droite par le nom en
+          // flex:1.
           "<div class='so-liste-actions'>" +
             "<button type='button' class='catalog-rule-remove' data-so-edit='1' data-query='" + esc(o.query) + "' data-product-id='" + esc(o.product_id) + "' data-action='" + esc(o.action) + "' data-position='" + (o.position || "") + "' aria-label='" + T("Modifier") + "' title='" + T("Modifier") + "'>&#9998;</button>" +
-          "</div>";
+          "</div>" +
+        "</div>";
       }).join("<hr class='so-liste-sep'>");
       return "<div class='so-liste-item'>" +
         "<div class='so-liste-trigger' title='" + esc(query) + "'>" + esc(query) + "</div>" +
