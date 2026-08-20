@@ -2254,6 +2254,10 @@ body.docs-dark .why-card p{ color:#CDD2F0; }
 .console-stat-warn .icn{ background:#FFF3DD; color:#B9750C; }
 .console-stat-num{ font-size:30px; font-weight:800; color:var(--blue-deep); letter-spacing:-0.02em; line-height:1.1; }
 .console-stat-label{ font-size:12px; color:var(--ink-muted); font-weight:600; margin-top:5px; }
+/* Mention secondaire du KPI Erreurs (20 aout 2026) : le bruit
+   d'exploitation, visible sans concurrencer le chiffre principal. */
+.console-stat-sous{ font-size:11px; color:var(--ink-muted); margin-top:2px; }
+.console-stat-sous[hidden]{ display:none; }
 
 .console-panel{
   background:#fff; border:1px solid var(--line); border-radius:16px;

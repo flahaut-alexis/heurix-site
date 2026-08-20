@@ -230,6 +230,7 @@
     "En stock uniquement": "In stock only",
     "Créer": "Create",
     "Modifier": "Edit",
+    "{0} sans conséquence": "{0} harmless",
     "Mettre en avant": "Set up a rule",
     "faible": "low",
     "fort": "high",

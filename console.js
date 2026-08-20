@@ -285,6 +285,12 @@
   function renderStats(summary, usage) {
     document.getElementById("stat-searches").textContent = summary.total_searches.toLocaleString(LOCALE);
     document.getElementById("stat-zero-rate").textContent = L.zeroRate(summary.zero_result_rate);
+    // Correctif (20 aout 2026, audit passe 3 §6). summary.total_errors
+    // compte TOUT, y compris les 401 provoques par des robots -- d'ou
+    // "58 Erreurs" ici quand la page Erreurs annoncait "0 a traiter".
+    // Valeur de repli seulement : majKpiErreurs() la remplace des que la
+    // liste detaillee arrive, en appliquant la meme regle de partage que
+    // la page (CODES_ACTIONNABLES), pour ne pas dupliquer cette regle.
     document.getElementById("stat-errors").textContent = summary.total_errors.toLocaleString(LOCALE);
     document.getElementById("stat-usage").textContent = usage.requests.toLocaleString(LOCALE);
     // La comparaison est un appel distinct : elle ne doit pas retarder
@@ -1307,6 +1313,27 @@
       W.localStorage.setItem(cle, valeur);
       return valeur;
     } catch (e) { return null; }
+  }
+
+  // Correctif (20 aout 2026, audit passe 3 §6) : le KPI du tableau de
+  // bord doit compter la MEME chose que la page Erreurs. Meme constante
+  // CODES_ACTIONNABLES, une seule definition de ce qui demande une
+  // action -- plutot que de filtrer aussi cote moteur, ou la regle
+  // aurait vecu en deux endroits avec un risque de divergence.
+  function majKpiErreurs(erreurs) {
+    var champ = document.getElementById("stat-errors");
+    var sous = document.getElementById("stat-errors-bruit");
+    if (!champ) return;
+    erreurs = erreurs || [];
+    var aTraiter = erreurs.filter(function (e) {
+      return CODES_ACTIONNABLES.indexOf(e.status_code) !== -1;
+    }).length;
+    var bruit = erreurs.length - aTraiter;
+    champ.textContent = aTraiter.toLocaleString(LOCALE);
+    if (sous) {
+      sous.hidden = bruit === 0;
+      sous.textContent = bruit === 0 ? "" : T("{0} sans conséquence", bruit);
+    }
   }
 
   function majSignalementErreurs(erreurs) {
@@ -5003,6 +5030,7 @@
       wireSuggestionsSynonymes(key);
       _dernieresErreurs = errors || [];
       majSignalementErreurs(errors);
+      majKpiErreurs(errors);
       renderTable("errors-table", "errors-empty", errors, function (e) {
         var t = traduireErreur(e);
         var html = "<td class='err-cell'>" +
