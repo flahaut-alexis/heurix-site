@@ -2505,9 +2505,19 @@
           // est deja conditionnee par `q` (contexte ou le rang a un sens
           // : "3e resultat pour cette recherche") -- source unique du
           // numero, le badge reste juste "Epingle" sans le repeter.
-          var badge = h.pinned
-            ? "<span class='so-card-badge so-card-badge-pin'>" + T("Épinglé") + "</span>"
-            : h.buried ? "<span class='so-card-badge so-card-badge-bury'>" + T("Relégué") + "</span>" : "";
+          // Correctif (20 aout 2026, planche de composants, point 2). Le
+          // bandeau bleu pleine largeur ecrasait le nom du produit et
+          // coexistait avec la pastille de rang : deux elements pour une
+          // seule information, signalee des la passe 1. La pastille
+          // porte desormais l'epingle et passe en plein quand la
+          // position est IMPOSEE ; contour simple quand elle est
+          // calculee. Le nom retrouve toute la largeur -- d'autant plus
+          // utile depuis que les visuels sont affiches.
+          //
+          // "Relegue" garde son badge : cet etat n'a pas de position, il
+          // ne peut pas se fondre dans la pastille.
+          var badge = h.buried
+            ? "<span class='so-card-badge so-card-badge-bury'>" + T("Relégué") + "</span>" : "";
           // Correctif B1 (audit UX console, 17 aout 2026). p.stock === 0
           // ne fonctionnait jamais : stock, cote catalogue, est un vrai
           // booleen (voir heurix-engine, ItemsBody), jamais une quantite
@@ -2576,7 +2586,9 @@
           var visuel = (afficherVisuels && imgSrc)
             ? "<img class='so-card-visuel' src='" + esc(imgSrc) + "' alt='' loading='lazy'>" : "";
           return "<div class='" + classes + "'" + " draggable='true' data-pid='" + pid + "' data-name='" + esc(p.name || "") + "'" + ">" +
-            (q ? "<span class='so-card-rank'>" + (i + 1) + "</span>" : "") +
+            (q ? "<span class='so-card-rank" + (h.pinned ? " so-card-rank-impose" : "") + "'" +
+              (h.pinned ? " title='" + escAttr(T("Position imposée par une règle")) + "'" : "") + ">" +
+              (h.pinned ? "&#128204; " : "") + (i + 1) + "</span>" : "") +
             badge + visuel +
             "<div class='so-card-name'>" + surlignerTexte(p.name || p.id, h.highlights && h.highlights.name) + "</div>" +
             "<div class='so-card-ref'>" + surlignerTexte(p.ref || p.id, h.highlights && h.highlights.ref) + "</div>" +
@@ -4434,8 +4446,10 @@
       // par categorie, pas de recherche textuelle) -- source unique du
       // numero sans exception. "Booste" n'avait deja pas de numero, non
       // concerne.
-      var badge = h.pinned ? "<span class='so-card-badge so-card-badge-pin'>" + T("Épinglé") + "</span>"
-        : h.boosted ? "<span class='so-card-badge so-card-badge-pin'>" + T("Favorisé") + "</span>"
+      // Meme correctif. "Favorise" et "Relegue" gardent leur badge : ces
+      // etats n'ont pas de position imposee, ils ne peuvent pas se
+      // fondre dans la pastille.
+      var badge = h.boosted ? "<span class='so-card-badge so-card-badge-pin'>" + T("Favorisé") + "</span>"
         : h.buried ? "<span class='so-card-badge so-card-badge-bury'>" + T("Relégué") + "</span>" : "";
       // Correctif B1 (audit UX console, 17 aout 2026). Meme correctif que
       // Search Overrides : h.in_stock plutot que p.stock === 0.
@@ -4464,7 +4478,9 @@
         ? "<img class='so-card-visuel' src='" + esc(brImgSrc) + "' alt='' loading='lazy'>" : "";
 
       return "<div class='" + classes + "'" + " draggable='true' data-pid='" + pid + "'" + nomAttrBr + ">" +
-        "<span class='so-card-rank'>" + (i + 1) + "</span>" + badge + brVisuel +
+        "<span class='so-card-rank" + (h.pinned ? " so-card-rank-impose" : "") + "'" +
+          (h.pinned ? " title='" + escAttr(T("Position imposée par une règle")) + "'" : "") + ">" +
+          (h.pinned ? "&#128204; " : "") + (i + 1) + "</span>" + badge + brVisuel +
         "<div class='so-card-name'>" + esc(p.name || p.id) + "</div>" +
         "<div class='so-card-ref'>" + esc(p.ref || p.id) + "</div>" +
         "<div class='so-card-foot'>" + prix + stock + "</div>" + actions + "</div>";

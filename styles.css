@@ -3391,10 +3391,19 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
   transition:border-color .12s ease, box-shadow .12s ease;
 }
 .so-card:hover{ border-color:#C9CDDD; box-shadow:0 4px 14px -8px rgba(18,20,43,0.14); }
+/* Correctif (20 aout 2026, planche de composants, point 2). Une seule
+   pastille porte desormais l'information de rang : contour discret
+   quand la position est CALCULEE, plein bleu avec epingle quand elle
+   est IMPOSEE par une regle. Le bandeau pleine largeur qui doublait ce
+   nombre est retire (voir console.js). */
 .so-card-rank{
   position:absolute; top:10px; right:10px;
   font-size:11px; font-weight:800; color:var(--ink-muted);
-  background:var(--bg-soft); border-radius:100px; padding:2px 8px;
+  background:var(--bg-soft); border:1px solid var(--line);
+  border-radius:100px; padding:2px 8px;
+}
+.so-card-rank-impose{
+  background:var(--blue); border-color:var(--blue); color:#fff;
 }
 /* Correctif : padding-right reserve la place du badge de rang meme
    sans badge -- conditionne desormais a sa presence. line-clamp evite

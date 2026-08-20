@@ -230,6 +230,7 @@
     "En stock uniquement": "In stock only",
     "Créer": "Create",
     "Modifier": "Edit",
+    "Position imposée par une règle": "Position set by a rule",
     "Présélectionner le pack {0}": "Preselect the {0} pack",
     "Zone sensible": "Danger zone",
     "Nom généré — vous pouvez en saisir un dans la règle": "Generated name — you can set your own in the rule",
