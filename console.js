@@ -3052,6 +3052,13 @@
     if (stock) stock.addEventListener("change", function () { refreshSoPreview(key); });
     var grouper = document.getElementById("so-grouper");
     if (grouper) grouper.addEventListener("change", function () { refreshSoPreview(key); });
+    // Correctif (20 aout 2026, demande Alexis). Le reglage "Afficher les
+    // visuels" existait de bout en bout -- case dans le popover, lecture
+    // au rendu, balise <img> conditionnee -- mais sans ecouteur : cocher
+    // n'avait d'effet qu'a la recherche SUIVANTE. Meme cablage que les
+    // trois reglages voisins.
+    var visuels = document.getElementById("so-visuels");
+    if (visuels) visuels.addEventListener("change", function () { refreshSoPreview(key); });
     var limite = document.getElementById("so-preview-limit");
     if (limite) limite.addEventListener("change", function () { refreshSoPreview(key); });
     var champ = document.getElementById("so-preview-query");
