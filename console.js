@@ -5492,7 +5492,18 @@
           "<p class='pack-suggestion-detail'>" + T("Sur {0} produits : <strong>{1}</strong> annotés avec « {2} », contre <strong>{3}</strong> avec « {4} ».",
             d.echantillon, meilleur.produits_annotes, esc(d.recommande), actuel.produits_annotes, esc(d.pack_actuel || T("aucun"))) + "</p>" +
           "<button type='button' class='pack-suggestion-appliquer' data-pack='" +
-            esc(d.recommande) + "'>" + T("Sélectionner le pack {0}", esc(d.recommande)) + "</button>" +
+            esc(d.recommande) + "'>" + T("Présélectionner le pack {0}", esc(d.recommande)) + "</button>" +
+          // Correctif (20 aout 2026, audit passe 3 §3) : le bouton
+          // annoncait "Selectionner le pack" en style primaire, mais ne
+          // fait que preselectionner dans la liste -- il fallait ensuite
+          // enregistrer, puis reimporter. Un bouton primaire doit faire
+          // ce qu'il annonce.
+          //
+          // Ecart assume avec l'audit, qui proposait d'ajouter un
+          // primaire "Reimporter avec le pack" : la reimportation part de
+          // l'API du client, la console ne peut pas la declencher. Ce
+          // bouton promettrait ce qu'on ne peut pas tenir. On corrige donc
+          // le libelle et le style, sans inventer une action impossible.
           "<span class='pack-suggestion-note'>" + T("Ce bouton présélectionne le pack.") + " " +
             T("<strong>Les annotations sont calculées à l'indexation</strong> : pour qu'elles changent, réimportez votre catalogue en déclarant le nouveau pack.") +
             " <a href='../docs.html#ep-items' target='_blank' rel='noopener'>" + T("Voir la marche à suivre") + "</a>.</span>";
@@ -5628,7 +5639,19 @@
       '</div>' +
       '<div class="catalog-synonyms-label" style="margin-top:22px;">' + T("Synonymes et reconnaissances personnalisées") + '</div>' +
       '<p class="console-panel-note" style="margin:6px 0 0;">' + T("Gérés depuis") + ' <button type="button" class="catalog-goto-rules" data-goto-pane="pane-vocabulaire">' + T("Optimiser → Vocabulaire du moteur") + '</button>.</p>' +
+      // Correctif (20 aout 2026, audit passe 3 §3, partiel). L'audit
+      // decrit "un bouton a contour rouge au fil du contenu, sans
+      // confirmation annoncee" et demande une confirmation par saisie du
+      // nom. VERIFIE AVANT DE CODER : elle existe deja, et a trois
+      // niveaux -- message annoncant l'irreversibilite et le nombre de
+      // produits perdus, recopie du nom exact, puis parametre confirm
+      // verifie par le moteur. Ce point de l'audit a ete decrit sans
+      // cliquer ; rien n'est change de ce cote.
+      //
+      // Ce qui manquait reellement : le titre de section. Le bouton
+      // apparaissait sous un simple filet, sans dire ou l'on entre.
       '<div class="catalog-card-danger">' +
+        '<div class="catalog-danger-titre">' + T("Zone sensible") + '</div>' +
         '<button type="button" class="catalog-delete">' + T("Supprimer ce catalogue") + '</button>' +
       '</div>' +
     '</div>';

@@ -230,6 +230,8 @@
     "En stock uniquement": "In stock only",
     "Créer": "Create",
     "Modifier": "Edit",
+    "Présélectionner le pack {0}": "Preselect the {0} pack",
+    "Zone sensible": "Danger zone",
     "Nom généré — vous pouvez en saisir un dans la règle": "Generated name — you can set your own in the rule",
     "épinglé en {0}": "pinned at {0}",
     "Cette recherche ne renvoie aucun résultat": "This search returns no results",

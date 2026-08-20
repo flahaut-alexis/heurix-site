@@ -4500,12 +4500,16 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 .pack-suggestion-titre strong{ color:var(--blue-deep); }
 .pack-suggestion-detail{ margin:0 0 10px; font-size:12px; line-height:1.5; color:var(--ink-muted); }
 .pack-suggestion-detail strong{ color:var(--ink); }
+/* Correctif (20 aout 2026, audit passe 3 §3) : style secondaire. Ce
+   bouton ne fait que preselectionner dans la liste -- le geste qui
+   engage reste l'enregistrement, puis la reimportation. Un plein bleu
+   lui donnait le poids d'une action definitive. */
 .pack-suggestion-appliquer{
   font-family:inherit; font-size:12.5px; font-weight:600; cursor:pointer;
   padding:7px 13px; border-radius:8px;
-  background:var(--blue); border:1px solid var(--blue); color:#fff;
+  background:#fff; border:1px solid var(--blue); color:var(--blue-deep);
 }
-.pack-suggestion-appliquer:hover{ background:var(--blue-deep); }
+.pack-suggestion-appliquer:hover{ background:var(--blue-tint); }
 .pack-suggestion-note{
   display:block; margin-top:7px; font-size:11.5px; color:var(--ink-muted);
 }
@@ -5102,6 +5106,12 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
    Une action irreversible ne doit pas voisiner les reglages courants. */
 .catalog-card-danger{
   margin-top:20px; padding-top:14px; border-top:1px solid var(--line);
+}
+/* Titre de section (20 aout 2026) : le bouton de suppression
+   apparaissait sous un simple filet, sans dire ou l'on entre. */
+.catalog-danger-titre{
+  font-size:11px; font-weight:800; text-transform:uppercase;
+  letter-spacing:0.05em; color:#B4402F; margin-bottom:8px;
 }
 .catalog-delete{
   font-family:inherit; font-size:12.5px; font-weight:600; cursor:pointer;
