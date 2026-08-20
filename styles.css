@@ -3104,13 +3104,27 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
    Couleurs harmonisees sur les vraies variables ambre officielles
    (--amber/--amber-tint/--amber-line, ajoutees pour B3), plus les
    valeurs en dur precedentes (#FFFBF3, #F0DDB8, #E0930C). */
+/* Correctif (20 aout 2026, retour Alexis : "elle est tout en bas, ce
+   n'est pas logique"). La barre etait deja en position:sticky, mais
+   collee EN HAUT (top:8px) tout en vivant en FIN de flux -- elle ne
+   collait donc jamais : on n'y arrivait qu'en bas de page, ou il n'y a
+   plus rien a defiler. Elle disparaissait exactement quand elle devenait
+   utile, apres avoir pose des regles dans la grille.
+
+   Collee en bas de fenetre : elle reste sous les yeux pendant qu'on
+   travaille dans la grille, et n'occupe rien tant qu'aucun brouillon
+   n'existe (l'attribut hidden la retire du flux). Marge basse pour ne
+   pas donner l'impression qu'elle est coupee par le bord de l'ecran.
+
+   Partagee par Search et Merchandising (so-simu-bar et br-simu-bar
+   portent la meme classe) : un seul correctif pour les deux. */
 .so-simu-bar{
   display:flex; align-items:center; gap:12px; flex-wrap:wrap;
   margin-top:14px; padding:12px 16px;
   background:var(--amber-tint); border:1px solid var(--amber-line); border-radius:10px;
   font-size:13px; color:var(--ink);
-  position:sticky; top:8px; z-index:20;
-  box-shadow:0 4px 14px rgba(178,106,0,0.12);
+  position:sticky; bottom:12px; z-index:20;
+  box-shadow:0 -4px 18px rgba(178,106,0,0.16);
 }
 .so-simu-bar[hidden]{ display:none; }
 .so-simu-tag{
