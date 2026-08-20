@@ -3446,6 +3446,31 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
   font-size:12.5px; font-weight:700; color:var(--ink-muted); margin:0 0 8px;
 }
 .so-amorce-chips{ display:flex; flex-wrap:wrap; gap:8px; }
+/* Correctif (20 aout 2026, planche de composants point 5). Trois
+   familles de pilules pour des objets de meme nature -- suggestions
+   d'amorce, facettes, catalogues -- avec trois tailles de texte (13 /
+   12.5 / 13), trois paddings (6/14, 5/12, 7/16) et des survols
+   incoherents. Base commune ci-dessous, variantes reduites a ce qui les
+   distingue vraiment.
+
+   .cell-statut EXCLUE apres verification, bien que l'audit la range
+   avec les pilules : c'est du texte colore sans fond ni bordure, dans
+   une cellule de tableau. Une pilule se clique ou se selectionne ; un
+   statut se lit. Leur donner la meme forme aurait suggere une
+   interaction qui n'existe pas. */
+.so-amorce-chip, .so-facet-chip, .catalog-list-pill{
+  font-family:inherit; font-size:12.5px; font-weight:600; cursor:pointer;
+  padding:6px 14px; border-radius:100px;
+  border:1px solid var(--line); background:#fff; color:var(--ink);
+  transition:border-color .12s ease, background .12s ease, color .12s ease;
+}
+.so-amorce-chip:hover, .so-facet-chip:hover, .catalog-list-pill:hover{
+  border-color:var(--blue); color:var(--blue-deep); background:var(--blue-tint);
+}
+/* Etat actif, commun aux trois : plein bleu. */
+.so-facet-chip.on, .catalog-list-pill-on{
+  background:var(--blue); border-color:var(--blue); color:#fff;
+}
 /* Une requete sans resultat reste cliquable -- c'est justement celle
    qu'on veut corriger -- mais signalee par un point ambre plutot que
    reléguée dans un bloc separe. */
@@ -3453,12 +3478,7 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
   content:""; display:inline-block; width:6px; height:6px; border-radius:50%;
   background:#E0930C; margin-right:6px; vertical-align:middle;
 }
-.so-amorce-chip{
-  font:inherit; font-size:13px; font-weight:600; color:var(--ink);
-  background:var(--bg-soft); border:1px solid var(--line); border-radius:100px;
-  padding:6px 14px; cursor:pointer;
-}
-.so-amorce-chip:hover{ background:var(--blue-tint); border-color:var(--blue); color:var(--blue-deep); }
+
 .so-card-ref{ font-family:IBM Plex Mono, monospace; font-size:11px; color:var(--ink-muted); margin-bottom:8px; }
 .so-card-name mark, .so-card-ref mark{ background:var(--blue-tint); color:var(--blue-deep); font-weight:700; padding:1px 3px; border-radius:3px; }
 .so-card-foot{ margin-top:auto; display:flex; align-items:baseline; justify-content:space-between; gap:8px; }
@@ -3664,14 +3684,7 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 .so-facets{ display:flex; flex-wrap:wrap; gap:7px; margin:0 0 12px; }
 .so-facets[hidden]{ display:none; }
 .so-facet-group{ font-size:11px; font-weight:800; letter-spacing:.04em; text-transform:uppercase; color:var(--ink-muted); align-self:center; margin-right:2px; }
-.so-facet-chip{
-  font-family:inherit; font-size:12.5px; font-weight:600; cursor:pointer;
-  padding:5px 12px; border-radius:100px;
-  border:1px solid var(--line); background:#fff; color:var(--ink);
-  transition:all .12s ease;
-}
-.so-facet-chip:hover{ border-color:var(--blue); color:var(--blue-deep); }
-.so-facet-chip.on{ background:var(--blue); border-color:var(--blue); color:#fff; }
+
 /* Avertissement du garde-fou : les fleches figent l ordre AFFICHE, donc
    une liste filtree produirait des regles trompeuses une fois le filtre
    retire. Ton ambre, comme la simulation -- meme registre : « attention,
@@ -4233,13 +4246,7 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 /* Correctif (18 aout 2026, brief §3.1) : selecteur de catalogues,
    deplace de la sidebar vers la page pane-catalog-list elle-meme. */
 .catalog-list-selector{ display:flex; flex-wrap:wrap; gap:8px; margin:0 0 18px; }
-.catalog-list-pill{
-  font:inherit; font-size:13px; font-weight:600; color:var(--ink-muted);
-  background:var(--bg-soft); border:1px solid var(--line); border-radius:100px;
-  padding:7px 16px; cursor:pointer;
-}
-.catalog-list-pill:hover{ background:var(--blue-tint); color:var(--ink); }
-.catalog-list-pill-on{ background:var(--blue-tint); border-color:var(--blue); color:var(--blue-deep); }
+
 
 /* Correctif (18 aout 2026, diagnostic Claude en Chrome) : liste verticale
    pour la colonne contextuelle -- tokens existants reutilises, pas de
