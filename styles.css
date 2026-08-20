@@ -2306,6 +2306,21 @@ body.docs-dark .why-card p{ color:#CDD2F0; }
   text-align:left;
 }
 .console-activation-restore:hover{ background:var(--blue-tint); color:var(--blue-deep); }
+/* Correctif (20 aout 2026, planche de composants point 6 : trois usages
+   stricts -- bleu = information, ambre = attention ou brouillon, rouge =
+   erreur ou irreversible). L'ambre servait a de l'information neutre sur
+   quatre ecrans : d'ou viennent les chiffres, ce qu'est une recherche
+   sans resultat, comment sont calcules les produits associes, comment
+   fonctionne la segmentation. Rien qui appelle a la vigilance -- et un
+   ambre partout finit par ne plus rien signaler.
+
+   Variante bleue creee en miroir, meme structure (degrade doux, pastille
+   coloree devant le titre). */
+.console-panel-info{ background:linear-gradient(180deg, #F4F6FF 0%, #fff 120px); border-color:#C6CEFF; }
+.console-panel-info h2{ display:flex; align-items:center; gap:8px; }
+.console-panel-info h2::before{
+  content:""; width:7px; height:7px; border-radius:50%; background:#5468FF; flex-shrink:0;
+}
 .console-panel-warn{ background:linear-gradient(180deg, #FFFBF3 0%, #fff 120px); border-color:#F0DDB8; }
 .console-panel-warn h2{ display:flex; align-items:center; gap:8px; }
 .console-panel-warn h2::before{
