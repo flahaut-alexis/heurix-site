@@ -2197,7 +2197,18 @@ body.docs-dark .why-card p{ color:#CDD2F0; }
    rien ne peut plus deborder visuellement au-dela de la carte. Aucun
    contenu de ce panneau n'a besoin de deborder intentionnellement
    (le tableau a deja son propre scroll dedie via .table-scroll). */
-.console-panel{ overflow:hidden; }
+/* Correctif (21 aout 2026) : ce filet rognait aussi le VERTICAL, donc
+   tout panneau flottant dans une carte -- le menu de categories perdait
+   ses 177 derniers pixels (mesure), et c'est la meme propriete qui
+   neutralisait position:sticky hier soir sur la barre de brouillon.
+   L'hypothese du 3 aout, « aucun contenu n'a besoin de deborder
+   intentionnellement », n'est plus vraie.
+   Le filet HORIZONTAL est conserve : sa cause n'a jamais ete isolee, le
+   retirer rouvrirait un probleme mal compris. Seul l'axe vertical est
+   libere.
+   ATTENTION : mixer les axes fait traiter `visible` comme `auto` par le
+   navigateur -- d'ou clip plutot que hidden, qui n'a pas cet effet. */
+.console-panel{ overflow-x:clip; overflow-y:visible; }
 .console-pane{ display:block; }
 .console-pane[hidden]{ display:none; }
 .console-pane-title{ font-size:20px; margin:0 0 18px; }
@@ -3302,8 +3313,13 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
    (21 aout 2026) : les champs Categorie et Classement font ensemble
    ~600px, le bouton s'aligne dessus plutot que de s'ajuster a son
    texte. */
-.br-reglages-wrap{ position:relative; display:block; max-width:600px; margin:0 0 14px; }
-.br-reglages-wrap .so-apercu-reglages-btn{ width:100%; justify-content:flex-start; gap:8px; }
+/* 589px : largeur MESUREE des deux champs reunis, du bord gauche de
+   « Categorie » au bord droit de « Classement de base » (21 aout 2026).
+   Mon estimation a 600px etait proche, mais le bouton ne faisait que
+   125px -- display:block sur le conteneur ne suffit pas, c'est le
+   BOUTON qui devait s'etirer. */
+.br-reglages-wrap{ position:relative; display:block; width:589px; max-width:100%; margin:0 0 14px; }
+.br-reglages-wrap > button{ width:100%; justify-content:flex-start; gap:8px; }
 /* Le popover s'ancre a GAUCHE ici : le bouton est en debut de ligne,
    l'ancrage a droite le faisait deborder hors de la carte (capture
    Alexis). Sur la page soeur le bouton est a droite, d'ou l'ancrage
