@@ -701,7 +701,10 @@
       // encore renseignee -- on garde alors un intitule neutre plutot
       // qu'un menu vide ou un placeholder technique.
       var orgBtn = document.getElementById("console-org-btn");
-      if (orgBtn) orgBtn.textContent = company.raison_sociale || T("Mon compte");
+      // Conservee pour recomposer le libelle : showPane y ajoute l'ecran
+      // courant, et doit pouvoir revenir a la raison sociale seule.
+      session.raisonSociale = company.raison_sociale || T("Mon compte");
+      if (orgBtn) orgBtn.textContent = session.raisonSociale;
       var orgDropVisible = document.querySelector(".console-org-drop");
       if (orgDropVisible) orgDropVisible.hidden = false;
 
@@ -1566,7 +1569,22 @@
         if (actif) dansLeMenu = true;
       });
       var btnMenu = document.getElementById("console-org-btn");
-      if (btnMenu) btnMenu.classList.toggle("nav-drop-btn-on", dansLeMenu);
+      if (btnMenu) {
+        btnMenu.classList.toggle("nav-drop-btn-on", dansLeMenu);
+        // Correctif (21 aout 2026, capture Alexis). Marquer l'entree
+        // ACTIVE ne servait a rien : elle vit dans un menu deroulant
+        // ferme. Le bouton bleu disait "quelque part dans le compte",
+        // sans dire ou -- le titre de page restait le seul repere.
+        //
+        // L'ecran courant s'affiche donc DANS le bouton, visible sans
+        // rien ouvrir.
+        var base = session.raisonSociale || T("Mon compte");
+        var courant = null;
+        entrees.forEach(function (b) {
+          if (b.getAttribute("data-goto-pane") === paneId) courant = b.textContent.trim();
+        });
+        btnMenu.textContent = courant ? base + " › " + courant : base;
+      }
     }
     // L'effet de frappe part a l'OUVERTURE du panneau, pas au cablage :
     // celui-ci s'execute a la connexion, alors que le pave est encore
