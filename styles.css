@@ -2278,6 +2278,24 @@ body.docs-dark .why-card p{ color:#CDD2F0; }
 }
 .seg-total-ligne strong{ font-size:22px; color:var(--ink); margin-right:4px; }
 .seg-total-ligne[hidden]{ display:none; }
+
+/* Etat vide de la segmentation (21 aout 2026, retour Alexis : "pas tres
+   visible"). Le message vivait en .console-empty -- le registre discret
+   des listes vides -- alors qu'il est le SEUL contenu de la page et
+   porte une action a faire. Passe en encart bleu, meme composant que
+   les autres notes d'information.
+
+   Lien plutot que bouton primaire : la console ne peut pas installer le
+   tracker a la place du marchand, c'est une balise a poser sur son site.
+   Un bouton aurait promis une action qu'on n'execute pas. */
+.seg-empty-lien{
+  display:inline-block; font-size:13.5px; font-weight:600;
+  color:var(--blue-deep); text-decoration:none;
+  padding:9px 16px; border-radius:8px;
+  border:1px solid var(--blue); background:#fff;
+}
+.seg-empty-lien:hover{ background:var(--blue-tint); }
+.seg-empty-lien:focus-visible{ outline:2px solid #5468FF; outline-offset:2px; }
 /* Une tuile qui mene quelque part doit le montrer (21 aout 2026). */
 .console-stat[data-goto-pane]{ cursor:pointer; transition:border-color .12s ease, box-shadow .12s ease; }
 .console-stat[data-goto-pane]:hover{
