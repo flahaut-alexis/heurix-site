@@ -3376,10 +3376,15 @@
     });
   }
 
-  function wireSoProductAutocomplete(key) {
-    var champ = document.getElementById("so-product-search");
-    var idCache = document.getElementById("so-product-id");
-    var panneau = document.getElementById("so-product-panel");
+  // Parametree (21 aout 2026) pour servir les DEUX ecrans : la
+  // recherche l'utilisait deja, la categorie en avait besoin. Les
+  // identifiants etaient en dur -- dupliquer la fonction aurait cree
+  // deux comportements a maintenir en parallele.
+  function wireSoProductAutocomplete(key, ids) {
+    ids = ids || {};
+    var champ = document.getElementById(ids.champ || "so-product-search");
+    var idCache = document.getElementById(ids.cache || "so-product-id");
+    var panneau = document.getElementById(ids.panneau || "so-product-panel");
     if (!champ || !idCache || !panneau) return;
 
     var debounceTimer = null;
@@ -5167,8 +5172,8 @@
         (o.product_name ? "" : " <span class='br-regle-orpheline' title='" + escAttr(T("Ce produit n'est plus dans le catalogue : la règle ne s'applique pas.")) + "'>&#9888;</span>") +
         "</td><td>" + T(o.action === "pin" ? "Épingler" : "Reléguer") +
         "</td><td>" + (o.position || "–") + "</td><td style='white-space:nowrap;'>" +
-        "<button type='button' class='catalog-rule-remove' data-edit-override='1' data-product-id='" + esc(o.product_id) + "' data-action='" + esc(o.action) + "' data-position='" + (o.position || "") + "' aria-label='" + T("Modifier") + "' title='" + T("Modifier") + "' style='margin-right:6px;'>&#9998;</button>" +
-        "<button type='button' class='catalog-rule-remove' data-duplicate-override='1' data-product-id='" + esc(o.product_id) + "' data-action='" + esc(o.action) + "' data-position='" + (o.position || "") + "' aria-label='" + T("Dupliquer") + "' title='" + T("Dupliquer") + "' style='margin-right:6px;'>&#10697;</button>" +
+        "<button type='button' class='catalog-rule-remove' data-edit-override='1' data-product-id='" + esc(o.product_id) + "' data-product-name='" + escAttr(o.product_name || "") + "' data-action='" + esc(o.action) + "' data-position='" + (o.position || "") + "' aria-label='" + T("Modifier") + "' title='" + T("Modifier") + "' style='margin-right:6px;'>&#9998;</button>" +
+        "<button type='button' class='catalog-rule-remove' data-duplicate-override='1' data-product-id='" + esc(o.product_id) + "' data-product-name='" + escAttr(o.product_name || "") + "' data-action='" + esc(o.action) + "' data-position='" + (o.position || "") + "' aria-label='" + T("Dupliquer") + "' title='" + T("Dupliquer") + "' style='margin-right:6px;'>&#10697;</button>" +
         "<button type='button' class='catalog-rule-remove' data-remove-override='" + esc(o.product_id) + "' aria-label='" + T("Retirer") + "'>&times;</button></td>";
     });
     var panneau = document.getElementById("bo-rules-panel");
@@ -5209,6 +5214,11 @@
   function resetBrowseOverrideForm() {
     boEditingProductId = null;
     document.getElementById("browse-override-product-id").value = "";
+    // Le champ VISIBLE aussi : sans cela le nom du produit restait
+    // affiche apres annulation, alors que l'identifiant sous-jacent
+    // etait vide -- le formulaire paraissait rempli sans l'etre.
+    var champVisibleReset = document.getElementById("bo-product-search");
+    if (champVisibleReset) champVisibleReset.value = "";
     document.getElementById("browse-override-action").value = "pin";
     document.getElementById("browse-override-position").value = "";
     document.getElementById("bo-form-title").textContent = T("Ajouter une règle");
@@ -5323,13 +5333,18 @@
         var src = editBtn || dupBtn;
         boEditingProductId = editBtn ? src.getAttribute("data-product-id") : null;
         document.getElementById("browse-override-product-id").value = src.getAttribute("data-product-id");
+        var champVisible = document.getElementById("bo-product-search");
+        if (champVisible) {
+          // Repli sur l'identifiant : une regle orpheline n'a pas de nom.
+          champVisible.value = src.getAttribute("data-product-name") || src.getAttribute("data-product-id");
+        }
         document.getElementById("browse-override-action").value = src.getAttribute("data-action");
         document.getElementById("browse-override-position").value = src.getAttribute("data-position") || "";
         document.getElementById("bo-form-title").textContent = editBtn ? T("Modifier la règle") : T("Dupliquer — modifiez au moins un champ");
         document.getElementById("bo-submit-btn").textContent = editBtn ? T("Enregistrer les modifications") : T("Créer cette règle");
         document.getElementById("bo-cancel-edit-btn").hidden = false;
-        document.getElementById("browse-override-product-id").scrollIntoView({ behavior: "smooth", block: "center" });
-        if (dupBtn) { document.getElementById("browse-override-product-id").focus(); document.getElementById("browse-override-product-id").select(); }
+        document.getElementById("bo-product-search").scrollIntoView({ behavior: "smooth", block: "center" });
+        if (dupBtn) { document.getElementById("bo-product-search").focus(); document.getElementById("browse-override-product-id").select(); }
         return;
       }
       if (delBtn) {
@@ -5614,6 +5629,14 @@
       wireBilling(key);
       brCablerOngletsRegles();
       brCablerReglages();
+      // Meme autocomplete que la page soeur, sur les champs de la
+      // categorie : le formulaire attendait un identifiant tape a la
+      // main, sans aucune aide.
+      wireSoProductAutocomplete(key, {
+        champ: "bo-product-search",
+        cache: "browse-override-product-id",
+        panneau: "bo-product-panel",
+      });
       // Correctif (20 aout 2026, mesure Network avec Alexis : synonyms,
       // custom-rules, usage et catalogs partaient en double au
       // changement de catalogue). wireCustomRulesPane ne faisait plus
