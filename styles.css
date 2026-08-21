@@ -2821,6 +2821,13 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
   background:none; border:none; cursor:pointer; padding:6px 2px;
   display:inline-flex; align-items:center; gap:5px;
 }
+/* Etat actif du menu compte (21 aout 2026) : ses ecrans ne figurent pas
+   dans la barre laterale, rien n'indiquait donc ou l'on se trouvait une
+   fois dedans. Le bouton du menu et l'entree ouverte se marquent. */
+.nav-drop-btn-on{ color:var(--blue-deep); }
+.nav-drop-panel .nav-drop-item-on{
+  color:var(--blue-deep); font-weight:700; background:var(--blue-tint);
+}
 .nav-drop-btn::after{ content:""; width:5px; height:5px; border-right:1.5px solid currentColor; border-bottom:1.5px solid currentColor; transform:rotate(45deg) translateY(-1px); transition:transform .15s ease; }
 .nav-drop-btn[aria-expanded="true"]::after{ transform:rotate(225deg) translateY(-2px); }
 .nav-drop-btn:hover,.nav-drop-btn[aria-expanded="true"]{ color:var(--blue-deep); }

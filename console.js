@@ -1543,6 +1543,31 @@
     document.querySelectorAll(".console-sidebar-item").forEach(function (btn) {
       btn.classList.toggle("console-sidebar-item-on", btn.getAttribute("data-pane") === paneId && !btn.hasAttribute("data-catalog"));
     });
+
+    // Correctif (21 aout 2026, audit de coherence, zone compte). Les
+    // ecrans du menu du haut -- Entreprise, Membres, Cle API, Mon
+    // abonnement -- ne figurent PAS dans la barre laterale. Une fois
+    // dedans, plus aucun repere : la boucle ci-dessus eteint tout, sans
+    // rien allumer ailleurs.
+    //
+    // L'audit decrivait 'Dashboard reste affiche comme etat courant' ;
+    // la verification montre plutot que RIEN n'est actif. Meme
+    // desorientation, autre cause.
+    //
+    // On marque donc l'entree du menu par laquelle on est arrive, et le
+    // bouton qui l'ouvre.
+    var menuCompte = document.querySelector(".console-org-drop");
+    if (menuCompte) {
+      var entrees = menuCompte.querySelectorAll("[data-goto-pane]");
+      var dansLeMenu = false;
+      entrees.forEach(function (b) {
+        var actif = b.getAttribute("data-goto-pane") === paneId;
+        b.classList.toggle("nav-drop-item-on", actif);
+        if (actif) dansLeMenu = true;
+      });
+      var btnMenu = document.getElementById("console-org-btn");
+      if (btnMenu) btnMenu.classList.toggle("nav-drop-btn-on", dansLeMenu);
+    }
     // L'effet de frappe part a l'OUVERTURE du panneau, pas au cablage :
     // celui-ci s'execute a la connexion, alors que le pave est encore
     // masque -- l'animation se terminait sans que personne ne la voie.
