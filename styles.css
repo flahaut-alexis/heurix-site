@@ -167,6 +167,15 @@ header{
 .mobile-nav-toggle.is-open span:nth-child(2){ opacity:0; }
 .mobile-nav-toggle.is-open span:nth-child(3){ transform:translateY(-6px) rotate(-45deg); }
 @media (max-width:760px){ .mobile-nav-toggle{ display:flex; } }
+/* Correctif (21 aout 2026) : dans la console, le menu compte se replie
+   des 1080px alors que le hamburger n'apparaissait qu'a 760px. Entre les
+   deux, le menu existait sans aucun moyen de l'ouvrir. Le bouton suit
+   donc le meme seuil que ce qu'il commande.
+   Portee a .console-page pour ne pas faire surgir un hamburger a 1080px
+   sur le site vitrine, dont la navigation tient jusqu'a 760px. */
+@media (max-width:1080px){
+  .console-page .mobile-nav-toggle{ display:flex; }
+}
 
 .logo{
   font-weight:800;

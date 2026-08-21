@@ -4,7 +4,17 @@
 (function () {
   "use strict";
   var btn = document.getElementById("mobile-nav-toggle");
-  var navRow = document.querySelector(".nav-links");
+  // Correctif (21 aout 2026, audit de coherence point 1). Ce script ne
+  // ciblait que .nav-links -- la console utilise .nav-links-console. Son
+  // menu compte (Entreprise, Membres, Cle API, Abonnement, Se
+  // deconnecter) se repliait donc sous 1080px SANS que rien ne puisse le
+  // rouvrir : le hamburger etait inoperant sur cette page.
+  //
+  // Consequence en production : sous 1080px, aucun chemin vers le compte
+  // ni vers la deconnexion. Le commentaire de styles.css montre que le
+  // repli du 2 aout supposait "le mecanisme deja utilise pour
+  // .nav-links" -- il ne l'etait pas, faute du bon selecteur.
+  var navRow = document.querySelector(".nav-links, .nav-links-console");
   if (!btn || !navRow) return;
 
   // FOND SEMI-OPAQUE (2 août, audit UX point 4) : .nav-links est en
