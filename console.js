@@ -5300,6 +5300,9 @@
     // production : 5,2% affiche pour public-demo, qui n'a en realite
     // aucun echec.
     var catalogQS = catalogueQS();
+    console.log("[diag] actif =", JSON.stringify(session.catalogueActif),
+                "| liste =", JSON.stringify(session.catalogueListe),
+                "| QS =", JSON.stringify(catalogQS));
     Promise.all([
       apiFetch("/v1/analytics/summary?days=" + days + catalogQS, key),
       apiFetch("/v1/analytics/top-queries?days=" + days + "&limit=15" + catalogQS, key),
