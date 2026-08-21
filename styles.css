@@ -2158,6 +2158,17 @@ body.docs-dark .why-card p{ color:#CDD2F0; }
 .console-sidebar-item-on{ color:var(--blue-deep); font-weight:700; border-left-color:var(--blue); background:var(--blue-tint); }
 .console-sidebar-item-top{ padding:10px 8px; font-size:13.5px; font-weight:700; color:var(--ink); border-radius:8px; }
 .console-sidebar-item-top.console-sidebar-item-on{ border-left-color:transparent; }
+/* Correctif (21 aout 2026, capture Alexis : "Dashboard" reste souligne
+   comme actif alors qu'on est sur Entreprise). .console-sidebar-item-top
+   impose font-weight:700 et la couleur d'encre EN PERMANENCE : le bouton
+   ressemblait donc a l'element selectionne quel que soit l'ecran ouvert.
+   Retirer la classe -on, ce que fait bien showPane, ne changeait rien --
+   l'apparence ne venait pas d'elle.
+   J'avais conclu de la lecture du JS que "rien n'etait actif" ; c'etait
+   faux, et la capture l'a montre en trois secondes. */
+.console-sidebar-item-top:not(.console-sidebar-item-on){
+  font-weight:600; color:var(--ink-muted);
+}
 
 .console-main{ flex:1; min-width:0; }
 /* Select natif sans max-width defini -- inoffensif ici (le vrai
