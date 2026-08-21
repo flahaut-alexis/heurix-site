@@ -6218,3 +6218,42 @@ body.docs-dark .addon-net{ color:#F5F6FF; }
   margin:16px 0 0; font-size:13px; line-height:1.6; color:var(--ink-muted);
   min-height:2.6em;
 }
+
+/* Explication du classement, pages marketing (21 aout 2026). Statique et
+   non interactif, a dessein : il n'y a rien a manipuler ici, seulement un
+   raisonnement a lire. Les donnees sont relevees sur l'API de
+   demonstration -- « boulen M8 inpx » rattrape reellement ces deux
+   fautes. */
+.demo-why{
+  border:1px solid var(--line); border-radius:16px; padding:26px 28px;
+  background:#fff; box-shadow:0 2px 12px -6px rgba(18,20,43,0.06);
+}
+.demo-why-intro{ margin:0 0 20px; font-size:15px; line-height:1.6; color:var(--ink-muted); max-width:62ch; }
+.demo-why-intro strong{ color:var(--ink); }
+.demo-why-requete{
+  display:flex; align-items:center; gap:10px; margin-bottom:18px;
+  padding:11px 16px; border:1px solid var(--line); border-radius:8px;
+  background:var(--bg-soft);
+}
+.demo-why-tape{ font-family:'IBM Plex Mono', monospace; font-size:14px; font-weight:600; }
+.demo-why-etapes{ display:flex; flex-direction:column; gap:10px; }
+.demo-why-etape{
+  display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+  padding:12px 14px; border:1px solid var(--line); border-radius:8px;
+}
+.demo-why-terme{
+  font-family:'IBM Plex Mono', monospace; font-size:13px; font-weight:700;
+  color:#C2760C; background:#FFF6E6; border-radius:6px; padding:3px 9px;
+}
+.demo-why-fleche{ color:var(--ink-muted); font-size:14px; }
+.demo-why-corrige{
+  font-family:'IBM Plex Mono', monospace; font-size:13px; font-weight:700;
+  color:var(--blue-deep); background:var(--blue-tint); border-radius:6px; padding:3px 9px;
+}
+.demo-why-annot{ color:#1F7A4D; background:#E8F6EE; }
+.demo-why-note{ font-size:12.5px; color:var(--ink-muted); flex:1; min-width:180px; }
+.demo-why-resultat{
+  margin:18px 0 0; padding-top:16px; border-top:1px solid var(--line);
+  font-size:14px; line-height:1.6; color:var(--ink-muted);
+}
+.demo-why-resultat strong{ color:var(--ink); }

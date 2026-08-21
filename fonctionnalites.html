@@ -18,7 +18,7 @@
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css?v=1787349068">
+<link rel="stylesheet" href="styles.css?v=1787349279">
 <link rel="canonical" href="https://heurix.fr/fonctionnalites.html">
 <script type="application/ld+json">
 {
@@ -26,7 +26,7 @@
   "@type": "Organization",
   "name": "Heurix",
   "url": "https://heurix.fr",
-  "logo": "https://heurix.fr/logo.svg?v=1787349068",
+  "logo": "https://heurix.fr/logo.svg?v=1787349279",
   "image": "https://heurix.fr/og-image.png",
   "description": "Moteur de recherche et search & discovery pour sites e-commerce, basé sur des expressions régulières, conçu en France.",
   "email": "contact@heurix.fr",
@@ -40,7 +40,7 @@
 <header>
   <div class="header-top">
     <nav class="header-top-inner">
-      <a href="index.html" class="logo"><img src="logo.svg?v=1787349068" alt="Heurix"> <span class="wordmark">Heurix</span></a>
+      <a href="index.html" class="logo"><img src="logo.svg?v=1787349279" alt="Heurix"> <span class="wordmark">Heurix</span></a>
       <div class="nav-links">
         <div class="nav-drop">
           <button type="button" class="nav-drop-btn" aria-expanded="false" aria-haspopup="true">Produit</button>
@@ -340,6 +340,49 @@
     </div>
   </section>
 
+  <!-- Seconde demonstration (21 aout 2026) : l'explication du
+       classement. Posee juste apres l'epinglage, elle repond a la
+       question que celui-ci fait naitre -- « mais comment il decide,
+       lui ? ».
+       Donnees relevees sur l'API de demonstration, pas inventees :
+       « boulen M8 inpx » rattrape reellement deux fautes et reconnait M8
+       comme un diametre. -->
+  <section class="feat-group">
+    <div class="feat-group-title">Et vous savez pourquoi</div>
+    <div class="demo-why reveal">
+      <p class="demo-why-intro">Un moteur qui se trompe sans expliquer est impossible à corriger. Heurix montre son raisonnement, terme par terme. <strong>Voici une vraie requête, avec ses fautes.</strong></p>
+
+      <div class="demo-why-requete">
+        <span aria-hidden="true">&#128269;</span>
+        <span class="demo-why-tape">boulen M8 inpx</span>
+      </div>
+
+      <div class="demo-why-etapes">
+        <div class="demo-why-etape">
+          <span class="demo-why-terme">boulen</span>
+          <span class="demo-why-fleche" aria-hidden="true">&rarr;</span>
+          <span class="demo-why-corrige">boulon</span>
+          <span class="demo-why-note">faute rattrapée, score pondéré à 60&nbsp;%</span>
+        </div>
+        <div class="demo-why-etape">
+          <span class="demo-why-terme">M8</span>
+          <span class="demo-why-fleche" aria-hidden="true">&rarr;</span>
+          <span class="demo-why-corrige demo-why-annot">diamètre M8</span>
+          <span class="demo-why-note">reconnu comme une cote, pas comme du texte</span>
+        </div>
+        <div class="demo-why-etape">
+          <span class="demo-why-terme">inpx</span>
+          <span class="demo-why-fleche" aria-hidden="true">&rarr;</span>
+          <span class="demo-why-corrige">inox</span>
+          <span class="demo-why-note">faute rattrapée, score pondéré à 60&nbsp;%</span>
+        </div>
+      </div>
+
+      <p class="demo-why-resultat"><strong>Boulon TF M8 x 50 inox A4</strong> arrive en tête — et vous savez exactement pourquoi.</p>
+    </div>
+  </section>
+
+
 
   <section class="feat-group">
     <div class="feat-group-title">Exploiter en confiance</div>
@@ -411,7 +454,7 @@
 
 <footer>
   <div class="wrap foot-grid">
-    <a href="index.html" class="logo" style="font-size:15px;"><img src="logo.svg?v=1787349068" alt="Heurix" style="height:22px;width:22px;"> <span class="wordmark">Heurix</span></a>
+    <a href="index.html" class="logo" style="font-size:15px;"><img src="logo.svg?v=1787349279" alt="Heurix" style="height:22px;width:22px;"> <span class="wordmark">Heurix</span></a>
     <div class="foot-links">
       <a href="blog.html">Blog</a>
       <a href="docs.html">Documentation API</a>
@@ -438,7 +481,7 @@
   </div>
 </footer>
 
-<script src="search.js?v=1787349068"></script>
+<script src="search.js?v=1787349279"></script>
 <script src="search-engine.js"></script>
 <script>
   document.getElementById('year').textContent = new Date().getFullYear();
@@ -460,7 +503,7 @@
 </script>
 
 <script src="nav-dropdown.js"></script>
-<script src="mobile-nav.js?v=1787349068"></script>
+<script src="mobile-nav.js?v=1787349279"></script>
 <div id="pricing-nudge" class="pricing-nudge">
   <button type="button" class="pricing-nudge-close" aria-label="Fermer">&times;</button>
   <div class="pricing-nudge-kicker">Essai gratuit 14 jours</div>
@@ -468,7 +511,7 @@
   <a href="pricing.html" class="btn">Voir les tarifs</a>
 </div>
 <script src="pricing-nudge.js"></script>
-<script src="consent.js?v=1787349068"></script>
-<script src="demo-epinglage.js?v=1787349068"></script>
+<script src="consent.js?v=1787349279"></script>
+<script src="demo-epinglage.js?v=1787349279"></script>
 </body>
 </html>
