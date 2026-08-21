@@ -5123,7 +5123,15 @@
     var browseFait = !!usage.first_browse_at;
 
     apiFetch("/v1/keys/public", key).then(function (data) {
-      var cleFaite = !!(data.public_keys && data.public_keys.length > 0);
+      // Correctif (21 aout 2026, bug signale par Alexis : l'etape restait
+      // "en attente" malgre une cle publique bien creee). L'endpoint
+      // renvoie {"keys": [...]} -- verifie dans admin.py -- et le code
+      // lisait data.public_keys, toujours undefined. L'etape ne pouvait
+      // donc JAMAIS se valider, quel que soit le nombre de cles.
+      //
+      // Le tableau des cles publiques, lui, lisait deja data.keys
+      // correctement : l'erreur etait isolee a cette seule ligne.
+      var cleFaite = !!(data.keys && data.keys.length > 0);
       var toutFait = indexeFait && rechercheFaite && cleFaite && browseFait;
 
       majItemActivation("activation-item-index", indexeFait);
