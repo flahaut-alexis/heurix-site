@@ -3844,10 +3844,23 @@
     return '<div class="catalog-synonyms-label">' + T("Synonymes") + '</div>' +
       '<div class="catalog-synonym-groups"></div>' +
       '<div class="catalog-synonym-add">' +
-        '<input type="text" placeholder="' + T("ex. vis, boulon, screw") + '" class="catalog-synonym-input">' +
+        '<input type="text" placeholder="' + T("ex. placo, ba13") + '" class="catalog-synonym-input">' +
         '<button type="button" class="catalog-synonym-add-btn">' + T("Ajouter un synonyme") + '</button>' +
         '<span class="catalog-synonym-status catalog-rule-status"></span>' +
-      '</div>';
+      '</div>' +
+      // Correctif (21 aout 2026) : le moteur sait faire du sens unique
+      // depuis ce matin, mais rien ne permettait de le demander.
+      //
+      // Case a cocher plutot que boutons radio : le sens unique convient
+      // dans la grande majorite des cas, et un defaut sur n'ajoute une
+      // decision que pour ceux qui en ont besoin. L'apercu se reecrit
+      // avec les termes saisis -- le marchand lit l'effet exact de sa
+      // regle avant de valider, plutot qu'une explication abstraite.
+      '<p class="syn-apercu" id="syn-apercu"></p>' +
+      '<label class="syn-sens-label">' +
+        '<input type="checkbox" class="syn-bidirectionnel">' +
+        T("Fonctionne aussi dans l'autre sens") +
+      '</label>';
   }
 
   function crMarkupTermes() {
@@ -5444,7 +5457,22 @@
 
   function synGroupChipsHtml(groups) {
     return groups.map(function (g, i) {
-      return '<span class="catalog-synonym-group" data-idx="' + i + '">' + esc(g.join(", ")) +
+      // Correctif (21 aout 2026) : tolere les deux formes. L'API renvoie
+      // aujourd'hui des listes -- dump() garde son contrat public pour ne
+      // pas casser cet affichage -- mais le stockage porte desormais le
+      // sens. Le jour ou la reponse l'expose, l'affichage suivra sans
+      // nouveau correctif.
+      //
+      // Sens ecrit en MOTS plutot qu'en fleche : un signe demande d'etre
+      // decode, et il faut distinguer deux regles d'apparence identique
+      // au comportement different -- les anciennes sont bidirectionnelles,
+      // les nouvelles unidirectionnelles par defaut.
+      var termes = Array.isArray(g) ? g : (g.termes || []);
+      var bidir = Array.isArray(g) ? null : !!g.bidirectionnel;
+      var libelle = termes.length > 1 && bidir !== null
+        ? esc(termes[0]) + " <em>" + (bidir ? T("équivaut à") : T("trouve")) + "</em> " + esc(termes.slice(1).join(", "))
+        : esc(termes.join(", "));
+      return '<span class="catalog-synonym-group" data-idx="' + i + '">' + libelle +
         '<button type="button" class="catalog-synonym-remove" data-idx="' + i + '" aria-label="Retirer ce groupe">&times;</button></span>';
     }).join("");
   }
@@ -5496,6 +5524,22 @@
     var groupsEl = cardEl.querySelector(".catalog-synonym-groups");
     var input = cardEl.querySelector(".catalog-synonym-input");
     var addBtn = cardEl.querySelector(".catalog-synonym-add-btn");
+    var caseBidir = cardEl.querySelector(".syn-bidirectionnel");
+    var apercu = cardEl.querySelector("#syn-apercu");
+
+    // L'apercu se reecrit a chaque frappe : le marchand voit l'effet de
+    // sa regle avant de valider.
+    function majApercu() {
+      if (!apercu) return;
+      var mots = input.value.split(",").map(function (t) { return t.trim(); }).filter(Boolean);
+      if (mots.length < 2) { apercu.textContent = ""; return; }
+      var source = mots[0], cibles = mots.slice(1).join(", ");
+      apercu.textContent = (caseBidir && caseBidir.checked)
+        ? T("« {0} » et « {1} » se trouveront mutuellement.", source, cibles)
+        : T("Chercher « {0} » trouvera aussi « {1} ».", source, cibles);
+    }
+    if (input) input.addEventListener("input", majApercu);
+    if (caseBidir) caseBidir.addEventListener("change", majApercu);
     var currentGroups = [];
 
     function render() {
@@ -5563,7 +5607,12 @@
       }
       if (synStatus) { synStatus.className = "catalog-rule-status"; synStatus.textContent = ""; }
       addBtn.disabled = true;
-      saveGroups(currentGroups.concat([terms]))
+      // Le moteur accepte les deux formes ; on envoie toujours l'objet
+      // portant le sens, meme bidirectionnel -- une liste nue laisserait
+      // le serveur deviner, et son defaut de compatibilite (bidirection-
+      // nel) masquerait un choix explicite de sens unique.
+      var regle = { termes: terms, bidirectionnel: !!(caseBidir && caseBidir.checked) };
+      saveGroups(currentGroups.concat([regle]))
         .then(function () {
           input.value = "";
           if (synStatus) {
