@@ -3291,6 +3291,40 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 /* Lien vers la barre de brouillon (21 aout 2026) : sur une grille
    longue, elle peut etre hors champ au moment ou on lit la phrase qui
    la mentionne. */
+/* Panneau unique des regles de categorie (21 aout 2026, note UX "La
+   colonne des regles"). Remplace deux accordeons fermes par defaut,
+   sans compteur, qui ne se citaient jamais l'un l'autre. */
+.br-regles-panneau{
+  border:1px solid var(--line); border-radius:14px; padding:16px 18px;
+  background:#fff;
+}
+.br-regles-tete{
+  display:flex; align-items:baseline; justify-content:space-between;
+  gap:10px; margin-bottom:12px;
+}
+.br-regles-tete h2{ font-size:15px; margin:0; font-weight:800; }
+.br-regles-compte{
+  font-size:11.5px; font-weight:700; color:var(--blue-deep);
+  background:var(--blue-tint); border-radius:100px; padding:2px 9px;
+  white-space:nowrap;
+}
+.br-regles-compte-vide{ color:var(--ink-muted); background:var(--bg-soft); }
+.br-regles-onglets{
+  display:flex; gap:4px; margin-bottom:12px;
+  border-bottom:1px solid var(--line);
+}
+.br-regles-onglet{
+  font:inherit; font-size:13px; font-weight:600; color:var(--ink-muted);
+  background:none; border:none; border-bottom:2px solid transparent;
+  padding:8px 12px; margin-bottom:-1px; cursor:pointer;
+}
+.br-regles-onglet:hover{ color:var(--ink); }
+.br-regles-onglet-on{ color:var(--blue-deep); border-bottom-color:var(--blue-deep); }
+.br-regles-onglet:focus-visible{ outline:2px solid #5468FF; outline-offset:-2px; }
+/* Regle visant un produit disparu : elle ne s'appliquera jamais, et
+   rien ne le signalait -- on en a trouve une en production. */
+.br-regle-orpheline{ color:#C2760C; font-size:12px; cursor:help; }
+
 .lien-barre{
   font:inherit; color:var(--blue-deep); background:none; border:none;
   padding:0; cursor:pointer; text-decoration:underline;

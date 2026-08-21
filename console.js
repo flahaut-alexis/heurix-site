@@ -2184,6 +2184,45 @@
     setTimeout(function () { barre.classList.remove("so-simu-bar-signalee"); }, 1200);
   });
 
+  // Selecteur de portee des regles de categorie (21 aout 2026, note UX).
+  // Les deux mecaniques restent DISTINCTES -- l'une vise un produit
+  // nomme, l'autre une famille entiere -- mais visibles cote a cote,
+  // avec le meme geste pour y acceder.
+  function brCablerOngletsRegles() {
+    var ongletP = document.getElementById("br-onglet-produit");
+    var ongletA = document.getElementById("br-onglet-attribut");
+    var voletP = document.getElementById("br-volet-produit");
+    var voletA = document.getElementById("br-volet-attribut");
+    if (!ongletP || !ongletA || !voletP || !voletA) return;
+
+    function basculer(versProduit) {
+      voletP.hidden = !versProduit;
+      voletA.hidden = versProduit;
+      ongletP.classList.toggle("br-regles-onglet-on", versProduit);
+      ongletA.classList.toggle("br-regles-onglet-on", !versProduit);
+      ongletP.setAttribute("aria-selected", versProduit ? "true" : "false");
+      ongletA.setAttribute("aria-selected", versProduit ? "false" : "true");
+    }
+    ongletP.addEventListener("click", function () { basculer(true); });
+    ongletA.addEventListener("click", function () { basculer(false); });
+  }
+
+  // Compteur de l'en-tete : il couvre LES DEUX volets. Ne compter que
+  // l'onglet visible ferait retomber dans l'invisible par defaut que ce
+  // panneau corrige -- des regles par attribut existeraient sans que
+  // rien ne le montre depuis l'onglet Produit.
+  function brMajCompteRegles() {
+    var cible = document.getElementById("br-regles-compte");
+    if (!cible) return;
+    function lignes(id) {
+      var t = document.querySelector("#" + id + " tbody");
+      return t ? t.querySelectorAll("tr").length : 0;
+    }
+    var total = lignes("browse-overrides-table") + lignes("browse-attribute-rules-table");
+    cible.textContent = total ? T("{0} règle(s)", total) : T("aucune règle");
+    cible.classList.toggle("br-regles-compte-vide", !total);
+  }
+
   function simuBarAligner(prefix) {
     var bar = document.getElementById(prefix + "-simu-bar");
     var grille = document.getElementById(prefix === "so" ? "so-preview-grid" : "br-grid");
@@ -5057,7 +5096,18 @@
   // tous les points de mutation du brouillon (donnees de session.brDraft).
   function brRenderReglesTable(liste, enBrouillon) {
     renderTable("browse-overrides-table", "browse-overrides-empty", liste, function (o) {
-      return "<td class='mono'>" + esc(o.product_id) + "</td><td>" + T(o.action === "pin" ? "Épingler" : "Reléguer") +
+      // Correctif (21 aout 2026) : le nom du produit, expose par le
+      // moteur depuis ce soir, remplace l'identifiant technique. Une
+      // regle disait `demo-gen-000016` la ou la grille juste a gauche
+      // montre un nom -- il fallait recroiser a l'oeil.
+      //
+      // Nom ABSENT : le produit n'est plus indexe, la regle ne
+      // s'appliquera jamais. Signale plutot que masque -- on en a trouve
+      // une en production, creee avec un nom saisi dans le champ
+      // identifiant.
+      return "<td>" + produitCell(o.product_id, o.product_name) +
+        (o.product_name ? "" : " <span class='br-regle-orpheline' title='" + escAttr(T("Ce produit n'est plus dans le catalogue : la règle ne s'applique pas.")) + "'>&#9888;</span>") +
+        "</td><td>" + T(o.action === "pin" ? "Épingler" : "Reléguer") +
         "</td><td>" + (o.position || "–") + "</td><td style='white-space:nowrap;'>" +
         "<button type='button' class='catalog-rule-remove' data-edit-override='1' data-product-id='" + esc(o.product_id) + "' data-action='" + esc(o.action) + "' data-position='" + (o.position || "") + "' aria-label='" + T("Modifier") + "' title='" + T("Modifier") + "' style='margin-right:6px;'>&#9998;</button>" +
         "<button type='button' class='catalog-rule-remove' data-duplicate-override='1' data-product-id='" + esc(o.product_id) + "' data-action='" + esc(o.action) + "' data-position='" + (o.position || "") + "' aria-label='" + T("Dupliquer") + "' title='" + T("Dupliquer") + "' style='margin-right:6px;'>&#10697;</button>" +
@@ -5065,6 +5115,7 @@
     });
     var panneau = document.getElementById("bo-rules-panel");
     if (panneau) panneau.classList.toggle("so-rules-draft", !!enBrouillon);
+    brMajCompteRegles();
   }
 
   function refreshBrowseOverrides(key) {
@@ -5091,6 +5142,9 @@
           "<button type='button' class='catalog-rule-remove' " +
           "data-remove-attribute-field='" + esc(r.field) + "' data-remove-attribute-value='" + esc(r.value) + "' aria-label='" + T("Retirer") + "'>&times;</button></td>";
       });
+      // Le compteur couvre les deux volets : il se recalcule apres
+      // CHAQUE rendu, sinon il decrirait un etat partiel.
+      brMajCompteRegles();
     }).catch(function () {});
   }
 
@@ -5500,6 +5554,7 @@
       window.HEURIX_RECHARGER_CATALOGUES = function () { loadCatalogs(key); };
       wireGlobalCatalog(key);
       wireBilling(key);
+      brCablerOngletsRegles();
       // Correctif (20 aout 2026, mesure Network avec Alexis : synonyms,
       // custom-rules, usage et catalogs partaient en double au
       // changement de catalogue). wireCustomRulesPane ne faisait plus

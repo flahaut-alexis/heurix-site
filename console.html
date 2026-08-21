@@ -8,14 +8,14 @@
 <meta name="robots" content="noindex">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css?v=1787336363">
+<link rel="stylesheet" href="styles.css?v=1787339777">
 <link rel="canonical" href="https://heurix.fr/console.html">
 </head>
 <body class="console-page">
 <header>
   <div class="header-top">
     <nav class="header-top-inner">
-      <a href="index.html" class="logo"><img src="logo.svg?v=1787336363" alt="Heurix"> <span class="wordmark">Heurix</span></a>
+      <a href="index.html" class="logo"><img src="logo.svg?v=1787339777" alt="Heurix"> <span class="wordmark">Heurix</span></a>
       <button type="button" id="mobile-nav-toggle" class="mobile-nav-toggle" aria-label="Menu" aria-expanded="false">
         <span></span><span></span><span></span>
       </button>
@@ -989,10 +989,30 @@
                 <p class="console-empty" id="browse-preview-empty" hidden>Aucun produit dans cette catégorie.</p>
                 </div>
                 <div class="so-apercu-col-principale">
-                <details class="br-attrs" style="margin-top:18px;">
-                  <summary>Règles par produit (liste détaillée)</summary>
-                  <div style="padding-top:12px;" id="bo-rules-panel">
-                <h2>Règles par produit</h2>
+                <!-- Correctif (21 aout 2026, note UX "La colonne des regles").
+                     Deux accordeons fermes par defaut, sans compteur : on ne
+                     pouvait pas savoir si des regles existaient sans les
+                     ouvrir un par un. Et ils ne se citaient jamais, alors que
+                     leur propre texte dit qu'ils interagissent.
+
+                     Un seul panneau, un selecteur de PORTEE. La phrase sous
+                     les onglets change avec le volet : elle dit qu'on choisit
+                     sur quoi la regle agit, pas un affichage. Le compteur de
+                     l'en-tete couvre LES DEUX mecaniques, sinon on retombe
+                     sur l'invisible par defaut qu'on corrige ici. -->
+                <div class="br-regles-panneau">
+                  <div class="br-regles-tete">
+                    <h2>Règles de tri</h2>
+                    <span class="br-regles-compte" id="br-regles-compte"></span>
+                  </div>
+                  <div class="br-regles-onglets" role="tablist">
+                    <button type="button" role="tab" class="br-regles-onglet br-regles-onglet-on"
+                            id="br-onglet-produit" aria-selected="true" aria-controls="br-volet-produit">Par produit</button>
+                    <button type="button" role="tab" class="br-regles-onglet"
+                            id="br-onglet-attribut" aria-selected="false" aria-controls="br-volet-attribut">Par attribut</button>
+                  </div>
+
+                  <div role="tabpanel" id="br-volet-produit" aria-labelledby="br-onglet-produit">
                 <p class="console-panel-note">Épinglez un produit à une position exacte, ou reléguez-le en fin de liste — quel que soit le tri choisi ci-dessus.</p>
                 <div class="table-scroll"><table class="console-table" id="browse-overrides-table">
                   <thead><tr><th>Produit</th><th>Action</th><th>Position</th><th></th></tr></thead>
@@ -1013,12 +1033,9 @@
                   <button type="button" class="btn btn-ghost" id="bo-cancel-edit-btn" hidden style="margin-left:8px;">Annuler la modification</button>
                   <span class="catalog-rule-status" id="browse-override-status"></span>
                 </form>
-              </div>
-                </details>
-                <details class="br-attrs">
-                  <summary>Boost et relégation par attribut</summary>
-                  <div style="padding-top:12px;">
-                <h2>Boost / relégation par attribut</h2>
+                  </div>
+
+                  <div role="tabpanel" id="br-volet-attribut" aria-labelledby="br-onglet-attribut" hidden>
                 <p class="console-panel-note">Mettez en avant — ou reléguez — tous les produits partageant un attribut (une marque, une couleur…), sans les cibler un par un. Une relégation par produit garde toujours la priorité sur un boost par attribut.</p>
                 <div class="table-scroll"><table class="console-table" id="browse-attribute-rules-table">
                   <thead><tr><th>Attribut</th><th>Valeur</th><th>Action</th><th></th></tr></thead>
@@ -1072,8 +1089,8 @@
                   <button type="button" class="btn btn-ghost" id="bar-cancel-edit-btn" hidden style="margin-left:8px;">Annuler la modification</button>
                   <span class="catalog-rule-status" id="browse-attribute-rule-status"></span>
                 </form>
-              </div>
-                </details>
+                  </div>
+                </div>
                 </div>
                 </div>
                 </div>
@@ -1422,7 +1439,7 @@
           <div id="pane-catalog-help" class="console-pane" hidden>
             <h2 class="console-pane-title">Comment ça marche</h2>
             <div class="console-panel">
-              <img src="img/cascade-annotations.svg?v=1787336363" alt="Schéma : la référence M8 x 20 - Inox A2 est reconnue par trois règles (diamètre, longueur, matière) qui se combinent en trois annotations" style="width:100%; max-width:640px; margin:0 0 16px;">
+              <img src="img/cascade-annotations.svg?v=1787339777" alt="Schéma : la référence M8 x 20 - Inox A2 est reconnue par trois règles (diamètre, longueur, matière) qui se combinent en trois annotations" style="width:100%; max-width:640px; margin:0 0 16px;">
               <h3 class="console-help-h3" style="margin-top:0;">Ce que fait un pack de règles</h3>
               <p class="console-panel-note" style="margin:4px 0 14px;">Un pack de règles lit vos références produit et reconnaît automatiquement ce qu'elles contiennent — comme dans le schéma ci-dessus. Dix packs existent aujourd'hui, couvrant les secteurs les plus courants (outillage, mode, industrie, livres, électronique, vins &amp; spiritueux, automobile, électricité, plomberie, finance).</p>
               <h3 class="console-help-h3">Créer une reconnaissance personnalisée</h3>
@@ -1590,7 +1607,7 @@
 
 <footer>
   <div class="wrap foot-grid">
-    <a href="index.html" class="logo" style="font-size:15px;"><img src="logo.svg?v=1787336363" alt="Heurix" style="height:22px;width:22px;"> <span class="wordmark">Heurix</span></a>
+    <a href="index.html" class="logo" style="font-size:15px;"><img src="logo.svg?v=1787339777" alt="Heurix" style="height:22px;width:22px;"> <span class="wordmark">Heurix</span></a>
     <div class="foot-links">
       <a href="blog.html">Blog</a>
       <a href="docs.html">Documentation API</a>
@@ -1620,16 +1637,16 @@
 </footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<script src="console-select.js?v=1787336363"></script>
-<script src="visite-editeur.js?v=1787336363"></script>
-<script type="module" src="csv-console.js?v=1787336363"></script>
-<script src="console-i18n.js?v=1787336363"></script>
-<script src="console.js?v=1787336363"></script>
+<script src="console-select.js?v=1787339777"></script>
+<script src="visite-editeur.js?v=1787339777"></script>
+<script type="module" src="csv-console.js?v=1787339777"></script>
+<script src="console-i18n.js?v=1787339777"></script>
+<script src="console.js?v=1787339777"></script>
 <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 
 <script src="nav-dropdown.js"></script>
-<script src="mobile-nav.js?v=1787336363"></script>
-<script src="consent.js?v=1787336363"></script>
+<script src="mobile-nav.js?v=1787339777"></script>
+<script src="consent.js?v=1787339777"></script>
 
 <!-- Correctif Lot 2 (audit UX console, 17 aout 2026) : toast d'annulation
      avec retour arriere 10s (regle 4, partie 5 du brief -- toute action
