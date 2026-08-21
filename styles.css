@@ -3657,7 +3657,17 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 
 .so-card-ref{ font-family:IBM Plex Mono, monospace; font-size:11px; color:var(--ink-muted); margin-bottom:8px; }
 .so-card-name mark, .so-card-ref mark{ background:var(--blue-tint); color:var(--blue-deep); font-weight:700; padding:1px 3px; border-radius:3px; }
+/* Correctif (21 aout 2026, note UX "La colonne des regles"). Les
+   boutons d'action sont en position:absolute en bas a droite, et ce pied
+   de carte y posait le stock avec justify-content:space-between : les
+   deux occupaient le meme coin. A l'ecran, "En stock" et les boutons se
+   superposaient, rendant les deux illisibles -- visible sur les captures
+   depuis ce matin, et que je n'avais pas releve.
+   Le pied reserve desormais la place des boutons plutot que de la leur
+   disputer. Reserve conditionnee a leur PRESENCE : une carte sans
+   actions n'a pas a laisser un vide. */
 .so-card-foot{ margin-top:auto; display:flex; align-items:baseline; justify-content:space-between; gap:8px; }
+.so-card:has(.so-card-actions) .so-card-foot{ padding-right:64px; }
 .so-card-price{ font-size:15px; font-weight:800; color:var(--blue-deep); white-space:nowrap; }
 .so-card-stock{ font-size:11.5px; color:var(--ink-muted); white-space:nowrap; }
 .so-card-stock.rupture{ color:#C0392B; font-weight:700; }
