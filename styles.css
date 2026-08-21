@@ -3401,11 +3401,32 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
   display:flex; align-items:flex-start; justify-content:space-between; gap:10px;
 }
 .so-apercu-titre-aide h2{ margin:0; }
-/* Correctif (19 aout 2026, brief §4.2). Meme bouton "?" que Search, mais
-   sans texte a cote (pas de "12 resultats sur..." pour Browse) -- vraie
-   classe distincte : justify-content:space-between avec un seul enfant
-   pousserait le bouton a gauche, pas a droite comme voulu. */
-.br-pipeline-titre-aide{ display:flex; justify-content:flex-end; }
+/* .br-pipeline-titre-aide retiree (21 aout 2026) : elle existait parce
+   que le bouton n'avait pas de texte a cote sur cette page. Il vit
+   desormais avec la legende du compte de produits, comme sur Search --
+   ce qui reglait aussi le "? flottant seul au milieu a droite" signale
+   par l'audit depuis deux passes. */
+
+/* Correctif (21 aout 2026, retour Alexis). Ce bouton portait un "?"
+   identique a celui de l'aide de page, a quelques dizaines de pixels --
+   deux ronds gris qui semblaient empiles. Or il n'ouvre pas la meme
+   chose : le "?" revele un texte d'aide statique, celui-ci deplie une
+   explication CALCULEE sur la recherche en cours (mots reconnus,
+   correspondances, classement, regles). Un "?" promettait donc la
+   mauvaise chose, et personne ne pouvait deviner ce qu'il cachait.
+
+   Lien texte avec chevron : le contenu devient decouvrable, et les deux
+   registres se distinguent. */
+.so-pipeline-lien{
+  display:inline-flex; align-items:center; gap:5px;
+  font:inherit; font-size:12.5px; font-weight:600; color:var(--blue-deep);
+  background:none; border:none; padding:2px 0; cursor:pointer; white-space:nowrap;
+}
+.so-pipeline-lien:hover{ text-decoration:underline; }
+.so-pipeline-lien:focus-visible{ outline:2px solid #5468FF; outline-offset:2px; border-radius:4px; }
+.so-pipeline-lien[hidden]{ display:none; }
+.so-pipeline-chevron::before{ content:"\25BE"; display:inline-block; font-size:10px; transition:transform .15s ease; }
+.so-pipeline-lien[aria-expanded="true"] .so-pipeline-chevron::before{ transform:rotate(180deg); }
 .so-apercu-rail-gauche{ margin-top:20px; padding-top:16px; border-top:1px solid var(--line); }
 .so-apercu-rail-gauche h2{ font-size:15px; }
 
