@@ -8,14 +8,14 @@
 <meta name="robots" content="noindex">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css?v=1787344249">
+<link rel="stylesheet" href="styles.css?v=1787344547">
 <link rel="canonical" href="https://heurix.fr/console.html">
 </head>
 <body class="console-page">
 <header>
   <div class="header-top">
     <nav class="header-top-inner">
-      <a href="index.html" class="logo"><img src="logo.svg?v=1787344249" alt="Heurix"> <span class="wordmark">Heurix</span></a>
+      <a href="index.html" class="logo"><img src="logo.svg?v=1787344547" alt="Heurix"> <span class="wordmark">Heurix</span></a>
       <button type="button" id="mobile-nav-toggle" class="mobile-nav-toggle" aria-label="Menu" aria-expanded="false">
         <span></span><span></span><span></span>
       </button>
@@ -934,25 +934,11 @@
                      absolue, qui ne pousse rien a l'ouverture. -->
                 
                 <div id="browse-results" hidden>
-                <p class="console-panel-note">Rien n'est enregistré avant <button type="button" class="lien-barre" data-aller-barre="br-simu-bar">« Publier »</button>. <button type="button" class="lien-barre" data-rouvrir-tuto="br-tuto">Comment réordonner des produits ?</button></p>
-                <div class="so-tuto" id="br-tuto" hidden>
-                  <button type="button" class="so-tuto-close" aria-label="Fermer">&times;</button>
-                  <p class="so-tuto-titre">Comment réordonner deux produits</p>
-                  <ol class="so-tuto-etapes">
-                    <li>Cliquez <span class="so-tuto-ico"><svg width='11' height='11' viewBox='0 0 24 24' fill='currentColor' aria-hidden='true' style='vertical-align:-1px'><path d='M9 4h6v6.8l2 3.2H7l2-3.2z'/><path d='M11 17h2v5h-2z'/></svg></span> sur un produit pour le mettre en tête.</li>
-                    <li>Faites de même sur un second produit.</li>
-                    <li><strong>Glissez une carte épinglée sur l'autre</strong> pour les intervertir — ou utilisez les flèches <span class="so-tuto-ico">▲▼</span>, équivalentes et utilisables au clavier.</li>
-                    <li>Cliquez <strong>Publier</strong> pour enregistrer.</li>
-                  </ol>
-                  <p class="so-tuto-note">Déplacer un produit fige aussi les positions au-dessus de lui : plusieurs règles apparaissent donc d'un seul clic. Rien n'est enregistré tant que vous n'avez pas cliqué sur Publier.</p>
-                </div>
-                <!-- Meme correctif Lot 1 que Search Overrides. -->
-                <!-- Le bouton rejoint la ligne du compteur (21 aout 2026) :
-                     seul sur sa ligne, il coutait 41px pour un controle qui
-                     ne sert qu'occasionnellement. -->
-                <div class="so-apercu-titre-aide br-ligne-compteur">
-                  <p class="so-grid-caption" id="br-caption"></p>
-                  <div class="so-apercu-reglages-wrap br-reglages-wrap">
+                <!-- Placement repris de la maquette (21 aout 2026) : sous les
+                     champs qui definissent ce qu'on regarde, aligne a
+                     gauche. Mon premier essai l'avait pose sur la ligne du
+                     compteur -- un placement invente, pas celui montre. -->
+                <div class="so-apercu-reglages-wrap br-reglages-wrap">
                   <button type="button" class="btn btn-ghost so-apercu-reglages-btn" id="br-reglages-btn"
                           aria-expanded="false" aria-controls="br-reglages-panel">Affichage</button>
                   <div class="so-apercu-reglages-panel" id="br-reglages-panel" hidden>
@@ -989,6 +975,25 @@
                 </div>
                   </div>
                 </div>
+                <p class="console-panel-note">Rien n'est enregistré avant <button type="button" class="lien-barre" data-aller-barre="br-simu-bar">« Publier »</button>. <button type="button" class="lien-barre" data-rouvrir-tuto="br-tuto">Comment réordonner des produits ?</button></p>
+                <div class="so-tuto" id="br-tuto" hidden>
+                  <button type="button" class="so-tuto-close" aria-label="Fermer">&times;</button>
+                  <p class="so-tuto-titre">Comment réordonner deux produits</p>
+                  <ol class="so-tuto-etapes">
+                    <li>Cliquez <span class="so-tuto-ico"><svg width='11' height='11' viewBox='0 0 24 24' fill='currentColor' aria-hidden='true' style='vertical-align:-1px'><path d='M9 4h6v6.8l2 3.2H7l2-3.2z'/><path d='M11 17h2v5h-2z'/></svg></span> sur un produit pour le mettre en tête.</li>
+                    <li>Faites de même sur un second produit.</li>
+                    <li><strong>Glissez une carte épinglée sur l'autre</strong> pour les intervertir — ou utilisez les flèches <span class="so-tuto-ico">▲▼</span>, équivalentes et utilisables au clavier.</li>
+                    <li>Cliquez <strong>Publier</strong> pour enregistrer.</li>
+                  </ol>
+                  <p class="so-tuto-note">Déplacer un produit fige aussi les positions au-dessus de lui : plusieurs règles apparaissent donc d'un seul clic. Rien n'est enregistré tant que vous n'avez pas cliqué sur Publier.</p>
+                </div>
+                <!-- Meme correctif Lot 1 que Search Overrides. -->
+                <!-- Le bouton rejoint la ligne du compteur (21 aout 2026) :
+                     seul sur sa ligne, il coutait 41px pour un controle qui
+                     ne sert qu'occasionnellement. -->
+                <div class="so-apercu-titre-aide br-ligne-compteur">
+                  <p class="so-grid-caption" id="br-caption"></p>
+                  
                   <button type="button" class="so-pipeline-lien" id="br-pipeline-btn" aria-expanded="false" aria-controls="br-pipeline" hidden>Pourquoi ce classement ?<span class="so-pipeline-chevron" aria-hidden="true"></span></button>
                 </div>
                 <!-- Correctif (21 aout 2026, demande Alexis) : disposition a
@@ -1462,7 +1467,7 @@
           <div id="pane-catalog-help" class="console-pane" hidden>
             <h2 class="console-pane-title">Comment ça marche</h2>
             <div class="console-panel">
-              <img src="img/cascade-annotations.svg?v=1787344249" alt="Schéma : la référence M8 x 20 - Inox A2 est reconnue par trois règles (diamètre, longueur, matière) qui se combinent en trois annotations" style="width:100%; max-width:640px; margin:0 0 16px;">
+              <img src="img/cascade-annotations.svg?v=1787344547" alt="Schéma : la référence M8 x 20 - Inox A2 est reconnue par trois règles (diamètre, longueur, matière) qui se combinent en trois annotations" style="width:100%; max-width:640px; margin:0 0 16px;">
               <h3 class="console-help-h3" style="margin-top:0;">Ce que fait un pack de règles</h3>
               <p class="console-panel-note" style="margin:4px 0 14px;">Un pack de règles lit vos références produit et reconnaît automatiquement ce qu'elles contiennent — comme dans le schéma ci-dessus. Dix packs existent aujourd'hui, couvrant les secteurs les plus courants (outillage, mode, industrie, livres, électronique, vins &amp; spiritueux, automobile, électricité, plomberie, finance).</p>
               <h3 class="console-help-h3">Créer une reconnaissance personnalisée</h3>
@@ -1630,7 +1635,7 @@
 
 <footer>
   <div class="wrap foot-grid">
-    <a href="index.html" class="logo" style="font-size:15px;"><img src="logo.svg?v=1787344249" alt="Heurix" style="height:22px;width:22px;"> <span class="wordmark">Heurix</span></a>
+    <a href="index.html" class="logo" style="font-size:15px;"><img src="logo.svg?v=1787344547" alt="Heurix" style="height:22px;width:22px;"> <span class="wordmark">Heurix</span></a>
     <div class="foot-links">
       <a href="blog.html">Blog</a>
       <a href="docs.html">Documentation API</a>
@@ -1660,16 +1665,16 @@
 </footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<script src="console-select.js?v=1787344249"></script>
-<script src="visite-editeur.js?v=1787344249"></script>
-<script type="module" src="csv-console.js?v=1787344249"></script>
-<script src="console-i18n.js?v=1787344249"></script>
-<script src="console.js?v=1787344249"></script>
+<script src="console-select.js?v=1787344547"></script>
+<script src="visite-editeur.js?v=1787344547"></script>
+<script type="module" src="csv-console.js?v=1787344547"></script>
+<script src="console-i18n.js?v=1787344547"></script>
+<script src="console.js?v=1787344547"></script>
 <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 
 <script src="nav-dropdown.js"></script>
-<script src="mobile-nav.js?v=1787344249"></script>
-<script src="consent.js?v=1787344249"></script>
+<script src="mobile-nav.js?v=1787344547"></script>
+<script src="consent.js?v=1787344547"></script>
 
 <!-- Correctif Lot 2 (audit UX console, 17 aout 2026) : toast d'annulation
      avec retour arriere 10s (regle 4, partie 5 du brief -- toute action

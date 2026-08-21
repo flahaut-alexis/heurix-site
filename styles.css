@@ -3294,17 +3294,11 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 /* Panneau unique des regles de categorie (21 aout 2026, note UX "La
    colonne des regles"). Remplace deux accordeons fermes par defaut,
    sans compteur, qui ne se citaient jamais l'un l'autre. */
-/* Le bouton d'affichage partage la ligne du compteur (21 aout 2026) :
-   seul sur sa ligne il coutait 41px, pour un controle occasionnel. Le
-   conteneur est deja en flex avec space-between -- le bouton part donc
-   a droite sans reglage supplementaire. La position relative est
-   necessaire au popover, qui s'ancre dessus. */
-.br-ligne-compteur{ align-items:center; }
-/* margin-left:auto pousse le bouton en fin de ligne : sans lui il
-   flottait au milieu, entre le compteur et « Pourquoi ce classement ? »
-   (capture Alexis). */
-.br-ligne-compteur .br-reglages-wrap{ position:relative; flex:0 0 auto; margin-left:auto; margin-right:12px; }
-.br-ligne-compteur .so-apercu-reglages-btn{ font-size:12.5px; padding:6px 12px; }
+/* Bouton d'affichage sous les champs, aligne a gauche -- placement de
+   la maquette (21 aout 2026). Mon premier essai l'avait pose sur la
+   ligne du compteur : un placement invente, que la capture d'Alexis a
+   corrige. La position relative ancre le popover. */
+.br-reglages-wrap{ position:relative; display:inline-block; margin:0 0 14px; }
 
 .br-regles-panneau{
   border:1px solid var(--line); border-radius:14px; padding:16px 18px;

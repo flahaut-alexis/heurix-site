@@ -2195,6 +2195,14 @@
     var btn = document.getElementById("br-reglages-btn");
     var panneau = document.getElementById("br-reglages-panel");
     if (!btn || !panneau) return;
+    // Correctif (21 aout 2026, getEventListeners avec Alexis : DEUX
+    // ecouteurs de clic sur le meme bouton). Cette fonction etait
+    // appelee deux fois : le premier clic ouvrait, le second refermait
+    // dans la foulee. stopPropagation n'y pouvait rien -- les deux
+    // ecouteurs vivent sur le MEME element, l'evenement n'a pas besoin
+    // de remonter pour les declencher tous les deux.
+    if (btn.dataset.cable === "1") return;
+    btn.dataset.cable = "1";
     btn.addEventListener("click", function (e) {
       // Correctif (21 aout 2026, diagnostic par MutationObserver avec
       // Alexis : DEUX mutations sur un seul clic). L'ecouteur de
