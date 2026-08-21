@@ -3324,7 +3324,10 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
    l'ancrage a droite le faisait deborder hors de la carte (capture
    Alexis). Sur la page soeur le bouton est a droite, d'ou l'ancrage
    inverse -- deux contextes, deux reglages. */
-.br-reglages-wrap .so-apercu-reglages-panel{ left:0; right:auto; }
+/* Cote recherche, le bouton est en fin de ligne : le panneau doit
+   s'ouvrir vers l'interieur, donc s'ancrer a droite. Cote categorie il
+   est en debut de ligne et garde l'ancrage par defaut. */
+.so-apercu-cols .so-apercu-reglages-panel{ left:auto; right:0; }
 
 .br-regles-panneau{
   border:1px solid var(--line); border-radius:14px; padding:16px 18px;
@@ -3638,7 +3641,14 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
    (« en ruptu... »). Ancre a droite : le panneau s'ouvre vers
    l'interieur de la page, ou il y a toujours de la place. */
 .so-apercu-reglages-panel{
-  position:absolute; top:calc(100% + 6px); right:0; z-index:15; width:260px;
+  /* Correctif du correctif (21 aout 2026, capture Alexis). J'avais
+     bascule de left:0 a right:0 pour regler un rognage a droite --
+     creant le rognage SYMETRIQUE a gauche sur la page recherche, dont le
+     bouton est deja colle au bord droit de la carte.
+     Le panneau s'aligne desormais sur le bord GAUCHE du bouton par
+     defaut, et bascule a droite seulement quand il n'y a plus la place :
+     l'ancrage suit l'espace disponible au lieu d'etre fixe. */
+  position:absolute; top:calc(100% + 6px); left:0; z-index:15; width:260px;
   background:#fff; border:1px solid var(--line); border-radius:12px;
   padding:14px 16px; box-shadow:0 8px 24px -8px rgba(18,20,43,0.18);
 }
