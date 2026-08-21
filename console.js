@@ -1035,6 +1035,8 @@
     if (bandeau) bandeau.hidden = !session.catalogueSandbox[session.catalogueActif];
   }
 
+  var rechargementAnalytics = false;
+
   function appliquerCatalogue(key) {
     majBandeauSandbox();
     // Garde (21 aout 2026) : la sentinelle "tous" ne doit JAMAIS servir
@@ -1062,6 +1064,35 @@
     // Un bloc conditionne ne se serait donc jamais declenche avant que
     // l'utilisateur ait deja visite ce pane une fois. chargerSegmentation
     // gere elle-meme son propre etat vide/absence de catalogue.
+    // Correctif (21 aout 2026, diagnostic par trace avec Alexis : le
+    // tableau de bord affichait "actif = '' | liste = []"). loadDashboard
+    // construit ses URL d'analytics AVANT que wireGlobalCatalog -- qu'il
+    // appelle lui-meme, plus bas dans son corps -- n'ait determine le
+    // catalogue. Les requetes partaient donc sans filtre.
+    //
+    // Defaut anterieur a ce chantier : les trois appels filtres depuis le
+    // 17 aout ne l'etaient pas davantage au premier chargement. Il ne se
+    // voyait pas, faute d'un ecran ou comparer deux perimetres.
+    //
+    // On recharge donc les analytics une fois le catalogue connu. Garde
+    // sur dashContent : inutile si le tableau de bord n'est pas affiche.
+    // GARDE CONTRE LA BOUCLE, posee avant de livrer : loadDashboard
+    // appelle wireGlobalCatalog, qui appelle appliquerCatalogue -- donc
+    // ce bloc. Sans drapeau, chaque tour relancerait des appels reseau,
+    // indefiniment et sans que rien ne le signale a l'ecran.
+    if (session.activeKey && dashContent && !dashContent.hidden && !rechargementAnalytics) {
+      rechargementAnalytics = true;
+      var champPeriode = document.getElementById("period-select");
+      loadDashboard(session.activeKey, champPeriode ? champPeriode.value : 30);
+      // Le drapeau reste leve le temps que le cycle complet se termine.
+      // Un setTimeout a 0 le liberait des le prochain tour de boucle,
+      // bien avant le retour reseau de wireGlobalCatalog -- la garde
+      // n'aurait alors rien garanti. Une seconde couvre largement un
+      // aller-retour, et le drapeau ne bloque qu'un rechargement
+      // automatique : un changement de catalogue manuel passe par un
+      // autre chemin.
+      setTimeout(function () { rechargementAnalytics = false; }, 1000);
+    }
     chargerSegmentation(key);
     // Correctif (19 aout 2026, brief §4.3) : meme raisonnement -- sorti
     // vers sa propre page (pane-vocabulaire), chargerSynonymesEtRegles
@@ -5300,9 +5331,6 @@
     // production : 5,2% affiche pour public-demo, qui n'a en realite
     // aucun echec.
     var catalogQS = catalogueQS();
-    console.log("[diag] actif =", JSON.stringify(session.catalogueActif),
-                "| liste =", JSON.stringify(session.catalogueListe),
-                "| QS =", JSON.stringify(catalogQS));
     Promise.all([
       apiFetch("/v1/analytics/summary?days=" + days + catalogQS, key),
       apiFetch("/v1/analytics/top-queries?days=" + days + "&limit=15" + catalogQS, key),
