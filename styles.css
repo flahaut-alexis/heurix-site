@@ -3288,6 +3288,20 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
   box-shadow:0 -4px 24px rgba(178,106,0,0.22);
 }
 .so-simu-bar[hidden]{ display:none; }
+/* Lien vers la barre de brouillon (21 aout 2026) : sur une grille
+   longue, elle peut etre hors champ au moment ou on lit la phrase qui
+   la mentionne. */
+.lien-barre{
+  font:inherit; color:var(--blue-deep); background:none; border:none;
+  padding:0; cursor:pointer; text-decoration:underline;
+}
+.so-simu-bar-signalee{
+  animation:barre-signalee .6s ease 2;
+}
+@keyframes barre-signalee{
+  0%, 100%{ box-shadow:0 -4px 24px rgba(178,106,0,0.22); }
+  50%{ box-shadow:0 0 0 4px rgba(224,147,12,0.45), 0 -4px 24px rgba(178,106,0,0.22); }
+}
 .so-simu-tag{
   font-size:11px; font-weight:800; letter-spacing:0.05em; text-transform:uppercase;
   background:var(--amber); color:#fff; padding:3px 9px; border-radius:100px; flex-shrink:0;

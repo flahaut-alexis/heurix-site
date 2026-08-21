@@ -2164,6 +2164,26 @@
   //
   // On lit donc la position reelle de la grille au moment de l'afficher,
   // et on la reapplique au redimensionnement.
+  // Correctif (21 aout 2026, demande Alexis apres la note UX). Le texte
+  // renvoie a un bouton « Publier » qui vit dans une barre flottante, en
+  // bas d'ecran : sur une grille longue, elle peut etre hors champ au
+  // moment ou on lit la phrase.
+  //
+  // Le mot devient cliquable et fait DEFILER jusqu'a la barre. Il ne la
+  // fait pas apparaitre -- elle se montre deja d'elle-meme des qu'un
+  // brouillon existe ; un lien qui la « revelerait » ferait doublon.
+  // Quand aucun brouillon n'existe, rien a montrer : le lien reste
+  // inerte plutot que de pointer dans le vide.
+  document.addEventListener("click", function (e) {
+    var lien = e.target.closest("[data-aller-barre]");
+    if (!lien) return;
+    var barre = document.getElementById(lien.getAttribute("data-aller-barre"));
+    if (!barre || barre.hidden) return;
+    barre.scrollIntoView({ behavior: "smooth", block: "center" });
+    barre.classList.add("so-simu-bar-signalee");
+    setTimeout(function () { barre.classList.remove("so-simu-bar-signalee"); }, 1200);
+  });
+
   function simuBarAligner(prefix) {
     var bar = document.getElementById(prefix + "-simu-bar");
     var grille = document.getElementById(prefix === "so" ? "so-preview-grid" : "br-grid");
