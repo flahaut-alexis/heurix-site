@@ -4329,6 +4329,17 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
    desormais imbrique DANS la ligne, le nom en flex:1 le pousse a
    droite. */
 .so-liste-actions{ display:flex; flex:0 0 auto; margin-left:auto; }
+
+/* Correctif (21 aout 2026, restructuration de Mise en avant sur
+   categorie). Les deux blocs de regles passent dans la colonne de
+   droite, large de 340px (260 en intermediaire) : les formulaires
+   qu'ils contiennent doivent s'y plier plutot que deborder. */
+.so-apercu-col-principale .br-attrs .catalog-rule-add-row{
+  flex-direction:column; align-items:stretch; gap:8px;
+}
+.so-apercu-col-principale .br-attrs input,
+.so-apercu-col-principale .br-attrs select{ width:100%; min-width:0; }
+.so-apercu-col-principale .br-attrs .table-scroll{ overflow-x:auto; }
 .so-liste-actions button{
   width:28px; height:28px; border-radius:8px; border:1px solid var(--line);
   background:#fff; cursor:pointer; display:inline-flex; align-items:center; justify-content:center;
