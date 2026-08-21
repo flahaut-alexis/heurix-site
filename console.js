@@ -297,7 +297,7 @@
     // l'affichage des chiffres principaux.
     if (typeof session.activeKey !== "undefined" && session.activeKey) {
       var jours = (document.getElementById("period-select") || {}).value || 30;
-      apiFetch("/v1/analytics/comparison?days=" + jours, session.activeKey)
+      apiFetch("/v1/analytics/comparison?days=" + jours + catalogueQS(), session.activeKey)
         .then(afficherTendances)
         .catch(function () { /* les tendances sont un bonus */ });
     }
@@ -800,6 +800,25 @@
     }).catch(function () {});
   }
 
+  // Correctif (21 aout 2026, demande Alexis). Le tableau de bord
+  // agregeait tous les catalogues sans le dire ; le backend accepte
+  // desormais un filtre. Cette valeur sentinelle porte le choix
+  // "tous" dans le selecteur global.
+  var CATALOGUE_TOUS = "__tous__";
+
+  // Suffixe de filtre, vide sur "tous" : le backend agrege alors, ce qui
+  // est son comportement par defaut. Factorise plutot que recopie --
+  // trois appels le construisaient separement.
+  function catalogueQS() {
+    return session.catalogueActif === CATALOGUE_TOUS
+      ? "" : "&catalog=" + encodeURIComponent(session.catalogueActif);
+  }
+
+  // Panes ou l'agregation n'a PAS de sens : on y ecrit des regles, qui
+  // visent forcement un catalogue precis. Y arriver avec "tous"
+  // selectionne bascule automatiquement sur le premier catalogue.
+  var PANES_CATALOGUE_REQUIS = ["pane-search-overrides", "pane-browse", "pane-vocabulaire"];
+
   var ALL_PANE_IDS = ["pane-overview", "pane-guides", "pane-recherches", "pane-search-overrides", "pane-vocabulaire", "pane-produits", "pane-segmentation",
     "pane-browse", "pane-catalog-help", "pane-catalog-list", "pane-billing", "pane-company", "pane-team", "pane-key", "pane-feedback",
     // Ajoute le 29 juillet. Cette liste est une LISTE BLANCHE : un pave
@@ -933,7 +952,11 @@
         return;
       }
       select.disabled = false;
-      select.innerHTML = session.catalogueListe.map(function (n) {
+      // L'entree n'apparait qu'a partir de deux catalogues : avec un
+      // seul, "tous" et "celui-ci" designent la meme chose.
+      var optionTous = session.catalogueListe.length > 1
+        ? "<option value='" + CATALOGUE_TOUS + "'>" + T("Tous les catalogues") + "</option>" : "";
+      select.innerHTML = optionTous + session.catalogueListe.map(function (n) {
         return "<option value='" + esc(n) + "'>" + esc(n) +
           (session.catalogueSandbox[n] ? " — " + T("bac à sable") : "") + "</option>";
       }).join("");
@@ -985,8 +1008,16 @@
 
   function appliquerCatalogue(key) {
     majBandeauSandbox();
-    session.soCurrentCatalog = session.catalogueActif;
-    session.browseCurrentCatalog = session.catalogueActif;
+    // Garde (21 aout 2026) : la sentinelle "tous" ne doit JAMAIS servir
+    // de nom de catalogue dans une URL de regles. showPane bascule deja
+    // avant d'afficher ces ecrans, mais on ne depend pas de l'ordre
+    // d'appel -- une valeur sentinelle ecrite ici produirait des requetes
+    // vers un catalogue inexistant.
+    var catalogueCible = session.catalogueActif === CATALOGUE_TOUS
+      ? (session.catalogueListe || [])[0] || null
+      : session.catalogueActif;
+    session.soCurrentCatalog = catalogueCible;
+    session.browseCurrentCatalog = catalogueCible;
     session.browseCurrentCategory = "";
     session.soDraft = null;
     session.brDraft = null;
@@ -1423,6 +1454,19 @@
   }
 
   function showPane(paneId) {
+    // Correctif (21 aout 2026) : arriver sur un ecran de regles avec
+    // "Tous les catalogues" selectionne laisserait ces pages sans cible
+    // -- on ne pose pas une regle sur "tous". Bascule sur le premier
+    // catalogue, en passant par le selecteur pour que la propagation et
+    // la memorisation suivent, comme pour un choix manuel.
+    if (PANES_CATALOGUE_REQUIS.indexOf(paneId) !== -1 && session.catalogueActif === CATALOGUE_TOUS) {
+      var selecteurGlobal = document.getElementById("global-catalog");
+      var premier = (session.catalogueListe || [])[0];
+      if (selecteurGlobal && premier) {
+        selecteurGlobal.value = premier;
+        selecteurGlobal.dispatchEvent(new Event("change"));
+      }
+    }
     ALL_PANE_IDS.forEach(function (id) {
       var el = document.getElementById(id);
       if (el) el.hidden = id !== paneId;
@@ -1716,7 +1760,7 @@
     var sortBy = document.getElementById("conv-sort-select").value;
     Promise.all([
       apiFetch("/v1/analytics/conversion-summary?days=" + periodSelect.value, key),
-      apiFetch("/v1/analytics/top-products?days=" + periodSelect.value + "&sort_by=" + sortBy + "&limit=10", key),
+      apiFetch("/v1/analytics/top-products?days=" + periodSelect.value + "&sort_by=" + sortBy + "&limit=10" + catalogueQS(), key),
     ]).then(function (results) {
       var summary = results[0], products = results[1].products;
       document.getElementById("conv-ctr").textContent = L.zeroRate(summary.click_through_rate);
@@ -5217,9 +5261,18 @@
     // recherches/erreurs d'un compte se melangeaient entre catalogues,
     // quel que soit le catalogue selectionne ici. session.catalogueActif
     // sert deja pour d'autres appels (synonymes) plus bas dans ce fichier.
-    var catalogQS = "&catalog=" + encodeURIComponent(session.catalogueActif);
+    // Correctif (21 aout 2026) : le filtre devient conditionnel. Chaine
+    // vide sur "Tous les catalogues" -- le backend agrege alors, ce qui
+    // est son comportement par defaut depuis toujours.
+    //
+    // summary rejoint les trois autres : il n'etait PAS filtre jusqu'ici,
+    // si bien que le taux sans resultat portait sur tous les catalogues
+    // pendant que les listes en dessous portaient sur un seul. Mesure en
+    // production : 5,2% affiche pour public-demo, qui n'a en realite
+    // aucun echec.
+    var catalogQS = catalogueQS();
     Promise.all([
-      apiFetch("/v1/analytics/summary?days=" + days, key),
+      apiFetch("/v1/analytics/summary?days=" + days + catalogQS, key),
       apiFetch("/v1/analytics/top-queries?days=" + days + "&limit=15" + catalogQS, key),
       apiFetch("/v1/analytics/zero-results?days=" + days + "&limit=15" + catalogQS, key),
       apiFetch("/v1/analytics/errors?days=" + days + "&limit=10" + catalogQS, key),

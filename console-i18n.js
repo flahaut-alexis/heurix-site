@@ -230,6 +230,7 @@
     "En stock uniquement": "In stock only",
     "Créer": "Create",
     "Modifier": "Edit",
+    "Voir ma progression ({0}/4)": "See my progress ({0}/4)",
     "Épinglé en {0}": "Pinned at {0}",
     "Position imposée par une règle": "Position set by a rule",
     "Présélectionner le pack {0}": "Preselect the {0} pack",
