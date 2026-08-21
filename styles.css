@@ -5223,6 +5223,7 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 .import-exemple:hover{ background:var(--blue-tint); }
 .import-exemple span{ font-weight:400; font-size:11.5px; color:var(--ink-muted); }
 .import-modules{ margin:0; font-size:12.5px; color:var(--ink-muted); }
+.import-plateforme{ color:var(--blue-deep); font-weight:600; }
 
 .import-effet{
   margin:12px 0 0; font-size:12.5px; color:var(--ink-muted);
