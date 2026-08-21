@@ -3298,7 +3298,17 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
    la maquette (21 aout 2026). Mon premier essai l'avait pose sur la
    ligne du compteur : un placement invente, que la capture d'Alexis a
    corrige. La position relative ancre le popover. */
-.br-reglages-wrap{ position:relative; display:inline-block; margin:0 0 14px; }
+/* Le bouton prend la largeur des deux champs reunis, comme la maquette
+   (21 aout 2026) : les champs Categorie et Classement font ensemble
+   ~600px, le bouton s'aligne dessus plutot que de s'ajuster a son
+   texte. */
+.br-reglages-wrap{ position:relative; display:block; max-width:600px; margin:0 0 14px; }
+.br-reglages-wrap .so-apercu-reglages-btn{ width:100%; justify-content:flex-start; gap:8px; }
+/* Le popover s'ancre a GAUCHE ici : le bouton est en debut de ligne,
+   l'ancrage a droite le faisait deborder hors de la carte (capture
+   Alexis). Sur la page soeur le bouton est a droite, d'ou l'ancrage
+   inverse -- deux contextes, deux reglages. */
+.br-reglages-wrap .so-apercu-reglages-panel{ left:0; right:auto; }
 
 .br-regles-panneau{
   border:1px solid var(--line); border-radius:14px; padding:16px 18px;
