@@ -630,7 +630,7 @@ h1 span{ color:var(--blue); }
   text-align:center; font-size:12.5px; font-weight:700;
   color:var(--blue-deep); background:var(--blue-tint); border:none; border-radius:8px; cursor:pointer;
 }
-.play-categories-voirplus:hover{ background:var(--blue); color:#fff; }
+.play-categories-voirplus:hover{ background:var(--blue-deep); color:#fff; }
 /* Forme plus arrondie + couleur de marque (2 août, retour Alexis) --
    choix entre "photo" ou "arrondi + couleur Heurix" proposés : l'option
    photo demanderait de choisir une image représentative par catégorie
@@ -644,7 +644,7 @@ h1 span{ color:var(--blue); }
   padding:10px 16px; text-align:center; cursor:pointer;
   transition:background .15s ease, color .15s ease;
 }
-.play-categorie:hover{ background:var(--blue); color:#fff; }
+.play-categorie:hover{ background:var(--blue-deep); color:#fff; }
 /* Correctif (3 aout, retour Alexis) : la correction precedente (juste
    ci-dessous) ciblait .play-categories-produits (la grille de PRODUITS)
    au lieu de .play-categories-pastilles (la grille de CATEGORIES/
@@ -689,7 +689,7 @@ h1 span{ color:var(--blue); }
   background:var(--blue-tint); border:none; border-radius:100px; padding:5px 11px;
   cursor:pointer; transition:background .15s ease, color .15s ease;
 }
-.play-chip:hover{ background:var(--blue); color:#fff; }
+.play-chip:hover{ background:var(--blue-deep); color:#fff; }
 .play-meta{
   display:flex; align-items:center; flex-wrap:wrap; gap:10px;
   font-size:12.5px; color:var(--ink-muted); margin:0 0 10px; min-height:26px;
@@ -736,7 +736,7 @@ h1 span{ color:var(--blue); }
   transition:border-color .12s ease, color .12s ease, background .12s ease;
 }
 .play-prism:hover{ border-color:var(--blue); color:var(--blue-deep); }
-.play-prism-on{ background:var(--blue); border-color:var(--blue); color:#fff; }
+.play-prism-on{ background:var(--blue-deep); border-color:var(--blue); color:#fff; }
 .play-prism-on .play-prism-n{ color:rgba(255,255,255,0.75); }
 .play-prism-n{ font-size:10px; color:var(--blue-deep); font-weight:800; }
 .play-side{ display:flex; flex-direction:column; align-items:flex-end; gap:5px; flex-shrink:0; align-self:flex-start; }
@@ -820,7 +820,7 @@ h1 span{ color:var(--blue); }
   border-radius:9px; padding:11px; cursor:pointer;
 }
 .play-more[hidden]{ display:none; }
-.play-more:hover{ background:var(--blue); color:#fff; }
+.play-more:hover{ background:var(--blue-deep); color:#fff; }
 .play-card{
   display:flex; flex-direction:column;
   background:var(--bg-soft); border:1px solid var(--line); border-radius:12px;
@@ -1230,7 +1230,7 @@ h2{ font-size:clamp(26px,3.4vw,34px); font-weight:800; margin:0 0 18px; max-widt
   padding:8px 15px; cursor:pointer; transition:all .15s ease;
 }
 .copilot-pill:hover{ border-color:var(--blue-tint); color:var(--blue-deep); }
-.copilot-pill.active{ background:var(--blue); border-color:var(--blue); color:#fff; }
+.copilot-pill.active{ background:var(--blue-deep); border-color:var(--blue); color:#fff; }
 .copilot-pill-court{ display:none; }
 /* Bug remonte (3 aout) : "Maison & Equipement" etc. sur mobile forcait
    chaque pastille sur sa propre ligne malgre flex-wrap -- le texte
@@ -1482,7 +1482,7 @@ h2{ font-size:clamp(26px,3.4vw,34px); font-weight:800; margin:0 0 18px; max-widt
   background:var(--blue-tint); border-radius:100px; padding:5px 12px;
 }
 .integration-badge-link{ text-decoration:none; transition:background .15s ease, color .15s ease; }
-.integration-badge-link:hover{ background:var(--blue); color:#fff; }
+.integration-badge-link:hover{ background:var(--blue-deep); color:#fff; }
 
 /* PRICING PAGE */
 .pricing-hero{
@@ -1530,7 +1530,7 @@ h2{ font-size:clamp(26px,3.4vw,34px); font-weight:800; margin:0 0 18px; max-widt
 }
 .price-tier-badge{
   position:absolute; top:-13px; left:26px;
-  background:var(--blue); color:#fff; font-size:11.5px; font-weight:700;
+  background:var(--blue-deep); color:#fff; font-size:11.5px; font-weight:700;
   padding:5px 12px; border-radius:100px;
 }
 .price-tier-name{ font-size:14px; font-weight:700; color:var(--ink-muted); text-transform:uppercase; letter-spacing:0.04em; margin-bottom:14px; }
@@ -1643,7 +1643,12 @@ h2{ font-size:clamp(26px,3.4vw,34px); font-weight:800; margin:0 0 18px; max-widt
   color:#fff; border-radius:6px; padding:4px 9px; letter-spacing:0.03em;
 }
 .docs-method-get{ background:var(--green); }
-.docs-method-post{ background:var(--blue); }
+/* Correctif (21 aout 2026) : le blanc vient de .docs-method, DEUX
+   regles plus haut -- ma detection automatique, qui cherchait fond et
+   couleur dans le meme bloc, l'avait manque. Trouve en relisant les
+   huit occurrences restantes une par une plutot qu'en faisant confiance
+   au compteur. */
+.docs-method-post{ background:var(--blue-deep); }
 .docs-method-put{ background:#C77D0A; }
 .docs-method-delete{ background:#C0392B; }
 
@@ -1780,7 +1785,7 @@ body.docs-dark .why-card p{ color:#CDD2F0; }
 .docs-step{ display:flex; align-items:baseline; gap:10px; }
 .docs-step-num{
   flex-shrink:0; width:22px; height:22px; border-radius:50%;
-  background:var(--blue); color:#fff; font-size:12px; font-weight:700;
+  background:var(--blue-deep); color:#fff; font-size:12px; font-weight:700;
   display:inline-flex; align-items:center; justify-content:center;
   transform:translateY(3px);
 }
@@ -1812,7 +1817,7 @@ body.docs-dark .why-card p{ color:#CDD2F0; }
 .how-step:hover{ border-color:var(--blue); transform:translateY(-2px); }
 .how-step-num{
   width:34px; height:34px; border-radius:50%;
-  background:var(--blue); color:#fff; font-size:16px; font-weight:800;
+  background:var(--blue-deep); color:#fff; font-size:16px; font-weight:800;
   display:flex; align-items:center; justify-content:center;
   margin-bottom:16px;
 }
@@ -2008,7 +2013,7 @@ body.docs-dark .why-card p{ color:#CDD2F0; }
   text-align:left; overflow-x:auto; white-space:nowrap;
 }
 .welcome-copy-btn{
-  flex-shrink:0; background:var(--blue); color:#fff; border:none; border-radius:8px;
+  flex-shrink:0; background:var(--blue-deep); color:#fff; border:none; border-radius:8px;
   padding:9px 16px; font-size:13px; font-weight:700; font-family:'Plus Jakarta Sans', sans-serif;
   cursor:pointer;
 }
@@ -2469,7 +2474,7 @@ body.docs-dark .why-card p{ color:#CDD2F0; }
 }
 .catalog-rulepack-save{
   font-family:'Plus Jakarta Sans', sans-serif; font-size:13px; font-weight:700;
-  color:#fff; background:var(--blue); border:none; border-radius:8px; padding:7px 14px; cursor:pointer;
+  color:#fff; background:var(--blue-deep); border:none; border-radius:8px; padding:7px 14px; cursor:pointer;
 }
 .catalog-rulepack-save:hover{ background:var(--blue-deep); }
 .catalog-rulepack-save:disabled{ opacity:0.5; cursor:default; }
@@ -2489,7 +2494,7 @@ body.docs-dark .why-card p{ color:#CDD2F0; }
   width:18px; height:18px; border-radius:50%; border:none; background:rgba(63,82,232,0.14);
   color:var(--blue-deep); font-size:13px; line-height:1; cursor:pointer; padding:0;
 }
-.catalog-synonym-remove:hover{ background:var(--blue); color:#fff; }
+.catalog-synonym-remove:hover{ background:var(--blue-deep); color:#fff; }
 .catalog-synonym-add{ display:flex; gap:8px; }
 .catalog-synonym-add input{
   flex:1; font-family:'Plus Jakarta Sans', sans-serif; font-size:13px;
@@ -2500,7 +2505,7 @@ body.docs-dark .why-card p{ color:#CDD2F0; }
   font-family:'Plus Jakarta Sans', sans-serif; font-size:13px; font-weight:700;
   color:var(--blue-deep); background:var(--blue-tint); border:none; border-radius:8px; padding:8px 16px; cursor:pointer; white-space:nowrap;
 }
-.catalog-synonym-add button:hover{ background:var(--blue); color:#fff; }
+.catalog-synonym-add button:hover{ background:var(--blue-deep); color:#fff; }
 
 .catalog-rules-empty{ font-size:12.5px; color:var(--ink-muted); margin:0 0 12px; }
 .catalog-rules-list{ margin-bottom:12px; }
@@ -2531,7 +2536,7 @@ body.docs-dark .why-card p{ color:#CDD2F0; }
   align-self:flex-start; font-family:'Plus Jakarta Sans', sans-serif; font-size:13px; font-weight:700;
   color:var(--blue-deep); background:var(--blue-tint); border:none; border-radius:8px; padding:8px 16px; cursor:pointer;
 }
-.catalog-rule-add-btn:hover{ background:var(--blue); color:#fff; }
+.catalog-rule-add-btn:hover{ background:var(--blue-deep); color:#fff; }
 .catalog-rule-add-btn:disabled{ opacity:0.5; cursor:default; }
 .catalog-rule-status{ font-size:12.5px; color:var(--ink-muted); }
 .catalog-rule-status.ok{ color:#0F7A3D; }
@@ -2589,7 +2594,7 @@ body.docs-dark .why-card p{ color:#CDD2F0; }
   font-weight:800; font-size:14px; background:var(--blue-tint); color:var(--blue-deep);
   border:1.5px solid var(--blue-tint);
 }
-.setup-step-marker.marker-required{ background:var(--blue); color:#fff; border-color:var(--blue); }
+.setup-step-marker.marker-required{ background:var(--blue-deep); color:#fff; border-color:var(--blue); }
 .setup-step-card{
   background:#fff; border:1px solid var(--line); border-radius:var(--radius);
   padding:16px 18px;
@@ -2603,7 +2608,7 @@ body.docs-dark .why-card p{ color:#CDD2F0; }
   font-size:10.5px; font-weight:800; letter-spacing:0.03em; text-transform:uppercase;
   padding:3px 9px; border-radius:100px; white-space:nowrap; flex:0 0 auto;
 }
-.setup-badge-required{ background:var(--blue); color:#fff; }
+.setup-badge-required{ background:var(--blue-deep); color:#fff; }
 .setup-badge-optional{ background:var(--blue-tint); color:var(--blue-deep); }
 
 /* Fond docs.html (chantier UX, 9 août 2026, revu le 10 août) -- scopé sous
@@ -2908,7 +2913,7 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
   background:#fff; color:var(--ink);
 }
 .guide-quiz-opts button:hover{ border-color:var(--blue); color:var(--blue-deep); }
-.guide-quiz-opts button.on{ background:var(--blue); border-color:var(--blue); color:#fff; }
+.guide-quiz-opts button.on{ background:var(--blue-deep); border-color:var(--blue); color:#fff; }
 .guide-quiz-recap{
   margin:18px 0 14px; padding:10px 14px; border-radius:8px;
   background:var(--blue-tint); color:var(--blue-deep);
@@ -3033,7 +3038,7 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 }
 .catalog-rule-add-btn{
   align-self:flex-start; font-family:inherit; font-size:13px; font-weight:700;
-  background:var(--blue); color:#fff; border:none; cursor:pointer;
+  background:var(--blue-deep); color:#fff; border:none; cursor:pointer;
   padding:9px 18px; border-radius:100px;
   transition:background .12s ease;
 }
@@ -3133,7 +3138,7 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
   padding:9px 12px; border-radius:7px;
 }
 .csel-opt:hover{ background:var(--blue-tint); color:var(--blue-deep); }
-.csel-opt.on{ background:var(--blue); color:#fff; font-weight:600; }
+.csel-opt.on{ background:var(--blue-deep); color:#fff; font-weight:600; }
 .csel-opt.on:hover{ background:var(--blue-deep); color:#fff; }
 
 /* Le selecteur de periode partage le meme style, mais plus compact : il vit
@@ -3375,8 +3380,14 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
   color:#3F52E8; font-weight:800; font-size:14px;
   cursor:pointer; display:flex; align-items:center; justify-content:center;
 }
+/* Correctif (21 aout 2026, audit de coherence point 2) : le survol
+   posait du blanc sur #5468FF, sous le seuil WCAG AA -- 4,37:1 mesure
+   lors de l'audit Lighthouse du 10 aout, qui avait justement fait
+   abandonner cette couleur pour .btn. Je l'avais reintroduite hier en
+   reprenant les valeurs de la planche sans verifier ce contraste.
+   #3F52E8 est le primaire du systeme, et il passe. */
 .so-aide-btn:hover, .so-aide-btn[aria-expanded="true"]{
-  background:#5468FF; color:#fff; border-color:#5468FF;
+  background:#3F52E8; color:#fff; border-color:#3F52E8;
 }
 .so-aide-btn:focus-visible{
   outline:2px solid #5468FF; outline-offset:2px;
@@ -3545,7 +3556,7 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
   border-radius:100px; padding:2px 8px;
 }
 .so-card-rank-impose{
-  background:var(--blue); border-color:var(--blue); color:#fff;
+  background:var(--blue-deep); border-color:var(--blue); color:#fff;
 }
 /* Correctif : padding-right reserve la place du badge de rang meme
    sans badge -- conditionne desormais a sa presence. line-clamp evite
@@ -3596,7 +3607,7 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 }
 /* Etat actif, commun aux trois : plein bleu. */
 .so-facet-chip.on, .catalog-list-pill-on{
-  background:var(--blue); border-color:var(--blue); color:#fff;
+  background:var(--blue-deep); border-color:var(--blue); color:#fff;
 }
 /* Une requete sans resultat reste cliquable -- c'est justement celle
    qu'on veut corriger -- mais signalee par un point ambre plutot que
@@ -3620,7 +3631,7 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
   display:inline-block; font-size:10.5px; font-weight:800; letter-spacing:.03em;
   text-transform:uppercase; padding:2px 8px; border-radius:100px; margin-bottom:6px;
 }
-.so-card-badge-pin{ background:var(--blue); color:#fff; }
+.so-card-badge-pin{ background:var(--blue-deep); color:#fff; }
 .so-card-badge-bury{ background:#FBE4E1; color:#C0392B; }
 /* Correctif (19 aout 2026, brief §4.1 "Explication du classement") :
    so-card-why est desormais un <details> (le contenu deplie porte le
@@ -3713,9 +3724,9 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 /* Icones d action en bleu Heurix, pas en gris : ce sont des actions de
    merchandising, elles doivent se voir. */
 .so-card-actions button{ color:var(--blue-deep); border-color:#D5DAF5; }
-.so-card-actions button:hover{ background:var(--blue); border-color:var(--blue); color:#fff; }
+.so-card-actions button:hover{ background:var(--blue-deep); border-color:var(--blue); color:#fff; }
 .so-card-actions button svg{ display:block; }
-.so-card-badge-pin{ background:var(--blue); color:#fff; }
+.so-card-badge-pin{ background:var(--blue-deep); color:#fff; }
 
 /* Compteur de regles actives : la liste « Regles en place » se trouve sous
    un apercu de 12 fiches ou plus, donc hors du champ visible. Un compteur
@@ -4037,7 +4048,7 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 }
 .visite-actions button:hover{ border-color:#C9CDDD; }
 .visite-actions .visite-principal{
-  background:var(--blue); border-color:var(--blue); color:#fff; font-weight:700;
+  background:var(--blue-deep); border-color:var(--blue); color:#fff; font-weight:700;
 }
 .visite-actions .visite-principal:hover{ background:var(--blue-deep); }
 .visite-actions .visite-quitter{ margin-left:auto; border:none; color:var(--ink-muted); }
@@ -4065,7 +4076,7 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
   background:var(--blue-tint); border-color:#C9D2FB; color:var(--blue-deep);
   font-weight:700;
 }
-.console-topbar-visite:hover{ background:var(--blue); border-color:var(--blue); color:#fff; }
+.console-topbar-visite:hover{ background:var(--blue-deep); border-color:var(--blue); color:#fff; }
 @media (max-width:1000px){ .console-topbar-visite span{ display:none; } }
 
 /* Bulle masquee pendant le repositionnement (audit UX 4.2) : sans cela elle
@@ -4617,7 +4628,7 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 /* Badge en chevauchement sur le bord superieur */
 .price-tier-badge{
   position:absolute; top:-12px; left:50%; transform:translateX(-50%);
-  background:var(--blue); color:#fff;
+  background:var(--blue-deep); color:#fff;
   font-size:11px; font-weight:800; letter-spacing:.04em; text-transform:uppercase;
   padding:5px 14px; border-radius:100px;
   box-shadow:0 4px 12px rgba(84,104,255,0.35);
@@ -4798,7 +4809,7 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
   padding:6px 12px; border-radius:7px;
   background:var(--blue-tint); border:1px solid #C9D2FB; color:var(--blue-deep);
 }
-.err-action:hover{ background:var(--blue); border-color:var(--blue); color:#fff; }
+.err-action:hover{ background:var(--blue-deep); border-color:var(--blue); color:#fff; }
 /* Le detail technique est REPLIE, pas supprime : un developpeur en a
    besoin, un responsable e-commerce non. */
 .err-detail{ margin-top:8px; }
@@ -5281,7 +5292,7 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 .import-etape-num{
   display:inline-flex; align-items:center; justify-content:center;
   width:22px; height:22px; border-radius:100px; margin-bottom:4px;
-  background:var(--blue); color:#fff; font-size:12px; font-weight:800;
+  background:var(--blue-deep); color:#fff; font-size:12px; font-weight:800;
 }
 @media (max-width:760px){
   .import-etapes{ grid-template-columns:1fr; }
