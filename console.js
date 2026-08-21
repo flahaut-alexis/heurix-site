@@ -2195,7 +2195,18 @@
     var btn = document.getElementById("br-reglages-btn");
     var panneau = document.getElementById("br-reglages-panel");
     if (!btn || !panneau) return;
-    btn.addEventListener("click", function () {
+    btn.addEventListener("click", function (e) {
+      // Correctif (21 aout 2026, diagnostic par MutationObserver avec
+      // Alexis : DEUX mutations sur un seul clic). L'ecouteur de
+      // fermeture pose sur `document` recevait le meme evenement et
+      // refermait le panneau aussitot ouvert -- le bouton paraissait
+      // inerte. La garde btn.contains() ne suffisait pas : le clic peut
+      // viser un noeud interne au bouton, hors de sa portee au moment ou
+      // l'evenement remonte.
+      //
+      // stopPropagation tranche a la source : l'evenement ne remonte
+      // simplement plus jusqu'au document.
+      e.stopPropagation();
       var ouvert = panneau.hidden;
       panneau.hidden = !ouvert;
       btn.setAttribute("aria-expanded", ouvert ? "true" : "false");
