@@ -608,8 +608,17 @@
     if (!catalogue) return;
     apiFetch("/v1/analytics/segmentation/" + encodeURIComponent(catalogue) + "?days=" + periodSelect.value, key)
       .then(function (data) {
+        // Correctif (21 aout 2026, audit passe 4) : sans tracker installe,
+        // l'ecran montrait quatre tuiles a zero avec le message d'aide
+        // EN DESSOUS. Les tuiles vides n'apprennent rien ; elles cedent
+        // la place au message, qui dit quoi faire.
         var vide = document.getElementById("seg-empty");
-        vide.hidden = !!data.courant.total_visiteurs;
+        var tuiles = document.getElementById("seg-tuiles");
+        var ligneTotal = document.getElementById("seg-total-ligne");
+        var aDesVisiteurs = !!data.courant.total_visiteurs;
+        vide.hidden = aDesVisiteurs;
+        if (tuiles) tuiles.hidden = !aDesVisiteurs;
+        if (ligneTotal) ligneTotal.hidden = !aDesVisiteurs;
 
         document.getElementById("seg-stat-total").textContent = data.courant.total_visiteurs.toLocaleString(LOCALE);
         document.getElementById("seg-stat-fort").textContent = data.courant.repartition.fort.toLocaleString(LOCALE);

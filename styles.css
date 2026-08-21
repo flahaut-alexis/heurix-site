@@ -2271,6 +2271,13 @@ body.docs-dark .why-card p{ color:#CDD2F0; }
 /* Mention secondaire du KPI Erreurs (20 aout 2026) : le bruit
    d'exploitation, visible sans concurrencer le chiffre principal. */
 .console-stat-sous{ font-size:11px; color:var(--ink-muted); margin-top:2px; }
+/* Total de segmentation, sorti du rang de ses composantes (21 aout
+   2026) : une somme et ses parts ne se lisent pas cote a cote. */
+.seg-total-ligne{
+  margin:0 0 16px; font-size:13.5px; color:var(--ink-muted);
+}
+.seg-total-ligne strong{ font-size:22px; color:var(--ink); margin-right:4px; }
+.seg-total-ligne[hidden]{ display:none; }
 /* Une tuile qui mene quelque part doit le montrer (21 aout 2026). */
 .console-stat[data-goto-pane]{ cursor:pointer; transition:border-color .12s ease, box-shadow .12s ease; }
 .console-stat[data-goto-pane]:hover{
