@@ -3845,7 +3845,7 @@
       '<div class="catalog-synonym-groups"></div>' +
       '<div class="catalog-synonym-add">' +
         '<input type="text" placeholder="' + T("ex. vis, boulon, screw") + '" class="catalog-synonym-input">' +
-        '<button type="button" class="catalog-synonym-add-btn">' + T("Ajouter un groupe") + '</button>' +
+        '<button type="button" class="catalog-synonym-add-btn">' + T("Ajouter un synonyme") + '</button>' +
         '<span class="catalog-synonym-status catalog-rule-status"></span>' +
       '</div>';
   }
@@ -5461,6 +5461,36 @@
       catalog.annotations + " annotations · " + catalog.synonym_groups + " groupe" + (catalog.synonym_groups > 1 ? "s" : "") + " de synonymes";
   }
 
+  // Alimente l'etat vide des synonymes depuis les recherches sans
+  // resultat (21 aout 2026). Endpoint deja existant et deja utilise par
+  // l'ecran d'amorce -- rien a ajouter cote moteur.
+  //
+  // Cliquer un candidat le pose dans le champ de saisie plutot que de
+  // creer le groupe directement : un synonyme se definit par PLUSIEURS
+  // mots, le marchand doit encore dire a quoi celui-ci correspond.
+  function chargerCandidatsSynonymes(catalogName, key, input) {
+    var hote = document.getElementById("syn-vide-candidats");
+    if (!hote) return;
+    apiFetch("/v1/analytics/zero-results?catalog=" + encodeURIComponent(catalogName) + "&limit=6", key)
+      .then(function (data) {
+        var requetes = (data.queries || []).slice(0, 6);
+        if (!requetes.length) return;
+        hote.innerHTML = "<p class='syn-vide-label'>" + T("Recherches sans résultat à corriger") + "</p>" +
+          requetes.map(function (r) {
+            return "<button type='button' class='so-amorce-chip syn-candidat' data-syn-candidat='" +
+              escAttr(r.query) + "'>" + esc(r.query) + "</button>";
+          }).join("");
+        hote.querySelectorAll("[data-syn-candidat]").forEach(function (b) {
+          b.addEventListener("click", function () {
+            if (!input) return;
+            input.value = b.getAttribute("data-syn-candidat") + ", ";
+            input.focus();
+          });
+        });
+      })
+      .catch(function () { /* suggestion facultative : jamais bloquante */ });
+  }
+
   function wireSynonymControls(cardEl, catalog, key) {
     var catalogName = catalog.catalog;
     var groupsEl = cardEl.querySelector(".catalog-synonym-groups");
@@ -5468,7 +5498,24 @@
     var addBtn = cardEl.querySelector(".catalog-synonym-add-btn");
     var currentGroups = [];
 
-    function render() { groupsEl.innerHTML = synGroupChipsHtml(currentGroups); wireRemoveButtons(); }
+    function render() {
+      // Correctif (21 aout 2026, audit passe 4). L'onglet etait vide avec
+      // un simple champ de saisie : rien n'indiquait par ou commencer.
+      // Les recherches SANS RESULTAT sont les meilleurs candidats -- ce
+      // sont exactement les mots que le moteur ne comprend pas. On relie
+      // ainsi deux ecrans qui s'ignoraient.
+      if (!currentGroups.length) {
+        groupsEl.innerHTML = "<div class='syn-vide' id='syn-vide'>" +
+          "<p class='syn-vide-titre'>" + T("Aucun synonyme pour l'instant") + "</p>" +
+          "<p class='syn-vide-texte'>" + T("Un synonyme relie des mots que vos visiteurs emploient pour désigner le même produit. Les recherches sans résultat sont vos meilleurs candidats : ce sont les mots que le moteur ne reconnaît pas encore.") + "</p>" +
+          "<div class='syn-vide-candidats' id='syn-vide-candidats'></div>" +
+        "</div>";
+        chargerCandidatsSynonymes(catalogName, key, input);
+        return;
+      }
+      groupsEl.innerHTML = synGroupChipsHtml(currentGroups);
+      wireRemoveButtons();
+    }
 
     function saveGroups(next) {
       return apiFetch("/v1/index/" + encodeURIComponent(catalogName) + "/synonyms", key, {

@@ -2296,6 +2296,23 @@ body.docs-dark .why-card p{ color:#CDD2F0; }
 }
 .seg-empty-lien:hover{ background:var(--blue-tint); }
 .seg-empty-lien:focus-visible{ outline:2px solid #5468FF; outline-offset:2px; }
+
+/* Etat vide des synonymes qui RECRUTE (21 aout 2026, audit passe 4) :
+   plutot qu'un champ de saisie sans contexte, il propose les recherches
+   sans resultat comme candidats -- exactement les mots que le moteur ne
+   comprend pas. */
+.syn-vide{
+  padding:18px 20px; border:1px dashed var(--line); border-radius:12px;
+  background:var(--bg-soft);
+}
+.syn-vide-titre{ margin:0 0 6px; font-size:13.5px; font-weight:700; }
+.syn-vide-texte{ margin:0; font-size:12.5px; line-height:1.6; color:var(--ink-muted); }
+.syn-vide-label{
+  margin:14px 0 8px; font-size:11px; font-weight:800; text-transform:uppercase;
+  letter-spacing:0.05em; color:var(--ink-muted);
+}
+.syn-vide-candidats{ display:flex; flex-wrap:wrap; gap:8px; }
+.syn-vide-candidats .syn-vide-label{ flex:1 0 100%; }
 /* Une tuile qui mene quelque part doit le montrer (21 aout 2026). */
 .console-stat[data-goto-pane]{ cursor:pointer; transition:border-color .12s ease, box-shadow .12s ease; }
 .console-stat[data-goto-pane]:hover{
