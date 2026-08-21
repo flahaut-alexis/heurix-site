@@ -16,43 +16,62 @@
 
   // Chaque étape : l'élément visé, ce qu'on explique, et éventuellement
   // l'action qui la fait avancer toute seule.
+  // Visite reecrite le 21 aout 2026. L'ancienne datait d'avant la moitie
+  // de ce que la console fait aujourd'hui : elle parlait d'« Appliquer »
+  // quand le bouton dit « Publier », visait #so-count supprime depuis, et
+  // ignorait « Pourquoi ces resultats ? » -- ce que le brief appelle la
+  // fonctionnalite differenciante.
+  //
+  // Ecrite pour un marchand qui vient de s'inscrire : chaque etape dit ce
+  // qu'il VOIT et ce qu'il peut en faire, pas comment la fonctionnalite
+  // s'appelle en interne.
   var ETAPES = [
     {
       cible: "#global-catalog",
       titre: "Choisissez votre catalogue",
-      texte: "Ce choix vaut pour toute la console : analytique, règles, classement. Vous ne le referez pas d'un écran à l'autre.",
+      texte: "Ce choix vaut pour toute la console : analytique, règles, classement. Vous ne le referez pas à chaque écran.",
     },
     {
       cible: "#so-preview-query",
       titre: "Tapez une requête de vos clients",
-      texte: "Les résultats s'affichent comme les verrait un visiteur. Essayez une recherche que vous voulez corriger — par exemple un mot sur lequel le bon produit ne remonte pas.",
-      avanceSur: { evenement: "input", selecteur: "#so-preview-query" },
+      texte: "Les résultats s'affichent comme les verrait un visiteur. Essayez une recherche qui vous pose problème aujourd'hui.",
     },
     {
       cible: "#so-preview-grid",
       titre: "Voici ce que voit votre client",
-      texte: "Chaque fiche indique son rang et <strong>pourquoi elle sort</strong> : terme exact, faute tolérée, annotation reconnue. C'est cette colonne qui explique un classement au lieu de le constater.",
+      texte: "Chaque fiche indique son rang. Rien n'est simulé : c'est le classement réel de votre catalogue, à cet instant.",
+    },
+    {
+      cible: "#so-pipeline-btn",
+      titre: "Comprenez pourquoi ce classement",
+      texte: "Ce lien ouvre le détail : les mots reconnus, les fautes rattrapées, ce qui a pesé dans le score. <strong>Aucun moteur de recherche ne vous montre habituellement cela.</strong>",
     },
     {
       cible: ".so-card-actions",
       titre: "Épinglez un produit",
-      texte: "L'épingle met un produit en tête pour cette requête. Les flèches le déplacent d'une place — et vous pouvez aussi <strong>glisser une carte épinglée sur une autre</strong> pour les intervertir.",
-      avanceSur: { evenement: "click", selecteur: "[data-so-act]" },
+      texte: "L'épingle met un produit en tête pour cette requête. Les flèches le déplacent d'une place — utile pour un produit en promotion ou une fin de série.",
     },
     {
       cible: "#so-simu-bar",
       titre: "Rien n'est encore enregistré",
-      texte: "Ce bandeau ambre signale un brouillon : <strong>vos visiteurs voient toujours le classement actuel</strong>. Vous pouvez essayer autant que vous voulez sans conséquence.",
+      texte: "Ce bandeau signale un brouillon : <strong>vos visiteurs voient toujours le classement actuel.</strong> Vous pouvez tout annuler sans conséquence.",
     },
     {
       cible: "#so-simu-apply",
-      titre: "Appliquer publie vos règles",
-      texte: "À ce moment seulement, vos visiteurs voient le nouveau classement. Un déplacement fige aussi les positions au-dessus : plusieurs règles apparaissent d'un seul clic, c'est normal.",
+      titre: "Publier met vos règles en ligne",
+      texte: "À ce moment seulement, vos visiteurs voient le nouveau classement. Déplacer un produit fige aussi les positions au-dessus : plusieurs règles apparaissent donc d'un seul clic.",
     },
     {
-      cible: "#so-count",
-      titre: "Vos règles restent consultables",
-      texte: "Ce compteur suit les règles actives. Plus bas, vous pouvez les relire et les supprimer — pensez-y quand une promotion se termine.",
+      pane: "pane-vocabulaire",
+      cible: "#cr-host-synonymes",
+      titre: "Apprenez ses mots au moteur",
+      texte: "Vos clients ne tapent pas le vocabulaire de votre catalogue. Un synonyme relie leur mot au vôtre — et les recherches sans résultat vous disent lesquels manquent.",
+    },
+    {
+      pane: "pane-browse",
+      cible: "#pane-browse .console-pane-title",
+      titre: "Classez aussi vos pages de catégorie",
+      texte: "Même principe, sans recherche : vous ordonnez les produits d'une catégorie de votre site. Épinglage par produit, ou mise en avant de toute une famille.",
     },
   ];
 
@@ -148,6 +167,35 @@
     if (detacheur) { detacheur(); detacheur = null; }
 
     var etape = ETAPES[n];
+
+    // NAVIGATION ENTRE ECRANS (21 aout 2026). La visite vivait sur la
+    // seule page Mise en avant sur recherche ; elle couvre desormais le
+    // vocabulaire et la categorie, donc elle doit changer de pane.
+    //
+    // On ne navigue QUE si l'ecran demande n'est pas deja ouvert : sinon
+    // chaque etape relancerait le chargement du pane courant, avec ses
+    // appels reseau.
+    if (etape.pane && !etape._navigue) {
+      var paneVise = document.getElementById(etape.pane);
+      if (paneVise && paneVise.hidden) {
+        var entree = document.querySelector('[data-pane="' + etape.pane + '"]');
+        if (entree) {
+          entree.click();
+          // Le pane s'affiche et charge ses donnees : on attend un cycle
+          // avant de chercher la cible, sinon estVisible() la trouve
+          // absente et l'etape s'annonce sans pointer nulle part.
+          // Marque l'etape comme deja navigee : si le pane reste
+          // masque -- ecran indisponible sur ce plan, chargement en
+          // echec -- aller(n) se rappellerait indefiniment. On passe
+          // alors en mode « annonce sans cible », comportement deja
+          // prevu plus bas.
+          etape._navigue = true;
+          setTimeout(function () { aller(n); }, 350);
+          return;
+        }
+      }
+    }
+
     var el = document.querySelector(etape.cible);
 
     // Étape dont l'élément n'est pas encore là (pas de requête tapée, pas
@@ -231,6 +279,9 @@
     // les trois quarts des étapes pointeraient dans le vide.
     if (typeof window.heurixShowPane === "function") window.heurixShowPane("pane-search-overrides");
     actif = true;
+    // Drapeaux de navigation remis a zero : sans cela, une seconde
+    // visite dans la meme session sauterait les changements d'ecran.
+    ETAPES.forEach(function (e) { e._navigue = false; });
     index = 0;
     construire();
     setTimeout(function () { aller(0); }, 300);
