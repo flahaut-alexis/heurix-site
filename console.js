@@ -904,6 +904,13 @@
   // oublier partiellement.
   function etatInitial() {
     return {
+      // Cablage des ecouteurs, fait une seule fois par session (22 aout
+      // 2026). Declare ICI et non en variable isolee : le commentaire
+      // du chantier S6 explique pourquoi -- un etat oublie dans la
+      // remise a zero est une fuite silencieuse entre deux comptes sur
+      // un poste partage. A la deconnexion, `session = etatInitial()`
+      // le remet a false, et la reconnexion recable proprement.
+      cablageFait: false,
       catalogueActif: "",
       catalogueListe: [],
       catalogueSandbox: {},
@@ -5625,18 +5632,36 @@
       // Permet aux modules ES — l'import CSV — de rafraichir la liste des
       // catalogues apres avoir cree le leur, sans recharger la page.
       window.HEURIX_RECHARGER_CATALOGUES = function () { loadCatalogs(key); };
-      wireGlobalCatalog(key);
-      wireBilling(key);
-      brCablerOngletsRegles();
-      brCablerReglages();
+      // CABLAGE UNE SEULE FOIS (22 aout 2026). loadDashboard fait deux
+      // choses de nature differente : elle CHARGE des donnees, ce qui
+      // doit pouvoir se repeter, et elle CABLE des ecouteurs, ce qui ne
+      // doit se faire qu'une fois. Elle a quatre appelants -- dont
+      // appliquerCatalogue, qui la rappelle une fois le catalogue connu.
+      //
+      // Chaque rappel recablait donc tout. Symptome constate avec Alexis
+      // via getEventListeners : DEUX ecouteurs de clic sur le bouton
+      // Affichage, le premier ouvrant le panneau et le second le
+      // refermant aussitot.
+      //
+      // Le commentaire du 20 aout, juste en dessous, decrivait deja le
+      // meme phenomene cote reseau -- synonyms, custom-rules, usage et
+      // catalogs partant en double. La cause etait connue par ses
+      // effets, jamais par son origine.
+      if (!session.cablageFait) {
+        session.cablageFait = true;
+        wireGlobalCatalog(key);
+        wireBilling(key);
+        brCablerOngletsRegles();
+        brCablerReglages();
       // Meme autocomplete que la page soeur, sur les champs de la
       // categorie : le formulaire attendait un identifiant tape a la
       // main, sans aucune aide.
-      wireSoProductAutocomplete(key, {
-        champ: "bo-product-search",
-        cache: "browse-override-product-id",
-        panneau: "bo-product-panel",
-      });
+        wireSoProductAutocomplete(key, {
+          champ: "bo-product-search",
+          cache: "browse-override-product-id",
+          panneau: "bo-product-panel",
+        });
+      }
       // Correctif (20 aout 2026, mesure Network avec Alexis : synonyms,
       // custom-rules, usage et catalogs partaient en double au
       // changement de catalogue). wireCustomRulesPane ne faisait plus
