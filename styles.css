@@ -2178,6 +2178,14 @@ body.docs-dark .why-card p{ color:#CDD2F0; }
 .console-pane{ display:block; }
 .console-pane[hidden]{ display:none; }
 .console-pane-title{ font-size:20px; margin:0 0 18px; }
+/* Nom commercial de l'offre, en second rang du titre (21 aout 2026) :
+   il rattache l'ecran a ce que le client a paye, sans voler la vedette
+   au nom qui dit ce que l'ecran fait. */
+.console-pane-offre{
+  font-size:12px; font-weight:600; color:var(--ink-muted);
+  background:var(--bg-soft); border:1px solid var(--line);
+  border-radius:100px; padding:3px 10px; vertical-align:middle; margin-left:8px;
+}
 
 @media (max-width:900px){
   .console-layout{ flex-direction:column; gap:20px; }
