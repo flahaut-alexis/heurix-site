@@ -533,6 +533,11 @@ h1 span{ color:var(--blue); }
      l'intérieur (padding-box) en blanc, le second peint la bordure
      (border-box) avec le dégradé — aucune couleur plate ne suffit pour un
      dégradé de bordure en CSS pur. */
+  /* Le violet est CONSERVE ici, seul endroit du site ou il subsiste :
+     c'est une bordure decorative, sans texte -- aucun enjeu de
+     contraste -- et elle porte l'accent de la barre de demo, l'element
+     le plus commercial de l'accueil. Choix documente plutot que subi :
+     accent exclusif du site, jamais introduit en console. */
   background-image: linear-gradient(#fff, #fff), linear-gradient(135deg, var(--blue), #8B5CF6);
   background-origin: border-box;
   background-clip: padding-box, border-box;
@@ -959,7 +964,14 @@ h1 span{ color:var(--blue); }
   font-family:'Plus Jakarta Sans', sans-serif; font-size:10px; font-weight:800;
   letter-spacing:.03em; text-transform:uppercase;
   color:#fff;
-  background:linear-gradient(135deg, var(--blue), #8B5CF6);
+  /* Correctif (21 aout 2026, audit de coherence + mesure de contraste).
+     Ce badge portait du texte blanc sur un degrade allant de #5468FF
+     (4,37:1) a #8B5CF6 (4,23:1) : les DEUX extremites sous le seuil AA
+     de 4,5:1. L'audit signalait le violet comme incoherent avec la regle
+     que le CSS s'est donnee ("famille indigo/marine, jamais deriver vers
+     le violet") ; le contraste tranche la question independamment du
+     gout. Degrade resserre sur la famille, extremites conformes. */
+  background:linear-gradient(135deg, var(--blue-deep), #2E3BB8);
   border-radius:100px; padding:4px 9px;
   box-shadow:0 2px 8px rgba(91,95,239,0.35);
 }
