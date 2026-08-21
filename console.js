@@ -2188,6 +2188,28 @@
   // Les deux mecaniques restent DISTINCTES -- l'une vise un produit
   // nomme, l'autre une famille entiere -- mais visibles cote a cote,
   // avec le meme geste pour y acceder.
+  // Popover des reglages d'affichage, cote categorie (21 aout 2026).
+  // Meme mecanique que sur la page soeur : le panneau est en position
+  // absolue, il ne pousse donc aucun produit a l'ouverture.
+  function brCablerReglages() {
+    var btn = document.getElementById("br-reglages-btn");
+    var panneau = document.getElementById("br-reglages-panel");
+    if (!btn || !panneau) return;
+    btn.addEventListener("click", function () {
+      var ouvert = panneau.hidden;
+      panneau.hidden = !ouvert;
+      btn.setAttribute("aria-expanded", ouvert ? "true" : "false");
+    });
+    // Fermeture au clic exterieur : sans cela, le panneau reste ouvert
+    // et masque les produits qu'il sert justement a regler.
+    document.addEventListener("click", function (e) {
+      if (panneau.hidden) return;
+      if (btn.contains(e.target) || panneau.contains(e.target)) return;
+      panneau.hidden = true;
+      btn.setAttribute("aria-expanded", "false");
+    });
+  }
+
   function brCablerOngletsRegles() {
     var ongletP = document.getElementById("br-onglet-produit");
     var ongletA = document.getElementById("br-onglet-attribut");
@@ -3919,6 +3941,23 @@
       var fermer = b.querySelector(".so-tuto-close");
       if (fermer) fermer.addEventListener("click", marquerVu);
     });
+
+    // Correctif (21 aout 2026, audit de densite). Ce tutoriel ne
+    // s'affichait qu'UNE fois, puis disparaissait definitivement -- le
+    // choix etait memorise, sans aucun moyen de revenir dessus.
+    //
+    // Or il dit exactement ce que repetait le paragraphe permanent de la
+    // page categorie, y compris la regle du blocage des positions
+    // au-dessus. Ce paragraphe cede donc la place a un lien qui rouvre
+    // ce tutoriel : le contenu se replie, l'acces reste.
+    document.addEventListener("click", function (e) {
+      var lien = e.target.closest("[data-rouvrir-tuto]");
+      if (!lien) return;
+      var boite = document.getElementById(lien.getAttribute("data-rouvrir-tuto"));
+      if (!boite) return;
+      boite.hidden = !boite.hidden;
+      if (!boite.hidden) boite.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    });
     // Agir vaut comprehension : un clic sur une action de fiche suffit.
     ["so-preview-grid", "br-grid"].forEach(function (id) {
       var g = document.getElementById(id);
@@ -5555,6 +5594,7 @@
       wireGlobalCatalog(key);
       wireBilling(key);
       brCablerOngletsRegles();
+      brCablerReglages();
       // Correctif (20 aout 2026, mesure Network avec Alexis : synonyms,
       // custom-rules, usage et catalogs partaient en double au
       // changement de catalogue). wireCustomRulesPane ne faisait plus

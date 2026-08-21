@@ -3600,8 +3600,13 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
    controles interactifs et pas seulement du texte). */
 .so-apercu-reglages-wrap{ position:relative; display:inline-block; margin-bottom:14px; }
 .so-apercu-reglages-btn{ font-size:13px; }
+/* Correctif (21 aout 2026, audit de densite) : `left:0` ancrait le
+   panneau au bord GAUCHE du bouton. Sur une fenetre etroite -- 1054px
+   mesures -- ses 260px depassaient a droite et le contenu se rognait
+   (« en ruptu... »). Ancre a droite : le panneau s'ouvre vers
+   l'interieur de la page, ou il y a toujours de la place. */
 .so-apercu-reglages-panel{
-  position:absolute; top:calc(100% + 6px); left:0; z-index:15; width:260px;
+  position:absolute; top:calc(100% + 6px); right:0; z-index:15; width:260px;
   background:#fff; border:1px solid var(--line); border-radius:12px;
   padding:14px 16px; box-shadow:0 8px 24px -8px rgba(18,20,43,0.18);
 }
