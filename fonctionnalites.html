@@ -18,7 +18,7 @@
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css?v=1787348345">
+<link rel="stylesheet" href="styles.css?v=1787349068">
 <link rel="canonical" href="https://heurix.fr/fonctionnalites.html">
 <script type="application/ld+json">
 {
@@ -26,7 +26,7 @@
   "@type": "Organization",
   "name": "Heurix",
   "url": "https://heurix.fr",
-  "logo": "https://heurix.fr/logo.svg?v=1787348345",
+  "logo": "https://heurix.fr/logo.svg?v=1787349068",
   "image": "https://heurix.fr/og-image.png",
   "description": "Moteur de recherche et search & discovery pour sites e-commerce, basé sur des expressions régulières, conçu en France.",
   "email": "contact@heurix.fr",
@@ -40,7 +40,7 @@
 <header>
   <div class="header-top">
     <nav class="header-top-inner">
-      <a href="index.html" class="logo"><img src="logo.svg?v=1787348345" alt="Heurix"> <span class="wordmark">Heurix</span></a>
+      <a href="index.html" class="logo"><img src="logo.svg?v=1787349068" alt="Heurix"> <span class="wordmark">Heurix</span></a>
       <div class="nav-links">
         <div class="nav-drop">
           <button type="button" class="nav-drop-btn" aria-expanded="false" aria-haspopup="true">Produit</button>
@@ -317,6 +317,30 @@
     </div>
   </section>
 
+  <!-- Demonstration manipulable (21 aout 2026). Posee a la fin de
+       « Livrer les bons resultats » : c'est l'argument qu'elle prouve, et
+       le prospect y est deja en train de se demander s'il garde la main.
+       Interactif plutot qu'un GIF : on clique, le classement bouge, et le
+       visiteur constate au lieu de regarder. -->
+  <section class="feat-group">
+    <div class="feat-group-title">Et vous gardez la main</div>
+    <div class="demo-pin reveal">
+      <p class="demo-pin-intro">Un moteur qui décide seul ne suffit pas : vous savez des choses qu'il ignore — une promotion, un déstockage, une marge. <strong>Épinglez un produit, le classement suit.</strong></p>
+
+      <div class="demo-pin-scene">
+        <div class="demo-pin-requete">
+          <span aria-hidden="true">&#128269;</span>
+          <span>vis à bois</span>
+        </div>
+
+        <ol class="demo-pin-liste" id="demo-pin-liste"></ol>
+
+        <p class="demo-pin-etat" id="demo-pin-etat">Cliquez l'épingle d'un produit pour le placer en tête de liste.</p>
+      </div>
+    </div>
+  </section>
+
+
   <section class="feat-group">
     <div class="feat-group-title">Exploiter en confiance</div>
     <div class="feat-grid-2 reveal">
@@ -387,7 +411,7 @@
 
 <footer>
   <div class="wrap foot-grid">
-    <a href="index.html" class="logo" style="font-size:15px;"><img src="logo.svg?v=1787348345" alt="Heurix" style="height:22px;width:22px;"> <span class="wordmark">Heurix</span></a>
+    <a href="index.html" class="logo" style="font-size:15px;"><img src="logo.svg?v=1787349068" alt="Heurix" style="height:22px;width:22px;"> <span class="wordmark">Heurix</span></a>
     <div class="foot-links">
       <a href="blog.html">Blog</a>
       <a href="docs.html">Documentation API</a>
@@ -414,7 +438,7 @@
   </div>
 </footer>
 
-<script src="search.js?v=1787348345"></script>
+<script src="search.js?v=1787349068"></script>
 <script src="search-engine.js"></script>
 <script>
   document.getElementById('year').textContent = new Date().getFullYear();
@@ -436,7 +460,7 @@
 </script>
 
 <script src="nav-dropdown.js"></script>
-<script src="mobile-nav.js?v=1787348345"></script>
+<script src="mobile-nav.js?v=1787349068"></script>
 <div id="pricing-nudge" class="pricing-nudge">
   <button type="button" class="pricing-nudge-close" aria-label="Fermer">&times;</button>
   <div class="pricing-nudge-kicker">Essai gratuit 14 jours</div>
@@ -444,6 +468,7 @@
   <a href="pricing.html" class="btn">Voir les tarifs</a>
 </div>
 <script src="pricing-nudge.js"></script>
-<script src="consent.js?v=1787348345"></script>
+<script src="consent.js?v=1787349068"></script>
+<script src="demo-epinglage.js?v=1787349068"></script>
 </body>
 </html>
