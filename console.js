@@ -1889,12 +1889,18 @@
   // lisible que le tiret qu'il remplace.
   function soLibelleRegle(o) {
     if (o.nom) return esc(o.nom);
-    var produit = o.product_name || o.product_id;
+    // Correctif (21 aout 2026, audit passe 4) : le libelle repetait le
+    // nom du produit, deja porte par la colonne voisine -- chaque ligne
+    // faisait donc deux fois sa hauteur utile pour la meme information.
+    // Il ne dit plus que ce que la colonne Nom ne dit pas.
+    //
+    // La colonne est CONSERVEE, contre l'avis de l'audit : le brief §4.6
+    // la demande, et elle porte un nom saisi des qu'il y en a un.
     var geste = o.action === "pin"
-      ? (o.position ? T("épinglé en {0}", o.position) : T("épinglé"))
-      : T("relégué");
+      ? (o.position ? T("Épinglé en {0}", o.position) : T("Épinglé"))
+      : T("Relégué");
     return "<span class='so-regle-auto' title='" + escAttr(T("Nom généré — vous pouvez en saisir un dans la règle")) + "'>" +
-      esc(produit) + " — " + esc(geste) + "</span>";
+      esc(geste) + "</span>";
   }
 
   function soRowHtmlCatalogue(o, enBrouillon, conflits) {
@@ -2835,6 +2841,17 @@
     function rendre() {
       var liste = !q ? [] : (session.soDraft || []).filter(function (r) {
         return q.indexOf(r.query.toLowerCase()) !== -1;
+      });
+      // Correctif (21 aout 2026, audit passe 4). Le rail sortait en 2, 3,
+      // 1 -- signale depuis trois passes. J'avais corrige le TABLEAU
+      // (soFiltrerEtTrierCatalogue) sans voir que le rail est alimente
+      // par session.soDraft, qui n'est trie nulle part. Meme regle que le
+      // tableau : par position croissante, une relegation n'ayant pas de
+      // position passe en fin.
+      liste = liste.slice().sort(function (a, b) {
+        var pa = a.action === "pin" ? (a.position || 0) : Infinity;
+        var pb = b.action === "pin" ? (b.position || 0) : Infinity;
+        return pa - pb;
       });
       soRenderListeContextuelle(liste);
     }

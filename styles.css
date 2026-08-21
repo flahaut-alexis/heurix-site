@@ -3273,7 +3273,10 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 }
 .console-tab:hover{ color:var(--ink); }
 .console-tab-active{ color:var(--blue-deep); border-bottom-color:var(--blue); }
-.console-tab-count{ font-size:11px; font-weight:700; color:var(--ink-muted); }
+/* L'espace avant la parenthese ne peut pas venir du HTML : le compteur
+   est un <span> colle au libelle, et un espace y serait avale au
+   rendu. margin-left plutot que d'ajouter un caractere. */
+.console-tab-count{ font-size:11px; font-weight:700; color:var(--ink-muted); margin-left:4px; }
 .console-tab-active .console-tab-count{ color:var(--blue-deep); }
 [role="tabpanel"][hidden]{ display:none; }
 
@@ -4354,8 +4357,12 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 
 /* Colonne d actions : alignee a droite, boutons en ligne plutot
    qu empiles -- ils apparaissaient les uns sous les autres. */
+/* Correctif (21 aout 2026, audit passe 4) : les boutons se touchaient
+   ("CorrigerMettre en avant", "crayon-copie-croix"), rendant la cible
+   difficile a viser et la lecture confuse. */
 .console-table .cell-actions{
   text-align:right; white-space:nowrap;
+  display:flex; gap:6px; justify-content:flex-end; align-items:center;
 }
 .console-table .cell-actions button{
   display:inline-flex; align-items:center; justify-content:center;
@@ -5404,7 +5411,10 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 /* Suggestions de synonymes depuis les recherches sans resultat.
    Chaque ligne est un client qui n a pas trouve ; le bouton propose les
    mots proches du catalogue, un clic cree le synonyme. */
-.zr-action-cell{ white-space:normal; }
+.zr-action-cell{
+  white-space:normal;
+  display:flex; gap:6px; align-items:center; flex-wrap:wrap;
+}
 /* .zr-vers-regle (brief §4.5, 19 aout 2026) partage le style de
    .zr-suggerer plutot que de le dupliquer -- meme registre, meme
    colonne, souvent cote a cote. */
