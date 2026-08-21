@@ -33,6 +33,11 @@
     },
     {
       cible: "#so-preview-query",
+      // Requete choisie sur le catalogue de demonstration : elle
+      // remonte des resultats et laisse voir l'explication du
+      // classement. Ignoree si le marchand a deja tape quelque chose --
+      // sa recherche vaut mieux que notre exemple.
+      amorce: "vis",
       titre: "Tapez une requête de vos clients",
       texte: "Les résultats s'affichent comme les verrait un visiteur. Essayez une recherche qui vous pose problème aujourd'hui.",
     },
@@ -196,6 +201,28 @@
       }
     }
 
+    // AMORCE (21 aout 2026) : la visite s'adresse a un marchand qui
+    // vient de s'inscrire et n'a rien tape. Sans requete, la grille est
+    // vide et « Pourquoi ces resultats ? » reste masque -- trois etapes
+    // sur neuf s'annonceraient sans rien a montrer.
+    //
+    // L'etape 2 remplit donc le champ et declenche l'evenement `input`,
+    // exactement comme une frappe reelle : on ne touche pas aux
+    // fonctions internes de la console, qui ne sont pas accessibles
+    // d'ici.
+    if (etape.amorce && !etape._amorce) {
+      etape._amorce = true;
+      var champAmorce = document.getElementById("so-preview-query");
+      if (champAmorce && !champAmorce.value.trim()) {
+        champAmorce.value = etape.amorce;
+        champAmorce.dispatchEvent(new Event("input", { bubbles: true }));
+        // Le moteur repond apres son propre delai de frappe : on laisse
+        // la grille se remplir avant de pointer dessus.
+        setTimeout(function () { aller(n); }, 700);
+        return;
+      }
+    }
+
     var el = document.querySelector(etape.cible);
 
     // Étape dont l'élément n'est pas encore là (pas de requête tapée, pas
@@ -281,7 +308,7 @@
     actif = true;
     // Drapeaux de navigation remis a zero : sans cela, une seconde
     // visite dans la meme session sauterait les changements d'ecran.
-    ETAPES.forEach(function (e) { e._navigue = false; });
+    ETAPES.forEach(function (e) { e._navigue = false; e._amorce = false; });
     index = 0;
     construire();
     setTimeout(function () { aller(0); }, 300);
