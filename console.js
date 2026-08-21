@@ -1473,6 +1473,18 @@
   // (ex. l'etat de premier lancement de "Vue d'ensemble" vers "Comment ca
   // marche") -- deplie aussi la section parente dans la barre laterale,
   // pas seulement le contenu, pour que l'utilisateur voie ou il atterrit.
+  // Correctif (21 aout 2026, audit passe 4) : les tuiles KPI sont
+  // devenues des liens (role="link", tabindex). Le gestionnaire de clic
+  // ci-dessous les couvre deja ; il leur manquait l'activation au
+  // clavier, sans quoi elles seraient atteignables mais inutilisables.
+  document.addEventListener("keydown", function (e) {
+    if (e.key !== "Enter" && e.key !== " ") return;
+    var cible = e.target.closest('[data-goto-pane][role="link"]');
+    if (!cible) return;
+    e.preventDefault();
+    cible.click();
+  });
+
   document.addEventListener("click", function (e) {
     var link = e.target.closest("[data-goto-pane]");
     if (!link) return;
@@ -5124,7 +5136,19 @@
         boutonRestore.hidden = true;
         return;
       }
-      var reduite = localStorage.getItem(ACTIVATION_REDUITE_KEY) === "1";
+      // Le bouton porte la progression : replie, il devient la seule
+      // trace de la checklist a l'ecran -- autant qu'il dise ou l'on en
+      // est plutot que d'inviter a rouvrir pour le decouvrir.
+      var n = [indexeFait, rechercheFaite, cleFaite, browseFait].filter(Boolean).length;
+      boutonRestore.textContent = T("Voir ma progression ({0}/4)", n);
+      // Correctif (21 aout 2026, audit passe 4) : a 3 etapes sur 4, la
+      // carte occupait encore tout le premier ecran. Elle se replie
+      // d'elle-meme des que la majorite est faite -- l'utilisateur sait
+      // deja ou il en est, le bouton "Voir ma progression" reste a un
+      // clic. On ne force jamais l'inverse : un choix de reduction
+      // explicite est conserve tel quel.
+      var faites = [indexeFait, rechercheFaite, cleFaite, browseFait].filter(Boolean).length;
+      var reduite = localStorage.getItem(ACTIVATION_REDUITE_KEY) === "1" || faites >= 3;
       carte.hidden = reduite;
       boutonRestore.hidden = !reduite;
     }).catch(function () {
