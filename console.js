@@ -810,8 +810,18 @@
   // est son comportement par defaut. Factorise plutot que recopie --
   // trois appels le construisaient separement.
   function catalogueQS() {
-    return session.catalogueActif === CATALOGUE_TOUS
-      ? "" : "&catalog=" + encodeURIComponent(session.catalogueActif);
+    // Correctif (21 aout 2026) : l'URL partait avec "&catalog=" VIDE,
+    // constate par Alexis dans l'onglet Network -- le backend traitait ce
+    // parametre vide comme absent, donc les chiffres ne changeaient
+    // jamais.
+    //
+    // On ne renvoie le filtre que si l'on tient un vrai nom. Sentinelle,
+    // valeur vide ou fonction appelee trop tot donnent toutes une chaine
+    // vide, ce qui fait agreger le backend -- comportement voulu dans les
+    // trois cas.
+    var actif = session.catalogueActif;
+    if (!actif || actif === CATALOGUE_TOUS) return "";
+    return "&catalog=" + encodeURIComponent(actif);
   }
 
   // Panes ou l'agregation n'a PAS de sens : on y ecrit des regles, qui
@@ -896,7 +906,21 @@
   }
   var session = etatInitial();
 
-  function catalogueCourant() { return session.catalogueActif; }
+  // Correctif (21 aout 2026, bugs constates par Alexis apres la mise en
+  // place de "Tous les catalogues"). Cette fonction est utilisee partout
+  // ou un NOM DE CATALOGUE est attendu -- URL de synonymes, de regles,
+  // de parcours. Elle ne doit donc jamais renvoyer la sentinelle, sous
+  // peine de requetes vers /v1/index/__tous__/... en 404.
+  //
+  // Ma garde precedente ne couvrait que appliquerCatalogue ; celle-ci
+  // couvre tous les appelants, presents et futurs.
+  function catalogueCourant() {
+    if (session.catalogueActif === CATALOGUE_TOUS) {
+      return (session.catalogueListe || [])[0] || null;
+    }
+    return session.catalogueActif;
+  }
+
 
   function rechargerCatalogues(key) {
     var select = document.getElementById("global-catalog");
@@ -964,8 +988,13 @@
       // La grande majorite des comptes n'a qu'un catalogue : on le
       // selectionne d'office plutot que d'imposer un choix sans alternative.
       var memoire = localStorage.getItem("heurix_catalogue_actif");
-      session.catalogueActif = (memoire && session.catalogueListe.indexOf(memoire) !== -1)
-        ? memoire : session.catalogueListe[0];
+      // La sentinelle n'est PAS dans catalogueListe : sans ce cas
+      // explicite, un choix "Tous les catalogues" etait perdu au
+      // rechargement et retombait sur le premier catalogue.
+      var memoireValide = memoire === CATALOGUE_TOUS
+        ? session.catalogueListe.length > 1
+        : (memoire && session.catalogueListe.indexOf(memoire) !== -1);
+      session.catalogueActif = memoireValide ? memoire : session.catalogueListe[0];
       select.value = session.catalogueActif;
       appliquerCatalogue(key);
       // Un nouveau client ne devine pas que ce choix porte sur TOUTE la
@@ -3017,7 +3046,7 @@
       var zone = btn.parentElement.querySelector(".zr-suggestions");
       btn.disabled = true;
       btn.textContent = "…";
-      apiFetch("/v1/index/" + encodeURIComponent(session.catalogueActif) +
+      apiFetch("/v1/index/" + encodeURIComponent(catalogueCourant()) +
                "/synonym-suggestions?q=" + encodeURIComponent(terme), key)
         .then(function (d) {
           var candidats = [];
@@ -3053,11 +3082,11 @@
       // Le PUT remplace la liste entière : on lit d'abord, on ajoute, on
       // renvoie. Les synonymes du pack ne sont pas dans cette liste — ils
       // se rechargent du YAML, on ne risque pas de les écraser.
-      apiFetch("/v1/index/" + encodeURIComponent(session.catalogueActif) + "/synonyms", key)
+      apiFetch("/v1/index/" + encodeURIComponent(catalogueCourant()) + "/synonyms", key)
         .then(function (d) {
           var groupes = (d.groups || []).slice();
           groupes.push([de, vers]);
-          return apiFetch("/v1/index/" + encodeURIComponent(session.catalogueActif) + "/synonyms",
+          return apiFetch("/v1/index/" + encodeURIComponent(catalogueCourant()) + "/synonyms",
                           key, { method: "PUT", body: { groups: groupes } });
         })
         .then(function () {
@@ -3107,11 +3136,11 @@
       // Meme logique que creerSynonyme (panneau Sans resultat, chantier
       // score d'intention) : le PUT remplace la liste entiere, on lit
       // d'abord, on ajoute, on renvoie.
-      apiFetch("/v1/index/" + encodeURIComponent(session.catalogueActif) + "/synonyms", key)
+      apiFetch("/v1/index/" + encodeURIComponent(catalogueCourant()) + "/synonyms", key)
         .then(function (d) {
           var groupes = (d.groups || []).slice();
           groupes.push([q, vers]);
-          return apiFetch("/v1/index/" + encodeURIComponent(session.catalogueActif) + "/synonyms",
+          return apiFetch("/v1/index/" + encodeURIComponent(catalogueCourant()) + "/synonyms",
                           key, { method: "PUT", body: { groups: groupes } });
         })
         .then(function () {
@@ -5911,7 +5940,7 @@
       // le commentaire precedent evoquait cette possibilite sans jamais
       // l'implementer. Le catalogue actif fait foi ; repli sur le premier
       // s'il n'est pas dans la liste (compte neuf, catalogue supprime).
-      var voulu = session.catalogueActif;
+      var voulu = catalogueCourant();
       var connu = catalogs.some(function (c) { return c.catalog === voulu; });
       afficherCatalogue(connu ? voulu : catalogs[0].catalog);
     }).catch(function () {
