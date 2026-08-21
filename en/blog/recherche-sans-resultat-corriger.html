@@ -3,23 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Index your first hardware catalog in 5 minutes — Heurix</title>
-<meta name="description" content="Two API calls, one real search result with a typo and a different format. All code on this page is tested.">
-<link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/tutoriel-catalogue-outillage-5-minutes.html">
-<link rel="alternate" hreflang="en" href="https://heurix.fr/en/blog/tutoriel-catalogue-outillage-5-minutes.html">
+<title>A search returns nothing: fixing it in three minutes — Heurix</title>
+<meta name="description" content="A customer looks for a product you have in stock, and gets nothing. Here's how to find those searches, understand why they fail, and fix them.">
+<link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/recherche-sans-resultat-corriger.html">
+<link rel="alternate" hreflang="en" href="https://heurix.fr/en/blog/recherche-sans-resultat-corriger.html">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Index your first hardware catalog in 5 minutes — Heurix">
-<meta property="og:description" content="Two API calls, one real search result with a typo and a different format. All code on this page is tested.">
+<meta property="og:title" content="A search returns nothing: fixing it in three minutes — Heurix">
+<meta property="og:description" content="A customer looks for a product you have in stock, and gets nothing. Here's how to find those searches, understand why they fail, and fix them.">
 <meta property="og:image" content="https://heurix.fr/og-image.png">
-<meta property="og:url" content="https://heurix.fr/en/blog/tutoriel-catalogue-outillage-5-minutes.html">
+<meta property="og:url" content="https://heurix.fr/en/blog/recherche-sans-resultat-corriger.html">
 <meta property="og:locale" content="en_US">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Index your first hardware catalog in 5 minutes — Heurix">
+<meta name="twitter:title" content="A search returns nothing: fixing it in three minutes — Heurix">
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="../../favicon-32.png">
 <link rel="apple-touch-icon" href="../../apple-touch-icon.png">
 <link rel="stylesheet" href="../../styles.css?v=1787350181">
-<link rel="canonical" href="https://heurix.fr/en/blog/tutoriel-catalogue-outillage-5-minutes.html">
+<link rel="canonical" href="https://heurix.fr/en/blog/recherche-sans-resultat-corriger.html">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -86,7 +86,7 @@
           <span></span><span></span><span></span>
         </button>
         <a href="../console.html" class="header-signin">Sign in</a>
-        <a href="../../blog/tutoriel-catalogue-outillage-5-minutes.html" class="lang-switch">FR</a>
+        <a href="../../blog/recherche-sans-resultat-corriger.html" class="lang-switch">FR</a>
         <a href="../pricing.html" class="btn">Start free trial</a>
       </div>
     </nav>
@@ -110,64 +110,41 @@
 <article class="post">
   <div class="wrap post-wrap">
     <a href="../blog.html" class="back-link">← All articles</a>
-    <div class="kicker">Tutorial · July 2026</div>
-    <h1>Index your first hardware catalog in 5 minutes</h1>
-    <p class="post-lede">Two API calls, one real search result with a typo and a different format. Every piece of code on this page is tested — copy, paste, adapt to your catalog.</p>
+    <div class="kicker">Blog · August 2026</div>
+    <h1>A search returns nothing: fixing it in three minutes</h1>
+    <p class="post-lede">A customer looks for a product you have in stock, and gets nothing. They won't write to tell you — they'll go elsewhere. Here's how to spot those searches, understand why they fail, and fix them.</p>
 
     <div class="post-body">
-      <h2>What you need</h2>
-      <p>An API key (<a href="../pricing.html">14-day free trial</a>, no credit card) and a terminal. That's it — no SDK to install, the engine answers in plain JSON over standard HTTP calls.</p>
+      <h2>Where to find them</h2>
+      <p>In the console, <strong>Observe → Searches</strong>, the <em>No results</em> tab. The list is sorted by frequency: the top rows are the ones costing you the most.</p>
+      <p>One useful detail: queries under three characters aren't listed — those are keystrokes in progress, not searches. A short reference like <code>M8</code> or <code>DN20</code>, however, is counted.</p>
 
-      <h2>Step 1 — Index 4 products</h2>
-      <p>A small hardware catalog, with the <code class="docs-inline-code">outillage</code> rule pack (the one that understands diameters, lengths, and materials in a reference):</p>
-      <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/index/hardware/items   -H "Authorization: Bearer YOUR_API_KEY"   -H "Content-Type: application/json"   -d '{
-  "rulepack": "outillage",
-  "items": [
-    {"id": "V001", "name": "Hex head machine screw", "ref": "M8 x 20 - Stainless A2", "stock": 120},
-    {"id": "V002", "name": "Hex head machine screw", "ref": "M8 x 30 - Stainless A2", "stock": 45},
-    {"id": "R001", "name": "Sealed ball bearing", "ref": "6205-2RS", "stock": 8},
-    {"id": "E001", "name": "Hex nut", "ref": "M8 - Zinc-plated", "stock": 300}
-  ]
-}'</code></pre>
-      <p>Response:</p>
-      <pre class="docs-code"><code>{"indexed": 4, "catalog": {"catalog": "hardware", "products": 4,
- "terms": 18, "annotations": 11, "rulepack": "outillage", "synonym_groups": 0}}</code></pre>
-      <p>11 annotations generated automatically from 4 products — that's the rule cascade decomposing each reference (diameter, length, material) without you writing a single regex.</p>
+      <h2>Three causes, three fixes</h2>
 
-      <h2>Step 2 — Search, with a typo and a different format</h2>
-      <p>The real test: not the exact reference as indexed, but what a customer actually types — a typo on "screw," and "M8x20" run together with no spaces or hyphens:</p>
-      <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/index/hardware/search   -H "Authorization: Bearer YOUR_API_KEY"   -H "Content-Type: application/json"   -d '{"q": "scew m8x20 stainless"}'</code></pre>
-      <p>Response (shortened):</p>
-      <pre class="docs-code"><code>{
-  "total": 3,
-  "hits": [
-    {
-      "product": {"id": "V001", "ref": "M8 x 20 - Stainless A2", "stock": 120},
-      "score": 43.5,
-      "matched": [
-        "term 'stainless' (from 'stainless', x1.00)",
-        "annotation #LONG_20",
-        "annotation #DIAM_M8",
-        "annotation #VIS_M8X20",
-        "annotation #DIAM_M8_INOX",
-        "annotation #MAT_INOX"
-      ]
-    },
-    { "product": {"id": "V002", "ref": "M8 x 30 - Stainless A2"}, "score": 28.5, ... },
-    { "product": {"id": "E001", "ref": "M8 - Zinc-plated"}, "score": 7.5, ... }
-  ]
-}</code></pre>
+      <h2>1. The word doesn't exist in your catalog</h2>
+      <p>The most common case. Your customer types <em>drywall</em>, your catalog says <em>plasterboard</em>. The engine is looking for a word written nowhere.</p>
+      <p>The fix takes one line: <strong>Optimise → Engine vocabulary</strong>, Synonyms tab. Enter <code>drywall, plasterboard</code>. Searching for "drywall" will now find your plasterboard.</p>
+      <p>Direction matters. By default the rule only works one way: "drywall" finds plasterboard, without "plasterboard" pulling up drywall. That's almost always what you want. Tick <em>Works the other way round too</em> when both words are genuinely interchangeable — <code>tshirt</code> and <code>tee-shirt</code>, for instance.</p>
 
-      <h2>What just happened</h2>
-      <p>"scew m8x20 stainless" exists literally nowhere in the indexed data — not "scew" (a typo on "screw"), not "m8x20" in that exact form (the stored reference is "M8 x 20"). The engine still found the right product and ranked it first, and the <code class="docs-inline-code">matched</code> field says precisely why: it recognized a diameter (<code class="docs-inline-code">DIAM_M8</code>), a length (<code class="docs-inline-code">LONG_20</code>), their combination as a screw reference (<code class="docs-inline-code">VIS_M8X20</code>), and the material (<code class="docs-inline-code">MAT_INOX</code>) — four annotations that weigh far more in the score than the simple spelling correction of "screw." That's the difference between an engine that tolerates typos on words, and an engine that understands a reference's structure.</p>
+      <h2>2. The word is trade vocabulary the engine can't read</h2>
+      <p>Your customers type references: <em>M8</em>, <em>DN20</em>, <em>A4</em>. These aren't words, they're dimensions, standards, grades. An engine treating them as plain text splits them badly and misses products you do have in stock.</p>
+      <p>Your sector's rule pack already covers most of this. For vocabulary specific to you, go to <strong>Engine vocabulary</strong>, Trade terms tab. There you declare that a prefix followed by a number denotes a reference, and the engine recognises it everywhere.</p>
 
-      <h2>And with your real catalog?</h2>
-      <p>Replace the <code class="docs-inline-code">items</code> array's content with your own products (5,000 per call maximum, several calls for a larger catalog), keep the <code class="docs-inline-code">outillage</code> pack if it matches your industry — or <code class="docs-inline-code">mode</code>, <code class="docs-inline-code">industrie</code> for the other two provided packs. The <a href="../docs.html">full documentation</a> covers facets, business synonyms, and federated search across multiple catalogs.</p>
+      <h2>3. You don't sell that product</h2>
+      <p>Not every empty search is a mistake. If your customers regularly look for something you don't carry, that's commercial information, not a technical fault.</p>
+      <p>This list tells you what your market expects from you. Some merchants find their next catalog additions there.</p>
+
+      <h2>Checking it's fixed</h2>
+      <p>After a fix, go to <strong>Optimise → Search merchandising</strong> and type the query. You immediately see what your visitor will see.</p>
+      <p>The <em>Why these results?</em> link details the reasoning: words recognised, typos caught, what weighed in the ranking. If a product still doesn't appear, that's where you'll see why.</p>
+
+      <h2>Making it a habit</h2>
+      <p>This list takes two minutes to review, once a week. It's probably the best ratio of time spent to sales recovered in your entire search setup.</p>
     </div>
 
     <div class="post-footer-cta">
-      <p>Want to test it with your own catalog?</p>
-      <a href="../pricing.html" class="btn">Try the Search API for free</a>
+      <p>Want to see your own zero-result searches?</p>
+      <a href="../pricing.html" class="btn">Try Heurix for free</a>
     </div>
   </div>
 </article>

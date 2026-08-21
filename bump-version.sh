@@ -13,7 +13,7 @@ set -euo pipefail
 cd "$(dirname "$0")"
 VERSION=$(date +%s)
 TOTAL=0
-for f in *.html en/*.html; do
+for f in *.html en/*.html blog/*.html en/blog/*.html; do
   [ -f "$f" ] || continue
   N=$(grep -o '?v=[0-9]*' "$f" | wc -l | tr -d ' ' || true)
   if [ "$N" -gt 0 ]; then
@@ -23,7 +23,7 @@ for f in *.html en/*.html; do
 done
 echo "Version : $VERSION"
 echo "References mises a jour : $TOTAL"
-RESTANTES=$(grep -roh '?v=[0-9]*' *.html en/*.html | sort -u | wc -l | tr -d ' ')
+RESTANTES=$(grep -roh '?v=[0-9]*' *.html en/*.html blog/*.html en/blog/*.html | sort -u | wc -l | tr -d ' ')
 if [ "$RESTANTES" -eq 1 ]; then
   echo "Verification : une seule version dans tout le site."
 else
