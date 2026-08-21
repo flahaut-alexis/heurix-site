@@ -8,14 +8,14 @@
 <meta name="robots" content="noindex">
 <link rel="icon" type="image/png" href="../favicon-32.png">
 <link rel="apple-touch-icon" href="../apple-touch-icon.png">
-<link rel="stylesheet" href="../styles.css?v=1787297090">
+<link rel="stylesheet" href="../styles.css?v=1787298677">
 <link rel="canonical" href="https://heurix.fr/en/console.html">
 </head>
 <body>
 <header>
   <div class="header-top">
     <nav class="header-top-inner">
-      <a href="index.html" class="logo"><img src="../logo.svg?v=1787297090" alt="Heurix"> <span class="wordmark">Heurix</span></a>
+      <a href="index.html" class="logo"><img src="../logo.svg?v=1787298677" alt="Heurix"> <span class="wordmark">Heurix</span></a>
       <div class="nav-links nav-links-console">
       <div class="console-org-hint" id="console-org-hint" hidden>
         <p><strong>"My info" has moved.</strong> Company, members, API key, and subscription are now grouped here, under your company name.</p>
@@ -905,13 +905,59 @@
                 <button type="button" class="btn btn-ghost csv-tuto-ok">Got it</button>
               </div>
 
-              <p class="console-lede">Drop your ERP or PIM export, in CSV or XML. We detect the structure and suggest a field match — which you can correct before sending.</p>
+              <p class="console-lede">Drop the export from your store or management software (ERP, PIM). We detect the structure and suggest a field mapping, which you can adjust before sending.</p>
+
+              <ol class="import-etapes">
+                <li>
+                  <span class="import-etape-num">1</span>
+                  <strong>Drop your file</strong>
+                  <span>CSV or XML export from your store</span>
+                </li>
+                <li>
+                  <span class="import-etape-num">2</span>
+                  <strong>Check the mapping</strong>
+                  <span>We detect your columns, you adjust if needed</span>
+                </li>
+                <li>
+                  <span class="import-etape-num">3</span>
+                  <strong>It's indexed</strong>
+                  <span>Search up to date within minutes</span>
+                </li>
+              </ol>
 
               <div class="csv-depot" id="csv-depot">
                 <input type="file" id="csv-fichier" accept=".csv,.txt,text/csv,.xml,application/xml,text/xml" hidden>
                 <button type="button" class="btn" id="csv-choisir">Choose a file</button>
-                <p class="csv-depot-note">or drop it here — CSV or XML, up to 100,000 rows</p>
+                <p class="csv-depot-note">or drop it here</p>
               </div>
+
+              <div class="import-formats">
+                <div class="import-formats-col">
+                  <p class="import-formats-titre">Accepted formats</p>
+                  <ul>
+                    <li><strong>CSV</strong> — comma or semicolon separator, UTF-8 encoding</li>
+                    <li><strong>XML</strong> — standard PrestaShop or WooCommerce export</li>
+                    <li>Up to 100,000 rows, around 50 MB</li>
+                  </ul>
+                </div>
+                <div class="import-formats-col">
+                  <p class="import-formats-titre">Columns detected automatically</p>
+                  <p class="import-formats-champs">name · reference · price · stock · category · brand · image</p>
+                  <p class="import-formats-note">Only the identifier is required. Other columns are optional, and you can adjust the mapping after dropping the file.</p>
+                </div>
+              </div>
+
+              <div class="import-aides">
+                <a class="import-exemple" href="../exemple-catalogue.csv" download>
+                  Download a sample file <span>CSV, 10 products</span>
+                </a>
+                <p class="import-modules">
+                  Running PrestaShop, WooCommerce or Shopify?
+                  <a href="../integrations.html">The official module syncs without a file.</a>
+                </p>
+              </div>
+
+              <p class="import-effet">The import replaces the selected catalog. Nothing is published until indexing succeeds.</p>
 
               <div id="csv-analyse" hidden>
                 <div class="csv-resume" id="csv-resume"></div>
@@ -952,7 +998,7 @@
           <div id="pane-catalog-help" class="console-pane" hidden>
             <h2 class="console-pane-title">How it works</h2>
             <div class="console-panel">
-              <img src="../img/cascade-annotations.svg?v=1787297090" alt="Diagram: the reference M8 x 20 - Stainless A2 is recognized by three rules (diameter, length, material) that combine into three annotations" style="width:100%; max-width:640px; margin:0 0 16px;">
+              <img src="../img/cascade-annotations.svg?v=1787298677" alt="Diagram: the reference M8 x 20 - Stainless A2 is recognized by three rules (diameter, length, material) that combine into three annotations" style="width:100%; max-width:640px; margin:0 0 16px;">
               <h3 class="console-help-h3" style="margin-top:0;">What a rule pack does</h3>
               <p class="console-panel-note" style="margin:4px 0 14px;">A rule pack reads your product references and automatically recognizes what they contain — as in the diagram above. Ten packs currently exist, covering the most common industries (hardware, fashion, industry, books, electronics, wine &amp; spirits, automotive, electrical, plumbing, finance).</p>
               <h3 class="console-help-h3">Create a custom rule</h3>
@@ -1113,7 +1159,7 @@
 
 <footer>
   <div class="wrap foot-grid">
-    <a href="index.html" class="logo" style="font-size:15px;"><img src="../logo.svg?v=1787297090" alt="Heurix" style="height:22px;width:22px;"> <span class="wordmark">Heurix</span></a>
+    <a href="index.html" class="logo" style="font-size:15px;"><img src="../logo.svg?v=1787298677" alt="Heurix" style="height:22px;width:22px;"> <span class="wordmark">Heurix</span></a>
     <div class="foot-links">
       <a href="blog.html">Blog</a>
       <a href="docs.html">API Documentation</a>
@@ -1140,16 +1186,16 @@
 </footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<script src="../console-select.js?v=1787297090"></script>
-<script src="../visite-editeur.js?v=1787297090"></script>
-<script src="../console-i18n.js?v=1787297090"></script>
-<script src="../console.js?v=1787297090"></script>
-<script type="module" src="../csv-console.js?v=1787297090"></script>
+<script src="../console-select.js?v=1787298677"></script>
+<script src="../visite-editeur.js?v=1787298677"></script>
+<script src="../console-i18n.js?v=1787298677"></script>
+<script src="../console.js?v=1787298677"></script>
+<script type="module" src="../csv-console.js?v=1787298677"></script>
 <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 
 <script src="../nav-dropdown.js"></script>
-<script src="../mobile-nav.js?v=1787297090"></script>
-<script src="../consent.js?v=1787297090"></script>
+<script src="../mobile-nav.js?v=1787298677"></script>
+<script src="../consent.js?v=1787298677"></script>
 
 <!-- Correctif Lot 2 -- parite EN avec console.html. -->
 <div id="undo-toast" class="undo-toast" hidden role="status" aria-live="polite">

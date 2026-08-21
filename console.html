@@ -8,14 +8,14 @@
 <meta name="robots" content="noindex">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css?v=1787297090">
+<link rel="stylesheet" href="styles.css?v=1787298677">
 <link rel="canonical" href="https://heurix.fr/console.html">
 </head>
 <body>
 <header>
   <div class="header-top">
     <nav class="header-top-inner">
-      <a href="index.html" class="logo"><img src="logo.svg?v=1787297090" alt="Heurix"> <span class="wordmark">Heurix</span></a>
+      <a href="index.html" class="logo"><img src="logo.svg?v=1787298677" alt="Heurix"> <span class="wordmark">Heurix</span></a>
       <button type="button" id="mobile-nav-toggle" class="mobile-nav-toggle" aria-label="Menu" aria-expanded="false">
         <span></span><span></span><span></span>
       </button>
@@ -1279,13 +1279,75 @@
                 <button type="button" class="btn btn-ghost csv-tuto-ok">J'ai compris</button>
               </div>
 
-              <p class="console-lede">Déposez l'export de votre ERP ou de votre PIM, en CSV ou en XML. Nous détectons la structure et proposons une correspondance de champs — que vous pouvez corriger avant d'envoyer.</p>
+              <!-- Correctif (21 aout 2026, demande Alexis puis audit passe 4) :
+                   le processus tenait en une phrase et demie de prose,
+                   donc invisible. Trois etapes numerotees, et les sigles
+                   ERP/PIM passent en parenthese au lieu d'etre le sujet
+                   -- la cible PrestaShop/WooCommerce ne les connait pas
+                   forcement. -->
+              <p class="console-lede">Déposez l'export de votre boutique ou de votre logiciel de gestion (ERP, PIM). Nous détectons la structure et proposons une correspondance de champs, que vous pouvez corriger avant d'envoyer.</p>
+
+              <ol class="import-etapes">
+                <li>
+                  <span class="import-etape-num">1</span>
+                  <strong>Déposez votre fichier</strong>
+                  <span>Export CSV ou XML de votre boutique</span>
+                </li>
+                <li>
+                  <span class="import-etape-num">2</span>
+                  <strong>Vérifiez la correspondance</strong>
+                  <span>Nous détectons vos colonnes, vous corrigez si besoin</span>
+                </li>
+                <li>
+                  <span class="import-etape-num">3</span>
+                  <strong>C'est indexé</strong>
+                  <span>Recherche à jour en quelques minutes</span>
+                </li>
+              </ol>
 
               <div class="csv-depot" id="csv-depot">
                 <input type="file" id="csv-fichier" accept=".csv,.txt,text/csv,.xml,application/xml,text/xml" hidden>
                 <button type="button" class="btn" id="csv-choisir">Choisir un fichier</button>
-                <p class="csv-depot-note">ou glissez-le ici — CSV ou XML, jusqu'à 100 000 lignes</p>
+                <p class="csv-depot-note">ou glissez-le ici</p>
               </div>
+
+              <!-- Les formats etaient cites deux fois -- dans le
+                   paragraphe et dans la zone de depot -- mais jamais
+                   detailles : ni separateur, ni encodage, ni colonnes
+                   attendues. Panneau scannable plutot que repetition. -->
+              <div class="import-formats">
+                <div class="import-formats-col">
+                  <p class="import-formats-titre">Formats acceptés</p>
+                  <ul>
+                    <li><strong>CSV</strong> — séparateur virgule ou point-virgule, encodage UTF-8</li>
+                    <li><strong>XML</strong> — export standard PrestaShop ou WooCommerce</li>
+                    <li>Jusqu'à 100 000 lignes, environ 50 Mo</li>
+                  </ul>
+                </div>
+                <div class="import-formats-col">
+                  <p class="import-formats-titre">Colonnes reconnues automatiquement</p>
+                  <p class="import-formats-champs">nom · référence · prix · stock · catégorie · marque · image</p>
+                  <p class="import-formats-note">Seul l'identifiant est obligatoire. Les autres colonnes sont facultatives, et vous pouvez corriger la correspondance après le dépôt.</p>
+                </div>
+              </div>
+
+              <!-- Les deux ajouts a plus fort levier selon l'audit
+                   passe 4. Le fichier d'exemple repond a "a quoi doit
+                   ressembler mon fichier ?" sans un mot de
+                   documentation ; le renvoi vers les modules evite a un
+                   marchand Shopify de faire a la main ce qu'un
+                   connecteur fait tout seul. -->
+              <div class="import-aides">
+                <a class="import-exemple" href="exemple-catalogue.csv" download>
+                  Télécharger un fichier d'exemple <span>CSV, 10 produits</span>
+                </a>
+                <p class="import-modules">
+                  Votre boutique est sous PrestaShop, WooCommerce ou Shopify ?
+                  <a href="integrations.html">Le module officiel synchronise sans fichier.</a>
+                </p>
+              </div>
+
+              <p class="import-effet">L'import remplace le catalogue sélectionné. Rien n'est publié tant que l'indexation n'a pas réussi.</p>
 
               <div id="csv-analyse" hidden>
                 <div class="csv-resume" id="csv-resume"></div>
@@ -1326,7 +1388,7 @@
           <div id="pane-catalog-help" class="console-pane" hidden>
             <h2 class="console-pane-title">Comment ça marche</h2>
             <div class="console-panel">
-              <img src="img/cascade-annotations.svg?v=1787297090" alt="Schéma : la référence M8 x 20 - Inox A2 est reconnue par trois règles (diamètre, longueur, matière) qui se combinent en trois annotations" style="width:100%; max-width:640px; margin:0 0 16px;">
+              <img src="img/cascade-annotations.svg?v=1787298677" alt="Schéma : la référence M8 x 20 - Inox A2 est reconnue par trois règles (diamètre, longueur, matière) qui se combinent en trois annotations" style="width:100%; max-width:640px; margin:0 0 16px;">
               <h3 class="console-help-h3" style="margin-top:0;">Ce que fait un pack de règles</h3>
               <p class="console-panel-note" style="margin:4px 0 14px;">Un pack de règles lit vos références produit et reconnaît automatiquement ce qu'elles contiennent — comme dans le schéma ci-dessus. Dix packs existent aujourd'hui, couvrant les secteurs les plus courants (outillage, mode, industrie, livres, électronique, vins &amp; spiritueux, automobile, électricité, plomberie, finance).</p>
               <h3 class="console-help-h3">Créer une reconnaissance personnalisée</h3>
@@ -1494,7 +1556,7 @@
 
 <footer>
   <div class="wrap foot-grid">
-    <a href="index.html" class="logo" style="font-size:15px;"><img src="logo.svg?v=1787297090" alt="Heurix" style="height:22px;width:22px;"> <span class="wordmark">Heurix</span></a>
+    <a href="index.html" class="logo" style="font-size:15px;"><img src="logo.svg?v=1787298677" alt="Heurix" style="height:22px;width:22px;"> <span class="wordmark">Heurix</span></a>
     <div class="foot-links">
       <a href="blog.html">Blog</a>
       <a href="docs.html">Documentation API</a>
@@ -1524,16 +1586,16 @@
 </footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<script src="console-select.js?v=1787297090"></script>
-<script src="visite-editeur.js?v=1787297090"></script>
-<script type="module" src="csv-console.js?v=1787297090"></script>
-<script src="console-i18n.js?v=1787297090"></script>
-<script src="console.js?v=1787297090"></script>
+<script src="console-select.js?v=1787298677"></script>
+<script src="visite-editeur.js?v=1787298677"></script>
+<script type="module" src="csv-console.js?v=1787298677"></script>
+<script src="console-i18n.js?v=1787298677"></script>
+<script src="console.js?v=1787298677"></script>
 <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 
 <script src="nav-dropdown.js"></script>
-<script src="mobile-nav.js?v=1787297090"></script>
-<script src="consent.js?v=1787297090"></script>
+<script src="mobile-nav.js?v=1787298677"></script>
+<script src="consent.js?v=1787298677"></script>
 
 <!-- Correctif Lot 2 (audit UX console, 17 aout 2026) : toast d'annulation
      avec retour arriere 10s (regle 4, partie 5 du brief -- toute action

@@ -5170,6 +5170,64 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 /* ------------------------------------------------------------------ */
 /* Import CSV                                                          */
 /* ------------------------------------------------------------------ */
+/* Ecran d'import refondu (21 aout 2026, demande Alexis puis audit
+   passe 4). Le processus tenait en prose, donc invisible ; les formats
+   etaient cites deux fois sans jamais etre detailles. */
+.import-etapes{
+  list-style:none; margin:0 0 20px; padding:0;
+  display:grid; grid-template-columns:repeat(3, 1fr); gap:14px;
+}
+.import-etapes li{
+  display:flex; flex-direction:column; gap:3px;
+  padding:14px 16px; border:1px solid var(--line); border-radius:12px;
+  background:var(--bg-soft); font-size:12.5px; color:var(--ink-muted);
+}
+.import-etapes strong{ font-size:13.5px; color:var(--ink); }
+.import-etape-num{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:22px; height:22px; border-radius:100px; margin-bottom:4px;
+  background:var(--blue); color:#fff; font-size:12px; font-weight:800;
+}
+@media (max-width:760px){
+  .import-etapes{ grid-template-columns:1fr; }
+}
+
+.import-formats{
+  display:grid; grid-template-columns:1fr 1fr; gap:24px;
+  margin-top:18px; padding:18px 20px;
+  border:1px solid var(--line); border-radius:12px;
+}
+@media (max-width:760px){
+  .import-formats{ grid-template-columns:1fr; gap:16px; }
+}
+.import-formats-titre{
+  margin:0 0 8px; font-size:11px; font-weight:800; text-transform:uppercase;
+  letter-spacing:0.05em; color:var(--ink-muted);
+}
+.import-formats ul{ margin:0; padding-left:18px; font-size:12.5px; line-height:1.7; }
+.import-formats-champs{
+  margin:0 0 8px; font-family:'IBM Plex Mono', monospace; font-size:12px;
+  color:var(--blue-deep); line-height:1.6;
+}
+.import-formats-note{ margin:0; font-size:12px; color:var(--ink-muted); line-height:1.5; }
+.import-aides{
+  display:flex; align-items:center; justify-content:space-between;
+  flex-wrap:wrap; gap:12px; margin-top:14px;
+}
+.import-exemple{
+  display:inline-flex; align-items:baseline; gap:8px;
+  font-size:13px; font-weight:600; color:var(--blue-deep);
+  text-decoration:none; padding:8px 14px; border-radius:8px;
+  border:1px solid var(--blue); background:#fff;
+}
+.import-exemple:hover{ background:var(--blue-tint); }
+.import-exemple span{ font-weight:400; font-size:11.5px; color:var(--ink-muted); }
+.import-modules{ margin:0; font-size:12.5px; color:var(--ink-muted); }
+
+.import-effet{
+  margin:12px 0 0; font-size:12.5px; color:var(--ink-muted);
+}
+
 .csv-depot{
   border:2px dashed var(--line); border-radius:12px;
   padding:34px 20px; text-align:center; background:var(--bg-soft);

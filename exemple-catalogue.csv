@@ -1,0 +1,11 @@
+id;nom;reference;prix;stock;categorie;marque;image
+VIS-M8-020-A2;Vis à tête hexagonale M8x20 inox A2;VIS-M8-020-A2;0.42;1250;Visserie;Générique;https://exemple.fr/images/vis-m8-020.jpg
+VIS-M8-030-A2;Vis à tête hexagonale M8x30 inox A2;VIS-M8-030-A2;0.51;980;Visserie;Générique;https://exemple.fr/images/vis-m8-030.jpg
+ECR-M8-A2;Écrou hexagonal M8 inox A2;ECR-M8-A2;0.18;3400;Visserie;Générique;https://exemple.fr/images/ecrou-m8.jpg
+ROND-M8-Z;Rondelle plate M8 acier zingué;ROND-M8-Z;0.05;8200;Visserie;Générique;
+CHEV-06-NYL;Cheville nylon Ø6 x 30 mm;CHEV-06-NYL;0.09;5600;Fixation;Fischer;https://exemple.fr/images/cheville-6.jpg
+CHEV-08-NYL;Cheville nylon Ø8 x 40 mm;CHEV-08-NYL;0.12;4100;Fixation;Fischer;
+FOR-BET-06;Foret béton SDS-Plus Ø6 x 110 mm;FOR-BET-06;3.90;220;Outillage;Bosch;https://exemple.fr/images/foret-6.jpg
+FOR-BET-08;Foret béton SDS-Plus Ø8 x 160 mm;FOR-BET-08;4.70;185;Outillage;Bosch;
+PER-18V-BL;Perceuse-visseuse 18V brushless 2 batteries;PER-18V-BL;189.00;12;Outillage;Makita;https://exemple.fr/images/perceuse-18v.jpg
+SCIE-CLO-190;Lame de scie circulaire Ø190 mm 24 dents;SCIE-CLO-190;18.50;0;Outillage;Makita;
