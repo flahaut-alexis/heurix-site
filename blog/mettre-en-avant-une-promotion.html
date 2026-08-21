@@ -3,23 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tolérance aux fautes de frappe : pourquoi une seule stratégie ne suffit jamais — Heurix</title>
-<meta name="description" content="Un algorithme optimal sur 500 produits devient un frein sur 50 000, et l'inverse est tout aussi vrai. Pourquoi la bonne réponse dépend d'une mesure, jamais d'une intuition.">
-<link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/tolerance-fautes-frappe-taille-catalogue.html">
+<title>Mettre en avant une promotion sans casser vos résultats — Heurix</title>
+<meta name="description" content="Vous lancez une opération sur une gamme. Le moteur classe par pertinence, il ne sait rien de votre promotion. Voici comment reprendre la main sans dérégler le reste.">
+<link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/mettre-en-avant-une-promotion.html">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Tolérance aux fautes de frappe : pourquoi une seule stratégie ne suffit jamais — Heurix">
-<meta property="og:description" content="Un algorithme optimal sur 500 produits devient un frein sur 50 000, et l'inverse est tout aussi vrai. Pourquoi la bonne réponse dépend d'une mesure, jamais d'une intuition.">
+<meta property="og:title" content="Mettre en avant une promotion sans casser vos résultats — Heurix">
+<meta property="og:description" content="Vous lancez une opération sur une gamme. Le moteur classe par pertinence, il ne sait rien de votre promotion. Voici comment reprendre la main sans dérégler le reste.">
 <meta property="og:image" content="https://heurix.fr/og-image.png">
-<meta property="og:url" content="https://heurix.fr/blog/tolerance-fautes-frappe-taille-catalogue.html">
+<meta property="og:url" content="https://heurix.fr/blog/mettre-en-avant-une-promotion.html">
 <meta property="og:locale" content="fr_FR">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Tolérance aux fautes de frappe : pourquoi une seule stratégie ne suffit jamais — Heurix">
-<meta name="twitter:description" content="Un algorithme optimal sur 500 produits devient un frein sur 50 000, et l'inverse est tout aussi vrai. Pourquoi la bonne réponse dépend d'une mesure, jamais d'une intuition.">
+<meta name="twitter:title" content="Mettre en avant une promotion sans casser vos résultats — Heurix">
+<meta name="twitter:description" content="Vous lancez une opération sur une gamme. Le moteur classe par pertinence, il ne sait rien de votre promotion. Voici comment reprendre la main sans dérégler le reste.">
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="../favicon-32.png">
 <link rel="apple-touch-icon" href="../apple-touch-icon.png">
 <link rel="stylesheet" href="../styles.css?v=1787350343">
-<link rel="canonical" href="https://heurix.fr/blog/tolerance-fautes-frappe-taille-catalogue.html">
+<link rel="canonical" href="https://heurix.fr/blog/mettre-en-avant-une-promotion.html">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -110,39 +110,40 @@
 <article class="post">
   <div class="wrap post-wrap">
     <a href="../blog.html" class="back-link">← Tous les articles</a>
-    <div class="kicker">Analyse · Août 2026</div>
-    <h1>Tolérance aux fautes de frappe : pourquoi une seule stratégie ne suffit jamais</h1>
-    <p class="post-lede">Un algorithme optimal sur 500 produits devient un frein sur 50 000 — et l'inverse est tout aussi vrai. Voici pourquoi la bonne réponse dépend d'une mesure, jamais d'une intuition.</p>
+    <div class="kicker">Blog · Août 2026</div>
+    <h1>Mettre en avant une promotion sans casser vos résultats</h1>
+    <p class="post-lede">Vous lancez une opération sur une gamme. Le moteur, lui, ne sait rien de votre promotion : il classe par pertinence. Voici comment reprendre la main sur quelques recherches, sans dérégler tout le reste.</p>
 
     <div class="post-body">
-      <h2>Un problème invisible tant qu'on n'a pas mesuré</h2>
-      <p>Tolérer une faute de frappe suppose de comparer ce que l'acheteur a tapé à chaque mot connu du catalogue, pour trouver les plus proches. Sur un petit catalogue, ce travail est trivial : quelques centaines de comparaisons, aucune latence perceptible. Sur un gros catalogue, ce même travail, fait naïvement, devient le vrai goulot d'étranglement de la recherche — pas l'indexation, pas le classement, la simple tolérance à la faute de frappe elle-même.</p>
-      <p><strong>Le problème n'est donc pas l'algorithme. C'est son adéquation à la taille réelle de ce qu'il doit traiter.</strong></p>
+      <h2>Le réflexe à éviter</h2>
+      <p>La tentation est de forcer le produit partout. C'est le meilleur moyen de le voir remonter sur des recherches où il n'a rien à faire — un client qui cherche autre chose se retrouve avec votre promotion, et vous perdez sur les deux tableaux.</p>
+      <p>Une mise en avant efficace est <strong>ciblée</strong> : quelques recherches précises, celles où le produit est légitime.</p>
 
-      <h2>Deux stratégies, deux profils de coût opposés</h2>
-      <p>Il existe grosso modo deux familles d'approches pour tolérer une faute de frappe à l'échelle d'un vocabulaire entier :</p>
-      <div class="table-scroll"><table class="docs-params">
-        <tr><th>Approche</th><th>Coût sur un petit vocabulaire</th><th>Coût sur un gros vocabulaire</th></tr>
-        <tr><td>Comparaison directe, mot par mot</td><td>Négligeable</td><td>Croît avec la taille du vocabulaire — devient le facteur dominant</td></tr>
-        <tr><td>Automate compilé à l'avance</td><td>Coût de construction inutile, pour un gain qui ne se voit pas</td><td>Quasi constant, quelle que soit la taille du vocabulaire</td></tr>
-      </table></div>
-      <p>Ces deux profils sont à l'opposé l'un de l'autre. Choisir l'automate partout pénalise inutilement les petits catalogues d'un coût de construction qui ne sert à rien à cette échelle. Choisir la comparaison directe partout pénalise les gros catalogues d'une lenteur qui, elle, se voit — et se paie en abandons de recherche.</p>
+      <h2>Choisir les bonnes recherches</h2>
+      <p>Allez dans <strong>Observer → Recherches</strong> et regardez ce que vos clients tapent réellement autour de cette gamme. Vous y verrez le vocabulaire qu'ils emploient — souvent différent du vôtre — et le volume de chaque requête.</p>
+      <p>Deux ou trois requêtes bien choisies valent mieux que quinze approximatives. Prenez celles qui ont du volume et où votre produit répond vraiment à la demande.</p>
 
-      <h2>Mesurer plutôt que deviner</h2>
-      <p>C'est le même principe qui nous a fait <a href="recherche-vectorielle-catalogues-techniques.html">écarter la recherche vectorielle</a> pour Heurix : la bonne réponse dépend de ce qu'il y a réellement à traiter, jamais d'une préférence pour une technique qu'on trouve élégante. Nous avons mesuré, sur nos propres catalogues, le point exact où chaque approche devient plus rapide que l'autre — pas supposé, pas extrapolé depuis un benchmark générique trouvé ailleurs, qui n'aurait mesuré ni le même matériel, ni le même vocabulaire, ni la même distribution de fautes réelles.</p>
-      <p>Ce point de croisement se situe à plusieurs dizaines de milliers de mots distincts dans le vocabulaire du catalogue — un ordre de grandeur que la grande majorité des catalogues e-commerce, même volumineux en nombre de produits, n'atteint jamais sur leur vocabulaire propre (le nombre de mots <em>distincts</em>, pas le nombre de produits, qui répètent largement les mêmes termes).</p>
+      <h2>Épingler, en trois gestes</h2>
+      <p>Dans <strong>Optimiser → Mise en avant sur recherche</strong>, tapez la requête. Vous voyez le classement actuel, exactement comme votre visiteur.</p>
+      <p>Cliquez l'épingle du produit à mettre en avant : il passe en tête. Rien n'est encore enregistré — un bandeau vous le rappelle, et vos visiteurs voient toujours le classement d'origine.</p>
+      <p>Quand le résultat vous convient, <strong>Publier</strong>. À ce moment seulement, la règle s'applique.</p>
 
-      <h2>Ce que ça change concrètement chez Heurix</h2>
-      <p>En dessous de ce seuil, Heurix compare directement — c'est déjà instantané, et construire un automate coûterait plus cher que ce qu'il ferait gagner. Au-dessus, le moteur bascule automatiquement sur l'automate compilé, qui garde un temps de réponse quasi constant même quand le vocabulaire continue de grandir.</p>
-      <p>Vous n'avez rien à configurer : la bascule se fait catalogue par catalogue, de façon transparente, réévaluée à chaque changement de taille de vocabulaire. C'est la même logique que la <a href="../fonctionnalites.html">tolérance aux fautes</a> et les <a href="../fonctionnalites.html">résultats explicables</a> déjà décrits sur la page fonctionnalités : le moteur choisit sa stratégie sur la base d'une mesure, jamais d'un principe appliqué sans le vérifier.</p>
+      <h2>Ce qui se passe si vous déplacez plutôt que d'épingler</h2>
+      <p>Les flèches déplacent un produit d'une place. Mais pour qu'il reste à cette place, le moteur doit aussi figer les positions au-dessus de lui : un seul clic crée donc plusieurs règles. C'est normal, et la liste vous les montre toutes avant publication.</p>
+      <p>Si vous voulez simplement mettre un produit en tête, l'épingle est plus directe.</p>
 
-      <h2>Pour aller plus loin</h2>
-      <p>Le même raisonnement — mesurer avant de choisir un outil, plutôt que de généraliser une préférence — sous-tend aussi notre choix d'écarter la <a href="recherche-vectorielle-catalogues-techniques.html">recherche vectorielle sur les catalogues techniques</a>. Les <a href="../index.html#moteur">principes du moteur</a> sont détaillés sur la page d'accueil.</p>
+      <h2>Toute une gamme d'un coup</h2>
+      <p>Épingler produit par produit convient à trois articles, pas à trois cents. Pour une gamme entière, passez par <strong>Mise en avant sur catégorie</strong>, onglet <em>Par attribut</em> : vous mettez en avant tous les produits partageant une marque, une famille ou une matière.</p>
+      <p>Une précision qui évite des surprises : une relégation par produit garde toujours la priorité sur une mise en avant par attribut. Si vous avez explicitement écarté un article, il ne remontera pas parce que sa gamme est boostée.</p>
+
+      <h2>Après l'opération</h2>
+      <p>Une promotion se termine, ses règles non. Notez la date de fin quelque part, ou prenez l'habitude de relire vos règles au début de chaque mois — dans l'onglet <em>Règles du catalogue</em>, qui les liste toutes avec leur date de création.</p>
+      <p>Une règle oubliée est pire qu'une absence de règle : elle met en avant un produit dont vous ne parlez plus, et vous ne savez plus pourquoi.</p>
     </div>
 
     <div class="post-footer-cta">
-      <p>Testez la tolérance aux fautes sur votre propre catalogue</p>
-      <a href="../pricing.html" class="btn">Essayer gratuitement — 14 jours</a>
+      <p>Envie de piloter vos mises en avant vous-même ?</p>
+      <a href="../pricing.html" class="btn">Essayer Heurix gratuitement</a>
     </div>
   </div>
 </article>
