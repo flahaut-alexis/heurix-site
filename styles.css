@@ -366,6 +366,14 @@ header{
   padding:7px 14px; border-radius:100px;
   margin-bottom:22px;
 }
+/* U7a (24 aout 2026) : l'audit UI/UX signale cette declaration comme la
+   seule a 8px du site, sous l'anti-pattern « texte sous 12px ». VERIFIE,
+   et ecarte : ce n'est pas du texte mais une PASTILLE decorative -- le
+   caractere rond qui precede le badge, dont le libelle est a 13px et
+   parfaitement lisible.
+   Le regler a 12px produirait un gros point disgracieux sans rien
+   apporter a personne. Conserve, et documente pour que la question ne se
+   repose pas au prochain audit. */
 .badge::before{ content:"●"; font-size:8px; color:var(--green); }
 .badge-emoji::before{ content:none; }
 /* Badge EN uniquement, sur fond désormais sombre -- resterait illisible
