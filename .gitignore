@@ -11,3 +11,12 @@ CLAUDE.md
 
 # macOS
 .DS_Store
+
+# Skills d'agent installes par `npx skills add` (24 aout 2026) -- outillage
+# de developpement local, jamais du contenu de site. Ignores explicitement
+# parce que la procedure de deploiement documentee dans CLAUDE.md est
+# `git add -A` : sans cette regle, 115 fichiers de skills tiers partiraient
+# dans le prochain commit de deploiement.
+.agents/
+.claude/
+skills-lock.json

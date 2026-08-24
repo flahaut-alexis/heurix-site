@@ -13,7 +13,16 @@ set -euo pipefail
 cd "$(dirname "$0")"
 VERSION=$(date +%s)
 TOTAL=0
-for f in *.html en/*.html blog/*.html en/blog/*.html; do
+# DECOUVERTE AUTOMATIQUE plutot qu'enumeration (24 aout 2026, troisieme
+# correction du perimetre). Le script listait *.html en/*.html, puis on y
+# a ajoute blog/ le 22, puis en/blog/ dans la foulee -- et une revue
+# externe a trouve qu'il restait solutions/, en/solutions/ et demo/, soit
+# 114 references perimees.
+#
+# Trois corrections successives du meme defaut : le probleme n'etait pas
+# les dossiers oublies, c'etait l'enumeration elle-meme. Un nouveau
+# dossier de pages est desormais couvert sans toucher a ce fichier.
+for f in $(find . -name '*.html' -not -path './node_modules/*' -not -path './.git/*'); do
   [ -f "$f" ] || continue
   N=$(grep -o '?v=[0-9]*' "$f" | wc -l | tr -d ' ' || true)
   if [ "$N" -gt 0 ]; then
@@ -23,7 +32,11 @@ for f in *.html en/*.html blog/*.html en/blog/*.html; do
 done
 echo "Version : $VERSION"
 echo "References mises a jour : $TOTAL"
-RESTANTES=$(grep -roh '?v=[0-9]*' *.html en/*.html blog/*.html en/blog/*.html | sort -u | wc -l | tr -d ' ')
+# La verification balaie le MEME perimetre que la boucle. Avant, elle ne
+# regardait que les dossiers enumeres : elle annoncait « une seule version
+# dans tout le site » alors que 114 references etaient perimees ailleurs.
+# Un message faussement rassurant est pire qu'un message absent.
+RESTANTES=$(find . -name '*.html' -not -path './node_modules/*' -not -path './.git/*' -exec grep -oh '?v=[0-9]*' {} + | sort -u | wc -l | tr -d ' ')
 if [ "$RESTANTES" -eq 1 ]; then
   echo "Verification : une seule version dans tout le site."
 else
