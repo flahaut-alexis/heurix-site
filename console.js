@@ -274,6 +274,19 @@
       // Dire pourquoi vaut mieux que ne rien dire : le marchand comprend
       // qu'il manque un historique, pas que l'outil a un defaut.
       if (pct === null || pct === undefined) {
+        // SUR LA SEGMENTATION, on masque -- comportement d'origine, exige
+        // par un test dont le nom porte la decision : « la tendance reste
+        // masquee, jamais un pourcentage trompeur ». Quatre tuiles de
+        // repartition portant chacune la meme phrase surchargeraient un
+        // ecran deja dense.
+        //
+        // Sur les grands indicateurs du tableau de bord, en revanche, la
+        // tendance disparaissait sans explication -- et le cas est
+        // systematique chez un nouveau client. On dit pourquoi.
+        //
+        // Le discriminant est le second parametre : la segmentation passe
+        // une correspondance personnalisee, le tableau de bord non.
+        if (correspondancePersonnalisee) { el.hidden = true; return; }
         el.hidden = false;
         el.className = "kpi-tendance kpi-tendance-neutre";
         el.textContent = T("pas d'historique sur la période précédente");
