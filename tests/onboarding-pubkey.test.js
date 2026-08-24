@@ -41,7 +41,7 @@ function construireFetchMock(cleGenereeAvecSucces = { ok: true }, catalogues = R
     if (chemin === "/v1/keys/public" && (!options || options.method !== "POST")) {
       // GET : reflete l'etat REEL, cree ou non, pour que majCarteActivation
       // (une fois vraiment appelee) lise la bonne valeur.
-      return { ok: true, json: async () => ({ public_keys: clePubliqueExiste ? [{ key: "hxp_test123" }] : [] }) };
+      return { ok: true, json: async () => ({ keys: clePubliqueExiste ? [{ key: "hxp_test123" }] : [] }) };
     }
     if (chemin === "/v1/keys/public" && options && options.method === "POST") {
       clePubliqueExiste = true;

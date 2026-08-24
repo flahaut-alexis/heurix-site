@@ -48,8 +48,22 @@ function chercher(win, q) {
 
 const ANCIEN_FR = path.join(RACINE, "tests/fixtures/search-avant-s4/search.js");
 const ANCIEN_EN = path.join(RACINE, "tests/fixtures/search-avant-s4/search-en.js");
-const NOUVEAU_FR = [path.join(RACINE, "search.js"), path.join(RACINE, "search-engine.js")];
-const NOUVEAU_EN = [path.join(RACINE, "search-en.js"), path.join(RACINE, "search-engine.js")];
+// Correctif du 24 aout 2026. Le moteur ACTUEL est charge avec les
+// DONNEES FIGEES, pas avec search.js. Sans cela, le test comparait deux
+// systemes complets : tout article ajoute creait un ecart sans rapport
+// avec la logique, et faisait echouer un test de non-regression du
+// MOTEUR.
+//
+// Six articles publies etaient devenus introuvables par la recherche du
+// site pour cette raison : l'etape qui les ajoute a search.js cassait ce
+// test, sans moyen documente de le reparer.
+//
+// Desormais : memes donnees des deux cotes, seule la logique differe --
+// ce que le test a toujours voulu mesurer.
+const DONNEES_FIGEES_FR = path.join(RACINE, "tests/fixtures/search-avant-s4/donnees-figees.js");
+const DONNEES_FIGEES_EN = path.join(RACINE, "tests/fixtures/search-avant-s4/donnees-figees-en.js");
+const NOUVEAU_FR = [DONNEES_FIGEES_FR, path.join(RACINE, "search-engine.js")];
+const NOUVEAU_EN = [DONNEES_FIGEES_EN, path.join(RACINE, "search-engine.js")];
 
 describe("search-engine.js — non-régression FR", () => {
   it.each(["recherche", "algolia", "prestashop", "moteur natif", "custom rules", "xyz-inexistant-zzz"])(
