@@ -4269,6 +4269,15 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 /* Et meme hauteur pour les deux selecteurs, pour que les valeurs
    s'alignent aussi en bas. */
 .console-env-wrap .console-period{ height:42px; box-sizing:border-box; }
+/* Les boutons d'aide n'ont pas d'etiquette au-dessus d'eux : sur une
+   rangee alignee en haut, ils remontaient au niveau des etiquettes au
+   lieu de s'aligner sur les selecteurs (mesure : bas a 134 contre 148).
+   Le decalage compense la hauteur etiquette + ecart. */
+.console-dash-actions .console-topbar-guides{ margin-top:14px; }
+/* Les deux etiquettes elles-memes doivent partager leur ligne de base :
+   sans hauteur fixe, « Catalogue actif » et « Periode » differaient de
+   3px selon leur longueur de texte. */
+.console-env-label{ line-height:1.2; min-height:15px; }
 .console-env-label{
   font-size:11px; font-weight:800; letter-spacing:.04em; text-transform:uppercase;
   color:var(--ink-muted); white-space:nowrap;
