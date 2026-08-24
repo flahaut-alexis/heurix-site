@@ -261,7 +261,24 @@
       // None cote moteur : la periode precedente etait vide. On n'affiche
       // rien plutot qu'un « +100 % » qui serait un demarrage, pas une
       // progression.
-      if (pct === null || pct === undefined) { el.hidden = true; return; }
+      // Correctif (24 aout 2026, signale par Alexis). Une variation nulle
+      // etait MASQUEE en silence. L'API renvoie null quand la periode
+      // precedente est vide -- une variation depuis zero n'a pas de sens
+      // mathematique, et c'est le bon choix cote serveur.
+      //
+      // Mais cote marchand, la tendance disparaissait sans explication.
+      // Le cas est loin d'etre rare : il est SYSTEMATIQUE chez un nouveau
+      // client, dont la periode precedente est toujours vide, et sur tout
+      // catalogue recemment cree.
+      //
+      // Dire pourquoi vaut mieux que ne rien dire : le marchand comprend
+      // qu'il manque un historique, pas que l'outil a un defaut.
+      if (pct === null || pct === undefined) {
+        el.hidden = false;
+        el.className = "kpi-tendance kpi-tendance-neutre";
+        el.textContent = T("pas d'historique sur la période précédente");
+        return;
+      }
       if (Math.abs(pct) < 1) {
         el.hidden = false;
         el.className = "kpi-tendance kpi-tendance-stable";
@@ -1101,6 +1118,16 @@
     // indefiniment et sans que rien ne le signale a l'ecran.
     if (session.activeKey && dashContent && !dashContent.hidden && !rechargementAnalytics) {
       rechargementAnalytics = true;
+      // Correctif (24 aout 2026, capture Alexis). Le premier rendu se
+      // faisait AVANT que le catalogue soit connu : l'API agregeait alors
+      // tous les catalogues. Le marchand voyait donc 1036 recherches
+      // clignoter puis devenir 101, avec des pourcentages de tendance qui
+      // apparaissaient puis disparaissaient.
+      //
+      // Les deux rendus etaient corrects ; c'est la transition qui ne
+      // l'etait pas. Le contenu est masque pendant le second chargement,
+      // le temps que les vrais chiffres arrivent.
+      dashContent.style.visibility = "hidden";
       var champPeriode = document.getElementById("period-select");
       loadDashboard(session.activeKey, champPeriode ? champPeriode.value : 30);
       // Le drapeau reste leve le temps que le cycle complet se termine.
@@ -1111,6 +1138,10 @@
       // automatique : un changement de catalogue manuel passe par un
       // autre chemin.
       setTimeout(function () { rechargementAnalytics = false; }, 1000);
+      // Revele des que le second rendu a eu le temps d'ecrire. visibility
+      // plutot que display : la place reste reservee, donc la page ne
+      // saute pas au moment ou le contenu reapparait.
+      setTimeout(function () { dashContent.style.visibility = ""; }, 450);
     }
     chargerSegmentation(key);
     // Correctif (19 aout 2026, brief §4.3) : meme raisonnement -- sorti

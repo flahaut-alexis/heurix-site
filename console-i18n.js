@@ -230,6 +230,7 @@
     "En stock uniquement": "In stock only",
     "Créer": "Create",
     "Modifier": "Edit",
+    "pas d'historique sur la période précédente": "no history for the previous period",
     "Aucune recherche sur la période.": "No searches over the period.",
     "{0} recherches sur {1} jours. Maximum {2} le {3}.": "{0} searches over {1} days. Peak of {2} on {3}.",
     "Choisissez votre catalogue": "Choose your catalog",
