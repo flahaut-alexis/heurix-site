@@ -167,6 +167,23 @@ header{
 .mobile-nav-toggle.is-open span:nth-child(2){ opacity:0; }
 .mobile-nav-toggle.is-open span:nth-child(3){ transform:translateY(-6px) rotate(-45deg); }
 @media (max-width:760px){ .mobile-nav-toggle{ display:flex; } }
+
+/* U1a (24 aout 2026, audit UI/UX) : plancher tactile de 44px sur les
+   cibles les plus critiques. Mesure en 375x812 : le hamburger et le
+   bouton de recherche faisaient 38x38, le champ de la demo 22px de haut.
+   Le hamburger est le SEUL acces a la navigation sur mobile -- six pixels
+   manquants sur la cible qui ouvre tout le site. Et le champ de la demo
+   est la premiere chose qu'un prospect essaie sur l'accueil.
+   (pointer: coarse) plutot qu'une largeur : la contrainte vient du doigt,
+   pas de la taille d'ecran. Le rendu a la souris, ou 38px est
+   confortable, n'est pas touche -- c'est ce qui permet de corriger sans
+   renegocier le design desktop. */
+@media (pointer: coarse){
+  .mobile-nav-toggle, .search-trigger, .lang-switch{
+    min-width:44px; min-height:44px;
+  }
+  .play-input{ min-height:44px; }
+}
 /* Correctif (21 aout 2026) : dans la console, le menu compte se replie
    des 1080px alors que le hamburger n'apparaissait qu'a 760px. Entre les
    deux, le menu existait sans aucun moyen de l'ouvrir. Le bouton suit
