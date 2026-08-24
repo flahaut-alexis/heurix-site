@@ -4268,12 +4268,17 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 .console-dash-actions{ align-items:flex-start; }
 /* Et meme hauteur pour les deux selecteurs, pour que les valeurs
    s'alignent aussi en bas. */
-.console-env-wrap .console-period{ height:42px; box-sizing:border-box; }
+/* Hauteur imposee a l'ENFANT DIRECT de l'enveloppe, quel qu'il soit
+   (24 aout 2026, mesure). Ma premiere regle visait .console-period : elle
+   agissait sur le selecteur de catalogue, mais celui de periode est
+   enveloppe dans un conteneur de 37px qui donnait la hauteur reelle.
+   Resultat : 60px contre 55, donc des bas a 146 et 144. */
+.console-env-wrap > :not(.console-env-label){ height:42px; box-sizing:border-box; }
 /* Les boutons d'aide n'ont pas d'etiquette au-dessus d'eux : sur une
    rangee alignee en haut, ils remontaient au niveau des etiquettes au
    lieu de s'aligner sur les selecteurs (mesure : bas a 134 contre 148).
    Le decalage compense la hauteur etiquette + ecart. */
-.console-dash-actions .console-topbar-guides{ margin-top:14px; }
+.console-dash-actions .console-topbar-guides{ margin-top:18px; }
 /* Les deux etiquettes elles-memes doivent partager leur ligne de base :
    sans hauteur fixe, « Catalogue actif » et « Periode » differaient de
    3px selon leur longueur de texte. */
