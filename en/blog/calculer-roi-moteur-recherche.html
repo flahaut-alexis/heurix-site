@@ -3,23 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Building a category page with Browse & Discovery — Heurix</title>
-<meta name="description" content="A category page has no query to process — just products to rank well. Index, verify, and render a dynamically sorted page.">
-<link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/guide-page-categorie-browse.html">
-<link rel="alternate" hreflang="en" href="https://heurix.fr/en/blog/guide-page-categorie-browse.html">
+<title>Calculating the ROI of an e-commerce search engine — Heurix</title>
+<meta name="description" content="What share of your revenue goes through internal search, and what each failed search costs you. The calculation method, variable by variable.">
+<link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/calculer-roi-moteur-recherche.html">
+<link rel="alternate" hreflang="en" href="https://heurix.fr/en/blog/calculer-roi-moteur-recherche.html">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Building a category page with Browse & Discovery — Heurix">
-<meta property="og:description" content="A category page has no query to process — just products to rank well. Index, verify, and render a dynamically sorted page.">
+<meta property="og:title" content="Calculating the ROI of an e-commerce search engine — Heurix">
+<meta property="og:description" content="What share of your revenue goes through internal search, and what each failed search costs you. The calculation method, variable by variable.">
 <meta property="og:image" content="https://heurix.fr/og-image.png">
-<meta property="og:url" content="https://heurix.fr/en/blog/guide-page-categorie-browse.html">
+<meta property="og:url" content="https://heurix.fr/en/blog/calculer-roi-moteur-recherche.html">
 <meta property="og:locale" content="en_US">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Building a category page with Browse & Discovery — Heurix">
+<meta name="twitter:title" content="Calculating the ROI of an e-commerce search engine — Heurix">
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="../../favicon-32.png">
 <link rel="apple-touch-icon" href="../../apple-touch-icon.png">
 <link rel="stylesheet" href="../../styles.css?v=1787557017">
-<link rel="canonical" href="https://heurix.fr/en/blog/guide-page-categorie-browse.html">
+<link rel="canonical" href="https://heurix.fr/en/blog/calculer-roi-moteur-recherche.html">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -86,7 +86,7 @@
           <span></span><span></span><span></span>
         </button>
         <a href="../console.html" class="header-signin">Sign in</a>
-        <a href="../../blog/guide-page-categorie-browse.html" class="lang-switch">FR</a>
+        <a href="../../blog/calculer-roi-moteur-recherche.html" class="lang-switch">FR</a>
         <a href="../pricing.html" class="btn">Start free trial</a>
       </div>
     </nav>
@@ -110,77 +110,46 @@
 <article class="post">
   <div class="wrap post-wrap">
     <a href="../blog.html" class="back-link">← All articles</a>
-    <div class="kicker">Guide · July 2026</div>
-    <h1>Building a category page with Browse &amp; Discovery</h1>
-    <p class="post-lede">A category page has no query to process — just products to rank well. This guide indexes a small catalog with real categories, then renders a dynamically sorted page using the provided snippet.</p>
+    <div class="kicker">Blog · August 2026</div>
+    <h1>Calculating the ROI of an e-commerce search engine</h1>
+    <p class="post-lede">An internal search engine justifies itself through a simple calculation that few sites actually run: what share of your revenue goes through the search bar, and what each failed search costs you.</p>
 
     <div class="post-body">
-      <h2>What you need</h2>
-      <p>An API key (<a href="../pricing.html">14-day free trial</a>, no credit card) and an HTML page to inject results into. No SDK to install.</p>
+      <h2>The four variables that matter</h2>
+      <p>The calculation fits on one line. Your annual revenue, multiplied by the share that goes through internal search, multiplied by the expected conversion uplift, multiplied by your gross margin. The result is an annual margin gain, to be weighed against the cost of the tool.</p>
+      <p>None of these variables is theoretical: you already know the first three, and the fourth is in your accounts.</p>
 
-      <h2>Step 1 — Index with categories</h2>
-      <p><code class="docs-inline-code">categories</code> (or <code class="docs-inline-code">category</code>, singular) is a field <strong>you</strong> supply, exactly like <code class="docs-inline-code">name</code> or <code class="docs-inline-code">stock</code> — reuse the taxonomy you already have on your site, no need to redefine it for Heurix. Add <code class="docs-inline-code">price</code> too if you want to sort by price:</p>
-      <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/index/mysite/items   -H "Authorization: Bearer YOUR_API_KEY"   -H "Content-Type: application/json"   -d '{
-  "items": [
-    {"id": "sku-1", "name": "BOSCH GDX 18V-285 Drill",
-     "categories": ["power-tools", "drills-drivers"],
-     "brand": "Bosch", "price": 139.90, "stock": 8},
-    {"id": "sku-2", "name": "MAKITA HP457D Drill",
-     "categories": ["power-tools", "drills-drivers"],
-     "brand": "Makita", "price": 99.90, "stock": 3}
-  ]
-}'</code></pre>
-      <p>Two levels in <code class="docs-inline-code">categories</code>: the main category AND the subcategory, in the same list. A product indexed this way shows up both on a "Power tools" page and on a more specific "Drills &amp; drivers" page — every value in the list is a potential category page.</p>
+      <h2>1. The share of revenue going through search</h2>
+      <p>This is the most underestimated variable. On a technical catalog — fasteners, spare parts, components — visitors search by reference rather than browsing categories. That share often exceeds 30%, sometimes 50% at B2B distributors whose customers know exactly what they want.</p>
+      <p>Your analytics tool has the answer: compare sessions with at least one search against total sessions, then their respective conversion rates.</p>
 
-      <h2>Step 2 — Check what was detected</h2>
-      <p>Before writing any code on the site side, confirm what Heurix understood from your catalog:</p>
-      <pre class="docs-code"><code>curl https://api.heurix.fr/v1/index/mysite/browse-categories   -H "Authorization: Bearer YOUR_API_KEY"</code></pre>
-      <pre class="docs-code"><code>{"categories": [
-  {"category": "power-tools", "products": 2},
-  {"category": "drills-drivers", "products": 2}
-]}</code></pre>
-      <p>These same categories are also visible and manageable from <a href="../console.html">your console</a>, under Dashboard → Browse &amp; Discovery.</p>
+      <h2>2. A realistic conversion uplift</h2>
+      <p>Be wary of three-figure promises. A 5 to 15% improvement in conversion on search-driven traffic is a defensible order of magnitude when the current engine regularly fails — empty results, unrecognised references, uncorrected typos.</p>
+      <p>The lever isn't magic: it comes from searches that now succeed where they previously didn't. If your current engine works well, the gain will be smaller — and that's a legitimate reason not to switch.</p>
 
-      <h2>Step 3 — Render the page, with the provided snippet</h2>
-      <p>Download <a href="../downloads/heurix-browse-widget.js" download>heurix-browse-widget.js</a>, fill in your key and catalog at the top of the file, then include it on your category page:</p>
-      <pre class="docs-code"><code>&lt;div id="my-category-page"&gt;&lt;/div&gt;
-&lt;script src="heurix-browse-widget.js"&gt;&lt;/script&gt;
-&lt;script&gt;
-  Heurix.browse({
-    catalog: "mysite",
-    category: "drills-drivers",
-    sort: "price_asc",
-    containerId: "my-category-page"
-  });
-&lt;/script&gt;</code></pre>
-      <p>By default, each product renders inside a plain <code class="docs-inline-code">&lt;div class="heurix-product"&gt;</code>, to style with your own CSS. For full control over the generated HTML (card grid, buttons, promo badges…), provide your own render function:</p>
-      <pre class="docs-code"><code>Heurix.browse({
-  catalog: "mysite",
-  category: "drills-drivers",
-  containerId: "my-category-page",
-  renderItem: function (hit) {
-    return '&lt;div class="my-product-card"&gt;' +
-      '&lt;h3&gt;' + hit.product.name + '&lt;/h3&gt;' +
-      '&lt;span&gt;' + hit.product.price + ' €&lt;/span&gt;' +
-      (hit.in_stock ? '' : '&lt;span class="out-of-stock"&gt;Out of stock&lt;/span&gt;') +
-    '&lt;/div&gt;';
-  }
-});</code></pre>
+      <h2>3. Your gross margin</h2>
+      <p>A revenue gain is not a margin gain. Yet most ROI calculations stop at revenue, which makes them flattering and wrong.</p>
 
-      <h2>Going further: sort, filter, feature</h2>
-      <p>A sort selector wires up by simply calling <code class="docs-inline-code">Heurix.browse()</code> again with a different <code class="docs-inline-code">sort</code> on value change — <code class="docs-inline-code">stock</code>, <code class="docs-inline-code">recent</code>, <code class="docs-inline-code">alphabetical</code>, <code class="docs-inline-code">price_asc</code>/<code class="docs-inline-code">price_desc</code>, <code class="docs-inline-code">margin</code>, or <code class="docs-inline-code">popular</code> (real clicks and purchases, if you've set up the <a href="../docs.html#ep-events">conversion tracker</a>).</p>
-      <p>To narrow within a category (by brand, by color…), pass a <code class="docs-inline-code">filters</code> object — any non-reserved product field automatically becomes filterable, with no configuration:</p>
-      <pre class="docs-code"><code>Heurix.browse({
-  catalog: "mysite", category: "drills-drivers",
-  filters: { brand: "Makita" },
-  containerId: "my-category-page"
-});</code></pre>
-      <p>And to feature an entire brand or product line without editing product by product, an attribute boost rule is set once from the console (or the API) — see <a href="../docs.html#ep-browse">the full documentation</a> for the pinning and boosting endpoint details.</p>
+      <h2>4. The real cost of the tool</h2>
+      <p>A hosted search engine is billed as a subscription, from a few hundred to a few thousand euros a year depending on catalog size and query volume. Add integration — a few days of development if your platform has a module, more otherwise.</p>
+      <p>An honest comparison also includes the cost of doing nothing: the time your team spends answering customers who can't find things, and the abandoned baskets that leave no trace.</p>
+
+      <h2>The break-even point</h2>
+      <p>Divide the annual cost by the annual margin gain, multiply by 365: you get the number of days after which the tool has paid for itself. For a site with a few million in revenue, a third of it going through search, that threshold is usually counted in days rather than months.</p>
+      <p>That isn't surprising: the cost of a hosted engine is fixed and modest, while the gain scales with your volume. The bigger your catalog, the faster the calculation tips.</p>
+
+      <h2>Running it on your own numbers</h2>
+      <p>The Heurix simulator uses exactly this calculation, with four sliders and a live result. You can leave with a PDF summary.</p>
+      <p><a href="../index.html#tarifs" class="btn">Open the simulator</a></p>
+
+      <h2>One caveat</h2>
+      <p>Every ROI calculation rests on an improvement assumption nobody can guarantee in advance. Yours is worth exactly what your conversion estimate is worth.</p>
+      <p>The honest way to check is to measure first: how many of your searches return nothing today, and over what volume. That figure, unlike the rest, is not a projection.</p>
     </div>
 
     <div class="post-footer-cta">
-      <p>Want to test it with your own catalog?</p>
-      <a href="../pricing.html" class="btn">Try for free</a>
+      <p>Run the numbers on your own figures.</p>
+      <a href="../index.html#tarifs" class="btn">Open the simulator</a>
     </div>
   </div>
 </article>
