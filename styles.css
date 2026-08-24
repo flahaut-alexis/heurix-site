@@ -4265,7 +4265,7 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
    donnaient 1,5px de decalage de chaque cote, assez pour se voir.
    Alignement sur le HAUT : les etiquettes partagent leur ligne de base
    quelle que soit la hauteur de ce qu'elles surmontent. */
-.console-dash-actions{ align-items:flex-start; }
+.console-dash-actions{ align-items:flex-end; }
 /* Et meme hauteur pour les deux selecteurs, pour que les valeurs
    s'alignent aussi en bas. */
 /* Hauteur imposee a l'ENFANT DIRECT de l'enveloppe, quel qu'il soit
@@ -4278,7 +4278,11 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
    rangee alignee en haut, ils remontaient au niveau des etiquettes au
    lieu de s'aligner sur les selecteurs (mesure : bas a 134 contre 148).
    Le decalage compense la hauteur etiquette + ecart. */
-.console-dash-actions .console-topbar-guides{ margin-top:18px; }
+/* Pas de decalage manuel sur les boutons d'aide (24 aout 2026). Quatre
+   tentatives d'ajustement ont echoue -- 14px puis 18px -- parce que je
+   reglais une valeur au lieu de traiter la structure. La rangee revient
+   a un alignement par le BAS, qui aligne naturellement des elements de
+   hauteurs differentes sans aucune compensation. */
 /* Les deux etiquettes elles-memes doivent partager leur ligne de base :
    sans hauteur fixe, « Catalogue actif » et « Periode » differaient de
    3px selon leur longueur de texte. */
