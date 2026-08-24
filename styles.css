@@ -2829,6 +2829,15 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 .reveal.in{ opacity:1; transform:translateY(0); }
 
 @media (prefers-reduced-motion: reduce){
+  /* U3 (24 aout 2026, audit UI/UX). scroll-behavior:smooth (ligne 65)
+     echappait a cette neutralisation : ce n'est ni une animation-duration
+     ni une transition-duration, donc la reinitialisation globale ci-dessous
+     ne l'atteignait pas.
+     Un utilisateur ayant active la reduction des animations -- souvent pour
+     un trouble vestibulaire, ou le defilement anime est precisement un
+     declencheur -- continuait de le subir sur chaque ancre interne. Le site
+     en a beaucoup : sommaires d'articles, navigation de la documentation. */
+  html{ scroll-behavior: auto; }
   *{ animation-duration:0.01ms !important; transition-duration:0.01ms !important; }
   .reveal{ opacity:1; transform:none; }
 }
