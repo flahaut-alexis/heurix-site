@@ -1672,6 +1672,15 @@ h2{ font-size:clamp(26px,3.4vw,34px); font-weight:800; margin:0 0 18px; max-widt
 .docs-method-put{ background:#C77D0A; }
 .docs-method-delete{ background:#C0392B; }
 
+/* U5 (24 aout 2026, audit UI/UX) : un element <code> depassait la
+   largeur du document en 375px. Les blocs .docs-code ont deja
+   overflow-x:auto, mais pas le code EN LIGNE dans un paragraphe.
+   overflow-x:auto serait le mauvais outil ici -- il produirait une barre
+   de defilement au milieu d'une phrase. On autorise la coupure a
+   l'interieur du mot : un identifiant technique long se poursuit a la
+   ligne suivante au lieu de deborder. */
+:not(pre) > code{ overflow-wrap:break-word; word-break:break-word; max-width:100%; }
+
 .docs-code{
   background:var(--ink); border-radius:12px; padding:16px 18px;
   overflow-x:auto; margin:0 0 16px; max-width:720px;
