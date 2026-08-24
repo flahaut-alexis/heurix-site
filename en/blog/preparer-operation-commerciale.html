@@ -3,23 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Typo tolerance: why one strategy is never enough — Heurix</title>
-<meta name="description" content="An optimal algorithm on 500 products becomes a bottleneck on 50,000 — and the reverse is just as true. Why the right answer comes from measurement, never intuition.">
-<link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/tolerance-fautes-frappe-taille-catalogue.html">
-<link rel="alternate" hreflang="en" href="https://heurix.fr/en/blog/tolerance-fautes-frappe-taille-catalogue.html">
+<title>Preparing a sales campaign on the search side — Heurix</title>
+<meta name="description" content="Traffic rises, and with it the cost of every search that fails. What to check before, during and after.">
+<link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/preparer-operation-commerciale.html">
+<link rel="alternate" hreflang="en" href="https://heurix.fr/en/blog/preparer-operation-commerciale.html">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Typo tolerance: why one strategy is never enough — Heurix">
-<meta property="og:description" content="An optimal algorithm on 500 products becomes a bottleneck on 50,000 — and the reverse is just as true. Why the right answer comes from measurement, never intuition.">
+<meta property="og:title" content="Preparing a sales campaign on the search side — Heurix">
+<meta property="og:description" content="Traffic rises, and with it the cost of every search that fails. What to check before, during and after.">
 <meta property="og:image" content="https://heurix.fr/og-image.png">
-<meta property="og:url" content="https://heurix.fr/en/blog/tolerance-fautes-frappe-taille-catalogue.html">
+<meta property="og:url" content="https://heurix.fr/en/blog/preparer-operation-commerciale.html">
 <meta property="og:locale" content="en_US">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Typo tolerance: why one strategy is never enough — Heurix">
+<meta name="twitter:title" content="Preparing a sales campaign on the search side — Heurix">
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="../../favicon-32.png">
 <link rel="apple-touch-icon" href="../../apple-touch-icon.png">
 <link rel="stylesheet" href="../../styles.css?v=1787558271">
-<link rel="canonical" href="https://heurix.fr/en/blog/tolerance-fautes-frappe-taille-catalogue.html">
+<link rel="canonical" href="https://heurix.fr/en/blog/preparer-operation-commerciale.html">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -86,7 +86,7 @@
           <span></span><span></span><span></span>
         </button>
         <a href="../console.html" class="header-signin">Sign in</a>
-        <a href="../../blog/tolerance-fautes-frappe-taille-catalogue.html" class="lang-switch">FR</a>
+        <a href="../../blog/preparer-operation-commerciale.html" class="lang-switch">FR</a>
         <a href="../pricing.html" class="btn">Start free trial</a>
       </div>
     </nav>
@@ -110,39 +110,40 @@
 <article class="post">
   <div class="wrap post-wrap">
     <a href="../blog.html" class="back-link">← All articles</a>
-    <div class="kicker">Analysis · August 2026</div>
-    <h1>Typo tolerance: why one strategy is never enough</h1>
-    <p class="post-lede">An optimal algorithm on 500 products becomes a bottleneck on 50,000 — and the reverse is just as true. Here's why the right answer comes from measurement, never intuition.</p>
+    <div class="kicker">Blog · August 2026</div>
+    <h1>Preparing a sales campaign on the search side</h1>
+    <p class="post-lede">Sales, Black Friday, a new range: traffic rises, and with it the cost of every search that fails. Here's what to check before, during and after — an hour in total.</p>
 
     <div class="post-body">
-      <h2>A problem you can't see until you measure it</h2>
-      <p>Tolerating a typo means comparing what the buyer typed against every known word in the catalog, to find the closest matches. On a small catalog, that work is trivial: a few hundred comparisons, no perceptible latency. On a large catalog, that same work, done naively, becomes the real bottleneck of the search — not indexing, not ranking, just typo tolerance itself.</p>
-      <p><strong>So the problem isn't the algorithm. It's whether it fits the actual size of what it has to process.</strong></p>
+      <h2>Two weeks before: vocabulary</h2>
+      <p>A campaign brings in an audience that doesn't know your catalog. Their words aren't yours, and your engine has never seen them.</p>
+      <p>Open your zero-result searches for the last three months and work through the top rows. Every synonym created now is worth more than one created during the campaign, once the traffic has already passed.</p>
+      <p>If you're launching a new range, add its terms before it goes live: brand, commercial name, the abbreviations your sales team uses. Your customers will use them too.</p>
 
-      <h2>Two strategies, two opposite cost profiles</h2>
-      <p>There are broadly two families of approach for tolerating typos across an entire vocabulary:</p>
-      <div class="table-scroll"><table class="docs-params">
-        <tr><th>Approach</th><th>Cost on a small vocabulary</th><th>Cost on a large vocabulary</th></tr>
-        <tr><td>Direct comparison, word by word</td><td>Negligible</td><td>Grows with vocabulary size — becomes the dominant factor</td></tr>
-        <tr><td>Pre-compiled automaton</td><td>Unnecessary build cost, for a gain you'd never notice</td><td>Near-constant, regardless of vocabulary size</td></tr>
-      </table></div>
-      <p>These two profiles are exact opposites. Using the automaton everywhere needlessly penalizes small catalogs with a build cost that buys nothing at that scale. Using direct comparison everywhere penalizes large catalogs with a slowness that's very much noticeable — and costs you abandoned searches.</p>
+      <h2>One week before: existing rules</h2>
+      <p>Time to review your merchandising rules. Last year's campaign may have left products pinned to searches where they no longer belong.</p>
+      <p>The catalog rules tab lists them all, with their creation date. Those dating from a finished campaign are better deleted than corrected.</p>
 
-      <h2>Measure, don't guess</h2>
-      <p>It's the same principle that led us to <a href="recherche-vectorielle-catalogues-techniques.html">rule out vector search</a> for Heurix: the right answer depends on what you actually have to process, never on a preference for a technique you happen to find elegant. We measured, on our own catalogs, the exact point where each approach becomes faster than the other — not assumed, not extrapolated from some generic benchmark found elsewhere, which would have measured different hardware, a different vocabulary, and a different distribution of real-world typos.</p>
-      <p>That crossover point sits at several tens of thousands of distinct words in the catalog's vocabulary — an order of magnitude that most e-commerce catalogs, even large ones by product count, never reach in their own vocabulary (the number of <em>distinct</em> words, not the number of products, which largely repeat the same terms).</p>
+      <h2>The day before: check what your customers see</h2>
+      <p>Take your ten most frequent searches and type them into the preview. You see exactly what a visitor will see, without leaving the console.</p>
+      <p>Two things to look at: do your promoted products appear on the searches that concern them, and are your out-of-stock items squatting the top positions.</p>
 
-      <h2>What this actually changes at Heurix</h2>
-      <p>Below that threshold, Heurix compares directly — it's already instant, and building an automaton would cost more than it would ever save. Above it, the engine automatically switches to the pre-compiled automaton, which keeps response time near-constant even as the vocabulary keeps growing.</p>
-      <p>There's nothing to configure: the switch happens catalog by catalog, transparently, re-evaluated every time vocabulary size changes. It's the same logic behind the <a href="../fonctionnalites.html">typo tolerance</a> and <a href="../fonctionnalites.html">explainable results</a> already described on the features page: the engine picks its strategy based on measurement, never on a principle applied without checking it.</p>
+      <h2>During: the zero-result rate</h2>
+      <p>One indicator is enough to monitor. If it climbs, the audience your campaign brought in is looking for things the engine can't find — and every hour counts.</p>
+      <p>The fix is quick: a synonym is created and applies immediately, with no reindexing and no technical work.</p>
 
-      <h2>Going further</h2>
-      <p>The same reasoning — measure before picking a tool, rather than generalizing a preference — is also what led us to rule out <a href="recherche-vectorielle-catalogues-techniques.html">vector search on technical catalogs</a>. The <a href="../index.html#moteur">engine's principles</a> are detailed on the homepage.</p>
+      <h2>After: what to undo</h2>
+      <p>A promotion ends; its rules don't. That's the most common mistake, and the quietest: nobody notices a product still pinned three months later.</p>
+      <p>Note the end date somewhere, or get into the habit of reviewing your rules at the start of each month.</p>
+
+      <h2>What the campaign teaches you</h2>
+      <p>Your zero-result searches during a traffic peak are worth more than market research: they tell you what people came to buy from you and didn't find.</p>
+      <p>Some merchants find their next catalog additions there. It's the one benefit of a campaign that outlasts it.</p>
     </div>
 
     <div class="post-footer-cta">
-      <p>Test typo tolerance on your own catalog</p>
-      <a href="../pricing.html" class="btn">Try it free — 14 days</a>
+      <p>Preparing your next campaign?</p>
+      <a href="../pricing.html" class="btn">Try for free</a>
     </div>
   </div>
 </article>
