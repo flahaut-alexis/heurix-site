@@ -704,7 +704,7 @@
       // Conservee pour recomposer le libelle : showPane y ajoute l'ecran
       // courant, et doit pouvoir revenir a la raison sociale seule.
       session.raisonSociale = company.raison_sociale || T("Mon compte");
-      if (orgBtn) orgBtn.textContent = session.raisonSociale;
+      if (orgBtn) majPastilleCompte(orgBtn, session.raisonSociale);
       var orgDropVisible = document.querySelector(".console-org-drop");
       if (orgDropVisible) orgDropVisible.hidden = false;
 
@@ -1590,7 +1590,10 @@
         entrees.forEach(function (b) {
           if (b.getAttribute("data-goto-pane") === paneId) courant = b.textContent.trim();
         });
-        btnMenu.textContent = courant ? base + " › " + courant : base;
+        // Passe par majPastilleCompte (24 aout 2026) : une affectation
+        // directe de textContent effacait la pastille des le premier
+        // changement d'ecran, et le bouton redevenait du texte nu.
+        majPastilleCompte(btnMenu, courant ? base + " › " + courant : base);
       }
     }
     // L'effet de frappe part a l'OUVERTURE du panneau, pas au cablage :
@@ -2198,6 +2201,37 @@
   // Popover des reglages d'affichage, cote categorie (21 aout 2026).
   // Meme mecanique que sur la page soeur : le panneau est en position
   // absolue, il ne pousse donc aucun produit a l'ouverture.
+  // PASTILLE DU MENU COMPTE (24 aout 2026, audit du bandeau).
+  //
+  // Le bouton portait la raison sociale en texte nu : chez un client
+  // nomme comme son produit, on lisait « Heurix » juste a cote du logo
+  // « Heurix ». Rien ne distinguait le menu de compte de la marque.
+  //
+  // Le correctif du 21 aout -- afficher l'ecran courant dans le bouton --
+  // attenuait la confusion sans la lever : elle revient des qu'on est sur
+  // le tableau de bord.
+  //
+  // Une pastille avec initiale distingue par la FORME, pas par le texte :
+  // elle fonctionne quel que soit le nom de l'organisation.
+  function majPastilleCompte(btn, libelle) {
+    var base = (libelle || "").trim();
+    // Initiale : premiere lettre du premier mot, en majuscule. Repli sur
+    // un point d'interrogation plutot qu'un vide, pour qu'une raison
+    // sociale absente se voie au lieu de laisser un rond blanc.
+    var initiale = base ? base.charAt(0).toUpperCase() : "?";
+    btn.innerHTML = "";
+    var pastille = document.createElement("span");
+    pastille.className = "console-org-avatar";
+    pastille.setAttribute("aria-hidden", "true");
+    pastille.textContent = initiale;
+    var nom = document.createElement("span");
+    nom.className = "console-org-nom";
+    nom.textContent = base;
+    btn.appendChild(pastille);
+    btn.appendChild(nom);
+    btn.classList.add("console-org-pastille");
+  }
+
   function brCablerReglages() {
     var btn = document.getElementById("br-reglages-btn");
     var panneau = document.getElementById("br-reglages-panel");
