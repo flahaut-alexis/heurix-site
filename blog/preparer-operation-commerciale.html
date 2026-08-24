@@ -3,23 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Indexez votre premier catalogue outillage en 5 minutes — Heurix</title>
-<meta name="description" content="Tutoriel pratique : indexez un petit catalogue de quincaillerie et lancez une vraie recherche avec faute de frappe, en 5 minutes, avec du vrai code à copier-coller.">
-<link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/tutoriel-catalogue-outillage-5-minutes.html">
+<title>Preparer une operation commerciale cote recherche — Heurix</title>
+<meta name="description" content="Soldes, Black Friday, lancement de gamme : le trafic monte et le cout de chaque recherche qui echoue avec lui. Ce qui se verifie avant, pendant et apres.">
+<link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/preparer-operation-commerciale.html">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Indexez votre premier catalogue outillage en 5 minutes — Heurix">
-<meta property="og:description" content="Tutoriel pratique : indexez un petit catalogue de quincaillerie et lancez une vraie recherche avec faute de frappe, en 5 minutes, avec du vrai code à copier-coller.">
+<meta property="og:title" content="Preparer une operation commerciale cote recherche — Heurix">
+<meta property="og:description" content="Soldes, Black Friday, lancement de gamme : le trafic monte et le cout de chaque recherche qui echoue avec lui. Ce qui se verifie avant, pendant et apres.">
 <meta property="og:image" content="https://heurix.fr/og-image.png">
-<meta property="og:url" content="https://heurix.fr/blog/tutoriel-catalogue-outillage-5-minutes.html">
+<meta property="og:url" content="https://heurix.fr/blog/preparer-operation-commerciale.html">
 <meta property="og:locale" content="fr_FR">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Indexez votre premier catalogue outillage en 5 minutes — Heurix">
-<meta name="twitter:description" content="Tutoriel pratique : indexez un petit catalogue de quincaillerie et lancez une vraie recherche avec faute de frappe, en 5 minutes, avec du vrai code à copier-coller.">
+<meta name="twitter:title" content="Preparer une operation commerciale cote recherche — Heurix">
+<meta name="twitter:description" content="Soldes, Black Friday, lancement de gamme : le trafic monte et le cout de chaque recherche qui echoue avec lui. Ce qui se verifie avant, pendant et apres.">
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="../favicon-32.png">
 <link rel="apple-touch-icon" href="../apple-touch-icon.png">
 <link rel="stylesheet" href="../styles.css?v=1787558157">
-<link rel="canonical" href="https://heurix.fr/blog/tutoriel-catalogue-outillage-5-minutes.html">
+<link rel="canonical" href="https://heurix.fr/blog/preparer-operation-commerciale.html">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -110,69 +110,39 @@
 <article class="post">
   <div class="wrap post-wrap">
     <a href="../blog.html" class="back-link">← Tous les articles</a>
-    <div class="kicker">Tutoriel · Juillet 2026</div>
-    <h1>Indexez votre premier catalogue outillage en 5 minutes</h1>
-    <p class="post-lede">Deux appels API, un vrai résultat de recherche avec faute de frappe et format différent. Tout le code de cette page est testé — copiez-collez, adaptez à votre catalogue.</p>
+    <div class="kicker">Blog · Août 2026</div>
+    <h1>Préparer une opération commerciale côté recherche</h1>
+    <p class="post-lede">Soldes, Black Friday, lancement de gamme : le trafic monte, et avec lui le coût de chaque recherche qui échoue. Voici ce qui se vérifie avant, pendant et après — en une heure au total.</p>
 
     <div class="post-body">
-      <h2>Ce qu'il vous faut</h2>
-      <p>Une clé API (<a href="../pricing.html">essai gratuit 14 jours</a>, sans carte bancaire) et un terminal. C'est tout — pas de SDK à installer, le moteur répond en JSON brut sur des appels HTTP standards.</p>
+      <h2>Deux semaines avant : le vocabulaire</h2>
+      <p>Une opération amène un public qui ne connaît pas votre catalogue. Ses mots ne sont pas les vôtres, et votre moteur ne les a jamais vus.</p>
+      <p>Ouvrez vos recherches sans résultat sur les trois derniers mois et traitez les premières lignes. Chaque synonyme créé maintenant vaut plus qu'un synonyme créé pendant l'opération, quand le trafic est déjà passé.</p>
+      <p>Si vous lancez une gamme nouvelle, ajoutez ses termes avant sa mise en ligne : marque, appellation commerciale, abréviations que vos commerciaux emploient. Vos clients les emploieront aussi.</p>
 
-      <h2>Étape 1 — Indexez 4 produits</h2>
-      <p>Un petit catalogue de quincaillerie, avec le pack de règles <code class="docs-inline-code">outillage</code> (celui qui comprend les diamètres, longueurs et matières dans une référence) :</p>
-      <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/index/quincaillerie/items \
-  -H "Authorization: Bearer VOTRE_CLE_API" \
-  -H "Content-Type: application/json" \
-  -d '{
-  "rulepack": "outillage",
-  "items": [
-    {"id": "V001", "name": "Vis à métaux tête hexagonale", "ref": "M8 x 20 - Inox A2", "stock": 120},
-    {"id": "V002", "name": "Vis à métaux tête hexagonale", "ref": "M8 x 30 - Inox A2", "stock": 45},
-    {"id": "R001", "name": "Roulement à billes étanche", "ref": "6205-2RS", "stock": 8},
-    {"id": "E001", "name": "Écrou hexagonal", "ref": "M8 - Zingué", "stock": 300}
-  ]
-}'</code></pre>
-      <p>Réponse :</p>
-      <pre class="docs-code"><code>{"indexed": 4, "catalog": {"catalog": "quincaillerie", "products": 4,
- "terms": 18, "annotations": 11, "rulepack": "outillage", "synonym_groups": 0}}</code></pre>
-      <p>11 annotations générées automatiquement à partir de 4 produits — c'est la cascade de règles qui vient de décomposer chaque référence (diamètre, longueur, matière) sans que vous ayez écrit la moindre regex.</p>
+      <h2>Une semaine avant : les règles existantes</h2>
+      <p>C'est le moment de relire vos règles de mise en avant. Une opération de l'an dernier a peut-être laissé des produits épinglés sur des recherches où ils n'ont plus rien à faire.</p>
+      <p>L'onglet des règles du catalogue les liste toutes, avec leur date de création. Celles qui datent d'une opération terminée méritent d'être supprimées plutôt que corrigées.</p>
 
-      <h2>Étape 2 — Cherchez, avec une faute et un format différent</h2>
-      <p>Le vrai test : pas la référence exacte telle qu'indexée, mais ce qu'un client tape réellement — une faute sur « vis », et « M8x20 » collé sans espaces ni tirets :</p>
-      <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/index/quincaillerie/search \
-  -H "Authorization: Bearer VOTRE_CLE_API" \
-  -H "Content-Type: application/json" \
-  -d '{"q": "vs m8x20 inox"}'</code></pre>
-      <p>Réponse (raccourcie) :</p>
-      <pre class="docs-code"><code>{
-  "total": 3,
-  "hits": [
-    {
-      "product": {"id": "V001", "ref": "M8 x 20 - Inox A2", "stock": 120},
-      "score": 43.5,
-      "matched": [
-        "terme 'inox' (depuis 'inox', x1.00)",
-        "annotation #LONG_20",
-        "annotation #DIAM_M8",
-        "annotation #VIS_M8X20",
-        "annotation #DIAM_M8_INOX",
-        "annotation #MAT_INOX"
-      ]
-    },
-    { "product": {"id": "V002", "ref": "M8 x 30 - Inox A2"}, "score": 28.5, ... },
-    { "product": {"id": "E001", "ref": "M8 - Zingué"}, "score": 7.5, ... }
-  ]
-}</code></pre>
+      <h2>La veille : vérifier ce que voient vos clients</h2>
+      <p>Prenez vos dix recherches les plus fréquentes et tapez-les dans l'aperçu. Vous voyez exactement ce que verra un visiteur, sans avoir à sortir de la console.</p>
+      <p>Deux choses à regarder : vos produits en promotion sortent-ils sur les recherches qui les concernent, et vos ruptures de stock ne squattent-elles pas les premières positions.</p>
 
-      <h2>Ce qui vient de se passer</h2>
-      <p>« vs m8x20 inox » n'existe littéralement nulle part dans les données indexées — ni « vs » (faute sur « vis »), ni « m8x20 » sous cette forme exacte (la référence stockée est « M8 x 20 »). Le moteur a quand même trouvé et classé en premier le bon produit, et le champ <code class="docs-inline-code">matched</code> dit précisément pourquoi : il a reconnu un diamètre (<code class="docs-inline-code">DIAM_M8</code>), une longueur (<code class="docs-inline-code">LONG_20</code>), leur combinaison en tant que référence de vis (<code class="docs-inline-code">VIS_M8X20</code>), et la matière (<code class="docs-inline-code">MAT_INOX</code>) — quatre annotations qui pèsent bien plus dans le score que la simple correction orthographique de « vis ». C'est la différence entre un moteur qui tolère les fautes sur des mots, et un moteur qui comprend la structure d'une référence.</p>
+      <h2>Pendant : le taux sans résultat</h2>
+      <p>Un seul indicateur suffit à surveiller. S'il grimpe, c'est que le public arrivé par votre campagne cherche des choses que le moteur ne trouve pas — et chaque heure compte.</p>
+      <p>La correction est rapide : un synonyme se crée et s'applique immédiatement, sans réindexation ni intervention technique.</p>
 
-      <h2>Et avec votre vrai catalogue ?</h2>
-      <p>Remplacez le contenu du tableau <code class="docs-inline-code">items</code> par vos propres produits (5 000 par appel maximum, plusieurs appels pour un catalogue plus grand), gardez le pack <code class="docs-inline-code">outillage</code> s'il correspond à votre secteur — ou <code class="docs-inline-code">mode</code>, <code class="docs-inline-code">industrie</code> pour les deux autres packs fournis. La <a href="../docs.html">documentation complète</a> couvre les facettes, les synonymes métier et la recherche fédérée sur plusieurs catalogues.</p>
+      <h2>Après : ce qu'il faut défaire</h2>
+      <p>Une promotion se termine, ses règles non. C'est l'erreur la plus fréquente, et la plus discrète : personne ne remarque un produit encore épinglé trois mois plus tard.</p>
+      <p>Notez la date de fin quelque part, ou prenez l'habitude de relire vos règles au début de chaque mois.</p>
+
+      <h2>Ce que l'opération vous apprend</h2>
+      <p>Vos recherches sans résultat pendant un pic de trafic valent mieux qu'une étude de marché : elles disent ce que des gens sont venus acheter chez vous et n'ont pas trouvé.</p>
+      <p>Certains marchands y trouvent leurs prochaines références au catalogue. C'est le seul bénéfice d'une opération qui dure après elle.</p>
     </div>
 
     <div class="post-footer-cta">
-      <p>Envie de tester avec votre propre catalogue ?</p>
+      <p>Preparer votre prochaine operation ?</p>
       <a href="../pricing.html" class="btn">Essayer gratuitement</a>
     </div>
   </div>

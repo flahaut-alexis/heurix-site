@@ -3,23 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Indexez votre premier catalogue outillage en 5 minutes — Heurix</title>
-<meta name="description" content="Tutoriel pratique : indexez un petit catalogue de quincaillerie et lancez une vraie recherche avec faute de frappe, en 5 minutes, avec du vrai code à copier-coller.">
-<link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/tutoriel-catalogue-outillage-5-minutes.html">
+<title>Vos statistiques de recherche : lesquelles regarder — Heurix</title>
+<meta name="description" content="Un tableau de bord affiche plus de chiffres qu on n a de decisions a prendre. Les trois qui meritent votre attention chaque semaine, et ce qu ils declenchent.">
+<link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/comprendre-statistiques-recherche.html">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Indexez votre premier catalogue outillage en 5 minutes — Heurix">
-<meta property="og:description" content="Tutoriel pratique : indexez un petit catalogue de quincaillerie et lancez une vraie recherche avec faute de frappe, en 5 minutes, avec du vrai code à copier-coller.">
+<meta property="og:title" content="Vos statistiques de recherche : lesquelles regarder — Heurix">
+<meta property="og:description" content="Un tableau de bord affiche plus de chiffres qu on n a de decisions a prendre. Les trois qui meritent votre attention chaque semaine, et ce qu ils declenchent.">
 <meta property="og:image" content="https://heurix.fr/og-image.png">
-<meta property="og:url" content="https://heurix.fr/blog/tutoriel-catalogue-outillage-5-minutes.html">
+<meta property="og:url" content="https://heurix.fr/blog/comprendre-statistiques-recherche.html">
 <meta property="og:locale" content="fr_FR">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Indexez votre premier catalogue outillage en 5 minutes — Heurix">
-<meta name="twitter:description" content="Tutoriel pratique : indexez un petit catalogue de quincaillerie et lancez une vraie recherche avec faute de frappe, en 5 minutes, avec du vrai code à copier-coller.">
+<meta name="twitter:title" content="Vos statistiques de recherche : lesquelles regarder — Heurix">
+<meta name="twitter:description" content="Un tableau de bord affiche plus de chiffres qu on n a de decisions a prendre. Les trois qui meritent votre attention chaque semaine, et ce qu ils declenchent.">
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="../favicon-32.png">
 <link rel="apple-touch-icon" href="../apple-touch-icon.png">
 <link rel="stylesheet" href="../styles.css?v=1787558157">
-<link rel="canonical" href="https://heurix.fr/blog/tutoriel-catalogue-outillage-5-minutes.html">
+<link rel="canonical" href="https://heurix.fr/blog/comprendre-statistiques-recherche.html">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -110,69 +110,35 @@
 <article class="post">
   <div class="wrap post-wrap">
     <a href="../blog.html" class="back-link">← Tous les articles</a>
-    <div class="kicker">Tutoriel · Juillet 2026</div>
-    <h1>Indexez votre premier catalogue outillage en 5 minutes</h1>
-    <p class="post-lede">Deux appels API, un vrai résultat de recherche avec faute de frappe et format différent. Tout le code de cette page est testé — copiez-collez, adaptez à votre catalogue.</p>
+    <div class="kicker">Blog · Août 2026</div>
+    <h1>Vos statistiques de recherche : lesquelles regarder</h1>
+    <p class="post-lede">Un tableau de bord affiche toujours plus de chiffres qu'on n'a de décisions à prendre. Voici les trois qui méritent votre attention chaque semaine, et ce qu'ils déclenchent concrètement.</p>
 
     <div class="post-body">
-      <h2>Ce qu'il vous faut</h2>
-      <p>Une clé API (<a href="../pricing.html">essai gratuit 14 jours</a>, sans carte bancaire) et un terminal. C'est tout — pas de SDK à installer, le moteur répond en JSON brut sur des appels HTTP standards.</p>
+      <h2>Le taux sans résultat, d'abord</h2>
+      <p>C'est le seul indicateur qui mesure directement de l'argent perdu. Chaque recherche qui ne remonte rien est un client qui voulait acheter et qui est reparti.</p>
+      <p>Il n'existe pas de valeur idéale universelle, mais un ordre de grandeur : au-delà de 15 %, quelque chose ne va pas dans le vocabulaire ou le catalogue. En dessous de 5 %, votre moteur fait son travail.</p>
+      <p>Surtout, regardez son évolution plutôt que sa valeur absolue. Une hausse soudaine signale presque toujours un événement : un import qui s'est mal passé, une gamme retirée, ou une campagne qui amène un public au vocabulaire différent.</p>
 
-      <h2>Étape 1 — Indexez 4 produits</h2>
-      <p>Un petit catalogue de quincaillerie, avec le pack de règles <code class="docs-inline-code">outillage</code> (celui qui comprend les diamètres, longueurs et matières dans une référence) :</p>
-      <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/index/quincaillerie/items \
-  -H "Authorization: Bearer VOTRE_CLE_API" \
-  -H "Content-Type: application/json" \
-  -d '{
-  "rulepack": "outillage",
-  "items": [
-    {"id": "V001", "name": "Vis à métaux tête hexagonale", "ref": "M8 x 20 - Inox A2", "stock": 120},
-    {"id": "V002", "name": "Vis à métaux tête hexagonale", "ref": "M8 x 30 - Inox A2", "stock": 45},
-    {"id": "R001", "name": "Roulement à billes étanche", "ref": "6205-2RS", "stock": 8},
-    {"id": "E001", "name": "Écrou hexagonal", "ref": "M8 - Zingué", "stock": 300}
-  ]
-}'</code></pre>
-      <p>Réponse :</p>
-      <pre class="docs-code"><code>{"indexed": 4, "catalog": {"catalog": "quincaillerie", "products": 4,
- "terms": 18, "annotations": 11, "rulepack": "outillage", "synonym_groups": 0}}</code></pre>
-      <p>11 annotations générées automatiquement à partir de 4 produits — c'est la cascade de règles qui vient de décomposer chaque référence (diamètre, longueur, matière) sans que vous ayez écrit la moindre regex.</p>
+      <h2>Les recherches les plus fréquentes, ensuite</h2>
+      <p>Cette liste vous dit ce que vos clients viennent chercher — pas ce que vous croyez qu'ils cherchent. L'écart entre les deux est souvent instructif.</p>
+      <p>Deux usages concrets. Les premières lignes méritent une vérification manuelle : tapez-les vous-même et regardez si les bons produits sortent. Et si un terme revient souvent sans correspondre à votre vocabulaire, c'est un synonyme à créer.</p>
 
-      <h2>Étape 2 — Cherchez, avec une faute et un format différent</h2>
-      <p>Le vrai test : pas la référence exacte telle qu'indexée, mais ce qu'un client tape réellement — une faute sur « vis », et « M8x20 » collé sans espaces ni tirets :</p>
-      <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/index/quincaillerie/search \
-  -H "Authorization: Bearer VOTRE_CLE_API" \
-  -H "Content-Type: application/json" \
-  -d '{"q": "vs m8x20 inox"}'</code></pre>
-      <p>Réponse (raccourcie) :</p>
-      <pre class="docs-code"><code>{
-  "total": 3,
-  "hits": [
-    {
-      "product": {"id": "V001", "ref": "M8 x 20 - Inox A2", "stock": 120},
-      "score": 43.5,
-      "matched": [
-        "terme 'inox' (depuis 'inox', x1.00)",
-        "annotation #LONG_20",
-        "annotation #DIAM_M8",
-        "annotation #VIS_M8X20",
-        "annotation #DIAM_M8_INOX",
-        "annotation #MAT_INOX"
-      ]
-    },
-    { "product": {"id": "V002", "ref": "M8 x 30 - Inox A2"}, "score": 28.5, ... },
-    { "product": {"id": "E001", "ref": "M8 - Zingué"}, "score": 7.5, ... }
-  ]
-}</code></pre>
+      <h2>Les erreurs à traiter</h2>
+      <p>Cet indicateur ne parle pas de recherche mais d'intégration : requêtes mal formées, clés invalides, quotas dépassés. Il devrait rester à zéro.</p>
+      <p>S'il ne l'est pas, le détail vous dit quel appel échoue. C'est généralement le signe d'un module mal configuré ou d'un changement côté site qui n'a pas été répercuté.</p>
 
-      <h2>Ce qui vient de se passer</h2>
-      <p>« vs m8x20 inox » n'existe littéralement nulle part dans les données indexées — ni « vs » (faute sur « vis »), ni « m8x20 » sous cette forme exacte (la référence stockée est « M8 x 20 »). Le moteur a quand même trouvé et classé en premier le bon produit, et le champ <code class="docs-inline-code">matched</code> dit précisément pourquoi : il a reconnu un diamètre (<code class="docs-inline-code">DIAM_M8</code>), une longueur (<code class="docs-inline-code">LONG_20</code>), leur combinaison en tant que référence de vis (<code class="docs-inline-code">VIS_M8X20</code>), et la matière (<code class="docs-inline-code">MAT_INOX</code>) — quatre annotations qui pèsent bien plus dans le score que la simple correction orthographique de « vis ». C'est la différence entre un moteur qui tolère les fautes sur des mots, et un moteur qui comprend la structure d'une référence.</p>
+      <h2>Ce que ces chiffres ne disent pas</h2>
+      <p>Le nombre de recherches est un indicateur de volume, pas de qualité. Il monte quand votre trafic monte, et aussi quand vos clients doivent s'y reprendre à plusieurs fois — ce qui est mauvais signe.</p>
+      <p>Lisez-le toujours à côté du taux sans résultat. Beaucoup de recherches avec peu d'échecs, c'est une barre de recherche qui fonctionne. Beaucoup de recherches avec beaucoup d'échecs, c'est le contraire.</p>
 
-      <h2>Et avec votre vrai catalogue ?</h2>
-      <p>Remplacez le contenu du tableau <code class="docs-inline-code">items</code> par vos propres produits (5 000 par appel maximum, plusieurs appels pour un catalogue plus grand), gardez le pack <code class="docs-inline-code">outillage</code> s'il correspond à votre secteur — ou <code class="docs-inline-code">mode</code>, <code class="docs-inline-code">industrie</code> pour les deux autres packs fournis. La <a href="../docs.html">documentation complète</a> couvre les facettes, les synonymes métier et la recherche fédérée sur plusieurs catalogues.</p>
+      <h2>Un rythme de lecture</h2>
+      <p>Une fois par semaine suffit, et cinq minutes suffisent : le taux sans résultat et sa tendance, les premières recherches sans réponse, un coup d'œil aux erreurs.</p>
+      <p>Le reste — la segmentation, les produits, les comparaisons de période — sert quand vous avez une question précise. Ce n'est pas une lecture de routine, et vouloir tout regarder chaque semaine est le meilleur moyen de ne rien regarder du tout.</p>
     </div>
 
     <div class="post-footer-cta">
-      <p>Envie de tester avec votre propre catalogue ?</p>
+      <p>Voir vos propres chiffres ?</p>
       <a href="../pricing.html" class="btn">Essayer gratuitement</a>
     </div>
   </div>
