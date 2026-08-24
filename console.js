@@ -1811,6 +1811,29 @@
       return parts[2] + "/" + parts[1];
     });
     var data = daily.map(function (d) { return d.count; });
+
+    // U9 (24 aout 2026, audit UI/UX). Un <canvas> est opaque pour un
+    // lecteur d'ecran : le graphe des recherches quotidiennes n'existait
+    // simplement pas pour qui ne le voit pas.
+    //
+    // Le resume est compose a partir des donnees DEJA en memoire -- rien
+    // n'est recalcule ni redemande au serveur.
+    //
+    // Il sert aussi les voyants : un resume chiffre sous un graphe est lu
+    // par tout le monde, et dit en une phrase ce qu'une courbe demande
+    // d'interpreter.
+    var resume = document.getElementById("searches-chart-resume");
+    if (resume) {
+      if (!data.length) {
+        resume.textContent = T("Aucune recherche sur la période.");
+      } else {
+        var total = data.reduce(function (a, b) { return a + b; }, 0);
+        var iMax = data.indexOf(Math.max.apply(null, data));
+        resume.textContent = T(
+          "{0} recherches sur {1} jours. Maximum {2} le {3}.",
+          total, data.length, data[iMax], labels[iMax]);
+      }
+    }
     if (chart) chart.destroy();
 
     var gradient = ctx.createLinearGradient(0, 0, 0, canvas.clientHeight || 220);

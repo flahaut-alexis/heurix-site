@@ -230,6 +230,8 @@
     "En stock uniquement": "In stock only",
     "Créer": "Create",
     "Modifier": "Edit",
+    "Aucune recherche sur la période.": "No searches over the period.",
+    "{0} recherches sur {1} jours. Maximum {2} le {3}.": "{0} searches over {1} days. Peak of {2} on {3}.",
     "Choisissez votre catalogue": "Choose your catalog",
     "Ce choix vaut pour toute la console : analytique, règles, classement. Vous ne le referez pas à chaque écran.": "This choice applies across the whole console: analytics, rules, ranking. You won't repeat it on every screen.",
     "Tapez une requête de vos clients": "Type one of your customers' searches",

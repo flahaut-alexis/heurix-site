@@ -2505,6 +2505,12 @@ body.docs-dark .why-card p{ color:#CDD2F0; }
 .console-form-status{ font-size:13px; color:var(--ink-muted); margin:12px 0 0; line-height:1.55; }
 .console-form-status.ok{ color:#0F7A3D; }
 .console-form-status.err{ color:#C0392B; }
+/* Resume textuel du graphe (U9, 24 aout 2026). Visible, pas sr-only :
+   une phrase chiffree sous une courbe sert aussi ceux qui la voient. */
+.console-chart-resume{
+  margin:10px 0 0; font-size:12.5px; color:var(--ink-muted); text-align:center;
+  min-height:1.2em;
+}
 .console-chart-wrap{ position:relative; height:230px; }
 
 .console-grid-2{ display:grid; grid-template-columns:1fr 1fr; gap:20px; }

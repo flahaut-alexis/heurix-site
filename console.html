@@ -8,14 +8,14 @@
 <meta name="robots" content="noindex">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css?v=1787606965">
+<link rel="stylesheet" href="styles.css?v=1787607831">
 <link rel="canonical" href="https://heurix.fr/console.html">
 </head>
 <body class="console-page">
 <header>
   <div class="header-top">
     <nav class="header-top-inner">
-      <a href="index.html" class="logo"><img src="logo.svg?v=1787606965" alt="Heurix"> <span class="wordmark">Heurix</span></a>
+      <a href="index.html" class="logo"><img src="logo.svg?v=1787607831" alt="Heurix"> <span class="wordmark">Heurix</span></a>
       <button type="button" id="mobile-nav-toggle" class="mobile-nav-toggle" aria-label="Menu" aria-expanded="false">
         <span></span><span></span><span></span>
       </button>
@@ -364,7 +364,14 @@
               </div>
               <div class="console-panel">
                 <h2>Volume de recherches</h2>
-                <div class="console-chart-wrap"><canvas id="searches-chart" height="90"></canvas></div>
+                <div class="console-chart-wrap"><canvas id="searches-chart" height="90" role="img" aria-labelledby="searches-chart-resume"></canvas>
+                  <!-- U9 (24 aout 2026) : le canvas est opaque pour un
+                       lecteur d'ecran. Ce resume lui sert d'alternative
+                       via aria-labelledby, et reste VISIBLE plutot que
+                       masque en sr-only : une phrase chiffree sous un
+                       graphe est utile a tout le monde. Rempli par
+                       console.js depuis les donnees deja chargees. -->
+                  <p class="console-chart-resume" id="searches-chart-resume"></p></div>
               </div>
             </div>
           
@@ -1482,7 +1489,7 @@
           <div id="pane-catalog-help" class="console-pane" hidden>
             <h2 class="console-pane-title">Comment ça marche</h2>
             <div class="console-panel">
-              <img src="img/cascade-annotations.svg?v=1787606965" width="680" height="340" alt="Schéma : la référence M8 x 20 - Inox A2 est reconnue par trois règles (diamètre, longueur, matière) qui se combinent en trois annotations" style="width:100%; max-width:640px; margin:0 0 16px;">
+              <img src="img/cascade-annotations.svg?v=1787607831" width="680" height="340" alt="Schéma : la référence M8 x 20 - Inox A2 est reconnue par trois règles (diamètre, longueur, matière) qui se combinent en trois annotations" style="width:100%; max-width:640px; margin:0 0 16px;">
               <h3 class="console-help-h3" style="margin-top:0;">Ce que fait un pack de règles</h3>
               <p class="console-panel-note" style="margin:4px 0 14px;">Un pack de règles lit vos références produit et reconnaît automatiquement ce qu'elles contiennent — comme dans le schéma ci-dessus. Dix packs existent aujourd'hui, couvrant les secteurs les plus courants (outillage, mode, industrie, livres, électronique, vins &amp; spiritueux, automobile, électricité, plomberie, finance).</p>
               <h3 class="console-help-h3">Créer une reconnaissance personnalisée</h3>
@@ -1650,7 +1657,7 @@
 
 <footer>
   <div class="wrap foot-grid">
-    <a href="index.html" class="logo" style="font-size:15px;"><img src="logo.svg?v=1787606965" alt="Heurix" style="height:22px;width:22px;"> <span class="wordmark">Heurix</span></a>
+    <a href="index.html" class="logo" style="font-size:15px;"><img src="logo.svg?v=1787607831" alt="Heurix" style="height:22px;width:22px;"> <span class="wordmark">Heurix</span></a>
     <div class="foot-links">
       <a href="blog.html">Blog</a>
       <a href="docs.html">Documentation API</a>
@@ -1680,16 +1687,16 @@
 </footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<script src="console-select.js?v=1787606965"></script>
-<script src="visite-editeur.js?v=1787606965"></script>
-<script type="module" src="csv-console.js?v=1787606965"></script>
-<script src="console-i18n.js?v=1787606965"></script>
-<script src="console.js?v=1787606965"></script>
+<script src="console-select.js?v=1787607831"></script>
+<script src="visite-editeur.js?v=1787607831"></script>
+<script type="module" src="csv-console.js?v=1787607831"></script>
+<script src="console-i18n.js?v=1787607831"></script>
+<script src="console.js?v=1787607831"></script>
 <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 
 <script src="nav-dropdown.js"></script>
-<script src="mobile-nav.js?v=1787606965"></script>
-<script src="consent.js?v=1787606965"></script>
+<script src="mobile-nav.js?v=1787607831"></script>
+<script src="consent.js?v=1787607831"></script>
 
 <!-- Correctif Lot 2 (audit UX console, 17 aout 2026) : toast d'annulation
      avec retour arriere 10s (regle 4, partie 5 du brief -- toute action
