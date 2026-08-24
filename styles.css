@@ -4254,12 +4254,18 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 
 /* Libelle du selecteur d environnement : « quincaillerie-demo » seul ne dit
    pas de quoi il s agit a un nouveau client. */
-.console-env-wrap{ display:inline-flex; align-items:center; gap:8px; }
+/* Etiquette AU-DESSUS de la valeur (24 aout 2026, audit du bandeau).
+   Elle etait en ligne pour le catalogue, empilee pour l'espace client,
+   absente pour la periode : trois conventions sur une meme rangee. */
+.console-env-wrap{ display:inline-flex; flex-direction:column; align-items:flex-start; gap:3px; }
 .console-env-label{
   font-size:11px; font-weight:800; letter-spacing:.04em; text-transform:uppercase;
   color:var(--ink-muted); white-space:nowrap;
 }
-@media (max-width:900px){ .console-env-label{ display:none; } }
+/* L'etiquette est CONSERVEE en petit ecran (24 aout 2026) : elle etait
+   masquee sous 900px, ce qui reintroduisait la troisieme convention --
+   valeur nue -- precisement la ou le contexte manque le plus. Elle ne
+   coute que 14px de hauteur. */
 
 /* Explication au premier usage */
 .console-env-tip{
@@ -5049,9 +5055,14 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 /* elle reste vraie partout et repond a une question utile : sur quel   */
 /* compte suis-je ?                                                     */
 /* ------------------------------------------------------------------ */
-.console-identite{ display:flex; flex-direction:column; gap:2px; min-width:0; }
+/* Aligne sur .console-env-label (24 aout 2026) : ces deux etiquettes
+   voisinent sur la meme rangee et differaient de 0,5px de taille, 0,02em
+   d'espacement et 1px d'ecart. Invisible isolement, visible cote a cote --
+   c'est ce genre d'ecart qui donne l'impression de deux composants
+   assembles plutot que d'un bandeau. */
+.console-identite{ display:flex; flex-direction:column; gap:3px; min-width:0; }
 .console-identite-label{
-  font-size:10.5px; font-weight:800; letter-spacing:.06em; text-transform:uppercase;
+  font-size:11px; font-weight:800; letter-spacing:.04em; text-transform:uppercase;
   color:var(--ink-muted);
 }
 .console-identite-email{
