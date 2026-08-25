@@ -1,0 +1,124 @@
+# CI de heurix-site (25 aout 2026).
+#
+# POURQUOI CE FICHIER EXISTE. Ce depot n'avait aucune verification
+# automatique, et deux defauts en sont sortis la meme semaine, tous deux
+# invisibles jusqu'a ce qu'on les cherche :
+#
+#   1. Un test rouge pendant 39 commits et deux jours. Le commit qui l'a
+#      casse (af0156a, 21 aout) annonce « 170 tests verts » dans son propre
+#      message -- la suite n'avait pas ete relancee. Le code etait juste,
+#      c'est la fixture qui etait perimee.
+#
+#   2. Seize pages de solutions/ servaient un styles.css vieux de huit jours
+#      et un consent.js du 27 juillet, parce que bump-version.sh ne
+#      parcourait pas ce dossier ET ne verifiait que son propre perimetre.
+#      Il affichait « une seule version dans tout le site » alors que 114
+#      references etaient perimees.
+#
+# Les deux etapes ci-dessous rendent ces deux situations impossibles.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    name: Suite de tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npx vitest run
+
+  cache-busting:
+    name: Clefs de cache a jour
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Deux commits : il faut le precedent pour savoir ce qui a change.
+          fetch-depth: 2
+
+      - name: Tout asset modifie doit voir sa clef ?v= bouger
+        run: |
+          set -euo pipefail
+
+          # Sur un push initial (pas de parent), rien a comparer.
+          if ! git rev-parse HEAD~1 >/dev/null 2>&1; then
+            echo "Pas de commit parent -- verification ignoree."
+            exit 0
+          fi
+
+          MODIFIES=$(git diff --name-only HEAD~1 HEAD -- '*.js' '*.css' \
+                     | grep -vE '^(tests/|node_modules/|\.claude/|\.agents/)' || true)
+
+          if [ -z "$MODIFIES" ]; then
+            echo "Aucun asset .js/.css modifie dans ce commit."
+            exit 0
+          fi
+
+          ECHEC=0
+          for F in $MODIFIES; do
+            BASE=$(basename "$F")
+            # Les clefs de CE fichier, avant et apres le commit.
+            AVANT=$(git show "HEAD~1:$F" >/dev/null 2>&1 && \
+                    git grep -hoE "\"(\.\./)?${BASE}\?v=[0-9]+" HEAD~1 -- '*.html' '*.js' \
+                      | grep -oE '[0-9]+$' | sort -u | head -1 || true)
+            APRES=$(git grep -hoE "\"(\.\./)?${BASE}\?v=[0-9]+" HEAD -- '*.html' '*.js' \
+                      | grep -oE '[0-9]+$' | sort -u | head -1 || true)
+
+            # Un fichier jamais reference par une clef ?v= n'est pas concerne
+            # (un module ES importe par un autre, par exemple).
+            if [ -z "$APRES" ]; then
+              echo "  - $F : aucune reference ?v=, ignore."
+              continue
+            fi
+
+            if [ "$AVANT" = "$APRES" ]; then
+              echo "  ECHEC $F : modifie, mais ?v=$APRES n'a pas bouge."
+              ECHEC=1
+            else
+              echo "  OK    $F : ?v=$AVANT -> ?v=$APRES"
+            fi
+          done
+
+          if [ "$ECHEC" -ne 0 ]; then
+            echo ""
+            echo "Un asset a change sans que sa clef de cache bouge : les"
+            echo "visiteurs qui l'ont deja en cache ne verront pas la"
+            echo "modification. Lancez scripts/bust-cache.sh sur le ou les"
+            echo "fichiers signales, puis recommitez."
+            exit 1
+          fi
+
+      - name: Toutes les pages servent-elles la meme version d'un asset donne ?
+        run: |
+          set -euo pipefail
+          # Repere le defaut de solutions/ : un meme fichier reference sous
+          # deux clefs differentes selon la page. bump-version.sh ne voyait
+          # que son propre perimetre et ne pouvait pas le detecter.
+          ECHEC=0
+          for BASE in styles.css consent.js mobile-nav.js search.js search-en.js console.js; do
+            N=$(git grep -hoE "\"(\.\./)?${BASE}\?v=[0-9]+" -- '*.html' \
+                | grep -oE '[0-9]+$' | sort -u | wc -l | tr -d ' ')
+            if [ "$N" -gt 1 ]; then
+              echo "  ECHEC $BASE : $N clefs ?v= differentes selon la page."
+              git grep -hoE "\"(\.\./)?${BASE}\?v=[0-9]+" -- '*.html' \
+                | grep -oE '[0-9]+$' | sort | uniq -c | sed 's/^/      /'
+              ECHEC=1
+            else
+              echo "  OK    $BASE : une seule clef sur tout le site."
+            fi
+          done
+          [ "$ECHEC" -eq 0 ] || { echo ""; echo "Lancez scripts/bust-cache.sh sur les fichiers signales."; exit 1; }

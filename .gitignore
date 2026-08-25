@@ -20,3 +20,12 @@ CLAUDE.md
 .agents/
 .claude/
 skills-lock.json
+
+# .impeccable/ -- etat local de l'outil de design (25 aout 2026). design.json
+# est un EXPORT genere (« schemaVersion », « generatedAt »), pas une source :
+# son contenu redit celui de DESIGN.md, qui est la version tenue a la main et
+# lisible en revue. Rien dans le depot ne le reference. Meme raisonnement que
+# .agents/ et .claude/ ci-dessus, et meme motif : la procedure de deploiement
+# documentee est `git add -A`, donc tout dossier d'outil non ignore finit par
+# partir dans un commit de deploiement sans que personne l'ait voulu.
+.impeccable/
