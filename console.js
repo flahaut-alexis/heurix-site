@@ -53,6 +53,54 @@
   // usages deja en place ailleurs dans ce fichier.
   function escAttr(s) { return esc(s).replace(/'/g, "&#39;"); }
 
+  // ---------------------------------------------------------------------
+  // FERMETURE AU CLIC EXTERIEUR : UN SEUL GESTIONNAIRE (25 aout 2026).
+  //
+  // CAS D'ESSAI DE LA DELEGATION. Trois autocompletes -- produit
+  // (wireSoProductAutocomplete), attribut Browse
+  // (wireBrowseAttributeFieldAutocomplete) et categorie Browse
+  // (wireBrowseCategorieAutocomplete) -- posaient chacune sur `document`
+  // un gestionnaire IDENTIQUE AU CARACTERE PRES :
+  //
+  //     document.addEventListener("click", function (e) {
+  //       if (!champ.contains(e.target) && !panneau.contains(e.target)) fermerPanneau();
+  //     });
+  //
+  // Mesure au banc avant ce chantier (tests/benchmarks/mesure-cablage-console.mjs) :
+  // `document` portait DIX gestionnaires de clic, poses par neuf fonctions.
+  //
+  // Ce que ce registre change, et ce qu'il ne change PAS. Il ne fusionne
+  // aucun comportement : chaque panneau garde sa propre fonction de
+  // fermeture, appelee exactement dans les memes conditions qu'avant. Il
+  // partage le seul point commun reel -- l'ecoute du clic. Un panneau
+  // ajoute plus tard ecrit une ligne au lieu de recopier un gestionnaire.
+  //
+  // UNE SEULE DIFFERENCE DE COMPORTEMENT, invisible et deliberee : un
+  // panneau deja enregistre ne l'est pas deux fois. Avec les gestionnaires
+  // separes, recabler une autocomplete posait un second ecouteur, et
+  // `fermerPanneau()` etait appelee deux fois -- sans consequence, elle se
+  // contente de masquer. Le registre l'appelle une fois.
+  // ---------------------------------------------------------------------
+  var panneauxFermables = [];
+
+  function fermerAuClicExterieur(champ, panneau, fermer) {
+    // Deja enregistre : rien a faire (voir la note ci-dessus).
+    for (var i = 0; i < panneauxFermables.length; i++) {
+      if (panneauxFermables[i].panneau === panneau) return;
+    }
+    // L'unique ecouteur est pose PARESSEUSEMENT, au premier enregistrement :
+    // une console qui n'ouvre aucun panneau n'ecoute rien.
+    if (!panneauxFermables.length) {
+      document.addEventListener("click", function (e) {
+        for (var j = 0; j < panneauxFermables.length; j++) {
+          var p = panneauxFermables[j];
+          if (!p.champ.contains(e.target) && !p.panneau.contains(e.target)) p.fermer();
+        }
+      });
+    }
+    panneauxFermables.push({ champ: champ, panneau: panneau, fermer: fermer });
+  }
+
   // Chantier highlighting (16 aout 2026). Fusionne des empans qui se
   // chevauchent partiellement (ex. "M8X" et "M8X20" sur la meme
   // reference, tres courant : plusieurs regles peuvent matcher des
@@ -2542,9 +2590,11 @@
     });
     // Fermeture au clic exterieur : sans cela, le panneau reste ouvert
     // et masque les produits qu'il sert justement a regler.
-    document.addEventListener("click", function (e) {
+    // LA GARDE `hidden` RESTE, deplacee dans la fermeture : le registre
+    // appelle `fermer` a chaque clic exterieur, y compris quand le panneau
+    // est deja ferme. Sans elle, on reecrirait aria-expanded pour rien.
+    fermerAuClicExterieur(btn, panneau, function () {
       if (panneau.hidden) return;
-      if (btn.contains(e.target) || panneau.contains(e.target)) return;
       panneau.hidden = true;
       btn.setAttribute("aria-expanded", "false");
     });
@@ -3779,9 +3829,7 @@
       soVerifierPositionReservee(key);
     });
 
-    document.addEventListener("click", function (e) {
-      if (!champ.contains(e.target) && !panneau.contains(e.target)) fermerPanneau();
-    });
+    fermerAuClicExterieur(champ, panneau, fermerPanneau);
   }
 
   function wireSoPreview(key) {
@@ -4613,13 +4661,29 @@
       soReglagesBtn.setAttribute("aria-expanded", ouvert ? "false" : "true");
       if (ouvert) refreshSoPreview(key);
     });
-    document.addEventListener("click", function (e) {
-      if (!soReglagesPanel || soReglagesPanel.hidden) return;
-      if (soReglagesPanel.contains(e.target) || e.target === soReglagesBtn) return;
-      soReglagesPanel.hidden = true;
-      soReglagesBtn.setAttribute("aria-expanded", "false");
-      refreshSoPreview(key);
-    });
+    // GARDE `hidden` ESSENTIELLE ICI, pas seulement propre : cette
+    // fermeture appelle refreshSoPreview, qui declenche un appel reseau.
+    // Sans la garde, le registre le declencherait a CHAQUE clic exterieur.
+    //
+    // CHANGEMENT DE COMPORTEMENT ASSUME, et c'est une correction. La version
+    // precedente testait `e.target === soReglagesBtn` -- une IDENTITE, pas
+    // une containment. Or ce bouton contient une icone SVG : cliquer
+    // l'engrenage donnait un e.target different du bouton, donc la
+    // condition de sortie ne s'appliquait pas, donc ce gestionnaire
+    // refermait le panneau que le clic venait d'ouvrir. Mesure du 25 aout
+    // sur console amorcee (dashboard visible : true) :
+    //     clic sur le TEXTE du bouton -> panneau ouvert : true
+    //     clic sur l'ICONE svg        -> panneau ouvert : false
+    // Le registre teste `contains`, qui couvre le bouton ET ses enfants :
+    // l'engrenage ouvre desormais le panneau, comme le texte.
+    if (soReglagesBtn && soReglagesPanel) {
+      fermerAuClicExterieur(soReglagesBtn, soReglagesPanel, function () {
+        if (soReglagesPanel.hidden) return;
+        soReglagesPanel.hidden = true;
+        soReglagesBtn.setAttribute("aria-expanded", "false");
+        refreshSoPreview(key);
+      });
+    }
 
     // Correctif (18 aout 2026, brief §"Etat initial, aucune recherche
     // saisie -- ecran d'amorce") : clic sur une chip remplit le champ,
@@ -4974,9 +5038,7 @@
       onBrowseFieldInput();
     });
 
-    document.addEventListener("click", function (e) {
-      if (!champ.contains(e.target) && !panneau.contains(e.target)) fermerPanneau();
-    });
+    fermerAuClicExterieur(champ, panneau, fermerPanneau);
   }
 
   // Brief §4.2 : l'intensite ne concerne QUE la favorisation. Sur une
@@ -5060,9 +5122,7 @@
       onBrowseCategoryChange(key);
     });
 
-    document.addEventListener("click", function (e) {
-      if (!champ.contains(e.target) && !panneau.contains(e.target)) fermerPanneau();
-    });
+    fermerAuClicExterieur(champ, panneau, fermerPanneau);
   }
 
   function onBrowseCategoryChange(key) {
