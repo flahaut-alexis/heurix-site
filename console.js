@@ -338,7 +338,6 @@
     emailEl.textContent = usage.account_email || "—";
   }
 
-  var keyDisplayWired = false;
   // ---------------- Cles publiques (chantier securite C1) ----------------
   var publicKeysWired = false;
 
@@ -691,31 +690,39 @@
     var copyBtn = document.getElementById("account-key-copy");
     var copiedMsg = document.getElementById("account-key-copied");
     var masked = "•".repeat(Math.min(key.length, 34));
-    var shown = false;
-
     valueEl.textContent = masked;
 
-    if (!keyDisplayWired) {
-      keyDisplayWired = true;
-      toggleBtn.addEventListener("click", function () {
-        shown = !shown;
-        valueEl.textContent = shown ? valueEl.dataset.full : valueEl.dataset.masked;
-        toggleBtn.setAttribute("aria-label", shown ? T("Masquer la clé") : T("Afficher la clé"));
-      });
-      copyBtn.addEventListener("click", function () {
-        navigator.clipboard.writeText(valueEl.dataset.full).then(function () {
-          copiedMsg.hidden = false;
-          setTimeout(function () { copiedMsg.hidden = true; }, 2000);
-        }).catch(function () {});
-      });
-    }
+    // C1, second lot (25 aout 2026) : le cablage vivait ICI, protege par
+    // `keyDisplayWired`. Il est parti dans cablerAffichageCle, appelee une
+    // fois -- la garde n'a plus d'objet.
     valueEl.dataset.full = key;
     valueEl.dataset.masked = masked;
-    shown = false;
   }
 
-  var inviteFormWired = false;
-  var companyFormWired = false;
+  // L'etat « affichee / masquee » se lit desormais sur le DOM. Il vivait
+  // dans une variable `shown` de renderApiKey : un cablage sorti du rendu ne
+  // peut plus partager sa portee, et le deduire evite d'inventer un second
+  // etat qui pourrait diverger de ce que l'ecran montre.
+  function cablerAffichageCle() {
+    var valueEl = document.getElementById("account-key-value");
+    var toggleBtn = document.getElementById("account-key-toggle");
+    var copyBtn = document.getElementById("account-key-copy");
+    var copiedMsg = document.getElementById("account-key-copied");
+    if (!valueEl || !toggleBtn || !copyBtn) return;
+    toggleBtn.addEventListener("click", function () {
+      var affichee = valueEl.textContent === valueEl.dataset.full;
+      valueEl.textContent = affichee ? valueEl.dataset.masked : valueEl.dataset.full;
+      toggleBtn.setAttribute("aria-label", affichee ? T("Afficher la clé") : T("Masquer la clé"));
+    });
+    copyBtn.addEventListener("click", function () {
+      navigator.clipboard.writeText(valueEl.dataset.full).then(function () {
+        if (!copiedMsg) return;
+        copiedMsg.hidden = false;
+        setTimeout(function () { copiedMsg.hidden = true; }, 2000);
+      }).catch(function () {});
+    });
+  }
+
 
   function renderTeam(teammates, myEmail, isAdmin) {
     var tbody = document.querySelector("#team-table tbody");
@@ -763,19 +770,10 @@
       // d'ou ce rappel affiche UNE SEULE FOIS par navigateur.
       var hint = document.getElementById("console-org-hint");
       var hintOk = document.getElementById("console-org-hint-ok");
-      if (hint && hintOk && !localStorage.getItem("heurix_org_hint_vu")) {
-        hint.hidden = false;
-        hintOk.addEventListener("click", function () {
-          hint.hidden = true;
-          localStorage.setItem("heurix_org_hint_vu", "1");
-        });
-        // Ouvrir le menu vaut aussi pour « compris » : l'utilisateur a
-        // manifestement trouve.
-        if (orgBtn) orgBtn.addEventListener("click", function () {
-          hint.hidden = true;
-          localStorage.setItem("heurix_org_hint_vu", "1");
-        }, { once: true });
-      }
+      // Seul l'AFFICHAGE reste ici : les deux ecouteurs qui le referment
+      // sont poses une fois par cablerAideCompte (C1, second lot). Ils
+      // etaient reposes a chaque chargement, sur des elements permanents.
+      if (hint && !localStorage.getItem("heurix_org_hint_vu")) hint.hidden = false;
       tvaInput.value = company.numero_tva || "";
       raisonInput.disabled = !isAdmin; tvaInput.disabled = !isAdmin;
       companySaveBtn.hidden = !isAdmin;
@@ -786,79 +784,8 @@
       var inviteStatus = document.getElementById("invite-status");
       inviteForm.hidden = !isAdmin;
 
-      if (!inviteFormWired) {
-        inviteFormWired = true;
-        inviteForm.addEventListener("submit", function (e) {
-          e.preventDefault();
-          var emailInput = document.getElementById("invite-email");
-          var btn = document.getElementById("invite-btn");
-          btn.disabled = true; btn.textContent = T("Envoi…");
-          inviteStatus.hidden = true;
-          apiFetch("/v1/auth/invite", localStorage.getItem(SESSION_STORAGE_KEY), { method: "POST", body: { email: emailInput.value.trim() } })
-            .then(function (r) {
-              inviteStatus.textContent = T("Invitation envoyée à {0}.", r.invited);
-              inviteStatus.hidden = false;
-              emailInput.value = "";
-            })
-            .catch(function (err) {
-              inviteStatus.textContent = (err && err.message) || T("Échec de l'envoi.");
-              inviteStatus.hidden = false;
-            })
-            .then(function () { btn.disabled = false; btn.textContent = T("Inviter"); });
-        });
-      }
-
-      if (!companyFormWired) {
-        companyFormWired = true;
-        document.getElementById("company-form").addEventListener("submit", function (e) {
-          e.preventDefault();
-          var status = document.getElementById("company-status");
-          companySaveBtn.disabled = true; companySaveBtn.textContent = T("Enregistrement…");
-          status.hidden = true;
-          apiFetch("/v1/auth/company", localStorage.getItem(SESSION_STORAGE_KEY), {
-            method: "PUT", body: { raison_sociale: raisonInput.value.trim(), numero_tva: tvaInput.value.trim() || null },
-          }).then(function () {
-            status.textContent = T("Informations enregistrées.");
-            status.hidden = false;
-          }).catch(function (err) {
-            status.textContent = (err && err.message) || T("Échec de l'enregistrement.");
-            status.hidden = false;
-          }).then(function () {
-            companySaveBtn.disabled = false; companySaveBtn.textContent = T("Enregistrer");
-          });
-        });
-
-        // Delegation : les lignes d'equipe sont regenerees a chaque chargement,
-        // un seul listener sur le tbody suffit plutot que d'en reattacher un par ligne.
-        document.querySelector("#team-table tbody").addEventListener("click", function (e) {
-          var btn = e.target.closest(".console-team-action");
-          if (!btn) return;
-          var token = localStorage.getItem(SESSION_STORAGE_KEY);
-          var userId = btn.getAttribute("data-id");
-          if (btn.getAttribute("data-action") === "role") {
-            btn.disabled = true;
-            apiFetch("/v1/auth/team/" + userId + "/role", token, { method: "PUT", body: { role: btn.getAttribute("data-role") } })
-              .then(function () { loadAccountInfo(); })
-              .catch(function () { btn.disabled = false; });
-          } else if (btn.getAttribute("data-action") === "remove") {
-            var email = btn.getAttribute("data-email");
-            // TROISIEME suppression destructive, non signalee par l'audit :
-            // elle utilisait window.confirm. Unifiee sur le meme utilitaire,
-            // pour que les trois se comportent pareil -- deux dialogues
-            // differents pour la meme gravite d'action est en soi un defaut.
-            confirmerSuppression(
-              T("Retirer <strong>{0}</strong> de l'équipe ?<br>Cette personne perdra immédiatement l'accès à la console et aux catalogues.", esc(email)),
-              btn,
-              function () {
-                btn.disabled = true;
-                apiFetch("/v1/auth/team/" + userId, token, { method: "DELETE" })
-                  .then(function () { loadAccountInfo(); })
-                  .catch(function () { btn.disabled = false; });
-              }
-            );
-          }
-        });
-      }
+      // Les deux formulaires et le tableau d'equipe sont cables une fois
+      // par cablerFormulairesCompte (C1, second lot).
     }).catch(function () {});
   }
 
@@ -1980,7 +1907,6 @@
     return n.toLocaleString(LOCALE, { style: "currency", currency: "EUR" });
   }
 
-  var convSortWired = false;
   function loadConversionData(key) {
     var sortBy = document.getElementById("conv-sort-select").value;
     Promise.all([
@@ -2008,12 +1934,163 @@
       });
     }).catch(function () {});
 
-    if (!convSortWired) {
-      convSortWired = true;
-      document.getElementById("conv-sort-select").addEventListener("change", function () {
-        if (session.activeKey) loadConversionData(session.activeKey);
+  }
+
+  // Sorti de loadConversionData, ou il etait protege par `convSortWired`
+  // (C1, second lot). Un tri qui recharge ses donnees n'a aucune raison
+  // d'etre cable par la fonction qui les charge.
+  function cablerTriConversion() {
+    var tri = document.getElementById("conv-sort-select");
+    if (!tri) return;
+    tri.addEventListener("change", function () {
+      if (session.activeKey) loadConversionData(session.activeKey);
+    });
+  }
+
+  // C1, second lot (25 aout 2026). Ces trois cablages vivaient dans
+  // loadAccountInfo, chacun derriere sa garde -- `inviteFormWired`,
+  // `companyFormWired`. Une fonction qui CHARGE le compte n'a pas de raison
+  // de cabler ses formulaires : c'est ce melange qui obligeait a inventer
+  // une garde par formulaire. Les elements sont relus depuis le DOM, ils
+  // etaient jusqu'ici captures dans la portee de loadAccountInfo.
+  function cablerFormulairesCompte() {
+    var inviteForm = document.getElementById("invite-form");
+    var inviteStatus = document.getElementById("invite-status");
+    var raisonInput = document.getElementById("company-raison-sociale");
+    var tvaInput = document.getElementById("company-numero-tva");
+    var companySaveBtn = document.getElementById("company-save-btn");
+    var companyForm = document.getElementById("company-form");
+    var teamBody = document.querySelector("#team-table tbody");
+    if (!inviteForm || !companyForm || !teamBody) return;
+
+        inviteForm.addEventListener("submit", function (e) {
+          e.preventDefault();
+          var emailInput = document.getElementById("invite-email");
+          var btn = document.getElementById("invite-btn");
+          btn.disabled = true; btn.textContent = T("Envoi…");
+          inviteStatus.hidden = true;
+          apiFetch("/v1/auth/invite", localStorage.getItem(SESSION_STORAGE_KEY), { method: "POST", body: { email: emailInput.value.trim() } })
+            .then(function (r) {
+              inviteStatus.textContent = T("Invitation envoyée à {0}.", r.invited);
+              inviteStatus.hidden = false;
+              emailInput.value = "";
+            })
+            .catch(function (err) {
+              inviteStatus.textContent = (err && err.message) || T("Échec de l'envoi.");
+              inviteStatus.hidden = false;
+            })
+            .then(function () { btn.disabled = false; btn.textContent = T("Inviter"); });
+        });
+        document.getElementById("company-form").addEventListener("submit", function (e) {
+          e.preventDefault();
+          var status = document.getElementById("company-status");
+          companySaveBtn.disabled = true; companySaveBtn.textContent = T("Enregistrement…");
+          status.hidden = true;
+          apiFetch("/v1/auth/company", localStorage.getItem(SESSION_STORAGE_KEY), {
+            method: "PUT", body: { raison_sociale: raisonInput.value.trim(), numero_tva: tvaInput.value.trim() || null },
+          }).then(function () {
+            status.textContent = T("Informations enregistrées.");
+            status.hidden = false;
+          }).catch(function (err) {
+            status.textContent = (err && err.message) || T("Échec de l'enregistrement.");
+            status.hidden = false;
+          }).then(function () {
+            companySaveBtn.disabled = false; companySaveBtn.textContent = T("Enregistrer");
+          });
+        });
+
+        // Delegation : les lignes d'equipe sont regenerees a chaque chargement,
+        // un seul listener sur le tbody suffit plutot que d'en reattacher un par ligne.
+        document.querySelector("#team-table tbody").addEventListener("click", function (e) {
+          var btn = e.target.closest(".console-team-action");
+          if (!btn) return;
+          var token = localStorage.getItem(SESSION_STORAGE_KEY);
+          var userId = btn.getAttribute("data-id");
+          if (btn.getAttribute("data-action") === "role") {
+            btn.disabled = true;
+            apiFetch("/v1/auth/team/" + userId + "/role", token, { method: "PUT", body: { role: btn.getAttribute("data-role") } })
+              .then(function () { loadAccountInfo(); })
+              .catch(function () { btn.disabled = false; });
+          } else if (btn.getAttribute("data-action") === "remove") {
+            var email = btn.getAttribute("data-email");
+            // TROISIEME suppression destructive, non signalee par l'audit :
+            // elle utilisait window.confirm. Unifiee sur le meme utilitaire,
+            // pour que les trois se comportent pareil -- deux dialogues
+            // differents pour la meme gravite d'action est en soi un defaut.
+            confirmerSuppression(
+              T("Retirer <strong>{0}</strong> de l'équipe ?<br>Cette personne perdra immédiatement l'accès à la console et aux catalogues.", esc(email)),
+              btn,
+              function () {
+                btn.disabled = true;
+                apiFetch("/v1/auth/team/" + userId, token, { method: "DELETE" })
+                  .then(function () { loadAccountInfo(); })
+                  .catch(function () { btn.disabled = false; });
+              }
+            );
+          }
+        });
+  }
+
+  // Aide ponctuelle « Mes infos » : loadAccountInfo decide de l'AFFICHER,
+  // ces deux ecouteurs la referment. Ils etaient reposes a chaque
+  // chargement, sur des elements permanents.
+  function cablerAideCompte() {
+    var hint = document.getElementById("console-org-hint");
+    var hintOk = document.getElementById("console-org-hint-ok");
+    var orgBtn = document.getElementById("console-org-btn");
+    if (!hint || !hintOk) return;
+    function compris() {
+      hint.hidden = true;
+      localStorage.setItem("heurix_org_hint_vu", "1");
+    }
+    hintOk.addEventListener("click", compris);
+    // Ouvrir le menu vaut aussi pour « compris » : l'utilisateur a
+    // manifestement trouve.
+    if (orgBtn) orgBtn.addEventListener("click", compris);
+  }
+
+  // Etat lu depuis le DOM plutot que d'une portee de rendu : les pastilles
+  // et les cartes sont regenerees a chaque chargement, l'ecouteur non.
+  function afficherCarteCatalogue(nom) {
+    var selecteur = document.getElementById("catalog-list-selector");
+    var titre = document.getElementById("catalog-pane-title");
+    var cartes = document.querySelectorAll("[data-catalog-card]");
+    Array.prototype.forEach.call(cartes, function (card) {
+      card.hidden = card.getAttribute("data-catalog-card") !== nom;
+    });
+    if (selecteur) {
+      Array.prototype.forEach.call(selecteur.querySelectorAll(".catalog-list-pill"), function (pastille) {
+        pastille.classList.toggle("catalog-list-pill-on", pastille.getAttribute("data-catalog-select") === nom);
       });
     }
+    if (titre) titre.textContent = cartes.length > 1 ? T("Mes catalogues") : T("Mon catalogue");
+  }
+
+  // Delegation sur le conteneur, qui est permanent : les pastilles a
+  // l'interieur sont recreees, l'ecouteur reste. Il etait repose a chaque
+  // loadCatalogs, sur cet element permanent -- une des trois fuites qui
+  // subsistaient apres le premier lot.
+  function cablerSelecteurListeCatalogues() {
+    var selecteur = document.getElementById("catalog-list-selector");
+    if (!selecteur) return;
+    selecteur.addEventListener("click", function (e) {
+      var pill = e.target.closest("[data-catalog-select]");
+      if (!pill) return;
+      var nom = pill.getAttribute("data-catalog-select");
+      afficherCarteCatalogue(nom);
+      // Correctif (20 aout 2026, audit passe 3 §2). Cliquer une pastille ne
+      // mettait PAS a jour le selecteur du haut : les deux restaient
+      // visibles avec des valeurs differentes, sans le moindre signal.
+      // Risque concret -- editer le pack de regles du mauvais catalogue en
+      // croyant travailler sur l'autre. Un seul catalogue actif fait foi :
+      // on passe par le selecteur global, dont l'ecouteur "change" porte
+      // deja la memorisation et la propagation a tous les ecrans.
+      var global = document.getElementById("global-catalog");
+      if (global && global.value !== nom) {
+        global.value = nom;
+        global.dispatchEvent(new Event("change"));
+      }
+    });
   }
 
   // ---------------- Browse & Discovery ----------------
@@ -5691,6 +5768,13 @@
     cablerVuesCategories(key);
     wireRelatedProducts(key);
     wireTutoEditeur(["so-tuto", "br-tuto"]);
+    // Second lot C1 : cablages extraits des fonctions de CHARGEMENT --
+    // renderApiKey, loadAccountInfo, loadConversionData, loadCatalogs.
+    cablerAffichageCle();
+    cablerFormulairesCompte();
+    cablerAideCompte();
+    cablerTriConversion();
+    cablerSelecteurListeCatalogues();
     // Meme autocomplete que la page soeur, sur les champs de la
     // categorie : le formulaire attendait un identifiant tape a la
     // main, sans aucune aide.
@@ -6440,34 +6524,9 @@
         return '<button type="button" class="catalog-list-pill' + (i === 0 ? ' catalog-list-pill-on' : '') +
           '" data-catalog-select="' + esc(c.catalog) + '">' + esc(c.catalog) + '</button>';
       }).join("");
-      function afficherCatalogue(nom) {
-        cardEls.forEach(function (card) { card.hidden = card.getAttribute("data-catalog-card") !== nom; });
-        selecteur.querySelectorAll(".catalog-list-pill").forEach(function (p) {
-          p.classList.toggle("catalog-list-pill-on", p.getAttribute("data-catalog-select") === nom);
-        });
-        if (titre) titre.textContent = catalogs.length > 1 ? T("Mes catalogues") : T("Mon catalogue");
-      }
-      selecteur.addEventListener("click", function (e) {
-        var pill = e.target.closest("[data-catalog-select]");
-        if (!pill) return;
-        var nom = pill.getAttribute("data-catalog-select");
-        afficherCatalogue(nom);
-        // Correctif (20 aout 2026, audit passe 3 §2). Cliquer une
-        // pastille ne mettait PAS a jour le selecteur du haut : les deux
-        // restaient visibles a l'ecran avec des valeurs differentes, sans
-        // le moindre signal. Risque concret -- editer le pack de regles
-        // du mauvais catalogue en croyant travailler sur l'autre.
-        //
-        // Un seul catalogue actif fait desormais foi. On passe par le
-        // selecteur global plutot que d'ecrire session.catalogueActif
-        // directement : son ecouteur "change" porte deja la memorisation
-        // et la propagation a tous les ecrans.
-        var global = document.getElementById("global-catalog");
-        if (global && global.value !== nom) {
-          global.value = nom;
-          global.dispatchEvent(new Event("change"));
-        }
-      });
+      // afficherCarteCatalogue et l'ecouteur du selecteur vivent desormais
+      // au niveau module (C1, second lot) : l'ecouteur est cable une seule
+      // fois et ne peut donc plus capturer les variables de CE rendu.
       // Correctif (20 aout 2026) : la page ouvrait toujours sur le
       // PREMIER catalogue, meme si le catalogue actif etait un autre --
       // le commentaire precedent evoquait cette possibilite sans jamais
@@ -6475,7 +6534,7 @@
       // s'il n'est pas dans la liste (compte neuf, catalogue supprime).
       var voulu = catalogueCourant();
       var connu = catalogs.some(function (c) { return c.catalog === voulu; });
-      afficherCatalogue(connu ? voulu : catalogs[0].catalog);
+      afficherCarteCatalogue(connu ? voulu : catalogs[0].catalog);
     }).catch(function () {
       loading.hidden = true;
       empty.hidden = false;
