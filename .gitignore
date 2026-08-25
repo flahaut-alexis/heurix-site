@@ -6,8 +6,13 @@ node_modules/
 # Rapports de couverture
 coverage/
 
-# CLAUDE.md -- contexte projet local, jamais versionne
-CLAUDE.md
+# CLAUDE.md EST versionne (decision du 25 aout 2026). La regle qui l'ignorait
+# decrivait une intention -- « contexte projet local, jamais versionne » --
+# qui n'a jamais eu d'effet : le fichier etait deja suivi quand elle a ete
+# ajoutee, et .gitignore ne s'applique pas a un fichier suivi. Il portait donc
+# les decisions du projet dans un depot public en croyant en etre absent.
+# L'intention est corrigee plutot que la realite : ce fichier documente le
+# projet, il a sa place dans le depot. Il ne contient aucun secret.
 
 # macOS
 .DS_Store

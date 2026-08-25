@@ -5,9 +5,15 @@ vector search / embeddings) pour catalogues techniques (outillage, mode,
 industrie...). Micro-entreprise d'Alexis Flahaut, Caen.
 
 **Ce fichier ne contient volontairement aucun secret** (clés API, mots de
-passe). Il reste toujours en `.gitignore` — jamais commité, même dans un
-dépôt public. Les valeurs sensibles se donnent directement en session le
-moment venu, jamais collées dans un fichier versionné.
+passe). Les valeurs sensibles se donnent directement en session le moment
+venu, jamais collées dans un fichier versionné.
+
+**Ce fichier EST versionné, et `heurix-site` est un dépôt PUBLIC** (décision
+du 25 août 2026). Le paragraphe précédent affirmait l'inverse — « toujours en
+`.gitignore`, jamais commité » — alors qu'il était suivi depuis son premier
+commit : la règle avait été ajoutée après coup, et `.gitignore` ne s'applique
+pas à un fichier déjà suivi. Écrire ici doit donc se faire en sachant que
+c'est publié.
 
 ## Les quatre composants du projet
 
@@ -45,11 +51,20 @@ appel ; avertit si une incohérence existait déjà avant le lancement.
 
 ## Déploiement du moteur (`heurix-engine`)
 
-Serveur OVH, IP `146.59.202.238`, service systemd nommé `heurix`.
+Serveur OVH, service systemd nommé `heurix`. **Les coordonnées du serveur ne
+sont pas écrites ici** : ce dépôt est public, et une adresse, un compte et une
+procédure servis ensemble forment un dossier de reconnaissance tout prêt.
+Elles vivent dans `heurix-engine` (dépôt privé), qui porte la procédure
+complète et outillée — `deploy/deploy-complet.sh` et
+`deploy/DEPLOIEMENT_OVH.md`.
+
+Exportez `HEURIX_SERVEUR` (forme `utilisateur@adresse`) avant de dérouler ce
+qui suit, ou utilisez directement `deploy/deploy-complet.sh`, qui fait tout
+cela avec vérification de CI, sauvegarde et contrôles post-déploiement.
 
 ```bash
-scp heurix-engine.zip ubuntu@146.59.202.238:/tmp/heurix-engine.zip
-ssh ubuntu@146.59.202.238
+scp heurix-engine.zip "$HEURIX_SERVEUR":/tmp/heurix-engine.zip
+ssh "$HEURIX_SERVEUR"
 sudo unzip -o /tmp/heurix-engine.zip -d /tmp/heurix-update
 sudo cp -r /tmp/heurix-update/heurix-engine/heurix /opt/heurix-engine/
 sudo chown -R heurix:heurix /opt/heurix-engine
@@ -89,3 +104,17 @@ nécessaire aux appels de tracking depuis les sites clients.
 - Une catégorie Browse est un champ **fourni par le marchand** à
   l'indexation (`categories`/`category`), jamais dérivée d'un pack de
   règles — deux concepts différents, confondus une fois par erreur.
+
+## Agent skills
+
+### Issue tracker
+
+Fichiers markdown locaux sous `.scratch/<feature>/` — projet solo, pas de
+gestionnaire de tickets externe. Voir `docs/agents/issue-tracker.md`.
+
+### Domain docs
+
+Contexte unique : un `CONTEXT.md` et un `docs/adr/` à la racine. Ni l'un ni
+l'autre n'existe encore ; ils seront créés paresseusement par
+`/domain-modeling` quand un terme ou une décision aura besoin d'être fixé.
+Voir `docs/agents/domain.md`.
