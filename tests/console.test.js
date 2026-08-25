@@ -120,3 +120,81 @@ describe("console.js — endSession()", () => {
     expect(document.getElementById("global-catalog").disabled).toBe(true);
   });
 });
+
+// ---------------------------------------------------------------------------
+// Une erreur transitoire ne doit pas coûter sa session (25 août 2026).
+//
+// Défaut réel : les deux `catch` qui pouvaient déconnecter étaient écrits
+// SANS ARGUMENT — le code de statut n'était même pas accessible. N'importe
+// quelle erreur effaçait donc le jeton. Un 429 (limitation de débit, la
+// cause d'échec la plus banale ici) renvoyait l'utilisateur à l'écran de
+// connexion en annonçant « impossible de joindre api.heurix.fr », alors que
+// l'API avait répondu en 98 ms avec le délai exact à attendre.
+//
+// Le test porte sur le CHEMIN D'OUVERTURE (/v1/auth/me au chargement de la
+// page), le plus dommageable des deux : il s'exécute avant que
+// l'utilisateur ait fait quoi que ce soit.
+// ---------------------------------------------------------------------------
+
+function chargerConsoleAvecReponse(statut, corps) {
+  const html = fs.readFileSync(path.join(RACINE, "console.html"), "utf8");
+  const dom = new JSDOM(html, { url: "http://localhost/console.html", runScripts: "outside-only" });
+  const { window } = dom;
+  global.window = window;
+  global.document = window.document;
+  global.localStorage = window.localStorage;
+  window.Element.prototype.scrollIntoView = () => {};
+
+  // Le jeton existe AVANT le chargement du script : c'est ce qui déclenche
+  // l'appel à /v1/auth/me sur le chemin d'ouverture.
+  window.localStorage.setItem("heurix_console_session", "jeton-valide-de-test");
+
+  global.fetch = async () => ({ ok: statut >= 200 && statut < 300, status: statut, json: async () => corps });
+  window.fetch = global.fetch;
+
+  window.eval(fs.readFileSync(path.join(RACINE, "console-i18n.js"), "utf8"));
+  window.eval(fs.readFileSync(path.join(RACINE, "console.js"), "utf8"));
+  return { window, document: window.document };
+}
+
+const attendreMicrotaches = () => new Promise((r) => setTimeout(r, 0));
+
+describe("console.js — une erreur transitoire ne déconnecte pas", () => {
+  it("un 429 au chargement CONSERVE le jeton de session", async () => {
+    const { window } = chargerConsoleAvecReponse(429, { detail: "Trop de tentatives. Réessayez dans 30 secondes." });
+    await attendreMicrotaches();
+    expect(window.localStorage.getItem("heurix_console_session")).toBe("jeton-valide-de-test");
+  });
+
+  it("un 429 affiche le message de l'API, pas « impossible de joindre »", async () => {
+    const { window, document } = chargerConsoleAvecReponse(429, { detail: "Trop de tentatives. Réessayez dans 30 secondes." });
+    await attendreMicrotaches();
+    const erreur = document.getElementById("login-error");
+    expect(erreur.textContent).toContain("Trop de tentatives");
+    expect(erreur.textContent).not.toContain("Impossible de joindre");
+  });
+
+  it("un 500 conserve aussi le jeton — transitoire, pas invalidant", async () => {
+    const { window } = chargerConsoleAvecReponse(500, { detail: "Erreur interne." });
+    await attendreMicrotaches();
+    expect(window.localStorage.getItem("heurix_console_session")).toBe("jeton-valide-de-test");
+  });
+
+  it("un 401 EFFACE le jeton — là, la session ne vaut plus rien", async () => {
+    const { window } = chargerConsoleAvecReponse(401, { detail: "Jeton invalide." });
+    await attendreMicrotaches();
+    expect(window.localStorage.getItem("heurix_console_session")).toBeNull();
+  });
+
+  it("un 403 efface aussi le jeton", async () => {
+    const { window } = chargerConsoleAvecReponse(403, { detail: "Accès refusé." });
+    await attendreMicrotaches();
+    expect(window.localStorage.getItem("heurix_console_session")).toBeNull();
+  });
+
+  it("un 401 dit que la session a expiré, pas que l'API est injoignable", async () => {
+    const { document } = chargerConsoleAvecReponse(401, { detail: "Jeton invalide." });
+    await attendreMicrotaches();
+    expect(document.getElementById("login-error").textContent).toContain("session a expiré");
+  });
+});

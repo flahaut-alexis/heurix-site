@@ -495,6 +495,7 @@
     // des {0}, {1}... — jamais la chaîne finale, qui varie à chaque appel.
     "Email ou mot de passe incorrect.": "Incorrect email or password.",
     "Impossible de joindre api.heurix.fr. Le service est peut-être temporairement indisponible.": "Couldn't reach api.heurix.fr. The service may be temporarily unavailable.",
+    "Votre session a expiré. Reconnectez-vous.": "Your session has expired. Please sign in again.",
     "Bonjour, {0}": "Hi, {0}",
     "à": "at",
     "tous": "all",

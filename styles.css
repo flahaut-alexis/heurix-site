@@ -2424,6 +2424,10 @@ body.docs-dark .why-card p{ color:#CDD2F0; }
 }
 .console-period:hover{ border-color:var(--blue); }
 .console-loading{ padding:80px 0; text-align:center; color:var(--ink-muted); font-size:14px; }
+/* .err : ce conteneur sert aussi de zone d'erreur au chargement du tableau
+   de bord (25 aout 2026). Meme rouge que .console-form-status.err et
+   .catalog-rulepack-status.err -- un seul rouge d'erreur dans la console. */
+.console-loading.err{ color:#C0392B; padding:48px 24px; }
 
 .console-stats{ display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:20px; }
 /* VRAI deuxieme foyer du debordement console mobile (3 aout, retour

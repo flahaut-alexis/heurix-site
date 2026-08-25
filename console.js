@@ -24,6 +24,8 @@
     loading: T("Chargement des données…"),
     loginErrorInvalid: T("Email ou mot de passe incorrect."),
     loginErrorNetwork: T("Impossible de joindre api.heurix.fr. Le service est peut-être temporairement indisponible."),
+    sessionExpiree: T("Votre session a expiré. Reconnectez-vous."),
+    compteSansCle: T("Ce compte n'a pas encore de clé API associée. Contactez le support."),
     zeroRate: function (n) { return Math.round(n * 100) + "%"; },
     dashTitle: function (label) { return label ? T("Bonjour, {0}", label) : T("Tableau de bord"); },
     when: function (iso) {
@@ -5806,12 +5808,39 @@
         });
     return pret
       .then(function (catalogues) { return chargerTableauDeBord(key, days, catalogues); })
-      .catch(function () {
+      .catch(function (err) {
+        // SEULS 401 ET 403 INVALIDENT LA SESSION (25 aout 2026).
+        //
+        // Ce bloc deconnectait sur N'IMPORTE QUELLE erreur, `catch` sans
+        // argument a l'appui : le code de statut n'etait meme pas
+        // accessible. Un 429 -- limitation de debit, cause la plus banale
+        // d'echec ici -- effacait donc le jeton, renvoyait a l'ecran de
+        // connexion, et annoncait « impossible de joindre api.heurix.fr ».
+        // L'API avait repondu en 98 ms. Un client qui vit cela conclut que
+        // le service l'a ejecte, pas qu'il a trop clique, et va chercher
+        // une panne qui n'existe pas -- constate le 25 aout, un quart
+        // d'heure perdu.
+        //
+        // 401 (jeton invalide ou expire) et 403 (jeton valide, acces
+        // refuse) sont les deux SEULS cas ou le jeton stocke ne vaut plus
+        // rien. Tout le reste -- 429, 5xx, coupure reseau -- est
+        // transitoire : la session reste, et un rechargement suffit.
         dashLoading.hidden = true;
-        localStorage.removeItem(SESSION_STORAGE_KEY);
-        session.activeKey = null;
-        setAuthMode("login");
-        showLogin(L.loginErrorNetwork);
+        var statut = err && err.status;
+        if (statut === 401 || statut === 403) {
+          localStorage.removeItem(SESSION_STORAGE_KEY);
+          session.activeKey = null;
+          setAuthMode("login");
+          showLogin(L.sessionExpiree);
+          return;
+        }
+        // Session conservee. Le message de l'API est affiche tel quel --
+        // il dit le delai exact sur un 429 la ou le message generique
+        // parlait de panne. Sa mise en forme (cas du `detail` en liste)
+        // est le chantier suivant, separe.
+        dashLoading.hidden = false;
+        dashLoading.className = "console-loading err";
+        dashLoading.textContent = (statut ? err.message : L.loginErrorNetwork);
       });
   }
 
@@ -6613,7 +6642,7 @@
     apiPost("/v1/auth/login", { email: loginEmail.value.trim(), password: loginPassword.value })
       .then(function (data) {
         if (!data.keys || !data.keys.length) {
-          showLogin(T("Ce compte n'a pas encore de clé API associée. Contactez le support."));
+          showLogin(L.compteSansCle);
           return;
         }
         startSession(data.session_token, data.keys[0].key);
@@ -6820,10 +6849,34 @@
           cablerConsole(session.activeKey);
           chargerDonnees(session.activeKey, periodSelect.value);
         })
-        .catch(function () {
-          localStorage.removeItem(SESSION_STORAGE_KEY);
+        .catch(function (err) {
+          // MEME REGLE QU'AU CHARGEMENT DU TABLEAU DE BORD, et ce site-ci
+          // est le plus dommageable des deux : il s'execute a l'OUVERTURE
+          // de la page. Un 429 ou une coupure reseau d'une seconde
+          // effacait le jeton avant que l'utilisateur ait rien fait, et le
+          // renvoyait a l'ecran de connexion SANS AUCUN MESSAGE --
+          // showLogin() etait appele sans argument.
+          var statut = err && err.status;
+          // `no_key` est leve juste au-dessus, pas renvoye par l'API : le
+          // compte existe et le jeton est bon, mais aucune cle n'y est
+          // associee. Se reconnecter n'y changerait rien, autant le dire.
+          if (err && err.message === "no_key") {
+            localStorage.removeItem(SESSION_STORAGE_KEY);
+            setAuthMode("login");
+            showLogin(L.compteSansCle);
+            return;
+          }
+          if (statut === 401 || statut === 403) {
+            localStorage.removeItem(SESSION_STORAGE_KEY);
+            setAuthMode("login");
+            showLogin(L.sessionExpiree);
+            return;
+          }
+          // JETON CONSERVE. Il n'a pas ete invalide -- on n'a pas pu le
+          // verifier, ce qui n'est pas la meme chose. Un rechargement une
+          // fois le delai passe rouvre la session sans reconnexion.
           setAuthMode("login");
-          showLogin();
+          showLogin(statut ? err.message : L.loginErrorNetwork);
         });
     } else {
       setAuthMode("login");
