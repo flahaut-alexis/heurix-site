@@ -8,7 +8,7 @@
 <meta name="robots" content="noindex">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css?v=1787610626">
+<link rel="stylesheet" href="styles.css?v=1787647485">
 <link rel="canonical" href="https://heurix.fr/console.html">
 </head>
 <body class="console-page">
@@ -184,7 +184,7 @@
           <span class="console-env-label">Catalogue actif</span>
           <select id="global-catalog" class="console-period console-global-catalog" aria-label="Catalogue actif — s'applique au tableau de bord, à l'analytique et à la personnalisation"></select>
         </span>
-        <select id="period-select" class="console-period">
+        <select id="period-select" class="console-period" aria-label="Période d'analyse">
           <option value="7">7 derniers jours</option>
           <option value="30" selected>30 derniers jours</option>
           <option value="90">90 derniers jours</option>
@@ -408,7 +408,7 @@
             <div class="console-panel">
               <div class="catalog-card-row" style="margin-bottom:14px;">
                 <h2 style="margin:0; flex:1;">Top produits</h2>
-                <select id="conv-sort-select" class="catalog-rulepack-select">
+                <select id="conv-sort-select" class="catalog-rulepack-select" aria-label="Trier les conversions">
                   <option value="volume">Par volume</option>
                   <option value="margin">Par marge</option>
                 </select>
@@ -609,10 +609,10 @@
                     <h2 id="so-synonyme-title">Créer un synonyme</h2>
                     <p class="console-panel-note">Relie « <strong id="so-synonyme-requete-affichee"></strong> » à d'autres mots équivalents — vos clients trouveront les mêmes résultats en tapant l'un ou l'autre.</p>
                     <form id="so-synonyme-form" class="catalog-rule-add">
-                      <input type="text" id="so-synonyme-requete" hidden>
-                      <input type="text" placeholder="Autres mots équivalents, séparés par une virgule — ex. cheville, molly" id="so-synonyme-mots" required>
+                      <input type="text" id="so-synonyme-requete" hidden aria-label="Requête de départ du synonyme">
+                      <input type="text" placeholder="Autres mots équivalents, séparés par une virgule — ex. cheville, molly" id="so-synonyme-mots" required aria-label="Mots équivalents, séparés par des virgules">
                       <button type="submit" class="catalog-rule-add-btn" id="so-synonyme-submit-btn">Créer le synonyme</button>
-                      <span class="catalog-rule-status" id="so-synonyme-status"></span>
+                      <span class="catalog-rule-status" id="so-synonyme-status" role="status" aria-live="polite"></span>
                     </form>
                     <button type="button" class="btn btn-ghost" id="so-synonyme-close-btn" style="margin-top:14px;">Fermer</button>
                   </div>
@@ -777,19 +777,19 @@
                 <h2 id="so-form-title">Ajouter une règle</h2>
                 <form id="so-form" class="catalog-rule-add">
                   <div class="catalog-rule-add-row">
-                    <input type="text" placeholder="Requête déclenchante, ex. promo" id="so-query" required>
+                    <input type="text" placeholder="Requête déclenchante, ex. promo" id="so-query" required aria-label="Requête qui déclenche la règle">
                     <div class="so-autocomplete" style="position:relative; flex:1;">
-                      <input type="text" placeholder="Nom ou référence du produit" id="so-product-search" autocomplete="off" required>
+                      <input type="text" placeholder="Nom ou référence du produit" id="so-product-search" autocomplete="off" required aria-label="Produit à épingler ou reléguer">
                       <input type="hidden" id="so-product-id">
                       <div class="so-autocomplete-panel" id="so-product-panel" hidden></div>
                     </div>
                   </div>
                   <div class="catalog-rule-add-row">
-                    <select id="so-action">
+                    <select id="so-action" aria-label="Action de la règle : épingler ou reléguer">
                       <option value="pin">Épingler en tête</option>
                       <option value="bury">Reléguer en fin de liste</option>
                     </select>
-                    <input type="number" min="1" max="100" placeholder="Position, ex. 3" id="so-position">
+                    <input type="number" min="1" max="100" placeholder="Position, ex. 3" id="so-position" aria-label="Position du produit épinglé">
                   </div>
                   <!-- Correctif (19 aout 2026, brief §3.5 "Modele de
                        donnees des regles") : premiers champs exposes
@@ -797,8 +797,8 @@
                        "meme si l'interface n'expose d'abord que le nom
                        et le statut". Backend deja pret et deploye. -->
                   <div class="catalog-rule-add-row">
-                    <input type="text" placeholder="Nom de la règle, facultatif — ex. Promo rentrée" id="so-nom" maxlength="200">
-                    <select id="so-statut">
+                    <input type="text" placeholder="Nom de la règle, facultatif — ex. Promo rentrée" id="so-nom" maxlength="200" aria-label="Nom de la règle (facultatif)">
+                    <select id="so-statut" aria-label="Statut de la règle">
                       <option value="active">Active</option>
                       <option value="brouillon">Brouillon</option>
                       <option value="inactive">Inactive</option>
@@ -812,17 +812,17 @@
                        attend ce format exact, verifie dans heurix-engine
                        avant de construire). -->
                   <div class="catalog-rule-add-row">
-                    <input type="number" min="1" max="100000" placeholder="Priorité, facultatif — la plus basse gagne" id="so-priorite">
+                    <input type="number" min="1" max="100000" placeholder="Priorité, facultatif — la plus basse gagne" id="so-priorite" aria-label="Priorité de la règle (facultatif)">
                   </div>
                   <div class="catalog-rule-add-row">
-                    <label class="so-diffusion-label">Du <input type="date" id="so-diffusion-debut"></label>
-                    <label class="so-diffusion-label">au <input type="date" id="so-diffusion-fin"></label>
+                    <label class="so-diffusion-label">Du <input type="date" id="so-diffusion-debut" aria-label="Début de diffusion de la règle"></label>
+                    <label class="so-diffusion-label">au <input type="date" id="so-diffusion-fin" aria-label="Fin de diffusion de la règle"></label>
                   </div>
                   <p class="so-validation-warn" id="so-position-warn" hidden></p>
                   <p class="so-validation-warn" id="so-stock-warn" hidden></p>
                   <button type="submit" class="catalog-rule-add-btn" id="so-submit-btn">Ajouter la règle</button>
                   <button type="button" class="btn btn-ghost" id="so-cancel-edit-btn" hidden style="margin-left:8px;">Annuler la modification</button>
-                  <span class="catalog-rule-status" id="so-status"></span>
+                  <span class="catalog-rule-status" id="so-status" role="status" aria-live="polite"></span>
                 </form>
                 <button type="button" class="btn btn-ghost" id="so-form-close-btn" style="margin-top:14px;">Fermer</button>
                 </div>
@@ -1069,19 +1069,19 @@
                          Meme composant que la page soeur : champ visible pour
                          la recherche, champ cache pour l'identifiant reel. -->
                     <div class="so-autocomplete" style="position:relative; flex:1;">
-                      <input type="text" placeholder="Nom ou référence du produit" id="bo-product-search" autocomplete="off" required>
+                      <input type="text" placeholder="Nom ou référence du produit" id="bo-product-search" autocomplete="off" required aria-label="Produit à épingler dans cette catégorie">
                       <input type="hidden" id="browse-override-product-id">
                       <div class="so-autocomplete-panel" id="bo-product-panel" hidden></div>
                     </div>
-                    <select id="browse-override-action">
+                    <select id="browse-override-action" aria-label="Action : épingler ou reléguer dans la catégorie">
                       <option value="pin">Épingler en tête</option>
                       <option value="bury">Reléguer en fin de liste</option>
                     </select>
                   </div>
-                  <input type="number" min="1" max="100" placeholder="Position (1 = premier épinglé)" id="browse-override-position">
+                  <input type="number" min="1" max="100" placeholder="Position (1 = premier épinglé)" id="browse-override-position" aria-label="Position du produit épinglé dans la catégorie">
                   <button type="submit" class="catalog-rule-add-btn" id="bo-submit-btn">Ajouter la règle</button>
                   <button type="button" class="btn btn-ghost" id="bo-cancel-edit-btn" hidden style="margin-left:8px;">Annuler la modification</button>
-                  <span class="catalog-rule-status" id="browse-override-status"></span>
+                  <span class="catalog-rule-status" id="browse-override-status" role="status" aria-live="polite"></span>
                 </form>
                   </div>
 
@@ -1110,14 +1110,14 @@
                          absent de l'indexation ne peut porter aucune
                          regle utile. -->
                     <div class="so-autocomplete" style="position:relative; flex:1;">
-                      <input type="text" placeholder="Champ, ex. brand" id="browse-attribute-field-search" autocomplete="off" required>
+                      <input type="text" placeholder="Champ, ex. brand" id="browse-attribute-field-search" autocomplete="off" required aria-label="Champ produit sur lequel porte la règle">
                       <input type="hidden" id="browse-attribute-field">
                       <div class="so-autocomplete-panel" id="browse-attribute-field-panel" hidden></div>
                     </div>
-                    <input type="text" placeholder="Valeur, ex. Makita" id="browse-attribute-value" list="browse-known-values" required>
+                    <input type="text" placeholder="Valeur, ex. Makita" id="browse-attribute-value" list="browse-known-values" required aria-label="Valeur du champ visée par la règle">
                   </div>
                   <datalist id="browse-known-values"></datalist>
-                  <select id="browse-attribute-action" style="margin-top:8px;">
+                  <select id="browse-attribute-action" style="margin-top:8px;" aria-label="Action de la règle par attribut">
                     <option value="boost">Booster (boost)</option>
                     <option value="bury">Reléguer en fin de liste</option>
                   </select>
@@ -1137,7 +1137,7 @@
                   </div>
                   <button type="submit" class="catalog-rule-add-btn" id="bar-submit-btn">Ajouter la règle</button>
                   <button type="button" class="btn btn-ghost" id="bar-cancel-edit-btn" hidden style="margin-left:8px;">Annuler la modification</button>
-                  <span class="catalog-rule-status" id="browse-attribute-rule-status"></span>
+                  <span class="catalog-rule-status" id="browse-attribute-rule-status" role="status" aria-live="polite"></span>
                 </form>
                   </div>
                 </div>
@@ -1397,7 +1397,7 @@
               </ol>
 
               <div class="csv-depot" id="csv-depot">
-                <input type="file" id="csv-fichier" accept=".csv,.txt,text/csv,.xml,application/xml,text/xml" hidden>
+                <input type="file" id="csv-fichier" accept=".csv,.txt,text/csv,.xml,application/xml,text/xml" hidden aria-label="Fichier CSV à importer">
                 <button type="button" class="btn" id="csv-choisir">Choisir un fichier</button>
                 <p class="csv-depot-note">ou glissez-le ici</p>
               </div>
@@ -1462,12 +1462,12 @@
                 <div class="csv-options">
                   <label>
                     <span>Nom du catalogue</span>
-                    <input type="text" id="csv-catalogue" autocomplete="off">
+                    <input type="text" id="csv-catalogue" autocomplete="off" aria-label="Nom du catalogue de destination">
                     <small class="csv-champ-aide">Sans espaces ni accents — il apparaîtra dans vos URL d'API.</small>
                   </label>
                   <label>
                     <span>Pack de règles</span>
-                    <select id="csv-rulepack"><option value="">Aucun</option></select>
+                    <select id="csv-rulepack" aria-label="Pack de règles à appliquer"><option value="">Aucun</option></select>
                   </label>
                 </div>
 
@@ -1557,7 +1557,7 @@
                 <a href="pricing.html" target="_blank" rel="noopener" class="btn btn-ghost">Comparer les offres</a>
               </div>
               <p class="console-panel-note" style="margin-top:10px;">Le portail de facturation est hébergé par Stripe : vous y retrouvez vos factures, votre moyen de paiement et pouvez résilier à tout moment.</p>
-              <p class="catalog-rule-status" id="billing-status"></p>
+              <p class="catalog-rule-status" id="billing-status" role="status" aria-live="polite"></p>
             </div>
           </div>
 
@@ -1571,7 +1571,7 @@
                 <input type="text" id="company-numero-tva" placeholder="FR12345678901">
                 <button type="submit" class="btn" id="company-save-btn" style="margin-top:14px; align-self:flex-start;" hidden>Enregistrer les informations</button>
               </form>
-              <p id="company-status" class="console-form-status" hidden></p>
+              <p id="company-status" class="console-form-status" hidden role="status" aria-live="polite"></p>
             </div>
           </div>
 
@@ -1584,10 +1584,10 @@
                 <tbody></tbody>
               </table></div>
               <form id="invite-form" class="console-invite-form" hidden>
-                <input type="email" id="invite-email" placeholder="collegue@entreprise.fr" required>
+                <input type="email" id="invite-email" placeholder="collegue@entreprise.fr" required aria-label="Adresse e-mail de la personne à inviter">
                 <button type="submit" class="btn" id="invite-btn">Inviter</button>
               </form>
-              <p id="invite-status" class="console-form-status" hidden></p>
+              <p id="invite-status" class="console-form-status" hidden role="status" aria-live="polite"></p>
             </div>
           </div>
 
@@ -1623,9 +1623,9 @@
               <p class="console-empty" id="public-keys-empty" hidden>Aucune clé publique pour l'instant.</p>
               <h2 style="margin-top:18px;">Générer une clé publique</h2>
               <form id="public-key-form" class="catalog-rule-add">
-                <input type="text" id="public-key-origins" placeholder="Domaines autorisés, ex. monsite.fr,www.monsite.fr (optionnel mais recommandé)">
+                <input type="text" id="public-key-origins" placeholder="Domaines autorisés, ex. monsite.fr,www.monsite.fr (optionnel mais recommandé)" aria-label="Domaines autorisés pour la clé publique">
                 <button type="submit" class="catalog-rule-add-btn">Générer la clé</button>
-                <span class="catalog-rule-status" id="public-key-status"></span>
+                <span class="catalog-rule-status" id="public-key-status" role="status" aria-live="polite"></span>
               </form>
             </div>
           </div>
@@ -1645,7 +1645,7 @@
                 <textarea id="feedback-message" rows="6" placeholder="Décrivez votre besoin ou le problème rencontré, avec autant de détail que possible…" maxlength="5000" required style="font-family:'Plus Jakarta Sans', sans-serif; font-size:14px; padding:10px 12px; border:1.5px solid var(--line); border-radius:8px; resize:vertical;"></textarea>
                 <button type="submit" class="btn" id="feedback-submit-btn" style="margin-top:14px; align-self:flex-start;">Envoyer ma suggestion</button>
               </form>
-              <p id="feedback-status" class="console-form-status" hidden></p>
+              <p id="feedback-status" class="console-form-status" hidden role="status" aria-live="polite"></p>
             </div>
           </div>
 

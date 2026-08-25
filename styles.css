@@ -33,11 +33,11 @@
   src:url('fonts/ipm-500.woff2') format('woff2');
   font-weight:500; font-style:normal; font-display:swap;
 }
-@font-face{
-  font-family:'Luckiest Guy';
-  src:url('fonts/luckiest-guy-400.woff2') format('woff2');
-  font-weight:400; font-style:normal; font-display:swap;
-}
+/* 'Luckiest Guy' retiree le 25 aout 2026 : declaree ici et utilisee nulle
+   part dans les 6 279 lignes de cette feuille. Un @font-face inutilise ne
+   telecharge rien, donc aucun gain de performance -- mais il laissait
+   croire que cette police faisait partie du systeme. Le fichier
+   fonts/luckiest-guy-400.woff2 peut etre supprime avec cette declaration. */
 
 :root{
   --bg:#FFFFFF;
@@ -74,6 +74,31 @@ body{
 .mono{ font-family:'IBM Plex Mono', monospace; }
 a{ color:inherit; }
 .wrap{ max-width:1100px; margin:0 auto; padding:0 28px; }
+
+/* U5 : DEJA TRAITE, ne pas y revenir. J'avais ajoute ici un
+   `pre, code{ overflow-x:auto }` le 25 aout avant de voir que le sujet
+   etait resolu plus bas (chercher « U5 (24 aout 2026 ») avec une meilleure
+   reponse : `:not(pre) > code{ overflow-wrap:break-word }` pour le code EN
+   LIGNE, et overflow-x:auto sur .docs-code pour les BLOCS. Poser
+   overflow-x:auto sur tous les <code> aurait produit une barre de
+   defilement au milieu d'une phrase -- exactement ce que le commentaire du
+   24 aout dit d'eviter. Regle retiree. */
+
+/* RETOUR AU CLIC (25 aout 2026). Le systeme comptait 160 regles :hover et
+   ZERO :active sur 6 279 lignes -- aucun element pressable ne confirmait
+   qu'il avait ete touche. Sur mobile, ou le survol n'existe pas, rien ne
+   repondait au doigt.
+   0.98 et non 0.97 : la console est un outil de travail quotidien, le
+   retour doit se sentir sans se voir. 140 ms est dans le budget du systeme
+   (120-200 ms). Herite du bloc prefers-reduced-motion plus bas, qui annule
+   deja toutes les durees. */
+button:active, .btn:active, a.btn:active,
+[role="button"]:active, .play-chip:active, .catalog-card-row button:active{
+  transform:scale(0.98);
+}
+button, .btn, a.btn, [role="button"], .play-chip{
+  transition:transform 140ms ease, background 150ms ease, border-color 150ms ease, color 150ms ease;
+}
 
 /* NAV */
 header{
@@ -183,6 +208,19 @@ header{
     min-width:44px; min-height:44px;
   }
   .play-input{ min-height:44px; }
+  /* Ajout du 25 aout 2026. Les quatre cibles ci-dessous mesuraient moins
+     de 24 px de haut, le seuil de CONFORMITE de WCAG 2.2 AA pour le web
+     (24 CSS px -- pas les 44 pt d'iOS ni les 48 dp d'Android, qui sont des
+     consignes de confort natives). Mesure en 375x812 :
+       .roi-pdf-toggle      255 x 18
+       .pricing-nudge-close  22 x 22
+       .logo                 82 x 22
+       .nav-link             29 x 20
+     Les autres cibles sous 44 px restent conformes ; elles gagnent malgre
+     tout le plancher ci-dessus par confort. */
+  .roi-pdf-toggle{ min-height:44px; }
+  .pricing-nudge-close{ width:44px; height:44px; }
+  .logo, .nav-link{ min-height:44px; display:inline-flex; align-items:center; }
 }
 /* Correctif (21 aout 2026) : dans la console, le menu compte se replie
    des 1080px alors que le hamburger n'apparaissait qu'a 760px. Entre les
@@ -391,7 +429,15 @@ header{
    Le regler a 12px produirait un gros point disgracieux sans rien
    apporter a personne. Conserve, et documente pour que la question ne se
    repose pas au prochain audit. */
-.badge::before{ content:"●"; font-size:8px; color:var(--green); }
+/* Pastille dessinee plutot qu'un glyphe "●" a 8px (audit typographie, 25
+   aout 2026). Un caractere texte a 8px etait la plus petite taille du
+   systeme, et son rendu dependait de la police disponible -- un rond
+   parfait sur une machine, un losange sur une autre. Une forme CSS ne
+   depend d'aucune police et sort du decompte des tailles de texte. */
+.badge::before{
+  content:""; display:inline-block; width:6px; height:6px;
+  border-radius:50%; background:var(--green); vertical-align:middle;
+}
 .badge-emoji::before{ content:none; }
 /* Badge EN uniquement, sur fond désormais sombre -- resterait illisible
    (fond bleu clair + texte bleu foncé sur un hero indigo) sans cette
@@ -1682,14 +1728,27 @@ h2{ font-size:clamp(26px,3.4vw,34px); font-weight:800; margin:0 0 18px; max-widt
   font-family:'IBM Plex Mono', monospace; font-size:11.5px; font-weight:700;
   color:#fff; border-radius:6px; padding:4px 9px; letter-spacing:0.03em;
 }
-.docs-method-get{ background:var(--green); }
+/* CORRECTIF DE CONTRASTE (25 aout 2026). GET etait la seule des quatre
+   pastilles restee sur une couleur non conforme : blanc sur var(--green)
+   (#1FAA6B) = 2,99:1, contre 4,5:1 exiges pour ce texte de 11,5px.
+   Le passage du 21 aout ci-dessous avait deja porte POST sur --blue-deep,
+   PUT et DELETE sur des tons assombris -- GET avait ete oublie.
+   #188654 est --green assombri a 79% de sa luminosite : meme teinte, meme
+   famille, 4,59:1 sur blanc. Meme raisonnement que --blue-deep face a
+   --blue : la couleur de marque reste l'accent, la couleur porteuse de
+   texte blanc est sa version dense. */
+.docs-method-get{ background:#188654; }
 /* Correctif (21 aout 2026) : le blanc vient de .docs-method, DEUX
    regles plus haut -- ma detection automatique, qui cherchait fond et
    couleur dans le meme bloc, l'avait manque. Trouve en relisant les
    huit occurrences restantes une par une plutot qu'en faisant confiance
    au compteur. */
 .docs-method-post{ background:var(--blue-deep); }
-.docs-method-put{ background:#C77D0A; }
+/* PUT etait a 3,30:1 sur #C77D0A -- trouve en re-mesurant APRES avoir
+   corrige GET : mon balayage dedupliquait par premiere classe, et les
+   quatre pastilles partagent .docs-method, donc une seule remontait a la
+   fois. #A56708 est le meme ocre a 83% de sa luminosite : 4,62:1. */
+.docs-method-put{ background:#A56708; }
 .docs-method-delete{ background:#C0392B; }
 
 /* U5 (24 aout 2026, audit UI/UX) : un element <code> depassait la
@@ -1794,6 +1853,36 @@ body.docs-dark .regex-copy p{ color:#CDD2F0; }
 /* .regex-copy code et .regex-reassure gardent leur fond clair propre
    (var(--blue-tint) + texte var(--blue-deep)) -- contraste interne
    autonome, meme raisonnement que les badges/pastilles deja traites. */
+/* CORRECTIF DE CONTRASTE (25 aout 2026) : l'intention ci-dessus n'etait
+   PAS appliquee sur docs.html.
+   .regex-reassure y est un <p> pose directement dans .docs-section (pas
+   dans .regex-copy). La regle du theme sombre
+   `body.docs-dark .docs-section p{ color:#CDD2F0 }` le colorait donc en
+   lavande clair -- specificite (0,2,2) contre (0,1,0) pour
+   `.regex-reassure` -- tout en lui laissant son fond clair
+   var(--blue-tint) (#EEF1FF).
+   Mesure sur les styles calcules : #CDD2F0 sur #EEF1FF = 1,33:1, contre
+   4,5:1 exiges par WCAG AA. Le texte des trois encarts de telechargement
+   etait quasiment invisible.
+   La regle ci-dessous monte a (0,3,2) et restaure la couleur annoncee par
+   le commentaire. L'icone SVG suit : elle est en stroke="currentColor". */
+/* POURQUOI !important ICI, exceptionnellement. .regex-reassure pose son
+   PROPRE fond clair (var(--blue-tint)) dans une page dont le theme peut
+   etre sombre. Un composant qui possede son fond doit posseder son texte :
+   toute regle d'ancetre qui ne change QUE la couleur du texte le rend
+   illisible par construction.
+   C'est arrive dans DEUX contextes differents, avec deux selecteurs
+   differents -- `body.docs-dark .docs-section p` sur docs.html, un autre
+   sur index.html. Une correction ciblee par contexte aurait laisse passer
+   le troisieme. La specificite ne suffit pas : il faudrait deviner a
+   l'avance chaque enveloppe future.
+   Mesure avant correctif : #CDD2F0 sur #EEF1FF = 1,33:1, contre 4,5:1
+   exiges. Le texte etait quasiment invisible sur index.html, produit.html
+   et docs.html. */
+.regex-reassure{ color:var(--blue-deep) !important; }
+.regex-reassure a:not(.btn){
+  color:var(--blue-deeper) !important; text-decoration-color:var(--blue);
+}
 
 body.docs-dark .vertical-card{ background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.14); }
 body.docs-dark .vertical-card h4{ color:#F5F6FF; }
@@ -2640,6 +2729,11 @@ body.docs-dark .why-card p{ color:#CDD2F0; }
   font-size:13.5px; color:var(--blue-deep); background:var(--blue-tint);
   border-radius:10px; padding:12px 16px; margin-top:14px !important;
 }
+/* Icone de telechargement (25 aout 2026) : remplace un emoji 🚀 qui tenait
+   lieu d'icone sur ces trois encarts. flex:none pour qu'elle ne s'ecrase
+   pas quand le texte est long, et 1px de decalage pour aligner son trait
+   sur la premiere ligne de texte. */
+.reassure-icon{ flex:none; margin-top:1px; }
 
 /* Composant Callout (chantier UX, 5 août 2026) -- remplace les
    avertissements en emoji brut par un encadré sémantique, plus reperable
