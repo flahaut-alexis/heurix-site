@@ -55,7 +55,13 @@ window.HEURIX_SEARCH_INDEX = [
   { title: "Why vector search fails on technical catalogs", excerpt: "Semantic similarity is a real advance, and the wrong tool when references encode dimensions, standards, and identifiers.", path: "en/blog/recherche-vectorielle-catalogues-techniques.html" },
   { title: "Connecting Heurix to Claude Desktop and Cursor with the MCP server", excerpt: "Ask a natural-language question about your catalog directly inside your AI agent — fifteen minutes to install.", path: "en/blog/guide-serveur-mcp-heurix.html" },
   { title: "Building a category page with Browse & Discovery", excerpt: "A category page has no query to process — just products to rank well. Index, verify, render.", path: "en/blog/guide-page-categorie-browse.html" },
-  { title: "Running your search day to day", excerpt: "Your catalog is indexed and search works. What comes after: reading what customers search for, fixing rankings.", path: "en/blog/guide-utilisation-console.html" }
+  { title: "Running your search day to day", excerpt: "Your catalog is indexed and search works. What comes after: reading what customers search for, fixing rankings.", path: "en/blog/guide-utilisation-console.html" },
+  { title: "Calculating the ROI of an e-commerce search engine", excerpt: "What share of your revenue goes through internal search, and what each failed search costs you.", path: "en/blog/calculer-roi-moteur-recherche.html" },
+  { title: "Your search statistics: which ones to watch", excerpt: "A dashboard shows more numbers than you have decisions to make. The three worth your attention each week.", path: "en/blog/comprendre-statistiques-recherche.html" },
+  { title: "Promoting a product without breaking your results", excerpt: "The engine ranks by relevance and knows nothing about your campaign. How to take back control without upsetting the rest.", path: "en/blog/mettre-en-avant-une-promotion.html" },
+  { title: "Preparing a sales campaign on the search side", excerpt: "Traffic rises, and with it the cost of every search that fails. What to check before, during and after.", path: "en/blog/preparer-operation-commerciale.html" },
+  { title: "A search returns nothing: fixing it in three minutes", excerpt: "A customer looks for a product you have in stock, and gets nothing. How to find those searches and fix them.", path: "en/blog/recherche-sans-resultat-corriger.html" },
+  { title: "Typo tolerance: why one strategy is never enough", excerpt: "An optimal algorithm on 500 products becomes a bottleneck on 50,000. Why the answer depends on a measurement.", path: "en/blog/tolerance-fautes-frappe-taille-catalogue.html" },
 ];
 
 window.HEURIX_SEARCH_LATEST_PATHS = [
