@@ -1090,6 +1090,11 @@ section.soft{ background:var(--bg-soft); }
    donnaient 340px de hauteur pour deux lignes de texte -- l'inverse du but
    poursuivi, qui est de baisser la densite sans gonfler la page. */
 #tarif-encart{ padding:44px 0; }
+/* Repere sectoriel unique sur l'accueil (26 aout 2026) : discret, mais lisible
+   sans clic. La source vit DANS la phrase, pas en note -- « FactFinder &
+   Sensefuel, 2026 » se lit et se verifie sur place. */
+.pb-repere{ margin:22px 0 0; font-size:14.5px; line-height:1.6; color:var(--ink-muted); }
+.pb-repere strong{ color:var(--ink); }
 .tarif-bloc{ display:flex; align-items:center; justify-content:space-between; gap:28px; flex-wrap:wrap; }
 .tarif-bloc-texte{ flex:1 1 320px; }
 .tarif-bloc .kicker{ margin-bottom:8px; }
