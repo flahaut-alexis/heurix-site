@@ -1080,6 +1080,24 @@ h1 span{ color:var(--blue); }
 /* SECTION generic */
 section{ padding:80px 0; }
 section.soft{ background:var(--bg-soft); }
+/* ENCART TARIF (25 aout 2026). Le prix n'existait nulle part ailleurs que
+   DANS le simulateur ROI, sous forme de cout annuel calcule -- jamais comme
+   un « a partir de ». Le simulateur ayant vocation a partir sur sa propre
+   page, cet encart doit exister AVANT son deplacement, sinon la vitrine
+   perdrait son seul affichage de prix. Aucune couleur ni composant nouveau :
+   .wrap, .kicker et .btn existants, plus la mise en page ci-dessous. */
+/* Rythme resserre : 80px de padding vertical comme les grandes sections
+   donnaient 340px de hauteur pour deux lignes de texte -- l'inverse du but
+   poursuivi, qui est de baisser la densite sans gonfler la page. */
+#tarif-encart{ padding:44px 0; }
+.tarif-bloc{ display:flex; align-items:center; justify-content:space-between; gap:28px; flex-wrap:wrap; }
+.tarif-bloc-texte{ flex:1 1 320px; }
+.tarif-bloc .kicker{ margin-bottom:8px; }
+.tarif-ligne{ font-size:19px; margin:0 0 6px; }
+.tarif-note{ font-size:14px; color:var(--ink-muted); margin:0; }
+.tarif-actions{ display:flex; gap:12px; flex-wrap:wrap; margin:0; }
+@media (max-width:640px){ .tarif-actions{ width:100%; } .tarif-actions .btn{ flex:1 1 auto; justify-content:center; } }
+
 .kicker{ font-size:13px; font-weight:700; color:var(--blue-deep); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:14px; }
 
 /* Accents sectoriels -- pages Solutions (10 aout 2026). Teintes calculees

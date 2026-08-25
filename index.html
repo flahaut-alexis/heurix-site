@@ -19,7 +19,7 @@
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css?v=1787672054">
+<link rel="stylesheet" href="styles.css?v=1787692742">
 <link rel="canonical" href="https://heurix.fr/">
 <script type="application/ld+json">
 {
@@ -314,31 +314,10 @@
 
     <div class="regex-block reveal">
       <div class="regex-copy">
-        <h3>Un avantage concurrentiel concret : comprendre les références, pas seulement les mots</h3>
-        <h3 class="pt-sous">Des règles qui lisent la structure</h3>
-        <p>Heurix reconnaît les composantes d'une référence — famille, dimension, matière, norme — et les transforme en attributs exploitables.</p>
-
-        <h3 class="pt-sous">Puis les combine en concepts</h3>
-        <p>Un second niveau assemble ces attributs en une combinaison recherchable, que le client demande sous n'importe quelle formulation — quel que soit votre secteur.</p>
-        <p class="regex-reassure"><svg width='14' height='14' viewBox='0 0 24 24' fill='currentColor' aria-hidden='true'><path d='M13 2 4.5 13.5H11l-1 8.5 8.5-11.5H12l1-8.5z'/></svg> Pas besoin d'écrire vous-même la moindre regex. Nos packs de règles — outillage, mode, industrie, automobile, électricité, plomberie, livres, électronique, vins &amp; spiritueux, finance &amp; compta — sont pré-configurés et s'activent au choix du secteur, à l'indexation. Un terme spécifique à votre catalogue nous échappe encore ? Ajoutez votre propre <strong>Custom Rule</strong> depuis la console, en décrivant simplement ce qu'elle doit reconnaître.</p>
-      </div>
-      <div class="demo-video" style="padding:24px 20px; display:flex; align-items:center; justify-content:center;">
-        <pre class="docs-code" style="margin:0; width:100%;"><code>// La cascade, en deux niveaux, quel que soit le secteur
-"m8" → DIAM_M8        "jean" → FAM_PANTALON
-"inox" → MAT_INOX     "w32/l34" → TAILLE_32_34
-
-DIAM_M8 + MAT_INOX → VIS_M8_INOX
-FAM_PANTALON + TAILLE_32_34 → JEAN_T32_34</code></pre>
-      </div>
-    </div>
-
-    <div class="regex-block reveal" style="margin-top:64px;">
-      <div class="regex-copy">
-        <h3>Le prisme Heurix : une référence, plusieurs informations</h3>
-        <h3 class="pt-sous">Une référence, plusieurs informations</h3>
-        <p>Une référence produit n'est jamais une suite de lettres au hasard : c'est plusieurs informations compressées dans une même chaîne — peu importe le secteur. La plupart des moteurs comparent des caractères et échouent dès que l'écriture change.</p>
-        <p>Heurix fonctionne comme un <strong>prisme</strong> : la référence entre en un seul faisceau, ressort décomposée en attributs recherchables — et votre client la retrouve par n'importe quel fragment, dans n'importe quel ordre, avec ou sans faute de frappe.</p>
-        <p class="regex-reassure"><svg width='14' height='14' viewBox='0 0 24 24' fill='currentColor' aria-hidden='true'><path d='M13 2 4.5 13.5H11l-1 8.5 8.5-11.5H12l1-8.5z'/></svg> Ces deux schémas tournent sur le vrai moteur Heurix, pas une maquette — la même mécanique, appliquée à deux secteurs différents. Explorez les <a href="docs.html#ep-rulepacks">dix packs de règles</a> ou <a href="docs.html#ep-custom-rules">créez le vôtre</a>.</p>
+        <h3>Une référence, plusieurs façons de la chercher</h3>
+        <p>Une référence produit n'est jamais une suite de lettres au hasard : c'est plusieurs informations compressées dans une même chaîne — famille, dimension, matière, norme. Heurix les sépare, et votre client retrouve le produit par n'importe quel fragment, dans n'importe quel ordre, avec ou sans faute de frappe.</p>
+        <p>La démonstration en haut de page tourne sur ce moteur — les chiffres ci-dessus sont mesurés, pas promis.</p>
+        <p class="regex-reassure"><svg width='14' height='14' viewBox='0 0 24 24' fill='currentColor' aria-hidden='true'><path d='M13 2 4.5 13.5H11l-1 8.5 8.5-11.5H12l1-8.5z'/></svg> Rien à écrire de votre côté : dix packs de règles sectoriels s'activent au choix du secteur. Un terme propre à votre catalogue ? Ajoutez une <strong>Custom Rule</strong> depuis la console, en décrivant ce qu'elle doit reconnaître. <a href="docs.html#cascade">Le détail du mécanisme est dans la documentation.</a></p>
       </div>
       <div class="demo-video" style="padding:24px 20px; display:flex; align-items:center; justify-content:center;">
         <img src="img/prisme-marketing-double.svg?v=1787610626" width="680" height="600" alt="Schéma : deux références, une outillage (M8 x 20 - Inox A2) et une mode (Jean W32/L34 - Denim brut), traversent chacune la loupe Heurix et ressortent décomposées en trois informations : deux dimensions et une matière" style="width:100%; max-width:420px;">
@@ -350,12 +329,6 @@ FAM_PANTALON + TAILLE_32_34 → JEAN_T32_34</code></pre>
       <p class="section-lede" style="margin-bottom:28px;">Plus un catalogue ou une base de contenu est volumineux, plus le gain d'une recherche bien réglée est important — parce que la recherche native décroche exactement là où le besoin de précision est le plus fin. Sept de ces secteurs ont déjà un pack de règles dédié, prêt à l'emploi ; les autres se couvrent avec des <strong>Custom Rules</strong> en quelques minutes, sans écrire de regex.</p>
       <div class="vertical-grid">
         <div class="vertical-card">
-          <div class="icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.38 3.46 16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.47a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.47a2 2 0 00-1.34-2.23z"/></svg></div>
-          <h4>Mode &amp; retail</h4>
-          <p>Tailles composées (W32/L34), coloris, matières, déclinaisons — et des clients qui tapent vite, avec des fautes.</p>
-          <div class="vertical-card-pack">Pack dédié : mode</div>
-        </div>
-        <div class="vertical-card">
           <div class="icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg></div>
           <h4>Outillage &amp; quincaillerie</h4>
           <p>Dizaines de milliers de références, codes produits normés (DIN, ISO), besoin de filtrer par dimension, matière, compatibilité.</p>
@@ -366,34 +339,6 @@ FAM_PANTALON + TAILLE_32_34 → JEAN_T32_34</code></pre>
           <h4>Pièces détachées &amp; industrie</h4>
           <p>Recherche par référence constructeur ou équivalence, tolérance aux formats de codes multiples selon le fournisseur.</p>
           <div class="vertical-card-pack">Pack dédié : industrie</div>
-        </div>
-        <div class="vertical-card">
-          <div class="icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg></div>
-          <h4>Librairie &amp; culture</h4>
-          <p>ISBN, éditions, formats, collections : le même titre existe en dizaines de versions — la démo de cette page en est la preuve.</p>
-          <div class="vertical-card-pack">Pack dédié : livres</div>
-        </div>
-        <div class="vertical-card">
-          <div class="icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6z"/></svg></div>
-          <h4>Électrique &amp; électronique</h4>
-          <p>Caractéristiques techniques précises (voltage, ampérage, normes), catalogues qui évoluent en continu.</p>
-          <div class="vertical-card-pack">Pack dédié : électronique</div>
-        </div>
-        <div class="vertical-card">
-          <div class="icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21V9l9-6 9 6v12"/><path d="M9 21v-6h6v6"/></svg></div>
-          <h4>Équipement pro &amp; BTP</h4>
-          <p>Gros volumes, acheteurs professionnels qui cherchent par référence exacte plus que par mot-clé descriptif.</p>
-        </div>
-        <div class="vertical-card">
-          <div class="icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 22h8"/><path d="M12 15v7"/><path d="M12 15a5 5 0 005-5V3H7v7a5 5 0 005 5z"/></svg></div>
-          <h4>Vins &amp; spiritueux</h4>
-          <p>Millésimes, domaines, appellations, formats (37,5 cl, magnum) : des références où chaque chiffre compte.</p>
-          <div class="vertical-card-pack">Pack dédié : vins</div>
-        </div>
-        <div class="vertical-card">
-          <div class="icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
-          <h4>Contenu, blog &amp; documentation</h4>
-          <p>Articles, FAQ, base de connaissances : la même tolérance aux fautes qui retrouve une référence produit retrouve une question mal formulée. (Essayez Ctrl+K sur cette page.)</p>
         </div>
         <div class="vertical-card vertical-card-cta">
           <div class="icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
@@ -465,7 +410,7 @@ FAM_PANTALON + TAILLE_32_34 → JEAN_T32_34</code></pre>
       <div class="how-step">
         <div class="how-step-num">2</div>
         <h3>La cascade annote chaque produit</h3>
-        <p>« M8 x 20 — A2 » devient <code class="docs-inline-code">DIAM_M8</code> + <code class="docs-inline-code">LONG_20</code> + <code class="docs-inline-code">MAT_INOX</code>. Les requêtes de vos clients traversent les mêmes règles : la correspondance se fait sur le sens, pas sur la forme.</p>
+        <p>« M8 x 20 — A2 », « vis M8 inox », « m8x20 A2 » : trois écritures, un même produit reconnu. Les requêtes de vos clients traversent les mêmes règles que vos fiches — la correspondance se fait sur le sens, pas sur la forme.</p>
       </div>
       <div class="how-step">
         <div class="how-step-num">3</div>
@@ -475,6 +420,20 @@ FAM_PANTALON + TAILLE_32_34 → JEAN_T32_34</code></pre>
     </div>
     <p class="voir-tout"><a href="docs.html" class="btn btn-ghost">Voir la doc technique &rarr;</a></p>
     <p class="how-note">La référence complète des endpoints est dans la <a href="docs.html">documentation API</a>. <a href="integrations.html">Guides d'intégration avec du vrai code</a> disponibles pour Shopify, PrestaShop, WooCommerce et Magento.</p>
+  </div>
+</section>
+
+<section id="tarif-encart">
+  <div class="wrap tarif-bloc">
+    <div class="tarif-bloc-texte">
+      <div class="kicker">Tarifs</div>
+      <p class="tarif-ligne"><strong>À partir de 19 €/mois.</strong> Essai gratuit de 14 jours, sans carte bancaire.</p>
+      <p class="tarif-note">Règles de comptage publiques, consommation consultable en temps réel.</p>
+    </div>
+    <p class="tarif-actions">
+      <a href="pricing.html" class="btn">Voir les plans</a>
+      <a href="#tarifs" class="btn btn-ghost">Estimer mon gain</a>
+    </p>
   </div>
 </section>
 
@@ -533,7 +492,7 @@ FAM_PANTALON + TAILLE_32_34 → JEAN_T32_34</code></pre>
             <span id="roi-lift-val" class="roi-slider-badge mono">12%</span>
           </div>
           <input type="range" id="roi-lift" min="3" max="25" step="1" value="12">
-          <div class="roi-range-hint"><span>3% prudent</span><span class="roi-range-mid">Gain courant observé : 10 à 15%</span><span>25% ambitieux</span></div>
+          <div class="roi-range-hint"><span>3% prudent</span><span>25% ambitieux</span></div>
         </div>
 
         <div class="roi-field roi-slider">
