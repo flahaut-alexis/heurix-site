@@ -18,15 +18,47 @@
   poste.
 -->
 <style>
+  /* POLICES DU SITE, MEME MECANISME QUE styles.css (25 aout 2026).
+     Elles y sont AUTO-HEBERGEES en @font-face sur fonts/*.woff2 -- aucun
+     appel a Google Fonts nulle part sur le site. On redeclare donc les
+     memes @font-face sur les memes fichiers plutot que de charger
+     styles.css : cette page est sombre et autonome, la feuille du site fait
+     6 279 lignes de theme clair qui se battraient avec les regles d'ici.
+     Aucune requete supplementaire de feuille de style, et les .woff2 sont
+     deja dans le cache du navigateur pour qui a vu le site.
+     Seuls les poids REELLEMENT utilises ici sont declares : 400 (corps),
+     600 (boutons, en-tetes de colonne), 700 (titres de carte, badges),
+     800 (les grandes valeurs). Le 500 de styles.css ne sert pas ici. */
+  @font-face{ font-family:'Plus Jakarta Sans'; src:url('fonts/pjs-400.woff2') format('woff2');
+              font-weight:400; font-style:normal; font-display:swap; }
+  @font-face{ font-family:'Plus Jakarta Sans'; src:url('fonts/pjs-600.woff2') format('woff2');
+              font-weight:600; font-style:normal; font-display:swap; }
+  @font-face{ font-family:'Plus Jakarta Sans'; src:url('fonts/pjs-700.woff2') format('woff2');
+              font-weight:700; font-style:normal; font-display:swap; }
+  @font-face{ font-family:'Plus Jakarta Sans'; src:url('fonts/pjs-800.woff2') format('woff2');
+              font-weight:800; font-style:normal; font-display:swap; }
+  @font-face{ font-family:'IBM Plex Mono'; src:url('fonts/ipm-400.woff2') format('woff2');
+              font-weight:400; font-style:normal; font-display:swap; }
+
   :root{
     --fond:#0F1523; --carte:#182234; --ligne:#26334A;
     --texte:#E6EDF7; --attenue:#8FA0BC;
+    /* --bleu RESTE #5B9BF8 et NE DOIT PAS passer a #5468FF, l'accent du
+       site (25 aout 2026). Mesure des contrastes dans les deux roles ou
+       --bleu sert reellement ici, seuil AA texte 4,5:1 :
+                              fond de bouton    texte du badge
+                              (texte #08111F)   (sur --carte)
+         #5468FF (site)           4,32:1            3,64:1     ECHEC
+         #5B9BF8 (ici)            6,74:1            5,69:1     OK
+       L'accent du site est concu pour du texte sombre sur fond clair ; sur
+       #0F1523 il n'a pas la luminosite necessaire. Un accent illisible est
+       pire qu'un accent approximatif. */
     --bleu:#5B9BF8; --vert:#3DD68C; --ambre:#F5B942; --rouge:#F87171;
   }
   *{ box-sizing:border-box; }
   body{
     margin:0; padding:28px 22px 60px;
-    font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+    font-family:'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
     background:var(--fond); color:var(--texte); font-size:15px; line-height:1.5;
   }
   .wrap{ max-width:1080px; margin:0 auto; }
@@ -69,7 +101,9 @@
   table{ width:100%; border-collapse:collapse; font-size:13.5px; }
   th,td{ text-align:left; padding:7px 10px; border-bottom:1px solid var(--ligne); }
   th{ color:var(--attenue); font-weight:600; font-size:12px; text-transform:uppercase; letter-spacing:.05em; }
-  .mono{ font-variant-numeric:tabular-nums; }
+  /* Meme regle et meme police que styles.css:74, pour que les chiffres de
+     cette page se lisent comme ceux de la console. */
+  .mono{ font-family:'IBM Plex Mono', monospace; font-variant-numeric:tabular-nums; }
 
   /* Statuts d'inscrit. Aucune couleur nouvelle : les quatre teintes du
      jeu existant suffisent, et chacune dit ce qu'il y a a faire.
@@ -77,15 +111,23 @@
        bleu  essai en cours      rien a faire, mais l'echeance approche
        ambre essai expire        une relance commerciale
        rouge essai sans echeance un defaut a corriger, pas un client a relancer */
-  .badge{ display:inline-block; padding:2px 8px; border-radius:100px;
-          font-size:11.5px; font-weight:700; letter-spacing:.02em;
-          border:1px solid; background:transparent; }
+  /* nowrap : Plus Jakarta Sans est un peu plus large que la pile systeme et
+     faisait passer « Essai sans echeance » sur deux lignes, ce qui doublait
+     la hauteur de la ligne de tableau. Une pastille de statut ne se coupe
+     pas -- c'est une etiquette, pas une phrase. */
+  .badge{ display:inline-block; white-space:nowrap; padding:2px 8px;
+          border-radius:100px; font-size:11.5px; font-weight:700;
+          letter-spacing:.02em; border:1px solid; background:transparent; }
   .b-payant{ color:var(--vert);  border-color:var(--vert); }
   .b-essai{ color:var(--bleu);   border-color:var(--bleu); }
   .b-expire{ color:var(--ambre); border-color:var(--ambre); }
   .b-defaut{ color:var(--rouge); border-color:var(--rouge); }
   /* Une case vide doit se LIRE comme vide, pas se confondre avec un zero. */
   .vide{ color:var(--attenue); }
+  /* Une mention dans un en-tete de colonne est une NOTE, pas une partie du
+     libelle : elle echappe aux majuscules et a l'interlettrage du th, sinon
+     « (NON COLLECTEE) » se lit comme un second titre. */
+  th .vide{ text-transform:none; letter-spacing:0; font-weight:400; }
   .large{ grid-column:1/-1; }
   .erreur{ color:var(--rouge); font-size:13.5px; }
   .maj{ color:var(--attenue); font-size:12px; margin-top:24px; }
@@ -168,8 +210,16 @@
   function rendreInscrits(c) {
     if (!c || !(c.elements || []).length) return "";
     var h = "<div class='carte large'><h2>Inscrits</h2><table>" +
+            // « non collectée » DANS L'EN-TETE, et pas seulement en info-bulle
+            // sur les cellules : une colonne entierement vide se lit comme une
+            // panne, et personne ne survole une case vide pour verifier. Le
+            // dire une fois en haut leve le doute pour toute la colonne.
             "<tr><th>Créé le</th><th>Compte</th><th>Clé</th><th>Plan</th><th>Statut</th>" +
-            "<th>Fin d'essai</th><th>Périodicité</th><th>Ranking</th></tr>";
+            "<th>Fin d'essai</th><th>Périodicité " +
+              "<span class='vide' title=\"La périodicité mensuel/annuel n'est " +
+              "persistée nulle part : elle n'existe que chez Stripe. La colonne " +
+              "attend que le webhook la remplisse.\">(non collectée)</span></th>" +
+            "<th>Ranking</th></tr>";
     c.elements.forEach(function (e) {
       var st = STATUTS[e.statut] || { texte: e.statut, classe: "b-defaut" };
       h += "<tr>" +
@@ -180,10 +230,22 @@
                 : "") +
            "</td>" +
            // La clé sert a retrouver le compte dans error_log, qui la stocke.
-           // Affichée telle que l'API la masque, sans rien en retirer : la
-           // reformater ici coupleraient cet écran au format de masquer(),
-           // et on a déjà appris ce que coûte un format parsé en deux endroits.
-           "<td class='mono vide'>" + echapper(e.key_prefix || "—") + "</td>" +
+           //
+           // LE SUFFIXE « (35 car.) » EST RETIRE DE L'AFFICHAGE (25 aout 2026).
+           // Verifie avant de le faire : une cle serveur vaut toujours
+           // « hx_ » + secrets.token_urlsafe(24), soit 3 + 32 = 35 caracteres,
+           // sans exception. Repete a l'identique sur chaque ligne, il ne
+           // distingue donc rien -- c'est du bruit, pas de l'information.
+           //
+           // Coupe a LONGUEUR FIXE, jamais par analyse du format. Decouper
+           // sur « …( » coupleraient cet ecran a logs.masquer(), et on a
+           // deja mesure cette semaine ce que coute un format lu en deux
+           // endroits. Une slice(0, 9) degrade proprement : si masquer()
+           // changeait, on afficherait les neuf premiers caracteres de ce
+           // qu'elle rend, ce qui reste un prefixe utilisable. La valeur
+           // complete reste dans le title, rien n'est perdu.
+           "<td class='mono vide' title=\"" + echapper(e.key_prefix || "") + "\">" +
+             echapper((e.key_prefix || "—").slice(0, 9)) + "</td>" +
            "<td>" + echapper(e.plan) + "</td>" +
            "<td><span class='badge " + st.classe + "' title=\"" +
              echapper(st.aide) + "\">" + echapper(st.texte) + "</span></td>" +
@@ -236,7 +298,12 @@
          (d.comptes.sans_societe
             ? "dont " + n(d.comptes.sans_societe) + " clé" +
               (d.comptes.sans_societe > 1 ? "s" : "") + " sans société<br>" : "") +
-         n(d.comptes.ayant_indexe) + " ont indexé un catalogue<br>" +
+         // « 4 sur 4 » et non « 4 » : un decompte d'activation sans son
+         // denominateur ne dit rien. 4/4, tout le monde s'est servi du
+         // produit ; 2/4, la moitie des inscrits n'a jamais rien indexe --
+         // deux situations opposees derriere le meme chiffre.
+         n(d.comptes.ayant_indexe) + " sur " + n(d.comptes.total) +
+         " ont indexé un catalogue<br>" +
          n(d.comptes.cles_serveur) + " clés serveur — " +
          Object.keys(d.comptes.par_plan).map(function (p) {
            return p + " : " + d.comptes.par_plan[p];
