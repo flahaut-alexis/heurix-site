@@ -297,3 +297,62 @@ describe("console.js — un detail en liste devient une phrase", () => {
     expect(document.getElementById("login-error").textContent).toBe("Trop de tentatives. Réessayez dans 30 secondes.");
   });
 });
+
+// ---------------------------------------------------------------------------
+// Propagation du message aux sites qui affichaient un générique (25 août 2026).
+//
+// Le formulaire de connexion ne traitait QUE le 401 : tout le reste — 429,
+// 403, 5xx — tombait sur « Impossible de joindre api.heurix.fr ». C'est le
+// chemin exact qui a coûté un quart d'heure de recherche de panne.
+// ---------------------------------------------------------------------------
+
+function chargerConsoleSansSession(reponsePourLogin) {
+  const html = fs.readFileSync(path.join(RACINE, "console.html"), "utf8");
+  const dom = new JSDOM(html, { url: "http://localhost/console.html", runScripts: "outside-only" });
+  const { window } = dom;
+  global.window = window; global.document = window.document; global.localStorage = window.localStorage;
+  window.Element.prototype.scrollIntoView = () => {};
+  window.localStorage.clear();
+  const f = async () => reponsePourLogin;
+  global.fetch = f; window.fetch = f;
+  window.eval(fs.readFileSync(path.join(RACINE, "console-i18n.js"), "utf8"));
+  window.eval(fs.readFileSync(path.join(RACINE, "console.js"), "utf8"));
+  return { window, document: window.document };
+}
+
+async function soumettreConnexion(document, window) {
+  document.getElementById("login-email").value = "marchand@exemple.fr";
+  document.getElementById("login-password").value = "motdepasse";
+  document.getElementById("login-form").dispatchEvent(new window.Event("submit", { cancelable: true }));
+  await new Promise((r) => setTimeout(r, 0));
+}
+
+describe("console.js — le formulaire de connexion dit ce que l'API a répondu", () => {
+  it("un 429 affiche le délai exact, pas « impossible de joindre »", async () => {
+    const { window, document } = chargerConsoleSansSession({
+      ok: false, status: 429,
+      json: async () => ({ detail: "Trop de tentatives. Réessayez dans 30 secondes." }),
+    });
+    await soumettreConnexion(document, window);
+    const texte = document.getElementById("login-error").textContent;
+    expect(texte).toBe("Trop de tentatives. Réessayez dans 30 secondes.");
+    expect(texte).not.toContain("Impossible de joindre");
+  });
+
+  it("un 401 garde son message dédié — l'API masque volontairement la cause", async () => {
+    const { window, document } = chargerConsoleSansSession({
+      ok: false, status: 401, json: async () => ({ detail: "Identifiants invalides." }),
+    });
+    await soumettreConnexion(document, window);
+    expect(document.getElementById("login-error").textContent).toBe("Email ou mot de passe incorrect.");
+  });
+
+  it("un 422 en liste devient une phrase, même sur ce formulaire", async () => {
+    const { window, document } = chargerConsoleSansSession({
+      ok: false, status: 422,
+      json: async () => ({ detail: [{ type: "missing", loc: ["body", "password"], msg: "Field required" }] }),
+    });
+    await soumettreConnexion(document, window);
+    expect(document.getElementById("login-error").textContent).toBe("Le mot de passe est obligatoire.");
+  });
+});

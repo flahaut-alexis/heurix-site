@@ -1365,8 +1365,9 @@
           essai.hidden = true;
         }
       }
-    }).catch(function () {
-      grille.innerHTML = "<p class='console-panel-note'>" + T("Impossible de charger votre abonnement.") + "</p>";
+    }).catch(function (err) {
+      var texte = (err && err.status) ? err.message : T("Impossible de charger votre abonnement.");
+      grille.innerHTML = "<p class='console-panel-note'>" + esc(texte) + "</p>";
     });
   }
 
@@ -4590,11 +4591,11 @@
           // rafraichit l'apercu pour le montrer immediatement.
           refreshSoPreview(key);
         })
-        .catch(function () {
+        .catch(function (err) {
           soSynonymeSubmitBtn.disabled = false;
           if (soSynonymeStatus) {
             soSynonymeStatus.className = "catalog-rule-status err";
-            soSynonymeStatus.textContent = T("Erreur — réessayez.");
+            soSynonymeStatus.textContent = (err && err.status) ? err.message : T("Erreur — réessayez.");
           }
         });
     });
@@ -6525,8 +6526,9 @@
         catalog.products = data.products; catalog.annotations = data.annotations; catalog.synonym_groups = data.synonym_groups;
         status.className = "catalog-rulepack-status ok"; status.textContent = T("Enregistré — produits réindexés.");
         updateCardMeta(cardEl, catalog);
-      }).catch(function () {
-        status.className = "catalog-rulepack-status err"; status.textContent = T("Échec — réessayez.");
+      }).catch(function (err) {
+        status.className = "catalog-rulepack-status err";
+        status.textContent = (err && err.status) ? err.message : T("Échec — réessayez.");
       }).then(function () { saveBtn.disabled = false; });
     });
     // Synonymes et regles personnalisees ne sont plus dans la carte : les
@@ -6680,10 +6682,11 @@
       var voulu = catalogueCourant();
       var connu = catalogs.some(function (c) { return c.catalog === voulu; });
       afficherCarteCatalogue(connu ? voulu : catalogs[0].catalog);
-    }).catch(function () {
+    }).catch(function (err) {
       loading.hidden = true;
       empty.hidden = false;
-      empty.textContent = T("Impossible de charger vos catalogues pour le moment.");
+      empty.textContent = (err && err.status) ? err.message
+        : T("Impossible de charger vos catalogues pour le moment.");
     });
   }
 
@@ -6745,7 +6748,14 @@
         startSession(data.session_token, data.keys[0].key);
       })
       .catch(function (err) {
-        var reason = err && err.status === 401 ? L.loginErrorInvalid : L.loginErrorNetwork;
+        // 401 garde son message PROPRE, et ce n'est pas un oubli : l'API
+        // renvoie deliberement le meme texte pour un email inconnu et un
+        // mauvais mot de passe, afin de ne pas reveler quels emails ont un
+        // compte. Le repeter ici serait redondant ; le remplacer par le
+        // detail de l'API n'apporterait rien.
+        var reason = err && err.status === 401 ? L.loginErrorInvalid
+                   : (err && err.status) ? err.message
+                   : L.loginErrorNetwork;
         loginError.textContent = reason;
         loginError.hidden = false;
       })
@@ -6865,8 +6875,8 @@
         resetRequestMsg.hidden = false;
         resetRequestForm.reset();
       })
-      .catch(function () {
-        resetRequestMsg.textContent = L.loginErrorNetwork;
+      .catch(function (err) {
+        resetRequestMsg.textContent = (err && err.status) ? err.message : L.loginErrorNetwork;
         resetRequestMsg.hidden = false;
       })
       .then(function () {
@@ -6927,8 +6937,9 @@
           ? T("Vous rejoignez l'équipe de {0} ({1}).", data.raison_sociale, data.email)
           : T("Invitation pour {0}.", data.email);
       })
-      .catch(function () {
-        acceptInviteIntro.textContent = T("Ce lien d'invitation semble invalide ou expiré.");
+      .catch(function (err) {
+        acceptInviteIntro.textContent = (err && err.status) ? err.message
+          : T("Ce lien d'invitation semble invalide ou expiré.");
       });
     showLogin();
   } else if (resetTokenFromUrl) {
