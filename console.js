@@ -98,6 +98,111 @@
     return resultat;
   }
 
+  // ---------------------------------------------------------------------
+  // MISE EN FORME DES ERREURS DE L'API (25 aout 2026).
+  //
+  // `apiFetch` et `apiPost` posaient deja `new Error(data.detail)`. Le
+  // probleme n'etait pas le transport, c'etait `detail` lui-meme : sur une
+  // erreur de validation, FastAPI le renvoie sous forme de LISTE d'objets
+  // Pydantic. `new Error([{...}])` donne « [object Object] » -- verifie en
+  // execution, pas suppose. Les 15 sites qui affichent deja err.message
+  // montraient donc cela a un marchand.
+  //
+  // Un seul endroit : les deux enveloppes passent ici, et tout site qui
+  // affiche err.message en profite sans rien changer.
+  // ---------------------------------------------------------------------
+
+  // Libelles PORTEURS DE LEUR ARTICLE : « l'email » et non « email », pour
+  // composer une phrase sans regle de grammaire a deviner. Table volontairement
+  // fermee aux champs que les formulaires de la console envoient reellement ;
+  // un champ inconnu retombe sur son nom brut, jamais sur du vide.
+  var CHAMPS = {
+    email: T("l'email"), password: T("le mot de passe"),
+    raison_sociale: T("la raison sociale"), numero_tva: T("le numéro de TVA"),
+    token: T("le lien"), items: T("les produits"), q: T("la recherche"),
+    synonyms: T("les synonymes"), name: T("le nom"), id: T("l'identifiant"),
+    rulepack: T("le pack de règles"), pattern: T("le motif"),
+  };
+
+  function majuscule(t) { return t ? t.charAt(0).toUpperCase() + t.slice(1) : t; }
+
+  // `loc` vaut ('body','email') ou ('body','items',3,'id') selon la
+  // profondeur. On retire le conteneur de tete et on nomme l'indice : un
+  // marchand cherche « le produit n°4 », pas « items[3] ».
+  function libelleDeLoc(loc) {
+    var parties = (loc || []).filter(function (p) {
+      return p !== "body" && p !== "query" && p !== "path";
+    });
+    var champ = null, rang = null;
+    parties.forEach(function (p) {
+      if (typeof p === "number") rang = p + 1;
+      else champ = p;
+    });
+    var nom = CHAMPS[champ] || champ || T("la valeur envoyée");
+    return rang === null ? nom : T("{0} du produit n°{1}", nom, rang);
+  }
+
+  function phraseDErreur(e) {
+    var ctx = e.ctx || {};
+    var nom = libelleDeLoc(e.loc);
+    if (e.type === "string_too_short") {
+      return ctx.min_length === 1
+        ? T("{0} ne peut pas être vide.", majuscule(nom))
+        : T("{0} fait moins de {1} caractères.", majuscule(nom), ctx.min_length);
+    }
+    if (e.type === "string_too_long" || e.type === "too_long") {
+      return T("{0} dépasse {1} caractères.", majuscule(nom), ctx.max_length);
+    }
+    // Repli : le message de Pydantic est en anglais, mais il est EXACT.
+    // Mieux vaut un message exact en anglais qu'un message vague en francais.
+    return majuscule(nom) + " : " + (e.msg || T("valeur invalide")) + ".";
+  }
+
+  function messageDeDetail(detail) {
+    if (typeof detail === "string") return detail;
+    if (!Array.isArray(detail) || !detail.length) return null;
+
+    // Les champs manquants sont REGROUPES : « L'email, le mot de passe et la
+    // raison sociale sont obligatoires. » vaut mieux que trois phrases dont
+    // chacune dit la meme chose.
+    var manquants = [], autres = [];
+    detail.forEach(function (e) {
+      if (e && e.type === "missing") manquants.push(libelleDeLoc(e.loc));
+      else if (e) autres.push(phraseDErreur(e));
+    });
+
+    var phrases = [];
+    if (manquants.length === 1) {
+      phrases.push(T("{0} est obligatoire.", majuscule(manquants[0])));
+    } else if (manquants.length > 1) {
+      var debut = manquants.slice(0, -1).join(", ");
+      var fin = manquants[manquants.length - 1];
+      phrases.push(T("{0} et {1} sont obligatoires.", majuscule(debut), fin));
+    }
+    phrases = phrases.concat(autres);
+
+    // PLAFOND. Une liste de douze lignes n'aide personne : on montre les
+    // trois premieres et on annonce le reste.
+    if (phrases.length > 3) {
+      var reste = phrases.length - 3;
+      phrases = phrases.slice(0, 3).concat([T("Et {0} autre(s) problème(s).", reste)]);
+    }
+    return phrases.join(" ");
+  }
+
+  // `solution` est le champ ACTIONNABLE du 422 de lot trop volumineux --
+  // « Découpez votre catalogue en 2 envois » -- et il n'etait jamais lu.
+  // `documentation` reste ignore a dessein : une URL non cliquable dans un
+  // noeud texte est du bruit.
+  function erreurDeReponse(data, statut) {
+    data = data || {};
+    var texte = messageDeDetail(data.detail) || ("HTTP " + statut);
+    if (data.solution) texte += "\n" + data.solution;
+    var err = new Error(texte);
+    err.status = statut;
+    return err;
+  }
+
   function apiFetch(path, token, options) {
     options = options || {};
     var headers = { Authorization: "Bearer " + token };
@@ -108,11 +213,7 @@
       body: options.body ? JSON.stringify(options.body) : undefined,
     }).then(function (r) {
       return r.json().catch(function () { return {}; }).then(function (data) {
-        if (!r.ok) {
-          var err = new Error(data.detail || ("HTTP " + r.status));
-          err.status = r.status;
-          throw err;
-        }
+        if (!r.ok) { throw erreurDeReponse(data, r.status); }
         return data;
       });
     });
@@ -123,11 +224,7 @@
       method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body),
     }).then(function (r) {
       return r.json().catch(function () { return {}; }).then(function (data) {
-        if (!r.ok) {
-          var err = new Error(data.detail || ("HTTP " + r.status));
-          err.status = r.status;
-          throw err;
-        }
+        if (!r.ok) { throw erreurDeReponse(data, r.status); }
         return data;
       });
     });

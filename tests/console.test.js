@@ -198,3 +198,102 @@ describe("console.js — une erreur transitoire ne déconnecte pas", () => {
     expect(document.getElementById("login-error").textContent).toContain("session a expiré");
   });
 });
+
+// ---------------------------------------------------------------------------
+// Mise en forme des erreurs de validation (25 août 2026).
+//
+// `detail` est une CHAÎNE sur les erreurs métier, mais une LISTE d'objets
+// Pydantic sur les erreurs de validation. `new Error(liste)` donnait
+// « [object Object] » — et les 15 sites qui affichaient déjà err.message
+// montraient donc cela à un marchand.
+//
+// Les formes testées ici sont celles produites réellement par les modèles
+// de l'API (SignupBody, ConfirmPasswordResetBody), relevées hors ligne en
+// les validant avec de mauvaises entrées — pas inventées.
+// ---------------------------------------------------------------------------
+
+describe("console.js — un detail en liste devient une phrase", () => {
+  it("trois champs manquants tiennent en UNE phrase", async () => {
+    const { document } = chargerConsoleAvecReponse(422, {
+      detail: [
+        { type: "missing", loc: ["body", "email"], msg: "Field required" },
+        { type: "missing", loc: ["body", "password"], msg: "Field required" },
+        { type: "missing", loc: ["body", "raison_sociale"], msg: "Field required" },
+      ],
+    });
+    await attendreMicrotaches();
+    const texte = document.getElementById("login-error").textContent;
+    expect(texte).toBe("L'email, le mot de passe et la raison sociale sont obligatoires.");
+  });
+
+  it("un seul champ manquant reste au singulier", async () => {
+    const { document } = chargerConsoleAvecReponse(422, {
+      detail: [{ type: "missing", loc: ["body", "password"], msg: "Field required" }],
+    });
+    await attendreMicrotaches();
+    expect(document.getElementById("login-error").textContent).toBe("Le mot de passe est obligatoire.");
+  });
+
+  it("min_length=1 se dit « ne peut pas être vide », pas « moins de 1 caractère »", async () => {
+    const { document } = chargerConsoleAvecReponse(422, {
+      detail: [{
+        type: "string_too_short", loc: ["body", "raison_sociale"],
+        msg: "String should have at least 1 character", ctx: { min_length: 1 },
+      }],
+    });
+    await attendreMicrotaches();
+    expect(document.getElementById("login-error").textContent).toBe("La raison sociale ne peut pas être vide.");
+  });
+
+  it("un indice de liste devient « du produit n°4 », pas « items[3] »", async () => {
+    const { document } = chargerConsoleAvecReponse(422, {
+      detail: [{ type: "missing", loc: ["body", "items", 3, "id"], msg: "Field required" }],
+    });
+    await attendreMicrotaches();
+    expect(document.getElementById("login-error").textContent).toContain("du produit n°4");
+  });
+
+  it("au-delà de trois problèmes, le reste est annoncé et non déroulé", async () => {
+    const champs = ["name", "pattern", "q", "token", "email"];
+    const { document } = chargerConsoleAvecReponse(422, {
+      detail: champs.map((c) => ({
+        type: "string_too_long", loc: ["body", c],
+        msg: "too long", ctx: { max_length: 10 },
+      })),
+    });
+    await attendreMicrotaches();
+    const texte = document.getElementById("login-error").textContent;
+    expect(texte).toContain("Et 2 autre(s)");
+    expect(texte.split("dépasse").length - 1).toBe(3);
+  });
+
+  it("JAMAIS « [object Object] », même sur un type inconnu", async () => {
+    const { document } = chargerConsoleAvecReponse(422, {
+      detail: [{ type: "un_type_que_personne_n_a_prevu", loc: ["body", "email"], msg: "Something odd" }],
+    });
+    await attendreMicrotaches();
+    const texte = document.getElementById("login-error").textContent;
+    expect(texte).not.toContain("[object Object]");
+    expect(texte).toContain("Something odd");
+  });
+
+  it("`solution` est affichée — c'est le champ qui dit quoi faire", async () => {
+    const { document } = chargerConsoleAvecReponse(422, {
+      detail: "Envoi trop volumineux : 10000 produits reçus, 5000 au maximum par appel.",
+      solution: "Découpez votre catalogue en 2 envois de 5000 produits maximum.",
+      documentation: "https://heurix.fr/docs.html#ep-items",
+    });
+    await attendreMicrotaches();
+    const texte = document.getElementById("login-error").textContent;
+    expect(texte).toContain("Envoi trop volumineux");
+    expect(texte).toContain("Découpez votre catalogue en 2 envois");
+    // `documentation` reste dehors : une URL non cliquable est du bruit.
+    expect(texte).not.toContain("https://");
+  });
+
+  it("un detail en chaîne passe inchangé", async () => {
+    const { document } = chargerConsoleAvecReponse(429, { detail: "Trop de tentatives. Réessayez dans 30 secondes." });
+    await attendreMicrotaches();
+    expect(document.getElementById("login-error").textContent).toBe("Trop de tentatives. Réessayez dans 30 secondes.");
+  });
+});
