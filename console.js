@@ -482,15 +482,23 @@
   }
 
   // ---------------- Produits les plus vus (Analytics > Ranking) ----------------
-  function wireCategoryViews(key) {
+  // C1 (25 aout 2026). wireCategoryViews melangeait CABLAGE et CHARGEMENT,
+  // et etait appelee depuis DEUX chemins -- loadDashboard et
+  // appliquerCatalogue -- sans aucune garde. Chaque passage ajoutait un
+  // ecouteur "change" de plus sur #cv-catalog, element permanent : six
+  // ecouteurs mesures apres un scenario ordinaire, donc six appels reseau
+  // pour un seul changement de selection.
+  //
+  // Scindee en trois : cvCharger (le rendu, rejouable), cablerVuesCategories
+  // (l'ecouteur, une seule fois) et chargerVuesCategories (le peuplement du
+  // selecteur, rejouable).
+  function cvCharger(key) {
     var select = document.getElementById("cv-catalog");
     var contenu = document.getElementById("cv-content");
     var vide = document.getElementById("cv-empty");
-    if (!select) return;
-
-    function charger() {
-      var catalogue = select.value;
-      if (!catalogue) return;
+    if (!select || !contenu || !vide) return;
+    var catalogue = select.value;
+    if (!catalogue) return;
       contenu.innerHTML = "<p class='console-panel-note'>" + T("Chargement…") + "</p>";
       vide.hidden = true;
       apiFetch("/v1/analytics/category-views/" + encodeURIComponent(catalogue), key)
@@ -526,19 +534,31 @@
           contenu.innerHTML = "";
           vide.hidden = false;
         });
-    }
+  }
 
-    // Les catalogues sont deja connus ailleurs dans la console : on
-    // reutilise la meme source plutot que de refaire un appel.
-    apiFetch("/v1/index/catalogs", key).then(function (data) {
+  function cablerVuesCategories(key) {
+    var select = document.getElementById("cv-catalog");
+    if (!select) return;
+    select.addEventListener("change", function () { cvCharger(key); });
+  }
+
+  // `catalogues` : la reponse deja obtenue par resoudreCatalogueActif. Le
+  // commentaire d'origine disait « les catalogues sont deja connus ailleurs
+  // dans la console : on reutilise la meme source plutot que de refaire un
+  // appel » -- l'intention etait bonne, l'appel repartait quand meme.
+  // Elle est vraie maintenant. En l'absence d'argument, on redemande.
+  function chargerVuesCategories(key, catalogues) {
+    var select = document.getElementById("cv-catalog");
+    if (!select) return;
+    function peupler(data) {
       var noms = (data.catalogs || []).map(function (c) { return c.catalog; });
       select.innerHTML = noms.map(function (n) {
         return "<option value='" + esc(n) + "'>" + esc(n) + "</option>";
       }).join("");
-      if (noms.length) charger();
-    }).catch(function () {});
-
-    select.addEventListener("change", charger);
+      if (noms.length) cvCharger(key);
+    }
+    if (catalogues) { peupler(catalogues); return; }
+    apiFetch("/v1/index/catalogs", key).then(peupler).catch(function () {});
   }
 
   // ---------------- Produits associés (Analytics > Ranking) ----------------
@@ -940,7 +960,6 @@
       // remise a zero est une fuite silencieuse entre deux comptes sur
       // un poste partage. A la deconnexion, `session = etatInitial()`
       // le remet a false, et la reconnexion recable proprement.
-      cablageFait: false,
       catalogueActif: "",
       catalogueListe: [],
       catalogueSandbox: {},
@@ -1008,11 +1027,30 @@
     setTimeout(function () { if (bulle.parentElement) bulle.remove(); }, 14000);
   }
 
-  function wireGlobalCatalog(key) {
+  // C1 (25 aout 2026) : SCINDEE. Le cablage du selecteur (une seule fois) et
+  // la resolution du catalogue actif (rejouable) vivaient dans la meme
+  // fonction. C'est de la que venait le cycle -- loadDashboard appelait
+  // wireGlobalCatalog, dont le retour reseau appelait appliquerCatalogue,
+  // qui rappelait loadDashboard.
+  function cablerSelecteurCatalogue(key) {
     var select = document.getElementById("global-catalog");
     if (!select) return;
+    select.addEventListener("change", function () {
+      session.catalogueActif = select.value;
+      localStorage.setItem("heurix_catalogue_actif", session.catalogueActif);
+      appliquerCatalogue(key);
+    });
+  }
 
-    apiFetch("/v1/index/catalogs", key).then(function (data) {
+  // Rend une PROMESSE, et c'est tout l'objet du chantier : chargerDonnees
+  // l'attend avant de composer ses URL d'analytics. Le filtre par catalogue
+  // est donc juste des le premier rendu, ce qui supprime le second
+  // chargement -- et avec lui le drapeau, son setTimeout de 1000 ms, et le
+  // masquage a 450 ms qui cachait le clignotement des chiffres.
+  function resoudreCatalogueActif(key) {
+    var select = document.getElementById("global-catalog");
+    if (!select) return Promise.resolve();
+    return apiFetch("/v1/index/catalogs", key).then(function (data) {
       session.catalogueListe = (data.catalogs || []).map(function (c) { return c.catalog; });
       session.catalogueSandbox = {};
       (data.catalogs || []).forEach(function (c) { session.catalogueSandbox[c.catalog] = !!c.sandbox; });
@@ -1022,7 +1060,7 @@
         // liste vide, qui laisserait croire a une panne.
         select.innerHTML = '<option value="">' + T("Aucun catalogue") + '</option>';
         select.disabled = true;
-        return;
+        return data;
       }
       select.disabled = false;
       // L'entree n'apparait qu'a partir de deux catalogues : avec un
@@ -1045,19 +1083,17 @@
         : (memoire && session.catalogueListe.indexOf(memoire) !== -1);
       session.catalogueActif = memoireValide ? memoire : session.catalogueListe[0];
       select.value = session.catalogueActif;
-      appliquerCatalogue(key);
       // Un nouveau client ne devine pas que ce choix porte sur TOUTE la
       // console -- il peut le prendre pour un filtre local. On l'explique
       // une fois, s'il a plus d'un catalogue (avec un seul, le selecteur
       // n'a rien d'ambigu).
       if (session.catalogueListe.length > 1) expliquerCatalogueGlobal();
-    }).catch(function () {});
-
-    select.addEventListener("change", function () {
-      session.catalogueActif = select.value;
-      localStorage.setItem("heurix_catalogue_actif", session.catalogueActif);
-      appliquerCatalogue(key);
-    });
+      // Rend la reponse : chargerDonnees la fait suivre a tout ce qui en a
+      // besoin. Sans ca, /v1/index/catalogs repartait quatre fois par
+      // chargement -- exactement le doublon d'appels reseau que ce chantier
+      // doit supprimer, pas deplacer.
+      return data;
+    }).catch(function () { return null; });
   }
 
   // Propage le choix aux ecrans et rafraichit CELUI QUI EST OUVERT : changer
@@ -1084,9 +1120,18 @@
     if (bandeau) bandeau.hidden = !session.catalogueSandbox[session.catalogueActif];
   }
 
-  var rechargementAnalytics = false;
+  // C1 (25 aout 2026). `rechargementAnalytics` vivait ici, libere par un
+  // setTimeout de 1000 ms. Il CASSAIT un cycle au lieu de le supprimer :
+  // deux changements de catalogue espaces de plus d'une seconde passaient
+  // tous les deux et recablaient. Mesure sur ce chemin exact avant le
+  // chantier : +42 ecouteurs et +22 appels reseau au SECOND changement,
+  // contre +6 et +4 au premier. Le cycle est parti avec la resolution du
+  // catalogue faite AVANT les analytics ; le drapeau n'a plus rien a garder.
 
-  function appliquerCatalogue(key) {
+  // Etat derive du catalogue actif, et rafraichissement de l'ecran ouvert.
+  // Ne charge PAS le tableau de bord : c'est chargerDonnees qui l'appelle,
+  // une fois le catalogue connu.
+  function appliquerEtatCatalogue(key) {
     majBandeauSandbox();
     // Garde (21 aout 2026) : la sentinelle "tous" ne doit JAMAIS servir
     // de nom de catalogue dans une URL de regles. showPane bascule deja
@@ -1113,49 +1158,23 @@
     // Un bloc conditionne ne se serait donc jamais declenche avant que
     // l'utilisateur ait deja visite ce pane une fois. chargerSegmentation
     // gere elle-meme son propre etat vide/absence de catalogue.
-    // Correctif (21 aout 2026, diagnostic par trace avec Alexis : le
-    // tableau de bord affichait "actif = '' | liste = []"). loadDashboard
-    // construit ses URL d'analytics AVANT que wireGlobalCatalog -- qu'il
-    // appelle lui-meme, plus bas dans son corps -- n'ait determine le
-    // catalogue. Les requetes partaient donc sans filtre.
+    // HISTOIRE DE CE BLOC, conservee au passe -- il n'existe plus, mais ce
+    // qu'il documentait explique la forme actuelle (C1, 25 aout 2026).
     //
-    // Defaut anterieur a ce chantier : les trois appels filtres depuis le
-    // 17 aout ne l'etaient pas davantage au premier chargement. Il ne se
-    // voyait pas, faute d'un ecran ou comparer deux perimetres.
+    // loadDashboard construisait ses URL d'analytics AVANT que
+    // wireGlobalCatalog -- qu'elle appelait elle-meme -- n'ait determine le
+    // catalogue. Les requetes partaient donc sans filtre (diagnostic du
+    // 21 aout : le tableau de bord affichait « actif = '' | liste = [] »),
+    // et il fallait TOUT recharger une fois le catalogue connu. Ce second
+    // chargement faisait clignoter les chiffres -- 1036 recherches puis 101
+    // (capture du 24 aout) -- d'ou un masquage de 450 ms pour cacher la
+    // transition, et un drapeau `rechargementAnalytics` libere a 1000 ms
+    // pour empecher la boucle de tourner indefiniment.
     //
-    // On recharge donc les analytics une fois le catalogue connu. Garde
-    // sur dashContent : inutile si le tableau de bord n'est pas affiche.
-    // GARDE CONTRE LA BOUCLE, posee avant de livrer : loadDashboard
-    // appelle wireGlobalCatalog, qui appelle appliquerCatalogue -- donc
-    // ce bloc. Sans drapeau, chaque tour relancerait des appels reseau,
-    // indefiniment et sans que rien ne le signale a l'ecran.
-    if (session.activeKey && dashContent && !dashContent.hidden && !rechargementAnalytics) {
-      rechargementAnalytics = true;
-      // Correctif (24 aout 2026, capture Alexis). Le premier rendu se
-      // faisait AVANT que le catalogue soit connu : l'API agregeait alors
-      // tous les catalogues. Le marchand voyait donc 1036 recherches
-      // clignoter puis devenir 101, avec des pourcentages de tendance qui
-      // apparaissaient puis disparaissaient.
-      //
-      // Les deux rendus etaient corrects ; c'est la transition qui ne
-      // l'etait pas. Le contenu est masque pendant le second chargement,
-      // le temps que les vrais chiffres arrivent.
-      dashContent.style.visibility = "hidden";
-      var champPeriode = document.getElementById("period-select");
-      loadDashboard(session.activeKey, champPeriode ? champPeriode.value : 30);
-      // Le drapeau reste leve le temps que le cycle complet se termine.
-      // Un setTimeout a 0 le liberait des le prochain tour de boucle,
-      // bien avant le retour reseau de wireGlobalCatalog -- la garde
-      // n'aurait alors rien garanti. Une seconde couvre largement un
-      // aller-retour, et le drapeau ne bloque qu'un rechargement
-      // automatique : un changement de catalogue manuel passe par un
-      // autre chemin.
-      setTimeout(function () { rechargementAnalytics = false; }, 1000);
-      // Revele des que le second rendu a eu le temps d'ecrire. visibility
-      // plutot que display : la place reste reservee, donc la page ne
-      // saute pas au moment ou le contenu reapparait.
-      setTimeout(function () { dashContent.style.visibility = ""; }, 450);
-    }
+    // Aucun des trois n'est encore la. resoudreCatalogueActif rend une
+    // promesse que chargerDonnees attend : le filtre est juste au PREMIER
+    // rendu, il n'y a plus de second chargement, donc plus de clignotement
+    // a masquer ni de boucle a garder.
     chargerSegmentation(key);
     // Correctif (19 aout 2026, brief §4.3) : meme raisonnement -- sorti
     // vers sa propre page (pane-vocabulaire), chargerSynonymesEtRegles
@@ -1187,9 +1206,26 @@
       // nouveau nom, sinon plus jamais declenchees) deviennent une
       // seule, les deux actions restant necessaires quel que soit
       // l'onglet actif au moment du changement de catalogue.
-      wireCategoryViews(key);
+      // Le selecteur #cv-catalog est deja peuple : seul son CONTENU depend
+      // du catalogue actif. cvCharger plutot que chargerVuesCategories.
+      cvCharger(key);
       rpReinitialiser();
     }
+  }
+
+  // Changement de catalogue par l'utilisateur. Uniquement des DONNEES a
+  // recharger : plus aucun cablage sur ce chemin, donc plus de doublon a
+  // empecher. C'est ce qui rend le drapeau inutile plutot que de le
+  // remplacer par un autre.
+  function appliquerCatalogue(key) {
+    // SYNCHRONE, et ce n'est pas un detail : l'ecran doit repondre au
+    // changement sans attendre le reseau. Passer cet appel dans une promesse
+    // laissait la selection precedente affichee le temps d'un aller-retour --
+    // regression attrapee par tests/related-products.test.js, qui verrouille
+    // « changer de catalogue global reinitialise la selection en cours ».
+    appliquerEtatCatalogue(key);
+    var champPeriode = document.getElementById("period-select");
+    chargerDonnees(key, champPeriode ? champPeriode.value : 30);
   }
 
   // ---------------- Mon abonnement ----------------
@@ -4225,12 +4261,21 @@
   }
 
   function wireSearchOverridesPane(key) {
+    // C1 (25 aout 2026) : ces quatre appels etaient AVANT la garde, donc
+    // rejoues a chaque passage -- 42 des 176 ecouteurs surnumeraires
+    // mesures venaient d'ici, sur des elements permanents (#so-query,
+    // #so-position, #so-preview-grid et ses cinq evenements de
+    // glisser-deposer). La garde ne protegeait que ce qui la suivait.
+    // Ils rejoignent le bloc garde : ils ne posent que des ecouteurs, le
+    // rafraichissement des donnees passe par refreshSoTable/refreshSoPreview,
+    // appelees separement au changement de catalogue.
+    if (soFormWired) return;
+    soFormWired = true;
+
     wireSoPreview(key);
     wireSoDraft(key);
     wireSoGridActions(key);
     wireSoProductAutocomplete(key);
-    if (soFormWired) return;
-    soFormWired = true;
 
     wireConsoleTabs("obs", ["populaires", "sans-resultat", "erreurs"]);
     // Correctif (18 aout 2026, brief §3.1) : meme geste pour "Produits"
@@ -5620,21 +5665,80 @@
     });
   }
 
-  function loadDashboard(key, days) {
+  // C1 (25 aout 2026). loadDashboard faisait DEUX choses de nature
+  // differente : elle CHARGEAIT des donnees, ce qui doit pouvoir se
+  // repeter, et elle CABLAIT des ecouteurs, ce qui ne doit se faire qu'une
+  // fois. Elle avait quatre appelants, dont appliquerCatalogue -- qu'elle
+  // declenchait elle-meme, via wireGlobalCatalog. Chaque rappel recablait
+  // tout, et c'est de la que venaient les doubles ecouteurs releves au
+  // getEventListeners du 21 et du 22 aout, les appels reseau en double du
+  // 20 aout, et la garde par attribut posee sur le bouton Reglages.
+  //
+  // Les deux moities portent desormais le nom de ce qu'elles font.
+
+  // Appelee UNE SEULE FOIS par session. Aucun appel reseau ici : que des
+  // ecouteurs. C'est ce qui rend toute garde ad hoc inutile -- il n'y a
+  // plus de second passage a empecher.
+  function cablerConsole(key) {
+    cablerSelecteurCatalogue(key);
+    wireBilling(key);
+    brCablerOngletsRegles();
+    brCablerReglages();
+    wireSuggestionsSynonymes(key);
+    wireBrowseForms(key);
+    wireSearchOverridesPane(key);
+    wirePublicKeys(key);
+    cablerVuesCategories(key);
+    wireRelatedProducts(key);
+    wireTutoEditeur(["so-tuto", "br-tuto"]);
+    // Meme autocomplete que la page soeur, sur les champs de la
+    // categorie : le formulaire attendait un identifiant tape a la
+    // main, sans aucune aide.
+    wireSoProductAutocomplete(key, {
+      champ: "bo-product-search",
+      cache: "browse-override-product-id",
+      panneau: "bo-product-panel",
+    });
+  }
+
+  // Rejouable autant qu'on veut : changement de periode, changement de
+  // catalogue, reconnexion. Ne pose aucun ecouteur.
+  function chargerDonnees(key, days) {
     dashLoading.hidden = false;
     dashContent.hidden = true;
+    // L'ORDRE EST LE CHANTIER. Le catalogue actif est resolu AVANT que les
+    // URL d'analytics ne soient composees : elles partent filtrees du
+    // premier coup, il n'y a plus de second chargement a declencher, donc
+    // plus de cycle a garder.
+    // Le catalogue n'a besoin d'etre RESOLU qu'au premier chargement. Ensuite
+    // il est connu -- soit memorise, soit choisi par l'utilisateur -- et le
+    // resoudre a nouveau relancerait /v1/index/catalogs pour rien. C'est la
+    // moitie des appels en double que ce chantier doit supprimer.
+    var pret = session.catalogueActif
+      ? Promise.resolve(null)
+      : resoudreCatalogueActif(key).then(function (catalogues) {
+          appliquerEtatCatalogue(key);
+          return catalogues;
+        });
+    return pret
+      .then(function (catalogues) { return chargerTableauDeBord(key, days, catalogues); })
+      .catch(function () {
+        dashLoading.hidden = true;
+        localStorage.removeItem(SESSION_STORAGE_KEY);
+        session.activeKey = null;
+        setAuthMode("login");
+        showLogin(L.loginErrorNetwork);
+      });
+  }
 
-    apiFetch("/v1/index/catalogs", key).then(function (data) {
-      var hasCatalogs = data.catalogs && data.catalogs.length > 0;
-      document.getElementById("overview-empty-state").hidden = hasCatalogs;
-      document.getElementById("overview-stats-content").hidden = !hasCatalogs;
-    }).catch(function () {
-      // En cas d'echec de cet appel precis, ne bloque pas le reste du
-      // dashboard -- on affiche le contenu normal par defaut plutot que
-      // de laisser l'ecran vide sur une erreur secondaire.
-      document.getElementById("overview-empty-state").hidden = true;
-      document.getElementById("overview-stats-content").hidden = false;
-    });
+  function chargerTableauDeBord(key, days, catalogues) {
+    // `catalogues` vient de resoudreCatalogueActif : plus d'appel a
+    // /v1/index/catalogs ici. Si la resolution a echoue, on affiche le
+    // contenu normal plutot que de laisser l'ecran vide sur une erreur
+    // secondaire -- meme repli qu'avant, sans le second appel.
+    var aDesCatalogues = !catalogues || (catalogues.catalogs && catalogues.catalogs.length > 0);
+    document.getElementById("overview-empty-state").hidden = aDesCatalogues;
+    document.getElementById("overview-stats-content").hidden = !aDesCatalogues;
 
     // Correctif B5 (audit UX console, 17 aout 2026) : le catalogue actif
     // n'etait jamais transmis a ces trois endpoints -- toutes les
@@ -5651,7 +5755,10 @@
     // production : 5,2% affiche pour public-demo, qui n'a en realite
     // aucun echec.
     var catalogQS = catalogueQS();
-    Promise.all([
+    // `return` : l'echec remonte a chargerDonnees, qui porte desormais la
+    // seule politique d'erreur (deconnexion). Deux .catch pour le meme cas
+    // auraient diverge tot ou tard.
+    return Promise.all([
       apiFetch("/v1/analytics/summary?days=" + days + catalogQS, key),
       apiFetch("/v1/analytics/top-queries?days=" + days + "&limit=15" + catalogQS, key),
       apiFetch("/v1/analytics/zero-results?days=" + days + "&limit=15" + catalogQS, key),
@@ -5686,7 +5793,6 @@
                "data-prefill-query='" + esc(q.query) + "'>" + T("Mettre en avant") + "</button>" +
                "<span class='zr-suggestions' hidden></span></td>";
       });
-      wireSuggestionsSynonymes(key);
       _dernieresErreurs = errors || [];
       majSignalementErreurs(errors);
       majKpiErreurs(errors);
@@ -5717,13 +5823,8 @@
       majCarteActivation(usage, key);
       loadConversionData(key);
       loadBrowseCatalogs(key);
-      wireBrowseForms(key);
       loadSearchOverridesCatalogs(key);
-      wireSearchOverridesPane(key);
-      wirePublicKeys(key);
-      wireCategoryViews(key);
-      wireRelatedProducts(key);
-      wireTutoEditeur(["so-tuto", "br-tuto"]);
+      if (catalogues) chargerVuesCategories(key, catalogues);
       session.cleCourante = key;
       // EXPOSITION POUR LES MODULES. L'import CSV est un module ES,
       // chargé séparément : il n'a pas accès aux variables de cette
@@ -5733,49 +5834,19 @@
       // Permet aux modules ES — l'import CSV — de rafraichir la liste des
       // catalogues apres avoir cree le leur, sans recharger la page.
       window.HEURIX_RECHARGER_CATALOGUES = function () { loadCatalogs(key); };
-      // CABLAGE UNE SEULE FOIS (22 aout 2026). loadDashboard fait deux
-      // choses de nature differente : elle CHARGE des donnees, ce qui
-      // doit pouvoir se repeter, et elle CABLE des ecouteurs, ce qui ne
-      // doit se faire qu'une fois. Elle a quatre appelants -- dont
-      // appliquerCatalogue, qui la rappelle une fois le catalogue connu.
+      // HISTOIRE, conservee au passe (C1, 25 aout 2026). Il y avait ici un
+      // drapeau `session.cablageFait` qui n'autorisait le cablage qu'au
+      // premier passage. Il repondait a un vrai symptome -- DEUX ecouteurs
+      // de clic sur le bouton Reglages, releves au getEventListeners du
+      // 22 aout, le premier ouvrant le panneau et le second le refermant
+      // aussitot -- et au meme phenomene cote reseau le 20 aout : synonyms,
+      // custom-rules, usage et catalogs partant en double au changement de
+      // catalogue.
       //
-      // Chaque rappel recablait donc tout. Symptome constate avec Alexis
-      // via getEventListeners : DEUX ecouteurs de clic sur le bouton
-      // Affichage, le premier ouvrant le panneau et le second le
-      // refermant aussitot.
-      //
-      // Le commentaire du 20 aout, juste en dessous, decrivait deja le
-      // meme phenomene cote reseau -- synonyms, custom-rules, usage et
-      // catalogs partant en double. La cause etait connue par ses
-      // effets, jamais par son origine.
-      if (!session.cablageFait) {
-        session.cablageFait = true;
-        wireGlobalCatalog(key);
-        wireBilling(key);
-        brCablerOngletsRegles();
-        brCablerReglages();
-      // Meme autocomplete que la page soeur, sur les champs de la
-      // categorie : le formulaire attendait un identifiant tape a la
-      // main, sans aucune aide.
-        wireSoProductAutocomplete(key, {
-          champ: "bo-product-search",
-          cache: "browse-override-product-id",
-          panneau: "bo-product-panel",
-        });
-      }
-      // Correctif (20 aout 2026, mesure Network avec Alexis : synonyms,
-      // custom-rules, usage et catalogs partaient en double au
-      // changement de catalogue). wireCustomRulesPane ne faisait plus
-      // que rappeler chargerSynonymesEtRegles, deja declenchee par
-      // wireGlobalCatalog -> appliquerCatalogue juste au-dessus. La
-      // fonction n'avait plus de raison d'etre depuis que le selecteur
-      // local a disparu, comme son propre commentaire l'indiquait.
-    }).catch(function () {
-      dashLoading.hidden = true;
-      localStorage.removeItem(SESSION_STORAGE_KEY);
-      session.activeKey = null;
-      setAuthMode("login");
-      showLogin(L.loginErrorNetwork);
+      // Trois symptomes, une seule cause : cette fonction cablait a chaque
+      // chargement. Le drapeau la traitait par ses effets. Le cablage vit
+      // maintenant dans cablerConsole, appelee une fois : il n'y a plus de
+      // second passage a interdire.
     });
   }
 
@@ -6416,7 +6487,8 @@
     localStorage.setItem(SESSION_STORAGE_KEY, sessionToken);
     session.activeKey = key;
     showDashboard();
-    loadDashboard(key, periodSelect.value);
+    cablerConsole(key);
+    chargerDonnees(key, periodSelect.value);
     dashboard.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
@@ -6632,7 +6704,9 @@
   logoutBtn.addEventListener("click", endSession);
 
   periodSelect.addEventListener("change", function () {
-    if (session.activeKey) loadDashboard(session.activeKey, periodSelect.value);
+    // Changement de periode : DONNEES seules. C'etait deja l'intention, mais
+    // loadDashboard recablait au passage.
+    if (session.activeKey) chargerDonnees(session.activeKey, periodSelect.value);
   });
 
   // ---------------- Point d'entrée ----------------
@@ -6665,7 +6739,8 @@
           if (!data.keys || !data.keys.length) { throw new Error("no_key"); }
           session.activeKey = data.keys[0].key;
           showDashboard();
-          loadDashboard(session.activeKey, periodSelect.value);
+          cablerConsole(session.activeKey);
+          chargerDonnees(session.activeKey, periodSelect.value);
         })
         .catch(function () {
           localStorage.removeItem(SESSION_STORAGE_KEY);
