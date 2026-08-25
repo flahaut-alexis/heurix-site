@@ -5902,7 +5902,9 @@
       dashLoading.hidden = true;
       dashContent.hidden = false;
       renderApiKey(key);
-      loadCatalogs(key);
+      // `usage` vient du Promise.all quelques microsecondes plus tot, sur le
+      // meme catalogue et la meme cle : c'est la meme reponse.
+      loadCatalogs(key, usage);
       loadAccountInfo();
       majCarteActivation(usage, key);
       loadConversionData(key);
@@ -6450,10 +6452,25 @@
     '</div>';
   }
 
-  function verifierQuotaCatalogues(key) {
+  // `usage` OPTIONNEL (25 aout 2026). Le doublon d'appels a /v1/usage venait
+  // de deux fonctions qui ont chacune besoin de la consommation sans savoir
+  // que l'autre vient de la demander : chargerTableauDeBord la charge dans
+  // son Promise.all pour renderStats et majCarteActivation, puis appelle
+  // loadCatalogs, qui appelle celle-ci, qui la redemandait.
+  //
+  // POURQUOI UN PARAMETRE OPTIONNEL PLUTOT QU'UN CACHE PARTAGE. loadCatalogs
+  // a quatre appelants, et DEUX d'entre eux suivent une mutation de
+  // catalogue : wireCatalogCard apres une suppression, et
+  // window.HEURIX_RECHARGER_CATALOGUES apres une creation par l'import CSV.
+  // Sur ces chemins, catalogs_used VIENT DE CHANGER -- reutiliser une valeur
+  // capturee au chargement du tableau de bord afficherait un compteur
+  // perime. Ces deux chemins ne passent pas d'argument et redemandent donc
+  // une reponse fraiche, ce qui est le comportement d'origine.
+  function verifierQuotaCatalogues(key, usage) {
     var zone = document.getElementById("catalogs-quota-alerte");
     if (!zone) return;
-    apiFetch("/v1/usage", key).then(function (d) {
+    var source = usage ? Promise.resolve(usage) : apiFetch("/v1/usage", key);
+    source.then(function (d) {
       var utilise = d.catalogs_used, plafond = d.catalogs_limit;
       if (utilise === undefined || !plafond) { zone.hidden = true; return; }
 
@@ -6482,7 +6499,9 @@
     }).catch(function () { /* l'alerte est un bonus, jamais bloquante */ });
   }
 
-  function loadCatalogs(key) {
+  // `usage` : transmis uniquement par le chemin du tableau de bord, qui vient
+  // de l'obtenir. Les autres appelants l'omettent, et le quota se relit.
+  function loadCatalogs(key, usage) {
     var loading = document.getElementById("catalogs-loading");
     var list = document.getElementById("catalogs-list");
     var empty = document.getElementById("catalogs-empty");
@@ -6494,7 +6513,7 @@
     // en tentant d'en creer un troisieme. Le prevenir en amont evite la
     // decouverte par l'echec -- et transforme une frustration en occasion de
     // montee en gamme.
-    verifierQuotaCatalogues(key);
+    verifierQuotaCatalogues(key, usage);
 
     Promise.all([
       apiFetch("/v1/index/catalogs", key),
