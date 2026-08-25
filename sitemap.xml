@@ -47,6 +47,16 @@
     <xhtml:link rel="alternate" hreflang="fr" href="https://heurix.fr/roi.html"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://heurix.fr/en/roi.html"/>
   </url>
+  <url>
+    <loc>https://heurix.fr/secteurs.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://heurix.fr/secteurs.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://heurix.fr/en/secteurs.html"/>
+  </url>
+  <url>
+    <loc>https://heurix.fr/en/secteurs.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://heurix.fr/secteurs.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://heurix.fr/en/secteurs.html"/>
+  </url>
 
   <url>
     <loc>https://heurix.fr/blog.html</loc>
