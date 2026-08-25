@@ -104,6 +104,13 @@ nécessaire aux appels de tracking depuis les sites clients.
 - Une catégorie Browse est un champ **fourni par le marchand** à
   l'indexation (`categories`/`category`), jamais dérivée d'un pack de
   règles — deux concepts différents, confondus une fois par erreur.
+- Un conteneur reconstruit par `innerHTML` ne peut pas garder ses écouteurs :
+  `innerHTML` les détruit avec les éléments qu'il remplace. Le mélange
+  « chargement + câblage » y est donc **imposé par le style de rendu, pas
+  choisi** — le découper ne le corrige pas. Le remède est de déléguer sur le
+  conteneur stable, qui survit au remplacement de ses enfants (`7f1450c`,
+  banc `tests/benchmarks/mesure-cablage-console.mjs` : les 6 recâblages par
+  changement de catalogue tombent à 0).
 
 ## Agent skills
 
