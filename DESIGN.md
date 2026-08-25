@@ -169,10 +169,30 @@ d'accessibilité déjà payé.
 Vert, rouge et ambre ne sont pas des couleurs de marque : ce sont des mots. Employer le vert
 parce qu'un bloc a besoin de variété, c'est le vider de son sens partout ailleurs.
 
+**La Règle du Rouge et du Vert Lisibles.** `--red-muted` (#D6584B) mesure **3,92:1** sur
+blanc et `--green` (#1FAA6B) **2,99:1** — tous deux sous le seuil WCAG AA de 4,5:1. Le vert
+n'atteint même pas le seuil de 3:1 des objets graphiques. **Ni l'un ni l'autre ne doit porter
+de texte** : ce sont des couleurs de bordure, de fond et de pastille.
+
+Sept déclarations le font pourtant aujourd'hui, et c'est une dette d'accessibilité, pas un
+précédent. Quatre portent du vrai texte — `.play-stock` (10,5px), `.play-card-out
+.play-stock`, `.result.dim .tag` (11,5px) et `.console-activation-item.fait
+.console-activation-statut` — les deux premières étant les pires cas, une couleur sous le
+seuil sur du très petit texte. Les trois autres sont des glyphes
+(`.price-tier-features li::before`, `.callout-warning .callout-icon`, `.h4-warning-icon`),
+soumis au seuil de 3:1 des objets graphiques : le rouge y passe, le vert non.
+
+Pour du texte d'erreur ou de succès, les valeurs conformes sont `#C0392B` (**5,44:1** sur
+blanc, **5,12:1** sur `--bg-soft`) et `#0F7A3D` (**5,42:1** et **5,11:1**). Elles n'ont pas
+encore de nom — c'est une dette réelle, suivie à part — mais elles sont **la bonne valeur**,
+pas une faute. Les remplacer par les tokens actuels dégraderait l'accessibilité de tout écran
+touché. Mesures du 25 août 2026, formule de luminance relative WCAG 2.x.
+
 **La Règle du Token ou Rien.** Toute couleur passe par une variable CSS. Le système compte
-aujourd'hui **588 hexadécimaux en dur** contre 17 variables : deux d'entre eux, `#C0392B` et
-`#0F7A3D`, redoublent sémantiquement `--red-muted` et `--green` avec des valeurs différentes.
-Une couleur écrite en dur est une couleur qui échappera au prochain changement de thème.
+aujourd'hui **588 hexadécimaux en dur** contre 17 variables. Une couleur écrite en dur est
+une couleur qui échappera au prochain changement de thème. **Exception nommée ci-dessus** :
+`#C0392B` et `#0F7A3D` restent en dur tant qu'aucun token conforme n'existe pour du texte ;
+la règle s'applique à eux le jour où l'on en crée un, pas avant.
 
 ## Typography
 
@@ -348,8 +368,11 @@ décrire — elle mérite un soin supérieur au reste de la page.
   alors qu'il dispose de 18 à 32 SVG en ligne par page. Une icône se dessine.
 - **Don't** descendre sous 12px. Les 104 déclarations existantes sont une dette à résorber,
   pas un précédent.
-- **Don't** écrire une couleur en hexadécimal quand un token existe. `#C0392B` et `#0F7A3D`
-  redoublent déjà `--red-muted` et `--green` avec d'autres valeurs.
+- **Don't** écrire une couleur en hexadécimal quand un token **conforme** existe.
+  Contre-exemple à ne PAS suivre : `#C0392B` et `#0F7A3D` ressemblent à des doublons de
+  `--red-muted` et `--green`, mais ce sont les seules valeurs de leurs paires qui passent
+  le seuil AA pour du texte (5,44:1 et 5,42:1 contre 3,92:1 et 2,99:1). Les « corriger »
+  vers les tokens dégrade l'accessibilité. Voir la Règle du Rouge et du Vert Lisibles.
 - **Don't** ajouter une ombre permanente pour détacher un bloc (Règle du Plat au Repos).
 - **Don't** ouvrir un menu au survol — le système a tranché pour le clic.
 - **Don't** utiliser la police **Luckiest Guy** : elle est déclarée en `@font-face`
