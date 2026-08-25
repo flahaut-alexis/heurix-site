@@ -5935,6 +5935,7 @@
     cablerAideCompte();
     cablerTriConversion();
     cablerSelecteurListeCatalogues();
+    cablerFichesCatalogue(key);
     // Meme autocomplete que la page soeur, sur les champs de la
     // categorie : le formulaire attendait un identifiant tape a la
     // main, sans aucune aide.
@@ -6505,97 +6506,154 @@
       .catch(function () { /* la suggestion est un bonus, jamais bloquante */ });
   }
 
-  function wireCatalogCard(cardEl, catalog, key) {
-    chargerSuggestionPack(cardEl, catalog.catalog, key);
+  // CATALOGUES CONNUS, par nom. Le registre delegue retrouve ici l'objet
+  // catalogue que les gestionnaires fermaient auparavant dans leur portee.
+  // La fiche porte deja son nom (`data-catalog-card`), pose par
+  // catalogCardHtml -- aucun attribut n'a eu besoin d'etre ajoute.
+  var cataloguesConnus = {};
 
-    // SUPPRESSION D'UN CATALOGUE (29 juillet).
-    //
-    // Rien ne permettait de supprimer un catalogue : un import raté
-    // obligeait à en créer un autre sous un nom différent, et l'ancien
-    // continuait de consommer le quota du plan.
-    //
-    // Double garde-fou : la modale habituelle, PUIS la saisie du nom.
-    // L'opération efface produits, priorités, règles et synonymes — et
-    // rien ne permet de revenir en arrière.
-    var btnSupprimer = cardEl.querySelector(".catalog-delete");
-    if (btnSupprimer) {
-      btnSupprimer.addEventListener("click", function () {
-        var nom = catalog.catalog;
-        confirmerSuppression(
-          T("Supprimer le catalogue <strong>{0}</strong> et ses {1} produits ?<br>Les règles, reconnaissances personnalisées et synonymes seront perdus. <strong>Cette action est irréversible.</strong>",
-            esc(nom), catalog.products || 0),
-          btnSupprimer,
-          function () {
-            var saisi = window.prompt(T("Confirmez en recopiant le nom du catalogue :"), "");
-            if (saisi !== nom) {
-              if (saisi !== null) window.alert(T("Le nom ne correspond pas. Rien n'a été supprimé."));
-              return;
-            }
-            btnSupprimer.disabled = true;
-            apiFetch("/v1/index/" + encodeURIComponent(nom) +
-                     "?confirm=" + encodeURIComponent(nom), key, { method: "DELETE" })
-              .then(function () { loadCatalogs(key); })
-              .catch(function (e) {
-                btnSupprimer.disabled = false;
-                window.alert(T("Suppression impossible : {0}", e.message || e));
-              });
-          }
-        );
-      });
-    }
-    // Bascule bac a sable. Les deux refus possibles (plan insuffisant,
-    // plafond atteint) viennent du moteur avec leur message : on les affiche
-    // tels quels plutot que de dupliquer la regle cote client, ou elle
-    // divergerait.
-    var sandboxToggle = cardEl.querySelector(".catalog-sandbox-toggle");
-    var sandboxStatus = cardEl.querySelector(".catalog-sandbox-status");
-    if (sandboxToggle) sandboxToggle.addEventListener("change", function () {
-      var voulu = sandboxToggle.checked;
-      sandboxToggle.disabled = true;
-      if (sandboxStatus) { sandboxStatus.className = "catalog-rule-status"; sandboxStatus.textContent = "…"; }
-      apiFetch("/v1/index/" + encodeURIComponent(catalog.catalog) + "/sandbox", key, {
-        method: "PUT", body: { sandbox: voulu },
-      }).then(function () {
-        catalog.sandbox = voulu;
-        if (sandboxStatus) {
-          sandboxStatus.className = "catalog-rule-status ok";
-          sandboxStatus.textContent = voulu ? T("Bac à sable activé.") : T("Catalogue redevenu facturé.");
-        }
-        if (typeof rechargerCatalogues === "function") rechargerCatalogues(key);
-      }).catch(function (err) {
-        sandboxToggle.checked = !voulu;
-        if (sandboxStatus) {
-          sandboxStatus.className = "catalog-rule-status err";
-          sandboxStatus.textContent = (err && err.message) || T("Impossible de modifier ce réglage.");
-        }
-      }).then(function () { sandboxToggle.disabled = false; });
+  function ficheEtCatalogue(cible) {
+    var cardEl = cible.closest(".catalog-card");
+    if (!cardEl) return null;
+    var catalog = cataloguesConnus[cardEl.getAttribute("data-catalog-card")];
+    return catalog ? { cardEl: cardEl, catalog: catalog } : null;
+  }
+
+  // ---------------------------------------------------------------------
+  // FICHES CATALOGUE : DELEGATION SUR LE CONTENEUR STABLE (25 aout 2026).
+  //
+  // SECOND MOUVEMENT du candidat « delegation », apres les fermetures au
+  // clic exterieur. Celui-ci ne range pas : il change ce que le fichier
+  // peut faire.
+  //
+  // CE QU'IL Y AVAIT. `loadCatalogs` reconstruisait les fiches par
+  // innerHTML, puis rappelait `wireCatalogCard` sur chacune. Ce n'etait pas
+  // une negligence : innerHTML DETRUIT les ecouteurs avec les elements, donc
+  // le cablage ne POUVAIT PAS vivre ailleurs que dans le chargement. C'est
+  // la cause du melange que le chantier C1 a traite ailleurs sans pouvoir
+  // l'eliminer ici.
+  //
+  // CE QUI CHANGE. `#catalogs-list` est un conteneur STABLE : innerHTML
+  // remplace ses ENFANTS, pas lui. Un ecouteur pose dessus survit donc a
+  // tous les rendus. Il est pose UNE FOIS par cablerConsole, et
+  // `loadCatalogs` cesse de cabler quoi que ce soit.
+  // ---------------------------------------------------------------------
+  function cablerFichesCatalogue(key) {
+    var liste = document.getElementById("catalogs-list");
+    if (!liste) return;
+
+    liste.addEventListener("click", function (e) {
+      var btnSupprimer = e.target.closest(".catalog-delete");
+      if (btnSupprimer) return surSuppression(btnSupprimer, key);
+      var saveBtn = e.target.closest(".catalog-rulepack-save");
+      if (saveBtn) return surEnregistrementPack(saveBtn, key);
     });
 
+    liste.addEventListener("change", function (e) {
+      var toggle = e.target.closest(".catalog-sandbox-toggle");
+      if (toggle) surBascule(toggle, key);
+    });
+  }
 
+  // SUPPRESSION D'UN CATALOGUE (29 juillet).
+  //
+  // Rien ne permettait de supprimer un catalogue : un import raté
+  // obligeait à en créer un autre sous un nom différent, et l'ancien
+  // continuait de consommer le quota du plan.
+  //
+  // Double garde-fou : la modale habituelle, PUIS la saisie du nom.
+  // L'opération efface produits, priorités, règles et synonymes — et
+  // rien ne permet de revenir en arrière.
+  function surSuppression(btnSupprimer, key) {
+    var ctx = ficheEtCatalogue(btnSupprimer);
+    if (!ctx) return;
+    var nom = ctx.catalog.catalog;
+    confirmerSuppression(
+      T("Supprimer le catalogue <strong>{0}</strong> et ses {1} produits ?<br>Les règles, reconnaissances personnalisées et synonymes seront perdus. <strong>Cette action est irréversible.</strong>",
+        esc(nom), ctx.catalog.products || 0),
+      btnSupprimer,
+      function () {
+        var saisi = window.prompt(T("Confirmez en recopiant le nom du catalogue :"), "");
+        if (saisi !== nom) {
+          if (saisi !== null) window.alert(T("Le nom ne correspond pas. Rien n'a été supprimé."));
+          return;
+        }
+        btnSupprimer.disabled = true;
+        apiFetch("/v1/index/" + encodeURIComponent(nom) +
+                 "?confirm=" + encodeURIComponent(nom), key, { method: "DELETE" })
+          .then(function () { loadCatalogs(key); })
+          .catch(function (e) {
+            btnSupprimer.disabled = false;
+            window.alert(T("Suppression impossible : {0}", e.message || e));
+          });
+      }
+    );
+  }
+
+  // Bascule bac a sable. Les deux refus possibles (plan insuffisant,
+  // plafond atteint) viennent du moteur avec leur message : on les affiche
+  // tels quels plutot que de dupliquer la regle cote client, ou elle
+  // divergerait.
+  function surBascule(sandboxToggle, key) {
+    var ctx = ficheEtCatalogue(sandboxToggle);
+    if (!ctx) return;
+    var catalog = ctx.catalog;
+    var sandboxStatus = ctx.cardEl.querySelector(".catalog-sandbox-status");
+    var voulu = sandboxToggle.checked;
+    sandboxToggle.disabled = true;
+    if (sandboxStatus) { sandboxStatus.className = "catalog-rule-status"; sandboxStatus.textContent = "…"; }
+    apiFetch("/v1/index/" + encodeURIComponent(catalog.catalog) + "/sandbox", key, {
+      method: "PUT", body: { sandbox: voulu },
+    }).then(function () {
+      catalog.sandbox = voulu;
+      if (sandboxStatus) {
+        sandboxStatus.className = "catalog-rule-status ok";
+        sandboxStatus.textContent = voulu ? T("Bac à sable activé.") : T("Catalogue redevenu facturé.");
+      }
+      if (typeof rechargerCatalogues === "function") rechargerCatalogues(key);
+    }).catch(function (err) {
+      sandboxToggle.checked = !voulu;
+      if (sandboxStatus) {
+        sandboxStatus.className = "catalog-rule-status err";
+        sandboxStatus.textContent = (err && err.message) || T("Impossible de modifier ce réglage.");
+      }
+    }).then(function () { sandboxToggle.disabled = false; });
+  }
+
+  function surEnregistrementPack(saveBtn, key) {
+    var ctx = ficheEtCatalogue(saveBtn);
+    if (!ctx) return;
+    var cardEl = ctx.cardEl, catalog = ctx.catalog;
     var select = cardEl.querySelector(".catalog-rulepack-select");
-    var saveBtn = cardEl.querySelector(".catalog-rulepack-save");
     var status = cardEl.querySelector(".catalog-rulepack-status");
-    saveBtn.addEventListener("click", function () {
-      if (select.value === catalog.rulepack) return;
-      saveBtn.disabled = true;
-      status.className = "catalog-rulepack-status"; status.textContent = T("Réindexation…");
-      apiFetch("/v1/index/" + encodeURIComponent(catalog.catalog) + "/config", key, {
-        method: "PUT", body: { rulepack: select.value },
-      }).then(function (data) {
-        catalog.rulepack = data.rulepack;
-        catalog.products = data.products; catalog.annotations = data.annotations; catalog.synonym_groups = data.synonym_groups;
-        status.className = "catalog-rulepack-status ok"; status.textContent = T("Enregistré — produits réindexés.");
-        updateCardMeta(cardEl, catalog);
-      }).catch(function (err) {
-        status.className = "catalog-rulepack-status err";
-        status.textContent = (err && err.status) ? err.message : T("Échec — réessayez.");
-      }).then(function () { saveBtn.disabled = false; });
-    });
-    // Synonymes et regles personnalisees ne sont plus dans la carte : les
-    // cabler ici cherchait des elements absents, levait une TypeError, et
-    // faisait echouer le rendu de TOUS les catalogues -- d'ou une section
-    // « Mes catalogues » vide. Ils sont desormais cables par
-    // wireCustomRulesPane, sous Personnalisation.
+    if (!select || select.value === catalog.rulepack) return;
+    saveBtn.disabled = true;
+    status.className = "catalog-rulepack-status"; status.textContent = T("Réindexation…");
+    apiFetch("/v1/index/" + encodeURIComponent(catalog.catalog) + "/config", key, {
+      method: "PUT", body: { rulepack: select.value },
+    }).then(function (data) {
+      catalog.rulepack = data.rulepack;
+      catalog.products = data.products; catalog.annotations = data.annotations; catalog.synonym_groups = data.synonym_groups;
+      status.className = "catalog-rulepack-status ok"; status.textContent = T("Enregistré — produits réindexés.");
+      updateCardMeta(cardEl, catalog);
+    }).catch(function (err) {
+      status.className = "catalog-rulepack-status err";
+      status.textContent = (err && err.status) ? err.message : T("Échec — réessayez.");
+    }).then(function () { saveBtn.disabled = false; });
+  }
+
+  // Ne cable plus rien : les trois gestionnaires vivent sur le conteneur
+  // stable (voir cablerFichesCatalogue). Il reste l'appel reseau qui
+  // remplit la suggestion de pack, propre a chaque fiche.
+  //
+  // Synonymes et regles personnalisees ne sont plus dans la carte : les
+  // cabler ici cherchait des elements absents, levait une TypeError, et
+  // faisait echouer le rendu de TOUS les catalogues -- d'ou une section
+  // « Mes catalogues » vide. Ils sont desormais cables par
+  // wireCustomRulesPane, sous Personnalisation.
+  function wireCatalogCard(cardEl, catalog, key) {
+    cataloguesConnus[catalog.catalog] = catalog;
+    chargerSuggestionPack(cardEl, catalog.catalog, key);
   }
 
   function catalogCardHtml(c) {
