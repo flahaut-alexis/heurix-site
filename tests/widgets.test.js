@@ -362,7 +362,19 @@ describe("renvoi vers les synonymes depuis Sans resultat", () => {
   });
 
   it("le gestionnaire data-goto-pane sait pre-remplir le champ synonyme", () => {
-    const bloc = js.match(/document\.addEventListener\("click"[\s\S]{0,4200}/)[0];
+    // ANCRE SUR LE GESTIONNAIRE VISE, pas sur le premier du fichier
+    // (25 aout 2026). La version precedente prenait le PREMIER
+    // `document.addEventListener("click"` rencontre puis 4 200 caracteres.
+    // Deux fragilites : tout gestionnaire ajoute plus haut dans le fichier
+    // decalait l'ancre, et le motif etait cherche dans le texte BRUT --
+    // un COMMENTAIRE citant cette ligne suffisait a faire echouer le test.
+    // C'est exactement ce qui est arrive en posant le registre de fermeture
+    // au clic exterieur, dont le commentaire recopie le motif d'origine.
+    // On part desormais du `closest(...)` propre a CE gestionnaire : le
+    // simple marqueur `[data-goto-pane]` ne suffit pas, il apparait aussi
+    // plus haut dans le HTML genere, ce qui ramenait l'ancre trop en amont.
+    const cible = js.indexOf('closest("[data-goto-pane]")');
+    const bloc = js.slice(js.lastIndexOf('document.addEventListener("click"', cible), cible + 4200);
     expect(bloc).toContain('link.getAttribute("data-prefill")');
     expect(bloc).toContain(".catalog-synonym-input");
     expect(bloc).toContain("champ.focus()");
