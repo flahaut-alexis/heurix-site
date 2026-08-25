@@ -34,3 +34,12 @@ skills-lock.json
 # documentee est `git add -A`, donc tout dossier d'outil non ignore finit par
 # partir dans un commit de deploiement sans que personne l'ait voulu.
 .impeccable/
+
+# .scratch/ -- tickets et notes de travail locaux (25 aout 2026). Meme
+# convention que dans heurix-engine, ou elle existe deja ; elle manquait
+# ici, et le risque n'est pas theorique : ce depot est PUBLIE par GitHub
+# Pages, et la procedure de deploiement documentee dans CLAUDE.md est
+# `git add -A`. Une note de travail deposee dans .scratch/ serait donc
+# publiee sur le site au prochain deploiement, sans que personne l'ait
+# voulu -- exactement le motif deja invoque pour .agents/ et .impeccable/.
+.scratch/
