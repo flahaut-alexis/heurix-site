@@ -14,7 +14,7 @@ window.HEURIX_SEARCH_INDEX = [
   { title: "À propos — Notre histoire", excerpt: "D'un moteur d'annotation né en 2014 au moteur de recherche e-commerce Heurix : l'histoire et la mission.", path: "about.html" },
   { title: "Simulateur ROI", excerpt: "Estimez l'effet de levier d'un moteur de recherche mieux réglé sur votre chiffre d'affaires.", path: "roi.html" },
   { title: "Blog", excerpt: "Notes sur la recherche et le e-commerce, publiées chaque mois.", path: "blog.html" },
-  { title: "Nous contacter", excerpt: "Réservez votre audit initial — réponse sous 48h ouvrées.", path: "contact.html" },
+  { title: "Nous contacter", excerpt: "Une question sur le moteur Heurix, un catalogue particulier ? Écrivez-nous. L'essai gratuit de 14 jours suffit pour démarrer sans nous écrire.", path: "contact.html" },
   { title: "Mentions légales", excerpt: "Informations légales sur l'éditeur du site heurix.fr.", path: "mentions-legales.html" },
   { title: "Politique de confidentialité", excerpt: "Quelles données Heurix traite, pourquoi, combien de temps, et comment exercer vos droits.", path: "confidentialite.html" },
   { title: "Construire son moteur de recherche ou en acheter un : comment trancher", excerpt: "Développer en interne semble gratuit sur le papier. Ce que ça coûte vraiment, et où Heurix se situe sur cet arbitrage.", path: "blog/build-vs-buy-moteur-recherche.html" },
