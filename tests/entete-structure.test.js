@@ -44,10 +44,6 @@ const EXCEPTIONS = new Map([
   ["demo/categorie.html",
    "Meme boutique fictive que demo/index.html, meme en-tete de faux " +
    "marchand : ni le menu Heurix, ni le selecteur de langue, ni la console."],
-  ["404.html",
-   "Pas de header-signin ni de lang-switch. Asymetrie connue et assumee : " +
-   "en/404.html pointe vers elle sans retour possible. A trancher un jour, " +
-   "ce n'est pas un lien mort."],
   ["console.html",
    "Espace connecte : nav-links-console au lieu de nav-links, selecteur " +
    "d'organisation, pas de menus deroulants produit. Le lien « Se connecter » " +
