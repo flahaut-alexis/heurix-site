@@ -21,6 +21,13 @@
  *     });
  *   </script>
  *
+ * Langue de l'interface : "fr" ou "en". Par defaut, l'attribut lang de la
+ * page ; a defaut d'attribut, le francais. L'option `lang` l'emporte sur
+ * les deux, pour une page dont l'attribut ne reflete pas la langue reelle
+ * de la boutique.
+ *
+ *     Heurix.searchBox({ ..., lang: "en" });
+ *
  * Documentation complete : https://heurix.fr/docs.html#ep-search-widget
  */
 (function (root, factory) {
@@ -40,6 +47,107 @@
   var STYLE_INJECTED = false;
 
 
+  // LANGUE (26 aout 2026) -- ce fichier etait integralement en francais,
+  // y compris servi depuis une page anglaise : « 8 résultats trouvés »
+  // sur une boutique en anglais.
+  //
+  // Ordre de resolution : parametre explicite > attribut lang du
+  // document > FRANCAIS. Le repli francais n'est pas un choix de gout,
+  // c'est la contrainte de compatibilite : cette bibliotheque est
+  // hebergee chez les marchands qui l'ont deja telechargee, et une page
+  // sans attribut lang doit afficher exactement ce qu'elle affichait
+  // avant. Seule une page qui DECLARE lang="en" change de comportement.
+  function resoudreLangue(explicite) {
+    var v = explicite ||
+      (typeof document !== "undefined" && document.documentElement &&
+       document.documentElement.lang) || "";
+    return String(v).toLowerCase().slice(0, 2) === "en" ? "en" : "fr";
+  }
+
+  // Le pluriel n'a pas la meme borne dans les deux langues : le francais
+  // ecrit « 0 résultat » au singulier, l'anglais « 0 results » au pluriel.
+  //
+  // MESURE (26 aout) -- les deux bornes ne different QU'A ZERO, et aucun
+  // des cinq sites d'appel ci-dessous ne peut recevoir zero : le garde-fou
+  // `if (!currentHits.length)` retourne avant l'annonce, le total est
+  // garde par `data.total > hits.length`, et une famille sans produit
+  // n'est jamais renvoyee. La distinction est donc exacte et inatteignable
+  // en l'etat -- verifiee par un test unitaire direct sur cette fonction,
+  // pas par le rendu, qui ne saurait pas la solliciter.
+  //
+  // Elle est conservee plutot que repliee sur `n > 1` parce que la table
+  // de textes grandit : la premiere chaine a pluriel qu'un zero pourra
+  // atteindre (une annonce aria de l'etat vide, par exemple) doit trouver
+  // la borne juste deja en place, et non un anglais faux a corriger.
+  function estPluriel(n, lang) {
+    return lang === "en" ? n !== 1 : n > 1;
+  }
+
+  // Deux clefs completes par cas de pluriel, comme console.js. Pas de
+  // fonction de pluriel generique : deux langues a pluriel binaire n'en
+  // ont pas besoin, et une clef entiere se relit sans la reconstruire.
+  var TEXTES = {
+    fr: {
+      placeholder: "Rechercher…",
+      ariaChamp: "Rechercher un produit",
+      chargement: "Recherche…",
+      indispo: "Recherche indisponible pour le moment.",
+      pack: "Pack recommandé",
+      rupture: "Rupture",
+      picks: "Nos incontournables",
+      aucunResultat: "Aucun résultat",
+      aucunProduit: "Aucun produit ",
+      sansContrainte: "Chercher sans la contrainte de prix",
+      entre: "entre ",
+      et: " et ",
+      moinsDe: "à moins de ",
+      plusDe: "à plus de ",
+      pourOuvre: " pour « ",
+      pourFerme: " »",
+      famille: " résultat — choisissez une famille",
+      familles: " résultats — choisissez une famille",
+      familleAria: " résultat, choisissez une famille",
+      famillesAria: " résultats, choisissez une famille",
+      produit: " produit",
+      produits: " produits",
+      totalUn: " résultat au total",
+      totalPlusieurs: " résultats au total",
+      voirLes: "Voir les ",
+      trouveUn: " résultat trouvé",
+      trouvePlusieurs: " résultats trouvés",
+    },
+    en: {
+      placeholder: "Search…",
+      ariaChamp: "Search for a product",
+      chargement: "Searching…",
+      indispo: "Search is unavailable right now.",
+      pack: "Recommended bundle",
+      rupture: "Out of stock",
+      picks: "Our picks",
+      aucunResultat: "No results",
+      aucunProduit: "No product ",
+      sansContrainte: "Search without the price constraint",
+      entre: "between ",
+      et: " and ",
+      moinsDe: "under ",
+      plusDe: "over ",
+      pourOuvre: ' for "',
+      pourFerme: '"',
+      famille: " result — choose a family",
+      familles: " results — choose a family",
+      familleAria: " result, choose a family",
+      famillesAria: " results, choose a family",
+      produit: " product",
+      produits: " products",
+      totalUn: " result in total",
+      totalPlusieurs: " results in total",
+      voirLes: "See all ",
+      trouveUn: " result found",
+      trouvePlusieurs: " results found",
+    },
+  };
+
+
   // Chantier securite C1 : garde-fou a l'execution. Une cle serveur (hx_)
   // dans le navigateur est lisible par n'importe quel visiteur, et ouvre
   // l'indexation, le merchandising et le portail de facturation Stripe.
@@ -53,8 +161,17 @@
     }
   }
 
-  function fmtPrix(v) {
-    return Number(v).toFixed(2).replace(".", ",").replace(/,00$/, "") + " €";
+  // La LOCALE est traitee ici (« 12,34 € » contre « €12.34 »). La DEVISE
+  // reste l'euro en dur, comme avant : l'API ne renvoie aucun code de
+  // devise avec le prix, donc rien ne permettrait de la deduire. C'est la
+  // moitie de la tension que le commentaire de defaultRenderItem (BUG-001,
+  // 8 aout) avait nommee puis remise a plus tard -- l'autre moitie tient
+  // toujours.
+  function fmtPrix(v, lang) {
+    var n = Number(v).toFixed(2);
+    return lang === "en"
+      ? "€" + n.replace(/\.00$/, "")
+      : n.replace(".", ",").replace(/,00$/, "") + " €";
   }
 
   function esc(s) {
@@ -141,7 +258,12 @@
     }).join(" ");
   }
 
-  function defaultRenderItem(hit) {
+  function defaultRenderItem(hit, i, lang) {
+    // `lang` est le 3e argument depuis le 26 aout. Un renderItem fourni
+    // par le marchand l'ignore sans rien casser (JS jette les arguments
+    // en trop), et defaultRenderItem retombe sur le francais s'il est
+    // appele sans -- meme repli que resoudreLangue().
+    var TXT = TEXTES[lang === "en" ? "en" : "fr"];
     var p = hit.product;
     var stockKnown = typeof hit.in_stock === "boolean";
     var metaBits = [];
@@ -169,23 +291,23 @@
     if (p.price != null && p.compare_at_price != null && Number(p.compare_at_price) > Number(p.price)) {
       var pourcentage = Math.round((1 - Number(p.price) / Number(p.compare_at_price)) * 100);
       prixHtml = '<span class="hx-search-hit-price-remise">' +
-        '<span class="hx-search-hit-price-barre">' + fmtPrix(p.compare_at_price) + "</span>" +
-        '<span class="hx-search-hit-price">' + fmtPrix(p.price) + "</span>" +
+        '<span class="hx-search-hit-price-barre">' + fmtPrix(p.compare_at_price, lang) + "</span>" +
+        '<span class="hx-search-hit-price">' + fmtPrix(p.price, lang) + "</span>" +
         '<span class="hx-search-hit-price-pct">−' + pourcentage + "%</span>" +
       "</span>";
     } else {
       prixHtml = p.price != null
-        ? '<span class="hx-search-hit-price">' + fmtPrix(p.price) + "</span>"
+        ? '<span class="hx-search-hit-price">' + fmtPrix(p.price, lang) + "</span>"
         : "";
     }
-    if (stockKnown && !hit.in_stock) metaBits.push('<span class="hx-search-hit-oos">Rupture</span>');
+    if (stockKnown && !hit.in_stock) metaBits.push('<span class="hx-search-hit-oos">' + esc(TXT.rupture) + "</span>");
     // ÉTIQUETTE PACK (2 août) -- affichée uniquement quand CE hit précis
     // est le highlighted_bundle renvoyé par l'API pour la requête en
     // cours. Voir searchBox() : c'est là que le rapprochement est fait,
     // pas ici -- defaultRenderItem reste une fonction pure sur un seul
     // hit, sans connaître le contexte de la recherche globale.
     var etiquetteHtml = hit._heurixBundle
-      ? '<span class="hx-search-hit-badge">Pack recommandé</span>'
+      ? '<span class="hx-search-hit-badge">' + esc(TXT.pack) + "</span>"
       : "";
     return (
       etiquetteHtml +
@@ -203,6 +325,9 @@
     if (!config.containerId) throw new Error("Heurix.searchBox: 'containerId' est requis.");
     var container = document.getElementById(config.containerId);
     if (!container) throw new Error("Heurix.searchBox: aucun element avec id='" + config.containerId + "'.");
+
+    var lang = resoudreLangue(config.lang);
+    var TX = TEXTES[lang];
 
     var baseUrl = (config.baseUrl || DEFAULT_BASE_URL).replace(/\/+$/, "");
     var minChars = config.minChars != null ? config.minChars : DEFAULT_MIN_CHARS;
@@ -248,7 +373,7 @@
     var idBase = String(config.containerId);
     container.classList.add("hx-search");
     container.innerHTML =
-      '<input type="text" id="' + esc(idBase) + '-input" class="hx-search-input" placeholder="' + esc(config.placeholder || "Rechercher…") + '" autocomplete="off" aria-label="Rechercher un produit"' +
+      '<input type="text" id="' + esc(idBase) + '-input" class="hx-search-input" placeholder="' + esc(config.placeholder || TX.placeholder) + '" autocomplete="off" aria-label="' + esc(TX.ariaChamp) + '"' +
       ' role="combobox" aria-autocomplete="list" aria-haspopup="listbox" aria-expanded="false" aria-controls="' + esc(idBase) + '-panel">' +
       '<div class="hx-search-panel" id="' + esc(idBase) + '-panel" role="listbox" hidden></div>' +
       '<div class="hx-search-live" aria-live="polite" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;"></div>';
@@ -339,7 +464,7 @@
         })
         .catch(function () {
           if (requestId !== lastRequestId) return;
-          setState("Recherche indisponible pour le moment.");
+          setState(TX.indispo);
         });
     }
 
@@ -355,14 +480,15 @@
       activeIndex = -1;
 
       var html = '<div class="hx-groups-head">' +
-        esc(String(data.total)) + " résultats — choisissez une famille" +
+        esc(String(data.total)) +
+        (estPluriel(data.total, lang) ? TX.familles : TX.famille) +
         "</div>";
 
       html += (data.groupes || []).map(function (g, i) {
         var interieur =
           '<span class="hx-group-name">' + esc(g.famille) + "</span>" +
           '<span class="hx-group-count">' + g.produits +
-            (g.produits > 1 ? " produits" : " produit") + "</span>" +
+            (estPluriel(g.produits, lang) ? TX.produits : TX.produit) + "</span>" +
           '<span class="hx-group-ex">' +
             esc((g.representant && (g.representant.name || g.representant.id)) || "") +
           "</span>";
@@ -374,7 +500,8 @@
 
       panel.innerHTML = html;
       openPanel();
-      annoncer(String(data.total) + " résultats, choisissez une famille");
+      annoncer(String(data.total) +
+        (estPluriel(data.total, lang) ? TX.famillesAria : TX.familleAria));
 
       panel.querySelectorAll(".hx-group").forEach(function (el) {
         el.addEventListener("click", function (e) {
@@ -436,15 +563,15 @@
         if (data.price_filter) {
           var pf = data.price_filter;
           var borne = pf.max !== null && pf.min !== null
-            ? "entre " + fmtPrix(pf.min) + " et " + fmtPrix(pf.max)
-            : pf.max !== null ? "à moins de " + fmtPrix(pf.max)
-            : "à plus de " + fmtPrix(pf.min);
+            ? TX.entre + fmtPrix(pf.min, lang) + TX.et + fmtPrix(pf.max, lang)
+            : pf.max !== null ? TX.moinsDe + fmtPrix(pf.max, lang)
+            : TX.plusDe + fmtPrix(pf.min, lang);
           panel.innerHTML =
             '<div class="hx-search-state">' +
-            "<p style=\"margin:0 0 10px;\">Aucun produit " + esc(borne) +
-            (data.query ? ' pour « ' + esc(data.query) + " »" : "") + ".</p>" +
+            "<p style=\"margin:0 0 10px;\">" + TX.aucunProduit + esc(borne) +
+            (data.query ? TX.pourOuvre + esc(data.query) + TX.pourFerme : "") + ".</p>" +
             '<button type="button" class="hx-search-clearfilter">' +
-            "Chercher sans la contrainte de prix</button></div>";
+            esc(TX.sansContrainte) + "</button></div>";
           openPanel();
           var relance = panel.querySelector(".hx-search-clearfilter");
           if (relance) relance.addEventListener("click", function () {
@@ -454,7 +581,8 @@
           });
           return;
         }
-        setState("Aucun résultat" + (data.query ? ' pour « ' + esc(data.query) + " »" : "") + ".");
+        setState(TX.aucunResultat +
+          (data.query ? TX.pourOuvre + esc(data.query) + TX.pourFerme : "") + ".");
         return;
       }
 
@@ -465,11 +593,11 @@
       }
 
       if (data.fallback) {
-        html += '<div class="hx-search-fallback-label">Nos incontournables</div>';
+        html += '<div class="hx-search-fallback-label">' + esc(TX.picks) + "</div>";
       }
 
       html += currentHits.map(function (hit, i) {
-        var inner = renderItem(hit, i);
+        var inner = renderItem(hit, i, lang);
         var href = resultHref ? resultHref(hit) : null;
         var tag = href ? "a" : "div";
         var hrefAttr = href ? ' href="' + esc(href) + '"' : "";
@@ -484,16 +612,18 @@
       // jamais rien de cassé pour un marchand qui n'a pas encore configuré
       // cette option.
       if ((data.total || 0) > (data.hits || []).length) {
-        var texteTotal = esc(String(data.total)) + " résultats au total";
+        var texteTotal = esc(String(data.total)) +
+          (estPluriel(data.total, lang) ? TX.totalPlusieurs : TX.totalUn);
         var lienTotal = seeAllHref ? seeAllHref(data.query || "", data.total) : null;
         html += lienTotal
-          ? '<a class="hx-search-seeall" href="' + esc(lienTotal) + '">Voir les ' + texteTotal + " →</a>"
+          ? '<a class="hx-search-seeall" href="' + esc(lienTotal) + '">' + esc(TX.voirLes) + texteTotal + " →</a>"
           : '<div class="hx-search-seeall">' + texteTotal + "</div>";
       }
 
       panel.innerHTML = html;
       openPanel();
-      annoncer(currentHits.length + (currentHits.length > 1 ? " résultats trouvés" : " résultat trouvé"));
+      annoncer(currentHits.length +
+        (estPluriel(currentHits.length, lang) ? TX.trouvePlusieurs : TX.trouveUn));
 
       panel.querySelectorAll(".hx-search-hit").forEach(function (el) {
         el.addEventListener("click", function (e) {
@@ -556,7 +686,7 @@
         closePanel();
         return;
       }
-      setState("Recherche…");
+      setState(TX.chargement);
       debounceTimer = setTimeout(function () { runSearch(query); }, debounceMs);
     });
 
