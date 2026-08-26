@@ -125,3 +125,31 @@ Contexte unique : un `CONTEXT.md` et un `docs/adr/` à la racine. Ni l'un ni
 l'autre n'existe encore ; ils seront créés paresseusement par
 `/domain-modeling` quand un terme ou une décision aura besoin d'être fixé.
 Voir `docs/agents/domain.md`.
+
+## Local
+- Déploiement (rm -rf + cp -r) : ne jamais supprimer demo/mode/images/ ni demo/outillage/images/. Exclure ces deux dossiers explicitement.
+
+## Vérification visuelle — obligatoire
+
+**Toute modification visuelle se vérifie À L'ÉCRAN avant d'être poussée.**
+Ouvrir la page, la regarder. Un test vert et un compte de mots ne disent rien
+de ce qu'un visiteur voit.
+
+Établi le 26 août 2026, après un audit visuel qui a trouvé quatre défauts
+introduits par les chantiers de la veille et du jour — dont une page
+(`secteurs.html`) qui s'affichait **quasiment vide**, tout son contenu bloqué
+à `opacity:0`. Aucun n'avait été vu, parce que personne n'avait ouvert la
+page : on avait mesuré des mots, des écouteurs et des millisecondes.
+
+Ce qu'une mesure ne voit pas :
+- un bloc à `opacity:0` compte ses mots normalement dans le DOM ;
+- un texte à 1,11:1 de contraste est présent, lisible par un script, et
+  invisible pour un œil ;
+- un `display:flex` mal placé n'échoue à aucun test ;
+- une page créée depuis un gabarit peut hériter du balisage sans le script
+  qui l'anime.
+
+Corollaire pratique : si l'outil de capture ne rend pas la page (onglet en
+arrière-plan, viewport à 0), **le dire** et demander une vérification humaine
+plutôt que de conclure depuis le DOM. Un DOM correct ne prouve pas un rendu
+correct.

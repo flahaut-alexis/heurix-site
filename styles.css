@@ -179,7 +179,7 @@ header{
   }
 }
 
-.mobile-nav-toggle{
+.mobile-nav-toggle{ font-family:'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif; 
   display:none; flex-direction:column; justify-content:center; gap:4px;
   width:38px; height:38px; padding:0; border:1px solid var(--line); border-radius:8px;
   background:#fff; cursor:pointer; flex-shrink:0;
@@ -292,7 +292,7 @@ header{
   .header-search .search-trigger-kbd{ display:none; }
 }
 
-.search-trigger{
+.search-trigger{ font-family:'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif; 
   display:flex; align-items:center; gap:9px;
   height:38px; padding:0 10px 0 12px; border-radius:8px;
   background:var(--bg-soft); border:1px solid var(--line); color:var(--ink-muted);
@@ -1474,8 +1474,11 @@ h2{ font-size:clamp(26px,3.4vw,34px); font-weight:800; margin:0 0 18px; max-widt
 .roi-bar-cost{ background:var(--blue); height:100%; transition:width .3s ease; }
 .roi-bar-gain{ background:#1FAA6B; height:100%; transition:width .3s ease; }
 
-.roi-cta{ width:100%; justify-content:center; margin-top:26px; background:#fff; color:var(--ink); }
-.roi-cta:hover{ background:var(--blue-tint); color:var(--ink); }
+/* ALIGNE SUR LE VOCABULAIRE EXISTANT (26 aout 2026). Ce bouton etait blanc
+   a texte fonce -- un TROISIEME traitement, a cote du primaire (bleu plein)
+   et du .btn-ghost (contour). Involontaire : il herite desormais du primaire
+   comme tous les CTA du site, et ne garde que sa mise en page propre. */
+.roi-cta{ width:100%; justify-content:center; margin-top:26px; }
 .roi-cta-note{ text-align:center; font-size:11px; color:rgba(255,255,255,0.45); margin-top:10px; }
 
 .roi-pdf-toggle{
@@ -1903,9 +1906,44 @@ body.docs-dark .regex-copy p{ color:#CDD2F0; }
    exiges. Le texte etait quasiment invisible sur index.html, produit.html
    et docs.html. */
 .regex-reassure{ color:var(--blue-deep) !important; }
+.regex-reassure > p{ margin:0; }
+.regex-reassure > svg,
+.regex-reassure > .regex-reassure-icone{ flex:0 0 auto; margin-top:2px; }
 .regex-reassure a:not(.btn){
   color:var(--blue-deeper) !important; text-decoration-color:var(--blue);
 }
+
+/* SURCOUCHES SOMBRES MANQUANTES (26 aout 2026).
+   Le site fonctionne en « clair par defaut, sombre par surcouche » : le texte
+   herite de --ink (#12142B) ou --ink-muted (#5B5E76), penses pour un fond
+   blanc, et chaque composant pose sur le degrade sombre doit recevoir sa
+   regle body.docs-dark. Ces huit-la ne l'avaient jamais recue. #tarif-encart
+   et .pb-repere ont ete ajoutes les 25 et 26 aout sans elle : le prix
+   « A partir de 19 EUR/mois » ressortait a 1,11:1 -- invisible.
+
+   CONTRASTES MESURES sur les trois arrets reels du degrade
+   (#4C3FE0 / #3648A8 / #101B4D), pas supposes :
+     #F5F6FF   6,30 / 7,36 / 15,17 : 1   AA partout, marge confortable
+     #CDD2F0   4,55 / 5,31 / 10,94 : 1   AA partout, mais 4,55 ne depasse le
+                                         seuil que de 0,05 sur l'arret le plus
+                                         clair. Retenu quand meme : c'est la
+                                         couleur deja employee partout ailleurs
+                                         sur fond sombre.
+     existant casse, pour memoire :
+     #12142B   2,67 / 2,28 / 1,11 : 1    echec sur les trois
+     #5B5E76   1,07 / 1,25 / 2,57 : 1    echec sur les trois          */
+body.docs-dark .tarif-note,
+body.docs-dark .pb-repere,
+body.docs-dark .copilot-point-source,
+body.docs-dark .form-note,
+body.docs-dark .contact-direct,
+body.docs-dark .how-note{ color:#CDD2F0; }
+body.docs-dark .tarif-ligne strong,
+body.docs-dark .pb-repere strong{ color:#F5F6FF; }
+/* Un lien doit se distinguer du texte qui l'entoure, pas s'y fondre. */
+body.docs-dark .pb-repere a,
+body.docs-dark .how-note a,
+body.docs-dark .contact-direct a{ color:#F5F6FF; text-decoration-color:rgba(255,255,255,.45); }
 
 body.docs-dark .vertical-card{ background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.14); }
 body.docs-dark .vertical-card h4{ color:#F5F6FF; }
@@ -1955,7 +1993,7 @@ body.docs-dark .why-card p{ color:#CDD2F0; }
 .why-cards{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:36px; }
 @media (max-width:800px){ .why-cards{ grid-template-columns:1fr; } }
 .why-card{
-  background:#fff; border:1px solid var(--line); border-radius:14px; padding:28px 24px;
+  background:#fff; border:1px solid var(--line); border-radius:12px; padding:28px 24px;
   transition:border-color .15s ease, transform .15s ease;
 }
 .why-card:hover{ border-color:var(--blue); transform:translateY(-2px); }
@@ -1972,7 +2010,7 @@ body.docs-dark .why-card p{ color:#CDD2F0; }
 .how-steps{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin:36px 0 26px; }
 @media (max-width:800px){ .how-steps{ grid-template-columns:1fr; } }
 .how-step{
-  background:#fff; border:1px solid var(--line); border-radius:14px; padding:26px 24px;
+  background:#fff; border:1px solid var(--line); border-radius:12px; padding:26px 24px;
   transition:border-color .15s ease, transform .15s ease;
 }
 .how-step:hover{ border-color:var(--blue); transform:translateY(-2px); }
@@ -2134,7 +2172,7 @@ body.docs-dark .why-card p{ color:#CDD2F0; }
   transition:bottom .35s ease;
 }
 .pricing-nudge.visible{ bottom:20px; }
-.pricing-nudge-close{
+.pricing-nudge-close{ font-family:'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif; 
   position:absolute; top:8px; right:8px; width:22px; height:22px; border:none;
   background:transparent; color:var(--ink-muted); cursor:pointer; font-size:16px; line-height:1;
   border-radius:5px;
@@ -2750,8 +2788,16 @@ body.docs-dark .why-card p{ color:#CDD2F0; }
 .header-signin:hover{ color:var(--blue-deep); }
 
 .regex-reassure{
-  /* Meme raison qu'au-dessus. align-items:flex-start et non center : ce
-     paragraphe fait plusieurs lignes, l'icone doit rester en tete. */
+  /* align-items:flex-start et non center : le texte fait plusieurs lignes,
+     l'icone doit rester en tete.
+     CORRECTIF DU 26 AOUT 2026. `display:flex` etait pose sur un <p> qui
+     contenait AUSSI du texte enrichi -- un <strong> et un <a> au fil de la
+     phrase. En flex, chaque noeud devient un item independant : la phrase
+     s'affichait en colonnes verticales, le gras et le lien isoles chacun
+     dans la sienne. Defaut introduit le 24 aout en remplacant les emoji par
+     des SVG (chantier U10), l'alignement etant le but recherche.
+     Le flex reste -- il sert l'alignement voulu -- mais il porte desormais
+     sur un CONTENEUR dont le texte est un seul enfant <p>. */
   display:flex; align-items:flex-start; gap:8px;
   font-size:13.5px; color:var(--blue-deep); background:var(--blue-tint);
   border-radius:10px; padding:12px 16px; margin-top:14px !important;
@@ -5592,7 +5638,7 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 }
 .pb-carte{
   position:relative;
-  background:#fff; border:1px solid var(--line); border-radius:13px;
+  background:#fff; border:1px solid var(--line); border-radius:12px;
   padding:24px 24px 22px;
 }
 .pb-num{
