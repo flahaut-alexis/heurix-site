@@ -1110,7 +1110,13 @@ section.soft{ background:var(--bg-soft); color:var(--ink); }
    Sensefuel, 2026 » se lit et se verifie sur place. */
 .pb-repere{ margin:22px 0 0; font-size:14.5px; line-height:1.6; color:var(--ink-muted); }
 .pb-repere strong{ color:var(--ink); }
-.tarif-bloc{ display:flex; align-items:center; justify-content:space-between; gap:28px; flex-wrap:wrap; }
+/* CARTE, PAS BANDEAU NU (26 aout 2026). L'encart flottait sans contenant sur
+   le degrade. Il rejoint la famille de cartes DEJA EN PLACE -- .vertical-card,
+   .pb-carte, .how-step -- dont il reprend les valeurs telles quelles :
+   fond clair par defaut, et la surcouche sombre translucide plus bas.
+   Aucune troisieme famille inventee. */
+.tarif-bloc{ display:flex; align-items:center; justify-content:space-between; gap:28px; flex-wrap:wrap;
+  background:#fff; border:1px solid var(--line); border-radius:12px; padding:24px 26px; }
 .tarif-bloc-texte{ flex:1 1 320px; }
 .tarif-bloc .kicker{ margin-bottom:8px; }
 .tarif-ligne{ font-size:19px; margin:0 0 6px; }
@@ -1891,6 +1897,7 @@ body.docs-dark .mission-pillar h3{ color:#F5F6FF; }
 body.docs-dark .mission-pillar p{ color:#CDD2F0; }
 
 body.docs-dark .pb-carte{ background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.14); }
+body.docs-dark .tarif-bloc{ background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.14); }
 body.docs-dark .pb-carte h3{ color:#F5F6FF; }
 body.docs-dark .pb-carte p{ color:#CDD2F0; }
 body.docs-dark .pb-sortie{ color:#F5F6FF; }
