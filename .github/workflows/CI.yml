@@ -90,7 +90,16 @@ jobs:
 
           ECHEC=0
           for F in $MODIFIES; do
-            BASE=$(basename "$F")
+            # LE CHEMIN DU DEPOT, PAS LE BASENAME (27 aout 2026). basename
+            # rendait "heurix-search.js" pour downloads/heurix-search.js, et
+            # l'ancre "(\.\./)*heurix-search.js" ne voit aucune des 8
+            # references reelles, qui traversent toutes le dossier
+            # downloads/. Le controle ne les manquait pas bruyamment : il
+            # concluait "aucune reference ?v=, ignore" et passait au suivant.
+            # Un asset servi depuis un sous-dossier n'a donc jamais ete
+            # verifie. Le chemin complet est l'identite ; les remontees ../
+            # restent libres devant lui.
+            BASE=$(printf '%s' "$F" | sed 's/[.]/\\./g')
             # Les clefs de CE fichier, avant et apres le commit.
             # (\.\./)* ET NON (\.\./)? -- voir le commentaire de l'etape
             # suivante : le "?" ne voyait pas les pages de profondeur 2.
@@ -155,7 +164,15 @@ jobs:
           #      asset versionne n'etait couvert par personne, en silence.
           #      Elle est desormais DEDUITE des references reellement
           #      presentes dans le depot.
-          ASSETS=$(git grep -hoE "\"(\.\./)*[A-Za-z0-9_-]+\.(css|js|svg)\?v=[0-9]+" -- '*.html' \
+          # LA CLASSE INCLUT "/" (27 aout 2026). Sans lui, l'extraction
+          # rendait "heurix-search.js" la ou la page ecrit
+          # "../downloads/heurix-search.js", puis cherchait cette forme-la
+          # et ne trouvait que les extraits de documentation. Le controle
+          # a donc certifie "une seule clef sur tout le site" pendant que
+          # 8 pages en servaient une autre -- exactement la faute que
+          # l'en-tete ci-dessus decrit, un cran plus loin. L'identite d'un
+          # asset est son chemin, pas son nom de fichier.
+          ASSETS=$(git grep -hoE "\"(\.\./)*[A-Za-z0-9_/-]+\.(css|js|svg)\?v=[0-9]+" -- '*.html' \
                    | sed -E 's|^"(\.\./)*||; s|\?v=[0-9]+$||' | sort -u)
           echo "Assets versionnes decouverts : $(echo "$ASSETS" | tr '\n' ' ')"
           ECHEC=0

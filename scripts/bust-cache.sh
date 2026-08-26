@@ -65,8 +65,18 @@ sed_inplace() {
 for FICHIER in "$@"; do
   MOTIF=$(printf '%s' "$FICHIER" | sed 's/[.]/\\./g')
   # Ancré sur un guillemet ouvrant, éventuellement suivi de "../" AUTANT
-  # DE FOIS QUE NÉCESSAIRE -- jamais un vrai sous-chemin comme
-  # "downloads/", qui désigne un fichier distinct.
+  # DE FOIS QUE NÉCESSAIRE.
+  #
+  # LE SOUS-DOSSIER EST DANS L'ARGUMENT (27 août 2026). La version
+  # précédente excluait délibérément "downloads/" au motif qu'il désignait
+  # un fichier distinct de l'homonyme de la racine. Vrai jusqu'au 26 août,
+  # date à laquelle cet homonyme a été supprimé (4a028c1d) : l'exclusion a
+  # survécu à sa raison d'être, et les 8 références réelles de
+  # downloads/heurix-search.js sont restées hors de portée du script, qui
+  # ne bumpait que les 4 extraits de documentation -- l'inverse exact de
+  # ce qu'il fallait. Le chemin fait donc maintenant partie du nom qu'on
+  # passe : "bust-cache.sh downloads/heurix-search.js" désigne ce
+  # fichier-là et lui seul, à n'importe quelle profondeur de remontée.
   #
   # LE "?" VALAIT 38 PAGES (26 août 2026). Il n'autorisait qu'un seul
   # niveau : vrai pour en/, faux dès que en/blog/ et en/solutions/ ont
@@ -98,5 +108,21 @@ for FICHIER in "$@"; do
   done <<< "$FICHIERS_TOUCHES"
 
   NB=$(echo "$FICHIERS_TOUCHES" | grep -c .)
-  echo "✓ $FICHIER -> ?v=${TIMESTAMP} propagé dans $NB fichier(s)"
+
+  # DIRE CE QU'ON N'A PAS TOUCHÉ. Un compte final ressemble à une preuve
+  # de couverture alors qu'il ne compte que ce qui a été vu -- c'est ce
+  # qui a masqué 38 pages en août. On compare donc au total des références
+  # portant le même nom de fichier, quel que soit leur chemin.
+  BASE=$(basename "$FICHIER")
+  BASE_MOTIF=$(printf '%s' "$BASE" | sed 's/[.]/\\./g')
+  TOTAL=$(git ls-files --cached --others --exclude-standard "*.html" "*.js" \
+          | xargs grep -ohE "[^\"']*${BASE_MOTIF}\\?v=[0-9]+" 2>/dev/null | wc -l | tr -d ' ')
+  VUES=$(echo "$FICHIERS_TOUCHES" | xargs grep -ohE "$ANCRE" 2>/dev/null | wc -l | tr -d ' ')
+  echo "✓ $FICHIER -> ?v=${TIMESTAMP} propagé dans $NB fichier(s) ($VUES référence(s))"
+  if [ "$TOTAL" -gt "$VUES" ]; then
+    echo "  ⚠ $((TOTAL - VUES)) référence(s) à \"$BASE\" NON touchée(s) -- autre chemin :" >&2
+    git ls-files --cached --others --exclude-standard "*.html" "*.js" \
+      | xargs grep -onE "[^\"']*${BASE_MOTIF}\\?v=[0-9]+" 2>/dev/null \
+      | grep -vE "(\\.\\./)*${MOTIF}\\?v=" | sed 's/^/    /' >&2
+  fi
 done
