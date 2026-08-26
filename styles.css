@@ -102,6 +102,9 @@ button, .btn, a.btn, [role="button"], .play-chip{
 
 /* NAV */
 header{
+  /* Encre declaree (26 aout 2026) : l'en-tete peint son propre fond clair
+     a 92 % avec flou, il ne doit rien a l'heritage de body. */
+  color:var(--ink);
   position:sticky; top:0;
   /* z-index CORRIGE (bug remonte, 3 aout) : etait a 50, backdrop-filter
      cree un contexte d'empilement local -- tout ce qui est DANS header,
@@ -238,7 +241,13 @@ header{
   letter-spacing:-0.01em;
   display:flex; align-items:center; gap:9px;
   text-decoration:none;
-  color:var(--ink);
+  /* HERITE, NE FIGE PAS (26 aout 2026). `.logo` vit dans DEUX contextes : le
+     bandeau d'en-tete, qui peint son propre fond clair, et le pied de page,
+     pose sur le degrade sombre. Figer --ink ici rendait le nom du produit
+     invisible en pied de page sur 118 pages -- et aucune liste de classement
+     ne peut trancher pour un selecteur qui vit des deux cotes. En heritant,
+     chaque instance prend la couleur de son fond. */
+  color:inherit;
 }
 .logo img{ height:28px; width:28px; display:block; }
 .wordmark{
@@ -2181,7 +2190,6 @@ body.docs-dark .regex-copy > p{ color:#CDD2F0; }
      .kpi-tendance-stable
      .lang-switch
      .lede
-     .logo
      .mobile-nav-toggle
      .nav-drop-btn
      .nav-drop-panel
@@ -2353,6 +2361,7 @@ body.docs-dark .regex-copy > p{ color:#CDD2F0; }
      .zr-choix i
      .zr-suggestions em
      body
+     header
    @fin-fond-clair
    ========================================================================== */
 
@@ -3343,6 +3352,16 @@ body.docs-dark .why-card p{ color:#CDD2F0; }
    "l'ensemble de la doc" demande. */
 body.docs-dark{
   background: radial-gradient(ellipse 1400px 900px at 50% 0%, #4C3FE0 0%, #3648A8 45%, #101B4D 100%);
+  /* LE FOND SOMBRE EMPORTE DESORMAIS SON ENCRE (26 aout 2026).
+     C'etait le generateur de dix defauts de contraste en trois tours
+     d'audit : cette regle changeait le FOND sans toucher a la couleur
+     heritee de `body{ color:var(--ink) }`. Tout element sans declaration
+     propre heritait donc du quasi-noir sur le degrade -- le logo du pied de
+     page a 1,11:1 sur 118 pages, le texte du bandeau tarif, .faq-body.
+     Les composants a fond clair ne dependent plus de cet heritage : le lot
+     precedent leur a donne leur `color:var(--ink)` explicite, sans changer
+     un seul pixel (empreintes identiques sur 2 013 elements de texte). */
+  color:#CDD2F0;
 }
 body.docs-dark .docs-hero{ background:transparent; border-bottom-color:rgba(255,255,255,0.14); }
 body.docs-dark .docs-hero h1,
