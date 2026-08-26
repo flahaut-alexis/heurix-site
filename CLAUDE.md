@@ -497,3 +497,49 @@ qu'il connaît, tout en la formulant sur l'ensemble.
 contrôle vert sur un défaut déjà corrigé ne prouve rien. La seule preuve est
 de faire diverger volontairement, de le voir nommer le coupable, puis de
 restaurer — les deux sens, à chaque fois.
+
+#### Une exclusion doit porter sa raison, et cette raison doit rester vérifiable
+
+Quatrième occurrence, le 27 août 2026, et la première où l'angle mort était
+**délibéré, documenté, et juste le jour où il a été écrit**.
+
+`bust-cache.sh` excluait `downloads/` de son motif, et son commentaire disait
+pourquoi : ce dossier « désigne un fichier distinct ». C'était vrai. Un
+`heurix-search.js` vivait à la racine et un autre dans `downloads/` ; les
+confondre aurait bumpé le mauvais. L'exclusion était le contraire d'une
+négligence.
+
+Puis `4a028c1d` a supprimé l'orphelin de la racine, le 26 août. L'homonyme
+n'existait plus. **L'exclusion, elle, est restée** — et le lendemain, lancée
+sur `heurix-search.js`, elle a bumpé les 4 extraits de documentation et
+manqué les 8 références réelles. L'inverse exact de ce qu'il fallait, sur le
+seul fichier qui n'existait plus qu'à un endroit.
+
+La CI était aveugle au même segment, des deux côtés : sa classe de caractères
+d'extraction, `[A-Za-z0-9_-]+`, ne contient pas `/`, et son contrôle par
+commit identifiait l'asset par `basename`. Trois outils, un seul angle mort.
+
+**Aucun test ne rattrape cela, et c'est le point.** Le script fait exactement
+ce qu'on lui a dit. Il n'échoue pas, il ne ment pas sur ce qu'il a fait, il
+n'a aucun bug. Un test ne peut pas distinguer une exclusion *délibérée* d'une
+exclusion *périmée* sans relire la raison et la revérifier — ce qu'aucun test
+ne fait, parce que la raison vit dans un commentaire.
+
+Deux règles, donc :
+
+**Toute exclusion dans un motif porte la raison qui la justifie.** Un motif
+qui exclut sans dire pourquoi est indéfendable : personne ne saura plus tard
+s'il faut le corriger ou le respecter.
+
+**Et cette raison doit rester vérifiable après coup.** « Parce qu'un homonyme
+vit à la racine » se vérifie d'une commande. « Par prudence » ne se vérifie
+pas, donc ne se périme jamais, donc ne sera jamais retirée.
+
+C'est le pendant de la section sur les listes d'exceptions, à un endroit plus
+sournois. Une liste nomme ses membres : le test peut les reprendre un à un et
+signaler ceux qui ne divergent plus. **Une exclusion dans une expression
+régulière ne nomme rien.** Elle ne produit aucune liste, ne laisse aucune
+trace, et le compte affiché à la fin ne compte que ce qu'elle a laissé
+passer. D'où son seul garde-fou possible, désormais dans `bust-cache.sh` :
+**dire ce qu'on n'a pas touché**, en comparant au total des références
+portant le même nom de fichier, quel que soit leur chemin.
