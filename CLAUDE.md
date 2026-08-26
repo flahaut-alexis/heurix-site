@@ -154,6 +154,41 @@ arrière-plan, viewport à 0), **le dire** et demander une vérification humaine
 plutôt que de conclure depuis le DOM. Un DOM correct ne prouve pas un rendu
 correct.
 
+### Une page peut répondre 200 et ne rien montrer
+
+Le 26 août 2026, trois liens « Voir le moteur en action » ont été pointés vers
+`demo/index.html` après vérification que la page répondait **HTTP 200**. Elle
+répondait bien 200. Elle affichait, à la place des produits :
+
+> « Catalogue indisponible — vérifiez la clé publique et le nom du catalogue
+> dans `boutique.js`. »
+
+Un message destiné au développeur, montré à un prospect. Mesuré ensuite sur
+l'API : le catalogue `quincaillerie-nord` n'existe pas (404) et la clé était
+restée au gabarit (403). Les liens ont été retirés dans la demi-heure.
+
+**Trois contrôles, trois portées différentes** — et seul le troisième aurait
+vu celui-là :
+
+| contrôle | ce qu'il prouve |
+|---|---|
+| code HTTP | le document existe |
+| rendu initial | le balisage et le style sont là |
+| **après les requêtes** | **la page fonctionne** |
+
+Le rendu initial ne suffit pas non plus : à l'ouverture, la page montrait son
+en-tête, son bandeau, son hero et sa barre de recherche — tout était correct.
+L'erreur n'apparaît qu'une fois l'appel `browse` revenu.
+
+Le contrôle qui l'attrape : ouvrir la page, **attendre**, puis lire la console
+et le DOM. `read_console_messages` avec `onlyErrors` donne les 4xx et 5xx en
+une ligne ; un `querySelector` sur la zone qui devait se remplir dit si elle
+s'est remplie. Les deux coûtent une seconde.
+
+Corollaire : **une page qui dépend d'un appel réseau n'est vérifiée qu'après
+cet appel.** Sur ce site, ça vise `demo/`, la console, le simulateur ROI et
+tout bloc alimenté par l'API — pas les pages statiques.
+
 ### Ce que le test de classement ne couvre pas
 
 `tests/classement-fond.test.js` refuse tout sélecteur qui pose
