@@ -3301,11 +3301,39 @@ body.docs-dark .why-card p{ color:#CDD2F0; }
 .catalog-rule-status.ok{ color:#0F7A3D; }
 .catalog-rule-status.err{ color:#C0392B; }
 
+/* « MON COMPTE » PREND LA FORME DE SES VOISINS (26 aout 2026). Ce lien etait
+   le seul controle NU d'une rangee qui en compte quatre : .search-trigger,
+   .lang-switch et .btn portent tous une hauteur de 38px et un rayon de 8px.
+   Il reprend donc .search-trigger a l'identique -- meme fond, meme bordure,
+   meme rayon, meme transition.
+   RAYON 8px ET NON UNE PILULE : la pilule (100px) est une famille etablie du
+   site, 63 occurrences, mais AUCUNE dans l'en-tete. En introduire une ici
+   aurait fait cohabiter deux rayons dans cinq centimetres. */
 .header-signin{
+  display:flex; align-items:center; gap:7px;
+  height:38px; padding:0 12px;
+  border-radius:8px;
+  background:var(--bg-soft);
+  border:1px solid var(--line);
   font-size:13.5px; font-weight:600; color:var(--ink-muted); text-decoration:none;
   white-space:nowrap;
+  transition:border-color .15s ease, color .15s ease, background .15s ease;
 }
-.header-signin:hover{ color:var(--blue-deep); }
+.header-signin:hover{ color:var(--blue-deep); border-color:var(--blue-tint); }
+.header-signin svg{ flex:0 0 auto; }
+
+/* LE MASQUAGE MOBILE DOIT ETRE REPETE ICI (26 aout 2026). La media query de
+   la ligne 127 pose `display:none` sous 640px -- elle etait suffisante tant
+   que .header-signin n'avait AUCUNE regle de display. En lui donnant
+   `display:flex` pour aligner son icone, on a place une declaration de meme
+   specificite PLUS BAS dans le fichier : elle l'emportait, et « Mon compte »
+   s'affichait a la fois dans l'en-tete et dans le menu burger.
+   Vu a l'ecran a 450px, pas par un test -- les 202 sont restes verts.
+   C'est la meme famille que la regle deja notee dans CLAUDE.md : toute classe
+   qui fixe elle-meme son display doit re-declarer ce qui la masque. */
+@media (max-width:640px){
+  .header-signin{ display:none; }
+}
 
 .regex-reassure{
   /* align-items:flex-start et non center : le texte fait plusieurs lignes,
