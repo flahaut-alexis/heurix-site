@@ -174,6 +174,28 @@
       : n.replace(".", ",").replace(/,00$/, "") + " €";
   }
 
+  // CE QU'ELLE N'ECHAPPE PAS : L'APOSTROPHE. Elle traite & < > et le
+  // guillemet DOUBLE, volontairement pas le simple -- et cette absence
+  // decide de la facon dont on l'emploie, pas seulement de ce qu'elle
+  // rend.
+  //
+  // Corollaire, a lire avant de la reutiliser : TOUT ATTRIBUT PORTANT
+  // UNE DONNEE SE DOUBLE-QUOTE. Dans un attribut simple-quote, une
+  // apostrophe dans la valeur ferme l'attribut et laisse la place a un
+  // onmouseover= ; esc() la laisse passer et ne verra rien. C'est
+  // pourquoi ce fichier ecrit data-index="..." et data-idx="...", jamais
+  // en simple quote.
+  //
+  // Ce n'est pas theorique. heurix-browse-widget.js ecrivait
+  // data-id='...' et n'echappait rien du tout ; le 27 aout 2026, y poser
+  // esc() sans toucher au quotage n'aurait ferme que la moitie du trou.
+  // Verifie en le faisant echouer : esc() integralement conserve, le seul
+  // attribut remis en simple quote, et la charge ressort.
+  //
+  // L'alternative -- ajouter &#39; ici -- a ete ecartee : elle ferait
+  // diverger les deux copies de esc() (voir
+  // tests/heurix-browse-echappement.test.js, qui les compare octet pour
+  // octet) et laisserait croire qu'un attribut simple-quote est sur.
   function esc(s) {
     return String(s == null ? "" : s)
       .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
