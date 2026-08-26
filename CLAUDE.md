@@ -345,17 +345,48 @@ celle-ci. Vérifié avant suppression : aucun workflow, hook, `package.json`,
 passages de ce fichier et deux commentaires historiques de la CI le
 nommaient.
 
-**Le garde-fou portait la maladie qu'il traquait** (corrigé le 26 août 2026).
-Les deux contrôles de clefs de la CI utilisaient le même `"(\.\./)?` sur un
-seul niveau, et le contrôle de cohérence énumérait six assets à la main.
-Rejoué sur `1cbe26bc`, il annonçait « OK styles.css : une seule clef sur tout
-le site » pendant que 38 pages en servaient une autre. La découverte
-automatique a par ailleurs révélé **18 assets versionnés** là où la liste en
-nommait 6 : douze n'étaient contrôlés par personne.
+### Un garde-fou peut certifier le contraire de ce qu'il détecte
 
-Corollaire, plus général que les clefs de cache : **un contrôle qui affirme
-une propriété sur « tout » doit dériver son périmètre, jamais l'énumérer** —
-et il faut le vérifier en le faisant échouer sur un défaut réel, pas en
-constatant qu'il passe. Un contrôle vert sur un défaut déjà corrigé ne prouve
-rien : la seule preuve est de faire diverger volontairement, de le voir
-nommer le coupable, puis de restaurer.
+Un garde-fou qui se tait laisse passer un défaut. C'est le cas ordinaire, et
+on finit par le trouver autrement.
+
+Celui-là faisait pire. Rejoué sur `1cbe26bc`, le contrôle de cohérence des
+clefs de cache — dont le commentaire dit « repère le défaut de solutions/ » —
+affirmait :
+
+```
+OK    styles.css : une seule clef sur tout le site.
+```
+
+pendant que 38 pages en servaient une autre depuis leur création. **Il ne
+manquait pas le défaut : il certifiait son absence, dans les termes exacts de
+ce qu'il devait détecter.** Un rapport vert de cette nature ne se corrige pas
+tout seul, parce qu'il décourage précisément la vérification qui le
+démentirait.
+
+**La cause est la même que celle des deux scripts de versionnement : une
+portée énumérée à la main.** Six assets surveillés ; la découverte
+automatique en trouve **dix-huit**. Douze n'étaient contrôlés par personne, en
+silence — `billing-toggle.js`, `console-i18n.js`, `console-select.js`,
+`csv-console.js`, `demo-epinglage.js`, `demo-search-live.js`, `docs-copy.js`,
+`heurix-pictos.js`, `heurix-search.js`, `logo.svg`, `reveal.js`,
+`visite-editeur.js`.
+
+**Trois occurrences le même jour** : les six assets de la CI, l'index de
+recherche du site (quatre pages liées depuis la navigation et absentes),
+`HEURIX_SEARCH_LATEST_PATHS` (écrite le 6 août, jamais rouverte, proposant
+vingt jours plus tard les articles classés 23ᵉ, 27ᵉ et 29ᵉ sur 30 sous le
+libellé « Latest articles »). Toutes trois : une liste juste le jour où on
+l'écrit, fausse ensuite, et rien qui le signale — une liste périmée reste du
+JavaScript valide.
+
+Deux corollaires :
+
+**Un contrôle qui affirme une propriété sur « tout » doit dériver son
+périmètre, jamais l'énumérer.** Sinon il n'affirme cette propriété que sur ce
+qu'il connaît, tout en la formulant sur l'ensemble.
+
+**Et il se vérifie en le faisant échouer, pas en le voyant passer.** Un
+contrôle vert sur un défaut déjà corrigé ne prouve rien. La seule preuve est
+de faire diverger volontairement, de le voir nommer le coupable, puis de
+restaurer — les deux sens, à chaque fois.
