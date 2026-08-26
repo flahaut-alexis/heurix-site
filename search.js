@@ -73,11 +73,9 @@ window.HEURIX_SEARCH_INDEX = [
 ];
 
 window.HEURIX_SEARCH_LATEST_PATHS = [
-  "blog/origine-du-nom-heurix.html",
-  "blog/elasticsearch-lucene-catalogue-technique.html",
-  "blog/guide-utilisation-console.html",
-  "blog/recherche-vectorielle-catalogues-techniques.html",
-  "blog/guide-mise-en-route.html",
-  "blog/guide-serveur-mcp-heurix.html",
-  "blog/guide-page-categorie-browse.html"
+  "blog/preparer-operation-commerciale.html",
+  "blog/comprendre-statistiques-recherche.html",
+  "blog/calculer-roi-moteur-recherche.html",
+  "blog/mettre-en-avant-une-promotion.html",
+  "blog/recherche-sans-resultat-corriger.html"
 ];

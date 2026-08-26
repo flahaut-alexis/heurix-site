@@ -73,7 +73,9 @@ window.HEURIX_SEARCH_INDEX = [
 ];
 
 window.HEURIX_SEARCH_LATEST_PATHS = [
-  "en/blog/recherche-reference-sku-b2b.html",
-  "en/blog/impact-ebitda-recherche-interne.html",
-  "en/blog/5-signes-recherche-vous-coute-des-ventes.html"
+  "en/blog/preparer-operation-commerciale.html",
+  "en/blog/comprendre-statistiques-recherche.html",
+  "en/blog/calculer-roi-moteur-recherche.html",
+  "en/blog/mettre-en-avant-une-promotion.html",
+  "en/blog/recherche-sans-resultat-corriger.html"
 ];
