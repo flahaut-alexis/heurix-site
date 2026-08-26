@@ -10,16 +10,36 @@
 # indéfiniment, sans qu'aucune erreur ne le signale).
 #
 # GARDE-FOU : ancre chaque motif sur le guillemet ouvrant ('"' + nom du
-# fichier), jamais le nom seul -- deux fichiers homonymes peuvent
-# coexister à des chemins différents dans ce dépôt (heurix-search.js à
-# la racine ET dans downloads/, deux widgets distincts) ; un motif non
-# ancré aurait fait fuiter un bump de l'un vers les références de
-# l'autre. Ne touche jamais heurix-site/ (résidu local non suivi par
-# git, exclu de fait par git ls-files).
+# fichier), jamais le nom seul -- un motif non ancré ferait fuiter le bump
+# d'un fichier vers les références d'un homonyme situé ailleurs.
+#
+# CONSÉQUENCE À CONNAÎTRE, ce n'est pas une limite mais une contrainte de
+# rangement : le motif accepte "../" répétés, jamais un sous-chemin. Un
+# actif partagé entre plusieurs dossiers doit donc vivre dans leur ANCÊTRE
+# COMMUN, sinon il sort du périmètre du versionnement en silence. C'est
+# pourquoi demo-boutique.js et demo-boutique.css sont à la racine plutôt
+# que dans demo/ : ils servent demo/ ET en/demo/, dont le seul ancêtre
+# commun est la racine. Tant qu'ils étaient dans demo/, ce script n'en
+# versionnait que la moitié des pages -- et annonçait « 2 fichier(s) »
+# sans nommer les deux qui lui échappaient (26 août 2026).
+#
+# Aucun homonyme ne subsiste dans le dépôt à ce jour (vérifié le 26 août
+# 2026, après suppression de heurix-search.js de la racine : un orphelin
+# que rien ne chargeait, doublon d'un widget de downloads/).
 #
 # USAGE (depuis n'importe où dans le dépôt) :
 #   scripts/bust-cache.sh console.js
-#   scripts/bust-cache.sh styles.css console.js heurix-search.js
+#   scripts/bust-cache.sh styles.css console.js demo-boutique.js
+#
+# NE MARCHE PAS SUR downloads/ (mesuré le 26 août 2026). Lancer
+# `bust-cache.sh heurix-search.js` -- ce que cette ligne proposait -- ne
+# touche PAS les références réelles `"../downloads/heurix-search.js?v="`,
+# qui portent un sous-chemin : il réécrit à la place les SNIPPETS DE
+# DOCUMENTATION de docs.html et du guide de mise en route, où le même nom
+# apparaît sans dossier parce qu'il désigne le fichier chez le client.
+# Deux populations disjointes, dont le script ne voit que la mauvaise.
+# Sans conséquence aujourd'hui (la clef du 25 août est postérieure aux
+# dernières modifications des widgets), mais à savoir avant d'y toucher.
 
 set -euo pipefail
 
