@@ -7,16 +7,28 @@
  * génération du catalogue de test a d'ailleurs révélé en trente minutes que
  * trois graphies de dimension sur six perdaient leur annotation de longueur.
  *
- * CONFIGURATION. Remplacez CLE_PUBLIQUE et CATALOGUE ci-dessous par les
- * vôtres. La clé doit être PUBLIQUE (préfixe hxp_) : une clé serveur dans
- * une page web serait lisible par n'importe quel visiteur, et lui donnerait
- * le droit de modifier votre catalogue.
+ * CE N'EST PAS UN GABARIT À RECOPIER (26 août 2026). L'en-tête disait
+ * « Remplacez CLE_PUBLIQUE et CATALOGUE ci-dessous par les vôtres » — une
+ * consigne d'exemple d'intégration, dans une page qui est une VITRINE. Les
+ * deux rôles ne tiennent pas ensemble : tant qu'on lisait ce fichier comme un
+ * modèle, une clé restée au gabarit paraissait normale, et la boutique a servi
+ * « Catalogue indisponible » à ses visiteurs sans que personne le relève.
+ * L'exemple d'intégration vit désormais dans docs.html, en bloc de code.
+ *
+ * LA CLÉ CI-DESSOUS EST PUBLIQUE, ET C'EST SA PLACE. Préfixe hxp_, portée
+ * limitée à search / browse / events, et restreinte aux origines heurix.fr et
+ * www.heurix.fr — l'en-tête Origin est posé par le navigateur, pas par le
+ * JavaScript de la page (heurix/deps.py:323). Elle ne peut donc pas servir
+ * depuis un autre site, ni modifier quoi que ce soit.
+ *
+ * Corollaire pratique : elle renvoie 403 depuis localhost. Une vérification
+ * de cette boutique se fait en production, pas sur un serveur d'aperçu.
  */
 (function () {
   "use strict";
 
   var API = "https://api.heurix.fr";
-  var CLE_PUBLIQUE = "hxp_REMPLACEZ_PAR_VOTRE_CLE_PUBLIQUE";
+  var CLE_PUBLIQUE = "hxp_-PwGHmQFiSb2qqML38M417jyhE10ArMa";
   var CATALOGUE = "quincaillerie-nord";
 
   // LE NOMBRE DE REFERENCES VIT ICI, ET NULLE PART AILLEURS (26 aout 2026).
@@ -54,8 +66,13 @@
     ajouter:      "Add to cart",
     ajoute:       "Added \u2713",
     aucunProduit: "No products.",
-    catalogueKo:  "Catalogue unavailable — check the public key and the catalogue " +
-                  "name in demo-boutique.js.",
+    // MESSAGE DE VITRINE, PAS DE DEVELOPPEUR (26 aout 2026). Il disait
+    // « check the public key and the catalogue name in demo-boutique.js » --
+    // une consigne de configuration, montree a un prospect. Le detail
+    // technique reste, mais dans la console : c'est la qu'un developpeur
+    // regarde, et pas un visiteur.
+    catalogueKo:  "Catalogue temporarily unavailable. Search still works — " +
+                  "try a reference above.",
     rayonVide:    "No products in this category.",
     rayonKo:      "This category is unavailable right now.",
     references:   function (n) { return n + " references"; },
@@ -70,8 +87,8 @@
     ajouter:      "Ajouter au panier",
     ajoute:       "Ajouté \u2713",
     aucunProduit: "Aucun produit.",
-    catalogueKo:  "Catalogue indisponible — vérifiez la clé publique et le nom du " +
-                  "catalogue dans demo-boutique.js.",
+    catalogueKo:  "Catalogue momentanément indisponible. La recherche fonctionne " +
+                  "toujours — essayez une référence ci-dessus.",
     rayonVide:    "Aucun produit dans ce rayon.",
     rayonKo:      "Rayon indisponible pour le moment.",
     references:   function (n) { return n + " références"; },
@@ -139,8 +156,9 @@
       .catch(function (e) {
         var el = document.getElementById("populaires");
         if (el) {
-          el.innerHTML = "<p class='chargement'>" + T.catalogueKo +
-            "<br><small>" + e.message + "</small></p>";
+          el.innerHTML = "<p class='chargement'>" + T.catalogueKo + "</p>";
+          // Le detail technique va en console, pas sous les yeux du visiteur.
+          if (window.console) console.error("Heurix browse:", e.message);
         }
       });
   }

@@ -495,6 +495,29 @@ curl "https://api.heurix.fr/v1/browse/mycatalog/drills-drivers?sort=price_asc" \
       <p>A product missing the requested field (no <code class="docs-inline-code">price</code> for a <code class="docs-inline-code">price_asc</code> sort, for example) is never excluded and never breaks the call — it simply lands at the end of the list, regardless of sort direction.</p>
       <p>Consumes the request quota, same as a search call — it's an engine call just the same.</p>
 
+      <h3>Building a category page in the browser</h3>
+      <p><code class="docs-inline-code">browse</code> accepts a <a href="#authentification">public key</a> (<code class="docs-inline-code">hxp_</code>), so you can build a category page entirely in JavaScript, with no server proxy. That is what the <a href="../demo/index.html">demo shop</a> does — its code is readable in <code class="docs-inline-code">demo-boutique.js</code>.</p>
+      <pre class="docs-code"><code>// PUBLIC key (hxp_), restricted to your domains via allowed_origins.
+// A server key here would be readable by any visitor.
+const KEY = "hxp_your_public_key";
+const CATALOG = "mycatalog";
+
+fetch(`https://api.heurix.fr/v1/browse/${CATALOG}/drills-drivers?sort=popularity&amp;limit=8`, {
+  headers: { Authorization: "Bearer " + KEY },
+})
+  .then(r =&gt; r.ok ? r.json() : Promise.reject(new Error("HTTP " + r.status)))
+  .then(d =&gt; {
+    // browse returns hits: the product sits in h.product.
+    document.getElementById("grid").innerHTML =
+      (d.hits || []).map(h =&gt; renderCard(h.product)).join("");
+  })
+  .catch(e =&gt; {
+    // Storefront message for the visitor, technical detail in the console.
+    document.getElementById("grid").textContent = "Category temporarily unavailable.";
+    console.error("Heurix browse:", e.message);
+  });</code></pre>
+      <p><code class="docs-inline-code">d.total</code> gives the category's reference count, useful for a counter or pagination. A <code class="docs-inline-code">403</code> from a domain absent from <code class="docs-inline-code">allowed_origins</code> carries an explicit message naming the allowed domains — a diagnostic aid, not a leak.</p>
+
       <h3>Sort by popularity (clicks + purchases)</h3>
       <p><code class="docs-inline-code">sort=popular</code> relies on events actually reported by the <a href="#ep-events">Heurix Tracker</a> — a purchase counts for 5, a click on a search result for 1. A heavily-clicked but never-yet-purchased product therefore stays visible in the ranking rather than being fully absent until a sale is reported. With no tracking data at all, every product simply falls back to the default order — the call never fails.</p>
 

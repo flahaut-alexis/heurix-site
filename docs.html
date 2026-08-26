@@ -508,6 +508,29 @@ curl "https://api.heurix.fr/v1/browse/moncatalogue/perceuses-visseuses?sort=pric
       <p>Un produit sans le champ demandé (pas de <code class="docs-inline-code">price</code> pour un tri <code class="docs-inline-code">price_asc</code>, par exemple) n'est jamais exclu ni ne fait planter l'appel — il se retrouve simplement en fin de liste, quel que soit le sens du tri.</p>
       <p>Consomme le quota de requêtes, comme un appel de recherche — c'est un appel moteur au même titre.</p>
 
+      <h3>Construire une page de rayon côté navigateur</h3>
+      <p><code class="docs-inline-code">browse</code> accepte une <a href="#authentification">clé publique</a> (<code class="docs-inline-code">hxp_</code>) : vous pouvez donc bâtir une page de catégorie entièrement en JavaScript, sans proxy serveur. C'est ce que fait la <a href="../demo/index.html">boutique de démonstration</a>, dont le code est lisible dans <code class="docs-inline-code">demo-boutique.js</code>.</p>
+      <pre class="docs-code"><code>// Cle PUBLIQUE (hxp_), restreinte a vos domaines via allowed_origins.
+// Une cle serveur ici serait lisible par n'importe quel visiteur.
+const CLE = "hxp_votre_cle_publique";
+const CATALOGUE = "moncatalogue";
+
+fetch(`https://api.heurix.fr/v1/browse/${CATALOGUE}/visserie?sort=popularity&amp;limit=8`, {
+  headers: { Authorization: "Bearer " + CLE },
+})
+  .then(r =&gt; r.ok ? r.json() : Promise.reject(new Error("HTTP " + r.status)))
+  .then(d =&gt; {
+    // browse renvoie des hits : le produit est dans h.product.
+    document.getElementById("grille").innerHTML =
+      (d.hits || []).map(h =&gt; renduFiche(h.product)).join("");
+  })
+  .catch(e =&gt; {
+    // Message de VITRINE pour le visiteur, detail technique en console.
+    document.getElementById("grille").textContent = "Rayon momentanement indisponible.";
+    console.error("Heurix browse:", e.message);
+  });</code></pre>
+      <p><code class="docs-inline-code">d.total</code> donne le nombre de références du rayon, utile pour un compteur ou une pagination. Un <code class="docs-inline-code">403</code> depuis un domaine non listé dans <code class="docs-inline-code">allowed_origins</code> porte un message explicite nommant les domaines autorisés — c'est une aide au diagnostic, pas une fuite.</p>
+
       <h3>Tri par popularité (clics + achats)</h3>
       <p><code class="docs-inline-code">sort=popular</code> s'appuie sur les événements réellement remontés par le <a href="#ep-events">Heurix Tracker</a> — un achat compte pour 5, un clic sur un résultat de recherche pour 1. Un produit très cliqué mais jamais encore acheté reste donc visible dans le classement plutôt que totalement absent tant qu'aucune vente n'est remontée. Sans aucune donnée de tracking, tous les produits reviennent simplement dans l'ordre par défaut — l'appel ne plante jamais.</p>
 
