@@ -80,8 +80,23 @@ jobs:
             exit 0
           fi
 
-          MODIFIES=$(git diff --name-only HEAD~1 HEAD -- '*.js' '*.css' \
-                     | grep -vE '^(tests/|node_modules/|\.claude/|\.agents/)' || true)
+          # UN ACTIF EST CE QU'UNE PAGE REFERENCE AVEC ?v= (27 aout 2026).
+          # La version precedente filtrait sur '*.js' '*.css' puis retirait
+          # quatre dossiers a la main. Deux enumerations, deux angles morts :
+          # les .svg de img/ n'etaient jamais verifies, et les
+          # telechargeables .tpl / .zip / .html de downloads/ non plus. Le
+          # jour ou un correctif de securite est parti dans un de ces
+          # fichiers, rien n'aurait signale que sa clef n'avait pas bouge.
+          #
+          # On ne filtre donc plus par extension ni par dossier : on croise
+          # les fichiers modifies avec la liste DERIVEE des actifs
+          # versionnes. Un fichier de tests ne s'y trouve jamais, puisque
+          # aucune page ne le reference -- la liste d'exclusion devient
+          # inutile au lieu d'etre maintenue.
+          git grep -hoE "\"(\.\./)*[A-Za-z0-9_/-]+\.[a-z0-9]{2,4}\?v=[0-9]+" HEAD -- '*.html' \
+            | sed -E 's|^"(\.\./)*||; s|\?v=[0-9]+$||' | sort -u > /tmp/actifs-versionnes.txt
+          MODIFIES=$(git diff --name-only HEAD~1 HEAD \
+                     | grep -Fx -f /tmp/actifs-versionnes.txt || true)
 
           if [ -z "$MODIFIES" ]; then
             echo "Aucun asset .js/.css modifie dans ce commit."
@@ -172,7 +187,13 @@ jobs:
           # 8 pages en servaient une autre -- exactement la faute que
           # l'en-tete ci-dessus decrit, un cran plus loin. L'identite d'un
           # asset est son chemin, pas son nom de fichier.
-          ASSETS=$(git grep -hoE "\"(\.\./)*[A-Za-z0-9_/-]+\.(css|js|svg)\?v=[0-9]+" -- '*.html' \
+          # L'EXTENSION EST DERIVEE, PAS ENUMEREE (27 aout 2026). (css|js|svg)
+          # laissait dehors les quatre telechargeables de downloads/ servis
+          # en .tpl, .zip et .html -- dont heurix-tracker.js, .js pourtant,
+          # mais sans clef du tout jusqu'a ce jour. Mesure avant/apres :
+          # 24 actifs decouverts contre 27, les trois nouveaux etant les
+          # non-js de downloads/, et les 27 existent tous sur disque.
+          ASSETS=$(git grep -hoE "\"(\.\./)*[A-Za-z0-9_/-]+\.[a-z0-9]{2,4}\?v=[0-9]+" -- '*.html' \
                    | sed -E 's|^"(\.\./)*||; s|\?v=[0-9]+$||' | sort -u)
           echo "Assets versionnes decouverts : $(echo "$ASSETS" | tr '\n' ' ')"
           ECHEC=0

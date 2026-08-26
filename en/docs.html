@@ -952,9 +952,9 @@ curl -X POST https://api.heurix.fr/v1/events \
        "products": [{"id": "sku-123", "amount": 29.90, "margin": 8.50}]}'</code></pre>
       <p>This endpoint is designed to be called <strong>from your end visitor's browser</strong>, on your own site — not from heurix.fr — hence CORS open to every origin. Three ways to set it up, from most complete to simplest:</p>
       <ul>
-        <li><a href="downloads/heurix-tracker.js" download>Heurix Tracker</a> (recommended) — a persistent visitor identifier, to link a click to a later purchase from the same visitor rather than a simple aggregate correlation. One single script to drop site-wide, exposes the same functions as the snippet below.</li>
-        <li><a href="downloads/heurix-conversion-events.tpl" download>Google Tag Manager tag template</a> (<code class="docs-inline-code">.tpl</code> file, import under Templates → Tag Templates → Import) — compatible with the tracker via an optional "Visitor ID" field</li>
-        <li><a href="downloads/heurix-conversion-snippet.html" download>Simple JavaScript snippet</a>, no persistent identifier — for a minimal integration with no GTM or tracker</li>
+        <li><a href="downloads/heurix-tracker.js?v=1787784017" download>Heurix Tracker</a> (recommended) — a persistent visitor identifier, to link a click to a later purchase from the same visitor rather than a simple aggregate correlation. One single script to drop site-wide, exposes the same functions as the snippet below.</li>
+        <li><a href="downloads/heurix-conversion-events.tpl?v=1787784017" download>Google Tag Manager tag template</a> (<code class="docs-inline-code">.tpl</code> file, import under Templates → Tag Templates → Import) — compatible with the tracker via an optional "Visitor ID" field</li>
+        <li><a href="downloads/heurix-conversion-snippet.html?v=1787784017" download>Simple JavaScript snippet</a>, no persistent identifier — for a minimal integration with no GTM or tracker</li>
       </ul>
       <p><strong>Doesn't consume your request quota</strong> — it's not an engine call, it's a data report.</p>
       <div class="callout callout-warning" role="note">
@@ -1110,7 +1110,7 @@ console.log(results.hits);</code></pre>
       <h2>Querying Heurix from Claude Desktop, Cursor, or an internal agent</h2>
       <p>An MCP (Model Context Protocol) server that exposes search and Browse as tools an AI agent can call natively — a team member can ask <em>"do I have M8 screws in stock?"</em> in natural language, without ever touching the API. Three tools: <code class="docs-inline-code">heurix_search</code>, <code class="docs-inline-code">heurix_browse</code>, <code class="docs-inline-code">heurix_catalog_stats</code>.</p>
       <p><strong>Requirements</strong>: Python 3.10 or later, installed on the machine running the agent (your computer, not a server) — the MCP server launches locally, on demand, by Claude Desktop or Cursor themselves.</p>
-      <div class="regex-reassure"><span class="regex-reassure-icone" aria-hidden="true">🚀</span><p><a href="../downloads/heurix-mcp-server.zip" download>Download the MCP server</a> — detailed installation and configuration (Claude Desktop and Cursor) on <a href="blog/guide-serveur-mcp-heurix.html">the dedicated guide</a>.</p></div>
+      <div class="regex-reassure"><span class="regex-reassure-icone" aria-hidden="true">🚀</span><p><a href="../downloads/heurix-mcp-server.zip?v=1787784017" download>Download the MCP server</a> — detailed installation and configuration (Claude Desktop and Cursor) on <a href="blog/guide-serveur-mcp-heurix.html">the dedicated guide</a>.</p></div>
       <pre class="docs-code"><code>pip install -r requirements.txt
 HEURIX_API_KEY=hx_your_key python3 server.py</code></pre>
       <p>The API key lives only in the MCP client's local configuration (a JSON file on the user's machine), never sent in the clear in a tool call. Every call consumes the normal quota of the key used — <code class="docs-inline-code">heurix_search</code> and <code class="docs-inline-code">heurix_browse</code> count like any search or Browse call, <code class="docs-inline-code">heurix_catalog_stats</code> does not.</p>
