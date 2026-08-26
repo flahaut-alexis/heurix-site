@@ -45,6 +45,18 @@
     return String(v).toLowerCase().slice(0, 2) === "en" ? "en" : "fr";
   }
 
+  // Repris tel quel de heurix-search.js -- meme fonction, pas une
+  // variante. Elle echappe & < > et le guillemet DOUBLE, et
+  // volontairement PAS l'apostrophe : c'est pourquoi tout attribut
+  // portant une donnee est double-quote ci-dessous, comme dans l'autre
+  // widget. Un esc() qui protege un attribut simple-quote serait une
+  // seconde fonction a maintenir, avec deux regles d'echappement a ne
+  // jamais confondre.
+  function esc(s) {
+    return String(s == null ? "" : s)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+
   var TEXTES = {
     fr: {
       vide: "<p>Aucun produit dans cette catégorie.</p>",
@@ -82,10 +94,22 @@
     var T = TEXTES[lang === "en" ? "en" : "fr"];
     var p = hit.product;
     var price = p.price !== undefined
-      ? "<div class='heurix-price'>" + fmtPrix(p.price, lang) + "</div>" : "";
-    return "<div class='heurix-product' data-id='" + p.id + "'>" +
-      "<div class='heurix-name'>" + (p.name || p.id) + "</div>" + price +
-      (hit.in_stock ? "" : "<div class='heurix-out-of-stock'>" + T.rupture + "</div>") +
+      ? '<div class="heurix-price">' + fmtPrix(p.price, lang) + "</div>" : "";
+    // DEUX SURFACES, DEUX PROTECTIONS (27 aout 2026). Ce fichier
+    // n'echappait rien : les noms et identifiants du catalogue partaient
+    // dans innerHTML tels quels. La donnee vient de l'indexation du
+    // marchand, donc quiconque peut y deposer un produit pouvait executer
+    // du script chez ses visiteurs -- du XSS stocke, dans un fichier
+    // installe chez le client.
+    //
+    //  - p.name atterrit dans du TEXTE : esc() suffit, il neutralise < et >.
+    //  - p.id atterrit dans un ATTRIBUT, et l'attribut passe de simple a
+    //    DOUBLE quote. En simple quote, une apostrophe dans l'identifiant
+    //    fermait l'attribut et ouvrait la porte a un onerror= ; esc()
+    //    n'echappe pas l'apostrophe et ne l'aurait pas vu.
+    return '<div class="heurix-product" data-id="' + esc(p.id) + '">' +
+      '<div class="heurix-name">' + esc(p.name || p.id) + "</div>" + price +
+      (hit.in_stock ? "" : '<div class="heurix-out-of-stock">' + T.rupture + "</div>") +
       "</div>";
   }
 
