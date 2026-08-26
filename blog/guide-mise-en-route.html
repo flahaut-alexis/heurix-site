@@ -130,7 +130,7 @@
     <a href="../blog.html" class="back-link">← Tous les articles</a>
     <div class="kicker">Guide · Juillet 2026</div>
     <h1>Guide de mise en route — de la souscription à l'installation complète</h1>
-    <p class="post-lede">Trois étapes pour avoir une recherche qui fonctionne. Puis trois modules indépendants, à activer selon vos besoins — aucun n'est obligatoire pour que le moteur réponde à vos clients.</p>
+    <p class="post-lede">Trois étapes pour avoir une recherche qui fonctionne. Puis trois modules indépendants, à activer selon vos besoins : aucun n'est obligatoire pour que le moteur réponde à vos clients.</p>
 
     <div class="post-body">
       <div class="setup-stepper">
@@ -177,10 +177,10 @@
       </div>
 
       <h2 id="etape-1">Étape 1 — Souscrivez</h2>
-      <p>Choisissez un plan sur <a href="../pricing.html">la page tarifs</a> — l'essai de 14 jours ne demande pas de carte bancaire. À la fin de la souscription, votre clé API (<code class="docs-inline-code">hx_...</code>) est immédiatement disponible dans <a href="../console.html">votre console</a>, section « Mes infos ».</p>
+      <p>Choisissez un plan sur <a href="../pricing.html">la page tarifs</a> : l'essai de 14 jours ne demande pas de carte bancaire. À la fin de la souscription, votre clé API (<code class="docs-inline-code">hx_...</code>) est immédiatement disponible dans <a href="../console.html">votre console</a>, section « Mes infos ».</p>
 
       <h2 id="etape-2">Étape 2 — Indexez votre premier catalogue</h2>
-      <p>Un seul appel suffit — le catalogue se crée automatiquement au premier import, pas de configuration préalable :</p>
+      <p>Un seul appel suffit : le catalogue se crée automatiquement au premier import, pas de configuration préalable :</p>
       <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/index/moncatalogue/items \
   -H "Authorization: Bearer VOTRE_CLE_API" \
   -H "Content-Type: application/json" \
@@ -189,7 +189,7 @@
     {"id": "sku-1", "name": "Perceuse GDX 18V-285 BOSCH", "ref": "M8 x 20 - Inox A2", "stock": 8, "price": 139.90}
   ]
 }'</code></pre>
-      <p>Précisez <code class="docs-inline-code">"rulepack": "outillage"</code> dans le corps de la requête si votre secteur correspond à l'un des <a href="../docs.html#ep-rulepacks">dix packs de règles pré-configurés</a> — sinon, le moteur indexe quand même, avec une reconnaissance de structure plus limitée tant qu'aucun pack ou <a href="../docs.html#ep-custom-rules">Custom Rule</a> n'est actif.</p>
+      <p>Précisez <code class="docs-inline-code">"rulepack": "outillage"</code> dans le corps de la requête si votre secteur correspond à l'un des <a href="../docs.html#ep-rulepacks">dix packs de règles pré-configurés</a> ; sinon, le moteur indexe quand même, avec une reconnaissance de structure plus limitée tant qu'aucun pack ou <a href="../docs.html#ep-custom-rules">Custom Rule</a> n'est actif.</p>
 
       <h2 id="etape-3">Étape 3 — Confirmez que la recherche fonctionne</h2>
       <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/index/moncatalogue/search \
@@ -232,9 +232,9 @@
       <h2 id="modules-optionnels">À partir d'ici, trois modules indépendants</h2>
       <div class="callout callout-info" role="note">
         <svg class="callout-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="14.5" r="4.5"/><path d="M10.8 11.2 20 2"/><path d="M16.5 5.5 19 8"/><path d="M13.5 8.5 15.3 10.3"/></svg>
-        <div class="callout-content"><p><strong>Deux des trois modules tournent dans le navigateur</strong> (Tracker et intégration front-end). Générez d'abord une <strong>clé publique</strong> depuis votre console (Mes infos → Ma clé API) : elle commence par <code class="docs-inline-code">hxp_</code> et ne peut que chercher, parcourir et remonter des événements. Votre clé serveur (<code class="docs-inline-code">hx_</code>) ne doit jamais apparaître dans une page web — elle donne accès à votre facturation. <a href="../docs.html#authentification">Détail des deux types de clés</a>.</p></div>
+        <div class="callout-content"><p><strong>Deux des trois modules tournent dans le navigateur</strong> (Tracker et intégration front-end). Générez d'abord une <strong>clé publique</strong> depuis votre console (Mes infos → Ma clé API) : elle commence par <code class="docs-inline-code">hxp_</code> et ne peut que chercher, parcourir et remonter des événements. Votre clé serveur (<code class="docs-inline-code">hx_</code>) ne doit jamais apparaître dans une page web : elle donne accès à votre facturation. <a href="../docs.html#authentification">Détail des deux types de clés</a>.</p></div>
       </div>
-      <p>Chacun répond à un besoin différent. Activez ce qui vous concerne, ignorez le reste — rien n'est requis pour les deux autres, et rien n'est requis pour que la recherche elle-même continue de fonctionner.</p>
+      <p>Chacun répond à un besoin différent. Activez ce qui vous concerne, ignorez le reste : rien n'est requis pour les deux autres, et rien n'est requis pour que la recherche elle-même continue de fonctionner.</p>
 
       <div class="guide-module" data-module="tracker">
       <h3 id="module-tracker">Module optionnel — Heurix Tracker (Conversion &amp; ROI)</h3>
@@ -275,7 +275,7 @@ const results = await client.search("perceuse bosch");</code></pre>
 
       </div>
       <h2 id="et-ensuite">Et ensuite</h2>
-      <p>Une fois ces bases posées, la <a href="../docs.html">documentation complète</a> couvre le reste — synonymes, facettes, Browse &amp; Discovery, priorités de requête. Rien de tout ça n'est nécessaire pour démarrer, mais tout est disponible dès que vous en avez besoin.</p>
+      <p>Une fois ces bases posées, la <a href="../docs.html">documentation complète</a> couvre le reste : synonymes, facettes, Browse &amp; Discovery, priorités de requête. Rien de tout ça n'est nécessaire pour démarrer, mais tout est disponible dès que vous en avez besoin.</p>
     </div>
 
     <div class="post-footer-cta">

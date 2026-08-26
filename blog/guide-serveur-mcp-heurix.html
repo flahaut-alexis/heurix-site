@@ -117,7 +117,7 @@
     <a href="../blog.html" class="back-link">← Tous les articles</a>
     <div class="kicker">Guide · Juillet 2026</div>
     <h1>Connecter Heurix à Claude Desktop et Cursor avec le serveur MCP</h1>
-    <p class="post-lede">Posez une question en langage naturel sur votre catalogue directement dans Claude Desktop ou Cursor — pas d'appel API à écrire, l'agent fait le pont. Quinze minutes d'installation, testé de bout en bout avant publication.</p>
+    <p class="post-lede">Posez une question en langage naturel sur votre catalogue directement dans Claude Desktop ou Cursor : pas d'appel API à écrire, l'agent fait le pont. Quinze minutes d'installation, testé de bout en bout avant publication.</p>
 
     <div class="post-body">
       <h2>Ce qu'il vous faut</h2>
@@ -128,7 +128,7 @@
       <pre class="docs-code"><code>cd heurix-mcp-server
 pip3 install -r requirements.txt
 which python3</code></pre>
-      <p>Gardez le résultat de <code class="docs-inline-code">which python3</code> sous le coude — vous en aurez besoin à l'étape suivante, en chemin complet.</p>
+      <p>Gardez le résultat de <code class="docs-inline-code">which python3</code> sous le coude : vous en aurez besoin à l'étape suivante, en chemin complet.</p>
 
       <h2>Étape 2 — Configurez Claude Desktop</h2>
       <p><strong>Réglages → Développeur → Modifier la configuration</strong> (crée le fichier s'il n'existe pas). Sur macOS, il se trouve à <code class="docs-inline-code">~/Library/Application Support/Claude/claude_desktop_config.json</code> ; sur Windows, <code class="docs-inline-code">%APPDATA%\Claude\claude_desktop_config.json</code>.</p>
@@ -144,11 +144,11 @@ which python3</code></pre>
     }
   }
 }</code></pre>
-      <p><strong>Le chemin complet vers <code class="docs-inline-code">python3</code> n'est pas optionnel</strong> — Claude Desktop lance la configuration avec un PATH minimal, une commande courte qui fonctionne dans votre terminal peut échouer silencieusement ici. Même chose pour le chemin vers <code class="docs-inline-code">server.py</code> : complet, jamais relatif (pas de <code class="docs-inline-code">~</code>).</p>
+      <p><strong>Le chemin complet vers <code class="docs-inline-code">python3</code> n'est pas optionnel</strong> : Claude Desktop lance la configuration avec un PATH minimal, une commande courte qui fonctionne dans votre terminal peut échouer silencieusement ici. Même chose pour le chemin vers <code class="docs-inline-code">server.py</code> : complet, jamais relatif (pas de <code class="docs-inline-code">~</code>).</p>
       <p>Redémarrez Claude Desktop entièrement (Cmd/Ctrl+Q, pas juste fermer la fenêtre).</p>
 
       <h2>Et dans Cursor ?</h2>
-      <p>Même structure de configuration, dans <code class="docs-inline-code">.cursor/mcp.json</code> (à la racine d'un projet) ou <code class="docs-inline-code">~/.cursor/mcp.json</code> (global, tous projets). Ensuite : <strong>Réglages Cursor → Tools &amp; MCP</strong>, vérifiez que "Enable MCP Servers" est coché et que <code class="docs-inline-code">heurix</code> apparaît avec un statut connecté. En cas de souci, le panneau Output → MCP affiche les logs bruts du serveur — souvent plus parlant que l'interface elle-même.</p>
+      <p>Même structure de configuration, dans <code class="docs-inline-code">.cursor/mcp.json</code> (à la racine d'un projet) ou <code class="docs-inline-code">~/.cursor/mcp.json</code> (global, tous projets). Ensuite : <strong>Réglages Cursor → Tools &amp; MCP</strong>, vérifiez que "Enable MCP Servers" est coché et que <code class="docs-inline-code">heurix</code> apparaît avec un statut connecté. En cas de souci, le panneau Output → MCP affiche les logs bruts du serveur, souvent plus parlant que l'interface elle-même.</p>
 
       <h2>Étape 3 — Testez</h2>
       <p>Dans une nouvelle conversation, sans rien préciser de plus qu'un nom de catalogue :</p>
@@ -160,7 +160,7 @@ Est-ce que j'ai des vis M8 en stock, et à quel prix ?</code></pre>
       <p><code class="docs-inline-code">heurix_search</code> (recherche par mot-clé, tolérante aux fautes de frappe), <code class="docs-inline-code">heurix_browse</code> (produits d'une catégorie, avec tri — stock, prix, popularité...), et <code class="docs-inline-code">heurix_catalog_stats</code> (liste les catalogues et catégories disponibles — utile en premier appel si l'agent ne connaît pas encore votre structure). Chaque appel de recherche ou de Browse consomme le quota normal de la clé utilisée, comme un appel direct à l'API.</p>
 
       <h2>Sécurité</h2>
-      <p>Votre clé API vit uniquement dans le fichier de configuration local du client MCP, jamais transmise en clair dans un appel d'outil — le serveur la lit une fois au démarrage et l'utilise pour chaque appel vers l'API Heurix. Documentation complète des trois outils sur <a href="../docs.html#ep-mcp">la référence API</a>.</p>
+      <p>Votre clé API vit uniquement dans le fichier de configuration local du client MCP, jamais transmise en clair dans un appel d'outil : le serveur la lit une fois au démarrage et l'utilise pour chaque appel vers l'API Heurix. Documentation complète des trois outils sur <a href="../docs.html#ep-mcp">la référence API</a>.</p>
     </div>
 
     <div class="post-footer-cta">

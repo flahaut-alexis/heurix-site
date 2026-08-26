@@ -117,14 +117,14 @@
     <a href="../blog.html" class="back-link">← Tous les articles</a>
     <div class="kicker">Guide · Juillet 2026</div>
     <h1>Construire une page de catégorie avec Browse &amp; Discovery</h1>
-    <p class="post-lede">Une page de catégorie n'a pas de requête à traiter — juste des produits à bien classer. Ce guide indexe un petit catalogue avec de vraies catégories, puis affiche une page triée dynamiquement, avec le snippet fourni.</p>
+    <p class="post-lede">Une page de catégorie n'a pas de requête à traiter, juste des produits à bien classer. Ce guide indexe un petit catalogue avec de vraies catégories, puis affiche une page triée dynamiquement, avec le snippet fourni.</p>
 
     <div class="post-body">
       <h2>Ce qu'il vous faut</h2>
       <p>Une clé API (<a href="../pricing.html">essai gratuit 14 jours</a>, sans carte bancaire) et une page HTML où injecter les résultats. Pas de SDK à installer.</p>
 
       <h2>Étape 1 — Indexez avec des catégories</h2>
-      <p><code class="docs-inline-code">categories</code> (ou <code class="docs-inline-code">category</code> au singulier) est un champ que <strong>vous</strong> fournissez, exactement comme <code class="docs-inline-code">name</code> ou <code class="docs-inline-code">stock</code> — reprenez la taxonomie que vous avez déjà sur votre site, pas besoin de la redéfinir pour Heurix. Ajoutez aussi <code class="docs-inline-code">price</code> si vous voulez trier par prix :</p>
+      <p><code class="docs-inline-code">categories</code> (ou <code class="docs-inline-code">category</code> au singulier) est un champ que <strong>vous</strong> fournissez, exactement comme <code class="docs-inline-code">name</code> ou <code class="docs-inline-code">stock</code> : reprenez la taxonomie que vous avez déjà sur votre site, pas besoin de la redéfinir pour Heurix. Ajoutez aussi <code class="docs-inline-code">price</code> si vous voulez trier par prix :</p>
       <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/index/monsite/items \
   -H "Authorization: Bearer VOTRE_CLE_API" \
   -H "Content-Type: application/json" \
@@ -177,14 +177,14 @@
 });</code></pre>
 
       <h2>Aller plus loin : trier, filtrer, mettre en avant</h2>
-      <p>Un sélecteur de tri se branche en rappelant simplement <code class="docs-inline-code">Heurix.browse()</code> avec un <code class="docs-inline-code">sort</code> différent au changement de valeur — <code class="docs-inline-code">stock</code>, <code class="docs-inline-code">recent</code>, <code class="docs-inline-code">alphabetical</code>, <code class="docs-inline-code">price_asc</code>/<code class="docs-inline-code">price_desc</code>, <code class="docs-inline-code">margin</code>, ou <code class="docs-inline-code">popular</code> (clics et achats réels, si vous avez posé le <a href="../docs.html#ep-events">tracker de conversion</a>).</p>
-      <p>Pour affiner à l'intérieur d'une catégorie (par marque, par couleur…), passez un objet <code class="docs-inline-code">filters</code> — n'importe quel champ produit non réservé devient automatiquement filtrable, sans configuration :</p>
+      <p>Un sélecteur de tri se branche en rappelant simplement <code class="docs-inline-code">Heurix.browse()</code> avec un <code class="docs-inline-code">sort</code> différent au changement de valeur : <code class="docs-inline-code">stock</code>, <code class="docs-inline-code">recent</code>, <code class="docs-inline-code">alphabetical</code>, <code class="docs-inline-code">price_asc</code>/<code class="docs-inline-code">price_desc</code>, <code class="docs-inline-code">margin</code>, ou <code class="docs-inline-code">popular</code> (clics et achats réels, si vous avez posé le <a href="../docs.html#ep-events">tracker de conversion</a>).</p>
+      <p>Pour affiner à l'intérieur d'une catégorie (par marque, par couleur…), passez un objet <code class="docs-inline-code">filters</code> : n'importe quel champ produit non réservé devient automatiquement filtrable, sans configuration :</p>
       <pre class="docs-code"><code>Heurix.browse({
   catalog: "monsite", category: "perceuses-visseuses",
   filters: { brand: "Makita" },
   containerId: "ma-page-categorie"
 });</code></pre>
-      <p>Et pour mettre en avant toute une marque ou une gamme sans éditer produit par produit, une règle de boost par attribut se pose une fois depuis la console (ou l'API) — voir <a href="../docs.html#ep-browse">la documentation complète</a> pour le détail des endpoints d'épinglage et de boost.</p>
+      <p>Et pour mettre en avant toute une marque ou une gamme sans éditer produit par produit, une règle de boost par attribut se pose une fois depuis la console (ou l'API). Voir <a href="../docs.html#ep-browse">la documentation complète</a> pour le détail des endpoints d'épinglage et de boost.</p>
     </div>
 
     <div class="post-footer-cta">

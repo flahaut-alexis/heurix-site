@@ -116,7 +116,7 @@
     <a href="../blog.html" class="back-link">← All articles</a>
     <div class="kicker">Guide · July 2026</div>
     <h1>Connecting Heurix to Claude Desktop and Cursor with the MCP server</h1>
-    <p class="post-lede">Ask a natural-language question about your catalog directly inside Claude Desktop or Cursor — no API call to write, the agent bridges it. Fifteen minutes to install, tested end to end before publishing.</p>
+    <p class="post-lede">Ask a natural-language question about your catalog directly inside Claude Desktop or Cursor: no API call to write, the agent bridges it. Fifteen minutes to install, tested end to end before publishing.</p>
 
     <div class="post-body">
       <h2>What you need</h2>
@@ -127,7 +127,7 @@
       <pre class="docs-code"><code>cd heurix-mcp-server
 pip3 install -r requirements.txt
 which python3</code></pre>
-      <p>Keep the result of <code class="docs-inline-code">which python3</code> handy — you'll need it, as a full path, in the next step.</p>
+      <p>Keep the result of <code class="docs-inline-code">which python3</code> handy: you'll need it, as a full path, in the next step.</p>
 
       <h2>Step 2 — Configure Claude Desktop</h2>
       <p><strong>Settings → Developer → Edit Config</strong> (creates the file if it doesn't exist). On macOS, it lives at <code class="docs-inline-code">~/Library/Application Support/Claude/claude_desktop_config.json</code>; on Windows, <code class="docs-inline-code">%APPDATA%\Claude\claude_desktop_config.json</code>.</p>
@@ -143,11 +143,11 @@ which python3</code></pre>
     }
   }
 }</code></pre>
-      <p><strong>The full path to <code class="docs-inline-code">python3</code> isn't optional</strong> — Claude Desktop launches the configuration with a minimal PATH, so a short command that works in your terminal can fail silently here. Same for the path to <code class="docs-inline-code">server.py</code>: full, never relative (no <code class="docs-inline-code">~</code>).</p>
+      <p><strong>The full path to <code class="docs-inline-code">python3</code> isn't optional</strong>: Claude Desktop launches the configuration with a minimal PATH, so a short command that works in your terminal can fail silently here. Same for the path to <code class="docs-inline-code">server.py</code>: full, never relative (no <code class="docs-inline-code">~</code>).</p>
       <p>Restart Claude Desktop entirely (Cmd/Ctrl+Q, not just closing the window).</p>
 
       <h2>What about Cursor?</h2>
-      <p>Same configuration structure, in <code class="docs-inline-code">.cursor/mcp.json</code> (at a project's root) or <code class="docs-inline-code">~/.cursor/mcp.json</code> (global, all projects). Then: <strong>Cursor Settings → Tools &amp; MCP</strong>, check that "Enable MCP Servers" is on and that <code class="docs-inline-code">heurix</code> shows a connected status. If something's off, the Output → MCP panel shows the server's raw logs — often more informative than the interface itself.</p>
+      <p>Same configuration structure, in <code class="docs-inline-code">.cursor/mcp.json</code> (at a project's root) or <code class="docs-inline-code">~/.cursor/mcp.json</code> (global, all projects). Then: <strong>Cursor Settings → Tools &amp; MCP</strong>, check that "Enable MCP Servers" is on and that <code class="docs-inline-code">heurix</code> shows a connected status. If something's off, the Output → MCP panel shows the server's raw logs, often more informative than the interface itself.</p>
 
       <h2>Step 3 — Test it</h2>
       <p>In a new conversation, with nothing more specified than a catalog name:</p>
@@ -159,7 +159,7 @@ Do I have M8 screws in stock, and at what price?</code></pre>
       <p><code class="docs-inline-code">heurix_search</code> (keyword search, typo-tolerant), <code class="docs-inline-code">heurix_browse</code> (products in a category, with sorting — stock, price, popularity...), and <code class="docs-inline-code">heurix_catalog_stats</code> (lists available catalogs and categories — useful as a first call if the agent doesn't yet know your structure). Every search or Browse call consumes the normal quota of the key used, just like a direct API call.</p>
 
       <h2>Security</h2>
-      <p>Your API key lives only in the MCP client's local configuration file, never sent in the clear in a tool call — the server reads it once at startup and uses it for every call to the Heurix API. Full documentation of the three tools is in <a href="../docs.html#ep-mcp">the API reference</a>.</p>
+      <p>Your API key lives only in the MCP client's local configuration file, never sent in the clear in a tool call: the server reads it once at startup and uses it for every call to the Heurix API. Full documentation of the three tools is in <a href="../docs.html#ep-mcp">the API reference</a>.</p>
     </div>
 
     <div class="post-footer-cta">

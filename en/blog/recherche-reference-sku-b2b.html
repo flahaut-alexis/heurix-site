@@ -119,11 +119,11 @@
     <p class="post-lede">A buyer types "M8x20." The engine searches for "M8x20" exactly. Your database has it stored as "M8 x 20." Result: zero matches, even though the product is in stock.</p>
 
     <div class="post-body">
-      <p>On a general consumer catalog, keyword search is usually enough: a visitor types "red dress," the engine finds red dresses. On a technical B2B catalog, the problem is different — the buyer isn't searching for a category, they're searching for an exact reference: a screw designation, a standard, a supplier code.</p>
+      <p>On a general consumer catalog, keyword search is usually enough: a visitor types "red dress," the engine finds red dresses. On a technical B2B catalog, the problem is different: the buyer isn't searching for a category, they're searching for an exact reference: a screw designation, a standard, a supplier code.</p>
 
       <h2>Why keyword search fails on technical references</h2>
       <p>Default search engines split text word by word (called tokenization) and look for matches between those tokens. This works well for natural language, but poorly for structured strings like <code>M8x20</code> or <code>DIN 933</code>.</p>
-      <p>The problem comes from format variation: the same reference might be stored as <code>DIN933</code>, <code>DIN-933</code>, or <code>DIN 933</code> depending on who filled in the product sheet, and the query a customer types rarely matches that exact format. The engine doesn't make the connection — to it, these are different strings.</p>
+      <p>The problem comes from format variation: the same reference might be stored as <code>DIN933</code>, <code>DIN-933</code>, or <code>DIN 933</code> depending on who filled in the product sheet, and the query a customer types rarely matches that exact format. The engine doesn't make the connection: to it, these are different strings.</p>
 
       <h2>The fix: regular expressions and normalization</h2>
       <p>Two complementary mechanisms solve this problem:</p>

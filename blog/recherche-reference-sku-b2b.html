@@ -133,11 +133,11 @@
     <p class="post-lede">Un acheteur tape « M8x20 ». Le moteur cherche « M8x20 » exactement. Votre base de données contient « M8 x 20 ». Résultat : zéro correspondance, alors que le produit est en stock.</p>
 
     <div class="post-body">
-      <p>Sur un catalogue grand public, la recherche par mots-clés suffit dans la plupart des cas : un visiteur tape « robe rouge », le moteur trouve des robes rouges. Sur un catalogue B2B technique, le problème est différent — l'acheteur ne cherche pas une catégorie, il cherche une référence exacte : une désignation de vis, une norme, un code fournisseur.</p>
+      <p>Sur un catalogue grand public, la recherche par mots-clés suffit dans la plupart des cas : un visiteur tape « robe rouge », le moteur trouve des robes rouges. Sur un catalogue B2B technique, le problème est différent : l'acheteur ne cherche pas une catégorie, il cherche une référence exacte : une désignation de vis, une norme, un code fournisseur.</p>
 
       <h2>Pourquoi la recherche par mot-clé échoue sur les références techniques</h2>
       <p>Les moteurs de recherche par défaut découpent le texte mot par mot (on parle de tokenisation) et cherchent des correspondances entre ces mots. Ce mécanisme fonctionne bien pour du texte naturel, mais mal pour des chaînes de caractères structurées comme <code>M8x20</code> ou <code>DIN 933</code>.</p>
-      <p>Le problème vient des variations de format : la même référence peut être enregistrée <code>DIN933</code>, <code>DIN-933</code> ou <code>DIN 933</code> selon qui a rempli la fiche produit, et la requête tapée par le client suit rarement le même format. Le moteur ne fait pas le lien — pour lui, ce sont des chaînes différentes.</p>
+      <p>Le problème vient des variations de format : la même référence peut être enregistrée <code>DIN933</code>, <code>DIN-933</code> ou <code>DIN 933</code> selon qui a rempli la fiche produit, et la requête tapée par le client suit rarement le même format. Le moteur ne fait pas le lien : pour lui, ce sont des chaînes différentes.</p>
 
       <h2>La solution : expressions régulières et normalisation</h2>
       <p>Deux mécanismes complémentaires permettent de corriger ce problème :</p>

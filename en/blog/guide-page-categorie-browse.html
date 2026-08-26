@@ -4,12 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Building a category page with Browse & Discovery — Heurix</title>
-<meta name="description" content="A category page has no query to process — just products to rank well. Index, verify, and render a dynamically sorted page.">
+<meta name="description" content="A category page has no query to process, just products to rank well. Index, verify, and render a dynamically sorted page.">
 <link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/guide-page-categorie-browse.html">
 <link rel="alternate" hreflang="en" href="https://heurix.fr/en/blog/guide-page-categorie-browse.html">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Building a category page with Browse & Discovery — Heurix">
-<meta property="og:description" content="A category page has no query to process — just products to rank well. Index, verify, and render a dynamically sorted page.">
+<meta property="og:description" content="A category page has no query to process, just products to rank well. Index, verify, and render a dynamically sorted page.">
 <meta property="og:image" content="https://heurix.fr/og-image.png">
 <meta property="og:url" content="https://heurix.fr/en/blog/guide-page-categorie-browse.html">
 <meta property="og:locale" content="en_US">
@@ -116,14 +116,14 @@
     <a href="../blog.html" class="back-link">← All articles</a>
     <div class="kicker">Guide · July 2026</div>
     <h1>Building a category page with Browse &amp; Discovery</h1>
-    <p class="post-lede">A category page has no query to process — just products to rank well. This guide indexes a small catalog with real categories, then renders a dynamically sorted page using the provided snippet.</p>
+    <p class="post-lede">A category page has no query to process, just products to rank well. This guide indexes a small catalog with real categories, then renders a dynamically sorted page using the provided snippet.</p>
 
     <div class="post-body">
       <h2>What you need</h2>
       <p>An API key (<a href="../pricing.html">14-day free trial</a>, no credit card) and an HTML page to inject results into. No SDK to install.</p>
 
       <h2>Step 1 — Index with categories</h2>
-      <p><code class="docs-inline-code">categories</code> (or <code class="docs-inline-code">category</code>, singular) is a field <strong>you</strong> supply, exactly like <code class="docs-inline-code">name</code> or <code class="docs-inline-code">stock</code> — reuse the taxonomy you already have on your site, no need to redefine it for Heurix. Add <code class="docs-inline-code">price</code> too if you want to sort by price:</p>
+      <p><code class="docs-inline-code">categories</code> (or <code class="docs-inline-code">category</code>, singular) is a field <strong>you</strong> supply, exactly like <code class="docs-inline-code">name</code> or <code class="docs-inline-code">stock</code>: reuse the taxonomy you already have on your site, no need to redefine it for Heurix. Add <code class="docs-inline-code">price</code> too if you want to sort by price:</p>
       <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/index/mysite/items   -H "Authorization: Bearer YOUR_API_KEY"   -H "Content-Type: application/json"   -d '{
   "items": [
     {"id": "sku-1", "name": "BOSCH GDX 18V-285 Drill",
@@ -172,14 +172,14 @@
 });</code></pre>
 
       <h2>Going further: sort, filter, feature</h2>
-      <p>A sort selector wires up by simply calling <code class="docs-inline-code">Heurix.browse()</code> again with a different <code class="docs-inline-code">sort</code> on value change — <code class="docs-inline-code">stock</code>, <code class="docs-inline-code">recent</code>, <code class="docs-inline-code">alphabetical</code>, <code class="docs-inline-code">price_asc</code>/<code class="docs-inline-code">price_desc</code>, <code class="docs-inline-code">margin</code>, or <code class="docs-inline-code">popular</code> (real clicks and purchases, if you've set up the <a href="../docs.html#ep-events">conversion tracker</a>).</p>
-      <p>To narrow within a category (by brand, by color…), pass a <code class="docs-inline-code">filters</code> object — any non-reserved product field automatically becomes filterable, with no configuration:</p>
+      <p>A sort selector wires up by simply calling <code class="docs-inline-code">Heurix.browse()</code> again with a different <code class="docs-inline-code">sort</code> on value change: <code class="docs-inline-code">stock</code>, <code class="docs-inline-code">recent</code>, <code class="docs-inline-code">alphabetical</code>, <code class="docs-inline-code">price_asc</code>/<code class="docs-inline-code">price_desc</code>, <code class="docs-inline-code">margin</code>, or <code class="docs-inline-code">popular</code> (real clicks and purchases, if you've set up the <a href="../docs.html#ep-events">conversion tracker</a>).</p>
+      <p>To narrow within a category (by brand, by color…), pass a <code class="docs-inline-code">filters</code> object: any non-reserved product field automatically becomes filterable, with no configuration:</p>
       <pre class="docs-code"><code>Heurix.browse({
   catalog: "mysite", category: "drills-drivers",
   filters: { brand: "Makita" },
   containerId: "my-category-page"
 });</code></pre>
-      <p>And to feature an entire brand or product line without editing product by product, an attribute boost rule is set once from the console (or the API) — see <a href="../docs.html#ep-browse">the full documentation</a> for the pinning and boosting endpoint details.</p>
+      <p>And to feature an entire brand or product line without editing product by product, an attribute boost rule is set once from the console (or the API). See <a href="../docs.html#ep-browse">the full documentation</a> for the pinning and boosting endpoint details.</p>
     </div>
 
     <div class="post-footer-cta">
