@@ -11,8 +11,27 @@
 -->
 <script>
 (function () {
-  var HEURIX_API_KEY = "hx_VOTRE_CLE_ICI";     // Console Heurix > Mes infos
-  var HEURIX_CATALOG = "votre-catalogue";       // Le nom exact de votre catalogue indexé
+  // CE GABARIT DISAIT « hx_VOTRE_CLE_ICI » -- une cle SERVEUR (26 aout 2026).
+  // Corrige : /v1/events accepte une cle PUBLIQUE (verifie, HTTP 200), et les
+  // trois autres widgets de ce dossier disent hxp_ et refusent hx_ a
+  // l'execution. Ce seul fichier conseillait l'inverse de la doc et de ses
+  // propres voisins -- un client qui le suivait posait dans sa page une cle
+  // ouvrant l'indexation, le merchandising et le portail de facturation.
+  var HEURIX_API_KEY = "hxp_VOTRE_CLE_PUBLIQUE";  // Cle PUBLIQUE (hxp_), jamais une cle serveur
+  var HEURIX_CATALOG = "votre-catalogue";         // Le nom exact de votre catalogue indexé
+
+  // Chantier securite C1 : garde-fou a l'execution, identique a celui de
+  // heurix-tracker.js, heurix-search.js et heurix-browse-widget.js. Il
+  // manquait ici, et c'est ce qui a laisse le gabarit se tromper en silence.
+  function heurixWarnIfServerKey(k) {
+    if (typeof k === "string" && k.indexOf("hxp_") !== 0 && k.indexOf("hx_") === 0) {
+      var msg = "[Heurix] ATTENTION : vous utilisez une cle SERVEUR (hx_) cote navigateur. " +
+        "Elle est lisible par tous vos visiteurs et donne acces a votre facturation. " +
+        "Generez une cle publique (hxp_) depuis votre console Heurix : Mes infos > Cles API.";
+      if (typeof console !== "undefined" && console.warn) console.warn(msg);
+    }
+  }
+  heurixWarnIfServerKey(HEURIX_API_KEY);
 
   function heurixSend(eventType, payload) {
     payload = payload || {};
