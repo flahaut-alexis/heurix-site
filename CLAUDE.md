@@ -270,6 +270,44 @@ seulement à l'adapter. Les valeurs qui pointent ailleurs — ancres, `hreflang`
 copier-coller en devenant fausses, parce que rien dans la page ne les
 contredit.
 
+#### Ce n'est pas que les gabarits se périment. C'est qu'on copie la voisine.
+
+Mesuré le 26 août 2026, sur huit occurrences en une semaine. Le diagnostic
+« un gabarit a vieilli » est trop indulgent : il suppose qu'il existe un
+gabarit, et qu'on le consulte. Ni l'un ni l'autre.
+
+**Chaque page est créée en copiant une page voisine — celle qu'on avait sous
+les yeux — et jamais la plus à jour.** La conséquence est mécanique et
+contre-intuitive : un correctif appliqué à un sous-ensemble n'atteint pas les
+pages nées **avant** lui, ce qu'on attend, **ni celles nées après**, ce qu'on
+n'attend pas.
+
+Le cas qui le prouve : le lien mobile « Se connecter », seul accès à la
+console sous 640 px, ajouté le 3 août. Il manquait sur 77 des 118 pages — dont
+2 créées le 11 août, 2 le 16, 4 le 22 et 6 le 24. **Trois semaines après le
+correctif, on créait encore des pages sans lui.**
+
+Second cas, dans l'autre sens : les pages `solutions/*` françaises (25 juillet)
+sont nées sans la modale de recherche ; leurs équivalents **anglais**, créés le
+31 juillet depuis un gabarit plus récent, l'avaient. La traduction était plus
+correcte que l'original — et c'est pourtant l'original défectueux qui a servi
+de modèle à tout ce qui a suivi.
+
+Corollaire : **désigner une page de référence ne suffirait pas.** Elle
+existait déjà, sous la forme du gabarit du 31 juillet, et personne ne l'a
+reprise. Ce qui manque n'est pas une référence, c'est un signal au moment du
+commit. D'où `tests/entete-structure.test.js` : il compare la structure
+d'en-tête de toutes les pages entre elles, et échoue dès qu'une diverge sans
+figurer dans une liste d'exceptions justifiées. Il ne dit pas laquelle est la
+bonne — trancher à la place de l'auteur figerait une décision que personne n'a
+prise. Signaler la divergence suffit.
+
+Les huit, pour mémoire : `hreflang` de trois articles · `index.html#tarifs`
+sur 116 pages · le sommaire du guide console · le sélecteur de langue de six
+pages · la modale de recherche absente de 20 pages · le lien mobile absent de
+77 · `index.html#mission` mort sur 76 · PrestaShop/WooCommerce/Shopify absents
+du menu Developers de 77.
+
 ### Vérifier une liste prouve la liste, pas la page
 
 Le 26 août 2026, le sélecteur de langue de six pages créées la veille menait
