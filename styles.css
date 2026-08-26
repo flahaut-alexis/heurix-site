@@ -1098,6 +1098,12 @@ section.soft{ background:var(--bg-soft); color:var(--ink); }
 /* Rythme resserre : 80px de padding vertical comme les grandes sections
    donnaient 340px de hauteur pour deux lignes de texte -- l'inverse du but
    poursuivi, qui est de baisser la densite sans gonfler la page. */
+/* Ligne tarif du hero (26 aout 2026) : discrete par construction -- taille et
+   couleur du texte secondaire, pas de fond, pas de bordure. Elle repond a une
+   question (« est-ce dans mes moyens »), elle ne vend pas. */
+.hero-tarif{ margin:14px 0 0; font-size:14px; color:#CDD2F0; }
+.hero-tarif strong{ color:#F5F6FF; font-weight:700; }
+
 #tarif-encart{ padding:44px 0; }
 /* Repere sectoriel unique sur l'accueil (26 aout 2026) : discret, mais lisible
    sans clic. La source vit DANS la phrase, pas en note -- « FactFinder &
