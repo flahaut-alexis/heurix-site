@@ -63,6 +63,7 @@
     stockFaible:  function (n) { return "Only " + n + " left"; },
     enStock:      function (n) { return "In stock (" + n + ")"; },
     indisponible: "Unavailable",
+    horsTaxes:    "excl. VAT",
     ajouter:      "Add to cart",
     ajoute:       "Added \u2713",
     aucunProduit: "No products.",
@@ -84,6 +85,7 @@
     stockFaible:  function (n) { return "Plus que " + n + " en stock"; },
     enStock:      function (n) { return "En stock (" + n + ")"; },
     indisponible: "Indisponible",
+    horsTaxes:    "HT",
     ajouter:      "Ajouter au panier",
     ajoute:       "Ajouté \u2713",
     aucunProduit: "Aucun produit.",
@@ -118,7 +120,7 @@
     return "<div class='fiche'>" +
         "<div class='fiche-ref'>" + (p.ref || p.id) + "</div>" +
         "<div class='fiche-nom'>" + p.name + "</div>" +
-        "<div class='fiche-prix'>" + euros(p.price) + " <small>HT</small></div>" +
+        "<div class='fiche-prix'>" + euros(p.price) + " <small>" + T.horsTaxes + "</small></div>" +
         "<div class='fiche-stock'>" + etatStock + "</div>" +
         "<button type='button' data-produit='" + p.id + "'" +
           (stock === 0 ? " disabled" : "") + ">" +
