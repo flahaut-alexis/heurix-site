@@ -117,7 +117,7 @@
     <a href="../blog.html" class="back-link">← Tous les articles</a>
     <div class="kicker">Tutoriel · Juillet 2026</div>
     <h1>Indexez votre premier catalogue outillage en 5 minutes</h1>
-    <p class="post-lede">Deux appels API, un vrai résultat de recherche avec faute de frappe et format différent. Tout le code de cette page est testé — copiez-collez, adaptez à votre catalogue.</p>
+    <p class="post-lede">Deux appels API, un vrai résultat de recherche avec faute de frappe et format différent. Tout le code de cette page est testé. Copiez-collez, adaptez à votre catalogue.</p>
 
     <div class="post-body">
       <h2>Ce qu'il vous faut</h2>
@@ -140,10 +140,10 @@
       <p>Réponse :</p>
       <pre class="docs-code"><code>{"indexed": 4, "catalog": {"catalog": "quincaillerie", "products": 4,
  "terms": 18, "annotations": 11, "rulepack": "outillage", "synonym_groups": 0}}</code></pre>
-      <p>11 annotations générées automatiquement à partir de 4 produits — c'est la cascade de règles qui vient de décomposer chaque référence (diamètre, longueur, matière) sans que vous ayez écrit la moindre regex.</p>
+      <p>11 annotations générées automatiquement à partir de 4 produits. C'est la cascade de règles qui vient de décomposer chaque référence (diamètre, longueur, matière) sans que vous ayez écrit la moindre regex.</p>
 
       <h2>Étape 2 — Cherchez, avec une faute et un format différent</h2>
-      <p>Le vrai test : pas la référence exacte telle qu'indexée, mais ce qu'un client tape réellement — une faute sur « vis », et « M8x20 » collé sans espaces ni tirets :</p>
+      <p>Le vrai test : pas la référence exacte telle qu'indexée, mais ce qu'un client tape réellement. Une faute sur « vis », et « M8x20 » collé sans espaces ni tirets :</p>
       <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/index/quincaillerie/search \
   -H "Authorization: Bearer VOTRE_CLE_API" \
   -H "Content-Type: application/json" \
@@ -170,7 +170,7 @@
 }</code></pre>
 
       <h2>Ce qui vient de se passer</h2>
-      <p>« vs m8x20 inox » n'existe littéralement nulle part dans les données indexées — ni « vs » (faute sur « vis »), ni « m8x20 » sous cette forme exacte (la référence stockée est « M8 x 20 »). Le moteur a quand même trouvé et classé en premier le bon produit, et le champ <code class="docs-inline-code">matched</code> dit précisément pourquoi : il a reconnu un diamètre (<code class="docs-inline-code">DIAM_M8</code>), une longueur (<code class="docs-inline-code">LONG_20</code>), leur combinaison en tant que référence de vis (<code class="docs-inline-code">VIS_M8X20</code>), et la matière (<code class="docs-inline-code">MAT_INOX</code>) — quatre annotations qui pèsent bien plus dans le score que la simple correction orthographique de « vis ». C'est la différence entre un moteur qui tolère les fautes sur des mots, et un moteur qui comprend la structure d'une référence.</p>
+      <p>« vs m8x20 inox » n'existe littéralement nulle part dans les données indexées : ni « vs » (faute sur « vis »), ni « m8x20 » sous cette forme exacte (la référence stockée est « M8 x 20 »). Le moteur a quand même trouvé et classé en premier le bon produit, et le champ <code class="docs-inline-code">matched</code> dit précisément pourquoi : il a reconnu un diamètre (<code class="docs-inline-code">DIAM_M8</code>), une longueur (<code class="docs-inline-code">LONG_20</code>), leur combinaison en tant que référence de vis (<code class="docs-inline-code">VIS_M8X20</code>), et la matière (<code class="docs-inline-code">MAT_INOX</code>) — quatre annotations qui pèsent bien plus dans le score que la simple correction orthographique de « vis ». C'est la différence entre un moteur qui tolère les fautes sur des mots, et un moteur qui comprend la structure d'une référence.</p>
 
       <h2>Et avec votre vrai catalogue ?</h2>
       <p>Remplacez le contenu du tableau <code class="docs-inline-code">items</code> par vos propres produits (5 000 par appel maximum, plusieurs appels pour un catalogue plus grand), gardez le pack <code class="docs-inline-code">outillage</code> s'il correspond à votre secteur — ou <code class="docs-inline-code">mode</code>, <code class="docs-inline-code">industrie</code> pour les deux autres packs fournis. La <a href="../docs.html">documentation complète</a> couvre les facettes, les synonymes métier et la recherche fédérée sur plusieurs catalogues.</p>

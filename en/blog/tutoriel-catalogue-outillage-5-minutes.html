@@ -116,7 +116,7 @@
     <a href="../blog.html" class="back-link">← All articles</a>
     <div class="kicker">Tutorial · July 2026</div>
     <h1>Index your first hardware catalog in 5 minutes</h1>
-    <p class="post-lede">Two API calls, one real search result with a typo and a different format. Every piece of code on this page is tested — copy, paste, adapt to your catalog.</p>
+    <p class="post-lede">Two API calls, one real search result with a typo and a different format. Every piece of code on this page is tested. Copy, paste, adapt to your catalog.</p>
 
     <div class="post-body">
       <h2>What you need</h2>
@@ -136,10 +136,10 @@
       <p>Response:</p>
       <pre class="docs-code"><code>{"indexed": 4, "catalog": {"catalog": "hardware", "products": 4,
  "terms": 18, "annotations": 11, "rulepack": "outillage", "synonym_groups": 0}}</code></pre>
-      <p>11 annotations generated automatically from 4 products — that's the rule cascade decomposing each reference (diameter, length, material) without you writing a single regex.</p>
+      <p>11 annotations generated automatically from 4 products. That's the rule cascade decomposing each reference (diameter, length, material) without you writing a single regex.</p>
 
       <h2>Step 2 — Search, with a typo and a different format</h2>
-      <p>The real test: not the exact reference as indexed, but what a customer actually types — a typo on "screw," and "M8x20" run together with no spaces or hyphens:</p>
+      <p>The real test: not the exact reference as indexed, but what a customer actually types. A typo on "screw," and "M8x20" run together with no spaces or hyphens:</p>
       <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/index/hardware/search   -H "Authorization: Bearer YOUR_API_KEY"   -H "Content-Type: application/json"   -d '{"q": "scew m8x20 stainless"}'</code></pre>
       <p>Response (shortened):</p>
       <pre class="docs-code"><code>{
@@ -163,7 +163,7 @@
 }</code></pre>
 
       <h2>What just happened</h2>
-      <p>"scew m8x20 stainless" exists literally nowhere in the indexed data — not "scew" (a typo on "screw"), not "m8x20" in that exact form (the stored reference is "M8 x 20"). The engine still found the right product and ranked it first, and the <code class="docs-inline-code">matched</code> field says precisely why: it recognized a diameter (<code class="docs-inline-code">DIAM_M8</code>), a length (<code class="docs-inline-code">LONG_20</code>), their combination as a screw reference (<code class="docs-inline-code">VIS_M8X20</code>), and the material (<code class="docs-inline-code">MAT_INOX</code>) — four annotations that weigh far more in the score than the simple spelling correction of "screw." That's the difference between an engine that tolerates typos on words, and an engine that understands a reference's structure.</p>
+      <p>"scew m8x20 stainless" exists literally nowhere in the indexed data: not "scew" (a typo on "screw"), not "m8x20" in that exact form (the stored reference is "M8 x 20"). The engine still found the right product and ranked it first, and the <code class="docs-inline-code">matched</code> field says precisely why: it recognized a diameter (<code class="docs-inline-code">DIAM_M8</code>), a length (<code class="docs-inline-code">LONG_20</code>), their combination as a screw reference (<code class="docs-inline-code">VIS_M8X20</code>), and the material (<code class="docs-inline-code">MAT_INOX</code>) — four annotations that weigh far more in the score than the simple spelling correction of "screw." That's the difference between an engine that tolerates typos on words, and an engine that understands a reference's structure.</p>
 
       <h2>And with your real catalog?</h2>
       <p>Replace the <code class="docs-inline-code">items</code> array's content with your own products (5,000 per call maximum, several calls for a larger catalog), keep the <code class="docs-inline-code">outillage</code> pack if it matches your industry — or <code class="docs-inline-code">mode</code>, <code class="docs-inline-code">industrie</code> for the other two provided packs. The <a href="../docs.html">full documentation</a> covers facets, business synonyms, and federated search across multiple catalogs.</p>

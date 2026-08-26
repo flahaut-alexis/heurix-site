@@ -117,7 +117,7 @@
     <a href="../blog.html" class="back-link">← Tous les articles</a>
     <div class="kicker">Blog · Août 2026</div>
     <h1>Mettre en avant un pack ou un bundle sans écraser la recherche</h1>
-    <p class="post-lede">Un pack — ou un bundle, deux mots pour la même idée selon le vocabulaire de votre secteur — a presque toujours un panier moyen plus élevé qu'un produit seul. Il a aussi, presque toujours, une fiche plus longue — et c'est précisément ce qui le désavantage au classement pur. Plutôt que de trancher artificiellement dans le score, un champ séparé.</p>
+    <p class="post-lede">Un pack — ou un bundle, deux mots pour la même idée selon le vocabulaire de votre secteur — a presque toujours un panier moyen plus élevé qu'un produit seul. Il a aussi, presque toujours, une fiche plus longue, et c'est précisément ce qui le désavantage au classement pur. Plutôt que de trancher artificiellement dans le score, un champ séparé.</p>
 
     <div class="post-body">
       <h2>Le symptôme, avant la cause</h2>
@@ -125,11 +125,11 @@
       <p>La question était ailleurs : est-ce que quelqu'un qui tape « perceuse 18V » cherche vraiment, en priorité, un investissement à plusieurs centaines d'euros en kit complet ?</p>
 
       <h2>Pourquoi c'est le texte qui gagne, pas le produit</h2>
-      <p>Une fiche produit qui décrit quatre outils accumule mécaniquement plus de signal qu'une fiche qui en décrit un seul. Chaque mention de « perceuse-visseuse », chaque référence « 18V-XXX » qui revient dans une longue description marketing pèse dans le score — un comportement voulu ailleurs (un mot qui revient plusieurs fois dans une fiche est un signal de pertinence légitime), mais qui joue mécaniquement en faveur du contenu le plus verbeux, pas du contenu le plus pertinent pour l'intention précise d'une requête.</p>
+      <p>Une fiche produit qui décrit quatre outils accumule mécaniquement plus de signal qu'une fiche qui en décrit un seul. Chaque mention de « perceuse-visseuse », chaque référence « 18V-XXX » qui revient dans une longue description marketing pèse dans le score. Un comportement voulu ailleurs (un mot qui revient plusieurs fois dans une fiche est un signal de pertinence légitime), mais qui joue mécaniquement en faveur du contenu le plus verbeux, pas du contenu le plus pertinent pour l'intention précise d'une requête.</p>
       <p>Une fiche pack n'est pas un produit qui triche. Elle est simplement plus longue, par nature.</p>
 
       <h2>La mauvaise réponse, et pourquoi on ne l'a pas prise</h2>
-      <p>La première tentation est de corriger ça dans le score lui-même — pénaliser les fiches longues, ou les catégories contenant « pack ». Deux problèmes. D'abord, un pack N'EST PAS moins pertinent : il contient réellement ce qui est cherché, et souvent davantage. Le déclasser reviendrait à cacher une option légitime, parfois la plus avantageuse pour l'acheteur. Ensuite, retoucher un score de pertinence a des effets qui dépassent toujours le cas qu'on cherche à corriger — un ajustement pensé pour un type de produit se répercute sur tous les autres, de façon rarement prévisible en une seule fois.</p>
+      <p>La première tentation est de corriger ça dans le score lui-même : pénaliser les fiches longues, ou les catégories contenant « pack ». Deux problèmes. D'abord, un pack N'EST PAS moins pertinent : il contient réellement ce qui est cherché, et souvent davantage. Le déclasser reviendrait à cacher une option légitime, parfois la plus avantageuse pour l'acheteur. Ensuite, retoucher un score de pertinence a des effets qui dépassent toujours le cas qu'on cherche à corriger. Un ajustement pensé pour un type de produit se répercute sur tous les autres, de façon rarement prévisible en une seule fois.</p>
 
       <h2>La réponse retenue : un champ séparé, pas un arbitrage</h2>
       <p>Plutôt que de choisir « pack ou produit seul en premier » à l'intérieur du classement, la réponse de recherche porte désormais un champ à part, <code class="docs-inline-code">highlighted_bundle</code> : le meilleur pack correspondant à la requête, distinct de <code class="docs-inline-code">hits</code>.</p>
@@ -139,15 +139,15 @@
    "score": 35.66,
    "in_stock": true
  }}</code></pre>
-      <p><code class="docs-inline-code">hits</code> ne change pas — c'est toujours le classement naturel, produits seuls compris. À votre interface de décider comment présenter les deux zones : une mise en avant visuelle distincte au-dessus de la liste, une « tête de gondole » plutôt qu'une place gagnée de force dans le classement ordinaire.</p>
+      <p><code class="docs-inline-code">hits</code> ne change pas : c'est toujours le classement naturel, produits seuls compris. À votre interface de décider comment présenter les deux zones : une mise en avant visuelle distincte au-dessus de la liste, une « tête de gondole » plutôt qu'une place gagnée de force dans le classement ordinaire.</p>
 
       <h2>Une limite, pour être honnête</h2>
-      <p>La détection se fait sur le champ <code class="docs-inline-code">category</code> — un produit est considéré comme un pack ou un bundle si sa catégorie contient « pack », « kit » ou « bundle » (insensible à la casse). Aucune donnée supplémentaire à fournir : ça fonctionne avec un catalogue déjà indexé, tel quel. La contrepartie, assumée : ça dépend du vocabulaire déjà présent dans vos catégories, pas d'une déclaration explicite. Une marque pourrait tout aussi bien écrire « Lot » ou « Combo » sans que la détection actuelle la reconnaisse — les trois mots retenus couvrent ce qu'on a observé sur de vrais catalogues, pas une liste exhaustive de tout le vocabulaire possible du secteur.</p>
+      <p>La détection se fait sur le champ <code class="docs-inline-code">category</code> : un produit est considéré comme un pack ou un bundle si sa catégorie contient « pack », « kit » ou « bundle » (insensible à la casse). Aucune donnée supplémentaire à fournir : ça fonctionne avec un catalogue déjà indexé, tel quel. La contrepartie, assumée : ça dépend du vocabulaire déjà présent dans vos catégories, pas d'une déclaration explicite. Une marque pourrait tout aussi bien écrire « Lot » ou « Combo » sans que la détection actuelle la reconnaisse — les trois mots retenus couvrent ce qu'on a observé sur de vrais catalogues, pas une liste exhaustive de tout le vocabulaire possible du secteur.</p>
 
       <blockquote>La question n'était jamais « les packs méritent-ils d'être vus » — ils le méritent, un panier moyen plus élevé sert autant le distributeur que l'acheteur qui économise en achetant groupé. La question était comment les montrer sans que leur longueur naturelle n'écrase, par accident, ce qu'un visiteur pressé cherchait précisément.</blockquote>
 
       <h2>Disponible dès maintenant</h2>
-      <p>Le champ <code class="docs-inline-code">highlighted_bundle</code> est actif sur toute recherche via <code class="docs-inline-code">POST /v1/index/{catalog}/search</code>, sans configuration ni migration — absent de la réponse si aucun produit correspondant à la requête n'a « pack », « kit » ou « bundle » dans sa catégorie, présent sinon. Il respecte aussi le stock : un pack épuisé n'est jamais mis en avant, même s'il est le mieux classé — recommander ce qui ne peut pas être acheté n'aide personne. Détail complet dans la <a href="../docs.html#bundles">documentation</a>.</p>
+      <p>Le champ <code class="docs-inline-code">highlighted_bundle</code> est actif sur toute recherche via <code class="docs-inline-code">POST /v1/index/{catalog}/search</code>, sans configuration ni migration, absent de la réponse si aucun produit correspondant à la requête n'a « pack », « kit » ou « bundle » dans sa catégorie, présent sinon. Il respecte aussi le stock : un pack épuisé n'est jamais mis en avant, même s'il est le mieux classé — recommander ce qui ne peut pas être acheté n'aide personne. Détail complet dans la <a href="../docs.html#bundles">documentation</a>.</p>
     </div>
 
     <div class="post-footer-cta">

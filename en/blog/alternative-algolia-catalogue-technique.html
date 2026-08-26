@@ -123,11 +123,11 @@
       <p>Algolia, Typesense, and Meilisearch share a common strength: extremely fast full-text indexing, generalist typo tolerance, and infrastructure proven at scale. For a fashion catalog, home decor, or editorial content — where search terms are everyday-language words — these are excellent choices, often better than what a small team could build itself.</p>
 
       <h2>Where it gets complicated: structured references</h2>
-      <p>The problem shows up on a specific kind of search: one where the reference itself carries the information. "M8x20," "6205-2RS," "DIN 933" aren't words — they're codes where each segment has a meaning (diameter, length, standard). A generalist typo-tolerant engine treats these strings as text to fuzzy-match, not as a structure to decompose. Result: a slightly misformatted reference, one extra or missing space, a supplier's own spelling variant, and the search silently fails.</p>
-      <p>These three engines do let you configure synonym rules or custom matching rules — but it's on you to write them, one by one, reference by reference. On a 500-product catalog, that's doable. On 50,000, it isn't.</p>
+      <p>The problem shows up on a specific kind of search: one where the reference itself carries the information. "M8x20," "6205-2RS," "DIN 933" aren't words: they're codes where each segment has a meaning (diameter, length, standard). A generalist typo-tolerant engine treats these strings as text to fuzzy-match, not as a structure to decompose. Result: a slightly misformatted reference, one extra or missing space, a supplier's own spelling variant, and the search silently fails.</p>
+      <p>These three engines do let you configure synonym rules or custom matching rules, but it's on you to write them, one by one, reference by reference. On a 500-product catalog, that's doable. On 50,000, it isn't.</p>
 
       <h2>The difference in approach</h2>
-      <p>Heurix doesn't replace these engines on their own turf — it answers a narrower, more specific problem: rule packs pre-configured by industry (hardware, fashion, industry) that recognize a reference's <em>structure</em> automatically, with no rule-by-rule manual setup. "M8 x 20 — A2" and "m8x20 stainless" point to the same product because the engine understands it's a diameter, a length, and a material — not because someone wrote a matching rule between those two exact strings.</p>
+      <p>Heurix doesn't replace these engines on their own turf. It answers a narrower, more specific problem: rule packs pre-configured by industry (hardware, fashion, industry) that recognize a reference's <em>structure</em> automatically, with no rule-by-rule manual setup. "M8 x 20 — A2" and "m8x20 stainless" point to the same product because the engine understands it's a diameter, a length, and a material — not because someone wrote a matching rule between those two exact strings.</p>
 
       <blockquote>The question isn't "what's the best search engine" — it's "which engine matches the nature of your references." A good choice for a clothing catalog can be a bad choice for a bearings catalog, and vice versa.</blockquote>
 
@@ -135,7 +135,7 @@
       <p>Algolia bills per search operation, with tiers that climb quickly past a few tens of thousands of monthly requests. Meilisearch Cloud and Typesense Cloud are more affordable at the entry level but demand more technical setup to reach a comparable result on structured references. Heurix sits on the same usage-based billing principle (<a href="../pricing.html">starting at €19/month</a>), with the advantage that reference understanding is included in the price, not something to build alongside it.</p>
 
       <h2>How to decide</h2>
-      <p>A simple question: if you type a product reference with a typo or a format slightly different from how it was saved, does your current engine still find it? If the answer is no more than one time in five, the problem probably isn't general typo tolerance — it's the lack of understanding of your references' structure. That's exactly the problem Heurix's rule packs were built to solve.</p>
+      <p>A simple question: if you type a product reference with a typo or a format slightly different from how it was saved, does your current engine still find it? If the answer is no more than one time in five, the problem probably isn't general typo tolerance. It's the lack of understanding of your references' structure. That's exactly the problem Heurix's rule packs were built to solve.</p>
     </div>
 
     <div class="post-footer-cta">

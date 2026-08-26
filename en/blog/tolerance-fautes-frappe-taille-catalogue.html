@@ -116,28 +116,28 @@
     <a href="../blog.html" class="back-link">← All articles</a>
     <div class="kicker">Analysis · August 2026</div>
     <h1>Typo tolerance: why one strategy is never enough</h1>
-    <p class="post-lede">An optimal algorithm on 500 products becomes a bottleneck on 50,000 — and the reverse is just as true. Here's why the right answer comes from measurement, never intuition.</p>
+    <p class="post-lede">An optimal algorithm on 500 products becomes a bottleneck on 50,000, and the reverse is just as true. Here's why the right answer comes from measurement, never intuition.</p>
 
     <div class="post-body">
       <h2>A problem you can't see until you measure it</h2>
-      <p>Tolerating a typo means comparing what the buyer typed against every known word in the catalog, to find the closest matches. On a small catalog, that work is trivial: a few hundred comparisons, no perceptible latency. On a large catalog, that same work, done naively, becomes the real bottleneck of the search — not indexing, not ranking, just typo tolerance itself.</p>
+      <p>Tolerating a typo means comparing what the buyer typed against every known word in the catalog, to find the closest matches. On a small catalog, that work is trivial: a few hundred comparisons, no perceptible latency. On a large catalog, that same work, done naively, becomes the real bottleneck of the search. Not indexing, not ranking, just typo tolerance itself.</p>
       <p><strong>So the problem isn't the algorithm. It's whether it fits the actual size of what it has to process.</strong></p>
 
       <h2>Two strategies, two opposite cost profiles</h2>
       <p>There are broadly two families of approach for tolerating typos across an entire vocabulary:</p>
       <div class="table-scroll"><table class="docs-params">
         <tr><th>Approach</th><th>Cost on a small vocabulary</th><th>Cost on a large vocabulary</th></tr>
-        <tr><td>Direct comparison, word by word</td><td>Negligible</td><td>Grows with vocabulary size — becomes the dominant factor</td></tr>
+        <tr><td>Direct comparison, word by word</td><td>Negligible</td><td>Grows with vocabulary size: becomes the dominant factor</td></tr>
         <tr><td>Pre-compiled automaton</td><td>Unnecessary build cost, for a gain you'd never notice</td><td>Near-constant, regardless of vocabulary size</td></tr>
       </table></div>
-      <p>These two profiles are exact opposites. Using the automaton everywhere needlessly penalizes small catalogs with a build cost that buys nothing at that scale. Using direct comparison everywhere penalizes large catalogs with a slowness that's very much noticeable — and costs you abandoned searches.</p>
+      <p>These two profiles are exact opposites. Using the automaton everywhere needlessly penalizes small catalogs with a build cost that buys nothing at that scale. Using direct comparison everywhere penalizes large catalogs with a slowness that's very much noticeable, and costs you abandoned searches.</p>
 
       <h2>Measure, don't guess</h2>
-      <p>It's the same principle that led us to <a href="recherche-vectorielle-catalogues-techniques.html">rule out vector search</a> for Heurix: the right answer depends on what you actually have to process, never on a preference for a technique you happen to find elegant. We measured, on our own catalogs, the exact point where each approach becomes faster than the other — not assumed, not extrapolated from some generic benchmark found elsewhere, which would have measured different hardware, a different vocabulary, and a different distribution of real-world typos.</p>
-      <p>That crossover point sits at several tens of thousands of distinct words in the catalog's vocabulary — an order of magnitude that most e-commerce catalogs, even large ones by product count, never reach in their own vocabulary (the number of <em>distinct</em> words, not the number of products, which largely repeat the same terms).</p>
+      <p>It's the same principle that led us to <a href="recherche-vectorielle-catalogues-techniques.html">rule out vector search</a> for Heurix: the right answer depends on what you actually have to process, never on a preference for a technique you happen to find elegant. We measured, on our own catalogs, the exact point where each approach becomes faster than the other. Not assumed, not extrapolated from some generic benchmark found elsewhere, which would have measured different hardware, a different vocabulary, and a different distribution of real-world typos.</p>
+      <p>That crossover point sits at several tens of thousands of distinct words in the catalog's vocabulary, an order of magnitude that most e-commerce catalogs, even large ones by product count, never reach in their own vocabulary (the number of <em>distinct</em> words, not the number of products, which largely repeat the same terms).</p>
 
       <h2>What this actually changes at Heurix</h2>
-      <p>Below that threshold, Heurix compares directly — it's already instant, and building an automaton would cost more than it would ever save. Above it, the engine automatically switches to the pre-compiled automaton, which keeps response time near-constant even as the vocabulary keeps growing.</p>
+      <p>Below that threshold, Heurix compares directly: it's already instant, and building an automaton would cost more than it would ever save. Above it, the engine automatically switches to the pre-compiled automaton, which keeps response time near-constant even as the vocabulary keeps growing.</p>
       <p>There's nothing to configure: the switch happens catalog by catalog, transparently, re-evaluated every time vocabulary size changes. It's the same logic behind the <a href="../fonctionnalites.html">typo tolerance</a> and <a href="../fonctionnalites.html">explainable results</a> already described on the features page: the engine picks its strategy based on measurement, never on a principle applied without checking it.</p>
 
       <h2>Going further</h2>

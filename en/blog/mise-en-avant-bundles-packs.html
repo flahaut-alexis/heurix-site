@@ -116,7 +116,7 @@
     <a href="../blog.html" class="back-link">← All articles</a>
     <div class="kicker">Blog · August 2026</div>
     <h1>Highlighting a pack or bundle without burying search</h1>
-    <p class="post-lede">A pack — or a bundle, two words for the same idea depending on your industry's vocabulary — almost always has a higher average order value than a single product. It almost always has a longer listing too — and that's precisely what puts it at a disadvantage in pure ranking. Rather than artificially deciding inside the score, a separate field.</p>
+    <p class="post-lede">A pack — or a bundle, two words for the same idea depending on your industry's vocabulary — almost always has a higher average order value than a single product. It almost always has a longer listing too, and that's precisely what puts it at a disadvantage in pure ranking. Rather than artificially deciding inside the score, a separate field.</p>
 
     <div class="post-body">
       <h2>The symptom, before the cause</h2>
@@ -124,11 +124,11 @@
       <p>The real question was elsewhere: does someone typing "18V drill" actually want, as a first choice, a several-hundred-euro investment in a full kit?</p>
 
       <h2>Why the text wins, not the product</h2>
-      <p>A listing describing four tools mechanically accumulates more signal than a listing describing one. Every mention of "drill driver," every "18V-XXX" reference repeated across a long marketing description weighs into the score — the right behavior elsewhere (a word repeated several times in a listing is a legitimate relevance signal), but one that mechanically favors the more verbose content, not the content most relevant to a precise query intent.</p>
+      <p>A listing describing four tools mechanically accumulates more signal than a listing describing one. Every mention of "drill driver," every "18V-XXX" reference repeated across a long marketing description weighs into the score. The right behavior elsewhere (a word repeated several times in a listing is a legitimate relevance signal), but one that mechanically favors the more verbose content, not the content most relevant to a precise query intent.</p>
       <p>A pack listing isn't a product gaming the system. It's simply longer, by nature.</p>
 
       <h2>The wrong answer, and why we didn't take it</h2>
-      <p>The first temptation is to fix this inside the score itself — penalize long listings, or categories containing "pack." Two problems. First, a pack ISN'T less relevant: it genuinely contains what's being searched for, often more. Demoting it would hide a legitimate option, sometimes the better deal for the buyer. Second, adjusting a relevance score always has effects that reach beyond the one case you're trying to fix — a tweak designed for one product type ripples into every other one, rarely in a way you can fully predict in a single pass.</p>
+      <p>The first temptation is to fix this inside the score itself: penalize long listings, or categories containing "pack." Two problems. First, a pack ISN'T less relevant: it genuinely contains what's being searched for, often more. Demoting it would hide a legitimate option, sometimes the better deal for the buyer. Second, adjusting a relevance score always has effects that reach beyond the one case you're trying to fix. A tweak designed for one product type ripples into every other one, rarely in a way you can fully predict in a single pass.</p>
 
       <h2>The answer we shipped: a separate field, not a trade-off</h2>
       <p>Rather than choosing "pack or single product first" inside the ranking itself, the search response now carries a separate field, <code class="docs-inline-code">highlighted_bundle</code>: the best-matching pack for the query, distinct from <code class="docs-inline-code">hits</code>.</p>
@@ -138,15 +138,15 @@
    "score": 35.66,
    "in_stock": true
  }}</code></pre>
-      <p><code class="docs-inline-code">hits</code> doesn't change — it's still the natural ranking, standalone products included. It's up to your interface to decide how to present the two zones: a visually distinct highlight above the list, an endcap rather than a spot forced into the regular ranking.</p>
+      <p><code class="docs-inline-code">hits</code> doesn't change: it's still the natural ranking, standalone products included. It's up to your interface to decide how to present the two zones: a visually distinct highlight above the list, an endcap rather than a spot forced into the regular ranking.</p>
 
       <h2>One limit, to be honest</h2>
-      <p>Detection runs on the <code class="docs-inline-code">category</code> field — a product counts as a pack or bundle if its category contains "pack," "kit," or "bundle" (case-insensitive). No extra data to supply: it works with a catalog you've already indexed, as is. The trade-off, knowingly accepted: it depends on the vocabulary already present in your categories, not an explicit declaration. A brand might just as well write "Lot" or "Combo" without today's detection recognizing it — the three words chosen cover what we've observed on real catalogs, not an exhaustive list of every possible term in the industry.</p>
+      <p>Detection runs on the <code class="docs-inline-code">category</code> field: a product counts as a pack or bundle if its category contains "pack," "kit," or "bundle" (case-insensitive). No extra data to supply: it works with a catalog you've already indexed, as is. The trade-off, knowingly accepted: it depends on the vocabulary already present in your categories, not an explicit declaration. A brand might just as well write "Lot" or "Combo" without today's detection recognizing it — the three words chosen cover what we've observed on real catalogs, not an exhaustive list of every possible term in the industry.</p>
 
       <blockquote>The question was never "do packs deserve to be seen" — they do, a higher average order value serves the distributor as much as the buyer saving money by purchasing together. The question was how to show them without their natural length accidentally burying what a visitor in a hurry was precisely looking for.</blockquote>
 
       <h2>Available now</h2>
-      <p>The <code class="docs-inline-code">highlighted_bundle</code> field is active on every search via <code class="docs-inline-code">POST /v1/index/{catalog}/search</code>, with no configuration or migration — absent from the response if no product matching the query has "pack," "kit," or "bundle" in its category, present otherwise. It also respects stock: an out-of-stock pack is never highlighted, even if it's the best match — recommending something that can't be bought helps no one. Full details in the <a href="../docs.html#bundles">documentation</a>.</p>
+      <p>The <code class="docs-inline-code">highlighted_bundle</code> field is active on every search via <code class="docs-inline-code">POST /v1/index/{catalog}/search</code>, with no configuration or migration, absent from the response if no product matching the query has "pack," "kit," or "bundle" in its category, present otherwise. It also respects stock: an out-of-stock pack is never highlighted, even if it's the best match — recommending something that can't be bought helps no one. Full details in the <a href="../docs.html#bundles">documentation</a>.</p>
     </div>
 
     <div class="post-footer-cta">

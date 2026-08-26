@@ -117,28 +117,28 @@
     <a href="../blog.html" class="back-link">← Tous les articles</a>
     <div class="kicker">Analyse · Août 2026</div>
     <h1>Tolérance aux fautes de frappe : pourquoi une seule stratégie ne suffit jamais</h1>
-    <p class="post-lede">Un algorithme optimal sur 500 produits devient un frein sur 50 000 — et l'inverse est tout aussi vrai. Voici pourquoi la bonne réponse dépend d'une mesure, jamais d'une intuition.</p>
+    <p class="post-lede">Un algorithme optimal sur 500 produits devient un frein sur 50 000, et l'inverse est tout aussi vrai. Voici pourquoi la bonne réponse dépend d'une mesure, jamais d'une intuition.</p>
 
     <div class="post-body">
       <h2>Un problème invisible tant qu'on n'a pas mesuré</h2>
-      <p>Tolérer une faute de frappe suppose de comparer ce que l'acheteur a tapé à chaque mot connu du catalogue, pour trouver les plus proches. Sur un petit catalogue, ce travail est trivial : quelques centaines de comparaisons, aucune latence perceptible. Sur un gros catalogue, ce même travail, fait naïvement, devient le vrai goulot d'étranglement de la recherche — pas l'indexation, pas le classement, la simple tolérance à la faute de frappe elle-même.</p>
+      <p>Tolérer une faute de frappe suppose de comparer ce que l'acheteur a tapé à chaque mot connu du catalogue, pour trouver les plus proches. Sur un petit catalogue, ce travail est trivial : quelques centaines de comparaisons, aucune latence perceptible. Sur un gros catalogue, ce même travail, fait naïvement, devient le vrai goulot d'étranglement de la recherche. Pas l'indexation, pas le classement, la simple tolérance à la faute de frappe elle-même.</p>
       <p><strong>Le problème n'est donc pas l'algorithme. C'est son adéquation à la taille réelle de ce qu'il doit traiter.</strong></p>
 
       <h2>Deux stratégies, deux profils de coût opposés</h2>
       <p>Il existe grosso modo deux familles d'approches pour tolérer une faute de frappe à l'échelle d'un vocabulaire entier :</p>
       <div class="table-scroll"><table class="docs-params">
         <tr><th>Approche</th><th>Coût sur un petit vocabulaire</th><th>Coût sur un gros vocabulaire</th></tr>
-        <tr><td>Comparaison directe, mot par mot</td><td>Négligeable</td><td>Croît avec la taille du vocabulaire — devient le facteur dominant</td></tr>
+        <tr><td>Comparaison directe, mot par mot</td><td>Négligeable</td><td>Croît avec la taille du vocabulaire : devient le facteur dominant</td></tr>
         <tr><td>Automate compilé à l'avance</td><td>Coût de construction inutile, pour un gain qui ne se voit pas</td><td>Quasi constant, quelle que soit la taille du vocabulaire</td></tr>
       </table></div>
-      <p>Ces deux profils sont à l'opposé l'un de l'autre. Choisir l'automate partout pénalise inutilement les petits catalogues d'un coût de construction qui ne sert à rien à cette échelle. Choisir la comparaison directe partout pénalise les gros catalogues d'une lenteur qui, elle, se voit — et se paie en abandons de recherche.</p>
+      <p>Ces deux profils sont à l'opposé l'un de l'autre. Choisir l'automate partout pénalise inutilement les petits catalogues d'un coût de construction qui ne sert à rien à cette échelle. Choisir la comparaison directe partout pénalise les gros catalogues d'une lenteur qui, elle, se voit, et se paie en abandons de recherche.</p>
 
       <h2>Mesurer plutôt que deviner</h2>
-      <p>C'est le même principe qui nous a fait <a href="recherche-vectorielle-catalogues-techniques.html">écarter la recherche vectorielle</a> pour Heurix : la bonne réponse dépend de ce qu'il y a réellement à traiter, jamais d'une préférence pour une technique qu'on trouve élégante. Nous avons mesuré, sur nos propres catalogues, le point exact où chaque approche devient plus rapide que l'autre — pas supposé, pas extrapolé depuis un benchmark générique trouvé ailleurs, qui n'aurait mesuré ni le même matériel, ni le même vocabulaire, ni la même distribution de fautes réelles.</p>
-      <p>Ce point de croisement se situe à plusieurs dizaines de milliers de mots distincts dans le vocabulaire du catalogue — un ordre de grandeur que la grande majorité des catalogues e-commerce, même volumineux en nombre de produits, n'atteint jamais sur leur vocabulaire propre (le nombre de mots <em>distincts</em>, pas le nombre de produits, qui répètent largement les mêmes termes).</p>
+      <p>C'est le même principe qui nous a fait <a href="recherche-vectorielle-catalogues-techniques.html">écarter la recherche vectorielle</a> pour Heurix : la bonne réponse dépend de ce qu'il y a réellement à traiter, jamais d'une préférence pour une technique qu'on trouve élégante. Nous avons mesuré, sur nos propres catalogues, le point exact où chaque approche devient plus rapide que l'autre. Pas supposé, pas extrapolé depuis un benchmark générique trouvé ailleurs, qui n'aurait mesuré ni le même matériel, ni le même vocabulaire, ni la même distribution de fautes réelles.</p>
+      <p>Ce point de croisement se situe à plusieurs dizaines de milliers de mots distincts dans le vocabulaire du catalogue, un ordre de grandeur que la grande majorité des catalogues e-commerce, même volumineux en nombre de produits, n'atteint jamais sur leur vocabulaire propre (le nombre de mots <em>distincts</em>, pas le nombre de produits, qui répètent largement les mêmes termes).</p>
 
       <h2>Ce que ça change concrètement chez Heurix</h2>
-      <p>En dessous de ce seuil, Heurix compare directement — c'est déjà instantané, et construire un automate coûterait plus cher que ce qu'il ferait gagner. Au-dessus, le moteur bascule automatiquement sur l'automate compilé, qui garde un temps de réponse quasi constant même quand le vocabulaire continue de grandir.</p>
+      <p>En dessous de ce seuil, Heurix compare directement : c'est déjà instantané, et construire un automate coûterait plus cher que ce qu'il ferait gagner. Au-dessus, le moteur bascule automatiquement sur l'automate compilé, qui garde un temps de réponse quasi constant même quand le vocabulaire continue de grandir.</p>
       <p>Vous n'avez rien à configurer : la bascule se fait catalogue par catalogue, de façon transparente, réévaluée à chaque changement de taille de vocabulaire. C'est la même logique que la <a href="../fonctionnalites.html">tolérance aux fautes</a> et les <a href="../fonctionnalites.html">résultats explicables</a> déjà décrits sur la page fonctionnalités : le moteur choisit sa stratégie sur la base d'une mesure, jamais d'un principe appliqué sans le vérifier.</p>
 
       <h2>Pour aller plus loin</h2>

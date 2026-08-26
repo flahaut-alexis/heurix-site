@@ -121,24 +121,24 @@
     <div class="post-body">
       <h2>The question being asked is rarely the right one</h2>
       <p>"How much would it cost to build it ourselves?" almost always gets the same answer: Elasticsearch is free, an in-house developer already costs what they cost, and the rest seems like just a matter of time. On paper, building looks cheaper than buying.</p>
-      <p>The right question isn't "how much does version 1 cost to build" — it's "how much does it cost to maintain at version 40, two years from now, once the person who wrote it is gone." That's where the calculation almost always tips the other way.</p>
+      <p>The right question isn't "how much does version 1 cost to build", it's "how much does it cost to maintain at version 40, two years from now, once the person who wrote it is gone." That's where the calculation almost always tips the other way.</p>
 
       <h2>What "building" actually means</h2>
       <p>A search engine for a technical catalog isn't installing Elasticsearch and firing off a <code>match</code> query. At minimum, it's:</p>
-      <p>Tokenization that distinguishes a reference from an everyday word — without it, "M8x20" gets split into three unrelated words. Typo tolerance calibrated by token type — a typo on a numeric reference shouldn't behave like a typo on a product name. Managing synonyms and business rules by industry. Ranking that prioritizes stock without overriding relevance. And, as soon as a second customer or a second reference language comes along, maintaining all of that over time.</p>
-      <p>None of this is exotic. But each piece, taken separately, takes a competent developer one to three weeks — and they interact with each other, which means the third piece sometimes breaks the first.</p>
+      <p>Tokenization that distinguishes a reference from an everyday word: without it, "M8x20" gets split into three unrelated words. Typo tolerance calibrated by token type: a typo on a numeric reference shouldn't behave like a typo on a product name. Managing synonyms and business rules by industry. Ranking that prioritizes stock without overriding relevance. And, as soon as a second customer or a second reference language comes along, maintaining all of that over time.</p>
+      <p>None of this is exotic. But each piece, taken separately, takes a competent developer one to three weeks, and they interact with each other, which means the third piece sometimes breaks the first.</p>
 
-      <blockquote>The real cost of "building" isn't the first version. It's the developer who has to remember, six months later, why a given regex exists — while they should be working on something other than search.</blockquote>
+      <blockquote>The real cost of "building" isn't the first version. It's the developer who has to remember, six months later, why a given regex exists, while they should be working on something other than search.</blockquote>
 
       <h2>What "buying" avoids, precisely</h2>
       <p>A specialized search engine doesn't buy a feature, it buys a problem already solved by someone whose full-time job it is — not a side task on a product developer's list. The difference shows up on three points: edge cases already encountered (the typographic "×" copied from a PDF, the decimal comma in "2.5 mm²," the many ways to write the same reference), maintenance that follows version upgrades without pulling in your team, and time to launch — days rather than months before the first usable result.</p>
 
       <h2>When building it yourself is genuinely justified</h2>
-      <p>It's not always the wrong choice. Building makes sense when search IS the product — a generalist search engine, not an engine in service of a catalog. When volume justifies a full-time dedicated team, not a side task. Or when your reference structure is so specific that no solution on the market, generalist or specialized, can cover it without a full rewrite.</p>
+      <p>It's not always the wrong choice. Building makes sense when search IS the product: a generalist search engine, not an engine in service of a catalog. When volume justifies a full-time dedicated team, not a side task. Or when your reference structure is so specific that no solution on the market, generalist or specialized, can cover it without a full rewrite.</p>
       <p>Outside those three cases, the question is simple: is search what differentiates your business in your customers' eyes, or is it a means of reaching what actually differentiates your business — your catalog, your product expertise, your customer relationship? If it's the second answer, every week spent on the engine is a week not spent on what matters.</p>
 
       <h2>Where Heurix sits on this trade-off</h2>
-      <p>Heurix doesn't claim to replace a generalist engine on its own turf — a fashion catalog or editorial content does perfectly well with Algolia or Meilisearch. Its place is narrower: catalogs where the reference itself carries technical information, and where that information varies by industry.</p>
+      <p>Heurix doesn't claim to replace a generalist engine on its own turf: a fashion catalog or editorial content does perfectly well with Algolia or Meilisearch. Its place is narrower: catalogs where the reference itself carries technical information, and where that information varies by industry.</p>
       <p>Concretely, that means business rules already written by industry — hardware, industry, electronics, fashion, books, wine — rather than written one by one. Ranking that combines relevance and stock availability with no extra configuration. And one simple principle running through the whole product: the merchant keeps control of their rules, nothing is decided for them opaquely.</p>
       <p>The concrete result: a catalog already exported can be tested in an afternoon, and going live on PrestaShop or WooCommerce takes two to four days — not months of in-house development to reach the same point.</p>
 
