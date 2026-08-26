@@ -1333,7 +1333,26 @@ h2{ font-size:clamp(26px,3.4vw,34px); font-weight:800; margin:0 0 18px; max-widt
 /* VERTICALS */
 .verticals{ margin-top:64px; }
 .verticals h3{ font-size:19px; margin:0 0 12px; font-weight:700; }
-.vertical-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
+/* AUTO-FIT PLUTOT QU'UN NOMBRE FIXE (26 aout 2026). La grille etait a
+   repeat(4,1fr) : sur l'accueil, qui n'a plus que TROIS cartes depuis la
+   reduction de la grille sectorielle, la quatrieme colonne restait vide et
+   les trois cartes tenaient dans 209px chacune -- assez etroit pour que
+   « Pieces detachees & industrie » passe sur deux lignes quand ses voisines
+   tenaient sur une.
+   Un nombre fixe de 3 aurait casse les DEUX autres pages qui emploient cette
+   grille : produit.html et secteurs.html en ont NEUF (verifie avant de
+   changer quoi que ce soit).
+   auto-fit rend les deux cas justes sans les distinguer -- il cree autant de
+   colonnes que la largeur permet, puis EFFONDRE les pistes vides, et les
+   pistes restantes en 1fr absorbent la place liberee :
+       3 cartes dans 1044px -> 3 colonnes de 339px
+       9 cartes dans 1044px -> 4 colonnes de 250px, inchange
+   minmax a 240px : quatre pistes tiennent dans 1044px, mais auto-fit
+   EFFONDRE celles qui n'ont pas d'element -- c'est tout son interet. Un
+   essai a 260px a ete ecarte apres mesure : il ramenait secteurs.html et
+   produit.html de quatre colonnes a trois, un changement que rien ne
+   demandait. */
+.vertical-grid{ display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:14px; }
 @media (max-width:900px){ .vertical-grid{ grid-template-columns:1fr 1fr; } }
 @media (max-width:560px){ .vertical-grid{ grid-template-columns:1fr; } }
 .vertical-card{ background:#fff; color:var(--ink); border:1px solid var(--line); border-radius:12px; padding:22px 20px; transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease; }
