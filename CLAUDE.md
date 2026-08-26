@@ -308,6 +308,40 @@ pages · la modale de recherche absente de 20 pages · le lien mobile absent de
 77 · `index.html#mission` mort sur 76 · PrestaShop/WooCommerce/Shopify absents
 du menu Developers de 77.
 
+#### Une liste d'exceptions se périme aussi. Faites-la vérifier par le test.
+
+Un test qui tolère des exceptions en accumule. Chacune est justifiée le jour
+où on l'écrit ; aucune ne se relit ensuite, et la liste devient un inventaire
+de dettes que plus personne ne conteste — le contraire exact de ce qu'elle
+devait être.
+
+`tests/entete-structure.test.js` porte donc **trois assertions sur sa propre
+liste**, en plus de celle qui cherche les divergences :
+
+- **aucune exception n'est périmée** — une page listée qui ne diverge plus
+  doit sortir ;
+- **chaque exception porte une raison lisible** — un renvoi (« idem l'autre
+  page ») n'en est pas une ;
+- **la référence reste tenue par plus de 90 % des pages** — sinon une dérive
+  majoritaire deviendrait la norme et le test validerait le défaut.
+
+**Les trois ont servi le jour de leur écriture, sur le travail de la même
+séance :**
+
+| assertion | ce qu'elle a attrapé |
+|---|---|
+| exception périmée | `404.html`, dès que son en-tête a été complété |
+| raison lisible | mes deux « Idem `demo/index.html`. » et « Idem `console.html`. » |
+| divergence non listée | les deux pages `en/demo/` créées une heure plus tard |
+
+La première est la plus importante : sans elle, `404.html` serait restée
+listée comme « asymétrie connue et assumée » alors que l'asymétrie n'existait
+plus. C'est la seule chose qui empêche une liste d'exceptions de devenir une
+liste de dettes oubliées.
+
+Corollaire : **quand on s'autorise une liste d'exceptions, on écrit dans le
+même mouvement ce qui la fera rétrécir.** Sinon elle ne fait que croître.
+
 ### Vérifier une liste prouve la liste, pas la page
 
 Le 26 août 2026, le sélecteur de langue de six pages créées la veille menait
