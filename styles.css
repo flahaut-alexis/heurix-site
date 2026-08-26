@@ -1271,7 +1271,13 @@ h2{ font-size:clamp(26px,3.4vw,34px); font-weight:800; margin:0 0 18px; max-widt
 }
 @media (max-width:800px){ .regex-block{ grid-template-columns:1fr; } }
 .regex-copy h3{ font-size:19px; margin:0 0 14px; font-weight:700; }
-.regex-copy p{ color:var(--ink-muted); font-size:15px; margin:0 0 14px; }
+/* ENFANTS DIRECTS SEULEMENT (26 aout 2026). Depuis que l'icone de
+   .regex-reassure est sortie du <p>, le texte de cet encart est un
+   PETIT-enfant de .regex-copy : `.regex-copy p` l'attrapait et lui imposait
+   une couleur de fond sombre alors que cet encart reste une carte CLAIRE
+   (fond lavande). Contraste mesure a l'ecran : 1,33:1. Le `>` rend a
+   .regex-reassure la main sur son propre texte. */
+.regex-copy > p{ color:var(--ink-muted); font-size:15px; margin:0 0 14px; }
 .regex-copy code{
   background:var(--blue-tint); color:var(--blue-deep); padding:2px 6px; border-radius:4px;
   font-family:'IBM Plex Mono', monospace; font-size:13.5px;
@@ -1875,7 +1881,7 @@ body.docs-dark .pb-carte p{ color:#CDD2F0; }
 body.docs-dark .pb-sortie{ color:#F5F6FF; }
 
 body.docs-dark .regex-copy h3{ color:#F5F6FF; }
-body.docs-dark .regex-copy p{ color:#CDD2F0; }
+body.docs-dark .regex-copy > p{ color:#CDD2F0; }
 /* .regex-copy code et .regex-reassure gardent leur fond clair propre
    (var(--blue-tint) + texte var(--blue-deep)) -- contraste interne
    autonome, meme raisonnement que les badges/pastilles deja traites. */
@@ -1938,6 +1944,18 @@ body.docs-dark .copilot-point-source,
 body.docs-dark .form-note,
 body.docs-dark .contact-direct,
 body.docs-dark .how-note{ color:#CDD2F0; }
+/* LOGO DU FOOTER (26 aout 2026). `.wordmark` retombait sur --ink (#12142B)
+   a 1,11:1 sur la fin du degrade -- le nom du produit, invisible, sur 118
+   pages. SCOPE AU FOOTER : l'instance de l'en-tete est saine, elle a son
+   propre fond blanc a 92 % avec flou qui l'isole du degrade. */
+body.docs-dark footer .wordmark{ color:#F5F6FF; }
+
+/* Le TEXTE COURANT du meme paragraphe que le prix (26 aout 2026). Le
+   correctif precedent n'avait cible que le <strong> : la phrase se coupait
+   en deux, « A partir de 19 EUR/mois » net puis « Essai gratuit de 14 jours,
+   sans carte bancaire. » invisible. */
+body.docs-dark .tarif-ligne{ color:#CDD2F0; }
+
 body.docs-dark .tarif-ligne strong,
 body.docs-dark .pb-repere strong{ color:#F5F6FF; }
 /* Un lien doit se distinguer du texte qui l'entoure, pas s'y fondre. */
