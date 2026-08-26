@@ -119,7 +119,7 @@
   <div class="wrap">
     <div class="badge">Fonctionnalités</div>
     <h1>Le moteur de recherche que vos références méritent.</h1>
-    <p class="lede">Cascade d'annotations, tolérance aux fautes, synonymes métier, packs par secteur : tout est là, packagé, prêt à brancher sur votre catalogue en quelques appels API. Pas une brique à assembler — un moteur complet.</p>
+    <p class="lede">Cascade d'annotations, tolérance aux fautes, synonymes métier, packs par secteur : tout est là, packagé, prêt à brancher sur votre catalogue en quelques appels API. Pas une brique à assembler : un moteur complet.</p>
   </div>
 </section>
 
@@ -131,7 +131,7 @@
 
       <div class="feat-card feat-card-highlight">
         <h3>Cascade d'annotations</h3>
-        <p>Des règles regex organisées en niveaux : le niveau 1 reconnaît les motifs bruts d'un texte (« m8 » → diamètre, « 20 » après un « x » → longueur), le niveau 2 compose ces annotations entre elles (diamètre + longueur → référence complète). Documents et requêtes traversent la même cascade — la correspondance se fait dans un espace partagé, pas seulement sur les mots.</p>
+        <p>Des règles regex organisées en niveaux : le niveau 1 reconnaît les motifs bruts d'un texte (« m8 » → diamètre, « 20 » après un « x » → longueur), le niveau 2 compose ces annotations entre elles (diamètre + longueur → référence complète). Documents et requêtes traversent la même cascade : la correspondance se fait dans un espace partagé, pas seulement sur les mots.</p>
         <pre class="docs-code"><code>« m8x20 »  →  DIAM_M8 + LONG_20  →  VIS_M8X20
 « M8 x 20 — A2 » (fiche produit)  →  même résultat</code></pre>
         <a href="docs.html#cascade">Comment ça marche →</a>
@@ -145,7 +145,7 @@
 
       <div class="feat-card">
         <h3>Tolérance aux fautes</h3>
-        <p>Distance de Damerau-Levenshtein bornée : 1 faute tolérée dès 4 caractères, 2 au-delà de 8. Sur les références chiffrées, la tolérance est plafonnée à 1 faute — un chiffre changé désigne un autre produit, pas une faute de frappe.</p>
+        <p>Distance de Damerau-Levenshtein bornée : 1 faute tolérée dès 4 caractères, 2 au-delà de 8. Sur les références chiffrées, la tolérance est plafonnée à 1 faute : un chiffre changé désigne un autre produit, pas une faute de frappe.</p>
         <a href="produit.html#moteur">Voir la démo en haut du site →</a>
       </div>
 
@@ -163,13 +163,13 @@
 
       <div class="feat-card">
         <h3>Packs de règles par secteur</h3>
-        <p>Dix packs fournis avec le moteur — outillage (normes DIN/ISO, diamètres, matières), mode (tailles composées, coloris, matières, saisons), industrie (roulements, raccords, pression nominale), automobile (références OEM, motorisation), électricité (calibres, sections, désignations), plomberie (filetages, diamètres nominaux), livres (genres, formats, ISBN), électronique (connectique, puissance, autonomie), vins &amp; spiritueux (millésime, format, degré), finance &amp; compta. Pour un besoin plus complexe qu'une <strong>Custom Rule</strong> (motifs à deux nombres combinés, par exemple), un pack entièrement sur mesure reste possible sur les plans Scale.</p>
+        <p>Dix packs fournis avec le moteur : outillage (normes DIN/ISO, diamètres, matières), mode (tailles composées, coloris, matières, saisons), industrie (roulements, raccords, pression nominale), automobile (références OEM, motorisation), électricité (calibres, sections, désignations), plomberie (filetages, diamètres nominaux), livres (genres, formats, ISBN), électronique (connectique, puissance, autonomie), vins &amp; spiritueux (millésime, format, degré), finance &amp; compta. Pour un besoin plus complexe qu'une <strong>Custom Rule</strong> (motifs à deux nombres combinés, par exemple), un pack entièrement sur mesure reste possible sur les plans Scale.</p>
         <a href="docs.html#ep-rulepacks">Endpoint /v1/rulepacks →</a>
       </div>
 
       <div class="feat-card">
         <h3>Suggestion de pack automatique</h3>
-        <p>Un catalogue de vêtements resté sur le pack outillage ne le sait jamais tout seul. L'endpoint annote un échantillon de votre catalogue avec chaque pack disponible et compare la couverture réelle — le vrai contenu tranche, pas le secteur déclaré à l'inscription. Ne modifie jamais rien : la suggestion est affichée, la décision reste la vôtre.</p>
+        <p>Un catalogue de vêtements resté sur le pack outillage ne le sait jamais tout seul. L'endpoint annote un échantillon de votre catalogue avec chaque pack disponible et compare la couverture réelle : le vrai contenu tranche, pas le secteur déclaré à l'inscription. Ne modifie jamais rien : la suggestion est affichée, la décision reste la vôtre.</p>
         <pre class="docs-code"><code>GET /v1/index/{catalog}/rulepack-suggestion
 → {"recommande": "mode", "raison": "..."}</code></pre>
         <a href="docs.html#ep-rulepack-suggestion">Endpoint suggestion de pack →</a>
@@ -177,7 +177,7 @@
 
       <div class="feat-card feat-card-highlight">
         <h3>Custom Rules</h3>
-        <p>Ajoutez vos propres règles de reconnaissance par-dessus un pack existant, sans écrire la moindre regex, directement depuis la console. Un mot-clé qui doit toujours pointer vers la même étiquette (« placo », « cheville », « molly » → une seule notion), ou un préfixe suivi d'un nombre (codes RAL, normes DIN, teintes). Effet immédiat sur votre recherche, propre à chaque catalogue — jamais partagé avec les autres comptes Heurix.</p>
+        <p>Ajoutez vos propres règles de reconnaissance par-dessus un pack existant, sans écrire la moindre regex, directement depuis la console. Un mot-clé qui doit toujours pointer vers la même étiquette (« placo », « cheville », « molly » → une seule notion), ou un préfixe suivi d'un nombre (codes RAL, normes DIN, teintes). Effet immédiat sur votre recherche, propre à chaque catalogue, jamais partagé avec les autres comptes Heurix.</p>
         <pre class="docs-code"><code>POST /v1/index/{catalog}/custom-rules
 {"rule_type": "keyword", "label": "Cheville",
  "keywords": ["placo", "cheville", "molly"]}</code></pre>
@@ -186,7 +186,7 @@
 
       <div class="feat-card">
         <h3>Synonymes métier</h3>
-        <p>« Vis » retrouve « boulon », « perceuse » retrouve « visseuse ». Les groupes de synonymes sont gérés par API, avec fusion automatique des groupes qui partagent un terme — sans configuration manuelle des doublons.</p>
+        <p>« Vis » retrouve « boulon », « perceuse » retrouve « visseuse ». Les groupes de synonymes sont gérés par API, avec fusion automatique des groupes qui partagent un terme, sans configuration manuelle des doublons.</p>
         <pre class="docs-code"><code>PUT /v1/index/{catalog}/synonyms
 {"groups": [["vis", "boulon", "visserie"]]}</code></pre>
         <a href="docs.html#ep-synonyms">Endpoint synonymes →</a>
@@ -194,7 +194,7 @@
 
       <div class="feat-card">
         <h3>Synonymes suggérés automatiquement</h3>
-        <p>Chaque recherche sans résultat est déjà un signal : un client qui n'a pas trouvé. L'endpoint compare ce terme au vocabulaire réel de votre catalogue par la même tolérance aux fautes que la recherche elle-même — jamais par IA, jamais deviné. Les références chiffrées sont exclues d'office : rapprocher deux produits différents serait le pire synonyme possible, invisible parce que plausible. Vous décidez ; rien n'est créé sans validation.</p>
+        <p>Chaque recherche sans résultat est déjà un signal : un client qui n'a pas trouvé. L'endpoint compare ce terme au vocabulaire réel de votre catalogue par la même tolérance aux fautes que la recherche elle-même, jamais par IA ni deviné. Les références chiffrées sont exclues d'office : rapprocher deux produits différents serait le pire synonyme possible, invisible parce que plausible. Vous décidez ; rien n'est créé sans validation.</p>
         <pre class="docs-code"><code>GET /v1/index/{catalog}/synonym-suggestions?q=rondele
 → {"suggestions": [{"jeton": "rondele", "candidats": [...]}]}</code></pre>
         <a href="docs.html#ep-synonym-suggestions">Endpoint suggestions →</a>
@@ -202,7 +202,7 @@
 
       <div class="feat-card">
         <h3>Multi-catalogues</h3>
-        <p>Un compte, autant de catalogues que nécessaire — par langue, par marque, par site. Chaque catalogue a son propre pack de règles, ses propres synonymes, son propre index.</p>
+        <p>Un compte, autant de catalogues que nécessaire : par langue, par marque, par site. Chaque catalogue a son propre pack de règles, ses propres synonymes, son propre index.</p>
         <a href="docs.html#ep-items">Endpoint indexation →</a>
       </div>
 
@@ -238,7 +238,7 @@
 
       <div class="feat-card feat-card-highlight">
         <h3>Barre de recherche heurix-search.js</h3>
-        <p>Aucune recherche interne sur votre site aujourd'hui ? Ce script autonome (zéro dépendance) affiche une barre de recherche connectée à votre catalogue en trois lignes de configuration — saisie, résultats en direct, facettes, navigation clavier. Pas une obligation si vous préférez coder votre propre interface, mais un point de départ immédiat si vous partez de zéro.</p>
+        <p>Aucune recherche interne sur votre site aujourd'hui ? Ce script autonome (zéro dépendance) affiche une barre de recherche connectée à votre catalogue en trois lignes de configuration : saisie, résultats en direct, facettes, navigation clavier. Pas une obligation si vous préférez coder votre propre interface, mais un point de départ immédiat si vous partez de zéro.</p>
         <a href="docs.html#ep-search-widget">Documentation et exemple →</a>
       </div>
 
@@ -251,7 +251,7 @@
 
       <div class="feat-card feat-card-highlight">
         <h3>Serveur MCP</h3>
-        <p>Connectez Heurix à Claude Desktop, Cursor, ou un agent interne — trois outils exposés nativement (recherche, Browse, statistiques catalogue). Un collaborateur demande « est-ce que j'ai des vis M8 en stock ? » en langage naturel, l'agent fait le pont vers votre API, sans qu'il ait jamais à l'appeler lui-même.</p>
+        <p>Connectez Heurix à Claude Desktop, Cursor, ou un agent interne : trois outils exposés nativement (recherche, Browse, statistiques catalogue). Un collaborateur demande « est-ce que j'ai des vis M8 en stock ? » en langage naturel, l'agent fait le pont vers votre API, sans qu'il ait jamais à l'appeler lui-même.</p>
         <a href="blog/guide-serveur-mcp-heurix.html">Guide d'installation →</a>
       </div>
 
@@ -260,7 +260,7 @@
 
   <section class="feat-group">
     <div class="feat-group-title">Merchandising e-commerce : classer sans recherche</div>
-    <p class="section-lede" style="margin-bottom:28px;">Une page de catégorie ou de rayon n'a pas de requête à traiter — juste des produits à bien classer. Un moteur distinct de la recherche, sur vos propres catégories.</p>
+    <p class="section-lede" style="margin-bottom:28px;">Une page de catégorie ou de rayon n'a pas de requête à traiter, juste des produits à bien classer. Un moteur distinct de la recherche, sur vos propres catégories.</p>
     <div class="feat-grid-2 reveal">
 
       <div class="feat-card feat-card-highlight">
@@ -272,7 +272,7 @@
 
       <div class="feat-card">
         <h3>Merchandising manuel</h3>
-        <p>Épinglez un produit en tête d'une catégorie pour une mise en avant ponctuelle, ou reléguez-en un discrètement en fin de liste — sans toucher au code, sans désindexer. Le classement naturel reprend automatiquement sa place dès que la priorité est retirée.</p>
+        <p>Épinglez un produit en tête d'une catégorie pour une mise en avant ponctuelle, ou reléguez-en un discrètement en fin de liste, sans toucher au code ni désindexer. Le classement naturel reprend automatiquement sa place dès que la priorité est retirée.</p>
       </div>
 
     </div>
@@ -284,13 +284,13 @@
 
       <div class="feat-card">
         <h3>Tri pertinence puis stock</h3>
-        <p>Champs pondérés (référence &gt; nom &gt; description), score composite incluant les annotations partagées, puis disponibilité en départage à score égal — un produit en rupture ne passe jamais devant un produit disponible équivalent.</p>
+        <p>Champs pondérés (référence &gt; nom &gt; description), score composite incluant les annotations partagées, puis disponibilité en départage à score égal : un produit en rupture ne passe jamais devant un produit disponible équivalent.</p>
         <a href="docs.html#ep-search">Endpoint recherche →</a>
       </div>
 
       <div class="feat-card feat-card-highlight">
         <h3>Ce qui se vend remonte</h3>
-        <p>Quand plusieurs produits répondent également bien à une recherche, celui qui se vend vraiment prend l'avantage — pas un simple tri par pertinence texte. Jamais assez fort pour inverser un vrai écart : seulement pour départager une quasi-égalité. Un produit avec une correspondance exacte reste toujours devant, quelle que soit la popularité de l'autre. Nécessite le Tracker installé ; sans lui, le classement reste inchangé.</p>
+        <p>Quand plusieurs produits répondent également bien à une recherche, celui qui se vend vraiment prend l'avantage, pas un simple tri par pertinence texte. Jamais assez fort pour inverser un vrai écart : seulement pour départager une quasi-égalité. Un produit avec une correspondance exacte reste toujours devant, quelle que soit la popularité de l'autre. Nécessite le Tracker installé ; sans lui, le classement reste inchangé.</p>
         <a href="docs.html#ep-search">Comment ça marche →</a>
       </div>
 
@@ -303,7 +303,7 @@
 
       <div class="feat-card">
         <h3>Surlignage des résultats</h3>
-        <p>Repérez d'un coup d'œil pourquoi un résultat sort, directement dans votre interface — les positions exactes de chaque correspondance, par champ, pour entourer le fragment pertinent d'un simple <code class="docs-inline-code">&lt;mark&gt;</code>. Reflète ce que <strong>cette recherche précise</strong> a déclenché, jamais toutes les caractéristiques du produit.</p>
+        <p>Repérez d'un coup d'œil pourquoi un résultat sort, directement dans votre interface : les positions exactes de chaque correspondance, par champ, pour entourer le fragment pertinent d'un simple <code class="docs-inline-code">&lt;mark&gt;</code>. Reflète ce que <strong>cette recherche précise</strong> a déclenché, jamais toutes les caractéristiques du produit.</p>
         <pre class="docs-code"><code>"highlights": {"name": [[0, 3], [13, 18]]}</code></pre>
         <a href="docs.html#highlighting">Format détaillé →</a>
       </div>
@@ -325,7 +325,7 @@
   <section class="feat-group">
     <div class="feat-group-title">Merchandising manuel : vous gardez la main</div>
     <div class="demo-pin reveal">
-      <p class="demo-pin-intro">Un moteur qui décide seul ne suffit pas : vous savez des choses qu'il ignore — une promotion, un déstockage, une marge. <strong>Épinglez un produit, le classement suit.</strong></p>
+      <p class="demo-pin-intro">Un moteur qui décide seul ne suffit pas : vous savez des choses qu'il ignore : une promotion, un déstockage, une marge. <strong>Épinglez un produit, le classement suit.</strong></p>
 
       <div class="demo-pin-scene">
         <div class="demo-pin-requete">
@@ -378,7 +378,7 @@
         </div>
       </div>
 
-      <p class="demo-why-resultat"><strong>Boulon TF M8 x 50 inox A4</strong> arrive en tête — et vous savez exactement pourquoi.</p>
+      <p class="demo-why-resultat"><strong>Boulon TF M8 x 50 inox A4</strong> arrive en tête, et vous savez exactement pourquoi.</p>
     </div>
   </section>
 
@@ -417,12 +417,12 @@
 
   <section class="feat-group">
     <div class="feat-group-title">Connaître vos visiteurs</div>
-    <p class="section-lede" style="margin-bottom:28px;">Deux visiteurs qui tapent la même recherche n'ont pas forcément la même intention. Un signal de comportement, explicable de bout en bout — jamais une boîte noire qu'on ne pourrait pas justifier.</p>
+    <p class="section-lede" style="margin-bottom:28px;">Deux visiteurs qui tapent la même recherche n'ont pas forcément la même intention. Un signal de comportement, explicable de bout en bout, jamais une boîte noire qu'on ne pourrait pas justifier.</p>
     <div class="feat-grid-2 reveal">
 
       <div class="feat-card feat-card-highlight">
         <h3>Score d'intention</h3>
-        <p>Combine la précision de recherche d'un visiteur (une référence précise plutôt qu'un mot générique) et son taux de clic — les deux seuls signaux qui composent le score, jamais fondus en un chiffre qu'on ne pourrait pas expliquer à un client qui demanderait pourquoi. Le panier moyen est fourni à côté, pour le contexte, jamais mélangé dedans.</p>
+        <p>Combine la précision de recherche d'un visiteur (une référence précise plutôt qu'un mot générique) et son taux de clic : les deux seuls signaux qui composent le score, jamais fondus en un chiffre qu'on ne pourrait pas expliquer à un client qui demanderait pourquoi. Le panier moyen est fourni à côté, pour le contexte, jamais mélangé dedans.</p>
         <a href="docs.html#ep-intent-score">Endpoint Score d'intention →</a>
       </div>
 
@@ -434,7 +434,7 @@
 
       <div class="feat-card">
         <h3>Recherche personnalisée</h3>
-        <p>Les résultats tiennent compte de ce que ce visiteur a déjà acheté ou consulté — sans devenir une boîte noire pour autant : le classement reste fondé sur les mêmes annotations que le reste du moteur, jamais un modèle opaque appris séparément. Jamais assez fort pour inverser un vrai écart de pertinence, seulement pour départager une quasi-égalité. Nécessite le Tracker installé ; sans lui, le classement reste inchangé.</p>
+        <p>Les résultats tiennent compte de ce que ce visiteur a déjà acheté ou consulté, sans devenir une boîte noire pour autant : le classement reste fondé sur les mêmes annotations que le reste du moteur, jamais un modèle opaque appris séparément. Jamais assez fort pour inverser un vrai écart de pertinence, seulement pour départager une quasi-égalité. Nécessite le Tracker installé ; sans lui, le classement reste inchangé.</p>
         <a href="docs.html#ep-search">Endpoint recherche →</a>
       </div>
 

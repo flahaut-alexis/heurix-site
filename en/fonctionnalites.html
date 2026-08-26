@@ -117,7 +117,7 @@
   <div class="wrap">
     <div class="badge">Features</div>
     <h1>The search engine your references deserve.</h1>
-    <p class="lede">Annotation cascade, typo tolerance, business synonyms, industry rule packs: it's all there, packaged, ready to plug into your catalog in a few API calls. Not a kit to assemble — a complete engine.</p>
+    <p class="lede">Annotation cascade, typo tolerance, business synonyms, industry rule packs: it's all there, packaged, ready to plug into your catalog in a few API calls. Not a kit to assemble: a complete engine.</p>
   </div>
 </section>
 
@@ -129,7 +129,7 @@
 
       <div class="feat-card feat-card-highlight">
         <h3>Annotation cascade</h3>
-        <p>Regex rules organized in levels: level 1 recognizes raw patterns in text ("m8" → diameter, "20" after an "x" → length), level 2 composes those annotations together (diameter + length → full reference). Documents and queries go through the same cascade — matching happens in a shared space, not just on words.</p>
+        <p>Regex rules organized in levels: level 1 recognizes raw patterns in text ("m8" → diameter, "20" after an "x" → length), level 2 composes those annotations together (diameter + length → full reference). Documents and queries go through the same cascade: matching happens in a shared space, not just on words.</p>
         <pre class="docs-code"><code>"m8x20"  →  DIAM_M8 + LONG_20  →  VIS_M8X20
 "M8 x 20 — A2" (product record)  →  same result</code></pre>
         <a href="docs.html#cascade">How it works →</a>
@@ -143,7 +143,7 @@
 
       <div class="feat-card">
         <h3>Typo tolerance</h3>
-        <p>Bounded Damerau-Levenshtein distance: 1 typo tolerated from 4 characters, 2 beyond 8. On numeric references, tolerance is capped at 1 typo — a changed digit means a different product, not a typo.</p>
+        <p>Bounded Damerau-Levenshtein distance: 1 typo tolerated from 4 characters, 2 beyond 8. On numeric references, tolerance is capped at 1 typo: a changed digit means a different product, not a typo.</p>
         <a href="index.html#moteur">See the live demo above →</a>
       </div>
 
@@ -161,13 +161,13 @@
 
       <div class="feat-card">
         <h3>Industry rule packs</h3>
-        <p>Ten packs ship with the engine — hardware (DIN/ISO standards, diameters, materials), fashion (compound sizes, colors, materials, seasons), industry (bearings, fittings, rated pressure), automotive (OEM references, engine type), electrical (ratings, cross-sections, designations), plumbing (threads, nominal diameters), books (genres, formats, ISBN), electronics (connectors, power, battery life), wine &amp; spirits (vintage, format, proof), finance &amp; accounting. For a need beyond a single <strong>Custom Rule</strong> (patterns combining two numbers, for example), a fully custom pack remains available on Scale plans.</p>
+        <p>Ten packs ship with the engine: hardware (DIN/ISO standards, diameters, materials), fashion (compound sizes, colors, materials, seasons), industry (bearings, fittings, rated pressure), automotive (OEM references, engine type), electrical (ratings, cross-sections, designations), plumbing (threads, nominal diameters), books (genres, formats, ISBN), electronics (connectors, power, battery life), wine &amp; spirits (vintage, format, proof), finance &amp; accounting. For a need beyond a single <strong>Custom Rule</strong> (patterns combining two numbers, for example), a fully custom pack remains available on Scale plans.</p>
         <a href="docs.html#ep-rulepacks">Endpoint /v1/rulepacks →</a>
       </div>
 
       <div class="feat-card">
         <h3>Automatic pack suggestion</h3>
-        <p>A fashion catalog left on the hardware pack never finds out on its own. The endpoint annotates a sample of your catalog with every available pack and compares the real coverage — actual content decides, not the vertical declared at signup. Never changes anything: the suggestion is shown, the decision stays yours.</p>
+        <p>A fashion catalog left on the hardware pack never finds out on its own. The endpoint annotates a sample of your catalog with every available pack and compares the real coverage: actual content decides, not the vertical declared at signup. Never changes anything: the suggestion is shown, the decision stays yours.</p>
         <pre class="docs-code"><code>GET /v1/index/{catalog}/rulepack-suggestion
 → {"recommande": "fashion", "raison": "..."}</code></pre>
         <a href="docs.html#ep-rulepack-suggestion">Suggestion endpoint →</a>
@@ -175,7 +175,7 @@
 
       <div class="feat-card feat-card-highlight">
         <h3>Custom Rules</h3>
-        <p>Add your own recognition rules on top of an existing pack, with no regex to write, directly from the console. A keyword that should always point to the same label ("drywall anchor", "molly bolt" → a single concept), or a prefix followed by a number (RAL codes, DIN standards, shades). Immediate effect on your search, specific to each catalog — never shared with other Heurix accounts.</p>
+        <p>Add your own recognition rules on top of an existing pack, with no regex to write, directly from the console. A keyword that should always point to the same label ("drywall anchor", "molly bolt" → a single concept), or a prefix followed by a number (RAL codes, DIN standards, shades). Immediate effect on your search, specific to each catalog, never shared with other Heurix accounts.</p>
         <pre class="docs-code"><code>POST /v1/index/{catalog}/custom-rules
 {"rule_type": "keyword", "label": "Anchor",
  "keywords": ["drywall anchor", "molly bolt", "toggle anchor"]}</code></pre>
@@ -184,7 +184,7 @@
 
       <div class="feat-card">
         <h3>Business synonyms</h3>
-        <p>"Screw" finds "bolt", "drill" finds "driver". Synonym groups are API-managed, with automatic merging of groups that share a term — no manual duplicate handling.</p>
+        <p>"Screw" finds "bolt", "drill" finds "driver". Synonym groups are API-managed, with automatic merging of groups that share a term, with no manual duplicate handling.</p>
         <pre class="docs-code"><code>PUT /v1/index/{catalog}/synonyms
 {"groups": [["screw", "bolt", "fastener"]]}</code></pre>
         <a href="docs.html#ep-synonyms">Synonyms endpoint →</a>
@@ -192,7 +192,7 @@
 
       <div class="feat-card">
         <h3>Synonym suggestions</h3>
-        <p>Every search that returns nothing is already a signal: a customer who didn't find it. The endpoint compares that term to your catalog's real vocabulary using the same typo tolerance as search itself — never AI, never guessed. Numeric references are excluded by design: pairing two different products would be the worst possible false synonym, invisible precisely because it looks plausible. You decide; nothing is created without approval.</p>
+        <p>Every search that returns nothing is already a signal: a customer who didn't find it. The endpoint compares that term to your catalog's real vocabulary using the same typo tolerance as search itself, never AI and never guessed. Numeric references are excluded by design: pairing two different products would be the worst possible false synonym, invisible precisely because it looks plausible. You decide; nothing is created without approval.</p>
         <pre class="docs-code"><code>GET /v1/index/{catalog}/synonym-suggestions?q=washr
 → {"suggestions": [{"jeton": "washr", "candidats": [...]}]}</code></pre>
         <a href="docs.html#ep-synonym-suggestions">Suggestions endpoint →</a>
@@ -200,13 +200,13 @@
 
       <div class="feat-card">
         <h3>Multi-catalog</h3>
-        <p>One account, as many catalogs as you need — per language, per brand, per site. Each catalog has its own rule pack, its own synonyms, its own index.</p>
+        <p>One account, as many catalogs as you need: per language, per brand, per site. Each catalog has its own rule pack, its own synonyms, its own index.</p>
         <a href="docs.html#ep-items">Indexing endpoint →</a>
       </div>
 
       <div class="feat-card feat-card-highlight">
         <h3>Faceted search</h3>
-        <p>Filter by genre, country, dimension, material... with disjunctive counting per group: selecting "Sweden" doesn't erase the other countries from the count — exactly like a standard e-commerce filter sidebar. This is what powers the prisms in the homepage demo.</p>
+        <p>Filter by genre, country, dimension, material... with disjunctive counting per group: selecting "Sweden" doesn't erase the other countries from the count, exactly like a standard e-commerce filter sidebar. This is what powers the prisms in the homepage demo.</p>
         <pre class="docs-code"><code>{"q": "crime", "facets": ["PAYS"], "filters": ["PAYS_SE"]}
 → "facets": {"PAYS": {"PAYS_SE": 12, "PAYS_FR": 34, ...}}</code></pre>
         <a href="docs.html#facettes">Facets and filters →</a>
@@ -236,7 +236,7 @@
 
       <div class="feat-card feat-card-highlight">
         <h3>heurix-search.js search bar</h3>
-        <p>No internal search on your site yet? This standalone script (zero dependencies) renders a search bar connected to your catalog in three lines of configuration — input, live results, facets, keyboard navigation. Not a requirement if you'd rather code your own interface, but an immediate starting point if you're building from scratch.</p>
+        <p>No internal search on your site yet? This standalone script (zero dependencies) renders a search bar connected to your catalog in three lines of configuration: input, live results, facets, keyboard navigation. Not a requirement if you'd rather code your own interface, but an immediate starting point if you're building from scratch.</p>
         <a href="docs.html#ep-search-widget">Documentation and example →</a>
       </div>
 
@@ -249,7 +249,7 @@
 
       <div class="feat-card feat-card-highlight">
         <h3>MCP server</h3>
-        <p>Connect Heurix to Claude Desktop, Cursor, or an internal agent — three tools exposed natively (search, Browse, catalog statistics). A team member asks "do I have M8 screws in stock?" in natural language, the agent bridges to your API, without ever having to call it themselves.</p>
+        <p>Connect Heurix to Claude Desktop, Cursor, or an internal agent: three tools exposed natively (search, Browse, catalog statistics). A team member asks "do I have M8 screws in stock?" in natural language, the agent bridges to your API, without ever having to call it themselves.</p>
         <a href="blog/guide-serveur-mcp-heurix.html">Installation guide →</a>
       </div>
 
@@ -258,7 +258,7 @@
 
   <section class="feat-group">
     <div class="feat-group-title">Rank without search: Browse &amp; Discovery</div>
-    <p class="section-lede" style="margin-bottom:28px;">A category or department page has no query to process — just products to rank well. An engine distinct from search, on your own categories.</p>
+    <p class="section-lede" style="margin-bottom:28px;">A category or department page has no query to process, just products to rank well. An engine distinct from search, on your own categories.</p>
     <div class="feat-grid-2 reveal">
 
       <div class="feat-card feat-card-highlight">
@@ -270,7 +270,7 @@
 
       <div class="feat-card">
         <h3>Manual merchandising</h3>
-        <p>Pin a product at the top of a category for a one-off feature, or discreetly bury one at the end of the list — no code changes, no unindexing. Natural ranking automatically resumes as soon as the priority is removed.</p>
+        <p>Pin a product at the top of a category for a one-off feature, or discreetly bury one at the end of the list, with no code changes and no unindexing. Natural ranking automatically resumes as soon as the priority is removed.</p>
       </div>
 
     </div>
@@ -282,13 +282,13 @@
 
       <div class="feat-card">
         <h3>Relevance, then stock</h3>
-        <p>Weighted fields (reference &gt; name &gt; description), a composite score including shared annotations, then availability as a tiebreaker at equal score — an out-of-stock product never outranks an equivalent available one.</p>
+        <p>Weighted fields (reference &gt; name &gt; description), a composite score including shared annotations, then availability as a tiebreaker at equal score: an out-of-stock product never outranks an equivalent available one.</p>
         <a href="docs.html#ep-search">Search endpoint →</a>
       </div>
 
       <div class="feat-card feat-card-highlight">
         <h3>What actually sells moves up</h3>
-        <p>When several products answer a query equally well, the one that actually sells takes the lead — not a plain text-relevance sort. Never strong enough to overturn a real gap: only to break a near-tie. A product with an exact match always stays ahead, whatever the other product's popularity. Requires the Tracker installed; without it, ranking stays unchanged.</p>
+        <p>When several products answer a query equally well, the one that actually sells takes the lead, not a plain text-relevance sort. Never strong enough to overturn a real gap: only to break a near-tie. A product with an exact match always stays ahead, whatever the other product's popularity. Requires the Tracker installed; without it, ranking stays unchanged.</p>
         <a href="docs.html#ep-search">How it works →</a>
       </div>
 
@@ -301,7 +301,7 @@
 
       <div class="feat-card">
         <h3>Result highlighting</h3>
-        <p>See at a glance why a result ranks, right in your own interface — exact positions of every match, per field, to wrap the relevant fragment with a simple <code class="docs-inline-code">&lt;mark&gt;</code>. Reflects what <strong>this specific search</strong> actually triggered, never every characteristic the product happens to have.</p>
+        <p>See at a glance why a result ranks, right in your own interface: exact positions of every match, per field, to wrap the relevant fragment with a simple <code class="docs-inline-code">&lt;mark&gt;</code>. Reflects what <strong>this specific search</strong> actually triggered, never every characteristic the product happens to have.</p>
         <pre class="docs-code"><code>"highlights": {"name": [[0, 3], [13, 18]]}</code></pre>
         <a href="docs.html#highlighting">Full format →</a>
       </div>
@@ -348,12 +348,12 @@
 
   <section class="feat-group">
     <div class="feat-group-title">Know your visitors</div>
-    <p class="section-lede" style="margin-bottom:28px;">Two visitors typing the same search don't necessarily share the same intent. A behavior signal, explainable end to end — never a black box you couldn't justify.</p>
+    <p class="section-lede" style="margin-bottom:28px;">Two visitors typing the same search don't necessarily share the same intent. A behavior signal, explainable end to end, never a black box you couldn't justify.</p>
     <div class="feat-grid-2 reveal">
 
       <div class="feat-card feat-card-highlight">
         <h3>Intent score</h3>
-        <p>Combines a visitor's search precision (a precise reference rather than a generic word) with their click-through rate — the only two signals the score is made of, never collapsed into a single number you couldn't explain to a customer asking why. Average basket is provided alongside, for context, never mixed in.</p>
+        <p>Combines a visitor's search precision (a precise reference rather than a generic word) with their click-through rate: the only two signals the score is made of, never collapsed into a single number you couldn't explain to a customer asking why. Average basket is provided alongside, for context, never mixed in.</p>
         <a href="docs.html#ep-intent-score">Intent score endpoint →</a>
       </div>
 
@@ -365,7 +365,7 @@
 
       <div class="feat-card">
         <h3>Personalized search</h3>
-        <p>Results factor in what this visitor has already bought or viewed — without becoming a black box: ranking still runs on the same annotations as the rest of the engine, never a separate opaque model. Never strong enough to overturn a real relevance gap, only to break a near-tie. Requires the Tracker installed; without it, ranking stays unchanged.</p>
+        <p>Results factor in what this visitor has already bought or viewed, without becoming a black box: ranking still runs on the same annotations as the rest of the engine, never a separate opaque model. Never strong enough to overturn a real relevance gap, only to break a near-tie. Requires the Tracker installed; without it, ranking stays unchanged.</p>
         <a href="docs.html#ep-search">Search endpoint →</a>
       </div>
 
