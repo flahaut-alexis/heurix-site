@@ -334,11 +334,16 @@ Corollaire : **un script de portée doit dire ce qu'il n'a pas touché**, ou
 au minimum comparer son résultat au total attendu. « 80 fichier(s) » n'est une
 bonne nouvelle que si l'on sait qu'il y en avait 80.
 
-À savoir aussi : les deux scripts coexistent et sont **incompatibles**.
-`bump-version.sh` aligne tous les assets sur un horodatage unique ;
-`bust-cache.sh` donne à chaque asset le sien, ce que décrit ce fichier. Lancer
-le premier annulerait le second. Il n'est plus référencé que par des
-commentaires de la CI.
+**`bump-version.sh` a été supprimé le 26 août 2026**, pour une raison qui
+n'est pas son ancienneté : les deux scripts étaient **incompatibles**. Il
+alignait tous les assets sur un horodatage unique ; `bust-cache.sh` donne à
+chaque asset le sien, ce que décrit ce fichier. Le lancer annulait le second
+— et son propre en-tête disait « à lancer AVANT chaque commit qui touche
+styles.css ou un fichier .js », donc la doc portée par le fichier contredisait
+celle-ci. Vérifié avant suppression : aucun workflow, hook, `package.json`,
+`Makefile` ni script d'aucun des cinq dépôts ne l'appelait ; seuls trois
+passages de ce fichier et deux commentaires historiques de la CI le
+nommaient.
 
 À vérifier aussi : la CI porte la **même** limite de profondeur dans son
 contrôle des clefs (`"(\.\./)?${BASE}\?v=`), et prend `sort -u | head -1`,

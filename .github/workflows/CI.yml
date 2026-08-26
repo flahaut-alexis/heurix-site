@@ -10,9 +10,10 @@
 #      c'est la fixture qui etait perimee.
 #
 #   2. Seize pages de solutions/ servaient un styles.css vieux de huit jours
-#      et un consent.js du 27 juillet, parce que bump-version.sh ne
-#      parcourait pas ce dossier ET ne verifiait que son propre perimetre.
-#      Il affichait « une seule version dans tout le site » alors que 114
+#      et un consent.js du 27 juillet, parce que bump-version.sh (supprime
+#      le 26 aout 2026, remplace par scripts/bust-cache.sh) ne parcourait
+#      pas ce dossier ET ne verifiait que son propre perimetre. Il
+#      affichait « une seule version dans tout le site » alors que 114
 #      references etaient perimees.
 #
 # Les deux etapes ci-dessous rendent ces deux situations impossibles.
@@ -106,8 +107,9 @@ jobs:
         run: |
           set -euo pipefail
           # Repere le defaut de solutions/ : un meme fichier reference sous
-          # deux clefs differentes selon la page. bump-version.sh ne voyait
-          # que son propre perimetre et ne pouvait pas le detecter.
+          # deux clefs differentes selon la page. L'ancien bump-version.sh
+          # (supprime le 26 aout 2026) ne voyait que son propre perimetre et
+          # ne pouvait pas le detecter.
           ECHEC=0
           for BASE in styles.css consent.js mobile-nav.js search.js search-en.js console.js; do
             N=$(git grep -hoE "\"(\.\./)?${BASE}\?v=[0-9]+" -- '*.html' \
