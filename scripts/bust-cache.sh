@@ -44,20 +44,29 @@ sed_inplace() {
 
 for FICHIER in "$@"; do
   MOTIF=$(printf '%s' "$FICHIER" | sed 's/[.]/\\./g')
-  # Ancré sur un guillemet ouvrant, éventuellement suivi de "../" UNE FOIS
-  # (le seul préfixe légitime : les pages du sous-dossier en/ remontent
-  # d'un niveau) -- jamais un vrai sous-chemin comme "downloads/", qui
-  # désigne un fichier distinct.
-  ANCRE="\"(\\.\\./)?${MOTIF}\\?v=[0-9]+"
+  # Ancré sur un guillemet ouvrant, éventuellement suivi de "../" AUTANT
+  # DE FOIS QUE NÉCESSAIRE -- jamais un vrai sous-chemin comme
+  # "downloads/", qui désigne un fichier distinct.
+  #
+  # LE "?" VALAIT 38 PAGES (26 août 2026). Il n'autorisait qu'un seul
+  # niveau : vrai pour en/, faux dès que en/blog/ et en/solutions/ ont
+  # existé, qui écrivent "../../styles.css". Ces 38 pages n'ont donc reçu
+  # AUCUN bump depuis leur création -- un visiteur déjà venu y servait sa
+  # feuille de style en cache indéfiniment. Le script annonçait "propagé
+  # dans N fichier(s)" sans jamais dire lesquels lui échappaient.
+  # Le groupe est EXTERNE : avec ((\.\./)*), \1 rend le préfixe entier ;
+  # avec (\.\./)*, il ne rendrait que la dernière répétition et
+  # transformerait "../../" en "../".
+  ANCRE="\"((\\.\\./)*)${MOTIF}\\?v=[0-9]+"
 
-  FICHIERS_TOUCHES=$(git ls-files "*.html" "*.js" | xargs grep -lE "$ANCRE" 2>/dev/null || true)
+  FICHIERS_TOUCHES=$(git ls-files --cached --others --exclude-standard "*.html" "*.js" | xargs grep -lE "$ANCRE" 2>/dev/null || true)
 
   if [ -z "$FICHIERS_TOUCHES" ]; then
     echo "⚠ $FICHIER : aucune référence \"${FICHIER}?v=...\" trouvée -- nom correct ? rien à faire." >&2
     continue
   fi
 
-  VALEURS=$(echo "$FICHIERS_TOUCHES" | xargs grep -ohE "\"(\\.\\./)?${MOTIF}\\?v=[0-9]+" | sed -E 's|^"(\.\./)?[^?]*||' | sort -u | wc -l)
+  VALEURS=$(echo "$FICHIERS_TOUCHES" | xargs grep -ohE "\"((\\.\\./)*)${MOTIF}\\?v=[0-9]+" | sed -E 's|^"(\.\./)*[^?]*||' | sort -u | wc -l)
   if [ "$VALEURS" -gt 1 ]; then
     echo "⚠ $FICHIER : $VALEURS valeurs ?v= DIFFÉRENTES déjà en place avant ce lancement --" >&2
     echo "  incohérence préexistante (précisément ce que ce script doit empêcher à l'avenir) :" >&2
@@ -65,7 +74,7 @@ for FICHIER in "$@"; do
   fi
 
   while IFS= read -r F; do
-    sed_inplace "s|\"(\\.\\./)?${MOTIF}\\?v=[0-9]+|\"\\1${FICHIER}?v=${TIMESTAMP}|g" "$F"
+    sed_inplace "s|\"((\\.\\./)*)${MOTIF}\\?v=[0-9]+|\"\\1${FICHIER}?v=${TIMESTAMP}|g" "$F"
   done <<< "$FICHIERS_TOUCHES"
 
   NB=$(echo "$FICHIERS_TOUCHES" | grep -c .)

@@ -48,6 +48,16 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://heurix.fr/en/roi.html"/>
   </url>
   <url>
+    <loc>https://heurix.fr/partners.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://heurix.fr/partners.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://heurix.fr/en/partners.html"/>
+  </url>
+  <url>
+    <loc>https://heurix.fr/en/partners.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://heurix.fr/partners.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://heurix.fr/en/partners.html"/>
+  </url>
+  <url>
     <loc>https://heurix.fr/secteurs.html</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://heurix.fr/secteurs.html"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://heurix.fr/en/secteurs.html"/>

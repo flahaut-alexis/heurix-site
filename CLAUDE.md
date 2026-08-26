@@ -178,6 +178,22 @@ Vérifié dans les deux sens : retirer la surcouche de `.pb-repere` fait
 échouer le test en le nommant ; retirer celle du logo du footer le laisse
 passer.
 
+**Il ne vérifie pas non plus ce que la surcouche FAIT.** Il exige qu'une
+règle `body.docs-dark` existe pour un sélecteur qui pose `color:var(--ink*)`.
+Elle peut ne traiter que le fond : le test passe, le texte reste noir.
+
+`body.docs-dark section.soft{ background:transparent }` était exactement dans
+ce cas — la surcouche existait, l'encre n'y était pas. Le défaut est resté
+invisible tant qu'aucune page n'a posé de `<p>` **sans classe** dans une
+section claire : la prose du site vit toujours dans un composant qui déclare
+sa propre couleur. `partners.html` a été la première, le 26 août 2026 — dix
+paragraphes à 1,11:1, vus à l'écran, pas par le test.
+
+Un test qui vérifie la **présence** d'une règle ne vérifie pas ce qu'elle
+fait. C'est la même limite que celle nommée plus haut, d'un cran plus fin :
+là le test constatait qu'une décision avait été prise sans juger si elle
+était juste ; ici il constate qu'une règle existe sans lire son contenu.
+
 **La cause des cinq non attrapés est une seule ligne** : `body{
 color:var(--ink) }` pose du texte quasi-noir, et `body.docs-dark{}` change le
 fond sans toucher à la couleur héritée. Tout élément sans déclaration propre
@@ -283,3 +299,47 @@ Vaut aussi hors HTML. Le balayage d'ancres de la veille annonçait « zéro
 ancre morte sur tout le site » en ne lisant que les `.html` ; `search.js`
 routait toujours vers `index.html#tarifs` et `index.html#mission`. Le
 périmètre réel était plus étroit que la phrase.
+
+### Un script de versionnement qui annonce sa portée ne l'a pas mesurée
+
+**Deuxième script de versionnement à mentir en une semaine**, après
+`bump-version.sh`.
+
+`bust-cache.sh` ancrait son motif sur `"(\.\./)?nom.css?v=` — **un seul
+niveau de remontée**. Vrai quand `en/` était le seul sous-dossier, faux dès la
+création de `en/blog/` et `en/solutions/`, qui écrivent `../../styles.css`.
+Ces 38 pages n'ont donc reçu **aucun** bump depuis leur création : un visiteur
+déjà venu y servait sa feuille de style en cache indéfiniment, sans jamais
+recevoir un seul correctif visuel. Le script annonçait « propagé dans 80
+fichier(s) » — sans jamais nommer les 38 qui lui échappaient.
+
+Il lisait aussi `git ls-files`, donc les seuls fichiers **suivis**. Une page
+tout juste créée n'en fait pas partie : c'est précisément celle qui doit
+recevoir la clef, et c'est celle qu'il sautait.
+
+`bump-version.sh` avait eu la même maladie sous une autre forme : il
+**énumérait** les dossiers, et son propre en-tête documente trois corrections
+successives — `blog/` oublié, puis `en/blog/`, puis `solutions/`,
+`en/solutions/` et `demo/`, soit 114 références périmées trouvées par une
+revue externe. Il a été guéri le 24 août en remplaçant l'énumération par un
+`find`.
+
+**Le motif commun : une portée définie par un motif qui exclut en silence.**
+Énumérer des dossiers, ancrer un `?` sur une profondeur, ne lire que l'index
+git — ce sont trois formes de la même chose. Aucune ne produit d'erreur sur ce
+qu'elle rate, et le compte affiché à la fin ressemble à une preuve de
+couverture alors qu'il ne compte que ce qui a été vu.
+
+Corollaire : **un script de portée doit dire ce qu'il n'a pas touché**, ou
+au minimum comparer son résultat au total attendu. « 80 fichier(s) » n'est une
+bonne nouvelle que si l'on sait qu'il y en avait 80.
+
+À savoir aussi : les deux scripts coexistent et sont **incompatibles**.
+`bump-version.sh` aligne tous les assets sur un horodatage unique ;
+`bust-cache.sh` donne à chaque asset le sien, ce que décrit ce fichier. Lancer
+le premier annulerait le second. Il n'est plus référencé que par des
+commentaires de la CI.
+
+À vérifier aussi : la CI porte la **même** limite de profondeur dans son
+contrôle des clefs (`"(\.\./)?${BASE}\?v=`), et prend `sort -u | head -1`,
+donc la plus petite valeur — elle voyait la clef périmée, pas la fraîche.

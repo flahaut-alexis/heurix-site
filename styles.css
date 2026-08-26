@@ -1145,6 +1145,17 @@ section.soft{ background:var(--bg-soft); color:var(--ink); }
 
 h2{ font-size:clamp(26px,3.4vw,34px); font-weight:800; margin:0 0 18px; max-width:640px; letter-spacing:-0.01em; }
 .section-lede{ color:var(--ink-muted); font-size:16.5px; max-width:600px; margin-bottom:44px; }
+/* PROSE NUE DANS UNE SECTION (26 aout 2026, partners.html). Aucune page
+   n'avait encore pose de <p> sans classe dans un `section.soft` : la prose
+   du site vit toujours dans un composant qui fixe sa propre largeur
+   (.post-wrap 700, .about-text 680, .section-lede 600, .docs-section p 720).
+   Sans conteneur, un <p> prend la largeur du .wrap -- mesure a 1044px, soit
+   jusqu'a 142 caracteres par ligne, quand le confort de lecture tient entre
+   45 et 75. 600px est la mesure que .section-lede a deja retenue juste
+   au-dessus, verifiee a 66 caracteres.
+   Porte sur les <p> et non sur le conteneur, pour que la .vertical-grid qui
+   les cotoie garde toute la largeur disponible. */
+.prose > p{ max-width:600px; }
 
 /* TECH STRIP */
 .tech-strip{ padding:36px 0; border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
@@ -1909,7 +1920,21 @@ body.docs-dark #probleme h1{ color:#F5F6FF; }
    utilise dans de petits blocs a fond variable pour une regle
    generique sans risque.*/
 body.docs-dark h2{ color:#F5F6FF; }
-body.docs-dark section.soft{ background:transparent; }
+body.docs-dark section.soft{ background:transparent; color:#CDD2F0; }
+/* L'ENCRE MANQUAIT A CETTE SURCOUCHE (26 aout 2026). Meme forme exacte que
+   le defaut de `body{ color:var(--ink) }` corrige la veille : la regle
+   changeait le FOND sans toucher a la couleur posee par
+   `section.soft{ color:var(--ink) }` juste au-dessus. Tout texte pose
+   directement dans une section claire, sur une page a fond sombre, heritait
+   donc du quasi-noir -- mesure a 1,11:1.
+   Reste invisible tant qu'aucune page ne pose de texte NU dans un
+   `section.soft` : les pages existantes passaient toutes par un composant
+   qui declare sa propre couleur (.section-lede, .vertical-card, .faq-answer).
+   partners.html est la premiere a poser des <p> sans classe -- d'ou dix
+   paragraphes illisibles, vus a l'ecran, pas par un test.
+   CE QUE LE TEST DE CLASSEMENT NE VOYAIT PAS : il exige qu'une surcouche
+   `body.docs-dark` EXISTE pour un selecteur qui pose color:var(--ink). Elle
+   existait -- elle ne traitait simplement pas la couleur. */
 body.docs-dark .mission-section{ background:transparent; }
 body.docs-dark .mission-pillar{ background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.14); }
 body.docs-dark .mission-pillar h3{ color:#F5F6FF; }
