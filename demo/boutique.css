@@ -1,0 +1,80 @@
+/* Boutique de demonstration — feuille de style partagee.
+ *
+ * EXTRAITE LE 26 AOUT 2026. Le meme bloc <style> etait duplique a
+ * l'identique (md5 e659acd9) dans demo/index.html et demo/categorie.html.
+ * Ajouter la version anglaise en aurait fait QUATRE copies -- soit
+ * exactement le geste que CLAUDE.md documente ce jour-la : copier la
+ * voisine plutot que partager la source.
+ *
+ * Le style est delibérement DIFFERENT de la charte Heurix : un widget qui
+ * ne s'integre bien que sur nos propres couleurs ne prouverait rien.
+ */
+  :root{
+    --brut:#1b2838; --brut-clair:#2d3f52; --orange:#e8730c; --orange-fonce:#c45f08;
+    --gris:#6b7280; --gris-clair:#f3f4f6; --ligne:#e5e7eb; --vert:#15803d;
+  }
+  *{ box-sizing:border-box; }
+  body{
+    margin:0; font-family:"Segoe UI",Roboto,system-ui,sans-serif;
+    color:#1f2937; background:#fff; font-size:15px; line-height:1.5;
+  }
+  a{ color:var(--orange-fonce); }
+  .bandeau{ background:var(--brut); color:#cbd5e1; font-size:12.5px; padding:7px 0; }
+  .conteneur{ max-width:1180px; margin:0 auto; padding:0 18px; }
+  .bandeau .conteneur{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; }
+
+  header{ background:#fff; border-bottom:2px solid var(--brut); padding:16px 0; }
+  .entete{ display:flex; align-items:center; gap:26px; flex-wrap:wrap; }
+  .marque{ font-size:21px; font-weight:800; color:var(--brut); text-decoration:none; white-space:nowrap; }
+  .marque span{ color:var(--orange); }
+  .zone-recherche{ flex:1; min-width:260px; }
+
+  nav.rayons{ background:var(--brut-clair); }
+  nav.rayons .conteneur{ display:flex; gap:2px; flex-wrap:wrap; }
+  nav.rayons a{
+    color:#e2e8f0; text-decoration:none; padding:11px 15px; font-size:14px; font-weight:500;
+  }
+  nav.rayons a:hover, nav.rayons a.actif{ background:var(--orange); color:#fff; }
+
+  .hero{
+    background:linear-gradient(100deg, var(--brut), var(--brut-clair));
+    color:#fff; padding:44px 0;
+  }
+  .hero h1{ margin:0 0 10px; font-size:30px; }
+  .hero p{ margin:0; color:#cbd5e1; max-width:640px; }
+
+  .section{ padding:34px 0; }
+  .section h2{ font-size:19px; margin:0 0 4px; color:var(--brut); }
+  .section .intro{ margin:0 0 20px; color:var(--gris); font-size:14px; }
+
+  .grille{ display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:16px; }
+  .fiche{
+    border:1px solid var(--ligne); border-radius:6px; padding:14px; background:#fff;
+    display:flex; flex-direction:column; transition:box-shadow .15s;
+  }
+  .fiche:hover{ box-shadow:0 4px 14px rgba(0,0,0,0.09); }
+  .fiche-ref{ font-family:ui-monospace,monospace; font-size:11px; color:var(--gris); }
+  .fiche-nom{ font-weight:600; font-size:14px; margin:5px 0 8px; flex:1; }
+  .fiche-prix{ font-size:19px; font-weight:800; color:var(--brut); }
+  .fiche-prix small{ font-size:12px; font-weight:500; color:var(--gris); }
+  .fiche-stock{ font-size:12px; margin-top:5px; }
+  .en-stock{ color:var(--vert); }
+  .stock-faible{ color:var(--orange-fonce); }
+  .rupture{ color:#b91c1c; }
+  .fiche button{
+    margin-top:11px; width:100%; padding:9px; border:none; border-radius:5px;
+    background:var(--orange); color:#fff; font-weight:600; cursor:pointer; font-size:13.5px;
+  }
+  .fiche button:hover{ background:var(--orange-fonce); }
+  .fiche button:disabled{ background:var(--ligne); color:var(--gris); cursor:not-allowed; }
+
+  .encart{
+    background:var(--gris-clair); border-left:3px solid var(--orange);
+    padding:14px 16px; margin:22px 0; font-size:13.5px; border-radius:0 5px 5px 0;
+  }
+  .encart strong{ color:var(--brut); }
+
+  footer{ background:var(--brut); color:#94a3b8; padding:26px 0; margin-top:40px; font-size:13px; }
+  footer a{ color:#cbd5e1; }
+
+  .chargement{ color:var(--gris); font-size:14px; padding:20px 0; }

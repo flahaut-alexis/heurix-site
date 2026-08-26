@@ -19,19 +19,69 @@
   var CLE_PUBLIQUE = "hxp_REMPLACEZ_PAR_VOTRE_CLE_PUBLIQUE";
   var CATALOGUE = "quincaillerie-nord";
 
+  // ------------------------------------------------------------- langue
+  // UN SEUL FICHIER POUR LES DEUX LANGUES (26 aout 2026). La langue se lit
+  // sur document.documentElement.lang, jamais supposee -- meme motif que
+  // demo-search-live.js, console-i18n.js et guide-quiz.js. Un second fichier
+  // aurait diverge du premier : c'est le defaut que ce depot a corrige huit
+  // fois cette semaine.
+  //
+  // Ce qui reste FRANCAIS et ne doit pas etre traduit : les slugs de
+  // categorie (c=visserie), qui sont les categories reelles du catalogue
+  // public-demo cote API, et les noms de produits, qui en viennent aussi.
+  var EN = document.documentElement.lang === "en";
+
+  var T = EN ? {
+    rupture:      function (j) { return "Out of stock — restock in " + j + " days"; },
+    stockFaible:  function (n) { return "Only " + n + " left"; },
+    enStock:      function (n) { return "In stock (" + n + ")"; },
+    indisponible: "Unavailable",
+    ajouter:      "Add to cart",
+    ajoute:       "Added \u2713",
+    aucunProduit: "No products.",
+    catalogueKo:  "Catalogue unavailable — check the public key and the catalogue " +
+                  "name in boutique.js.",
+    rayonVide:    "No products in this category.",
+    rayonKo:      "This category is unavailable right now.",
+    references:   function (n) { return n + " references"; },
+    placeholder:  "Reference, dimension, standard\u2026 (e.g. M8x20, DIN 933)",
+    rayons: { visserie: "Screws", boulonnerie: "Bolts", fixation: "Fixings",
+              maconnerie: "Masonry", accessoires: "Accessories" }
+  } : {
+    rupture:      function (j) { return "Rupture — réappro sous " + j + " j"; },
+    stockFaible:  function (n) { return "Plus que " + n + " en stock"; },
+    enStock:      function (n) { return "En stock (" + n + ")"; },
+    indisponible: "Indisponible",
+    ajouter:      "Ajouter au panier",
+    ajoute:       "Ajouté \u2713",
+    aucunProduit: "Aucun produit.",
+    catalogueKo:  "Catalogue indisponible — vérifiez la clé publique et le nom du " +
+                  "catalogue dans boutique.js.",
+    rayonVide:    "Aucun produit dans ce rayon.",
+    rayonKo:      "Rayon indisponible pour le moment.",
+    references:   function (n) { return n + " références"; },
+    placeholder:  "Référence, dimension, norme… (ex. M8x20, DIN 933)",
+    rayons: { visserie: "Visserie", boulonnerie: "Boulonnerie", fixation: "Fixation",
+              maconnerie: "Maçonnerie", accessoires: "Accessoires" }
+  };
+
   // ------------------------------------------------------------- affichage
 
   function euros(n) {
-    return Number(n).toFixed(2).replace(".", ",") + " €";
+    // Le catalogue est facture en euros dans les deux langues ; seule la
+    // CONVENTION D'ECRITURE change -- « 12,34 € » contre « €12.34 ». Meme
+    // regle que demo-search-live.js, ou elle est deja couverte par un test.
+    var v = Number(n).toFixed(2);
+    return EN ? "\u20AC" + v : v.replace(".", ",") + " \u20AC";
   }
 
   function ficheProduit(p) {
     var stock = p.stock || 0;
     var etatStock = stock === 0
-      ? "<span class='rupture'>Rupture — réappro sous 5 j</span>"
+      ? "<span class='rupture'>" + T.rupture(5) + "</span>"
       : (stock < 20
-        ? "<span class='stock-faible'>Plus que " + stock + " en stock</span>"
-        : "<span class='en-stock'>En stock (" + stock + ")</span>");
+        ? "<span class='stock-faible'>" + T.stockFaible(stock) + "</span>"
+        : "<span class='en-stock'>" + T.enStock(stock) + "</span>");
 
     return "<div class='fiche'>" +
         "<div class='fiche-ref'>" + (p.ref || p.id) + "</div>" +
@@ -40,7 +90,7 @@
         "<div class='fiche-stock'>" + etatStock + "</div>" +
         "<button type='button' data-produit='" + p.id + "'" +
           (stock === 0 ? " disabled" : "") + ">" +
-          (stock === 0 ? "Indisponible" : "Ajouter au panier") + "</button>" +
+          (stock === 0 ? T.indisponible : T.ajouter) + "</button>" +
       "</div>";
   }
 
@@ -48,7 +98,7 @@
     var el = document.getElementById(conteneur);
     if (!el) return;
     if (!produits || !produits.length) {
-      el.innerHTML = "<p class='chargement'>" + (messageVide || "Aucun produit.") + "</p>";
+      el.innerHTML = "<p class='chargement'>" + (messageVide || T.aucunProduit) + "</p>";
       return;
     }
     el.innerHTML = produits.map(ficheProduit).join("");
@@ -74,8 +124,7 @@
       .catch(function (e) {
         var el = document.getElementById("populaires");
         if (el) {
-          el.innerHTML = "<p class='chargement'>Catalogue indisponible — " +
-            "vérifiez la clé publique et le nom du catalogue dans boutique.js. " +
+          el.innerHTML = "<p class='chargement'>" + T.catalogueKo +
             "<br><small>" + e.message + "</small></p>";
         }
       });
@@ -88,12 +137,12 @@
             "?sort=" + tri + "&limit=24")
       .then(function (d) {
         afficher("produits-categorie", (d.hits || []).map(function (h) { return h.product; }),
-                 "Aucun produit dans ce rayon.");
+                 T.rayonVide);
         var compteur = document.getElementById("compteur");
-        if (compteur) compteur.textContent = (d.total || 0) + " références";
+        if (compteur) compteur.textContent = T.references(d.total || 0);
       })
       .catch(function () {
-        afficher("produits-categorie", [], "Rayon indisponible pour le moment.");
+        afficher("produits-categorie", [], T.rayonKo);
       });
   }
 
@@ -106,8 +155,8 @@
     if (!b || b.disabled) return;
     var id = b.getAttribute("data-produit");
     panier.push(id);
-    b.textContent = "Ajouté ✓";
-    setTimeout(function () { b.textContent = "Ajouter au panier"; }, 1400);
+    b.textContent = T.ajoute;
+    setTimeout(function () { b.textContent = T.ajouter; }, 1400);
 
     // REMONTÉE DE CONVERSION. C'est ce qui permet à Heurix de rattacher un
     // achat à la recherche qui l'a précédé — sans quoi l'analytique ne
@@ -127,7 +176,7 @@
         apiKey: CLE_PUBLIQUE,
         catalog: CATALOGUE,
         containerId: "recherche-heurix",
-        placeholder: "Référence, dimension, norme… (ex. M8x20, DIN 933)",
+        placeholder: T.placeholder,
       });
     }
 
@@ -137,7 +186,9 @@
     if (zone) {
       var c = new URLSearchParams(location.search).get("c") || "visserie";
       var titre = document.getElementById("titre-categorie");
-      if (titre) titre.textContent = c.charAt(0).toUpperCase() + c.slice(1);
+      // Le slug reste francais (categorie reelle de l'API) ; seul le
+      // LIBELLE affiche suit la langue de la page.
+      if (titre) titre.textContent = T.rayons[c] || (c.charAt(0).toUpperCase() + c.slice(1));
       document.querySelectorAll("nav.rayons a").forEach(function (a) {
         if (a.getAttribute("href").indexOf("c=" + c) !== -1) a.classList.add("actif");
       });

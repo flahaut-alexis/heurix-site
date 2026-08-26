@@ -44,6 +44,13 @@ const EXCEPTIONS = new Map([
   ["demo/categorie.html",
    "Meme boutique fictive que demo/index.html, meme en-tete de faux " +
    "marchand : ni le menu Heurix, ni le selecteur de langue, ni la console."],
+  ["en/demo/index.html",
+   "Version anglaise de la boutique fictive (26 aout 2026). Chrome traduit, " +
+   "catalogue et slugs de categorie laisses en francais : ils viennent de " +
+   "l'API. Meme en-tete de faux marchand que sa version francaise."],
+  ["en/demo/categorie.html",
+   "Meme boutique fictive que en/demo/index.html, meme en-tete de faux " +
+   "marchand traduit."],
   ["console.html",
    "Espace connecte : nav-links-console au lieu de nav-links, selecteur " +
    "d'organisation, pas de menus deroulants produit. Le lien « Se connecter » " +
