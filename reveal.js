@@ -13,6 +13,12 @@
 (function () {
   var els = document.querySelectorAll('.reveal');
   if (!els.length) return;
+
+  // ON SE SIGNALE AVANT DE MASQUER. Tant que cette classe n'est pas posee,
+  // `.reveal` vaut opacity:1 : une page dont le script ne s'execute jamais
+  // affiche son contenu au lieu de se vider. C'est le sens de l'inversion
+  // du 26 aout -- voir le commentaire de .reveal dans styles.css.
+  document.documentElement.classList.add('js-reveal');
   var liste = Array.prototype.slice.call(els);
   function montrer(el) { el.classList.add('in'); }
 
@@ -44,7 +50,24 @@
     liste.forEach(montrer);
   }
 
-  // 3. FILET DE SECURITE, conditionnel. Une animation ne doit JAMAIS pouvoir
+  // 3. REPLI SUR L'EVENEMENT `scroll`, qui ne depend d'aucun observateur.
+  //    Si l'IntersectionObserver est absent, casse ou jamais declenche, un
+  //    simple test de rectangle au defilement fait le meme travail. Passif et
+  //    auto-desarmant : des que tout est visible, l'ecouteur se retire.
+  function balayer() {
+    var hh = window.innerHeight || document.documentElement.clientHeight || 0;
+    if (!hh) return;
+    var restants = 0;
+    liste.forEach(function (el) {
+      if (el.classList.contains('in')) return;
+      var r = el.getBoundingClientRect();
+      if (r.top < hh && r.bottom > 0) montrer(el); else restants++;
+    });
+    if (!restants) window.removeEventListener('scroll', balayer);
+  }
+  window.addEventListener('scroll', balayer, { passive: true });
+
+  // 4. FILET DE SECURITE, conditionnel. Une animation ne doit JAMAIS pouvoir
   //    cacher du contenu de facon permanente. Si AUCUN bloc n'a recu `.in`
   //    au bout de deux secondes, le mecanisme est manifestement casse
   //    (observateur inoperant, script charge trop tard, fenetre de hauteur

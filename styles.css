@@ -3038,8 +3038,19 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 }
 
 /* SCROLL REVEAL */
-.reveal{ opacity:0; transform:translateY(18px); transition:opacity .6s ease, transform .6s ease; }
-.reveal.in{ opacity:1; transform:translateY(0); }
+/* DEGRADATION : JAMAIS INVISIBLE (26 aout 2026).
+   `.reveal` partait a opacity:0 et attendait que du JavaScript lui pose
+   `.in`. Consequence : un bloqueur de script, une erreur reseau sur le
+   fichier, une exception dans un script voisin -- et la page se vide. C'est
+   arrive : secteurs.html est partie en production entierement invisible, son
+   unique bloc de contenu bloque a opacity:0.
+   Une vitrine statique ne doit RIEN a JavaScript pour afficher son contenu.
+   Le defaut est donc desormais VISIBLE, et c'est le script qui, en se
+   signalant par `.js-reveal` sur <html>, demande a masquer avant d'animer.
+   Sans JS : tout s'affiche, sans animation. Avec JS : animation comme avant. */
+.reveal{ opacity:1; transform:none; transition:opacity .6s ease, transform .6s ease; }
+.js-reveal .reveal{ opacity:0; transform:translateY(18px); }
+.js-reveal .reveal.in{ opacity:1; transform:translateY(0); }
 
 @media (prefers-reduced-motion: reduce){
   /* U3 (24 aout 2026, audit UI/UX). scroll-behavior:smooth (ligne 65)
