@@ -188,3 +188,42 @@ est correct. Les corriger explicitement permettrait de poser
 
 La règle du regard reste donc nécessaire. Le test réduit la surface, il ne
 la supprime pas.
+
+### Déplacer une section = balayer les ancres
+
+Tout déplacement d'une section vers une autre page doit être suivi d'un
+**balayage des ancres internes du site**. Une ancre absente ne produit ni
+erreur ni message : le clic ne fait simplement rien.
+
+Le 26 août 2026, sortir le simulateur ROI de l'accueil a laissé
+`index.html#tarifs` mort dans le menu de **116 pages** — 126 occurrences.
+
+C'est le **troisième** défaut de cette forme en une semaine : un lien recopié
+dans chaque page, cassé d'un coup. Les deux autres étaient `hreflang` et
+`og:url`. Le motif est toujours le même — une valeur dupliquée partout, une
+seule cause, et rien qui le signale.
+
+Le balayage, en une commande :
+
+```bash
+python3 - <<'EOF'
+import glob, re, os, collections
+pages = [p for p in glob.glob("**/*.html", recursive=True) if "node_modules" not in p]
+morts = collections.defaultdict(list)
+for p in pages:
+    s = open(p).read()
+    sans_js = re.sub(r'<script\b[^>]*>.*?</script>', '', s, flags=re.S)  # les gabarits JS ne sont pas des liens
+    ids = set(re.findall(r'id="([^"]+)"', s))
+    for a in set(re.findall(r'href="#([^"]+)"', sans_js)):
+        if a and a not in ids: morts[a].append(p)
+for a, ps in sorted(morts.items(), key=lambda kv: -len(kv[1])):
+    print(f"#{a} : {len(ps)} page(s) — ex. {ps[0]}")
+EOF
+```
+
+**Vérifier la cible, pas la chaîne.** Un remplacement de texte peut réussir
+partout et mener nulle part : les pages ne sont pas au même niveau
+(`roi.html` à la racine, `../roi.html` depuis `blog/`), et un `../` de trop
+fait basculer une page anglaise vers la version française sans rien casser
+visiblement. Le contrôle qui compte résout chaque chemin depuis le dossier de
+sa page et vérifie que le fichier existe — et que la langue est conservée.
