@@ -253,3 +253,33 @@ seulement à l'adapter. Les valeurs qui pointent ailleurs — ancres, `hreflang`
 `og:url`, `canonical`, liens de sommaire — sont celles qui survivent au
 copier-coller en devenant fausses, parce que rien dans la page ne les
 contredit.
+
+### Vérifier une liste prouve la liste, pas la page
+
+Le 26 août 2026, le sélecteur de langue de six pages créées la veille menait
+à `about.html` — la page dont leur gabarit venait. Leur `twitter:title`
+annonçait « À propos d'Heurix » / « About ». Quatrième occurrence de la
+famille ci-dessus, à trois valeurs près.
+
+Ce qui la rend instructive : **les trois valeurs que j'avais vérifiées à la
+création étaient justes.** Sitemap, `hreflang` réciproques, `og:url` propre à
+chaque page — les trois demandées, les trois contrôlées, les trois correctes.
+Le `hreflang` de `secteurs.html` désignait bien `en/secteurs.html`. C'est le
+bouton EN, juste à côté, que le visiteur cliquait pour atterrir sur « À propos ».
+
+Une liste de contrôle prouve ce qu'elle énumère. Elle ne dit rien de ce
+qu'elle omet, et rien ne signale une omission : la page passe, le rapport est
+vert, le défaut est intact. Ici la liste couvrait les valeurs lues par les
+moteurs et manquait la seule que le visiteur actionne.
+
+Le contrôle qui aurait vu les six ne part pas d'une liste mais d'une
+question : **quelles valeurs de cette page désignent une autre page ?** Puis
+il les résout toutes. Sur ce site elles sont cinq — `hreflang`, `og:url`,
+`canonical`, le sélecteur de langue, et les liens de sommaire — plus les
+métadonnées qui recopient un titre (`twitter:title`, qui doit valoir
+`og:title` : vérifié, l'écart ne concernait que ces six pages sur 120).
+
+Vaut aussi hors HTML. Le balayage d'ancres de la veille annonçait « zéro
+ancre morte sur tout le site » en ne lisant que les `.html` ; `search.js`
+routait toujours vers `index.html#tarifs` et `index.html#mission`. Le
+périmètre réel était plus étroit que la phrase.
