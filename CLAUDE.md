@@ -153,3 +153,38 @@ Corollaire pratique : si l'outil de capture ne rend pas la page (onglet en
 arrière-plan, viewport à 0), **le dire** et demander une vérification humaine
 plutôt que de conclure depuis le DOM. Un DOM correct ne prouve pas un rendu
 correct.
+
+### Ce que le test de classement ne couvre pas
+
+`tests/classement-fond.test.js` refuse tout sélecteur qui pose
+`color:var(--ink*)` sans être classé — soit par une surcouche
+`body.docs-dark`, soit dans la liste `@fond-clair` de `styles.css`.
+
+**Il vérifie qu'une décision a été prise, pas qu'elle est juste.** Un
+composant classé « fond clair » mais posé sur le dégradé passerait le test
+en étant illisible.
+
+Et il ne voit que les composants qui **déclarent** leur couleur. Sur les dix
+défauts des rounds 2 et 3, il en attrape **cinq** :
+
+| attrapé | non attrapé | pourquoi |
+|---|---|---|
+| `.tarif-note`, `.pb-repere`, `.copilot-point-source`, `.form-note`, `.contact-direct` | | déclarent `color:var(--ink*)` |
+| | `.wordmark` (footer), `.tarif-ligne`, `.tarif-ligne strong` | **héritent** de `body{color:var(--ink)}`, ne déclarent rien |
+| | `.faq-body` | classe orpheline, aucune règle CSS |
+| | `.regex-copy p` | surcouche existante appliquée au mauvais endroit |
+
+Vérifié dans les deux sens : retirer la surcouche de `.pb-repere` fait
+échouer le test en le nommant ; retirer celle du logo du footer le laisse
+passer.
+
+**La cause des cinq non attrapés est une seule ligne** : `body{
+color:var(--ink) }` pose du texte quasi-noir, et `body.docs-dark{}` change le
+fond sans toucher à la couleur héritée. Tout élément sans déclaration propre
+hérite donc du noir sur un dégradé sombre. Mesuré : 29 classes sur trois
+pages dépendent aujourd'hui de cet héritage — mais sur fond **clair**, où il
+est correct. Les corriger explicitement permettrait de poser
+`body.docs-dark{ color:#CDD2F0 }` et de fermer la famille entière.
+
+La règle du regard reste donc nécessaire. Le test réduit la surface, il ne
+la supprime pas.

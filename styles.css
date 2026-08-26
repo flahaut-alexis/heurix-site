@@ -1919,6 +1919,366 @@ body.docs-dark .regex-copy > p{ color:#CDD2F0; }
   color:var(--blue-deeper) !important; text-decoration-color:var(--blue);
 }
 
+
+/* ==========================================================================
+   CLASSEMENT DES COMPOSANTS PAR FOND (26 aout 2026)
+   ==========================================================================
+
+   POURQUOI CETTE LISTE EXISTE. Le site est « clair par defaut, sombre par
+   surcouche » : le texte herite de --ink / --ink-muted, penses pour un fond
+   blanc, et chaque composant pose sur le degrade sombre doit recevoir sa
+   regle `body.docs-dark`. Un composant neuf naissait donc casse par defaut,
+   et personne ne s'en apercevait avant de regarder la page.
+
+   Dix defauts de ce type ont ete trouves en deux tours d'audit -- dont le
+   PRIX de l'offre a 1,11:1 et le LOGO du produit en pied de page, sur
+   118 pages.
+
+   L'INVERSION A ETE MESUREE ET ECARTEE. Recensement des elements porteurs de
+   texte, par fond reellement composite :
+       index.html    28 clair / 29 sombre
+       docs.html     16 clair / 28 sombre
+       console.html  78 clair / 11 sombre
+   La console est presque entierement claire. Inverser le defaut ferait
+   passer le nombre de surcouches a ecrire de 68 a 122, et deplacerait le
+   risque de regression sur l'application cliente. Le sens du defaut n'est
+   pas le probleme : l'absence de classement l'est.
+
+   COMMENT S'EN SERVIR. Tout selecteur qui pose `color:var(--ink)` ou
+   `color:var(--ink-muted)` doit etre classe, d'une des deux facons :
+
+     - il vit sur le DEGRADE SOMBRE  -> lui donner une regle
+       `body.docs-dark <selecteur>{ color:#CDD2F0 }` (ou #F5F6FF si c'est du
+       texte fort). C'est le classement par le code lui-meme.
+
+     - il vit dans une CARTE CLAIRE (fond blanc, #F7F8FC, lavande...)
+       -> l'ajouter a la liste `@fond-clair` ci-dessous. --ink y est correct.
+
+   Le test tests/classement-fond.test.js refuse tout selecteur qui n'est ni
+   dans l'un ni dans l'autre.
+
+   CE QUE CE CLASSEMENT NE PROUVE PAS : qu'un composant classe « fond clair »
+   est reellement sur fond clair. Il dit qu'une decision a ete prise, pas
+   qu'elle est juste. Le regard reste necessaire -- voir CLAUDE.md.
+
+   @fond-clair
+     #csv-catalogue::placeholder
+     .addon-card-desc
+     .addon-card-price
+     .addon-card-price span
+     .addon-card-title
+     .apropos-fact-label
+     .apropos-fact-value
+     .apropos-grid p
+     .benefit p
+     .billing-label
+     .billing-value
+     .blog-card
+     .blog-card p
+     .br-regles-compte-vide
+     .br-regles-onglet
+     .br-regles-onglet:hover
+     .br-stock-toggle
+     .browse-addon-toggle
+     .catalog-card-meta
+     .catalog-card-name
+     .catalog-card-row label
+     .catalog-list-pill
+     .catalog-rule-desc
+     .catalog-rule-empty
+     .catalog-rule-remove
+     .catalog-rule-row strong
+     .catalog-rule-status
+     .catalog-rulepack-select
+     .catalog-rulepack-status
+     .catalog-rules-empty
+     .catalog-synonym-group em
+     .catalog-synonyms-label
+     .confirm-actions button
+     .confirm-texte
+     .confirm-texte strong
+     .confirm-titre
+     .consent-cat-texte
+     .consent-cat-titre
+     .consent-cat-titre em
+     .consent-lien a
+     .consent-texte
+     .consent-titre
+     .console-account-email
+     .console-activation-item.fait .console-activation-texte
+     .console-activation-reduce
+     .console-activation-restore
+     .console-activation-statut
+     .console-activation-texte
+     .console-chart-resume
+     .console-empty
+     .console-env-label
+     .console-field > label
+     .console-form-status
+     .console-global-catalog:disabled
+     .console-guides-list a
+     .console-guides-list a::after
+     .console-help-example-context
+     .console-help-example-fields code
+     .console-help-example-fields span
+     .console-help-h3
+     .console-help-list
+     .console-help-list strong
+     .console-help-toggle
+     .console-help-toggle svg
+     .console-identite-email
+     .console-identite-label
+     .console-info-label
+     .console-info-value
+     .console-key-btn
+     .console-key-toggle
+     .console-key-toggle:hover
+     .console-key-value
+     .console-loading
+     .console-login-form label
+     .console-login-micro
+     .console-login-note
+     .console-org-drop .nav-drop-panel button
+     .console-org-hint button
+     .console-org-nom
+     .console-pane .so-searchbar input[type="text"]
+     .console-pane input:disabled
+     .console-pane input[type="email"]
+     .console-pane input[type="number"]
+     .console-pane input[type="search"]
+     .console-pane input[type="text"]
+     .console-pane select
+     .console-pane select:disabled
+     .console-pane textarea
+     .console-pane-offre
+     .console-panel input:disabled
+     .console-panel input[type="email"]
+     .console-panel input[type="number"]
+     .console-panel input[type="text"]
+     .console-panel select
+     .console-panel select:disabled
+     .console-panel textarea
+     .console-period
+     .console-postsignup-key code
+     .console-segmentation label
+     .console-segmentation select
+     .console-sidebar-chevron
+     .console-sidebar-item
+     .console-sidebar-item-top
+     .console-sidebar-item-top:not(.console-sidebar-item-on)
+     .console-sidebar-item:hover
+     .console-sidebar-section
+     .console-sidebar-sublabel
+     .console-stat-label
+     .console-stat-sous
+     .console-tab
+     .console-tab-count
+     .console-tab:hover
+     .console-table .cell-actions button
+     .console-table .cell-statut-inactive
+     .console-table .cell-trigger
+     .console-table tbody td
+     .console-table td
+     .console-table td.mono
+     .console-table th
+     .console-table thead th
+     .console-topbar-guides
+     .csel-btn
+     .csel-btn:disabled
+     .csel-opt
+     .csv-aide
+     .csv-aide-champ
+     .csv-apercu
+     .csv-champ-aide
+     .csv-depot-note
+     .csv-detecte
+     .csv-etat
+     .csv-rapport-bloc ul
+     .csv-reco
+     .csv-tuto ol
+     .csv-tuto-close
+     .csv-tuto-close:hover
+     .cta-form input
+     .cta-form label
+     .cta-form select
+     .cta-form textarea
+     .demo-pin-etat
+     .demo-pin-intro
+     .demo-pin-intro strong
+     .demo-pin-meta
+     .demo-pin-rang
+     .demo-video-caption
+     .demo-why-fleche
+     .demo-why-intro
+     .demo-why-intro strong
+     .demo-why-note
+     .demo-why-resultat
+     .demo-why-resultat strong
+     .docs-hero-note
+     .docs-page-search-empty
+     .docs-page-search-result
+     .docs-params-plain
+     .err-aide
+     .err-bilan-bloc em
+     .err-bilan-bloc strong
+     .err-bilan-note
+     .err-detail .mono
+     .err-detail > summary
+     .err-phrase
+     .err-quand
+     .foot-social-icon
+     .guide-quiz-opts button
+     .header-signin
+     .icp-card p
+     .import-effet
+     .import-etapes li
+     .import-etapes strong
+     .import-exemple span
+     .import-formats-note
+     .import-formats-titre
+     .import-modules
+     .kpi-tendance-neutre
+     .kpi-tendance-ref
+     .kpi-tendance-stable
+     .lang-switch
+     .lede
+     .logo
+     .nav-drop-btn
+     .nav-drop-panel a
+     .nav-links
+     .nav-links > a
+     .offer-card p
+     .offer-card-highlight
+     .pack-suggestion-alerte
+     .pack-suggestion-detail
+     .pack-suggestion-detail strong
+     .pack-suggestion-note
+     .pack-suggestion-titre
+     .pdf-modal-card p
+     .pdf-modal-card p strong
+     .pdf-modal-close
+     .pdf-modal-close:hover
+     .play-api-label
+     .play-api-note
+     .play-bar
+     .play-card-name
+     .play-card-out .play-card-name
+     .play-card-out .play-card-ref-bas
+     .play-card-price-barre
+     .play-card-ref-bas
+     .play-card-tag
+     .play-card-vign
+     .play-chips-label
+     .play-input
+     .play-meta
+     .play-meta strong
+     .play-meta-count
+     .play-meta-filtre
+     .play-price
+     .play-prism
+     .play-prism-group
+     .play-vertical-pill
+     .play-vertical-pill:hover
+     .play-view-tab
+     .play-view-tab-discret
+     .play-view-tab:hover
+     .play-why
+     .portrait figcaption
+     .post-body blockquote
+     .pricing-nudge p
+     .pricing-nudge-close
+     .pricing-nudge-close:hover
+     .problem-grid p
+     .problem-grid strong
+     .pt-sous
+     .quota-alerte-texte span
+     .quota-alerte-texte strong
+     .quota-label
+     .quota-valeur
+     .quota-valeur em
+     .recap-modal-group-title
+     .recap-modal-note
+     .recap-modal-row-remove
+     .recap-modal-summary
+     .regex-example-arrow
+     .regex-example-note
+     .regex-example-query
+     .result .name
+     .result .tag
+     .search-close
+     .search-close:hover
+     .search-empty
+     .search-panel-head
+     .search-panel-head input
+     .search-result
+     .search-result-excerpt
+     .search-suggest-label
+     .search-trigger
+     .search-trigger-kbd
+     .search-trigger-text
+     .seg-total-ligne
+     .seg-total-ligne strong
+     .service p
+     .service-duration
+     .setup-step-header h3
+     .so-action-btn
+     .so-amorce-chip
+     .so-amorce-titre-principal
+     .so-autocomplete-empty
+     .so-autocomplete-meta
+     .so-autocomplete-name
+     .so-caption-warn
+     .so-card-actions button
+     .so-card-detail-ligne
+     .so-card-detail-ligne span:first-child
+     .so-card-detail-resultat
+     .so-card-detail-resultat span:first-child
+     .so-card-rank
+     .so-card-ref
+     .so-card-stock
+     .so-card-why
+     .so-catalogue-compteur
+     .so-catalogue-controls select
+     .so-diffusion-label
+     .so-facet-chip
+     .so-facet-group
+     .so-facet-warn
+     .so-famille-ex
+     .so-famille-nom
+     .so-famille-tags span
+     .so-grid-caption
+     .so-liste-chips
+     .so-liste-trigger
+     .so-pipeline-detail
+     .so-pipeline-etape strong
+     .so-regle-auto
+     .so-regle-indicateur
+     .so-simu-bar
+     .so-tuto-etapes
+     .so-tuto-note
+     .so-why
+     .stat .lbl
+     .syn-sens-label
+     .syn-vide-label
+     .syn-vide-texte
+     .tech-chip
+     .tech-strip-label
+     .trial-banner
+     .visite-actions .visite-quitter
+     .visite-actions .visite-quitter:hover
+     .visite-actions button
+     .visite-attente
+     .visite-texte
+     .visite-texte strong
+     .visite-titre
+     .welcome-card p
+     .welcome-plan strong
+     .zr-choix i
+     .zr-suggestions em
+     body
+   @fin-fond-clair
+   ========================================================================== */
+
 /* SURCOUCHES SOMBRES MANQUANTES (26 aout 2026).
    Le site fonctionne en « clair par defaut, sombre par surcouche » : le texte
    herite de --ink (#12142B) ou --ink-muted (#5B5E76), penses pour un fond
