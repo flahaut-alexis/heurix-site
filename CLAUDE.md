@@ -227,3 +227,29 @@ partout et mener nulle part : les pages ne sont pas au même niveau
 fait basculer une page anglaise vers la version française sans rien casser
 visiblement. Le contrôle qui compte résout chaque chemin depuis le dossier de
 sa page et vérifie que le fichier existe — et que la langue est conservée.
+
+### Reproduire un gabarit sans lire ce qu'il contient
+
+Trois occurrences en une semaine, toujours le même geste : un bloc copié
+d'une page vers une autre, où son contenu ne veut plus rien dire.
+
+- Trois articles au `hreflang` cassé — le lien pointait vers l'équivalent de
+  l'article dont le gabarit venait, pas du leur.
+- `index.html#tarifs` dans le menu de 116 pages, resté après le déplacement
+  du simulateur.
+- Le sommaire de `guide-mise-en-route.html` recopié dans
+  `guide-utilisation-console.html`, dont les huit entrées visaient des
+  sections qui n'existent pas sur cette page.
+
+**Ce qui rend le troisième cas instructif : le copier-coller précède la
+traduction.** La version anglaise porte le même sommaire erroné, libellés
+compris — l'article a donc été traduit depuis un original qui contenait déjà
+le défaut, et personne ne l'a vu. Or traduire suppose de lire chaque phrase.
+Un sommaire se regarde comme un bloc, pas comme du texte : on traduit les
+huit libellés sans jamais cliquer une seule des huit ancres.
+
+Corollaire : partir d'un gabarit oblige à relire **ce qu'il contient**, pas
+seulement à l'adapter. Les valeurs qui pointent ailleurs — ancres, `hreflang`,
+`og:url`, `canonical`, liens de sommaire — sont celles qui survivent au
+copier-coller en devenant fausses, parce que rien dans la page ne les
+contredit.
