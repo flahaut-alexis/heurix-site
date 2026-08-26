@@ -209,6 +209,7 @@
       // cartes espacees), un deplacement vertical ferait vibrer les lignes
       // voisines de facon genante.
       ".hx-search-hit:hover,.hx-search-hit.hx-hit-active{background:#F6F7FC;box-shadow:inset 2px 0 0 var(--hx-accent);}",
+      ".hx-search-hit-texte{min-width:0;}",
       ".hx-search-hit-name{font-size:14px;font-weight:600;color:#181A2E;}",
       ".hx-search-hit-ref{font-size:12px;color:#7B7E93;margin-top:2px;}",
       ".hx-search-hit-meta{font-size:13px;color:#7B7E93;white-space:nowrap;flex-shrink:0;}",
@@ -309,10 +310,36 @@
     var etiquetteHtml = hit._heurixBundle
       ? '<span class="hx-search-hit-badge">' + esc(TXT.pack) + "</span>"
       : "";
+    // LE CONTENEUR DE GAUCHE, ENFIN OUVERT (27 aout 2026). Le fragment
+    // fermait un <div> qu'il n'ouvrait pas, depuis 4cf41043 (24 juillet,
+    // premier commit du widget). Cette balise fermante orpheline fermait
+    // la LIGNE PRODUIT elle-meme : .hx-search-hit-meta -- le prix -- se
+    // retrouvait FRERE de .hx-search-hit au lieu d'en etre l'enfant.
+    //
+    // Trois effets, du plus grave au moins grave :
+    //  - l'element role="option" ne contient pas le prix, donc un lecteur
+    //    d'ecran annonce l'option sans jamais dire combien elle coute ;
+    //  - cliquer le prix ne selectionne rien : il est hors du <a>/<div>
+    //    porteur de data-index ;
+    //  - dans une liste, le prix se lit sur la ligne d'a cote.
+    //
+    // Qui etait touche, mesure : la CONFIGURATION PAR DEFAUT. Sans
+    // resultHref la ligne est un <div>, et la fermeture orpheline l'a
+    // ferme -- le prix sortait. Avec resultHref la ligne est un <a>, et
+    // l'algorithme de parsing de fragment (innerHTML) ignore la fermeture
+    // surnumeraire : le prix restait dedans, par accident. C'est donc le
+    // marchand qui suit l'exemple minimal de l'en-tete de ce fichier
+    // -- apiKey, catalog, containerId -- qui avait le defaut.
+    //
+    // Le CSS disait deja la structure attendue : .hx-search-hit est un
+    // flex justify-content:space-between a DEUX enfants, le bloc texte a
+    // gauche et .hx-search-hit-meta a droite (flex-shrink:0). Le correctif
+    // ouvre le conteneur de gauche ; il ne retire pas la fermeture.
     return (
       etiquetteHtml +
-      '<div class="hx-search-hit-name">' + esc(p.name || p.id) + "</div>" +
-      (p.ref ? '<div class="hx-search-hit-ref">' + esc(p.ref) + "</div>" : "") +
+      '<div class="hx-search-hit-texte">' +
+        '<div class="hx-search-hit-name">' + esc(p.name || p.id) + "</div>" +
+        (p.ref ? '<div class="hx-search-hit-ref">' + esc(p.ref) + "</div>" : "") +
       '</div><div class="hx-search-hit-meta">' + prixHtml +
       (metaBits.length ? (prixHtml ? " · " : "") + metaBits.join(" · ") : "") + "</div>"
     );
