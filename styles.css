@@ -2299,7 +2299,6 @@ body.docs-dark .regex-copy > p{ color:#CDD2F0; }
      .play-view-toggle
      .play-why
      .portrait figcaption
-     .post-body blockquote
      .pricing-nudge
      .pricing-nudge p
      .pricing-nudge-close
@@ -6797,6 +6796,19 @@ body.docs-dark .cta-section{
    pour ce meme fond sombre. .docs-hero, lui, verifie a la meme occasion,
    etait deja correct. */
 body.docs-dark .blog-hero .lede{ color:rgba(255,255,255,0.88); }
+
+/* .post-body blockquote ETAIT CLASSE « FOND CLAIR » -- A TORT (26 aout 2026).
+   Mesure qui tranche : les 32 pages du depot qui posent un blockquote sont
+   TOUTES en body.docs-dark. Zero usage sur fond clair. Le composant etait
+   donc range dans la liste @fond-clair sans qu'aucune de ses occurrences ne
+   s'y trouve -- et le test de classement le laissait passer, puisqu'il
+   verifie qu'une decision a ete prise, pas qu'elle est juste. C'est le cas
+   exact que CLAUDE.md decrivait en creux depuis hier.
+   Mesure avant : 2,57:1. Le --blue de la bordure gauche, lui, ressort deja.
+   Trouve en allongeant le texte d'une de ces citations, d'une ligne a quatre
+   -- ce qui a rendu visible ce que personne ne lisait. */
+body.docs-dark .post-body blockquote{ color:#CDD2F0; }
+
 
 /* Signale par Alexis (11 aout 2026), confirme empiriquement. Le titre de
    section .verticals h3 n'a jamais eu de correctif propre. La carte

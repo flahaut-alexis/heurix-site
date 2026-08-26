@@ -22,8 +22,18 @@ function sansCommentaires(css) {
 
 /** Selecteurs classes « vit sur fond clair », lus dans le bloc @fond-clair. */
 function listeFondClair() {
-  const debut = CSS.lastIndexOf("@fond-clair");
-  const fin = CSS.indexOf("@fin-fond-clair", debut);
+  // lastIndexOf SEUL ETAIT FRAGILE (durci le 26 aout 2026). Le marqueur est
+  // aussi cite en prose -- dans le commentaire qui precede la liste, et depuis
+  // aujourd'hui dans celui qui explique pourquoi .post-body blockquote en a
+  // ete retire. lastIndexOf tombait sur cette derniere mention, situee APRES
+  // @fin-fond-clair, et la recherche du marqueur de fin renvoyait -1 : le test
+  // ne trouvait plus la liste et declarait 300 composants non classes.
+  // On retient donc la derniere occurrence QUI A UNE FIN APRES ELLE.
+  let debut = -1, fin = -1;
+  for (let i = CSS.indexOf("@fond-clair"); i !== -1; i = CSS.indexOf("@fond-clair", i + 1)) {
+    const f = CSS.indexOf("@fin-fond-clair", i);
+    if (f !== -1) { debut = i; fin = f; }
+  }
   if (debut === -1 || fin === -1) return null;
   return new Set(
     CSS.slice(debut + "@fond-clair".length, fin)
