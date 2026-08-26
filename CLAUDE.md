@@ -543,3 +543,59 @@ trace, et le compte affiché à la fin ne compte que ce qu'elle a laissé
 passer. D'où son seul garde-fou possible, désormais dans `bust-cache.sh` :
 **dire ce qu'on n'a pas touché**, en comparant au total des références
 portant le même nom de fichier, quel que soit leur chemin.
+
+### La version anglaise est une zone que personne ne regarde
+
+**Toute vérification à l'écran est partie de la version française.** Pas une
+fois de l'anglaise. Ce n'est pas une négligence ponctuelle, c'est le réflexe
+par défaut : on ouvre `index.html`, jamais `en/index.html`.
+
+Le 27 août 2026, deux occurrences le même jour, de deux natures différentes.
+
+**Ce que la traduction ne voit pas.** Le sommaire recopié de
+`guide-mise-en-route.html` vers `guide-utilisation-console.html` visait huit
+sections qui n'existent pas sur cette page. La version **anglaise** porte le
+même sommaire erroné, libellés traduits. L'article a donc été traduit depuis un
+original déjà défectueux, et traduire suppose de lire chaque phrase — mais un
+sommaire se regarde comme un bloc. On traduit les huit libellés sans cliquer
+une seule des huit ancres.
+
+**Ce que la recopie casse, et dans un seul sens.** 19 liens relatifs morts, tous
+des pages anglaises nées d'une française à une profondeur de plus :
+
+```
+solutions/index.html        ../logo.svg        ->  logo.svg             OK
+en/solutions/index.html     ../logo.svg        ->  en/logo.svg          404
+blog/guide-mise-en-route    ../downloads/x.js  ->  downloads/x.js       OK
+en/blog/guide-mise-en-route ../downloads/x.js  ->  en/downloads/x.js    404
+```
+
+Neuf d'entre eux étaient les liens de téléchargement des widgets. Un marchand
+anglophone cliquait « Download heurix-search.js » et recevait un 404. Depuis la
+création des pages.
+
+**Le pire détail** : sur la même page, l'en-tête écrivait `../../logo.svg`,
+juste, et le pied de page `../logo.svg`, faux. Rien ne se voyait au-dessus de
+la ligne de flottaison — et une vérification à l'écran qui s'arrête au premier
+écran ne l'aurait pas trouvé non plus.
+
+Ces défauts vivent tous dans une asymétrie FR/EN, donc **aucune comparaison
+FR↔EN de contenu ne les attrape** : les deux pages disent la même chose, seule
+l'une atteint sa cible. Et `CLAUDE.md` nommait déjà le piège **dans l'autre
+sens** — « un `../` de trop fait basculer une page anglaise vers la version
+française ». Ici il en manque un, et le résultat n'est pas une mauvaise page,
+c'est rien du tout.
+
+Trois conséquences pratiques :
+
+**Une vérification à l'écran se fait sur les deux versions, ou elle n'est pas
+faite.** L'anglaise n'est pas une traduction de la française, c'est une page
+distincte, à une profondeur distincte, avec ses propres liens.
+
+**Et elle descend jusqu'au pied de page.** Le premier écran est celui qu'on
+regarde et celui où les défauts se rangent le moins.
+
+**Ce qu'un œil ne peut pas couvrir, un contrôle dérivé le doit.** 126 pages ×
+deux langues ne se cliquent pas. `tests/liens-relatifs.test.js` résout chaque
+lien depuis le dossier de sa page et demande au disque si le fichier existe —
+périmètre dérivé, aucune liste de pages. Il aurait attrapé les 22.
