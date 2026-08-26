@@ -345,6 +345,17 @@ celle-ci. Vérifié avant suppression : aucun workflow, hook, `package.json`,
 passages de ce fichier et deux commentaires historiques de la CI le
 nommaient.
 
-À vérifier aussi : la CI porte la **même** limite de profondeur dans son
-contrôle des clefs (`"(\.\./)?${BASE}\?v=`), et prend `sort -u | head -1`,
-donc la plus petite valeur — elle voyait la clef périmée, pas la fraîche.
+**Le garde-fou portait la maladie qu'il traquait** (corrigé le 26 août 2026).
+Les deux contrôles de clefs de la CI utilisaient le même `"(\.\./)?` sur un
+seul niveau, et le contrôle de cohérence énumérait six assets à la main.
+Rejoué sur `1cbe26bc`, il annonçait « OK styles.css : une seule clef sur tout
+le site » pendant que 38 pages en servaient une autre. La découverte
+automatique a par ailleurs révélé **18 assets versionnés** là où la liste en
+nommait 6 : douze n'étaient contrôlés par personne.
+
+Corollaire, plus général que les clefs de cache : **un contrôle qui affirme
+une propriété sur « tout » doit dériver son périmètre, jamais l'énumérer** —
+et il faut le vérifier en le faisant échouer sur un défaut réel, pas en
+constatant qu'il passe. Un contrôle vert sur un défaut déjà corrigé ne prouve
+rien : la seule preuve est de faire diverger volontairement, de le voir
+nommer le coupable, puis de restaurer.

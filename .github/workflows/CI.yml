@@ -73,11 +73,19 @@ jobs:
           for F in $MODIFIES; do
             BASE=$(basename "$F")
             # Les clefs de CE fichier, avant et apres le commit.
+            # (\.\./)* ET NON (\.\./)? -- voir le commentaire de l'etape
+            # suivante : le "?" ne voyait pas les pages de profondeur 2.
+            # tail -1 ET NON head -1 : ce sont des horodatages unix a 10
+            # chiffres, donc l'ordre lexicographique est l'ordre numerique,
+            # et la DERNIERE valeur est la plus fraiche. head -1 rendait la
+            # plus ANCIENNE -- s'il subsistait une clef perimee quelque part,
+            # le controle comparait deux fois cette relique et concluait
+            # "n'a pas bouge" sur un asset pourtant correctement bumpe.
             AVANT=$(git show "HEAD~1:$F" >/dev/null 2>&1 && \
-                    git grep -hoE "\"(\.\./)?${BASE}\?v=[0-9]+" HEAD~1 -- '*.html' '*.js' \
-                      | grep -oE '[0-9]+$' | sort -u | head -1 || true)
-            APRES=$(git grep -hoE "\"(\.\./)?${BASE}\?v=[0-9]+" HEAD -- '*.html' '*.js' \
-                      | grep -oE '[0-9]+$' | sort -u | head -1 || true)
+                    git grep -hoE "\"(\.\./)*${BASE}\?v=[0-9]+" HEAD~1 -- '*.html' '*.js' \
+                      | grep -oE '[0-9]+$' | sort -u | tail -1 || true)
+            APRES=$(git grep -hoE "\"(\.\./)*${BASE}\?v=[0-9]+" HEAD -- '*.html' '*.js' \
+                      | grep -oE '[0-9]+$' | sort -u | tail -1 || true)
 
             # Un fichier jamais reference par une clef ?v= n'est pas concerne
             # (un module ES importe par un autre, par exemple).
@@ -110,14 +118,37 @@ jobs:
           # deux clefs differentes selon la page. L'ancien bump-version.sh
           # (supprime le 26 aout 2026) ne voyait que son propre perimetre et
           # ne pouvait pas le detecter.
+          #
+          # CE CONTROLE PORTAIT LUI-MEME LES DEUX DEFAUTS QU'IL TRAQUE
+          # (corrige le 26 aout 2026) :
+          #
+          #   1. "(\.\./)?" n'autorisait qu'UN niveau de remontee. Les 76
+          #      pages de en/blog/ et en/solutions/ ecrivent
+          #      "../../styles.css" : il ne les voyait pas. Rejoue sur
+          #      1cbe26bc, il annoncait « OK styles.css : une seule clef sur
+          #      tout le site » alors que 38 pages en servaient une autre
+          #      depuis leur creation. Le garde-fou etait aveugle exactement
+          #      la ou il devait voir.
+          #
+          #   2. La liste des assets etait ENUMEREE a la main. C'est la
+          #      maladie meme de bump-version.sh, corrigee trois fois chez
+          #      lui avant d'etre remplacee par une decouverte. Un nouvel
+          #      asset versionne n'etait couvert par personne, en silence.
+          #      Elle est desormais DEDUITE des references reellement
+          #      presentes dans le depot.
+          ASSETS=$(git grep -hoE "\"(\.\./)*[A-Za-z0-9_-]+\.(css|js|svg)\?v=[0-9]+" -- '*.html' \
+                   | sed -E 's|^"(\.\./)*||; s|\?v=[0-9]+$||' | sort -u)
+          echo "Assets versionnes decouverts : $(echo "$ASSETS" | tr '\n' ' ')"
           ECHEC=0
-          for BASE in styles.css consent.js mobile-nav.js search.js search-en.js console.js; do
-            N=$(git grep -hoE "\"(\.\./)?${BASE}\?v=[0-9]+" -- '*.html' \
+          for BASE in $ASSETS; do
+            N=$(git grep -hoE "\"(\.\./)*${BASE}\?v=[0-9]+" -- '*.html' \
                 | grep -oE '[0-9]+$' | sort -u | wc -l | tr -d ' ')
             if [ "$N" -gt 1 ]; then
               echo "  ECHEC $BASE : $N clefs ?v= differentes selon la page."
-              git grep -hoE "\"(\.\./)?${BASE}\?v=[0-9]+" -- '*.html' \
-                | grep -oE '[0-9]+$' | sort | uniq -c | sed 's/^/      /'
+              git grep -lE "\"(\.\./)*${BASE}\?v=[0-9]+" -- '*.html' | while read -r PAGE; do
+                V=$(grep -hoE "\"(\.\./)*${BASE}\?v=[0-9]+" "$PAGE" | grep -oE '[0-9]+$' | head -1)
+                echo "      $V  $PAGE"
+              done | sort | awk '{c[$1]++; ex[$1]=$2} END {for (v in c) printf "      %s : %d page(s), ex. %s\n", v, c[v], ex[v]}'
               ECHEC=1
             else
               echo "  OK    $BASE : une seule clef sur tout le site."
