@@ -469,7 +469,7 @@
       <h2>Browse &amp; Discovery</h2>
       <p>Ranks <strong>every</strong> product in a category with no query — for a listing page (category, department), not a search bar. Replaces a static sort with configurable ranking, enriched by your own manual priorities.</p>
       <p><strong><code class="docs-inline-code">{category}</code> is a field you supply at indexing time</strong> — exactly like <code class="docs-inline-code">name</code> or <code class="docs-inline-code">stock</code>, never derived from a rule pack. Add <code class="docs-inline-code">categories</code> (a list — a product can belong to several categories at once, useful for listing both a category and its ancestors) or <code class="docs-inline-code">category</code> (a single value) to your products:</p>
-      <div class="regex-reassure"><span class="regex-reassure-icone" aria-hidden="true">🚀</span><p>Don't want to write the fetch call yourself? <a href="downloads/heurix-browse-widget.js?v=1787783963" download>Download the ready-to-use snippet</a> — a step-by-step guide with a full example is available on <a href="blog/guide-page-categorie-browse.html">the blog</a>.</p></div>
+      <div class="regex-reassure"><span class="regex-reassure-icone" aria-hidden="true">🚀</span><p>Don't want to write the fetch call yourself? <a href="../downloads/heurix-browse-widget.js?v=1787783963" download>Download the ready-to-use snippet</a> — a step-by-step guide with a full example is available on <a href="blog/guide-page-categorie-browse.html">the blog</a>.</p></div>
       <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/index/mycatalog/items \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
@@ -952,9 +952,9 @@ curl -X POST https://api.heurix.fr/v1/events \
        "products": [{"id": "sku-123", "amount": 29.90, "margin": 8.50}]}'</code></pre>
       <p>This endpoint is designed to be called <strong>from your end visitor's browser</strong>, on your own site — not from heurix.fr — hence CORS open to every origin. Three ways to set it up, from most complete to simplest:</p>
       <ul>
-        <li><a href="downloads/heurix-tracker.js?v=1787784017" download>Heurix Tracker</a> (recommended) — a persistent visitor identifier, to link a click to a later purchase from the same visitor rather than a simple aggregate correlation. One single script to drop site-wide, exposes the same functions as the snippet below.</li>
-        <li><a href="downloads/heurix-conversion-events.tpl?v=1787784017" download>Google Tag Manager tag template</a> (<code class="docs-inline-code">.tpl</code> file, import under Templates → Tag Templates → Import) — compatible with the tracker via an optional "Visitor ID" field</li>
-        <li><a href="downloads/heurix-conversion-snippet.html?v=1787784017" download>Simple JavaScript snippet</a>, no persistent identifier — for a minimal integration with no GTM or tracker</li>
+        <li><a href="../downloads/heurix-tracker.js?v=1787784017" download>Heurix Tracker</a> (recommended) — a persistent visitor identifier, to link a click to a later purchase from the same visitor rather than a simple aggregate correlation. One single script to drop site-wide, exposes the same functions as the snippet below.</li>
+        <li><a href="../downloads/heurix-conversion-events.tpl?v=1787784017" download>Google Tag Manager tag template</a> (<code class="docs-inline-code">.tpl</code> file, import under Templates → Tag Templates → Import) — compatible with the tracker via an optional "Visitor ID" field</li>
+        <li><a href="../downloads/heurix-conversion-snippet.html?v=1787784017" download>Simple JavaScript snippet</a>, no persistent identifier — for a minimal integration with no GTM or tracker</li>
       </ul>
       <p><strong>Doesn't consume your request quota</strong> — it's not an engine call, it's a data report.</p>
       <div class="callout callout-warning" role="note">
@@ -1024,7 +1024,7 @@ curl -X POST https://api.heurix.fr/v1/events \
       <div class="docs-endpoint"><span class="docs-method docs-method-get">JS</span><code>heurix-search.js</code></div>
       <h2>Ready-to-use search bar</h2>
       <p>Don't want to code the <code class="docs-inline-code">fetch</code> call, result rendering, and facet handling yourself? A standalone JavaScript library (zero dependencies) renders a complete search bar — input, live results, clickable facets, keyboard navigation — connected to your catalog in a few lines.</p>
-      <div class="regex-reassure"><span class="regex-reassure-icone" aria-hidden="true">🚀</span><p><a href="downloads/heurix-search.js?v=1787784710" download>Download heurix-search.js</a> — a single file, drop it wherever you want on your site.</p></div>
+      <div class="regex-reassure"><span class="regex-reassure-icone" aria-hidden="true">🚀</span><p><a href="../downloads/heurix-search.js?v=1787784710" download>Download heurix-search.js</a> — a single file, drop it wherever you want on your site.</p></div>
 
       <div class="callout callout-info" role="note">
         <svg class="callout-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="14.5" r="4.5"/><path d="M10.8 11.2 20 2"/><path d="M16.5 5.5 19 8"/><path d="M13.5 8.5 15.3 10.3"/></svg>

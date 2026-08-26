@@ -509,7 +509,7 @@ curl "https://api.heurix.fr/v1/browse/moncatalogue/perceuses-visseuses?sort=pric
       <p>Consomme le quota de requêtes, comme un appel de recherche — c'est un appel moteur au même titre.</p>
 
       <h3>Construire une page de rayon côté navigateur</h3>
-      <p><code class="docs-inline-code">browse</code> accepte une <a href="#authentification">clé publique</a> (<code class="docs-inline-code">hxp_</code>) : vous pouvez donc bâtir une page de catégorie entièrement en JavaScript, sans proxy serveur. C'est ce que fait la <a href="../demo/index.html">boutique de démonstration</a>, dont le code est lisible dans <code class="docs-inline-code">demo-boutique.js</code>.</p>
+      <p><code class="docs-inline-code">browse</code> accepte une <a href="#authentification">clé publique</a> (<code class="docs-inline-code">hxp_</code>) : vous pouvez donc bâtir une page de catégorie entièrement en JavaScript, sans proxy serveur. C'est ce que fait la <a href="demo/index.html">boutique de démonstration</a>, dont le code est lisible dans <code class="docs-inline-code">demo-boutique.js</code>.</p>
       <pre class="docs-code"><code>// Cle PUBLIQUE (hxp_), restreinte a vos domaines via allowed_origins.
 // Une cle serveur ici serait lisible par n'importe quel visiteur.
 const CLE = "hxp_votre_cle_publique";
