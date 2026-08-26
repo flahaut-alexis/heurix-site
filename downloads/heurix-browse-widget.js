@@ -7,6 +7,12 @@
  * s'occupe de l'appel API et de la boucle d'affichage ; vous fournissez
  * le rendu HTML de chaque produit (renderItem) et votre CSS habituel.
  *
+ * Langue de l'interface : "fr" ou "en". Par défaut, l'attribut lang de la
+ * page ; à défaut d'attribut, le français. L'option `lang` l'emporte sur
+ * les deux.
+ *
+ *     Heurix.browse({ ..., lang: "en" });
+ *
  * Documentation complète et exemple pas à pas :
  * https://heurix.fr/blog/guide-page-categorie-browse.html
  */
@@ -24,15 +30,62 @@
     }
   }
 
+  // LANGUE (27 aout 2026) -- meme mecanique que heurix-search.js, et
+  // volontairement recopiee plutot que partagee : ces fichiers sont
+  // telecharges un par un et heberges chez le marchand, donc chacun doit
+  // tenir seul. C'est deja le cas de heurixWarnIfServerKey ci-dessus.
+  //
+  // Ordre : options.lang > attribut lang du document > FRANCAIS. Le repli
+  // francais preserve le comportement des installations existantes : une
+  // page sans attribut lang affiche ce qu'elle affichait avant.
+  function resoudreLangue(explicite) {
+    var v = explicite ||
+      (typeof document !== "undefined" && document.documentElement &&
+       document.documentElement.lang) || "";
+    return String(v).toLowerCase().slice(0, 2) === "en" ? "en" : "fr";
+  }
+
+  var TEXTES = {
+    fr: {
+      vide: "<p>Aucun produit dans cette catégorie.</p>",
+      rupture: "Rupture de stock",
+    },
+    en: {
+      vide: "<p>No products in this category.</p>",
+      rupture: "Out of stock",
+    },
+  };
+
+  // Le prix arrivait BRUT : "12.5 €" pour un produit a 12,50 €, point
+  // decimal et centime manquant compris. heurix-search.js formatait deja ;
+  // ce fichier ne le faisait pas du tout. Meme convention que lui :
+  // "12,50 €" en francais, "€12.50" en anglais, centimes nuls coupes.
+  // La DEVISE reste l'euro en dur -- l'API n'en renvoie aucun code.
+  function fmtPrix(v, lang) {
+    var n = Number(v).toFixed(2);
+    return lang === "en"
+      ? "€" + n.replace(/\.00$/, "")
+      : n.replace(".", ",").replace(/,00$/, "") + " €";
+  }
+
   var HEURIX_API_KEY = "hxp_VOTRE_CLE_PUBLIQUE"; // Cle PUBLIQUE (hxp_), jamais une cle serveur
   var HEURIX_CATALOG = "votre-catalogue";   // Le nom exact de votre catalogue indexé
 
-  function defaultRenderItem(hit) {
+  // `lang` est le 3e argument depuis le 27 aout. Il REMPLACE le tableau
+  // que Array.prototype.map fournissait a cette position : l'appel passe
+  // desormais par une fonction explicite (voir plus bas), sans quoi
+  // defaultRenderItem aurait recu data.hits comme langue. Un renderItem
+  // fourni par le marchand recevait ce tableau et ne s'en servait pas ;
+  // il recoit maintenant "fr" ou "en", et l'ignore de la meme facon s'il
+  // n'en veut pas.
+  function defaultRenderItem(hit, i, lang) {
+    var T = TEXTES[lang === "en" ? "en" : "fr"];
     var p = hit.product;
-    var price = p.price !== undefined ? "<div class='heurix-price'>" + p.price + " €</div>" : "";
+    var price = p.price !== undefined
+      ? "<div class='heurix-price'>" + fmtPrix(p.price, lang) + "</div>" : "";
     return "<div class='heurix-product' data-id='" + p.id + "'>" +
       "<div class='heurix-name'>" + (p.name || p.id) + "</div>" + price +
-      (hit.in_stock ? "" : "<div class='heurix-out-of-stock'>Rupture de stock</div>") +
+      (hit.in_stock ? "" : "<div class='heurix-out-of-stock'>" + T.rupture + "</div>") +
       "</div>";
   }
 
@@ -61,6 +114,7 @@
   window.Heurix = window.Heurix || {};
   window.Heurix.browse = function (options) {
     options = options || {};
+    var lang = resoudreLangue(options.lang);
     var apiKey = options.apiKey || HEURIX_API_KEY;
     heurixWarnIfServerKey(apiKey);
     return fetch(buildUrl(options), {
@@ -73,9 +127,13 @@
         if (container) {
           var renderItem = options.renderItem || defaultRenderItem;
           if (!data.hits || !data.hits.length) {
-            container.innerHTML = options.emptyMessage || "<p>Aucun produit dans cette catégorie.</p>";
+            // options.emptyMessage garde la main : c'est une option deja
+            // publiee, et un marchand qui l'a posee a choisi son texte.
+            container.innerHTML = options.emptyMessage || TEXTES[lang].vide;
           } else {
-            container.innerHTML = data.hits.map(renderItem).join("");
+            container.innerHTML = data.hits.map(function (h, i) {
+              return renderItem(h, i, lang);
+            }).join("");
           }
         }
       }
