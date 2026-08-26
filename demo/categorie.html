@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Rayon — Quincaillerie du Nord</title>
-<meta name="description" content="Boutique de démonstration Heurix : 10 000 références de visserie, boulonnerie et fixation.">
+<meta name="description" content="Boutique de démonstration Heurix : visserie, boulonnerie et fixation, avec le désordre de références d'un vrai catalogue.">
 <meta name="robots" content="noindex, nofollow">
 <!--
   BOUTIQUE DE DÉMONSTRATION.
@@ -13,7 +13,8 @@
   consomme l'API comme le ferait un vrai distributeur. C'est la seule façon
   d'éprouver l'intégration de bout en bout — ce qui coince, ce que le widget
   rend mal sur un gabarit qui n'est pas le nôtre, quelles requêtes échouent
-  sur un catalogue de 10 000 références.
+  sur un catalogue genere par heurix-engine/deploy/generer_catalogue.py --
+  le nombre de references vit dans demo-boutique.js, pas ici.
 
   `noindex` volontaire : ce contenu ne doit pas se retrouver dans les
   résultats de recherche, il porterait préjudice au référencement du vrai
@@ -22,7 +23,7 @@
   Le style est délibérément DIFFÉRENT de la charte Heurix. Un widget qui ne
   s'intègre bien que sur nos propres couleurs ne prouverait rien.
 -->
-<link rel="stylesheet" href="boutique.css?v=1787750820">
+<link rel="stylesheet" href="../demo-boutique.css?v=1787756933">
 </head>
 <body>
 
@@ -69,6 +70,6 @@
 </footer>
 
 <script src="../downloads/heurix-search.js?v=1787610626"></script>
-<script src="boutique.js"></script>
+<script src="../demo-boutique.js?v=1787756963"></script>
 </body>
 </html>

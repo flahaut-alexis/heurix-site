@@ -19,6 +19,21 @@
   var CLE_PUBLIQUE = "hxp_REMPLACEZ_PAR_VOTRE_CLE_PUBLIQUE";
   var CATALOGUE = "quincaillerie-nord";
 
+  // LE NOMBRE DE REFERENCES VIT ICI, ET NULLE PART AILLEURS (26 aout 2026).
+  // Il etait ecrit « 10 000 » a QUATRE endroits par langue -- meta
+  // description, commentaire d'en-tete, titre du hero, encart de
+  // demonstration -- soit huit copies d'un seul fait. Passer le catalogue a
+  // 5 000 les aurait toutes rendues mensongeres d'un coup, et rien ne
+  // l'aurait signale : c'est la forme exacte des deux chiffres perimes
+  // trouves ailleurs le meme jour.
+  //
+  // Une seule copie desormais, injectee dans [data-total-catalogue], posee
+  // juste sous CATALOGUE pour que qui change l'un voie l'autre. Elle n'est
+  // pas lue de l'API : /v1/index/{cat}/stats exige une cle SERVEUR, et
+  // sommer les rayons compterait double (une vis est a la fois dans
+  // « visserie » et dans « fixation » -- 20 000 pour 10 000 produits).
+  var TOTAL_CATALOGUE = "5 000";
+
   // ------------------------------------------------------------- langue
   // UN SEUL FICHIER POUR LES DEUX LANGUES (26 aout 2026). La langue se lit
   // sur document.documentElement.lang, jamais supposee -- meme motif que
@@ -40,7 +55,7 @@
     ajoute:       "Added \u2713",
     aucunProduit: "No products.",
     catalogueKo:  "Catalogue unavailable — check the public key and the catalogue " +
-                  "name in boutique.js.",
+                  "name in demo-boutique.js.",
     rayonVide:    "No products in this category.",
     rayonKo:      "This category is unavailable right now.",
     references:   function (n) { return n + " references"; },
@@ -56,7 +71,7 @@
     ajoute:       "Ajouté \u2713",
     aucunProduit: "Aucun produit.",
     catalogueKo:  "Catalogue indisponible — vérifiez la clé publique et le nom du " +
-                  "catalogue dans boutique.js.",
+                  "catalogue dans demo-boutique.js.",
     rayonVide:    "Aucun produit dans ce rayon.",
     rayonKo:      "Rayon indisponible pour le moment.",
     references:   function (n) { return n + " références"; },
@@ -169,6 +184,10 @@
   // --------------------------------------------------------------- départ
 
   function init() {
+    document.querySelectorAll("[data-total-catalogue]").forEach(function (el) {
+      el.textContent = EN ? TOTAL_CATALOGUE.replace(/\u00A0| /g, ",") : TOTAL_CATALOGUE;
+    });
+
     // Barre de recherche : c'est l'intégration que teste ce site.
     if (window.Heurix && window.Heurix.searchBox &&
         document.getElementById("recherche-heurix")) {
