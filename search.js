@@ -2,23 +2,19 @@
 // Données uniquement — logique partagée dans search-engine.js (chantier S4, 5 aout 2026)
 
 window.HEURIX_SEARCH_INDEX = [
-  { title: "Le problème", excerpt: "La recherche interne est le point de conversion le moins surveillé d'un site marchand.", path: "index.html#probleme" },
+  { title: "Le problème", excerpt: "La recherche interne est le point de conversion le moins surveillé d'un site marchand.", path: "produit.html#probleme" },
   { title: "Comment ça marche", excerpt: "Opérationnel en 3 étapes : indexez votre catalogue, la cascade annote chaque produit, vos clients trouvent.", path: "index.html#comment-ca-marche" },
-  { title: "Notre mission", excerpt: "La recherche ne devrait jamais être un fardeau. C'est un levier de conversion.", path: "index.html#mission" },
+  { title: "Notre mission", excerpt: "La recherche ne devrait jamais être un fardeau. C'est un levier de conversion.", path: "produit.html#mission" },
   { title: "Console — tableau de bord", excerpt: "Mots les plus recherchés, recherches sans résultat, erreurs, consommation. Connexion avec votre clé API.", path: "console.html" },
   { title: "Intégrations", excerpt: "Guides techniques Shopify, PrestaShop, WooCommerce, Magento — recherche et synchronisation de catalogue, avec du vrai code.", path: "integrations.html" },
   { title: "Fonctionnalités", excerpt: "Cascade d'annotations, tolérance aux fautes, références composées, synonymes métier, résultats explicables — page dédiée avec liens vers la doc API.", path: "fonctionnalites.html" },
   { title: "Documentation API", excerpt: "Référence complète du Search API : authentification, indexation, recherche, synonymes, cascade d'annotations, bonnes pratiques.", path: "docs.html" },
   { title: "Search API — Tarifs", excerpt: "Le moteur de recherche Heurix en self-service, à partir de gratuit. Facturation à l'usage, sans engagement.", path: "pricing.html" },
-  { title: "Le moteur", excerpt: "Un moteur de recherche et d'indexation développé en propre, avec expressions régulières pour les catalogues techniques.", path: "index.html#moteur" },
+  { title: "Le moteur", excerpt: "Un moteur de recherche et d'indexation développé en propre, avec expressions régulières pour les catalogues techniques.", path: "produit.html#moteur" },
   { title: "À propos — Notre histoire", excerpt: "D'un moteur d'annotation né en 2014 au moteur de recherche e-commerce Heurix : l'histoire et la mission.", path: "about.html" },
-  { title: "Simulateur ROI", excerpt: "Estimez l'effet de levier d'un moteur de recherche mieux réglé sur votre chiffre d'affaires.", path: "index.html#tarifs" },
+  { title: "Simulateur ROI", excerpt: "Estimez l'effet de levier d'un moteur de recherche mieux réglé sur votre chiffre d'affaires.", path: "roi.html" },
   { title: "Blog", excerpt: "Notes sur la recherche et le e-commerce, publiées chaque mois.", path: "blog.html" },
-  { title: "FAQ — Combien coûte une mission ?", excerpt: "Facturation à la journée, 850 € HT/jour, sur devis établi selon le périmètre.", path: "index.html#faq" },
-  { title: "FAQ — Et si les résultats ne sont pas au rendez-vous ?", excerpt: "Pas d'abonnement, pas d'engagement dans la durée : l'audit initial limite le risque.", path: "index.html#faq" },
-  { title: "FAQ — Dois-je changer de plateforme e-commerce ?", excerpt: "Non, Heurix intervient sur la couche recherche sans toucher au reste de votre architecture.", path: "index.html#faq" },
-  { title: "FAQ — Moteur propriétaire ou Algolia / Elasticsearch / Typesense ?", excerpt: "Le choix se fait pendant l'audit, selon votre catalogue, votre budget et votre existant.", path: "index.html#faq" },
-  { title: "Devis / Contact", excerpt: "Réservez votre audit initial — réponse sous 48h ouvrées.", path: "index.html#contact" },
+  { title: "Nous contacter", excerpt: "Réservez votre audit initial — réponse sous 48h ouvrées.", path: "contact.html" },
   { title: "Mentions légales", excerpt: "Informations légales sur l'éditeur du site heurix.fr.", path: "mentions-legales.html" },
   { title: "Politique de confidentialité", excerpt: "Quelles données Heurix traite, pourquoi, combien de temps, et comment exercer vos droits.", path: "confidentialite.html" },
   { title: "Construire son moteur de recherche ou en acheter un : comment trancher", excerpt: "Développer en interne semble gratuit sur le papier. Ce que ça coûte vraiment, et où Heurix se situe sur cet arbitrage.", path: "blog/build-vs-buy-moteur-recherche.html" },
@@ -57,7 +53,23 @@ window.HEURIX_SEARCH_INDEX = [
   { title: "Elasticsearch et Lucene : ce que vous devrez construire vous-même", excerpt: "Ces outils peuvent tout faire. C'est le sujet : ils fournissent les briques, pas la logique métier de vos références techniques.", path: "blog/elasticsearch-lucene-catalogue-technique.html" },
   { title: "Guide d'utilisation : piloter votre recherche au quotidien", excerpt: "Lire vos statistiques, corriger un classement, faire évoluer le moteur depuis la console — une fois l'installation faite.", path: "blog/guide-utilisation-console.html" },
   { title: "Guide de mise en route — de la souscription à l'installation complète", excerpt: "Le parcours complet : premier catalogue, Heurix Tracker, intégration front-end, serveur MCP.", path: "blog/guide-mise-en-route.html" },
-  { title: "Connecter Heurix à Claude Desktop et Cursor avec le serveur MCP", excerpt: "Guide pas à pas : interrogez votre catalogue en langage naturel depuis un agent IA, sans écrire de code.", path: "blog/guide-serveur-mcp-heurix.html" }
+  { title: "Connecter Heurix à Claude Desktop et Cursor avec le serveur MCP", excerpt: "Guide pas à pas : interrogez votre catalogue en langage naturel depuis un agent IA, sans écrire de code.", path: "blog/guide-serveur-mcp-heurix.html" },
+  { title: "FAQ — Comment intégrer le moteur Heurix à mon site ?", excerpt: "Par API : vous indexez votre catalogue (un appel), vous branchez la recherche (un appel), c'est en ligne.", path: "faq.html" },
+  { title: "FAQ — Combien ça coûte ?", excerpt: "Un essai gratuit de 14 jours (jusqu'à 2 000 requêtes et 2 000 produits) pour tester sans carte bancaire, puis des plans à partir de 19 €/mois.", path: "faq.html" },
+  { title: "FAQ — Heurix ou Algolia / Elasticsearch / Typesense — pourquoi choisir Heurix ?", excerpt: "Les moteurs généralistes comparent des caractères ; Heurix lit la structure de vos références grâce à sa cascade d'annotations.", path: "faq.html" },
+  { title: "FAQ — Dois-je changer de plateforme e-commerce ?", excerpt: "Non. Heurix s'ajoute à votre site existant par API, quel que soit votre CMS — Shopify, PrestaShop, WooCommerce, Magento ou solution maison.", path: "faq.html" },
+  { title: "FAQ — Comment mesurer l'impact sur mes ventes ?", excerpt: "Le champ matched de chaque résultat explique pourquoi il sort, et le simulateur ROI vous donne un ordre de grandeur du levier économique selon votre trafic et…", path: "faq.html" },
+  { title: "FAQ — Mon secteur est-il couvert ?", excerpt: "Dix packs de règles sont fournis (outillage, automobile, électricité, plomberie, industrie, électronique, mode, vins, livres, finance) et la mécanique…", path: "faq.html" },
+  { title: "FAQ — Combien de temps pour être opérationnel ?", excerpt: "Le premier résultat se voit en une après-midi. Exportez votre catalogue en CSV depuis votre ERP, déposez-le dans la console : séparateur, encodage et…", path: "faq.html" },
+  { title: "FAQ — Que se passe-t-il si Heurix ne répond pas ?", excerpt: "Vos visiteurs gardent une recherche fonctionnelle. Les modules PrestaShop et WooCommerce embarquent un repli automatique : si Heurix ne répond pas en une…", path: "faq.html" },
+  { title: "FAQ — Où sont hébergées mes données ?", excerpt: "En France, chez OVH (Gravelines ou Strasbourg). Vos catalogues ne quittent pas l'Union européenne, et le moteur lui-même est conçu et développé en France.", path: "faq.html" },
+  { title: "FAQ — Que se passe-t-il si je dépasse le quota de mon plan ?", excerpt: "Jamais de coupure brutale : le surplus est facturé au tarif à l'usage indiqué sur la page tarifs.", path: "faq.html" },
+  { title: "FAQ — La démo sur cette page utilise-t-elle vraiment le moteur ?", excerpt: "Oui — chaque frappe interroge le vrai moteur Heurix via l'endpoint de démo public (/v1/public-demo/search), sur deux vrais catalogues (outillage, mode) : même…", path: "faq.html" },
+  { title: "Moteur de recherche pour PrestaShop", excerpt: "Remplacez la recherche native de PrestaShop par un moteur qui comprend vos références techniques.", path: "prestashop.html" },
+  { title: "Moteur de recherche pour WooCommerce", excerpt: "Remplacez la recherche produits de WooCommerce par un moteur qui comprend vos références techniques.", path: "woocommerce.html" },
+  { title: "Moteur de recherche pour Shopify", excerpt: "Améliorez la recherche Shopify sur les catalogues techniques : tolérance aux fautes, graphies de références, gros catalogues.", path: "shopify.html" },
+  { title: "Les secteurs couverts", excerpt: "Outillage, industrie, mode, librairie, électrique, BTP, vins : les catalogues où une recherche qui lit la structure des références change le plus de choses.", path: "secteurs.html" },
+  { title: "Programme partenaires", excerpt: "Heurix ouvre son programme partenaires et recrute ses premières agences.", path: "partners.html" }
 ];
 
 window.HEURIX_SEARCH_LATEST_PATHS = [
