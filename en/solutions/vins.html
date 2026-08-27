@@ -18,7 +18,7 @@
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="../../favicon-32.png">
 <link rel="apple-touch-icon" href="../../apple-touch-icon.png">
-<link rel="stylesheet" href="../../styles.css?v=1787856782">
+<link rel="stylesheet" href="../../styles.css?v=1787857157">
 <link rel="canonical" href="https://heurix.fr/en/solutions/vins.html">
 <script type="application/ld+json">
 {
@@ -57,6 +57,7 @@
           <div class="nav-drop-panel">
           <a href="../solutions/outillage.html">Hardware & tools</a>
           <a href="../solutions/industrie.html">Spare parts & industry</a>
+          <a href="../solutions/automobile.html">Automotive & spare parts</a>
           <a href="../solutions/mode.html">Fashion & retail</a>
           <a href="../solutions/electronique.html">Electronics & high-tech</a>
           <a href="../solutions/livres.html">Books & publishing</a>
@@ -123,7 +124,7 @@
     </nav>
     <div class="kicker kicker-vins">🍇 Solutions · Wine & spirits</div>
     <h1>Wine &amp; spirits: search that understands your references</h1>
-    <div class="solution-intro solution-intro-droite">
+    <div class="solution-intro solution-intro-gauche">
       <img class="solution-intro-img" src="../../img/solutions/vins.jpg?v=1787855970"
            width="1000" height="671" decoding="async"
            alt="Three empty wine bottles standing on a wooden table, in different glass and shapes: brown, green and black.">
@@ -138,12 +139,13 @@
       <p>The <code class="docs-inline-code">vins</code> rule pack activates when you pick this industry, at indexing time. It produces these annotations, each becoming a usable filter:</p>
       <div class="table-scroll"><table class="docs-params">
         <tr><th>Annotation</th><th>What it isolates</th></tr>
-        <tr><td><code class="docs-inline-code">MILLESIME_2015</code></td><td>the vintage, distinguished from any other number</td></tr>
-        <tr><td><code class="docs-inline-code">FORMAT_MAGNUM</code></td><td>the bottle format</td></tr>
-        <tr><td><code class="docs-inline-code">DEGRE_13</code></td><td>the alcohol level</td></tr>
-        <tr><td><code class="docs-inline-code">COULEUR_ROUGE</code></td><td>the color</td></tr>
-        <tr><td><code class="docs-inline-code">ELEVAGE_BIO</code></td><td>the farming method</td></tr>
+        <tr><td><code class="docs-inline-code">MILLESIME_2015</code></td><td>the year, bounded to 1900-2029 so it never bites on a price</td></tr>
+        <tr><td><code class="docs-inline-code">FORMAT_MAGNUM</code></td><td>the format, by name or in centiliters — a magnum is 150 cl</td></tr>
+        <tr><td><code class="docs-inline-code">DEGRE_13</code></td><td>the alcohol level, decimal comma included</td></tr>
+        <tr><td><code class="docs-inline-code">COULEUR_ROUGE</code></td><td>the color, in French as well as rosso, tinto or blanco</td></tr>
+        <tr><td><code class="docs-inline-code">ELEVAGE_BIO</code></td><td>how the vineyard is farmed — organic, biodynamic, Demeter</td></tr>
       </table></div>
+      <p>On top of those: the type — still or sparkling, champagne and crémant included — and oak-barrel ageing. The four formats are recognized by name as well as by capacity: half-bottle, 75 cl, magnum, jeroboam. Two profiles then compose themselves, the ones a wine merchant looks for as such: <code class="docs-inline-code">MOUSSEUX_MILLESIME_2015</code> for a vintage champagne, <code class="docs-inline-code">ROUGE_BIODYNAMIE</code> for a biodynamic red — with no need to cross two filters by hand.</p>
 
       <h2>Three bottles, taken from the label</h2>
       <div class="table-scroll"><table class="docs-params">

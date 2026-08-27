@@ -18,7 +18,7 @@
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="../../favicon-32.png">
 <link rel="apple-touch-icon" href="../../apple-touch-icon.png">
-<link rel="stylesheet" href="../../styles.css?v=1787856782">
+<link rel="stylesheet" href="../../styles.css?v=1787857157">
 <link rel="canonical" href="https://heurix.fr/en/solutions/outillage.html">
 <script type="application/ld+json">
 {
@@ -57,6 +57,7 @@
           <div class="nav-drop-panel">
           <a href="../solutions/outillage.html">Hardware & tools</a>
           <a href="../solutions/industrie.html">Spare parts & industry</a>
+          <a href="../solutions/automobile.html">Automotive & spare parts</a>
           <a href="../solutions/mode.html">Fashion & retail</a>
           <a href="../solutions/electronique.html">Electronics & high-tech</a>
           <a href="../solutions/livres.html">Books & publishing</a>
@@ -138,12 +139,13 @@
       <p>The <code class="docs-inline-code">outillage</code> rule pack activates when you pick this industry, at indexing time. It produces these annotations, each becoming a usable filter:</p>
       <div class="table-scroll"><table class="docs-params">
         <tr><th>Annotation</th><th>What it isolates</th></tr>
-        <tr><td><code class="docs-inline-code">DIAM_M8</code></td><td>the diameter, isolated from the reference</td></tr>
-        <tr><td><code class="docs-inline-code">LONG_20</code></td><td>the length, distinguished from the diameter</td></tr>
-        <tr><td><code class="docs-inline-code">MAT_INOX</code></td><td>the material</td></tr>
-        <tr><td><code class="docs-inline-code">TETE_HEX</code></td><td>the head type</td></tr>
-        <tr><td><code class="docs-inline-code">NORME_DIN933</code></td><td>the standard, recognized with or without spaces</td></tr>
+        <tr><td><code class="docs-inline-code">DIAM_M8</code></td><td>the metric diameter, isolated from the rest of the reference</td></tr>
+        <tr><td><code class="docs-inline-code">LONG_20</code></td><td>the length, whatever the separator: x, ×, * or a hyphen</td></tr>
+        <tr><td><code class="docs-inline-code">MAT_INOX</code></td><td>the material, by name or by its A2 and A4 codes</td></tr>
+        <tr><td><code class="docs-inline-code">TETE_HEX</code></td><td>the head type, workshop abbreviations included — TH, TF, CHC, BTR</td></tr>
+        <tr><td><code class="docs-inline-code">NORME_DIN933</code></td><td>the DIN or ISO standard, with or without a space</td></tr>
       </table></div>
+      <p>On top of those: the family — screw, nut, washer, bolt, stud, wall plug — and the strength class, from 4.6 to 12.9. Those six families are recognized in six languages: a Spanish <code class="docs-inline-code">tornillo</code> and a German <code class="docs-inline-code">schraube</code> land in the same filter as the French <code class="docs-inline-code">vis</code>. Two annotations then compose themselves: <code class="docs-inline-code">VIS_M8X20</code> puts diameter and length back together as one reference, <code class="docs-inline-code">DIAM_M8_INOX</code> crosses diameter with material — the pair a buyer asks for at the counter.</p>
 
       <h2>Three real references, broken down</h2>
       <div class="table-scroll"><table class="docs-params">
