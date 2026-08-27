@@ -35,6 +35,102 @@
   "areaServed": "FR"
 }
 </script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How do I integrate the Heurix engine into my site?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "By API: you index your catalog (one call), you wire up search (one call), it's live. No plugin to install, no rebuild, no dependency on your CMS. The quickstart guide fits in 3 calls. Integration guides with real code are available for Shopify, PrestaShop, WooCommerce, and Magento."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How much does it cost?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A 14-day free trial (up to 2,000 requests and 2,000 products) to test with no credit card, then plans starting at €19/month. Counting rules are public and your usage is viewable in real time — no surprise at the end of the month. Full plan details are here ."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Heurix or Algolia / Elasticsearch / Typesense — why choose Heurix?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Generalist engines compare characters; Heurix reads the structure of your references through its annotation cascade. If your catalog is technical (dimensions, standards, sizes, vintages, editions), that's precisely the case Heurix is built for — with rule packs provided per industry, sorting that respects stock, and explainable results. For a blog or a simple editorial site, a generalist engine is more than enough."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Do I need to change e-commerce platforms?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. Heurix plugs into your existing site by API, whatever your CMS — Shopify, PrestaShop, WooCommerce, Magento, or a custom build. Your catalog stays with you; the engine only replaces search."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I measure the impact on my sales?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The matched field on every result explains why it came up, and the ROI simulator gives you an order of magnitude for the economic lever based on your traffic and average order value. The most reliable method remains a before/after test on your zero-result queries — measurable in your analytics tool within the first week."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is my industry covered?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Ten rule packs are provided (hardware, automotive, electrical, plumbing, industry, electronics, fashion, wine, books, finance) and the mechanism applies to any catalog where people search by reference, dimension, or variant — books, wine, spare parts, electronics... If your industry has very specific references, tell us about your catalog : designing a fully custom pack is possible on Scale plans."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How long until I'm up and running?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The first result shows up in an afternoon. Export your catalog to CSV from your ERP, drop it into the console: separator, encoding, and column matching are detected, and the rule pack for your industry is recommended based on your content. You then test search on your own products. Going live depends on your platform: 2 to 3 days on PrestaShop , 3 to 4 days on WooCommerce — module provided, your theme unchanged. A fully custom on-site replacement takes 2 to 3 weeks."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What happens if Heurix doesn't respond?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Your visitors keep a working search. The PrestaShop and WooCommerce modules include an automatic fallback: if Heurix doesn't respond within a second, your platform's native search takes back over, then Heurix is retried a minute later — no action needed on your part. A search-engine outage should never become a storefront outage. That's a design principle, not an option."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Where is my data hosted?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "In France, with OVH (Gravelines or Strasbourg). Your catalogs never leave the European Union, and the engine itself is designed and built in France. For GDPR requirements, it's the simplest scenario to document with your DPO."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What happens if I exceed my plan's quota?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Never an abrupt cutoff: the surplus is billed at the usage rate shown on the pricing page . Counting rules are public (1 search = 1 request, 1,000 indexed products = 10 requests) and your usage is viewable in real time via the API."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does the demo on this page really use the engine?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes — every keystroke queries the real Heurix engine through the public demo endpoint ( /v1/public-demo/search ), on two real catalogs (hardware, fashion): same normalization, same typo tolerance, same annotation cascade, same scoring, same result highlighting as any production integration. The description field is omitted from each response to keep the widget fast on mobile — everything else is the genuine article, not a mock."
+      }
+    }
+  ]
+}
+</script>
 </head>
 <body class="docs-dark">
 <header>
