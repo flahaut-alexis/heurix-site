@@ -1603,6 +1603,30 @@ h2{ font-size:clamp(26px,3.4vw,34px); font-weight:800; margin:0 0 18px; max-widt
 /* ARTICLE / POST */
 .post{ padding:56px 0 90px; }
 .post-wrap{ max-width:700px; }
+
+/* LARGEUR DE LECTURE DE LA PROSE, indépendante de celle du conteneur
+   (27 août 2026).
+
+   Les 18 pages `solutions/` portaient `wrap post-wrap` : 700 px de large,
+   la mesure d'un article de blog, sur des pages qui contiennent deux
+   tableaux et des grilles de cartes. Mesuré à 1920 px : 644 px utiles,
+   34 % de la fenêtre, 610 px vides de chaque côté. Elles sont passées à
+   `.wrap` seul — 1100 px, la valeur de toutes les pages saines
+   (produit.html, pricing.html, secteurs.html), pas une valeur inventée.
+
+   MAIS ÉLARGIR LE CONTENEUR ÉLARGIT AUSSI LA PROSE, et c'est ce que le
+   contrôle à l'écran a montré : les paragraphes passaient de ~85 à
+   127 CARACTÈRES par ligne, là où la lecture confortable tient entre 60
+   et 80. Un conteneur large est bon pour un tableau, mauvais pour un
+   paragraphe — les deux besoins sont distincts et se règlent séparément.
+
+   720 px n'est pas un nombre nouveau : c'est déjà celui de
+   `.docs-section p`, quelques lignes plus bas.
+
+   SANS EFFET SUR LES 56 ARTICLES DE BLOG, qui gardent `post-wrap` : leur
+   conteneur ne fait que 644 px utiles, donc ce plafond ne les atteint
+   jamais. Vérifié plutôt que supposé. */
+.post-body p{ max-width:720px; }
 .back-link{ display:inline-flex; align-items:center; gap:6px; font-size:13.5px; font-weight:600; color:var(--blue-deep); text-decoration:none; margin-bottom:28px; }
 .back-link:hover{ text-decoration:underline; }
 .post h1{ font-size:clamp(28px,4.4vw,40px); margin-bottom:14px; }
