@@ -613,3 +613,79 @@ regarde et celui où les défauts se rangent le moins.
 deux langues ne se cliquent pas. `tests/liens-relatifs.test.js` résout chaque
 lien depuis le dossier de sa page et demande au disque si le fichier existe —
 périmètre dérivé, aucune liste de pages. Il aurait attrapé les 22.
+
+### Une capacité documentée qui n'existe pas est pire qu'une limite documentée
+
+Les deux sont des commentaires faux. Ils ne coûtent pas la même chose.
+
+**Une limite documentée fait perdre du temps.** `rulepacks/vins.yaml` a porté
+un mois durant : « le symbole ° est supprimé par la normalisation avant même
+d'atteindre cette règle — inutile de le prévoir dans le motif, il ne se
+déclencherait jamais ». C'était vrai le jour où ça a été écrit. C'était aussi
+un constat transformé en contournement durable : la cause vivait dans
+`fold()`, pas dans le pack, et personne n'y est remonté. **Le commentaire
+enseignait la limite au lieu de la signaler.** Pendant ce temps « 13,5° », la
+graphie la plus courante d'une étiquette de vin, ne sortait aucune
+annotation.
+
+**Une capacité documentée qui n'existe pas fait écrire du code qui ne
+marchera pas.** Le 27 août, ce même commentaire a été remplacé par « le ° est
+désormais reconnu ». Vrai pendant une heure — le correctif a été reculé le
+temps de mesurer son prix. Un lecteur arrivant après aurait construit sur une
+capacité absente, sans aucune raison d'aller vérifier : une doc qui promet ne
+se met pas en doute, une doc qui limite invite au moins à essayer.
+
+La forme juste est la troisième, et elle est plus longue à écrire : **dire
+l'état, sa cause, et ce qui le débloque.** Le commentaire dit maintenant que
+la cause est trouvée, que le correctif est écrit, où il vit, pourquoi il est
+reculé, et quelle condition le libère.
+
+Corollaire : **un commentaire qui décrit un comportement se périme au rythme
+du code qu'il ne contient pas.** Celui de `vins` décrivait `fold()`, à deux
+dépôts de distance. Les trois formulations successives ont été fausses tour à
+tour, et aucune ne pouvait être vérifiée depuis le fichier qui la portait.
+
+### Quatre divergences silencieuses, et la quatrième traverse les sessions
+
+Quatre fois en une semaine, un instrument et sa cible ont divergé sans qu'un
+test tombe. Les trois premières se ressemblent ; la quatrième est d'une autre
+nature.
+
+| | l'instrument | ce qu'il mesurait vraiment |
+|---|---|---|
+| 1 | `bust-cache.sh` et le contrôle de la CI | les références qu'un motif à un seul niveau de remontée voulait bien voir — 38 pages jamais bumpées |
+| 2 | le contrôle de langue | « ce texte porte des accents », pas « ce texte est en français » |
+| 3 | `generer_catalogue_pack.py --verifier` | sa propre réimplémentation de la tokenisation — 2 801 termes sous-comptés, seuil franchi sans le savoir |
+| 4 | **le `.venv` partagé** | **le cœur natif d'une autre session** |
+
+**Les trois premiers sont un instrument qui se trompait de cible.** Ils se
+corrigent en dérivant la portée au lieu de l'énumérer, et en demandant son
+résultat au système contrôlé plutôt qu'en le recalculant.
+
+**Le quatrième est un instrument qui change la cible des autres**, et c'est
+pour ça qu'il est plus dangereux. `maturin develop` remplace
+`heurix_fst_core` dans le `.venv` **pour toutes les sessions qui le
+partagent**. Le 27 août, une session mesurait le comportement de production
+pendant qu'une autre reconstruisait la wheel :
+
+    fold('°')  ->  ' deg'   à 13h30
+    fold('°')  ->  '°'      à 13h56
+
+sans qu'une ligne bouge dans le dépôt de la première. Elle a failli rapporter
+le comportement d'une branche comme celui de la production.
+
+Aucune des deux ne pouvait le voir depuis son propre travail. C'est la
+différence qui compte : les trois premiers défauts sont visibles en relisant
+l'instrument, le quatrième ne l'est pas — il faut savoir qu'une autre session
+existe.
+
+Trois conséquences, écrites dans `requirements-dev.txt` à côté de la
+déclaration de `maturin` :
+
+- **le `.venv` partagé n'est une source fiable sur aucun comportement du cœur
+  natif** ;
+- une mesure qui doit valoir pour la production se prend **contre l'API de
+  production**, ou après avoir vérifié le commit du cœur natif installé
+  (`git -C ../heurix-engine-fst log --oneline -1`) ;
+- **si vous reconstruisez pendant que d'autres sessions travaillent dans cet
+  arbre, dites-le-leur.** Aucun outil ne le fera.
