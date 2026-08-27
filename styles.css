@@ -371,6 +371,35 @@ header{
    et il se remontre tout seul le jour ou on lui en donne un, sans qu'il
    faille penser a retirer cette regle. */
 .search-rail:empty{ display:none; }
+.search-rail h3{
+  font-size:11px; font-weight:700; letter-spacing:.6px; text-transform:uppercase;
+  color:var(--ink-muted); margin:0 0 8px; padding:0 2px;
+}
+.search-filtre{
+  display:flex; align-items:center; gap:9px;
+  padding:7px 8px; border-radius:7px; cursor:pointer; font-size:13.5px;
+}
+.search-filtre:hover{ background:#fff; }
+.search-filtre input{ accent-color:var(--blue); width:15px; height:15px; flex:none; }
+/* Le focus clavier doit se voir sur la LIGNE, pas seulement sur la case :
+   la case fait 15 px dans un rail de 220. */
+.search-filtre:focus-within{ background:#fff; outline:2px solid var(--blue); outline-offset:-2px; }
+.search-filtre-nom{ min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.search-filtre-n{
+  margin-left:auto; font-size:12px; color:var(--ink-muted);
+  font-variant-numeric:tabular-nums; flex:none;
+}
+/* Une source qui ne rend rien pour cette requete. Grisee ET desactivee : le
+   gris seul laisserait cocher une case qui ne change rien, ce qui se lit
+   comme une panne. */
+.search-filtre.vide{ opacity:.42; cursor:default; }
+.search-filtre.vide:hover{ background:transparent; }
+.search-effacer{
+  margin-top:10px; font:600 12px/1 inherit; color:var(--blue-deep);
+  background:none; border:0; padding:7px 8px; cursor:pointer; border-radius:6px;
+}
+.search-effacer:hover{ background:#fff; }
+.search-effacer:focus-visible{ outline:2px solid var(--blue); outline-offset:1px; }
 .search-results{ flex:1; overflow:auto; padding:8px; }
 
 .search-result{
@@ -449,7 +478,23 @@ header{
   /* Sous 768 px le rail devient une rangée de chips au-dessus des résultats
      (étape « filtres »). En attendant, il ne prend pas la moitié de l'écran. */
   .search-body{ flex-direction:column; }
-  .search-rail{ width:100%; border-right:0; border-bottom:1px solid var(--line); padding:10px 12px; }
+  /* SOUS 768 PX LE RAIL DEVIENT UNE RANGEE QUI DEFILE, il ne disparait pas.
+     Les maquettes le masquaient (`display:none`) : cela retire le filtrage aux
+     visiteurs mobiles, alors qu'un petit ecran est justement l'endroit ou
+     reduire une liste sert le plus. Le titre « Sources » saute -- il coutait
+     une ligne pour nommer ce que cinq cases nomment deja. */
+  .search-rail{
+    width:100%; border-right:0; border-bottom:1px solid var(--line);
+    padding:8px 12px; display:flex; gap:8px; overflow-x:auto;
+    scrollbar-width:none;
+  }
+  .search-rail::-webkit-scrollbar{ display:none; }
+  .search-rail h3{ display:none; }
+  .search-filtre{
+    flex:none; background:#fff; border:1px solid var(--line);
+    padding:6px 10px; border-radius:999px; gap:7px;
+  }
+  .search-effacer{ margin-top:0; flex:none; align-self:center; white-space:nowrap; }
 }
 
 /* Sur un ecran tactile sans clavier, le pied listait quatre raccourcis
@@ -2455,6 +2500,7 @@ body.docs-dark .regex-copy > p{ color:#CDD2F0; }
      .search-close
      .search-count
      .search-empty
+     .search-filtre-n
      .search-foot
      .search-foot kbd
      .search-panel
@@ -2465,6 +2511,7 @@ body.docs-dark .regex-copy > p{ color:#CDD2F0; }
      .search-pill-plateformes
      .search-pill-produit
      .search-pill-secteurs
+     .search-rail h3
      .search-result-excerpt
      .search-result-parent
      .search-suggest-label

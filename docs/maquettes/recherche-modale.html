@@ -31,6 +31,15 @@
       pas de mention de journalisation tant que rien ne journalise — la
       ligne reviendra avec le code qui l'implémente.
 
+  CE QUI A CHANGÉ À L'IMPLÉMENTATION (étape « filtres », 27 août 2026).
+  Cette maquette masquait le rail sous 768 px — `.rail{display:none}`. Ça
+  retire le filtrage aux visiteurs mobiles, alors qu'un petit écran est
+  justement l'endroit où réduire une liste sert le plus. Le rail y devient
+  donc une rangée de pastilles qui défile : 52 px mesurés à 390, contre les
+  110 px que le pied de raccourcis clavier occupait avant d'être masqué sur
+  tactile. Le titre « Sources » saute — il coûtait une ligne pour nommer ce
+  que cinq cases nomment déjà. Le fichier suit ci-dessus.
+
   Les notes sous les onglets portent chacune sa mesure. Elles se lisent avec
   l'implémentation, pas à sa place.
 -->
@@ -130,7 +139,13 @@ kbd{font:600 10.5px/1 inherit;background:#fff;border:1px solid var(--line);borde
      background:#fff;cursor:pointer;color:var(--ink)}
 .btn.p{background:var(--blue);border-color:var(--blue);color:#fff}
 .etat{display:none}.etat.on{display:block}
-@media(max-width:768px){.rail{display:none}.panneau{max-height:100vh;border-radius:0}}
+@media(max-width:768px){.panneau{max-height:100vh;border-radius:0}
+  .rail{width:100%;border-right:0;border-bottom:1px solid var(--line);
+        display:flex;gap:8px;overflow-x:auto;padding:8px 12px}
+  .rail h3{display:none}
+  .filtre{flex:none;background:#fff;border:1px solid var(--line);
+          padding:6px 10px;border-radius:999px;gap:7px}
+  .effacer{margin-top:0;flex:none;align-self:center;white-space:nowrap}}
 </style>
 </head>
 <body>

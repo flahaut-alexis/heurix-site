@@ -44,3 +44,8 @@ décident :
 Une spécification. L'implémentation peut diverger — mais alors le commit doit
 dire pourquoi, et ces fichiers doivent suivre ou être retirés. Une maquette qui
 survit à ce qu'elle décrivait est le même défaut qu'un commentaire périmé.
+
+Appliqué une fois : l'étape « filtres » a fait diverger le comportement sous
+768 px — la maquette masquait le rail, l'implémentation en fait une rangée de
+pastilles qui défile, parce que masquer retirait le filtrage aux visiteurs
+mobiles. `recherche-modale.html` a suivi le même jour, et porte la note.

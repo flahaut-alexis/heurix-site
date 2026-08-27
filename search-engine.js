@@ -341,6 +341,14 @@
     },
   };
 
+  // L'ORDRE D'AFFICHAGE DES SOURCES, et non l'ordre des clefs.
+  // Releve sur l'arborescence reelle, du plus fourni au moins fourni. Les
+  // maquettes portent la mesure : Blog 38, Secteurs, Produit, Documentation,
+  // Plateformes. FAQ n'avait qu'une entree et rejoint Produit -- une source
+  // sous le seuil coute une ligne de filtre et ne filtre rien.
+  var ORDRE_SOURCES = ["blog", "secteurs", "produit", "documentation", "plateformes"];
+
+
   function langue() {
     return /(^|\/)en\//.test(window.location.pathname) ? "en" : "fr";
   }
@@ -403,6 +411,36 @@
     var corps = el("div", "search-body");
     var rail = el("aside", "search-rail");
     rail.id = "heurix-search-rail";
+
+    // UN GROUPE NOMME, PAS UNE PILE DE CASES. Sans role=group et son nom, un
+    // lecteur d'ecran annonce cinq cases a cocher sans dire ce qu'elles filtrent.
+    rail.setAttribute("role", "group");
+    var titreRail = el("h3", null, L.sources);
+    titreRail.id = "heurix-search-rail-titre";
+    rail.setAttribute("aria-labelledby", titreRail.id);
+    rail.appendChild(titreRail);
+
+    // L'ORDRE EST FIXE, PAS TRIE PAR COMPTEUR. Un rail qui se reordonne a chaque
+    // frappe fait viser une ligne qui a bouge. On garde l'ordre de frequence
+    // releve sur l'arborescence, celui des maquettes.
+    var filtres = {};
+    ORDRE_SOURCES.forEach(function (clef) {
+      var ligne = el("label", "search-filtre");
+      var boite = document.createElement("input");
+      boite.type = "checkbox";
+      boite.value = clef;
+      ligne.appendChild(boite);
+      ligne.appendChild(el("span", "search-filtre-nom", L.source[clef]));
+      var n = el("span", "search-filtre-n", "\u2014");
+      ligne.appendChild(n);
+      rail.appendChild(ligne);
+      filtres[clef] = { ligne: ligne, boite: boite, n: n };
+    });
+
+    var effacer = el("button", "search-effacer", L.effacer);
+    effacer.type = "button";
+    effacer.hidden = true;
+    rail.appendChild(effacer);
     var liste = el("div", "search-results");
     liste.id = "heurix-search-results";
     liste.setAttribute("role", "listbox");
@@ -447,7 +485,8 @@
 
     modale = {
       racine: racine, panneau: panneau, champ: champ, compte: compte,
-      rail: rail, liste: liste, vide: vide, etiquette: etiquette,
+      rail: rail, filtres: filtres, effacer: effacer,
+      liste: liste, vide: vide, etiquette: etiquette,
       annonce: annonce, fond: fond,
     };
     return modale;
@@ -523,6 +562,57 @@
       }, 300);
     }
 
+    // ----- filtres de source ---------------------------------------------
+
+    // LES SOURCES RETENUES, pas les cases : l'etat vit ici et les cases le
+    // refletent. L'inverse -- lire l'etat dans le DOM a chaque frappe -- casse
+    // des qu'une case est desactivee parce que sa source est vide.
+    var retenues = {};
+
+    function auMoinsUnFiltre() {
+      for (var k in retenues) if (retenues[k]) return true;
+      return false;
+    }
+
+    function passe(item) {
+      return !auMoinsUnFiltre() || !!retenues[item.s];
+    }
+
+    function compterParSource(items) {
+      var c = {};
+      ORDRE_SOURCES.forEach(function (k) { c[k] = 0; });
+      items.forEach(function (it) { if (c[it.s] !== undefined) c[it.s]++; });
+      return c;
+    }
+
+    // LES COMPTEURS PORTENT SUR LE RESULTAT NON FILTRE.
+    // Sinon cocher « Blog » met les quatre autres a zero et on ne peut plus voir
+    // ce qu'on gagnerait en cochant une seconde source -- le filtre devient un
+    // cul-de-sac au lieu d'un choix.
+    function majRail(comptes) {
+      ORDRE_SOURCES.forEach(function (clef) {
+        var f = m.filtres[clef];
+        var n = comptes ? comptes[clef] : null;
+        f.n.textContent = n === null ? "\u2014" : String(n);
+        // Une source vide ne se coche pas : la case resterait cochable et
+        // ne changerait rien, ce qui se lit comme une panne.
+        var morte = n === 0;
+        f.boite.disabled = morte && !retenues[clef];
+        f.ligne.classList.toggle("vide", morte && !retenues[clef]);
+        f.boite.checked = !!retenues[clef];
+        // Le nom accessible porte le compte : « Blog, 38 resultats ». Sans lui,
+        // un lecteur d'ecran lit « Blog 38 » et le chiffre flotte.
+        f.boite.setAttribute("aria-label", n === null ? L.source[clef]
+          : L.source[clef] + ", " + n + " " + (n === 1 ? L.resultat : L.resultats));
+      });
+      m.effacer.hidden = !auMoinsUnFiltre();
+    }
+
+    function viderFiltres() {
+      retenues = {};
+      chercherEtRendre();
+      m.champ.focus();
+    }
     function compteur(total) {
       m.compte.textContent = total ? total + " " + (total === 1 ? L.resultat : L.resultats) : "";
     }
@@ -532,6 +622,10 @@
       m.etiquette.hidden = false;
       m.etiquette.textContent = L.avant;
       compteur(0);
+      // SANS REQUETE, LES COMPTEURS N'ONT RIEN A COMPTER. Un tiret plutot
+      // qu'un zero : zero veut dire « cette source ne rend rien pour cette
+      // recherche », et il n'y a pas de recherche.
+      majRail(null);
       rendre(derniers(), "");
     }
 
@@ -618,12 +712,13 @@
       if (!q.trim()) { suggestionsParDefaut(); annoncer(0, ""); return; }
       m.etiquette.hidden = true;
       var tous = runSearch(q, 0);          // 0 = sans plafond, pour le compteur
-      var visibles = tous.slice(0, 8);
-      m.vide.hidden = tous.length !== 0;
+      majRail(compterParSource(tous));
+      var retenus = tous.filter(passe);
+      m.vide.hidden = retenus.length !== 0;
       m.vide.textContent = L.rien + " « " + q + " »";
-      compteur(tous.length);
-      rendre(visibles, q);
-      annoncer(tous.length, q);
+      compteur(retenus.length);
+      rendre(retenus.slice(0, 8), q);
+      annoncer(retenus.length, q);
     }
 
     // ----- ouverture et fermeture ---------------------------------------
@@ -638,6 +733,21 @@
       m.racine.querySelectorAll("[data-search-close]").forEach(function (n) {
         n.addEventListener("click", close);
       });
+      ORDRE_SOURCES.forEach(function (clef) {
+        m.filtres[clef].boite.addEventListener("change", function () {
+          if (this.checked) retenues[clef] = true; else delete retenues[clef];
+          chercherEtRendre();
+        });
+      });
+      m.effacer.addEventListener("click", viderFiltres);
+
+      // ECHAP DEPUIS N'IMPORTE OU DANS LE PANNEAU.
+      // auClavier est pose sur le CHAMP : depuis une case a cocher, Echap ne
+      // fermait rien. Le defaut n'existait pas avant cette etape -- le panneau
+      // n'avait aucun autre element focalisable que le champ et la croix.
+      m.panneau.addEventListener("keydown", function (e) {
+        if (e.key === "Escape" && e.target !== m.champ) { e.preventDefault(); close(); }
+      });
     }
 
     function open() {
@@ -649,6 +759,11 @@
       m.racine.classList.add("open");
       document.body.style.overflow = "hidden";
       m.champ.value = "";
+      // UNE OUVERTURE EST UNE RECHERCHE NEUVE. Garder les filtres de la
+      // precedente ferait rendre zero resultat sans que rien a l'ecran ne dise
+      // pourquoi : le rail est en peripherie, la liste est au centre du regard.
+      retenues = {};
+      majRail(null);
       setTimeout(function () { m.champ.focus(); }, 10);
       if (window.dataLayer) window.dataLayer.push({ event: "site_search_open" });
 
