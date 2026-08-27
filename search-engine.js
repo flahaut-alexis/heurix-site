@@ -32,13 +32,90 @@
     return str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
   }
 
-  function highlight(text, query) {
-    if (!query) return text;
-    var nText = normalize(text);
-    var nQuery = normalize(query);
-    var idx = nText.indexOf(nQuery);
-    if (idx === -1) return text;
-    return text.slice(0, idx) + "<mark>" + text.slice(idx, idx + query.length) + "</mark>" + text.slice(idx + query.length);
+  // REPLI AVEC CARTE DE POSITIONS (27 aout 2026).
+  //
+  // POURQUOI UNE CARTE PLUTOT QU'UN indexOf SUR DEUX CHAINES. L'ancien
+  // `highlight` cherchait dans le texte NORMALISE et decoupait le texte
+  // ORIGINAL au meme indice, en supposant que la normalisation preserve les
+  // longueurs. Elle les preserve pour les accents precomposes du latin
+  // (« e » aigu se decompose en deux caracteres puis en reperd un), et c'est
+  // pourquoi le defaut ne s'est jamais vu. Elle ne les preserve pas en
+  // general : l'eszett allemand donne « ss », la ligature « oe » donne deux
+  // caracteres. Un seul de ces caracteres dans un titre decalait tout le
+  // surlignage a sa droite, sans erreur ni signal.
+  //
+  // C'est exactement le defaut que le coeur natif a corrige le meme jour
+  // (fold_avec_positions, heurix-engine-fst) : constater une egalite de
+  // longueur ne remplace pas traduire chaque position. On construit donc la
+  // carte ici aussi -- une entree par caractere replie, portant l'indice du
+  // caractere SOURCE dont il provient.
+  function replier(src) {
+    var out = "";
+    var carte = [];
+    for (var i = 0; i < src.length; i++) {
+      var f = src[i].toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      for (var k = 0; k < f.length; k++) {
+        out += f[k];
+        carte.push(i);
+      }
+    }
+    return { texte: out, carte: carte };
+  }
+
+  // Un caractere de mot, au sens du surlignage : ce qui ne doit pas etre
+  // coupe en deux a l'ecran. Les accents en font partie -- « r », « e »
+  // accentue et « f » appartiennent au meme mot dans « reference ».
+  function estCarMot(c) {
+    return c !== undefined && /[0-9A-Za-z\u00C0-\u024F]/.test(c);
+  }
+
+  // DECOUPE UN TEXTE EN SEGMENTS A SURLIGNER OU NON.
+  //
+  // Deux corrections par rapport a l'ancien `highlight`, qui rendait une
+  // CHAINE HTML concatenee :
+  //
+  //   1. LE MOT ENTIER. « Recher » dans « Recherche » surlignait « Recher »
+  //      et laissait « che » en dehors, coupant le mot en deux a l'ecran.
+  //      L'empan s'etend desormais aux frontieres du mot qui le contient.
+  //
+  //   2. AUCUN HTML CONSTRUIT PAR CONCATENATION. L'ancien rendu passait par
+  //      innerHTML. La requete ne pouvait pas s'y injecter -- elle ne sert
+  //      qu'a localiser -- mais le TEXTE DE L'INDEX, si : un titre portant
+  //      « <b> » s'affichait en gras. C'etait sans danger tant que l'index
+  //      etait ecrit a la main. Il va devenir DERIVE du contenu des pages :
+  //      la confiance disparait, et le rendu passe par des noeuds texte.
+  function segmenter(text, query) {
+    if (!query) return [{ t: text, marque: false }];
+    var r = replier(text);
+    var q = replier(query).texte;
+    if (!q) return [{ t: text, marque: false }];
+    var i = r.texte.indexOf(q);
+    if (i === -1) return [{ t: text, marque: false }];
+
+    var debut = r.carte[i];
+    var fin = r.carte[i + q.length - 1] + 1;
+    while (debut > 0 && estCarMot(text[debut - 1]) && estCarMot(text[debut])) debut--;
+    while (fin < text.length && estCarMot(text[fin]) && estCarMot(text[fin - 1])) fin++;
+
+    var segments = [];
+    if (debut > 0) segments.push({ t: text.slice(0, debut), marque: false });
+    segments.push({ t: text.slice(debut, fin), marque: true });
+    if (fin < text.length) segments.push({ t: text.slice(fin), marque: false });
+    return segments;
+  }
+
+  /** Ecrit le texte surligne dans `el`, par noeuds -- jamais par innerHTML. */
+  function poser(el, text, query) {
+    segmenter(text, query).forEach(function (seg) {
+      if (!seg.t) return;
+      if (seg.marque) {
+        var m = document.createElement("mark");
+        m.textContent = seg.t;
+        el.appendChild(m);
+      } else {
+        el.appendChild(document.createTextNode(seg.t));
+      }
+    });
   }
 
   function runSearch(query) {
@@ -94,9 +171,14 @@
         var a = document.createElement("a");
         a.className = "search-result";
         a.href = root + item.path;
-        a.innerHTML =
-          '<div class="search-result-title">' + highlight(item.title, query) + "</div>" +
-          '<div class="search-result-excerpt">' + highlight(item.excerpt, query) + "</div>";
+        var titre = document.createElement("div");
+        titre.className = "search-result-title";
+        poser(titre, item.title, query);
+        var extrait = document.createElement("div");
+        extrait.className = "search-result-excerpt";
+        poser(extrait, item.excerpt, query);
+        a.appendChild(titre);
+        a.appendChild(extrait);
         resultsEl.appendChild(a);
       });
     }
@@ -146,6 +228,12 @@
     modal.querySelectorAll("[data-search-close]").forEach(function (el) {
       el.addEventListener("click", close);
     });
+  }
+
+  // Exposees pour les tests : ce sont les deux fonctions dont le
+  // comportement se verifie sans DOM complet.
+  if (typeof window !== "undefined") {
+    window.__heurixSearchInterne = { segmenter: segmenter, replier: replier };
   }
 
   if (document.readyState === "loading") {
