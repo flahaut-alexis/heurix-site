@@ -69,6 +69,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # HISTORIQUE COMPLET REQUIS (27 aout 2026). La suite appelle
+          # `scripts/index-recherche.py --verifier`, dont `date_ajout()` fait
+          # `git log --diff-filter=A` pour dater l'AJOUT de chaque article.
+          #
+          # Avec le `fetch-depth: 1` par defaut, un seul commit est present :
+          # `git log --diff-filter=A -- <article>` ne rend RIEN pour tout
+          # fichier ajoute avant lui, `date_ajout()` rend 0 pour tous, et le
+          # tri par date tombe sur l'ordre alphabetique inverse.
+          #
+          # Le symptome etait « les derniers articles ont change », avec une
+          # liste qui est exactement `ls blog/*.html | sort -r | head -5`.
+          # Verifie caractere par caractere : les cinq articles annonces par
+          # la CI sont les cinq derniers dans l'ordre alphabetique.
+          #
+          # Le job « Index de recherche a jour » ne tombait pas dedans : il
+          # porte deja `fetch-depth: 0`. Deux jobs, le meme script, deux
+          # reponses -- et seul celui qui avait l'historique disait vrai.
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: '22'

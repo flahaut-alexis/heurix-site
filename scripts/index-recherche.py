@@ -319,7 +319,20 @@ def verifier() -> int:
         # LA LISTE DES DERNIERS ARTICLES, meme controle et meme raison qu'avant
         # sa fusion ici : une liste perimee reste du JSON valide, et personne
         # ne remarque qu'on met en avant le 23e article sur 30.
-        voulu = derniers_articles(langue)
+        # L'HISTORIQUE MANQUANT N'EST PAS UN ECART, C'EST UNE INCAPACITE A
+        # MESURER. Le distinguer importe : « les derniers articles ont
+        # change » invite a regenerer l'index, ce qui l'ecraserait avec la
+        # liste FAUSSE. Le message ci-dessous invite a reparer le clone.
+        try:
+            voulu = derniers_articles(langue)
+        except HistoriqueTronque as exc:
+            print("IMPOSSIBLE DE VERIFIER -- %s" % exc, file=sys.stderr)
+            print("\n  NE REGENEREZ PAS l'index depuis ce clone : vous y ecririez"
+                  "\n  une liste de derniers articles fausse, d'apparence normale."
+                  "\n  Reparez le clone :  git fetch --unshallow"
+                  "\n  Ou, en CI :  actions/checkout@v4 avec fetch-depth: 0",
+                  file=sys.stderr)
+            return 2
         if index.get("derniers", []) != voulu:
             ecarts.append("%s : les derniers articles ont change -- attendu %s"
                           % (fichier, ", ".join(voulu)))
@@ -365,12 +378,62 @@ def date_ajout(chemin: str) -> int:
     return int(out[-1]) if out and out[-1] else 0
 
 
+class HistoriqueTronque(RuntimeError):
+    """L'historique git ne permet pas de dater l'ajout des articles."""
+
+
 def derniers_articles(langue: str) -> list[str]:
+    """Les N derniers articles, datés par le commit qui les a AJOUTÉS.
+
+    GARDE SUR L'HISTORIQUE TRONQUÉ (27 août 2026). `date_ajout()` interroge
+    `git log --diff-filter=A`. Sur un clone superficiel — `fetch-depth: 1`,
+    le défaut d'`actions/checkout` — un seul commit est présent : la requête
+    ne rend rien pour tout fichier ajouté avant lui, toutes les dates valent
+    0, et le tri retombe sur l'ordre ALPHABÉTIQUE INVERSE.
+
+    Le script rendait alors une liste fausse avec l'assurance d'une liste
+    juste, et le message d'erreur disait « les derniers articles ont changé »
+    — vrai, et trompeur : ils n'avaient pas changé, c'est la mesure qui ne
+    pouvait plus les dater.
+
+    Constaté en CI le 27 août : le job « Suite de tests » n'avait pas de
+    `fetch-depth`, le job « Index de recherche à jour » avait `fetch-depth: 0`.
+    Deux jobs, le même script, deux réponses — et seul celui qui avait
+    l'historique disait vrai. Le `fetch-depth: 0` a été ajouté au premier,
+    mais ce garde vaut indépendamment : il refuse de répondre plutôt que de
+    répondre faux, partout où l'historique manque.
+    """
     import glob
     dossier = DOSSIERS_BLOG[langue]
     arts = sorted(glob.glob(os.path.join(RACINE, dossier, "*.html")))
     rels = [os.path.relpath(a, RACINE) for a in arts]
-    return [p for _, p in sorted(((date_ajout(p), p) for p in rels), reverse=True)[:N_DERNIERS]]
+    dates = [(date_ajout(p), p) for p in rels]
+
+    # LE SIGNAL EST « TOUTES LES DATES SONT EGALES », PAS « TOUTES A ZERO ».
+    #
+    # Premiere version de ce garde : `all(d == 0)`. C'etait une hypothese,
+    # pas une mesure, et elle etait FAUSSE. Verifie sur un clone --depth 1 :
+    # `date_ajout()` rend 1787853596 pour chaque article -- pas zero. Du
+    # point de vue de git, le commit unique d'un clone superficiel AJOUTE
+    # tous les fichiers, donc chacun est date de ce commit.
+    #
+    # Le tri retombe alors sur la clef secondaire, le chemin, en ordre
+    # inverse. Le symptome exact observe en CI.
+    distinctes = {d for d, _ in dates}
+    if len(rels) > 1 and len(distinctes) == 1:
+        raise HistoriqueTronque(
+            "impossible de dater l'ajout des %d articles de %s : ils portent "
+            "TOUS la meme date (%d).\n"
+            "  Cause la plus probable : un clone SUPERFICIEL (git clone --depth 1,\n"
+            "  ou actions/checkout sans fetch-depth: 0). Du point de vue de git,\n"
+            "  le commit unique ajoute tous les fichiers a la meme seconde.\n"
+            "  Sans historique discriminant, le tri retomberait sur l'ordre\n"
+            "  ALPHABETIQUE INVERSE et produirait une liste FAUSSE d'apparence\n"
+            "  normale -- c'est ce qui s'est produit en CI le 27 aout 2026."
+            % (len(rels), dossier, distinctes.pop())
+        )
+
+    return [p for _, p in sorted(dates, reverse=True)[:N_DERNIERS]]
 
 
 def main() -> int:
