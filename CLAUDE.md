@@ -741,3 +741,91 @@ Corollaire pour qui *produit* la mesure : **nommez le périmètre avec le
 résultat, pas seulement le résultat.** « Zéro ligature du bloc U+FB00–FB06 »
 n'aurait pas pu être lu comme « zéro `œ` ». C'est trois mots de plus, et ils
 sont la moitié de l'information.
+
+#### Dire ce qu'on n'a pas touché ne suffit pas s'il reste des arguments muets
+
+Cinquième défaut de `bust-cache.sh` en une semaine, et **le premier qui mente
+par omission plutôt que par portée.**
+
+Les quatre autres — le motif à un seul niveau de remontée, `git ls-files`,
+l'exclusion périmée de `downloads/`, les six assets énumérés de la CI —
+disaient tous trop peu sur un périmètre trop étroit. Mais ils *parlaient* de
+ce qu'ils avaient touché. Celui-ci se tait sur un argument qu'on lui a
+explicitement donné :
+
+```
+$ scripts/bust-cache.sh styles.css search.js search-en.js
+✓ styles.css   -> ?v=1787842214 propagé dans 122 fichier(s)
+✓ search.js    -> ?v=1787842214 propagé dans 60 fichier(s)
+  ⚠ 8 référence(s) à "search.js" NON touchée(s) -- autre chemin :
+$                                    <- fin. Pas une ligne sur search-en.js.
+```
+
+`search-en.js` est resté à son ancienne clef. **Ni « ✓ », ni « ⚠ », ni un
+code de sortie remarquable. Rien.** Le compte rendu a l'air complet : deux
+succès et un avertissement, ce qui ressemble à une exécution normale. Seul un
+contrôle de cohérence externe l'a montré, après coup.
+
+La cause tient en une ligne. `set -euo pipefail` plus un bloc d'avertissement
+qui se termine par `grep -vE` : quand celui-ci filtre tout, il sort en 1,
+`pipefail` propage, `set -e` tue la boucle. Mesuré, le pipeline rend bien 1.
+
+**Mais le correctif d'une ligne ne ferme que ce cas-ci.** La règle plus haut
+— « un script de portée doit dire ce qu'il n'a pas touché » — est respectée
+par ce script : la ligne « ⚠ 8 références non touchées » est exactement ça.
+Elle ne couvre pas le cas où le script ne dit **rien du tout** d'un argument.
+
+> **Un script qui reçoit une liste d'arguments rend compte de CHACUN,
+> y compris pour dire qu'il l'a abandonné.**
+
+C'est une exigence distincte de la précédente, et elle ferme la famille au
+lieu du cas : toute sortie anticipée future se voit, quelle qu'en soit la
+cause. `bust-cache.sh` porte désormais un piège `EXIT` qui nomme les
+arguments jamais atteints, et une ligne finale « N reçu(s), N avec un compte
+rendu ».
+
+Le contrôle externe qui l'attrape en attendant, et qui ne coûte rien —
+périmètre dérivé, aucune liste d'assets :
+
+```bash
+python3 - <<'EOF'
+import glob, io, re, collections
+c = collections.defaultdict(set)
+for p in glob.glob("**/*.html", recursive=True):
+    if "node_modules" in p: continue
+    for m in re.finditer(r'(?:src|href)="([^"?]+)\?v=(\d+)"', io.open(p, encoding="utf-8").read()):
+        c[m.group(1).split("/")[-1]].add(m.group(2))
+print({k: sorted(v) for k, v in c.items() if len(v) > 1} or "aucun asset à clefs multiples")
+EOF
+```
+
+### Trois commandes dont la portée vient de l'arbre, et non d'une liste
+
+Trois formes en deux jours, même racine, dégâts différents :
+
+| geste | ce qu'il emporte |
+|---|---|
+| `git add -A` | **inclut trop** — 1 770 lignes du travail d'une autre session, dans deux commits |
+| `git checkout <fichier>` | **restaure à HEAD** et efface un correctif non commité |
+| `git checkout -- .` | **annule en bloc** tout le non-commité d'un arbre partagé |
+
+Les trois demandent à Git « ce qui a changé » au lieu de lui donner « ce que
+j'ai changé ». Dans un arbre où quatre sessions écrivent, la réponse à la
+première question contient le travail des autres.
+
+**Le remède n'est pas de se méfier, c'est de nommer.** Un `git stash` avant
+une manœuvre risquée protège par précaution générale ; il ne cible rien. Ce
+qui cible, c'est la liste des fichiers que l'opération a réellement touchés —
+et cette liste vient de l'outil qu'on vient de lancer, pas d'un `git status`
+postérieur, qui contient déjà ce que les autres ont écrit entre-temps.
+
+Le contrôle d'une seconde, avant tout commit dans un arbre partagé :
+
+```bash
+git diff --cached --name-only | grep -v '\.html$'
+```
+
+Relire les fichiers **non-HTML** du diff indexé. Sur un dépôt de site, ils
+sont cinq ou six — les scripts, les tests, les données. C'est là que se
+cachent les fichiers d'autrui, et un coup d'œil suffit à voir celui qu'on ne
+reconnaît pas.

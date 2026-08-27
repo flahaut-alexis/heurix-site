@@ -62,7 +62,51 @@ sed_inplace() {
   fi
 }
 
+# COMPTE RENDU PAR ARGUMENT (27 août 2026, cinquième défaut de cet outil).
+#
+# Le script s'arrêtait EN SILENCE au premier avertissement, en multi-
+# arguments. Mesuré :
+#
+#     $ scripts/bust-cache.sh styles.css search.js search-en.js
+#     ✓ styles.css   -> propagé dans 122 fichier(s)
+#     ✓ search.js    -> propagé dans 60 fichier(s)
+#       ⚠ 8 référence(s) à "search.js" NON touchée(s) -- autre chemin :
+#     $                              <- fin. Pas un mot sur search-en.js.
+#
+# `search-en.js` restait à son ancienne clef, et RIEN ne le disait -- ni
+# « ✓ », ni « ⚠ », ni un code de sortie remarquable. Seul un contrôle de
+# cohérence externe l'a montré, après coup.
+#
+# LA CAUSE : `set -euo pipefail` (ligne 44) plus le pipeline de
+# l'avertissement, qui se termine par un `grep -vE`. Quand celui-ci filtre
+# TOUT, il sort en 1 ; `pipefail` propage, `set -e` tue la boucle. Le `|| true`
+# posé plus bas neutralise ce statut.
+#
+# CE QUI EST AJOUTÉ EN PLUS DU CORRECTIF, et qui compte davantage : le script
+# rend maintenant compte de CHAQUE argument reçu, y compris pour dire qu'il
+# ne l'a pas traité. Un correctif seul aurait refermé ce cas-ci ; le compte
+# rendu ferme la famille -- toute sortie anticipée future se voit.
+RECUS=$#
+RENDUS=0
+declare -a ABANDONNES=()
+rendre_compte() {
+  local statut=$?
+  if [ "${#ABANDONNES[@]}" -gt 0 ]; then
+    echo "" >&2
+    echo "⚠ ${#ABANDONNES[@]} argument(s) reçu(s) et NON traité(s) : ${ABANDONNES[*]}" >&2
+    echo "  Le script s'est arrêté avant eux (statut $statut). Relancez-les" >&2
+    echo "  séparément, et vérifiez la cohérence des clefs avant de conclure." >&2
+    exit 1
+  fi
+}
+
+# La liste des arguments restants, recalculée à chaque tour : si le script
+# meurt, le piège EXIT sait ce qui n'a pas été fait.
+ARGS_RESTANTS=("$@")
+trap rendre_compte EXIT
+
 for FICHIER in "$@"; do
+  ABANDONNES=("${ARGS_RESTANTS[@]}")
   MOTIF=$(printf '%s' "$FICHIER" | sed 's/[.]/\\./g')
   # Ancré sur un guillemet ouvrant, éventuellement suivi de "../" AUTANT
   # DE FOIS QUE NÉCESSAIRE.
@@ -93,6 +137,11 @@ for FICHIER in "$@"; do
 
   if [ -z "$FICHIERS_TOUCHES" ]; then
     echo "⚠ $FICHIER : aucune référence \"${FICHIER}?v=...\" trouvée -- nom correct ? rien à faire." >&2
+    # RENDU COMPTE, meme si rien n'a ete fait : « rien a faire » est une
+    # reponse sur cet argument. Ce qui doit rester invisible, c'est
+    # l'argument dont le script ne dit RIEN.
+    RENDUS=$((RENDUS + 1))
+    ARGS_RESTANTS=("${ARGS_RESTANTS[@]:1}")
     continue
   fi
 
@@ -121,8 +170,17 @@ for FICHIER in "$@"; do
   echo "✓ $FICHIER -> ?v=${TIMESTAMP} propagé dans $NB fichier(s) ($VUES référence(s))"
   if [ "$TOTAL" -gt "$VUES" ]; then
     echo "  ⚠ $((TOTAL - VUES)) référence(s) à \"$BASE\" NON touchée(s) -- autre chemin :" >&2
+    # `|| true` OBLIGATOIRE : quand `grep -vE` filtre tout, il sort en 1,
+    # `pipefail` propage et `set -e` tue la boucle -- en silence, au milieu
+    # des arguments. C'est le défaut que le compte rendu ci-dessus signale
+    # désormais ; ceci l'empêche de se produire.
     git ls-files --cached --others --exclude-standard "*.html" "*.js" \
       | xargs grep -onE "[^\"']*${BASE_MOTIF}\\?v=[0-9]+" 2>/dev/null \
-      | grep -vE "(\\.\\./)*${MOTIF}\\?v=" | sed 's/^/    /' >&2
+      | grep -vE "(\\.\\./)*${MOTIF}\\?v=" | sed 's/^/    /' >&2 || true
   fi
+  RENDUS=$((RENDUS + 1))
+  ARGS_RESTANTS=("${ARGS_RESTANTS[@]:1}")
 done
+
+ABANDONNES=()
+echo "$RECUS argument(s) reçu(s), $RENDUS avec un compte rendu."
