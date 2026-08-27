@@ -46,6 +46,7 @@ window.HEURIX_SEARCH_INDEX = [
   { title: "Électronique & high-tech", excerpt: "Watts, autonomie, connectique, indice IP : des grandeurs filtrables, pas des chaînes de caractères.", path: "solutions/electronique.html" },
   { title: "Librairie & édition", excerpt: "ISBN quelle que soit sa ponctuation, genre, format et édition croisés.", path: "solutions/livres.html" },
   { title: "Vins & spiritueux", excerpt: "Millésime, format de bouteille et mode de culture isolés comme attributs, pas comme du texte.", path: "solutions/vins.html" },
+  { title: "Sport & glisse", excerpt: "Un ballon de taille 5, une aile de 5 m2 et un manche L5 portent le même chiffre : volume, surface et taille isolés comme attributs.", path: "solutions/sport.html" },
   { title: "Finance & comptabilité", excerpt: "SIRET, SIREN, IBAN et TVA reconnus à leur structure, quelle que soit la mise en forme.", path: "solutions/finance.html" },
   { title: "Construire une page de catégorie avec Browse & Discovery", excerpt: "Guide pas à pas : catégories à l'indexation, snippet prêt à l'emploi, tri par prix, marge ou popularité réelle.", path: "blog/guide-page-categorie-browse.html" },
   { title: "Pourquoi la recherche vectorielle échoue sur les catalogues techniques", excerpt: "La similarité sémantique est un atout sur du langage naturel et un défaut sur des références structurées. Démonstration sur de vrais cas.", path: "blog/recherche-vectorielle-catalogues-techniques.html" },

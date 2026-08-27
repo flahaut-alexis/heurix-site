@@ -24,6 +24,7 @@ window.HEURIX_SEARCH_INDEX = [
   { title: "Electronics & high-tech", excerpt: "A 65W charger and a 45W charger look alike as text. Not in use.", path: "en/solutions/electronique.html" },
   { title: "Books & publishing", excerpt: "Two editions of the same novel share the same title and have two different ISBNs.", path: "en/solutions/livres.html" },
   { title: "Wine & spirits", excerpt: "The vintage isn't a detail: 2015 and 2016 are two different wines, two prices, two availabilities.", path: "en/solutions/vins.html" },
+  { title: "Sport & surf", excerpt: "A size 5 ball, a 5 m2 wing and an L5 grip all carry the same number: volume, sail area and size isolated as attributes.", path: "en/solutions/sport.html" },
   { title: "Finance & accounting", excerpt: "A SIRET has 14 digits, a SIREN has 9, and both identify the same company.", path: "en/solutions/finance.html" },
   { title: "Legal notice", excerpt: "Legal information about the publisher of heurix.fr.", path: "en/mentions-legales.html" },
   { title: "Privacy Policy", excerpt: "What data Heurix processes, why, for how long, and how to exercise your rights.", path: "en/privacy.html" },

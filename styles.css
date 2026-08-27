@@ -1142,6 +1142,7 @@ section.soft{ background:var(--bg-soft); color:var(--ink); }
 .kicker-livres{ color:#5D3B6D; }
 .kicker-mode{ color:#883A6E; }
 .kicker-vins{ color:#682732; }
+.kicker-sport{ color:#1B5E8C; }
 
 h2{ font-size:clamp(26px,3.4vw,34px); font-weight:800; margin:0 0 18px; max-width:640px; letter-spacing:-0.01em; }
 .section-lede{ color:var(--ink-muted); font-size:16.5px; max-width:600px; margin-bottom:44px; }
@@ -1883,6 +1884,7 @@ body.docs-dark .kicker-industrie{ color:#C4D5E9; }
 body.docs-dark .kicker-livres{ color:#E1CBEB; }
 body.docs-dark .kicker-mode{ color:#EFC8E2; }
 body.docs-dark .kicker-vins{ color:#F2CAD1; }
+body.docs-dark .kicker-sport{ color:#B9DCF2; }
 
 /* Hub Solutions + fil d'Ariane + voir-aussi : classes creees apres le
    dernier chantier docs-dark, jamais encore couvertes. Meme traitement
