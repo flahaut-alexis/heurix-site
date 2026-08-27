@@ -228,6 +228,11 @@
 
   // TOUS LES JETONS DE LA REQUETE, PAS LA CHAINE ENTIERE.
   //
+  // CE N'EST PAS UN CAS PARTICULIER DE RECHERCHE, c'est ce qu'une structure
+  // TRIEE impose : l'ordre des elements n'est plus celui qu'on a en tete,
+  // donc tout motif qui suppose une adjacence se tait -- sans erreur, en
+  // rendant simplement zero. Chaque jeton doit etre exige separement.
+  //
   // Le champ `k` est une liste de termes TRIES et separes par des espaces.
   // « din » et « 933 » n'y sont pas voisins, donc y chercher « din 933 »
   // d'un bloc ne trouve rien -- mesure de la premiere version : 0 resultat
