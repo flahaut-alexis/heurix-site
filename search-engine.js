@@ -325,7 +325,12 @@
       naviguer: "naviguer", ouvrir: "ouvrir", onglet: "nouvel onglet",
       vider: "effacer, puis fermer", resultat: "résultat", resultats: "résultats",
       recents: "Recherches récentes", avant: "À lire en premier",
-      rien: "Rien pour", titre: "Rechercher sur le site",
+      ouvrant: "« ", fermant: " »",
+      rien: "Rien pour", rienFiltre: "Aucun résultat avec ce filtre", titre: "Rechercher sur le site",
+      essayez: "Ou essayez", toujoursRien: "Toujours rien ?",
+      decrivez: "Décrivez-nous votre besoin", vouliez: "Vouliez-vous dire",
+      reessayer: "Réessayer", echec: "L'index n'a pas pu être chargé",
+      echecDetail: "Votre connexion, ou la nôtre. Votre requête est conservée.",
       source: { blog: "Blog", secteurs: "Secteurs", documentation: "Documentation",
                 plateformes: "Plateformes", produit: "Produit" },
     },
@@ -335,7 +340,12 @@
       naviguer: "navigate", ouvrir: "open", onglet: "new tab",
       vider: "clear, then close", resultat: "result", resultats: "results",
       recents: "Recent searches", avant: "Start here",
-      rien: "Nothing for", titre: "Search this site",
+      ouvrant: "\u201c", fermant: "\u201d",
+      rien: "Nothing for", rienFiltre: "No result with this filter", titre: "Search this site",
+      essayez: "Or try", toujoursRien: "Still nothing?",
+      decrivez: "Tell us what you need", vouliez: "Did you mean",
+      reessayer: "Try again", echec: "The index could not be loaded",
+      echecDetail: "Your connection, or ours. Your query is kept.",
       source: { blog: "Blog", secteurs: "Solutions", documentation: "Documentation",
                 plateformes: "Platforms", produit: "Product" },
     },
@@ -347,6 +357,16 @@
   // Plateformes. FAQ n'avait qu'une entree et rejoint Produit -- une source
   // sous le seuil coute une ligne de filtre et ne filtre rien.
   var ORDRE_SOURCES = ["blog", "secteurs", "produit", "documentation", "plateformes"];
+
+  // TROIS REQUETES DE REPLI, quand la correction se tait.
+  // Elles sont ECRITES et non derivees : rien dans l'index ne dit quelle
+  // requete relance quelqu'un qui n'a rien trouve. Elles sont en revanche
+  // GARDEES -- un test verifie que chacune rend encore des resultats dans sa
+  // langue, sinon la modale proposerait un cul-de-sac de plus.
+  var ALTERNATIVES = {
+    fr: ["indexer un catalogue", "tolérance aux fautes", "recherche par référence"],
+    en: ["index a catalog", "typo tolerance", "search by reference"],
+  };
 
 
   function langue() {
@@ -448,9 +468,38 @@
     corps.appendChild(rail);
     corps.appendChild(liste);
 
-    var vide = el("p", "search-empty");
+    // LA ZONE « RIEN TROUVE » VIT DANS LE CORPS, a cote du rail.
+    // Elle etait un <p> pose sous le corps : avec un rail visible depuis
+    // l'etape (b), le message tombait SOUS les filtres au lieu d'occuper la
+    // colonne des resultats. Les maquettes la placent dans le corps.
+    var vide = el("div", "search-empty");
     vide.id = "heurix-search-empty";
     vide.hidden = true;
+    var videTitre = el("div", "search-vide-titre");
+    var correction = el("p", "search-correction");
+    correction.hidden = true;
+    var alternatives = el("div", "search-alternatives");
+    alternatives.hidden = true;
+    var altTitre = el("div", "search-alt-titre", L.essayez);
+    var altListe = el("div", "search-alt-liste");
+    alternatives.appendChild(altTitre);
+    alternatives.appendChild(altListe);
+    // LE LIEN CONTACT NE PROMET PAS DE DELAI.
+    // Les maquettes ecrivaient « on repond sous 24 h ». La page contact
+    // annonce 48 h ouvrees : la modale aurait affiche un engagement plus fort
+    // que le vrai, et un second endroit ou le maintenir. Le delai reste ou il
+    // se maintient.
+    var contact = el("p", "search-contact");
+    contact.appendChild(document.createTextNode(L.toujoursRien + " "));
+    var lienContact = document.createElement("a");
+    lienContact.href = calculerRoot() + (langue() === "en" ? "en/contact.html" : "contact.html");
+    lienContact.textContent = L.decrivez;
+    contact.appendChild(lienContact);
+    vide.appendChild(videTitre);
+    vide.appendChild(correction);
+    vide.appendChild(alternatives);
+    vide.appendChild(contact);
+    corps.appendChild(vide);
 
     var etiquette = el("p", "search-suggest-label");
     etiquette.id = "heurix-search-suggest-label";
@@ -476,7 +525,6 @@
     panneau.appendChild(tete);
     panneau.appendChild(etiquette);
     panneau.appendChild(corps);
-    panneau.appendChild(vide);
     panneau.appendChild(pied);
     panneau.appendChild(annonce);
     racine.appendChild(fond);
@@ -487,6 +535,8 @@
       racine: racine, panneau: panneau, champ: champ, compte: compte,
       rail: rail, filtres: filtres, effacer: effacer,
       liste: liste, vide: vide, etiquette: etiquette,
+      videTitre: videTitre, correction: correction,
+      alternatives: alternatives, altListe: altListe,
       annonce: annonce, fond: fond,
     };
     return modale;
@@ -553,6 +603,71 @@
       m.champ.removeAttribute("aria-activedescendant");
     }
 
+    // ----- l'etat « rien trouve » -----------------------------------------
+    //
+    // DEUX SITUATIONS QUI SE RESSEMBLENT A L'ECRAN ET N'ONT PAS LA MEME CAUSE.
+    // La requete ne rend rien : on corrige, ou on propose autre chose. Le
+    // FILTRE ne laisse rien passer : la requete est bonne, proposer une
+    // correction serait un contresens -- il faut retirer le filtre.
+    // Le second cas est atteignable depuis l'etape (b) : cocher une source,
+    // puis taper une requete ou cette source ne rend rien.
+
+    function bouton(texte, requete) {
+      var b = el("button", "search-chip", texte);
+      b.type = "button";
+      b.addEventListener("click", function () {
+        m.champ.value = requete;
+        chercherEtRendre();
+        m.champ.focus();
+      });
+      return b;
+    }
+
+    function montrerVide(query, tous) {
+      m.vide.hidden = false;
+
+      // Le filtre masque tout : rien a corriger, il y a a decocher.
+      if (tous.length) {
+        m.videTitre.textContent = L.rienFiltre;
+        m.correction.hidden = true;
+        m.alternatives.hidden = false;
+        m.altListe.innerHTML = "";
+        var vider = el("button", "search-chip", L.effacer);
+        vider.type = "button";
+        vider.addEventListener("click", viderFiltres);
+        m.altListe.appendChild(vider);
+        m.alternatives.firstChild.hidden = true;
+        return;
+      }
+
+      // LES GUILLEMETS SONT DU TEXTE D'INTERFACE. L'anglais affichait
+      // « prestshop » -- des chevrons francais dans une phrase anglaise.
+      m.videTitre.textContent = L.rien + " " + L.ouvrant + query + L.fermant;
+      m.alternatives.firstChild.hidden = false;
+      var c = corriger(query);
+      m.correction.hidden = !c;
+      m.alternatives.hidden = !!c;
+      if (c) {
+        // On VIDE les replis plutot que de seulement cacher leur conteneur :
+        // des boutons laisses dans un bloc `hidden` restent dans le document,
+        // et le prochain qui compte les elements du panneau les compte.
+        m.altListe.innerHTML = "";
+        m.correction.innerHTML = "";
+        m.correction.appendChild(document.createTextNode(L.vouliez + " "));
+        m.correction.appendChild(bouton(c.requete, c.requete));
+        m.correction.appendChild(document.createTextNode(" ? "));
+        m.correction.appendChild(el("span", "search-correction-n",
+          c.n + " " + (c.n === 1 ? L.resultat : L.resultats)));
+        return;
+      }
+      // LES REPLIS PORTENT SUR LA REQUETE, PAS SUR LE FILTRE -- ils sont
+      // proposes parce que la recherche n'a rien rendu, et ils partent d'une
+      // recherche neuve.
+      m.altListe.innerHTML = "";
+      (ALTERNATIVES[langue()] || ALTERNATIVES.fr).forEach(function (q) {
+        m.altListe.appendChild(bouton(q, q));
+      });
+    }
     function annoncer(n, query) {
       clearTimeout(minuteurAnnonce);
       minuteurAnnonce = setTimeout(function () {
@@ -578,6 +693,78 @@
       return !auMoinsUnFiltre() || !!retenues[item.s];
     }
 
+    // ----- correction orthographique, a UNE lettre -------------------------
+    //
+    // LE REGLAGE VIENT D'UNE MESURE, pas d'un choix d'implementation. Sur onze
+    // fautes reelles du journal de recherche :
+    //
+    //     distance <= 2, >= 1 page    8 bonnes   3 MAUVAISES   0 silence
+    //     distance <= 1, >= 1 page    6 bonnes   0 MAUVAISE    5 silences  <- retenu
+    //
+    // A deux lettres : « visdin -> visio », « rondei -> rondele »,
+    // « juppe -> juste ». Une proposition fausse sur cinq, chez un editeur de
+    // moteur de recherche. Cinq silences valent mieux, et c'est ce que les
+    // trois requetes de repli couvrent.
+    //
+    // Le jeu des onze n'est pas versionne : seuls ces trois cas sont nommes,
+    // et le test verifie qu'ils restent MUETS a une lettre.
+
+    var vocabulaire = null;
+    function motsConnus() {
+      if (vocabulaire) return vocabulaire;
+      vocabulaire = {};
+      INDEX.forEach(function (e) {
+        (e.k || "").split(" ").forEach(function (mot) {
+          if (mot) vocabulaire[mot] = (vocabulaire[mot] || 0) + 1;
+        });
+      });
+      return vocabulaire;
+    }
+
+    // Distance d'edition bornee a 1 : on n'a pas besoin de la valeur, seulement
+    // de savoir si elle depasse. Une seule difference de longueur autorisee.
+    function aUneLettrePres(a, b) {
+      var da = a.length - b.length;
+      if (da > 1 || da < -1) return false;
+      if (a === b) return false;
+      var i = 0, j = 0, ecarts = 0;
+      while (i < a.length && j < b.length) {
+        if (a.charAt(i) === b.charAt(j)) { i++; j++; continue; }
+        if (++ecarts > 1) return false;
+        if (da === 0) { i++; j++; }
+        else if (da === 1) { i++; }
+        else { j++; }
+      }
+      return ecarts + (a.length - i) + (b.length - j) <= 1;
+    }
+
+    // LA CORRECTION NE PARLE QUE SI ELLE RAPPORTE.
+    // Un mot du vocabulaire a une lettre pres ne suffit pas : la requete
+    // corrigee doit rendre au moins une page. C'est la seconde moitie du
+    // reglage mesure, et c'est elle qui elimine les corrections plausibles
+    // vers un terme qui ne remonte rien.
+    function corriger(query) {
+      var mots = motsConnus();
+      var jetons = normalize(query.trim()).split(/\s+/).filter(Boolean);
+      if (!jetons.length) return null;
+      var change = false;
+      var corriges = jetons.map(function (jeton) {
+        if (mots[jeton]) return jeton;
+        var meilleur = null, poids = 0;
+        for (var mot in mots) {
+          if (mots[mot] > poids && aUneLettrePres(jeton, mot)) {
+            meilleur = mot; poids = mots[mot];
+          }
+        }
+        if (!meilleur) return jeton;
+        change = true;
+        return meilleur;
+      });
+      if (!change) return null;
+      var propose = corriges.join(" ");
+      var n = runSearch(propose, 0).length;
+      return n ? { requete: propose, n: n } : null;
+    }
     function compterParSource(items) {
       var c = {};
       ORDRE_SOURCES.forEach(function (k) { c[k] = 0; });
@@ -637,9 +824,32 @@
       }, 200);
     }
 
+    // L'ETAT D'ERREUR N'AFFICHAIT RIEN.
+    // Il posait `data-erreur` sur la liste, et AUCUNE regle CSS ne lisait cet
+    // attribut : l'index qui ne se charge pas rendait un panneau vide, sans un
+    // mot. Trouve en relisant les etats pour cette etape, pas a l'ecran --
+    // personne n'a jamais coupe le reseau devant cette modale.
     function montrerErreur() {
       m.liste.innerHTML = "";
       m.liste.setAttribute("data-erreur", "1");
+      m.vide.hidden = false;
+      m.videTitre.textContent = L.echec;
+      m.correction.hidden = false;
+      m.correction.textContent = L.echecDetail;
+      m.alternatives.hidden = false;
+      m.alternatives.firstChild.hidden = true;
+      m.altListe.innerHTML = "";
+      var reessayer = el("button", "search-chip search-chip-fort", L.reessayer);
+      reessayer.type = "button";
+      reessayer.addEventListener("click", function () {
+        m.liste.removeAttribute("data-erreur");
+        m.vide.hidden = true;
+        attendre(true);
+        precharger(calculerRoot())
+          .then(function () { attendre(false); chercherEtRendre(); })
+          .catch(function () { attendre(false); montrerErreur(); });
+      });
+      m.altListe.appendChild(reessayer);
     }
 
     // ----- clavier -----------------------------------------------------
@@ -696,7 +906,16 @@
         // ne doit etre atteignable. Deux elements focalisables seulement -- le
         // champ et le bouton de fermeture -- le piege se referme donc a la
         // main plutot que par une liste calculee.
-        var focalisables = m.panneau.querySelectorAll("input, button, a[href]");
+        // LE PIEGE NE COMPTE QUE CE QUE TAB PEUT ATTEINDRE.
+        // Deux categories lui echappaient, et les deux sont apparues avec les
+        // etapes (b) et (c) : les elements CACHES -- la correction quand ce
+        // sont les replis qui s'affichent, et l'inverse -- et les cases
+        // DESACTIVEES, celles d'une source qui ne rend rien. Les compter fait
+        // viser un « premier » ou un « dernier » que Tab saute, et le piege
+        // s'ouvre a l'endroit exact ou il devait se refermer.
+        var focalisables = [].filter.call(
+          m.panneau.querySelectorAll("input, button, a[href]"),
+          function (n) { return !n.disabled && !n.closest("[hidden]"); });
         if (!focalisables.length) return;
         var premier = focalisables[0];
         var dernier = focalisables[focalisables.length - 1];
@@ -714,8 +933,7 @@
       var tous = runSearch(q, 0);          // 0 = sans plafond, pour le compteur
       majRail(compterParSource(tous));
       var retenus = tous.filter(passe);
-      m.vide.hidden = retenus.length !== 0;
-      m.vide.textContent = L.rien + " « " + q + " »";
+      if (retenus.length) { m.vide.hidden = true; } else { montrerVide(q, tous); }
       compteur(retenus.length);
       rendre(retenus.slice(0, 8), q);
       annoncer(retenus.length, q);

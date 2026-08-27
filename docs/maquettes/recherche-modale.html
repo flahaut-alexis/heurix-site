@@ -31,6 +31,25 @@
       pas de mention de journalisation tant que rien ne journalise — la
       ligne reviendra avec le code qui l'implémente.
 
+  CE QUI A CHANGÉ À L'IMPLÉMENTATION (étape « états », 27 août 2026).
+  Trois écarts, tous vérifiés contre le site plutôt que contre cette maquette.
+
+    * « on répond sous 24 h » est retiré. contact.html annonce 48 h ouvrées :
+      la modale aurait affiché un engagement PLUS FORT que le vrai, et un
+      second endroit où le maintenir. Le lien reste, le délai vit là où il se
+      maintient. C'est le même principe que la ligne de journalisation qu'on
+      s'était interdite — ne pas promettre depuis un écran ce qu'on ne tient
+      pas ailleurs.
+
+    * la correction et les trois replis S'EXCLUENT. Ils sont côte à côte
+      ci-dessus pour tenir dans un écran ; à l'usage, proposer « vouliez-vous
+      dire » ET « ou essayez » au même moment donne deux chemins concurrents
+      alors qu'un seul est le bon.
+
+    * le compteur du haut reste VIDE à zéro, là où la maquette écrivait
+      « 0 résultat ». Le titre au centre dit déjà « Rien pour … », à quarante
+      pixels de là.
+
   CE QUI A CHANGÉ À L'IMPLÉMENTATION (étape « filtres », 27 août 2026).
   Cette maquette masquait le rail sous 768 px — `.rail{display:none}`. Ça
   retire le filtrage aux visiteurs mobiles, alors qu'un petit écran est
@@ -307,6 +326,9 @@ kbd{font:600 10.5px/1 inherit;background:#fff;border:1px solid var(--line);borde
     <div class="vide-zone">
       <div class="gros">Rien pour « prestshop »</div>
       <div class="correction">Vouliez-vous dire <button><b>prestashop</b></button> ? <span style="color:var(--ink-muted);font-size:12.5px">13 résultats</span></div>
+      <!-- La correction ET les replis sont montres cote a cote ICI pour que la
+           maquette tienne dans un ecran. A l'implementation ils s'EXCLUENT :
+           les trois replis n'apparaissent que si la correction se tait. -->
       <div>
         <div class="sugg-l" style="margin-bottom:9px">Ou essayez</div>
         <div class="sugg-r" style="justify-content:center">
@@ -315,7 +337,7 @@ kbd{font:600 10.5px/1 inherit;background:#fff;border:1px solid var(--line);borde
           <button class="chip">indexer un catalogue</button>
         </div>
       </div>
-      <div class="gris" style="margin-top:2px">Toujours rien ? <a href="#" style="color:var(--blue-deep);font-weight:600">Décrivez-nous votre besoin</a> — on répond sous 24 h.</div>
+      <div class="gris" style="margin-top:2px">Toujours rien ? <a href="#" style="color:var(--blue-deep);font-weight:600">Décrivez-nous votre besoin</a></div>
     </div>
   </div>
   <div class="pied">

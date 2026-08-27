@@ -401,6 +401,12 @@ header{
 .search-effacer:hover{ background:#fff; }
 .search-effacer:focus-visible{ outline:2px solid var(--blue); outline-offset:1px; }
 .search-results{ flex:1; overflow:auto; padding:8px; }
+/* UNE LISTE VIDE GARDE SON `flex:1` ET MANGE LA MOITIE DE LA HAUTEUR.
+   Le message « rien trouve » se retrouvait alors aux deux tiers de l'ecran sur
+   telephone, sous 600 px de blanc -- et `justify-content` n'y pouvait rien,
+   puisque le probleme etait le VOISIN, pas l'alignement interne. Meme geste
+   que pour le rail : ce qui n'a pas de contenu ne prend pas de place. */
+.search-results:empty{ display:none; }
 
 .search-result{
   display:block; text-decoration:none; color:inherit;
@@ -468,7 +474,28 @@ header{
   font-size:11px; font-weight:700; letter-spacing:.6px; text-transform:uppercase;
   color:var(--ink-muted); padding:12px 16px 0; margin:0;
 }
-.search-empty{ padding:26px 20px; text-align:center; color:var(--ink-muted); font-size:14px; }
+/* LA ZONE « RIEN TROUVE ». Elle etait declaree DEUX FOIS dans ce fichier, a
+   trente lignes d'ecart : la seconde gagnait, et la premiere ne servait a
+   rien. Une seule regle desormais, et elle occupe la colonne des resultats
+   plutot que de tomber sous le rail. */
+.search-empty{
+  flex:1; display:flex; flex-direction:column; align-items:center;
+  justify-content:center; gap:13px; padding:30px 22px; text-align:center;
+}
+.search-vide-titre{ font-size:16px; font-weight:600; color:var(--ink); }
+.search-correction{ font-size:14px; color:var(--ink-muted); margin:0; }
+.search-correction-n{ font-size:12.5px; color:var(--ink-muted); }
+.search-alt-titre{ font-size:12.5px; color:var(--ink-muted); margin-bottom:9px; }
+.search-alt-liste{ display:flex; flex-wrap:wrap; gap:8px; justify-content:center; }
+.search-chip{
+  font:600 13px/1 inherit; color:var(--blue-deep); background:var(--blue-tint);
+  border:1px solid transparent; border-radius:999px; padding:7px 13px; cursor:pointer;
+}
+.search-chip:hover{ border-color:var(--blue); }
+.search-chip:focus-visible{ outline:2px solid var(--blue); outline-offset:2px; }
+.search-chip-fort{ background:var(--blue); color:#fff; }
+.search-contact{ font-size:12.5px; color:var(--ink-muted); margin:0; }
+.search-contact a{ color:var(--blue-deep); font-weight:600; }
 
 .search-results[data-chargement] .search-result{ opacity:.45; }
 
@@ -495,6 +522,11 @@ header{
     padding:6px 10px; border-radius:999px; gap:7px;
   }
   .search-effacer{ margin-top:0; flex:none; align-self:center; white-space:nowrap; }
+  /* LA ZONE « RIEN TROUVE » NE SE CENTRE PAS SUR UN PLEIN ECRAN.
+     Le panneau fait 100vh sur telephone : centrer verticalement posait le
+     message aux deux tiers de la hauteur, sous 600 px de blanc, alors que le
+     regard est reste sur le champ. Vu a l'ecran a 390, pas dans le code. */
+  .search-empty{ justify-content:flex-start; padding-top:34px; }
 }
 
 /* Sur un ecran tactile sans clavier, le pied listait quatre raccourcis
@@ -510,7 +542,6 @@ header{
 .search-result mark, .search-result-title mark, .search-result-excerpt mark{
   background:var(--blue-tint); color:var(--blue-deep); border-radius:3px; padding:0 2px;
 }
-.search-empty{ padding:24px 18px; text-align:center; color:var(--ink-muted); font-size:14px; margin:0; }
 
 /* HERO */
 .hero{
@@ -2497,9 +2528,12 @@ body.docs-dark .regex-copy > p{ color:#CDD2F0; }
      .roi-field input[type="range"]::-moz-range-track
      .roi-field input[type="range"]::-webkit-slider-runnable-track
      .rp-search-result
+     .search-alt-titre
      .search-close
+     .search-contact
+     .search-correction
+     .search-correction-n
      .search-count
-     .search-empty
      .search-filtre-n
      .search-foot
      .search-foot kbd
@@ -2518,6 +2552,7 @@ body.docs-dark .regex-copy > p{ color:#CDD2F0; }
      .search-trigger
      .search-trigger-kbd
      .search-trigger-text
+     .search-vide-titre
      .seg-total-ligne
      .seg-total-ligne strong
      .service
