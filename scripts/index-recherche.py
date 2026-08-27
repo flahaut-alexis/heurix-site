@@ -189,6 +189,59 @@ def pages_du_sitemap() -> list[str]:
     return sorted(chemins)
 
 
+# ---------------------------------------------------------------------------
+# LA SOURCE D'UNE PAGE, DERIVEE DE L'ARBORESCENCE.
+#
+# Elle vit dans l'INDEX et non dans le moteur de recherche : c'est une
+# propriete du contenu, pas une regle d'affichage. Le jour ou un dossier
+# apparait, c'est ce fichier qu'on modifie, pas le JavaScript servi a 122
+# pages.
+#
+# LES SOURCES SONT CELLES DE L'ARBORESCENCE REELLE, mesurees et non
+# supposees. Le brief d'origine proposait Documentation, Guides, Blog,
+# Developpeurs, Produit, FAQ. Releve sur les 76 entrees FR :
+#
+#     Blog 38   Secteurs 17   Produit 10   Documentation 6   Plateformes 4
+#     FAQ 1
+#
+# « Guides » et « Developpeurs » n'existent pas comme sections ; « Secteurs »
+# et « Plateformes » existent et n'etaient pas prevus.
+#
+# FAQ N'A QU'UNE ENTREE et rejoint Produit : une source a un document ne
+# merite pas une ligne de filtre permanente. Le seuil n'est pas arbitraire --
+# une ligne qui ne filtre jamais rien coute un rang de lecture a chaque
+# ouverture, pour ne rien rendre.
+# ---------------------------------------------------------------------------
+
+# LA SOURCE EST UNE CLEF, PAS UN LIBELLE. L'index anglais portait
+# « Secteurs », « Produit », « Plateformes » : le generateur ne connait qu'une
+# langue, et l'interface anglaise affichait donc trois mots francais. La clef
+# se traduit dans search-engine.js, ou vit deja le reste du texte d'interface.
+# Elle sert aussi de suffixe de classe CSS (.search-pill-secteurs), inchange.
+SOURCES = (
+    ("blog/",           "blog"),
+    ("en/blog/",        "blog"),
+    ("solutions/",      "secteurs"),
+    ("en/solutions/",   "secteurs"),
+    ("docs.html",       "documentation"),
+    ("en/docs.html",    "documentation"),
+    ("shopify.html",    "plateformes"),
+    ("woocommerce.html", "plateformes"),
+    ("prestashop.html", "plateformes"),
+    ("integrations.html", "plateformes"),
+)
+
+
+def source(chemin: str) -> str:
+    f = chemin.split("#")[0]
+    fr = f[3:] if f.startswith("en/") else f
+    for prefixe, nom in SOURCES:
+        p = prefixe[3:] if prefixe.startswith("en/") else prefixe
+        if fr == p or (p.endswith("/") and fr.startswith(p)):
+            return nom
+    return "produit"
+
+
 def extraire(chemin: str) -> dict:
     """Rend ce qui sera indexe, et RIEN d'autre.
 
@@ -252,6 +305,7 @@ def construire(langue: str) -> dict:
         empreintes[chemin] = empreinte(brut)
         entrees.append({
             "p": brut["p"], "t": brut["t"], "e": brut["e"],
+            "s": source(chemin),
             "k": " ".join(sorted(termes(brut["t"] + " " + brut["e"] + " " + brut["corps"]))),
         })
         # Une ancre herite du vocabulaire de sa page : elle y mene, et son
@@ -260,7 +314,14 @@ def construire(langue: str) -> dict:
         src = open(os.path.join(RACINE, chemin), encoding="utf8").read()
         for a in ancres(chemin, src):
             entrees.append({
+                # `e` porte le titre de la PAGE PARENTE, pas un extrait : c'est
+                # ce qui situe une section pour qui la voit dans une liste.
+                # Aucune « categorie » n'est inventee ici -- verifie, aucune
+                # page ne porte de signal exploitable : og:type ne rend que
+                # « article » ou « website », et le schema decrit
+                # l'organisation, pas la page.
                 "p": a["p"], "t": a["t"], "e": brut["t"],
+                "s": source(chemin), "ancre": True,
                 "k": " ".join(sorted(termes(a["t"]))),
             })
     # Un chemin absent des entrees serait filtre EN SILENCE a l'affichage.

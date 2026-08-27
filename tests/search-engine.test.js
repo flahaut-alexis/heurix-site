@@ -22,13 +22,30 @@ const RACINE = path.resolve(__dirname, "..");
 function domAvecMoteur(scripts, url) {
   const html = `<!DOCTYPE html><html><body>
     <button id="heurix-search-btn"></button>
-    <div id="heurix-search-modal"><div id="heurix-search-backdrop"></div>
-      <input id="heurix-search-input">
-      <div id="heurix-search-results"></div>
-      <p id="heurix-search-empty" hidden></p>
-      <p id="heurix-search-suggest-label" hidden></p>
-    </div></body></html>`;
-  const dom = new JSDOM(html, { url, runScripts: "outside-only" });
+    <!--MODALE-->
+      </body></html>`;
+  // L'ANCIEN MOTEUR ATTEND LE BALISAGE, LE NOUVEAU LE CONSTRUIT. Depuis le
+  // 27 aout, la modale est batie en JS et les pages ne portent plus que le
+  // bouton. Les fixtures figees, elles, gelent l'etat d'AVANT et lisent des
+  // elements qu'elles ne creent pas -- c'est leur role, elles ne bougent pas.
+  //
+  // Le harnais fournit donc le balisage UNIQUEMENT au cote ancien. Le fournir
+  // aux deux ferait gagner ce div vide sur celui que le nouveau moteur ajoute
+  // -- deux elements de meme id, et `getElementById` rend le premier.
+  // LE PREDICAT PORTE SUR LE MOTEUR, PAS SUR LE DOSSIER. Premiere version :
+  // `s.includes("search-avant-s4")` -- vrai aussi pour donnees-figees.js, qui
+  // vit dans le meme dossier et sert les DEUX cotes. Le nouveau moteur
+  // recevait donc le balisage lui aussi, deux elements de meme id, et
+  // `getElementById` rendait le div vide du harnais. Le test echouait en
+  // annoncant zero resultat pour une recherche qui en rend trois.
+  const ancien = scripts.some((s) => /search-avant-s4\/search(-en)?\.js$/.test(s));
+  const balisage = ancien
+    ? `<div id="heurix-search-modal"><div id="heurix-search-backdrop"></div>
+         <input id="heurix-search-input"><div id="heurix-search-results"></div>
+         <p id="heurix-search-empty" hidden></p>
+         <p id="heurix-search-suggest-label" hidden></p></div>`
+    : "";
+  const dom = new JSDOM(html.replace("<!--MODALE-->", balisage), { url, runScripts: "outside-only" });
   for (const s of scripts) dom.window.eval(fs.readFileSync(s, "utf8"));
 
   // L'INDEX N'ARRIVE PLUS PAR UNE GLOBALE (27 aout 2026). Le moteur le

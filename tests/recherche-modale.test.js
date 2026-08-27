@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+import { JSDOM } from "jsdom";
 import fs from "node:fs";
 import path from "node:path";
 
@@ -44,61 +45,77 @@ function pagesHtml() {
 const avecBouton = () =>
   pagesHtml().filter((p) => fs.readFileSync(p, "utf8").includes('id="heurix-search-btn"'));
 
-describe("recherche du site — le bouton doit avoir sa modale", () => {
-  it("aucune page ne porte le bouton sans le conteneur que search-engine.js cherche", () => {
-    const fautives = avecBouton().filter(
-      (p) => !fs.readFileSync(p, "utf8").includes('id="heurix-search-modal"')
-    );
-    expect(fautives.map((p) => path.relative(RACINE, p))).toEqual([]);
-  });
+// ---------------------------------------------------------------------------
+// LA MODALE EST CONSTRUITE EN JS (27 aout 2026).
+//
+// Son balisage vivait en clair dans 122 pages -- 920 octets chacune, 109,6 ko
+// de duplication qu'il fallait reecrire a chaque changement de structure.
+//
+// L'INTENTION DE CE FICHIER NE CHANGE PAS : un bouton sans moteur est un
+// bouton mort. Elle se verifie desormais en DEUX assertions au lieu d'une, et
+// la seconde une seule fois plutot que 122 :
+//
+//   1. chaque page qui porte le bouton charge search-engine.js
+//   2. search-engine.js construit bien les quatre identifiants
+//
+// Les deux mordent, verifie dans les deux sens -- une page avec le bouton mais
+// sans le script, et un script qui ne construit pas la modale.
+// ---------------------------------------------------------------------------
 
-  // L'INDEX N'EST PLUS UN SCRIPT (27 aout 2026). Cette assertion exigeait
-  // qu'une page portant le bouton charge AUSSI search.js ou search-en.js.
-  // Ces deux fichiers sont supprimes : l'index est derive des pages, servi
-  // en JSON, et recupere au premier usage.
-  //
-  // Ce qui reste vrai et se verifie encore : le bouton sans le moteur est
-  // un bouton mort.
+describe("recherche du site — le bouton doit avoir son moteur", () => {
   it("aucune page ne porte le bouton sans charger le moteur", () => {
     const fautives = avecBouton().filter((p) => !fs.readFileSync(p, "utf8").includes("search-engine.js"));
     expect(fautives.map((p) => path.relative(RACINE, p))).toEqual([]);
   });
 
-  // Le pendant du precedent : plus aucune page ne doit charger les anciens
-  // index. En laisser un servirait 5,5 ko compresses a chaque visite pour
-  // un fichier que plus rien ne lit.
+  it("le balisage de la modale n'est plus duplique dans les pages", () => {
+    const restantes = pagesHtml().filter((p) =>
+      !path.relative(RACINE, p).startsWith("docs/maquettes") &&
+      fs.readFileSync(p, "utf8").includes('id="heurix-search-modal"'));
+    expect(restantes.map((p) => path.relative(RACINE, p))).toEqual([]);
+  });
+
   it("plus aucune page ne charge les anciens index", () => {
-    const toutes = pagesHtml();
-    const fautives = toutes.filter((p) =>
+    const fautives = pagesHtml().filter((p) =>
       /<script[^>]*src="[^"]*\bsearch(-en)?\.js/.test(fs.readFileSync(p, "utf8")));
     expect(fautives.map((p) => path.relative(RACINE, p))).toEqual([]);
   });
+});
 
-  it("les quatre elements que search-engine.js interroge par id existent partout", () => {
-    // Tires de search-engine.js : un id absent ne leve rien, il rend null et
-    // la fonction concernee cesse silencieusement d'operer.
-    const requis = [
-      "heurix-search-modal",
-      "heurix-search-backdrop",
-      "heurix-search-input",
-      "heurix-search-results",
-    ];
-    const fautives = [];
-    for (const p of avecBouton()) {
-      const s = fs.readFileSync(p, "utf8");
-      const manquants = requis.filter((id) => !s.includes(`id="${id}"`));
-      if (manquants.length) fautives.push(`${path.relative(RACINE, p)} → ${manquants.join(", ")}`);
-    }
-    expect(fautives).toEqual([]);
+describe("recherche du site — le moteur construit ce qu'il interroge", () => {
+  const scene = () => {
+    const dom = new JSDOM(
+      `<!DOCTYPE html><html><body><button id="heurix-search-btn"></button></body></html>`,
+      { url: "https://heurix.fr/index.html", runScripts: "outside-only" }
+    );
+    const w = dom.window;
+    w.fetch = () => Promise.resolve({ ok: true, json: () => Promise.resolve({ entrees: [], derniers: [] }) });
+    w.matchMedia = () => ({ matches: true });
+    w.eval(fs.readFileSync(path.join(RACINE, "search-engine.js"), "utf8"));
+    w.document.dispatchEvent(new w.Event("DOMContentLoaded"));
+    return w;
+  };
+
+  it("rien n'est construit tant qu'on n'ouvre pas", () => {
+    const w = scene();
+    expect(w.document.getElementById("heurix-search-modal")).toBeNull();
   });
 
-  it("la modale est dans la langue de sa page", () => {
-    const fautives = avecBouton().filter((p) => {
-      const s = fs.readFileSync(p, "utf8");
-      const rel = path.relative(RACINE, p);
-      const attendu = rel.startsWith("en/") ? "Latest articles" : "Derniers articles";
-      return !s.includes(`class="search-suggest-label" hidden>${attendu}<`);
-    });
-    expect(fautives.map((p) => path.relative(RACINE, p))).toEqual([]);
+  it("les quatre identifiants que le moteur interroge existent apres ouverture", () => {
+    const w = scene();
+    w.document.getElementById("heurix-search-btn").dispatchEvent(new w.Event("click"));
+    for (const id of ["heurix-search-modal", "heurix-search-input",
+                      "heurix-search-results", "heurix-search-empty"]) {
+      expect(w.document.getElementById(id), id).not.toBeNull();
+    }
+  });
+
+  it("une seconde ouverture ne construit pas une seconde modale", () => {
+    const w = scene();
+    const btn = w.document.getElementById("heurix-search-btn");
+    btn.dispatchEvent(new w.Event("click"));
+    btn.dispatchEvent(new w.Event("click"));
+    expect(w.document.querySelectorAll("#heurix-search-modal")).toHaveLength(1);
   });
 });
+

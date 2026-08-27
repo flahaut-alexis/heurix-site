@@ -23,10 +23,7 @@ function scene({ fetchDispo = true, survolPossible = true, url = "https://heurix
   const dom = new JSDOM(
     `<!DOCTYPE html><html><body>
       <button id="heurix-search-btn"></button>
-      <div id="heurix-search-modal"><div id="heurix-search-backdrop"></div>
-        <input id="heurix-search-input"><p id="heurix-search-suggest-label"></p>
-        <div id="heurix-search-results"></div><p id="heurix-search-empty"></p></div>
-    </body></html>`,
+      </body></html>`,
     { url, runScripts: "outside-only" }
   );
   const w = dom.window;

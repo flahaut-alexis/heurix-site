@@ -152,21 +152,29 @@ describe("index derive — le verificateur", () => {
     }
   });
 
+  // NE CREE AUCUN FICHIER DANS LE DEPOT. Premiere version : elle ecrivait une
+  // vraie page a la racine et l'ajoutait au sitemap. D'autres fichiers de
+  // test s'executent EN PARALLELE, et l'un d'eux -- le garde du sitemap --
+  // voyait la page temporaire et echouait. Une course entre tests, qui ne se
+  // reproduisait pas a l'execution isolee.
+  //
+  // On retire donc l'empreinte d'une page EXISTANTE de l'index : du point de
+  // vue du verificateur, c'est exactement le meme cas -- une page du sitemap
+  // dont il n'a pas trace -- et rien ne sort du fichier d'index.
   it("detecte une page AJOUTEE — celle qui ne change aucune empreinte", () => {
-    const sm = path.join(RACINE, "sitemap.xml");
-    const page = path.join(RACINE, "page-de-test-index.html");
-    const avant = fs.readFileSync(sm, "utf8");
+    const f = path.join(RACINE, "search-index-fr.json");
+    const avant = fs.readFileSync(f, "utf8");
     try {
-      fs.writeFileSync(page, "<!DOCTYPE html><html><head><title>Test</title></head><body>x</body></html>");
-      fs.writeFileSync(sm, avant.replace("</urlset>",
-        "<url><loc>https://heurix.fr/page-de-test-index.html</loc></url></urlset>"));
+      const idx = JSON.parse(avant);
+      const orpheline = Object.keys(idx.empreintes)[0];
+      delete idx.empreintes[orpheline];
+      fs.writeFileSync(f, JSON.stringify(idx));
       const r = verifier();
       expect(r.code).toBe(1);
-      expect(r.sortie).toContain("page-de-test-index.html");
+      expect(r.sortie).toContain(orpheline);
       expect(r.sortie).toContain("AJOUTEE");
     } finally {
-      fs.writeFileSync(sm, avant);
-      fs.rmSync(page, { force: true });
+      fs.writeFileSync(f, avant);
     }
   });
 });
@@ -196,9 +204,6 @@ describe("index derive — la recherche lit vraiment les termes", () => {
     const index = lire(`search-index-${langue}.json`);
     const dom = new JSDOM(
       `<!DOCTYPE html><html><body><button id="heurix-search-btn"></button>
-        <div id="heurix-search-modal"><div id="heurix-search-backdrop"></div>
-        <input id="heurix-search-input"><p id="heurix-search-suggest-label"></p>
-        <div id="heurix-search-results"></div><p id="heurix-search-empty"></p></div>
       </body></html>`,
       { url, runScripts: "outside-only" }
     );
@@ -224,9 +229,19 @@ describe("index derive — la recherche lit vraiment les termes", () => {
     expect(chercher(w, "2rs")).toHaveLength(8);
   });
 
-  it("« din 933 » rend les sept pages qui en parlent, pas zero", async () => {
+  // SEPT PAGES, ET UNE ANCRE DEPUIS LE 27 AOUT : HUIT.
+  // Le chiffre etait 7 et il est passe a 8 sans que la recherche change. La
+  // cause est en amont : « Huit pages qui visaient huit requetes portaient le
+  // meme titre » a retitre solutions/outillage.html en « Recherche visserie :
+  // M8x20, DIN 933, inox A2 ». Une entree ANCREE porte le titre de sa page
+  // mere comme extrait ; celui de #annotations contient donc desormais la
+  // requete mot pour mot, et l'entree remonte au palier extrait -- pas au
+  // palier des termes, ou elle ne matche toujours pas.
+  // Les sept PAGES qui parlent de DIN 933 sont les memes qu'avant : verifie
+  // en comparant les deux index, zero page entrante, zero sortante.
+  it("« din 933 » rend les sept pages qui en parlent, plus une ancre", async () => {
     const w = await moteurAvecIndexReel();
-    expect(chercher(w, "din 933")).toHaveLength(7);
+    expect(chercher(w, "din 933")).toHaveLength(8);
   });
 
   // Une requete de plusieurs mots ne peut pas matcher d'un bloc une liste de

@@ -252,7 +252,9 @@
     return true;
   }
 
-  function runSearch(query) {
+  // `limite` a 0 rend TOUT : le compteur du haut annonce le total, la liste
+  // n'en affiche que les premiers. Deux besoins, un seul parcours.
+  function runSearch(query, limite) {
     var nQuery = normalize(query.trim());
     if (!nQuery) return [];
     return INDEX
@@ -280,7 +282,7 @@
       .filter(function (r) { return r.score > -1; })
       .sort(function (a, b) { return b.score - a.score; })
       .map(function (r) { return r.item; })
-      .slice(0, 8);
+      .slice(0, limite === 0 ? undefined : (limite || 8));
   }
 
   // GÉNÉRALISATION (chantier S4). L'ancien code FR ne testait que
@@ -301,115 +303,388 @@
     return root;
   }
 
+  // ---------------------------------------------------------------------
+  // LA MODALE EST CONSTRUITE EN JS (27 aout 2026), plus ecrite dans chaque page.
+  //
+  // Son balisage vivait en clair dans 122 pages -- 920 octets chacune, 109,6 ko
+  // de duplication. Chaque changement de structure demandait de le reecrire
+  // partout, et l'etape suivante l'aurait double.
+  //
+  // LE BOUTON RESTE DANS LE HTML. C'est l'affordance visible : il doit exister
+  // avant que ce script tourne. La modale, elle, n'a aucun sens sans lui.
+  //
+  // CONSTRUITE A L'OUVERTURE, PAS AU CHARGEMENT : une page qui n'ouvre jamais
+  // la recherche ne paie aucun noeud. Mesure du cout a froid, du clic au
+  // premier affichage, plus bas dans ce fichier.
+  // ---------------------------------------------------------------------
+
+  var LIBELLES = {
+    fr: {
+      placeholder: "Rechercher sur heurix.fr…", fermer: "Échap",
+      sources: "Sources", effacer: "Tout effacer",
+      naviguer: "naviguer", ouvrir: "ouvrir", onglet: "nouvel onglet",
+      vider: "effacer, puis fermer", resultat: "résultat", resultats: "résultats",
+      recents: "Recherches récentes", avant: "À lire en premier",
+      rien: "Rien pour", titre: "Rechercher sur le site",
+      source: { blog: "Blog", secteurs: "Secteurs", documentation: "Documentation",
+                plateformes: "Plateformes", produit: "Produit" },
+    },
+    en: {
+      placeholder: "Search heurix.fr…", fermer: "Esc",
+      sources: "Sources", effacer: "Clear all",
+      naviguer: "navigate", ouvrir: "open", onglet: "new tab",
+      vider: "clear, then close", resultat: "result", resultats: "results",
+      recents: "Recent searches", avant: "Start here",
+      rien: "Nothing for", titre: "Search this site",
+      source: { blog: "Blog", secteurs: "Solutions", documentation: "Documentation",
+                plateformes: "Platforms", produit: "Product" },
+    },
+  };
+
+  function langue() {
+    return /(^|\/)en\//.test(window.location.pathname) ? "en" : "fr";
+  }
+
+  var L = LIBELLES[langue()];
+
+  function el(balise, classe, texte) {
+    var n = document.createElement(balise);
+    if (classe) n.className = classe;
+    if (texte !== undefined) n.textContent = texte;
+    return n;
+  }
+
+  var modale = null;
+
+  function construireModale() {
+    if (modale) return modale;
+
+    var racine = el("div", "search-modal");
+    racine.id = "heurix-search-modal";
+
+    var fond = el("div", "search-backdrop");
+    fond.id = "heurix-search-backdrop";
+    fond.setAttribute("data-search-close", "");
+
+    var panneau = el("div", "search-panel");
+    panneau.setAttribute("role", "dialog");
+    panneau.setAttribute("aria-modal", "true");
+    panneau.setAttribute("aria-label", L.titre);
+
+    // --- tete : icone, champ, compteur, echap ---
+    var tete = el("div", "search-panel-head");
+    tete.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" ' +
+      'stroke="currentColor" stroke-width="2" aria-hidden="true">' +
+      '<circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>';
+
+    var champ = el("input");
+    champ.id = "heurix-search-input";
+    champ.type = "text";
+    champ.placeholder = L.placeholder;
+    champ.setAttribute("autocomplete", "off");
+    champ.setAttribute("role", "combobox");
+    champ.setAttribute("aria-expanded", "false");
+    champ.setAttribute("aria-controls", "heurix-search-results");
+    champ.setAttribute("aria-autocomplete", "list");
+    champ.setAttribute("aria-label", L.titre);
+
+    var compte = el("span", "search-count");
+    compte.id = "heurix-search-count";
+
+    var fermer = el("button", "search-close", L.fermer);
+    fermer.type = "button";
+    fermer.setAttribute("data-search-close", "");
+
+    tete.appendChild(champ);
+    tete.appendChild(compte);
+    tete.appendChild(fermer);
+
+    // --- corps : rail de filtres + liste ---
+    var corps = el("div", "search-body");
+    var rail = el("aside", "search-rail");
+    rail.id = "heurix-search-rail";
+    var liste = el("div", "search-results");
+    liste.id = "heurix-search-results";
+    liste.setAttribute("role", "listbox");
+    liste.setAttribute("aria-label", L.titre);
+    corps.appendChild(rail);
+    corps.appendChild(liste);
+
+    var vide = el("p", "search-empty");
+    vide.id = "heurix-search-empty";
+    vide.hidden = true;
+
+    var etiquette = el("p", "search-suggest-label");
+    etiquette.id = "heurix-search-suggest-label";
+    etiquette.hidden = true;
+
+    // --- pied : aide clavier ---
+    var pied = el("div", "search-foot");
+    [["↑ ↓", L.naviguer], ["↵", L.ouvrir], ["⌘ ↵", L.onglet], ["Esc", L.vider]]
+      .forEach(function (paire) {
+        var k = el("span", "search-key");
+        k.appendChild(el("kbd", null, paire[0]));
+        k.appendChild(el("span", null, " " + paire[1]));
+        pied.appendChild(k);
+      });
+
+    // ANNONCE DU NOMBRE DE RESULTATS. Hors du flux visuel mais dans le DOM :
+    // `display:none` la rendrait muette pour les lecteurs d'ecran.
+    var annonce = el("p", "search-sr-only");
+    annonce.id = "heurix-search-annonce";
+    annonce.setAttribute("aria-live", "polite");
+    annonce.setAttribute("aria-atomic", "true");
+
+    panneau.appendChild(tete);
+    panneau.appendChild(etiquette);
+    panneau.appendChild(corps);
+    panneau.appendChild(vide);
+    panneau.appendChild(pied);
+    panneau.appendChild(annonce);
+    racine.appendChild(fond);
+    racine.appendChild(panneau);
+    document.body.appendChild(racine);
+
+    modale = {
+      racine: racine, panneau: panneau, champ: champ, compte: compte,
+      rail: rail, liste: liste, vide: vide, etiquette: etiquette,
+      annonce: annonce, fond: fond,
+    };
+    return modale;
+  }
+
   function init() {
     var root = calculerRoot();
     var btn = document.getElementById("heurix-search-btn");
-    var modal = document.getElementById("heurix-search-modal");
-    var backdrop = document.getElementById("heurix-search-backdrop");
-    var input = document.getElementById("heurix-search-input");
-    var resultsEl = document.getElementById("heurix-search-results");
-    var emptyEl = document.getElementById("heurix-search-empty");
-    var suggestLabel = document.getElementById("heurix-search-suggest-label");
-    if (!btn || !modal) return;
+    if (!btn) return;
 
-    function renderItems(items, query) {
-      resultsEl.innerHTML = "";
-      items.forEach(function (item) {
+    var m = null;                 // la modale, construite a la premiere ouverture
+    var curseur = -1;             // index de l'option active, -1 = aucune
+    var affiches = [];            // les items rendus, dans l'ordre
+    var minuteurSquelette = null;
+    var minuteurAnnonce = null;
+    var focusAvant = null;
+
+    // ----- rendu -------------------------------------------------------
+
+    // La source arrive en clef (« secteurs »). La classe la reprend telle
+    // quelle ; le mot affiche vient du dictionnaire de langue. Une clef
+    // inconnue se montre brute plutot que de rendre une pastille vide.
+    function pastille(clef) {
+      return el("span", "search-pill search-pill-" + clef, L.source[clef] || clef);
+    }
+
+    function rendre(items, query) {
+      m.liste.innerHTML = "";
+      affiches = items;
+      curseur = -1;
+      items.forEach(function (item, i) {
         var a = document.createElement("a");
         a.className = "search-result";
+        a.id = "heurix-search-opt-" + i;
         a.href = root + chemin(item);
-        var titre = document.createElement("div");
-        titre.className = "search-result-title";
+        a.setAttribute("role", "option");
+        a.setAttribute("aria-selected", "false");
+
+        var titre = el("div", "search-result-title");
         poser(titre, item.t || "", query);
-        var extrait = document.createElement("div");
-        extrait.className = "search-result-excerpt";
-        poser(extrait, item.e || "", query);
         a.appendChild(titre);
-        a.appendChild(extrait);
-        resultsEl.appendChild(a);
+
+        // L'EXTRAIT D'UNE ANCRE EST LE TITRE DE SA PAGE, pas un resume : c'est
+        // ce qui situe une section. Il n'est donc pas surligne comme un
+        // extrait -- il est rendu dans la ligne meta, plus bas.
+        if (!item.ancre && item.e) {
+          var extrait = el("div", "search-result-excerpt");
+          poser(extrait, item.e, query);
+          a.appendChild(extrait);
+        }
+
+        var meta = el("div", "search-result-meta");
+        if (item.s) meta.appendChild(pastille(item.s));
+        // AUCUNE CATEGORIE INVENTEE. Verifie sur les 56 pages : og:type ne
+        // rend que « article » ou « website », et le schema decrit
+        // l'organisation. La seule seconde information derivable est la page
+        // PARENTE d'une ancre, et c'est celle qui situe reellement.
+        if (item.ancre && item.e) meta.appendChild(el("span", "search-result-parent", item.e));
+        a.appendChild(meta);
+
+        m.liste.appendChild(a);
       });
+      m.champ.setAttribute("aria-expanded", items.length ? "true" : "false");
+      m.champ.removeAttribute("aria-activedescendant");
     }
 
-    function showDefaultSuggestions() {
-      emptyEl.hidden = true;
-      if (suggestLabel) suggestLabel.hidden = false;
-      renderItems(derniers(), "");
+    function annoncer(n, query) {
+      clearTimeout(minuteurAnnonce);
+      minuteurAnnonce = setTimeout(function () {
+        m.annonce.textContent = query
+          ? n + " " + (n === 1 ? L.resultat : L.resultats)
+          : "";
+      }, 300);
     }
 
-    // SQUELETTE AU-DELA DE 200 ms, PAS AVANT. En dessous, la liste
-    // precedente reste : un flash de vide sur une connexion rapide est plus
-    // desagreable que l'attente qu'il signale.
-    var minuteurSquelette = null;
+    function compteur(total) {
+      m.compte.textContent = total ? total + " " + (total === 1 ? L.resultat : L.resultats) : "";
+    }
+
+    function suggestionsParDefaut() {
+      m.vide.hidden = true;
+      m.etiquette.hidden = false;
+      m.etiquette.textContent = L.avant;
+      compteur(0);
+      rendre(derniers(), "");
+    }
+
     function attendre(actif) {
       clearTimeout(minuteurSquelette);
-      if (!actif) { resultsEl.removeAttribute("data-chargement"); return; }
+      if (!actif) { m.liste.removeAttribute("data-chargement"); return; }
       minuteurSquelette = setTimeout(function () {
-        resultsEl.setAttribute("data-chargement", "1");
+        m.liste.setAttribute("data-chargement", "1");
       }, 200);
     }
 
-    // PRECHARGEMENT SUR INTENTION -- ET PAS SUR SURVOL TACTILE.
-    //
-    // `hover: hover` demande directement « cet appareil sait-il survoler ? »,
-    // ce qui est la question, la ou `pointer: coarse` demande la finesse du
-    // pointeur. Sur mobile, un survol EST un debut de tap : s'y accrocher
-    // ferait recuperer 40 ko a chaque effleurement du bandeau.
-    //
-    // Les autres declencheurs couvrent tous les chemins d'ouverture, y
-    // compris Ctrl+K qui ne passe jamais par le bouton.
+    function montrerErreur() {
+      m.liste.innerHTML = "";
+      m.liste.setAttribute("data-erreur", "1");
+    }
+
+    // ----- clavier -----------------------------------------------------
+
+    function surligner(i) {
+      var options = m.liste.querySelectorAll(".search-result");
+      if (!options.length) return;
+      if (curseur >= 0 && options[curseur]) {
+        options[curseur].classList.remove("on");
+        options[curseur].setAttribute("aria-selected", "false");
+      }
+      curseur = (i + options.length) % options.length;
+      var a = options[curseur];
+      a.classList.add("on");
+      a.setAttribute("aria-selected", "true");
+      m.champ.setAttribute("aria-activedescendant", a.id);
+      // `block: nearest` plutot que `center` : deplacer la liste sous un
+      // curseur qui n'en avait pas besoin desoriente autant qu'un element
+      // hors champ.
+      if (a.scrollIntoView) a.scrollIntoView({ block: "nearest" });
+    }
+
+    function ouvrirCourant(nouvelOnglet) {
+      var options = m.liste.querySelectorAll(".search-result");
+      var a = options[curseur >= 0 ? curseur : 0];
+      if (!a) return;
+      if (nouvelOnglet) window.open(a.href, "_blank", "noopener");
+      else window.location.href = a.href;
+    }
+
+    function auClavier(e) {
+      // `curseur` vaut -1 tant que rien n'est surligne, ce qui n'est pas
+      // « avant l'index 0 » mais « hors de la liste ». Le modulo seul y
+      // repond mal : depuis -1, une fleche haut viserait -2, donc
+      // l'AVANT-DERNIERE option. Les deux entrees depuis l'exterieur sont
+      // donc explicites.
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        surligner(curseur === -1 ? 0 : curseur + 1);
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        surligner(curseur === -1 ? m.liste.querySelectorAll(".search-result").length - 1 : curseur - 1);
+      }
+      else if (e.key === "Enter") { e.preventDefault(); ouvrirCourant(e.metaKey || e.ctrlKey); }
+      else if (e.key === "Escape") {
+        e.preventDefault();
+        // ECHAP VIDE D'ABORD, FERME ENSUITE. Une requete tapee est un travail :
+        // la fermeture la detruit, et c'est le geste le plus facile a faire
+        // par accident.
+        if (m.champ.value) { m.champ.value = ""; chercherEtRendre(); }
+        else close();
+      } else if (e.key === "Tab") {
+        // PIEGE DE FOCUS : la modale est `aria-modal`, donc rien derriere elle
+        // ne doit etre atteignable. Deux elements focalisables seulement -- le
+        // champ et le bouton de fermeture -- le piege se referme donc a la
+        // main plutot que par une liste calculee.
+        var focalisables = m.panneau.querySelectorAll("input, button, a[href]");
+        if (!focalisables.length) return;
+        var premier = focalisables[0];
+        var dernier = focalisables[focalisables.length - 1];
+        if (e.shiftKey && document.activeElement === premier) { e.preventDefault(); dernier.focus(); }
+        else if (!e.shiftKey && document.activeElement === dernier) { e.preventDefault(); premier.focus(); }
+      }
+    }
+
+    // ----- recherche ---------------------------------------------------
+
+    function chercherEtRendre() {
+      var q = m.champ.value;
+      if (!q.trim()) { suggestionsParDefaut(); annoncer(0, ""); return; }
+      m.etiquette.hidden = true;
+      var tous = runSearch(q, 0);          // 0 = sans plafond, pour le compteur
+      var visibles = tous.slice(0, 8);
+      m.vide.hidden = tous.length !== 0;
+      m.vide.textContent = L.rien + " « " + q + " »";
+      compteur(tous.length);
+      rendre(visibles, q);
+      annoncer(tous.length, q);
+    }
+
+    // ----- ouverture et fermeture ---------------------------------------
+
+    // POSES UNE SEULE FOIS, a la construction. Les attacher dans `open()`
+    // les empilait a chaque ouverture : la deuxieme fois, chaque frappe
+    // declenchait deux recherches. Trouve en relisant, pas en mesurant --
+    // le doublon ne se voit pas a l'ecran, il se voit au compteur d'appels.
+    function cabler() {
+      m.champ.addEventListener("input", chercherEtRendre);
+      m.champ.addEventListener("keydown", auClavier);
+      m.racine.querySelectorAll("[data-search-close]").forEach(function (n) {
+        n.addEventListener("click", close);
+      });
+    }
+
+    function open() {
+      var neuve = !modale;
+      m = construireModale();
+      if (neuve) cabler();
+
+      focusAvant = document.activeElement;
+      m.racine.classList.add("open");
+      document.body.style.overflow = "hidden";
+      m.champ.value = "";
+      setTimeout(function () { m.champ.focus(); }, 10);
+      if (window.dataLayer) window.dataLayer.push({ event: "site_search_open" });
+
+      attendre(true);
+      precharger(root)
+        .then(function () { attendre(false); suggestionsParDefaut(); })
+        .catch(function () { attendre(false); montrerErreur(); });
+    }
+
+    function close() {
+      if (!m) return;
+      m.racine.classList.remove("open");
+      document.body.style.overflow = "";
+      // LE FOCUS REVIENT D'OU IL VENAIT. Sans cela il retombe sur <body> et la
+      // navigation au clavier repart du haut de la page.
+      if (focusAvant && focusAvant.focus) focusAvant.focus();
+    }
+
+    // ----- declencheurs --------------------------------------------------
+
     var peutSurvoler = !window.matchMedia || window.matchMedia("(hover: hover)").matches;
     if (peutSurvoler) {
       btn.addEventListener("pointerenter", function () { precharger(root).catch(function () {}); });
     }
     btn.addEventListener("focus", function () { precharger(root).catch(function () {}); });
-
-    function open() {
-      modal.classList.add("open");
-      document.body.style.overflow = "hidden";
-      input.value = "";
-      setTimeout(function () { input.focus(); }, 10);
-      if (window.dataLayer) window.dataLayer.push({ event: "site_search_open" });
-
-      attendre(true);
-      precharger(root)
-        .then(function () { attendre(false); showDefaultSuggestions(); })
-        .catch(function () { attendre(false); montrerErreur(); });
-    }
-
-    function montrerErreur() {
-      resultsEl.innerHTML = "";
-      resultsEl.setAttribute("data-erreur", "1");
-    }
-    function close() {
-      modal.classList.remove("open");
-      document.body.style.overflow = "";
-    }
-
     btn.addEventListener("click", open);
-    backdrop.addEventListener("click", close);
+
     document.addEventListener("keydown", function (e) {
-      if (e.key === "Escape" && modal.classList.contains("open")) close();
-      if ((e.key === "/" || (e.ctrlKey && e.key === "k") || (e.metaKey && e.key === "k")) &&
-          document.activeElement.tagName !== "INPUT" && document.activeElement.tagName !== "TEXTAREA") {
+      var ouverte = m && m.racine.classList.contains("open");
+      if (e.key === "Escape" && ouverte) return;      // gere par auClavier
+      if ((e.key === "/" || ((e.ctrlKey || e.metaKey) && e.key === "k")) &&
+          document.activeElement.tagName !== "INPUT" &&
+          document.activeElement.tagName !== "TEXTAREA" && !ouverte) {
         e.preventDefault();
         open();
       }
-    });
-
-    input.addEventListener("input", function () {
-      var q = input.value;
-      if (!q.trim()) {
-        showDefaultSuggestions();
-        return;
-      }
-      if (suggestLabel) suggestLabel.hidden = true;
-      var results = runSearch(q);
-      emptyEl.hidden = results.length !== 0;
-      renderItems(results, q);
-    });
-
-    modal.querySelectorAll("[data-search-close]").forEach(function (el) {
-      el.addEventListener("click", close);
     });
   }
 
