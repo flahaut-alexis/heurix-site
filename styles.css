@@ -6686,6 +6686,48 @@ body.docs-dark .integ-panel p{ color:#CDD2F0; }
   display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:14px;
 }
 
+/* IMAGE D'EN-TETE DES PAGES SOLUTIONS (27 aout 2026).
+
+   Une image par page, posee a cote du chapo, du cote qui alterne avec la
+   POSITION DE LA PAGE dans la grille de `solutions/index.html` -- impaire
+   a gauche, paire a droite. Le cote est ecrit dans le HTML (site statique,
+   aucune etape de construction), et `tests/solutions-image.test.js` le
+   re-derive depuis cette grille : une alternance se verifie, un tirage non.
+
+   L'ORDRE DE LA GRILLE, PAS CELUI DE faq.html. Les deux existent et ne
+   coincident pas. faq.html enumere les ONZE packs du moteur, dont trois
+   n'ont pas de page (automobile, electricite, plomberie) ; en ne gardant
+   que les huit qui en ont une, ses rangs donnent G,G,D,G,D,G,D,G -- deux
+   gauches de suite en tete, donc pas une alternance. Celui de la grille
+   est aussi le seul que le visiteur parcourt.
+
+   420 px de colonne pour une source de 1000 px : le facteur 2,4 couvre un
+   ecran a densite double sans servir les 8 Mo d'origine (mesure dans le
+   commit). `align-items:center` cale le chapo sur le milieu de l'image :
+   deux a quatre lignes de 18 px contre 282 px de hauteur, un alignement
+   haut laisserait le texte flotter en haut d'un bloc trois fois plus grand.
+
+   Sous 768 px la grille tombe a une colonne. L'image est PREMIERE DANS LE
+   DOM, donc elle passe naturellement au-dessus du texte sans qu'on ait a
+   l'y remettre ; `order` ne sert qu'a la renvoyer a droite sur grand ecran. */
+.solution-intro{
+  display:grid; grid-template-columns:420px minmax(0,1fr);
+  gap:32px; align-items:center; margin-bottom:36px;
+}
+.solution-intro-droite{ grid-template-columns:minmax(0,1fr) 420px; }
+.solution-intro-droite .solution-intro-img{ order:2; }
+.solution-intro-img{
+  display:block; width:100%; height:auto;
+  border-radius:14px; border:1px solid var(--line);
+}
+.solution-intro .post-lede{ margin-bottom:0; }
+
+@media (max-width:768px){
+  .solution-intro,
+  .solution-intro-droite{ grid-template-columns:1fr; gap:22px; }
+  .solution-intro-droite .solution-intro-img{ order:0; }
+}
+
 /* Harmonisation sombre de fonctionnalites.html (11 aout 2026) -- les
    cartes feat-card restaient sur leur fond clair d'origine, seule page
    du menu Produit jamais passee en docs-dark jusqu'ici. Meme traitement
