@@ -205,6 +205,61 @@ describe("le rang du resultat ouvert", () => {
   });
 });
 
+describe("les deux sorties doivent s'accorder", () => {
+  // LA CONTRADICTION EST UN SIGNAL, ET CE TEST LA REND AUTOMATIQUE.
+  //
+  // Le defaut de l'etape (a) a ete trouve parce que le dataLayer portait deux
+  // lignes qui ne pouvaient pas etre vraies ensemble : un « site_search » a 0
+  // resultat, suivi d'un « site_search_click » au rang 3. Personne ne le
+  // cherchait -- 426 tests, quatre configurations verifiees a l'ecran, trois
+  // etapes passees dessus.
+  //
+  // Le controle etait alors manuel : il fallait REGARDER la sortie brute.
+  // Ici il ne l'est plus. Deux champs portent le meme fait sous deux angles,
+  // et on affirme qu'ils s'accordent.
+  it("le rang clique ne depasse jamais le compte annonce, sur la meme requete", async () => {
+    const w = await ouvrir();
+    taper(w, "din 933");
+    await pose();
+    const options = resultats(w);
+    options[options.length - 1].dispatchEvent(new w.Event("click", { bubbles: true }));
+
+    const recherche = dernier(w, "site_search");
+    const clic = dernier(w, "site_search_click");
+    expect(clic.recherche_termes).toBe(recherche.recherche_termes);
+    expect(clic.recherche_rang).toBeGreaterThan(0);
+    expect(clic.recherche_rang).toBeLessThanOrEqual(recherche.recherche_resultats);
+    expect(recherche.recherche_sans_resultat).toBe(false);
+  });
+
+  // Le cas exact du defaut : l'index arrive apres la frappe. Avant correctif,
+  // « site_search » partait a 0 et le clic suivant annoncait un rang.
+  it("s'accordent aussi quand l'index arrive apres la frappe", async () => {
+    const dom = new JSDOM(
+      `<!DOCTYPE html><html><body><button id="heurix-search-btn">b</button></body></html>`,
+      { url: "https://heurix.fr/index.html", runScripts: "outside-only" }
+    );
+    const w = dom.window;
+    let livrer;
+    w.fetch = () => new Promise((r) => { livrer = () => r({ ok: true, json: () => Promise.resolve(INDEX) }); });
+    w.matchMedia = () => ({ matches: true });
+    w.dataLayer = [];
+    w.eval(fs.readFileSync(path.join(RACINE, "search-engine.js"), "utf8"));
+    w.document.dispatchEvent(new w.Event("DOMContentLoaded"));
+    w.document.getElementById("heurix-search-btn").dispatchEvent(new w.Event("click"));
+    await new Promise((r) => setTimeout(r, 25));
+
+    taper(w, "din 933");
+    livrer();
+    await pose();
+    resultats(w)[2].dispatchEvent(new w.Event("click", { bubbles: true }));
+
+    const recherche = dernier(w, "site_search");
+    const clic = dernier(w, "site_search_click");
+    expect(clic.recherche_rang).toBeLessThanOrEqual(recherche.recherche_resultats);
+  });
+});
+
 describe("l'abandon", () => {
   it("fermer sans rien ouvrir le signale, avec la derniere requete", async () => {
     const w = await ouvrir();
