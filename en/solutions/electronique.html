@@ -3,18 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Electronics & high-tech: search that understands your references | Heurix</title>
+<title>Electronics: search by watts, USB-C and GB | Heurix</title>
 <meta name="description" content="A 65W charger and a 45W charger look alike as text. Not in use.">
 <link rel="alternate" hreflang="fr" href="https://heurix.fr/solutions/electronique.html">
 <link rel="alternate" hreflang="en" href="https://heurix.fr/en/solutions/electronique.html">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Electronics & high-tech: search that understands your references | Heurix">
+<meta property="og:title" content="Electronics: search by watts, USB-C and GB | Heurix">
 <meta property="og:description" content="A 65W charger and a 45W charger look alike as text. Not in use.">
 <meta property="og:image" content="https://heurix.fr/og-image.png">
 <meta property="og:url" content="https://heurix.fr/en/solutions/electronique.html">
 <meta property="og:locale" content="en_US">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Electronics & high-tech: search that understands your references | Heurix">
+<meta name="twitter:title" content="Electronics: search by watts, USB-C and GB | Heurix">
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="../../favicon-32.png">
 <link rel="apple-touch-icon" href="../../apple-touch-icon.png">
@@ -123,7 +123,7 @@
       <span class="breadcrumb-current">Electronics & high-tech</span>
     </nav>
     <div class="kicker kicker-electronique">🔌 Solutions · Electronics & high-tech</div>
-    <h1>Electronics &amp; high-tech: search that understands your references</h1>
+    <h1>Electronics &amp; high-tech: USB-C, IP68 and 512 GB pulled out of the label</h1>
     <div class="solution-intro solution-intro-gauche">
       <img class="solution-intro-img" src="../../img/solutions/electronique.jpg?v=1787855970"
            width="1000" height="671" decoding="async"
@@ -139,12 +139,13 @@
       <p>The <code class="docs-inline-code">electronique</code> rule pack activates when you pick this industry, at indexing time. It produces these annotations, each becoming a usable filter:</p>
       <div class="table-scroll"><table class="docs-params">
         <tr><th>Annotation</th><th>What it isolates</th></tr>
-        <tr><td><code class="docs-inline-code">PUISSANCE_65W</code></td><td>the wattage, recognized as a quantity</td></tr>
-        <tr><td><code class="docs-inline-code">AUTONOMIE_30H</code></td><td>the advertised battery life</td></tr>
-        <tr><td><code class="docs-inline-code">CONN_USBC</code></td><td>the connector type</td></tr>
-        <tr><td><code class="docs-inline-code">NORME_IP68</code></td><td>the ingress protection rating</td></tr>
-        <tr><td><code class="docs-inline-code">CAPACITE_512GO</code></td><td>the storage capacity</td></tr>
+        <tr><td><code class="docs-inline-code">PUISSANCE_65W</code></td><td>the wattage, read as a quantity</td></tr>
+        <tr><td><code class="docs-inline-code">AUTONOMIE_30H</code></td><td>battery life in hours, never mistaken for a wattage</td></tr>
+        <tr><td><code class="docs-inline-code">CONN_USBC</code></td><td>the connector — USB-C, HDMI, jack or Bluetooth</td></tr>
+        <tr><td><code class="docs-inline-code">NORME_IP68</code></td><td>the ingress protection rating, with or without a space after IP</td></tr>
+        <tr><td><code class="docs-inline-code">CAPACITE_512GO</code></td><td>the storage capacity, in GB as well as TB</td></tr>
       </table></div>
+      <p>Here it is the letter after the number that decides the axis: 65 W is a wattage, 30 h a battery life, 12 V a voltage, 2 A a current. Four quantities, one digit, and nothing to tell them apart for a text engine. On top of those: the family — charger, speaker, headphones, cable — and two compositions: <code class="docs-inline-code">CHARGEUR_65W</code> joins family and wattage, <code class="docs-inline-code">BT_AUTONOMIE_30H</code> the battery life of a wireless product. The “3.5 mm” of a jack, meanwhile, is read as a connector and not as a measurement.</p>
 
       <h2>Three products, listing as is</h2>
       <div class="table-scroll"><table class="docs-params">
