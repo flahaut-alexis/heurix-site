@@ -47,6 +47,62 @@
   ]
 }
 </script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Comment démarrer ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Démarrez l'essai gratuit de 14 jours (aucune carte bancaire requise), indexez un premier lot de produits, lancez une recherche. Le guide de démarrage rapide tient en 3 appels API."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Puis-je changer de forfait ou arrêter à tout moment ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Oui. Facturation mensuelle, aucun engagement de durée. Vous changez de forfait ou vous arrêtez quand vous voulez, sans pénalité."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Le moteur Heurix remplace-t-il Algolia ou Elasticsearch ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Ce n'est pas une surcouche des solutions existantes : c'est un moteur différent, spécialisé dans les catalogues où les références comptent — dimensions, tailles, normes, millésimes. Le Search API a du sens dès que vous n'avez pas encore de moteur dédié, ou que le vôtre échoue sur ce type de recherches."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Que se passe-t-il si je dépasse mon quota de requêtes ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Le service continue de fonctionner normalement — le surplus est simplement facturé au tarif par tranche indiqué sur votre forfait. Vous êtes prévenu avant tout dépassement significatif, pas de coupure surprise."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Puis-je créer des règles pour mon propre secteur ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Dix packs sont fournis (outillage, automobile, électricité, plomberie, industrie, électronique, mode, vins, livres, finance) et couvrent la plupart des catalogues techniques. Un terme spécifique à votre catalogue n'y figure pas ? Ajoutez vos propres Custom Rules directement depuis la console, sans écrire de regex — inclus à tous les plans, effet immédiat. Pour un besoin plus complexe (motifs à deux nombres combinés, par exemple), un pack entièrement sur mesure reste possible sur les plans Scale."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Ranking est-il inclus dans mon plan Search ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Non, c'est un produit à part avec son propre quota — vous pouvez le prendre en autonome (sans plan Search) ou en option sur Growth/Scale, avec 25% de remise dans ce second cas. Les deux quotas ne se marchent jamais dessus : votre volume de recherche n'est jamais affecté par votre trafic de navigation par catégorie, et inversement."
+      }
+    }
+  ]
+}
+</script>
 </head>
 <body class="docs-dark">
 <header>
