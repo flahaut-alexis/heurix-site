@@ -136,8 +136,100 @@ const EXCEPTIONS = [
     raison: "idem, version anglaise" },
 ];
 
-// Une enumeration commence par le premier pack et liste les autres.
-const ENUMERATION = /\((outillage|hardware)[^)]{40,}\)/gi;
+// DEUX MISES EN PAGE COEXISTENT, ET LE MOTIF N'EN CONNAISSAIT QU'UNE
+// (27 aout 2026).
+//
+// Forme A -- la liste tient dans UNE parenthese ouverte par le premier
+// pack. C'est celle de faq.html, pricing.html, search.js :
+//
+//     « Onze packs de regles sont fournis (outillage, automobile, ...) »
+//
+// Forme B -- la liste est en prose et CHAQUE nom porte sa propre
+// parenthese de details. C'est celle de docs.html et en/docs.html :
+//
+//     « outillage (visserie, normes DIN/ISO), automobile (references
+//       OEM Bosch/MANN/Valeo), electricite (calibres, courbes), ... »
+//
+// L'ancien motif exigeait la forme A. Sur docs.html il ne matchait RIEN,
+// donc l'assertion « chaque enumeration compte autant de noms que le
+// chiffre annonce » ne s'y appliquait jamais. Les deux pages annoncaient
+// onze packs et en listaient DIX -- `sport` manquant -- et le garde etait
+// vert.
+//
+// C'est le meme defaut de forme que l'adjacence de AFFIRMATION : le motif
+// decrivait une mise en page particuliere plutot que la chose cherchee.
+// ---------------------------------------------------------------------
+// CE QUE CE GARDE RECONNAIT, EN UNE LECTURE.
+//
+// Si vous ajoutez une page qui enumere les packs, ECRIVEZ-LA DANS L'UNE DE
+// CES DEUX FORMES. Une troisieme forme ne sera pas signalee comme non
+// couverte : elle sera simplement INVISIBLE, et votre page pourra annoncer
+// onze packs en en listant dix sans qu'aucun test ne tombe.
+//
+// C'est le defaut qui a ete corrige DEUX FOIS le 27 aout -- d'abord sur
+// AFFIRMATION qui exigeait le nombre colle au mot, puis ici. Un motif qui
+// decrit une mise en page plutot que la chose cherchee rate en silence.
+//
+// ┌─ FORME A ─ la liste tient dans UNE parenthese, ouverte par le premier
+// │            pack. Le reste de la phrase continue apres la fermante.
+// │
+// │   « Onze packs de regles sont fournis (outillage, automobile,
+// │     electricite, plomberie, industrie, electronique, mode, vins,
+// │     livres, finance, sport) et la mecanique s'applique a tout... »
+// │
+// │   faq.html · pricing.html · console.html · search.js  (+ leurs
+// │   equivalents anglais, et les copies JSON-LD de faq et pricing)
+// └─
+//
+// ┌─ FORME B ─ la liste est en PROSE et chaque nom porte SA PROPRE
+// │            parenthese de details. Elle court jusqu'au point final.
+// │
+// │   « Onze packs standards sont fournis : outillage (visserie, normes
+// │     DIN/ISO, matieres), automobile (references OEM Bosch/MANN/Valeo),
+// │     electricite (calibres, courbes), ... et sport (volumes en litres,
+// │     tailles normalisees, plans de cordage). »
+// │
+// │   docs.html · fonctionnalites.html  (+ leurs equivalents anglais)
+// └─
+//
+// DEUX FORMES, PAS TROIS -- ET LE COMPTE A ETE MESURE, PAS ESTIME.
+// J'avais d'abord annonce trois mises en page, en comptant
+// fonctionnalites.html comme une troisieme par inattention : elle a
+// exactement la forme de docs.html. Verifie page par page avant d'ecrire ce
+// bloc, motif par motif :
+//
+//                              forme A   forme B
+//     faq · pricing · console     oui       -
+//     search.js · search-en.js    oui       -
+//     docs · fonctionnalites       -       oui
+//
+// LA PARTITION EST NETTE : aucune page n'est attrapee par les deux motifs,
+// aucune des douze pages porteuses n'echappe aux deux. Si vous en ajoutez
+// une forme, remesurez ce tableau plutot que de l'estimer -- c'est deux
+// commandes, et une estimation fausse ici rend une page invisible.
+//
+// Une assertion plus bas verifie que CHAQUE forme trouve encore quelque
+// chose -- si l'une cessait de matcher, le garde deviendrait vert sur la
+// moitie du site sans rien dire.
+// ---------------------------------------------------------------------
+const ENUM_PARENTHESE = /\((outillage|hardware)[^)]{40,}\)/gi;
+const ENUM_EN_PROSE = /\b(outillage|hardware)\b\s*\([^)]*\)[^.]{40,}?\./gi;
+
+/** Extrait les noms d'une enumeration, quelle que soit sa forme.
+ *
+ * Les parentheses INTERNES sont retirees d'abord : sans cela, les details
+ * de la forme B -- « outillage (visserie, normes DIN/ISO, matieres) » --
+ * se feraient decouper en trois faux noms par le split sur les virgules. */
+function nomsDeLEnumeration(brut) {
+  const sansDetails = brut
+    .replace(/^\(|\)$/g, "")          // parentheses englobantes de la forme A
+    .replace(/\([^)]*\)/g, "")        // parentheses de details de la forme B
+    .replace(/\.$/, "");
+  return sansDetails
+    .split(/,| et | and /)
+    .map((x) => x.trim())
+    .filter(Boolean);
+}
 
 const affirmations = [];
 const enumerations = [];
@@ -148,9 +240,11 @@ for (const p of pages) {
     if (exception) continue;
     affirmations.push({ page: p, mot: m[1].toLowerCase(), valeur: NOMBRES[m[1].toLowerCase()] });
   }
-  for (const m of t.matchAll(ENUMERATION)) {
-    const noms = m[0].slice(1, -1).split(",").map((x) => x.trim()).filter(Boolean);
-    if (noms.length >= 5) enumerations.push({ page: p, noms });
+  for (const [forme, motif] of [["A", ENUM_PARENTHESE], ["B", ENUM_EN_PROSE]]) {
+    for (const m of t.matchAll(motif)) {
+      const noms = nomsDeLEnumeration(m[0]);
+      if (noms.length >= 5) enumerations.push({ page: p, noms, forme });
+    }
   }
 }
 
@@ -320,5 +414,17 @@ describe("packs — les trente et une affirmations du site s'accordent", () => {
       .toBeGreaterThan(0);
     expect(pages.some((p) => /<script[^>]*application\/ld\+json/.test(brut(p))),
       "aucun JSON-LD lu : les copies de balisage echappent au garde").toBe(true);
+  });
+
+  // Si une forme cessait de matcher -- une page reecrite, un motif casse par
+  // une refonte de balisage -- le garde deviendrait vert sur la moitie du
+  // site sans rien dire. C'est exactement ce qui s'est passe pour la forme B
+  // avant le 27 aout : elle n'existait pas, et docs.html annoncait onze
+  // packs en en listant dix, sans aucun test rouge.
+  it("les deux formes d'enumeration trouvent encore chacune quelque chose", () => {
+    const parForme = { A: [], B: [] };
+    for (const e of enumerations) parForme[e.forme].push(e.page);
+    expect(parForme.A, "forme A (liste entre parentheses) ne matche plus rien").not.toEqual([]);
+    expect(parForme.B, "forme B (liste en prose, parentheses par nom) ne matche plus rien").not.toEqual([]);
   });
 });
