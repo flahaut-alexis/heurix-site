@@ -49,6 +49,32 @@ jobs:
           # une liste perimee reste du JavaScript valide.
           scripts/derniers-articles.py --verifier
 
+  index-recherche:
+    name: Index de recherche a jour
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # POURQUOI CE CONTROLE NE REGENERE PAS L'INDEX.
+      #
+      # La generation appelle la tokenisation du MOTEUR (heurix.normalize),
+      # qui exige la wheel heurix_fst_core -- un depot PRIVE. Poser un jeton
+      # de lecture d'un depot prive dans les secrets d'un depot PUBLIC est
+      # une decision de securite, et le jeton se maintient : il expire, il se
+      # revoque, il se re-cree. L'empreinte, elle, ne se maintient pas.
+      #
+      # Ce controle compare donc les empreintes du contenu INDEXABLE de
+      # chaque page a celles enregistrees dans l'index. Aucune dependance,
+      # aucun jeton, et il detecte exactement ce que « perime » veut dire :
+      # une page modifiee, une page retiree, et surtout une page AJOUTEE --
+      # celle qui ne change aucune empreinte existante, et par laquelle
+      # partners.html et roi.html sont restes introuvables des semaines.
+      - name: Les index refletent-ils le contenu des pages ?
+        run: python3 scripts/index-recherche.py --verifier
+
   tests:
     name: Suite de tests
     runs-on: ubuntu-latest
