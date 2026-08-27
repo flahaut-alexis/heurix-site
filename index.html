@@ -76,10 +76,30 @@
   "@context": "https://schema.org",
   "@type": "FAQPage",
   "mainEntity": [
-    {"@type": "Question", "name": "Comment intégrer le moteur Heurix à mon site ?", "acceptedAnswer": {"@type": "Answer", "text": "Par API : vous indexez votre catalogue, vous branchez la recherche, c'est en ligne. Pas de plugin, pas de refonte, pas de dépendance à votre CMS. Des guides d'intégration avec du vrai code sont disponibles pour Shopify, PrestaShop, WooCommerce et Magento."}},
-    {"@type": "Question", "name": "Combien coûte le Search API Heurix ?", "acceptedAnswer": {"@type": "Answer", "text": "Un essai gratuit de 14 jours (jusqu'à 2 000 requêtes et 2 000 produits) pour tester sans carte bancaire, puis des plans à partir de 19 €/mois. Les règles de comptage sont publiques et la consommation est consultable en temps réel."}},
-    {"@type": "Question", "name": "Pourquoi choisir Heurix plutôt qu'Algolia, Elasticsearch ou Typesense ?", "acceptedAnswer": {"@type": "Answer", "text": "Les moteurs généralistes comparent des caractères ; Heurix lit la structure des références produits grâce à sa cascade d'annotations — dimensions, normes, tailles, millésimes, éditions — avec des packs de règles par verticale et des résultats explicables."}},
-    {"@type": "Question", "name": "Où sont hébergées les données ?", "acceptedAnswer": {"@type": "Answer", "text": "En France, chez OVH (Gravelines ou Strasbourg). Les catalogues ne quittent pas l'Union européenne."}}
+    {
+      "@type": "Question",
+      "name": "Combien de temps pour être opérationnel ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Le premier résultat en une après-midi : export CSV, dépôt dans la console, pack recommandé automatiquement. En production : 2 à 3 jours sur PrestaShop , 3 à 4 sur WooCommerce ."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Et si Heurix ne répond pas ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Nos modules embarquent un repli automatique : la recherche native reprend la main en une seconde. Une panne de moteur ne devient jamais une panne de boutique."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Êtes-vous conforme au RGPD ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Oui — données hébergées en France (OVH), registre des traitements tenu, procédure de violation documentée, durées de conservation différenciées. Le détail est public ."
+      }
+    }
   ]
 }
 </script>
