@@ -581,10 +581,24 @@ la ligne de flottaison — et une vérification à l'écran qui s'arrête au pre
 
 Ces défauts vivent tous dans une asymétrie FR/EN, donc **aucune comparaison
 FR↔EN de contenu ne les attrape** : les deux pages disent la même chose, seule
-l'une atteint sa cible. Et `CLAUDE.md` nommait déjà le piège **dans l'autre
-sens** — « un `../` de trop fait basculer une page anglaise vers la version
-française ». Ici il en manque un, et le résultat n'est pas une mauvaise page,
-c'est rien du tout.
+l'une atteint sa cible.
+
+**Le piège existe dans les deux sens, et la mesure l'établit :**
+
+| | résultat | ce que voit le visiteur |
+|---|---|---|
+| un `../` **de trop** | bascule vers la version française | une page, mais dans la mauvaise langue |
+| un `../` **manquant** | 404 | rien |
+
+Le premier était déjà noté ici. Le second est celui du 27 août, et il est le
+plus coûteux : neuf téléchargements morts valent mieux qu'une page en français
+pour un moteur de recherche, et strictement moins pour un marchand.
+
+Les deux se voient en cliquant — **à condition que quelqu'un clique.** C'est
+toute la difficulté : ces deux erreurs ne se produisent que sur les pages
+anglaises, précisément celles que personne n'ouvre. La vigilance ne les ferme
+pas, parce que la vigilance s'exerce là où l'on regarde. **C'est le test qui
+ferme les deux sens**, et il les ferme sans qu'on ait à y penser.
 
 Trois conséquences pratiques :
 
