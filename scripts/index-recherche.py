@@ -263,7 +263,17 @@ def construire(langue: str) -> dict:
                 "p": a["p"], "t": a["t"], "e": brut["t"],
                 "k": " ".join(sorted(termes(a["t"]))),
             })
-    return {"langue": langue, "entrees": entrees, "empreintes": empreintes}
+    # Un chemin absent des entrees serait filtre EN SILENCE a l'affichage.
+    # On le refuse ici plutot que de le laisser se perdre.
+    connus = {e["p"] for e in entrees}
+    derniers = derniers_articles(langue)
+    manquants = [d for d in derniers if d not in connus]
+    if manquants:
+        sys.exit("Article recent absent de l'index : %s\n"
+                 "  Il serait filtre en silence a l'affichage. Est-il dans le sitemap ?"
+                 % ", ".join(manquants))
+    return {"langue": langue, "entrees": entrees,
+            "derniers": derniers, "empreintes": empreintes}
 
 
 # ---------------------------------------------------------------------------
@@ -306,6 +316,14 @@ def verifier() -> int:
             if p not in attendues:
                 ecarts.append("%s : plus dans le sitemap, encore dans %s" % (p, fichier))
 
+        # LA LISTE DES DERNIERS ARTICLES, meme controle et meme raison qu'avant
+        # sa fusion ici : une liste perimee reste du JSON valide, et personne
+        # ne remarque qu'on met en avant le 23e article sur 30.
+        voulu = derniers_articles(langue)
+        if index.get("derniers", []) != voulu:
+            ecarts.append("%s : les derniers articles ont change -- attendu %s"
+                          % (fichier, ", ".join(voulu)))
+
     if not ecarts:
         print("index de recherche a jour (%d pages)" % len(pages_du_sitemap()))
         return 0
@@ -317,6 +335,42 @@ def verifier() -> int:
 
 
 FICHIERS = {"fr": "search-index-fr.json", "en": "search-index-en.json"}
+DOSSIERS_BLOG = {"fr": "blog", "en": "en/blog"}
+N_DERNIERS = 5
+
+
+# ---------------------------------------------------------------------------
+# LES DERNIERS ARTICLES, REPRIS DE scripts/derniers-articles.py (supprime).
+#
+# CE QU'IL CORRIGEAIT, ET QUI RESTE VRAI. Les deux listes etaient ecrites a la
+# main, introduites le 6 aout avec 7 entrees en FR et 3 en EN. Vingt jours et
+# une douzaine d'articles plus tard, la modale annoncait « Derniers articles »
+# en proposant les articles classes 23e, 27e et 29e sur 30. Rien ne le
+# signalait : une liste perimee reste du JavaScript valide.
+#
+# POURQUOI FONDU ICI. Ce script-la vivait a cote parce que les listes vivaient
+# dans search.js. Elles vivent maintenant dans l'index derive, et deux
+# generateurs qui ecrivent le meme fichier finiraient par se marcher dessus --
+# le second effacant ce que le premier a pose.
+#
+# LA DATE DU COMMIT QUI A AJOUTE LE FICHIER, pas sa derniere modification :
+# corriger une coquille ne republie pas un article. Et blog.html ne fait pas
+# foi -- son ordre est editorial, son premier article date du 1er aout quand
+# les trois suivants datent du 24.
+# ---------------------------------------------------------------------------
+
+def date_ajout(chemin: str) -> int:
+    out = subprocess.run(["git", "-C", RACINE, "log", "--diff-filter=A", "--format=%at",
+                          "--", chemin], capture_output=True, text=True).stdout.strip().split("\n")
+    return int(out[-1]) if out and out[-1] else 0
+
+
+def derniers_articles(langue: str) -> list[str]:
+    import glob
+    dossier = DOSSIERS_BLOG[langue]
+    arts = sorted(glob.glob(os.path.join(RACINE, dossier, "*.html")))
+    rels = [os.path.relpath(a, RACINE) for a in arts]
+    return [p for _, p in sorted(((date_ajout(p), p) for p in rels), reverse=True)[:N_DERNIERS]]
 
 
 def main() -> int:

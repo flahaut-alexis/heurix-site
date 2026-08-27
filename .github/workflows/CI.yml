@@ -30,30 +30,19 @@ permissions:
   contents: read
 
 jobs:
-  derniers-articles:
-    name: Liste des derniers articles a jour
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          # Ce controle lit la date du commit qui a AJOUTE chaque article :
-          # il lui faut l'historique complet, pas les deux derniers commits.
-          fetch-depth: 0
-
-      - name: HEURIX_SEARCH_LATEST_PATHS reflete-t-il les cinq derniers ?
-        run: |
-          # Les deux listes ont ete ecrites a la main le 6 aout 2026 (7 entrees
-          # en FR, 3 en EN) et n'avaient plus bouge vingt jours plus tard : la
-          # modale de recherche annoncait « Latest articles » en proposant les
-          # articles classes 23e, 27e et 29e sur 30. Rien ne le signalait --
-          # une liste perimee reste du JavaScript valide.
-          scripts/derniers-articles.py --verifier
-
   index-recherche:
     name: Index de recherche a jour
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          # LA LISTE DES DERNIERS ARTICLES lit la date du commit qui a AJOUTE
+          # chaque article : il lui faut l'historique complet, pas les deux
+          # derniers commits. Reprise de la tache « derniers-articles »,
+          # fondue ici le 27 aout -- deux generateurs qui ecrivent le meme
+          # fichier finiraient par se marcher dessus.
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -72,7 +61,7 @@ jobs:
       # une page modifiee, une page retiree, et surtout une page AJOUTEE --
       # celle qui ne change aucune empreinte existante, et par laquelle
       # partners.html et roi.html sont restes introuvables des semaines.
-      - name: Les index refletent-ils le contenu des pages ?
+      - name: Index et derniers articles refletent-ils les pages ?
         run: python3 scripts/index-recherche.py --verifier
 
   tests:

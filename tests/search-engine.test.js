@@ -30,6 +30,27 @@ function domAvecMoteur(scripts, url) {
     </div></body></html>`;
   const dom = new JSDOM(html, { url, runScripts: "outside-only" });
   for (const s of scripts) dom.window.eval(fs.readFileSync(s, "utf8"));
+
+  // L'INDEX N'ARRIVE PLUS PAR UNE GLOBALE (27 aout 2026). Le moteur le
+  // recupere en JSON au premier usage ; search.js et search-en.js sont
+  // supprimes. Les fixtures figees, elles, posent encore
+  // window.HEURIX_SEARCH_INDEX -- c'est leur role : elles gelent l'ETAT
+  // D'AVANT le chantier S4 et ne doivent pas bouger.
+  //
+  // On les evalue donc pour recuperer leurs donnees, puis on les sert par un
+  // fetch feint. Ce que ce fichier mesure -- le calcul du chemin relatif, le
+  // classement, les liens produits -- est inchange ; seule la FACON dont les
+  // donnees entrent a change, et c'est l'objet du commit.
+  const donnees = (dom.window.HEURIX_SEARCH_INDEX || []).map(function (e) {
+    return { p: e.path, t: e.title, e: e.excerpt };
+  });
+  const derniersChemins = dom.window.HEURIX_SEARCH_LATEST_PATHS || [];
+  dom.window.fetch = function () {
+    return Promise.resolve({
+      ok: true,
+      json: function () { return Promise.resolve({ entrees: donnees, derniers: derniersChemins }); },
+    });
+  };
   // jsdom en mode "outside-only" ne déclenche jamais DOMContentLoaded tout
   // seul -- sans ce déclenchement manuel, init() n'est jamais appelée et
   // TOUS les résultats de ce fichier seraient un faux "aucun écart"
@@ -38,8 +59,11 @@ function domAvecMoteur(scripts, url) {
   return dom.window;
 }
 
-function chercher(win, q) {
+async function chercher(win, q) {
   win.document.getElementById("heurix-search-btn").dispatchEvent(new win.Event("click"));
+  // Le chargement est asynchrone : sans cette attente, on interrogerait un
+  // index vide et le test rendrait « aucun ecart » sans rien mesurer.
+  await new Promise((r) => setTimeout(r, 20));
   const input = win.document.getElementById("heurix-search-input");
   input.value = q;
   input.dispatchEvent(new win.Event("input"));
@@ -68,9 +92,9 @@ const NOUVEAU_EN = [DONNEES_FIGEES_EN, path.join(RACINE, "search-engine.js")];
 describe("search-engine.js — non-régression FR", () => {
   it.each(["recherche", "algolia", "prestashop", "moteur natif", "custom rules", "xyz-inexistant-zzz"])(
     "« %s » renvoie les mêmes liens qu'avant le chantier S4",
-    (q) => {
-      const avant = chercher(domAvecMoteur([ANCIEN_FR], "https://heurix.fr/index.html"), q);
-      const apres = chercher(domAvecMoteur(NOUVEAU_FR, "https://heurix.fr/index.html"), q);
+    async (q) => {
+      const avant = await chercher(domAvecMoteur([ANCIEN_FR], "https://heurix.fr/index.html"), q);
+      const apres = await chercher(domAvecMoteur(NOUVEAU_FR, "https://heurix.fr/index.html"), q);
       expect(apres).toEqual(avant);
     }
   );
@@ -79,36 +103,36 @@ describe("search-engine.js — non-régression FR", () => {
 describe("search-engine.js — non-régression EN", () => {
   it.each(["search", "algolia", "shopify", "vector search"])(
     "« %s » renvoie les mêmes liens qu'avant le chantier S4",
-    (q) => {
-      const avant = chercher(domAvecMoteur([ANCIEN_EN], "https://heurix.fr/en/index.html"), q);
-      const apres = chercher(domAvecMoteur(NOUVEAU_EN, "https://heurix.fr/en/index.html"), q);
+    async (q) => {
+      const avant = await chercher(domAvecMoteur([ANCIEN_EN], "https://heurix.fr/en/index.html"), q);
+      const apres = await chercher(domAvecMoteur(NOUVEAU_EN, "https://heurix.fr/en/index.html"), q);
       expect(apres).toEqual(avant);
     }
   );
 });
 
 describe("search-engine.js — calcul du chemin relatif (root)", () => {
-  it("racine FR : aucun préfixe", () => {
+  it("racine FR : aucun préfixe", async () => {
     const win = domAvecMoteur(NOUVEAU_FR, "https://heurix.fr/index.html");
-    const [lien] = chercher(win, "recherche");
+    const [lien] = await chercher(win, "recherche");
     expect(lien.startsWith("../")).toBe(false);
   });
 
-  it("racine EN (un niveau) : même résultat qu'avant le chantier", () => {
-    const avant = chercher(domAvecMoteur([ANCIEN_EN], "https://heurix.fr/en/index.html"), "algolia");
-    const apres = chercher(domAvecMoteur(NOUVEAU_EN, "https://heurix.fr/en/index.html"), "algolia");
+  it("racine EN (un niveau) : même résultat qu'avant le chantier", async () => {
+    const avant = await chercher(domAvecMoteur([ANCIEN_EN], "https://heurix.fr/en/index.html"), "algolia");
+    const apres = await chercher(domAvecMoteur(NOUVEAU_EN, "https://heurix.fr/en/index.html"), "algolia");
     expect(apres).toEqual(avant);
   });
 
-  it("en/blog (deux niveaux) : même résultat qu'avant le chantier", () => {
-    const avant = chercher(domAvecMoteur([ANCIEN_EN], "https://heurix.fr/en/blog/article.html"), "algolia");
-    const apres = chercher(domAvecMoteur(NOUVEAU_EN, "https://heurix.fr/en/blog/article.html"), "algolia");
+  it("en/blog (deux niveaux) : même résultat qu'avant le chantier", async () => {
+    const avant = await chercher(domAvecMoteur([ANCIEN_EN], "https://heurix.fr/en/blog/article.html"), "algolia");
+    const apres = await chercher(domAvecMoteur(NOUVEAU_EN, "https://heurix.fr/en/blog/article.html"), "algolia");
     expect(apres).toEqual(avant);
   });
 
-  it("GAIN DE ROBUSTESSE : solutions/ en français calcule désormais un root correct — l'ancien code FR ne gérait que /blog/, ce cas aurait échoué silencieusement (liens cassés)", () => {
+  it("GAIN DE ROBUSTESSE : solutions/ en français calcule désormais un root correct — l'ancien code FR ne gérait que /blog/, ce cas aurait échoué silencieusement (liens cassés)", async () => {
     const win = domAvecMoteur(NOUVEAU_FR, "https://heurix.fr/solutions/outillage.html");
-    const [lien] = chercher(win, "recherche");
+    const [lien] = await chercher(win, "recherche");
     expect(lien.startsWith("../")).toBe(true);
   });
 });

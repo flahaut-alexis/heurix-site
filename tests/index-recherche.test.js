@@ -158,3 +158,88 @@ describe("index derive — le verificateur", () => {
     }
   });
 });
+
+// ---------------------------------------------------------------------------
+// LE CHEMIN DIFFERE SERT-IL BIEN LE NOUVEL INDEX ? (27 aout 2026)
+//
+// C'est le cas le plus difficile a voir : tout fonctionne, la modale s'ouvre,
+// les resultats s'affichent -- et « 2rs » rend deux pages au lieu de huit,
+// parce que la recherche interroge encore le titre et l'extrait sans jamais
+// lire le champ `k` des termes, qui est toute la raison d'etre de l'index
+// derive. Aucune erreur, aucun signal.
+//
+// C'est arrive. La premiere version de ce commit avait exactement ce defaut,
+// et les 322 autres tests etaient verts.
+//
+// « 2rs » est le chiffre qui distingue les deux index :
+//     index ecrit a la main   0 page      -- le terme n'y figurait pas
+//     index derive, sans `k`  2 pages     -- seulement titre et extrait
+//     index derive, avec `k`  8 pages     -- les huit qui en parlent
+// ---------------------------------------------------------------------------
+
+describe("index derive — la recherche lit vraiment les termes", () => {
+  async function moteurAvecIndexReel(url = "https://heurix.fr/index.html") {
+    const { JSDOM } = await import("jsdom");
+    const langue = url.includes("/en/") ? "en" : "fr";
+    const index = lire(`search-index-${langue}.json`);
+    const dom = new JSDOM(
+      `<!DOCTYPE html><html><body><button id="heurix-search-btn"></button>
+        <div id="heurix-search-modal"><div id="heurix-search-backdrop"></div>
+        <input id="heurix-search-input"><p id="heurix-search-suggest-label"></p>
+        <div id="heurix-search-results"></div><p id="heurix-search-empty"></p></div>
+      </body></html>`,
+      { url, runScripts: "outside-only" }
+    );
+    const w = dom.window;
+    w.fetch = () => Promise.resolve({ ok: true, json: () => Promise.resolve(index) });
+    w.matchMedia = () => ({ matches: true });
+    w.eval(fs.readFileSync(path.join(RACINE, "search-engine.js"), "utf8"));
+    w.document.dispatchEvent(new w.Event("DOMContentLoaded"));
+    w.document.getElementById("heurix-search-btn").dispatchEvent(new w.Event("click"));
+    await new Promise((r) => setTimeout(r, 20));
+    return w;
+  }
+
+  const chercher = (w, q) => {
+    const i = w.document.getElementById("heurix-search-input");
+    i.value = q;
+    i.dispatchEvent(new w.Event("input"));
+    return [...w.document.querySelectorAll(".search-result")];
+  };
+
+  it("« 2rs » rend HUIT resultats — le chiffre qui distingue les deux index", async () => {
+    const w = await moteurAvecIndexReel();
+    expect(chercher(w, "2rs")).toHaveLength(8);
+  });
+
+  it("« din 933 » rend les sept pages qui en parlent, pas zero", async () => {
+    const w = await moteurAvecIndexReel();
+    expect(chercher(w, "din 933")).toHaveLength(7);
+  });
+
+  // Une requete de plusieurs mots ne peut pas matcher d'un bloc une liste de
+  // termes TRIES : « din » et « 933 » n'y sont pas voisins. Chaque jeton est
+  // donc exige separement.
+  it("une requete de plusieurs mots trouve, la ou une recherche litterale echoue", async () => {
+    const w = await moteurAvecIndexReel();
+    expect(chercher(w, "din 933").length).toBeGreaterThan(0);
+  });
+
+  // Le classement doit tenir : un titre bat un terme de corps, sinon la page
+  // Tarifs se noie dans les 55 pages qui mentionnent le mot.
+  it("un titre passe devant un terme de corps", async () => {
+    const w = await moteurAvecIndexReel();
+    const premier = chercher(w, "tarifs")[0].querySelector(".search-result-title").textContent;
+    expect(premier.toLowerCase()).toContain("tarifs");
+  });
+
+  it("une requete sans correspondance rend zero", async () => {
+    const w = await moteurAvecIndexReel();
+    expect(chercher(w, "xyzinexistantzzz")).toHaveLength(0);
+  });
+
+  it("l'index anglais se charge sur une page anglaise", async () => {
+    const w = await moteurAvecIndexReel("https://heurix.fr/en/index.html");
+    expect(chercher(w, "shopify").length).toBeGreaterThan(0);
+  });
+});

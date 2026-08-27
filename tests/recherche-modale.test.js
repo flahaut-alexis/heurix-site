@@ -52,11 +52,25 @@ describe("recherche du site — le bouton doit avoir sa modale", () => {
     expect(fautives.map((p) => path.relative(RACINE, p))).toEqual([]);
   });
 
-  it("aucune page ne porte le bouton sans charger un index ET le moteur", () => {
-    const fautives = avecBouton().filter((p) => {
-      const s = fs.readFileSync(p, "utf8");
-      return !/src="[^"]*search(-en)?\.js/.test(s) || !s.includes("search-engine.js");
-    });
+  // L'INDEX N'EST PLUS UN SCRIPT (27 aout 2026). Cette assertion exigeait
+  // qu'une page portant le bouton charge AUSSI search.js ou search-en.js.
+  // Ces deux fichiers sont supprimes : l'index est derive des pages, servi
+  // en JSON, et recupere au premier usage.
+  //
+  // Ce qui reste vrai et se verifie encore : le bouton sans le moteur est
+  // un bouton mort.
+  it("aucune page ne porte le bouton sans charger le moteur", () => {
+    const fautives = avecBouton().filter((p) => !fs.readFileSync(p, "utf8").includes("search-engine.js"));
+    expect(fautives.map((p) => path.relative(RACINE, p))).toEqual([]);
+  });
+
+  // Le pendant du precedent : plus aucune page ne doit charger les anciens
+  // index. En laisser un servirait 5,5 ko compresses a chaque visite pour
+  // un fichier que plus rien ne lit.
+  it("plus aucune page ne charge les anciens index", () => {
+    const toutes = pagesHtml();
+    const fautives = toutes.filter((p) =>
+      /<script[^>]*src="[^"]*\bsearch(-en)?\.js/.test(fs.readFileSync(p, "utf8")));
     expect(fautives.map((p) => path.relative(RACINE, p))).toEqual([]);
   });
 

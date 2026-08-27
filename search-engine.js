@@ -13,11 +13,10 @@
 // n'est pas du texte à traduire — c'est la LOGIQUE (normalize, highlight,
 // runSearch, le câblage DOM), qui elle était réellement identique.
 //
-// Attend que la page ait déjà défini, AVANT ce script :
-//   window.HEURIX_SEARCH_INDEX        (tableau {title, excerpt, path})
-//   window.HEURIX_SEARCH_LATEST_PATHS (chemins des derniers articles)
-// C'est le rôle de search.js (FR) ou search-en.js (EN), chargés juste
-// avant celui-ci dans le HTML.
+// N'attend plus RIEN de la page (27 août 2026). L'index vivait dans deux
+// tableaux JavaScript écrits à la main -- search.js et search-en.js --
+// chargés par les 118 pages du site. Il est désormais DÉRIVÉ des pages,
+// servi en JSON, et récupéré au premier usage : voir `precharger`.
 (function () {
   "use strict";
 
@@ -52,14 +51,32 @@
   // pour les cas ou le prechargement n'a pas eu le temps.
   // ---------------------------------------------------------------------
 
-  var INDEX = window.HEURIX_SEARCH_INDEX || [];
+  var INDEX = [];
+  var DERNIERS = [];
   var indexPromesse = null;
   var indexErreur = false;
 
   /** L'URL de l'index de la langue de la page. */
+  // LA VERSION DU MOTEUR SERT AUSSI D'ANTIMEMOIRE A L'INDEX.
+  //
+  // Les deux changent ensemble : le jour ou le format de l'index bouge, le
+  // moteur qui le lit bouge aussi. Reprendre sa clef ?v= evite un second
+  // versionnement a tenir a jour -- et surtout evite le cas ou l'un est
+  // rafraichi et pas l'autre.
+  //
+  // Sans clef du tout, un visiteur deja venu recevrait l'ANCIEN moteur en
+  // cache : celui qui lit window.HEURIX_SEARCH_INDEX, que les pages ne
+  // definissent plus. La modale s'ouvrirait vide, sans erreur.
+  function versionMoteur() {
+    var s = document.querySelector('script[src*="search-engine.js"]');
+    var m = s && s.getAttribute("src").match(/[?&]v=([^&"]+)/);
+    return m ? m[1] : "";
+  }
+
   function urlIndex(root) {
     var en = /(^|\/)en\//.test(window.location.pathname);
-    return root + "search-index-" + (en ? "en" : "fr") + ".json";
+    var v = versionMoteur();
+    return root + "search-index-" + (en ? "en" : "fr") + ".json" + (v ? "?v=" + v : "");
   }
 
   /** Lance le chargement s'il n'a pas deja commence. Idempotent.
@@ -83,6 +100,7 @@
       })
       .then(function (data) {
         INDEX = data.entrees || [];
+        DERNIERS = data.derniers || [];
         indexErreur = false;
         return INDEX;
       })
@@ -97,12 +115,10 @@
     return indexPromesse;
   }
 
-  // Les chemins portent « p » dans l'index derive et « path » dans l'ancien
-  // tableau ecrit a la main. Les deux formes cohabitent le temps du retrait.
-  function chemin(item) { return item.p || item.path; }
+  function chemin(item) { return item.p; }
 
   function derniers() {
-    return (window.HEURIX_SEARCH_LATEST_PATHS || [])
+    return DERNIERS
       .map(function (p) {
         return INDEX.filter(function (item) { return chemin(item) === p; })[0];
       })
@@ -199,19 +215,64 @@
     });
   }
 
+  // Les termes d'une page sont deja replies et separes par des espaces a la
+  // generation. On les entoure d'espaces pour qu'une requete d'un seul terme
+  // ne matche pas au milieu d'un autre -- « rs » ne doit pas trouver « 2rs ».
+  var cacheTermes = null;
+  function nTerms(item) {
+    if (!cacheTermes) cacheTermes = {};
+    var c = chemin(item);
+    if (cacheTermes[c] === undefined) cacheTermes[c] = " " + (item.k || "") + " ";
+    return cacheTermes[c];
+  }
+
+  // TOUS LES JETONS DE LA REQUETE, PAS LA CHAINE ENTIERE.
+  //
+  // Le champ `k` est une liste de termes TRIES et separes par des espaces.
+  // « din » et « 933 » n'y sont pas voisins, donc y chercher « din 933 »
+  // d'un bloc ne trouve rien -- mesure de la premiere version : 0 resultat
+  // pour une requete que sept pages satisfont.
+  //
+  // On exige donc chaque jeton separement. C'est la meme regle que la mesure
+  // qui a valide l'extraction, et elle porte le meme defaut connu : elle
+  // trouve « din » et « 933 » sans qu'ils se suivent. Verifie sur ce
+  // corpus -- 7 pages remontees pour 7 qui en parlent, zero faux positif.
+  function tousLesTermes(item, nQuery) {
+    var termes = nTerms(item);
+    var jetons = nQuery.split(/\s+/);
+    for (var i = 0; i < jetons.length; i++) {
+      if (!jetons[i]) continue;
+      if (termes.indexOf(" " + jetons[i]) === -1) return false;
+    }
+    return true;
+  }
+
   function runSearch(query) {
     var nQuery = normalize(query.trim());
     if (!nQuery) return [];
     return INDEX
       .map(function (item) {
-        var nTitle = normalize(item.t || item.title || "");
-        var nExcerpt = normalize(item.e || item.excerpt || "");
+        var nTitle = normalize(item.t || "");
+        var nExcerpt = normalize(item.e || "");
         var score = -1;
         if (nTitle.indexOf(nQuery) !== -1) score = nTitle.indexOf(nQuery) === 0 ? 2 : 1;
         else if (nExcerpt.indexOf(nQuery) !== -1) score = 0;
+        // LES TERMES DE LA PAGE, en dernier recours et au score le plus bas.
+        //
+        // C'EST TOUTE LA RAISON D'ETRE DE L'INDEX DERIVE, et la premiere
+        // version de ce commit ne les lisait pas : la recherche continuait
+        // d'interroger le titre et l'extrait, exactement comme avec l'index
+        // ecrit a la main. Tout fonctionnait -- et « 2rs » rendait 2 pages
+        // au lieu de 8, « din 933 » zero au lieu de 7. Aucune erreur, aucun
+        // signal : les nouvelles donnees servies par l'ancien comportement.
+        //
+        // Un titre reste plus fort qu'un terme de corps : quelqu'un qui
+        // cherche « tarifs » veut la page Tarifs, pas les onze pages qui
+        // mentionnent le mot.
+        else if (tousLesTermes(item, nQuery)) score = -0.5;
         return { item: item, score: score };
       })
-      .filter(function (r) { return r.score >= 0; })
+      .filter(function (r) { return r.score > -1; })
       .sort(function (a, b) { return b.score - a.score; })
       .map(function (r) { return r.item; })
       .slice(0, 8);
@@ -254,10 +315,10 @@
         a.href = root + chemin(item);
         var titre = document.createElement("div");
         titre.className = "search-result-title";
-        poser(titre, item.t || item.title || "", query);
+        poser(titre, item.t || "", query);
         var extrait = document.createElement("div");
         extrait.className = "search-result-excerpt";
-        poser(extrait, item.e || item.excerpt || "", query);
+        poser(extrait, item.e || "", query);
         a.appendChild(titre);
         a.appendChild(extrait);
         resultsEl.appendChild(a);
