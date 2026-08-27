@@ -689,3 +689,55 @@ déclaration de `maturin` :
   (`git -C ../heurix-engine-fst log --oneline -1`) ;
 - **si vous reconstruisez pendant que d'autres sessions travaillent dans cet
   arbre, dites-le-leur.** Aucun outil ne le fera.
+
+### Un chiffre porte son périmètre, et le périmètre ne voyage pas avec lui
+
+Cinquième divergence de la semaine, et la seule où **rien n'a été mal
+mesuré**. Les quatre autres sont un instrument qui se trompe de cible ou qui
+change celle des autres. Celle-ci n'a pas d'instrument fautif du tout.
+
+Le 27 août, une session voisine mesure `public-demo` et rapporte :
+
+    ° 133   ¼ 8   ⌀ 3   ½ 2
+
+J'en conclus, et je l'écris dans une note : « aucune ligature de juillet
+n'apparaît — pas un `œ`, pas un `æ`, pas un `ß` sur 1 321 fiches réelles »,
+donc la dette de juillet est nulle, donc le correctif n'est pas prioritaire.
+
+**Ce relevé n'avait jamais cherché `œ`.** Il balayait le bloc
+`U+FB00–FB06`, les ligatures typographiques. `œ` est `U+0153`, une lettre
+française, qui vit dans une autre table. Vérifié après coup, caractère par
+caractère : aucun des quatre du relevé n'est dans le bloc, et `œ` non plus.
+
+Le chiffre était juste. Ma phrase était fausse. La reprise exhaustive — les
+52 caractères non-ASCII de `public-demo`, passés un par un dans le `fold` de
+production — a donné **70 fiches réelles sur 1 321, soit 5,3 %**, et un
+défaut visible à l'écran sur la démo publique.
+
+**Ce qui rend ce cas difficile, c'est qu'aucune vigilance ordinaire ne
+l'attrape.** Relire mon code n'aurait rien montré : je n'avais pas de code.
+Refaire ma mesure non plus : je n'avais pas mesuré. J'ai hérité d'un nombre
+exact et je l'ai lu comme couvrant plus que ce qu'il couvrait.
+
+La règle n'est donc pas « vérifie tes mesures ».
+
+> **Quand vous reprenez la mesure d'un autre, demandez ce qu'elle a exclu.**
+
+Un relevé arrive avec son résultat, jamais avec sa définition de périmètre.
+« Zéro » ne veut pas dire « absent » : il veut dire « absent de ce qui a été
+cherché ». Les deux se confondent d'autant plus facilement que le chiffre
+est juste — c'est sa justesse même qui décourage la question.
+
+Trois formes concrètes de la question, dans l'ordre où elles servent :
+
+- **quel jeu de caractères / de fichiers / de pages a été balayé ?** pas
+  « combien en a-t-on trouvé » ;
+- **la chose que je veux conclure était-elle dans ce jeu ?** ici : `œ`
+  était-il dans la liste balayée ? non ;
+- **le zéro est-il une absence ou un non-examen ?** un non-examen se
+  reconnaît à ceci qu'il ne pouvait pas rendre autre chose.
+
+Corollaire pour qui *produit* la mesure : **nommez le périmètre avec le
+résultat, pas seulement le résultat.** « Zéro ligature du bloc U+FB00–FB06 »
+n'aurait pas pu être lu comme « zéro `œ` ». C'est trois mots de plus, et ils
+sont la moitié de l'information.
