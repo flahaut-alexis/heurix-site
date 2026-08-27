@@ -6701,26 +6701,37 @@ body.docs-dark .integ-panel p{ color:#CDD2F0; }
    gauches de suite en tete, donc pas une alternance. Celui de la grille
    est aussi le seul que le visiteur parcourt.
 
-   420 px de colonne pour une source de 1000 px : le facteur 2,4 couvre un
-   ecran a densite double sans servir les 8 Mo d'origine (mesure dans le
-   commit). `align-items:center` cale le chapo sur le milieu de l'image :
-   deux a quatre lignes de 18 px contre 282 px de hauteur, un alignement
-   haut laisserait le texte flotter en haut d'un bloc trois fois plus grand.
+   40 % ET NON 420 px. Les deux donnent la meme chose a pleine largeur
+   (~418 px pour une source de 1000, facteur 2,4 : de quoi tenir un ecran a
+   densite double sans servir les 8 Mo d'origine). Ils divergent entre 769
+   et 1100 px, ou une colonne fixe ne cede rien : mesure a 820 px de
+   fenetre, l'image gardait ses 420 px et laissait 312 px au chapo -- cinq
+   lignes de 40 caracteres a cote d'une photo deux fois plus large qu'elles.
+   Un pourcentage retrecit avec le texte au lieu de l'ecraser.
+   `align-items:center` cale le chapo sur le milieu de l'image : trois a
+   cinq lignes de 18 px contre 282 px de hauteur, un alignement haut
+   laisserait le texte flotter en haut d'un bloc trois fois plus grand.
 
    Sous 768 px la grille tombe a une colonne. L'image est PREMIERE DANS LE
    DOM, donc elle passe naturellement au-dessus du texte sans qu'on ait a
    l'y remettre ; `order` ne sert qu'a la renvoyer a droite sur grand ecran. */
 .solution-intro{
-  display:grid; grid-template-columns:420px minmax(0,1fr);
+  display:grid; grid-template-columns:40% minmax(0,1fr);
   gap:32px; align-items:center; margin-bottom:36px;
 }
-.solution-intro-droite{ grid-template-columns:minmax(0,1fr) 420px; }
+.solution-intro-droite{ grid-template-columns:minmax(0,1fr) 40%; }
 .solution-intro-droite .solution-intro-img{ order:2; }
 .solution-intro-img{
   display:block; width:100%; height:auto;
   border-radius:14px; border:1px solid var(--line);
 }
 .solution-intro .post-lede{ margin-bottom:0; }
+
+/* Les 16 pages solutions portent `docs-dark`. `var(--line)` y vaut
+   #E7E9F2 -- un trait quasi blanc sur un fond sombre, mesure a l'ecran :
+   le cadre se voyait plus que l'image. Meme valeur que .solutions-hub-card,
+   qui borde deja des cartes sur ces memes pages. */
+body.docs-dark .solution-intro-img{ border-color:rgba(255,255,255,0.14); }
 
 @media (max-width:768px){
   .solution-intro,
