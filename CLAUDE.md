@@ -829,3 +829,78 @@ Relire les fichiers **non-HTML** du diff indexé. Sur un dépôt de site, ils
 sont cinq ou six — les scripts, les tests, les données. C'est là que se
 cachent les fichiers d'autrui, et un coup d'œil suffit à voir celui qu'on ne
 reconnaît pas.
+
+### La vérification qui attrape le motif n'est jamais celle qu'on est en train de faire
+
+Neuvième cas de la semaine, et le seul qui ait cette forme : **il a été
+commis sur le correctif de ce motif, pendant qu'on l'écrivait.**
+
+Le 27 août, la CI échoue sur `--verifier`. Diagnostic : `date_ajout()` fait
+`git log --diff-filter=A`, et le job de tests clone en `fetch-depth: 1`. On
+pose un garde pour que le script refuse de répondre plutôt que de répondre
+faux. Le garde teste :
+
+```python
+if rels and all(d == 0 for d, _ in dates):
+```
+
+**Ce zéro était une supposition.** Mesuré ensuite sur un vrai
+`git clone --depth 1` : `date_ajout()` rend `1787853596` pour *chaque*
+article — du point de vue de git, le commit unique d'un clone superficiel
+*ajoute* tous les fichiers à la même seconde. Le garde ne se déclenchait
+jamais.
+
+Le vrai signal est « toutes les dates sont **égales** », pas « toutes à
+zéro ».
+
+**Ce qui rend le cas instructif n'est pas l'ironie, c'est le mécanisme.** La
+vérification en cours portait sur la *sortie du script* — reproduire l'échec
+de la CI en local, comparer les cinq articles à `ls | sort -r`. Elle a
+parfaitement fonctionné : le diagnostic était juste. Elle ne pouvait pas
+attraper la valeur d'une variable interne au garde qu'on venait d'écrire,
+parce qu'elle ne regardait pas là.
+
+> **Une vérification prouve ce qu'elle observe. Le code écrit pendant
+> qu'elle tourne n'en fait pas partie.**
+
+Corollaire pratique : un garde qui repose sur une valeur qu'on n'a pas vue
+de ses yeux se teste **en le faisant se déclencher**, pas en constatant que
+le reste passe. Ici, une seule commande manquait :
+
+```bash
+git clone --depth 1 . /tmp/x && cd /tmp/x && python3 -c "…date_ajout('blog/…')"
+```
+
+Elle aurait rendu `1787853596` avant que le `== 0` soit écrit, pas après.
+
+### Une incapacité à mesurer n'est pas un écart
+
+`--verifier` disait « les derniers articles ont changé — attendu … ». C'était
+vrai et trompeur. Ils n'avaient pas changé : **c'est la mesure qui ne pouvait
+plus les dater**, faute d'historique.
+
+La différence n'est pas de vocabulaire. Ce message se termine par
+« Régénérez : … », et régénérer depuis ce clone aurait **écrit la liste
+fausse dans l'index** — une liste d'apparence normale, en ordre alphabétique
+inverse, que personne n'aurait relue.
+
+> **Un script qui confond les deux invite à corriger ce qu'il n'a pas pu
+> voir.**
+
+D'où deux codes de sortie distincts, et deux messages :
+
+| code | sens | ce qu'il demande |
+|---|---|---|
+| `0` | tout concorde | rien |
+| `1` | **écart** — l'index ne reflète plus les pages | régénérer |
+| `2` | **incapacité** — l'historique ne permet pas de dater | réparer le clone, et **surtout ne pas régénérer** |
+
+C'est le **troisième outil de la semaine à répondre faux plutôt qu'à se
+taire**, après le contrôle de cohérence qui certifiait « une seule clef sur
+tout le site » pendant que 38 pages en servaient une autre, et
+`bust-cache.sh` qui s'arrêtait au milieu de ses arguments sans le dire.
+
+Les trois avaient la même forme : une réponse d'apparence normale là où la
+bonne réponse était « je ne peux pas savoir ». Un outil qui ne distingue pas
+ses deux échecs — *j'ai regardé et c'est faux* contre *je n'ai pas pu
+regarder* — transforme le second en premier, et fait agir sur du vide.
