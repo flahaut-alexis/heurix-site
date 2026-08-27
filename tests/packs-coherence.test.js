@@ -45,6 +45,11 @@ const pages = [];
   }
 })("");
 
+/** HTML brut, tel quel -- necessaire pour lire un <select>, que texte() efface. */
+function brut(p) {
+  return fs.readFileSync(path.join(RACINE, p), "utf8");
+}
+
 /** Texte visible, scripts et styles retires. */
 function texte(p) {
   let s = fs.readFileSync(path.join(RACINE, p), "utf8");
@@ -129,6 +134,55 @@ describe("packs — les vingt-trois affirmations du site s'accordent", () => {
     expect(fr.length, "aucune enumeration francaise trouvee").toBeGreaterThan(0);
     expect(en.length, "aucune enumeration anglaise trouvee").toBeGreaterThan(0);
     expect(en[0].noms.length).toBe(fr[0].noms.length);
+  });
+
+  // ---------------------------------------------------------------------
+  // LE MEME FAIT, SOUS UNE FORME QUE LE BALAYAGE NE VOYAIT PAS (27 aout).
+  //
+  // console.html porte un <select> « Quel secteur decrit le mieux votre
+  // catalogue ? » dont les value sont des NOMS DE PACKS. Il en listait SEPT
+  // sur dix : electricite, plomberie et finance n'y sont jamais entres
+  // depuis leur ajout le 26 juillet, trois semaines plus tot.
+  //
+  // Mon balayage cherchait des chiffres ecrits et des enumerations entre
+  // parentheses. Une liste d'options n'est ni l'un ni l'autre : elle affirme
+  // « il y a N secteurs » en en proposant N, sans jamais l'ecrire.
+  //
+  // Ce champ est DERIVE, pas liste : seules les pages qui portent un
+  // seg-secteur sont verifiees. en/console.html n'en a pas -- non par oubli
+  // de parite, mais parce qu'elle n'a pas l'ecran de post-inscription du
+  // tout (section post-signup-screen, absente : 6 identifiants cote
+  // francais, zero cote anglais). Ticket ouvert separement.
+  // ---------------------------------------------------------------------
+
+  // Les value du select s'ecrivent sans accent (electricite) la ou les
+  // etiquettes en portent (electricite). On replie donc les accents avant
+  // de comparer -- sinon l'assertion echouerait sur une difference
+  // d'orthographe qui n'est pas un defaut.
+  const sansAccent = (x) => x.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  const idPack = (x) => sansAccent(identite(x));
+
+  it("les options du select de secteur sont exactement les packs", () => {
+    const avecSelect = pages.filter((p) => /id="seg-secteur"/.test(brut(p)));
+    expect(avecSelect.length, "aucune page ne porte de select de secteur").toBeGreaterThan(0);
+
+    // La reference : l'enumeration nommee de la meme langue.
+    const ref = enumerations.find((e) => !e.page.startsWith("en/"));
+    const attendus = new Set(ref.noms.map(idPack));
+
+    const ecarts = [];
+    for (const p of avecSelect) {
+      const bloc = brut(p).match(/<select id="seg-secteur">([\s\S]*?)<\/select>/)[1];
+      const valeurs = [...bloc.matchAll(/<option value="([^"]*)"/g)]
+        .map((m) => m[1])
+        .filter((v) => v && v !== "autre");   // « — Choisir — » et « Autre » ne sont pas des packs
+      const vus = new Set(valeurs.map(idPack));
+      const manquants = [...attendus].filter((x) => !vus.has(x));
+      const enTrop = [...vus].filter((x) => !attendus.has(x));
+      if (manquants.length) ecarts.push(`${p} : pack(s) absent(s) du select — ${manquants.join(", ")}`);
+      if (enTrop.length) ecarts.push(`${p} : option(s) sans pack correspondant — ${enTrop.join(", ")}`);
+    }
+    expect(ecarts).toEqual([]);
   });
 
   // Un balayage qui n'examine rien passe au vert sans rien prouver.
