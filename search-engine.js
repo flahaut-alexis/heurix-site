@@ -21,12 +21,93 @@
 (function () {
   "use strict";
 
+  // ---------------------------------------------------------------------
+  // CHARGEMENT DIFFERE DE L'INDEX (27 aout 2026)
+  //
+  // L'index derive pese 40,9 ko une fois compresse -- GitHub Pages sert du
+  // gzip, pas du brotli, verifie sur l'origine. Le charger dans chaque page
+  // le ferait payer aux 118 pages du site, par tous les visiteurs, alors que
+  // la grande majorite ne cherche jamais.
+  //
+  // Il est donc recupere au PREMIER USAGE. Cout mesure, connexion deja
+  // chaude (meme origine, page chargee, donc RTT + transfert) :
+  //
+  //     ma connexion (mesuree)     63 ms RTT +  20 ms  =    83 ms
+  //     4G lente (4 Mbps)         170 ms     +  82 ms  =   252 ms
+  //     3G rapide (1,6 Mbps)      562 ms     + 204 ms  =   766 ms
+  //     3G lente (400 kbps)       400 ms     + 818 ms  =  1218 ms
+  //
+  // Le budget est de 150 ms. Attendre la frappe ne tient donc pas : ce
+  // serait rendre a l'envers l'arbitrage qui a ecarte l'API a 83 ms.
+  //
+  // ON PRECHARGE DONC SUR INTENTION, avant que la requete existe. Ce que ca
+  // achete, mesure sur 116 suites de frappe reelles du journal : de la
+  // premiere frappe journalisee a la derniere, mediane 4 217 ms, premier
+  // quartile 2 205 ms. Trois quarts des visiteurs tapent plus de deux
+  // secondes -- de quoi couvrir la 3G rapide, et une bonne part de la lente.
+  //
+  // CE QUE JE N'AI PAS PU MESURER : l'intervalle entre le survol et la
+  // premiere frappe. Le journal ne commence qu'a trois caracteres, il ne
+  // porte pas ce qui precede. Le squelette au-dela de 200 ms est le repli
+  // pour les cas ou le prechargement n'a pas eu le temps.
+  // ---------------------------------------------------------------------
+
   var INDEX = window.HEURIX_SEARCH_INDEX || [];
-  var LATEST = (window.HEURIX_SEARCH_LATEST_PATHS || [])
-    .map(function (p) {
-      return INDEX.filter(function (item) { return item.path === p; })[0];
-    })
-    .filter(Boolean);
+  var indexPromesse = null;
+  var indexErreur = false;
+
+  /** L'URL de l'index de la langue de la page. */
+  function urlIndex(root) {
+    var en = /(^|\/)en\//.test(window.location.pathname);
+    return root + "search-index-" + (en ? "en" : "fr") + ".json";
+  }
+
+  /** Lance le chargement s'il n'a pas deja commence. Idempotent.
+   *
+   * NE LEVE JAMAIS, meme sans `fetch`. Une premiere version appelait
+   * `fetch` directement : sur un navigateur qui ne le connait pas, l'appel
+   * jetait SYNCHRONEMENT depuis un gestionnaire de clic, donc avant tout
+   * `.catch()`, et l'erreur remontait a la fenetre. Trouve en eprouvant ce
+   * cas, pas en le relisant -- les quatre autres passaient.
+   */
+  function precharger(root) {
+    if (indexPromesse) return indexPromesse;
+    if (typeof fetch !== "function") {
+      indexErreur = true;
+      return Promise.reject(new Error("fetch indisponible"));
+    }
+    indexPromesse = fetch(urlIndex(root))
+      .then(function (r) {
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        return r.json();
+      })
+      .then(function (data) {
+        INDEX = data.entrees || [];
+        indexErreur = false;
+        return INDEX;
+      })
+      .catch(function (e) {
+        // Une erreur ne doit pas figer l'etat : la promesse est remise a
+        // zero pour qu'un « Reessayer » relance vraiment, au lieu de rendre
+        // le meme echec en cache.
+        indexPromesse = null;
+        indexErreur = true;
+        throw e;
+      });
+    return indexPromesse;
+  }
+
+  // Les chemins portent « p » dans l'index derive et « path » dans l'ancien
+  // tableau ecrit a la main. Les deux formes cohabitent le temps du retrait.
+  function chemin(item) { return item.p || item.path; }
+
+  function derniers() {
+    return (window.HEURIX_SEARCH_LATEST_PATHS || [])
+      .map(function (p) {
+        return INDEX.filter(function (item) { return chemin(item) === p; })[0];
+      })
+      .filter(Boolean);
+  }
 
   function normalize(str) {
     return str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
@@ -123,8 +204,8 @@
     if (!nQuery) return [];
     return INDEX
       .map(function (item) {
-        var nTitle = normalize(item.title);
-        var nExcerpt = normalize(item.excerpt);
+        var nTitle = normalize(item.t || item.title || "");
+        var nExcerpt = normalize(item.e || item.excerpt || "");
         var score = -1;
         if (nTitle.indexOf(nQuery) !== -1) score = nTitle.indexOf(nQuery) === 0 ? 2 : 1;
         else if (nExcerpt.indexOf(nQuery) !== -1) score = 0;
@@ -170,13 +251,13 @@
       items.forEach(function (item) {
         var a = document.createElement("a");
         a.className = "search-result";
-        a.href = root + item.path;
+        a.href = root + chemin(item);
         var titre = document.createElement("div");
         titre.className = "search-result-title";
-        poser(titre, item.title, query);
+        poser(titre, item.t || item.title || "", query);
         var extrait = document.createElement("div");
         extrait.className = "search-result-excerpt";
-        poser(extrait, item.excerpt, query);
+        poser(extrait, item.e || item.excerpt || "", query);
         a.appendChild(titre);
         a.appendChild(extrait);
         resultsEl.appendChild(a);
@@ -186,16 +267,52 @@
     function showDefaultSuggestions() {
       emptyEl.hidden = true;
       if (suggestLabel) suggestLabel.hidden = false;
-      renderItems(LATEST, "");
+      renderItems(derniers(), "");
     }
+
+    // SQUELETTE AU-DELA DE 200 ms, PAS AVANT. En dessous, la liste
+    // precedente reste : un flash de vide sur une connexion rapide est plus
+    // desagreable que l'attente qu'il signale.
+    var minuteurSquelette = null;
+    function attendre(actif) {
+      clearTimeout(minuteurSquelette);
+      if (!actif) { resultsEl.removeAttribute("data-chargement"); return; }
+      minuteurSquelette = setTimeout(function () {
+        resultsEl.setAttribute("data-chargement", "1");
+      }, 200);
+    }
+
+    // PRECHARGEMENT SUR INTENTION -- ET PAS SUR SURVOL TACTILE.
+    //
+    // `hover: hover` demande directement « cet appareil sait-il survoler ? »,
+    // ce qui est la question, la ou `pointer: coarse` demande la finesse du
+    // pointeur. Sur mobile, un survol EST un debut de tap : s'y accrocher
+    // ferait recuperer 40 ko a chaque effleurement du bandeau.
+    //
+    // Les autres declencheurs couvrent tous les chemins d'ouverture, y
+    // compris Ctrl+K qui ne passe jamais par le bouton.
+    var peutSurvoler = !window.matchMedia || window.matchMedia("(hover: hover)").matches;
+    if (peutSurvoler) {
+      btn.addEventListener("pointerenter", function () { precharger(root).catch(function () {}); });
+    }
+    btn.addEventListener("focus", function () { precharger(root).catch(function () {}); });
 
     function open() {
       modal.classList.add("open");
       document.body.style.overflow = "hidden";
       input.value = "";
-      showDefaultSuggestions();
       setTimeout(function () { input.focus(); }, 10);
       if (window.dataLayer) window.dataLayer.push({ event: "site_search_open" });
+
+      attendre(true);
+      precharger(root)
+        .then(function () { attendre(false); showDefaultSuggestions(); })
+        .catch(function () { attendre(false); montrerErreur(); });
+    }
+
+    function montrerErreur() {
+      resultsEl.innerHTML = "";
+      resultsEl.setAttribute("data-erreur", "1");
     }
     function close() {
       modal.classList.remove("open");
