@@ -185,7 +185,7 @@
     {"id": "sku-1", "name": "BOSCH GDX 18V-285 Drill", "ref": "M8 x 20 - Stainless A2", "stock": 8, "price": 139.90}
   ]
 }'</code></pre>
-      <p>Specify <code class="docs-inline-code">"rulepack": "outillage"</code> in the request body if your industry matches one of the <a href="../docs.html#ep-rulepacks">ten pre-configured rule packs</a>; otherwise, the engine still indexes, with more limited structure recognition until a pack or <a href="../docs.html#ep-custom-rules">Custom Rule</a> is active.</p>
+      <p>Specify <code class="docs-inline-code">"rulepack": "outillage"</code> in the request body if your industry matches one of the <a href="../docs.html#ep-rulepacks">eleven pre-configured rule packs</a>; otherwise, the engine still indexes, with more limited structure recognition until a pack or <a href="../docs.html#ep-custom-rules">Custom Rule</a> is active.</p>
 
       <h2 id="etape-3">Step 3 — Confirm search works</h2>
       <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/index/mycatalog/search   -H "Authorization: Bearer YOUR_API_KEY"   -H "Content-Type: application/json"   -d '{"q": "bosch drill"}'</code></pre>
@@ -311,7 +311,7 @@ const results = await client.search("bosch drill");</code></pre>
 </footer>
 
 <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
-<script src="../../search-en.js?v=1787746756"></script>
+<script src="../../search-en.js?v=1787838705"></script>
 <script src="../../search-engine.js"></script>
 <script src="../../nav-dropdown.js"></script>
 <script src="../../mobile-nav.js?v=1787610626"></script>

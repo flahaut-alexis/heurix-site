@@ -571,7 +571,7 @@ curl -X DELETE "https://api.heurix.fr/v1/browse/mycatalog/drills-drivers/attribu
       <div class="table-scroll"><table class="docs-params">
         <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
         <tr><td><code class="docs-inline-code">items</code></td><td>array <span class="docs-required">required</span></td><td>1 to 5,000 products per call. Every product must have an <code class="docs-inline-code">id</code>.</td></tr>
-        <tr><td><code class="docs-inline-code">rulepack</code></td><td>string</td><td>Rule pack to attach to the catalog — ten available, see <a href="#ep-rulepacks">the full list</a> (<code class="docs-inline-code">outillage</code>, <code class="docs-inline-code">mode</code>, <code class="docs-inline-code">industrie</code>, etc.). Changing the pack re-indexes the catalog.</td></tr>
+        <tr><td><code class="docs-inline-code">rulepack</code></td><td>string</td><td>Rule pack to attach to the catalog — eleven available, see <a href="#ep-rulepacks">the full list</a> (<code class="docs-inline-code">outillage</code>, <code class="docs-inline-code">mode</code>, <code class="docs-inline-code">industrie</code>, etc.). Changing the pack re-indexes the catalog.</td></tr>
       </table></div>
       <h3>Response</h3>
       <pre class="docs-code"><code>{"indexed": 2, "catalog": {"catalog": "mycatalog", "products": 2, "terms": 11,
@@ -895,7 +895,7 @@ done</code></pre>
     <section id="ep-rulepacks" class="docs-section">
       <div class="docs-endpoint"><span class="docs-method docs-method-get">GET</span><code>/v1/rulepacks</code></div>
       <h2>Rule packs</h2>
-      <p>Lists the packs available on your instance, with their level and rule counts. <strong>Ten standard packs</strong> are provided, covering verticals where references are structured:
+      <p>Lists the packs available on your instance, with their level and rule counts. <strong>Eleven standard packs</strong> are provided, covering verticals where references are structured:
         <strong>hardware</strong> (fasteners, DIN/ISO standards, materials),
         <strong>automotive</strong> (Bosch/MANN/Valeo OEM references, engine type, mounting side),
         <strong>electrical</strong> (ratings, curves, cross-sections, harmonized designations),
@@ -1309,7 +1309,7 @@ VIS_M8X20  ──────────── match ────────�
     });
   })();
 </script>
-<script src="../search-en.js?v=1787746756"></script>
+<script src="../search-en.js?v=1787838705"></script>
 <script src="../search-engine.js"></script>
 <script src="../nav-dropdown.js"></script>
 <script src="../mobile-nav.js?v=1787610626"></script>

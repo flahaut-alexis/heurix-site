@@ -124,9 +124,20 @@
   // erreurs de programmation, qu'il laisse remonter à la console.
   var prismeActif = null;
 
-  // VERTICALE COURANTE. Le sélecteur porte l'argument des dix secteurs :
-  // le même moteur, des règles différentes. Le retirer aurait fait perdre
-  // ce que la page d'accueil démontre de plus important.
+  // VERTICALE COURANTE. Le sélecteur porte l'argument sectoriel : le même
+  // moteur, des règles différentes. Le retirer aurait fait perdre ce que la
+  // page d'accueil démontre de plus important.
+  //
+  // AUCUN NOMBRE ICI, DÉLIBÉRÉMENT (27 août 2026). Ce commentaire disait
+  // « l'argument des dix secteurs ». Il était déjà faux avant l'arrivée du
+  // onzième pack : la démo n'offre que DEUX pastilles, `outillage` et
+  // `mode` — vérifié sur les `data-vertical` d'index.html. Le passer à
+  // « onze » l'aurait rendu faux dans l'autre sens, en comptant des packs
+  // que ce sélecteur ne montre pas.
+  //
+  // Le nombre de packs est affirmé à 23 endroits du site, tenus d'accord par
+  // tests/packs-coherence.test.js. Celui-ci n'en fait pas partie et n'a pas
+  // à en faire partie : il décrit un sélecteur, pas un catalogue de packs.
   var pastilles = racine.querySelectorAll(".play-vertical-pill");
 
   // LA VERTICALE DE DÉPART SE LIT DANS LA PAGE, elle n'est pas décidée ici.
