@@ -163,12 +163,24 @@ describe("accessibilite — ce qu'un lecteur d'ecran percoit", () => {
 });
 
 describe("non-regression de l'index, a chaque etape", () => {
-  // « din 933 » vaut 8 depuis le 27 aout, et non 7 : le retitrage de
-  // solutions/outillage.html fait remonter son ancre #annotations par
-  // l'extrait. Detail et mesure dans tests/index-recherche.test.js.
-  it.each([["2rs", 8], ["din 933", 8]])("« %s » rend %d resultats", async (q, n) => {
+  // ON COMPTE LES PAGES, PAS LES ENTREES.
+  //
+  // Ce garde comptait les entrees et il est tombe le 27 aout sans qu'une
+  // ligne de recherche ne bouge : une autre session avait retitre une page,
+  // ce qui a fait remonter une ancre par son extrait. Les sept pages, elles,
+  // n'avaient pas change. Chacune des deux requetes rend huit entrees pour
+  // sept pages -- une page y figure aussi par son ancre #annotations.
+  //
+  // Ici on verifie seulement que l'etape en cours n'a rien casse. Les pages
+  // attendues sont NOMMEES une fois, dans tests/index-recherche.test.js, qui
+  // est le garde de l'index lui-meme.
+  const pages = (w) =>
+    new Set(options(w).map((a) =>
+      a.getAttribute("href").split("#")[0].replace(/^(\.\.\/)+/, "")));
+
+  it.each(["2rs", "din 933"])("« %s » remonte sept pages", async (q) => {
     const w = await ouvrir();
     taper(w, q);
-    expect(options(w)).toHaveLength(n);
+    expect(pages(w).size).toBe(7);
   });
 });

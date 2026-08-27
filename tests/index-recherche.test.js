@@ -194,7 +194,12 @@ describe("index derive — le verificateur", () => {
 // « 2rs » est le chiffre qui distingue les deux index :
 //     index ecrit a la main   0 page      -- le terme n'y figurait pas
 //     index derive, sans `k`  2 pages     -- seulement titre et extrait
-//     index derive, avec `k`  8 pages     -- les huit qui en parlent
+//     index derive, avec `k`  7 pages     -- les sept qui en parlent
+//
+// SEPT PAGES, HUIT ENTREES : solutions/industrie.html y figure deux fois, une
+// fois comme page et une fois par son ancre #annotations. On compte donc les
+// PAGES et jamais les entrees -- la note sur le corpus mouvant, plus bas, dit
+// pourquoi.
 // ---------------------------------------------------------------------------
 
 describe("index derive — la recherche lit vraiment les termes", () => {
@@ -224,25 +229,67 @@ describe("index derive — la recherche lit vraiment les termes", () => {
     return [...w.document.querySelectorAll(".search-result")];
   };
 
-  it("« 2rs » rend HUIT resultats — le chiffre qui distingue les deux index", async () => {
+  // ON NOMME LES PAGES ATTENDUES, ON NE COMPTE PAS LES ENTREES.
+  //
+  // Ce garde figeait un compte -- « din 933 » rend 7 -- et il est tombe le
+  // 27 aout sans qu'une seule ligne de recherche ne bouge : une autre session
+  // avait retitre une page. Un compte fige sur un corpus qui bouge se perime a
+  // chaque retitrage, et celui qui le voit tomber cherche une regression du
+  // moteur la ou il n'y en a pas.
+  //
+  // Une liste de pages survit a un titre qui change. Elle ne tombe que si une
+  // page ENTRE ou SORT du resultat -- ce qui merite d'etre regarde a chaque
+  // fois, et se lit directement dans le diff du test.
+  const pagesDe = (elements) =>
+    new Set(elements.map((a) =>
+      a.getAttribute("href").split("#")[0].replace(/^(\.\.\/)+/, "")));
+
+  const PAGES_2RS = [
+    "blog/alternative-algolia-catalogue-technique.html",
+    "blog/recherche-vectorielle-catalogues-techniques.html",
+    "blog/tutoriel-catalogue-outillage-5-minutes.html",
+    "fonctionnalites.html",
+    "index.html",
+    "solutions/index.html",
+    "solutions/industrie.html",
+  ];
+
+  it("« 2rs » remonte les sept pages qui en parlent — celles que l'index ecrit a la main ne trouvait pas", async () => {
     const w = await moteurAvecIndexReel();
-    expect(chercher(w, "2rs")).toHaveLength(8);
+    expect([...pagesDe(chercher(w, "2rs"))].sort()).toEqual(PAGES_2RS);
   });
 
-  // SEPT PAGES, ET UNE ANCRE DEPUIS LE 27 AOUT : HUIT.
-  // Le chiffre etait 7 et il est passe a 8 sans que la recherche change. La
-  // cause est en amont : « Huit pages qui visaient huit requetes portaient le
-  // meme titre » a retitre solutions/outillage.html en « Recherche visserie :
-  // M8x20, DIN 933, inox A2 ». Une entree ANCREE porte le titre de sa page
-  // mere comme extrait ; celui de #annotations contient donc desormais la
-  // requete mot pour mot, et l'entree remonte au palier extrait -- pas au
-  // palier des termes, ou elle ne matche toujours pas.
-  // Les sept PAGES qui parlent de DIN 933 sont les memes qu'avant : verifie
-  // en comparant les deux index, zero page entrante, zero sortante.
-  it("« din 933 » rend les sept pages qui en parlent, plus une ancre", async () => {
+  const PAGES_DIN_933 = [
+    "blog/alternative-algolia-catalogue-technique.html",
+    "blog/heurix-vs-algolia-typesense-sensefuel-doofinder.html",
+    "blog/recherche-reference-sku-b2b.html",
+    "blog/recherche-vectorielle-catalogues-techniques.html",
+    "index.html",
+    "prestashop.html",
+    "solutions/outillage.html",
+  ];
+
+  // HUIT ENTREES POUR SEPT PAGES, DEPUIS LE 27 AOUT.
+  //
+  // Le commit « Huit pages qui visaient huit requetes portaient le meme titre »
+  // a retitre solutions/outillage.html en « Recherche visserie : M8x20, DIN
+  // 933, inox A2 ». Une entree ANCREE porte le titre de sa page mere comme
+  // EXTRAIT : celui de #annotations contient donc la requete mot pour mot, et
+  // remonte au palier EXTRAIT de runSearch. Pas au palier des termes -- son
+  // champ `k` ne contient toujours ni « din » ni « 933 ».
+  //
+  // Aucune page n'est entree ni sortie ce jour-la, et c'est pour cela que ce
+  // garde nomme des pages : il n'a pas bouge, la ou un compte d'entrees serait
+  // passe de 7 a 8. Mesure : en defaisant la promotion dans l'index, le compte
+  // retombe a 7 et ce test reste vert.
+  //
+  // On n'affirme donc PAS que l'ancre est la : sa presence est un fait des
+  // titres du jour, pas une propriete de la recherche.
+  it("« din 933 » remonte les sept pages qui en parlent, pas zero", async () => {
     const w = await moteurAvecIndexReel();
-    expect(chercher(w, "din 933")).toHaveLength(8);
+    expect([...pagesDe(chercher(w, "din 933"))].sort()).toEqual(PAGES_DIN_933);
   });
+
 
   // Une requete de plusieurs mots ne peut pas matcher d'un bloc une liste de
   // termes TRIES : « din » et « 933 » n'y sont pas voisins. Chaque jeton est
