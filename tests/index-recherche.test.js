@@ -24,7 +24,11 @@ describe("index derive — forme", () => {
   it.each(["search-index-fr.json", "search-index-en.json"])("%s est bien forme", (f) => {
     const i = lire(f);
     expect(i.entrees.length).toBeGreaterThan(40);
-    expect(Object.keys(i.empreintes).length).toBe(i.entrees.length);
+    // UNE EMPREINTE PAR PAGE, PAS PAR ENTREE. Une page peut produire
+    // plusieurs entrees : la page elle-meme, plus une par titre portant
+    // deja un `id`. L'empreinte, elle, porte sur le contenu de la PAGE.
+    const pages = new Set(i.entrees.map((e) => e.p.split("#")[0]));
+    expect(Object.keys(i.empreintes).length).toBe(pages.size);
     for (const e of i.entrees) {
       expect(e).toHaveProperty("p");
       expect(e).toHaveProperty("t");
@@ -36,8 +40,25 @@ describe("index derive — forme", () => {
   it("chaque entree correspond a une page qui existe", () => {
     for (const f of ["search-index-fr.json", "search-index-en.json"]) {
       for (const e of lire(f).entrees) {
-        expect(fs.existsSync(path.join(RACINE, e.p)), `${e.p} (${f})`).toBe(true);
+        const fichier = e.p.split("#")[0];
+        expect(fs.existsSync(path.join(RACINE, fichier)), `${e.p} (${f})`).toBe(true);
       }
+    }
+  });
+
+  // Les quatre ancres de l'index ecrit a la main (produit.html#probleme,
+  // index.html#comment-ca-marche...) auraient disparu d'une derivation naive :
+  // une entree par page, et le visiteur atterrit en haut d'une page longue.
+  // On garde les titres qui portent DEJA un `id` -- 21 sur les 54 pages FR,
+  // contre 369 si on indexait tous les h2 sans rien y gagner.
+  it("les ancres deliberees survivent a la derivation", () => {
+    const ancrees = lire("search-index-fr.json").entrees.filter((e) => e.p.includes("#"));
+    expect(ancrees.length).toBeGreaterThanOrEqual(15);
+    for (const e of ancrees) {
+      const [fichier, frag] = e.p.split("#");
+      const src = fs.readFileSync(path.join(RACINE, fichier), "utf8");
+      expect(src, `${e.p} : l'ancre doit exister dans la page`).toContain(`id="${frag}"`);
+      expect(e.t.length).toBeGreaterThan(0);
     }
   });
 

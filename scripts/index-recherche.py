@@ -210,6 +210,37 @@ def empreinte(brut: dict) -> str:
     return hashlib.sha256(graine.encode("utf8")).hexdigest()[:16]
 
 
+# ---------------------------------------------------------------------------
+# LES ANCRES, ET POURQUOI SEULEMENT CELLES-LA.
+#
+# L'index ecrit a la main portait quatre entrees ancrees
+# (produit.html#probleme, index.html#comment-ca-marche...). Une derivation
+# naive les perdait : une entree par page, et le visiteur atterrit en haut
+# d'une page longue au lieu de la section qu'il cherchait.
+#
+# Indexer TOUS les h2 aurait rendu 369 entrees pour 54 pages -- mesure -- et
+# ne rendait AUCUN terme technique trouvable de plus, ceux-ci vivant dans la
+# prose. On ne garde donc que les titres qui portent DEJA un `id` : quelqu'un
+# les a rendus adressables a dessein, souvent parce qu'un lien pointe dessus.
+# Vingt et un sur les 54 pages FR.
+#
+# Le critere se lit dans le contenu, il n'est pas invente : c'est la
+# difference entre « les sections importantes » -- que je devrais deviner --
+# et « les sections que l'auteur a rendues citables ».
+# ---------------------------------------------------------------------------
+
+_TITRE_ANCRE = re.compile(r'<(h2|h3)[^>]*\bid="([^"]+)"[^>]*>([\s\S]*?)</\1>', re.I)
+
+
+def ancres(chemin: str, src: str) -> list[dict]:
+    sortie = []
+    for _, ident, brut_titre in _TITRE_ANCRE.findall(src):
+        titre = _ESPACES.sub(" ", _BALISES.sub(" ", brut_titre)).strip()
+        if titre:
+            sortie.append({"p": "%s#%s" % (chemin, ident), "t": titre})
+    return sortie
+
+
 def construire(langue: str) -> dict:
     _charger_moteur()
     en = langue == "en"
@@ -223,6 +254,15 @@ def construire(langue: str) -> dict:
             "p": brut["p"], "t": brut["t"], "e": brut["e"],
             "k": " ".join(sorted(termes(brut["t"] + " " + brut["e"] + " " + brut["corps"]))),
         })
+        # Une ancre herite du vocabulaire de sa page : elle y mene, et son
+        # propre titre est trop court pour porter seul les termes qui
+        # amenent un visiteur jusqu'a elle.
+        src = open(os.path.join(RACINE, chemin), encoding="utf8").read()
+        for a in ancres(chemin, src):
+            entrees.append({
+                "p": a["p"], "t": a["t"], "e": brut["t"],
+                "k": " ".join(sorted(termes(a["t"]))),
+            })
     return {"langue": langue, "entrees": entrees, "empreintes": empreintes}
 
 
