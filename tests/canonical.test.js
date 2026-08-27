@@ -150,3 +150,64 @@ describe("canonical — chaque page se declare canonique d'elle-meme", () => {
       .toBeGreaterThan(100);
   });
 });
+
+
+// ---------------------------------------------------------------------------
+// SITEMAP ET ROBOTS DOIVENT DIRE LA MEME CHOSE (27 aout 2026).
+//
+// Trouve en ecrivant les assertions ci-dessus : le sitemap declarait CINQ
+// pages portant `noindex` -- bienvenue, cgv, confidentialite, en/console,
+// mentions-legales -- et en OUBLIAIT quatre indexables, dont
+// solutions/index.html dans les deux langues, liee depuis la navigation de
+// tout le site.
+//
+// Les deux defauts n'ont pas le meme cout. Une page noindex dans le sitemap
+// envoie deux signaux contradictoires, que Google tranche seul. Une page liee
+// et absente du sitemap est une page qu'il trouve tard, ou pas.
+//
+// TOUT SE DERIVE, aucune liste : une page est indexable si elle porte une
+// balise <html> et pas de `noindex`. C'est la meme lecture que celle qui
+// dispense de canonical plus haut, appliquee a l'autre signal.
+// ---------------------------------------------------------------------------
+
+describe("sitemap — il declare exactement les pages indexables", () => {
+  const sitemap = fs.readFileSync(path.join(RACINE, "sitemap.xml"), "utf8");
+  const declarees = [...sitemap.matchAll(/<loc>https:\/\/heurix\.fr\/([^<]*)<\/loc>/g)]
+    .map((m) => m[1]);
+  const ensemble = new Set(declarees);
+
+  const estIndexable = (p) => {
+    const s = lire(p);
+    if (!/<html\b/i.test(s)) return false;
+    const robots = s.match(/<meta name="robots" content="([^"]*)"/i);
+    return !(robots && /noindex/i.test(robots[1]));
+  };
+
+  it("aucune page noindex n'est declaree dans le sitemap", () => {
+    const contradictoires = pages.filter((p) => !estIndexable(p) && ensemble.has(p));
+    expect(contradictoires).toEqual([]);
+  });
+
+  it("aucune page indexable n'est absente du sitemap", () => {
+    // index.html est declaree par son chemin de fichier dans ce sitemap, pas
+    // par la racine -- verifie, et coherent avec les 110 autres entrees.
+    const oubliees = pages.filter((p) => estIndexable(p) && !ensemble.has(p));
+    expect(oubliees).toEqual([]);
+  });
+
+  it("chaque URL declaree correspond a un fichier qui existe", () => {
+    const fantomes = declarees.filter(
+      (u) => u && !fs.existsSync(path.join(RACINE, u))
+    );
+    expect(fantomes).toEqual([]);
+  });
+
+  it("aucune URL n'est declaree deux fois", () => {
+    const doubles = declarees.filter((u, i) => declarees.indexOf(u) !== i);
+    expect([...new Set(doubles)]).toEqual([]);
+  });
+
+  it("le sitemap couvre reellement le site", () => {
+    expect(declarees.length).toBeGreaterThan(100);
+  });
+});
