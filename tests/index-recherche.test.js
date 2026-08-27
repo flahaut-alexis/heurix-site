@@ -117,14 +117,26 @@ describe("index derive — le verificateur", () => {
     }
   };
 
+  // LE MESSAGE D'ECHEC PORTE LA SORTIE (27 aout 2026).
+  //
+  // Ces deux assertions n'affichaient que `.code`. En CI elles echouaient sur
+  // « expected 1 to be 0 » -- vrai, inutile, et exactement le defaut corrige
+  // le matin meme SUR CE SCRIPT : `--verifier` disait « index perime » sans
+  // nommer les pages.
+  //
+  // La fonction `verifier()` capture pourtant deja stdout et stderr dans
+  // `.sortie`. Le test connaissait la cause de son echec et ne la montrait
+  // pas. Le second argument d'`expect` l'affiche.
   it("sort 0 quand l'index correspond aux pages", () => {
-    expect(verifier().code).toBe(0);
+    const r = verifier();
+    expect(r.code, r.sortie).toBe(0);
   });
 
   it("tourne SANS le moteur ni sa wheel — c'est sa raison d'etre", () => {
     // Si le generateur importait le moteur au chargement, cet appel
     // echouerait ici comme il echouerait dans la CI du site.
-    expect(verifier().code).toBe(0);
+    const r = verifier();
+    expect(r.code, r.sortie).toBe(0);
   });
 
   it("NOMME la page fautive plutot que de sortir 1 en silence", () => {
