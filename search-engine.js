@@ -800,6 +800,95 @@
       chercherEtRendre();
       m.champ.focus();
     }
+    // ----- mesure ----------------------------------------------------------
+    //
+    // OU VA LA DONNEE, ET POUR QUI. Le site n'a qu'un point de collecte : le
+    // dataLayer de GTM. consent.js n'injecte GTM qu'apres un clic explicite
+    // (`choix.mesure || choix.commercial`), et cree `window.dataLayer` a ce
+    // moment-la. Avant consentement, la variable n'existe pas et le garde
+    // ci-dessous ne pousse RIEN -- ce qui est le comportement voulu : pousser
+    // dans un tableau que GTM rejouerait a son chargement ferait remonter des
+    // evenements anterieurs au consentement.
+    //
+    // CE QUE CA IMPLIQUE POUR QUI LIT LES CHIFFRES.
+    //   * La population mesuree est celle qui a ACCEPTE les traceurs. La
+    //     banniere est conforme au sens strict -- cases decochees, inaction
+    //     valant refus, refus au meme poids visuel -- donc cette fraction est
+    //     nettement sous 100 %.
+    //   * SA TAILLE EST IMMESURABLE D'ICI. GitHub Pages ne rend aucun journal
+    //     serveur : il n'y a pas de denominateur sur l'ensemble des visiteurs.
+    //     Aucun taux « X % des visiteurs cherchent » n'est calculable.
+    //   * Les trois mesures ci-dessous sont en revanche des RATIOS INTERNES a
+    //     l'entonnoir -- sans resultat / toutes recherches, rang cliqué,
+    //     ouvertures sans clic. Numerateur et denominateur vivent dans la meme
+    //     population : l'arithmetique reste juste, seul le biais de
+    //     representativite demeure, et sa direction est inconnue.
+    //
+    // C'est pour cela qu'aucune ligne « cette recherche est journalisee »
+    // n'apparait dans la modale : elle serait vraie pour les consentants et
+    // fausse pour les autres, au meme endroit.
+
+    var TERMES_MAX = 100;   // une requete est un mot-clef, pas un presse-papier
+
+    function mesurer(nom, champs) {
+      if (!window.dataLayer) return false;      // pas de consentement, pas de mesure
+      var charge = { event: nom, recherche_langue: langue() };
+      for (var k in champs) charge[k] = champs[k];
+      window.dataLayer.push(charge);
+      return true;
+    }
+
+    var derniereMesuree = null;   // la requete deja envoyee, pour ne pas la repeter
+    var minuteurMesure = null;
+    var aClique = false;          // un resultat a-t-il ete ouvert depuis l'ouverture
+
+    // ON NE MESURE QUE LES REQUETES POSEES.
+    // Une mesure a chaque frappe enverrait « d », « di », « din » : du bruit,
+    // et trois fois plus de texte de visiteur que necessaire. On attend que la
+    // frappe se soit arretee.
+    var REPOS_MS = 900;
+
+    // LE COMPTE EST RECALCULE AU MOMENT DE L'ENVOI, pas fige a l'appel.
+    // Une frappe pendant le chargement de l'index donnait zero, et c'est ce
+    // zero qui partait 900 ms plus tard alors que l'index etait arrive
+    // entre-temps. Le surcout est une recherche de plus par requete POSEE, pas
+    // par frappe : une frappe complete -- recherche, rail et rendu -- coute
+    // 1,29 ms mesuree sur ce corpus, dont la recherche seule est une part.
+    function mesurerRequete(q) {
+      clearTimeout(minuteurMesure);
+      var termes = q.trim().toLowerCase().slice(0, TERMES_MAX);
+      if (termes.length < 2) return;
+      minuteurMesure = setTimeout(function () {
+        if (termes === derniereMesuree) return;
+        derniereMesuree = termes;
+        var total = runSearch(q, 0).length;
+        mesurer("site_search", {
+          recherche_termes: termes,
+          recherche_resultats: total,
+          recherche_sans_resultat: total === 0,
+          recherche_filtres: Object.keys(retenues).sort().join(",")
+        });
+      }, REPOS_MS);
+    }
+
+    // LE RANG EST COMPTE A PARTIR DE 1, et il porte sur la liste AFFICHEE --
+    // c'est celle que le visiteur a vue. Un rang 1 majoritaire dit que l'ordre
+    // est bon ; un rang 5 recurrent dit qu'il ne l'est pas.
+    function mesurerClic(a) {
+      var options = [].slice.call(m.liste.querySelectorAll(".search-result"));
+      var rang = options.indexOf(a);
+      if (rang === -1) return;
+      aClique = true;
+      var pastille = a.querySelector(".search-pill");
+      mesurer("site_search_click", {
+        recherche_termes: m.champ.value.trim().toLowerCase().slice(0, TERMES_MAX),
+        recherche_rang: rang + 1,
+        recherche_resultats: options.length,
+        recherche_source: pastille ? (pastille.className.split("search-pill-")[1] || "") : "",
+        recherche_ancre: a.getAttribute("href").indexOf("#") !== -1,
+        recherche_filtres: Object.keys(retenues).sort().join(",")
+      });
+    }
     function compteur(total) {
       m.compte.textContent = total ? total + " " + (total === 1 ? L.resultat : L.resultats) : "";
     }
@@ -876,6 +965,10 @@
       var options = m.liste.querySelectorAll(".search-result");
       var a = options[curseur >= 0 ? curseur : 0];
       if (!a) return;
+      // AU CLAVIER AUSSI. Entree n'emet pas de clic : sans cette ligne, tout
+      // ce qui est ouvert au clavier disparaitrait de la mesure du rang, et
+      // le rang moyen serait celui des seuls utilisateurs de souris.
+      mesurerClic(a);
       if (nouvelOnglet) window.open(a.href, "_blank", "noopener");
       else window.location.href = a.href;
     }
@@ -937,6 +1030,10 @@
       compteur(retenus.length);
       rendre(retenus.slice(0, 8), q);
       annoncer(retenus.length, q);
+      // Le total NON FILTRE : « sans resultat » doit dire que la recherche n'a
+      // rien trouve, pas qu'une case cochee masque tout. Il est recalcule a
+      // l'envoi, voir mesurerRequete.
+      mesurerRequete(q);
     }
 
     // ----- ouverture et fermeture ---------------------------------------
@@ -958,6 +1055,13 @@
         });
       });
       m.effacer.addEventListener("click", viderFiltres);
+
+      // DELEGATION SUR LA LISTE : les resultats sont recrees a chaque frappe,
+      // un ecouteur par <a> serait repose des centaines de fois par session.
+      m.liste.addEventListener("click", function (e) {
+        var a = e.target.closest && e.target.closest(".search-result");
+        if (a) mesurerClic(a);
+      });
 
       // ECHAP DEPUIS N'IMPORTE OU DANS LE PANNEAU.
       // auClavier est pose sur le CHAMP : depuis une case a cocher, Echap ne
@@ -981,18 +1085,42 @@
       // precedente ferait rendre zero resultat sans que rien a l'ecran ne dise
       // pourquoi : le rail est en peripherie, la liste est au centre du regard.
       retenues = {};
+      aClique = false;
+      derniereMesuree = null;
       majRail(null);
       setTimeout(function () { m.champ.focus(); }, 10);
       if (window.dataLayer) window.dataLayer.push({ event: "site_search_open" });
 
       attendre(true);
       precharger(root)
-        .then(function () { attendre(false); suggestionsParDefaut(); })
+        .then(function () {
+          attendre(false);
+          // CE QUI A ETE TAPE PENDANT LE CHARGEMENT N'EST PAS JETE.
+          // On ouvrait sur les suggestions par defaut sans regarder le champ :
+          // qui tapait avant l'arrivee de l'index voyait sa requete dans le
+          // champ, l'etiquette « A lire en premier » au-dessus, et cinq
+          // articles sans rapport. Trouve par la MESURE de l'etape (e), qui
+          // se contredisait -- « 0 resultat » suivi d'un clic au rang 3.
+          if (m.champ.value.trim()) chercherEtRendre(); else suggestionsParDefaut();
+        })
         .catch(function () { attendre(false); montrerErreur(); });
     }
 
     function close() {
       if (!m) return;
+      // L'ABANDON EST MESURE A LA FERMETURE, pas deduit d'une absence : c'est
+      // le seul moment ou l'on sait que la recherche est finie. Le minuteur de
+      // la requete posee est annule -- une requete abandonnee en cours de
+      // frappe n'a pas ete « posee ».
+      clearTimeout(minuteurMesure);
+      if (!aClique) {
+        var q = m.champ.value.trim().toLowerCase().slice(0, TERMES_MAX);
+        mesurer("site_search_abandon", {
+          recherche_termes: q,
+          recherche_resultats: m.liste.querySelectorAll(".search-result").length,
+          recherche_vide: q.length === 0
+        });
+      }
       m.racine.classList.remove("open");
       document.body.style.overflow = "";
       // LE FOCUS REVIENT D'OU IL VENAIT. Sans cela il retombe sur <body> et la

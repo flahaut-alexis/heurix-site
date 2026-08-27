@@ -247,6 +247,55 @@ describe("le filtre qui masque tout n'est pas une requete sans resultat", () => 
   });
 });
 
+describe("taper avant que l'index soit la", () => {
+  // L'ETAT LE PLUS COURANT SUR UNE CONNEXION LENTE, ET IL JETAIT LA REQUETE.
+  // `open()` appelait suggestionsParDefaut() a la resolution de precharger,
+  // sans regarder le champ : qui tapait pendant le chargement voyait sa
+  // requete dans le champ, l'etiquette « A lire en premier » au-dessus, et
+  // cinq articles sans rapport. Trouve par la MESURE de l'etape (e), qui se
+  // contredisait -- « 0 resultat » suivi d'un clic au rang 3 -- et non a
+  // l'ecran, ou il faut une connexion lente pour le voir.
+  async function avecIndexRetarde() {
+    const index = lire("search-index-fr.json");
+    const dom = new JSDOM(
+      `<!DOCTYPE html><html><body><button id="heurix-search-btn">b</button></body></html>`,
+      { url: "https://heurix.fr/index.html", runScripts: "outside-only" }
+    );
+    const w = dom.window;
+    let livrer;
+    w.fetch = () => new Promise((r) => { livrer = () => r({ ok: true, json: () => Promise.resolve(index) }); });
+    w.matchMedia = () => ({ matches: true });
+    w.eval(fs.readFileSync(path.join(RACINE, "search-engine.js"), "utf8"));
+    w.document.dispatchEvent(new w.Event("DOMContentLoaded"));
+    w.document.getElementById("heurix-search-btn").dispatchEvent(new w.Event("click"));
+    await new Promise((r) => setTimeout(r, 25));
+    return { w, livrer: () => livrer() };
+  }
+
+  it("la requete survit a l'arrivee de l'index, elle n'est pas remplacee par les suggestions", async () => {
+    const { w, livrer } = await avecIndexRetarde();
+    taper(w, "din 933");
+    expect(w.document.querySelectorAll(".search-result")).toHaveLength(0);
+    livrer();
+    await new Promise((r) => setTimeout(r, 30));
+
+    expect(w.document.getElementById("heurix-search-input").value).toBe("din 933");
+    expect(w.document.querySelector(".search-suggest-label").hidden).toBe(true);
+    expect(w.document.querySelector(".search-count").textContent).toMatch(/^\d+ résultats$/);
+    const pages = new Set([...w.document.querySelectorAll(".search-result")]
+      .map((a) => a.getAttribute("href").split("#")[0].replace(/^(\.\.\/)+/, "")));
+    expect(pages.has("prestashop.html")).toBe(true);       // un resultat de « din 933 »
+  });
+
+  it("un champ vide a l'arrivee de l'index donne bien les suggestions", async () => {
+    const { w, livrer } = await avecIndexRetarde();
+    livrer();
+    await new Promise((r) => setTimeout(r, 30));
+    expect(w.document.querySelector(".search-suggest-label").hidden).toBe(false);
+    expect(w.document.querySelectorAll(".search-result").length).toBeGreaterThan(0);
+  });
+});
+
 describe("l'etat d'erreur", () => {
   async function avecIndexMort() {
     const dom = new JSDOM(
