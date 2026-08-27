@@ -1144,6 +1144,8 @@ section.soft{ background:var(--bg-soft); color:var(--ink); }
 .kicker-vins{ color:#682732; }
 .kicker-sport{ color:#1B5E8C; }
 .kicker-automobile{ color:#8C3A1B; }
+.kicker-electricite{ color:#8C7A1B; }
+.kicker-plomberie{ color:#2B6B5E; }
 
 h2{ font-size:clamp(26px,3.4vw,34px); font-weight:800; margin:0 0 18px; max-width:640px; letter-spacing:-0.01em; }
 .section-lede{ color:var(--ink-muted); font-size:16.5px; max-width:600px; margin-bottom:44px; }
@@ -1911,6 +1913,8 @@ body.docs-dark .kicker-mode{ color:#EFC8E2; }
 body.docs-dark .kicker-vins{ color:#F2CAD1; }
 body.docs-dark .kicker-sport{ color:#B9DCF2; }
 body.docs-dark .kicker-automobile{ color:#F2CDB9; }
+body.docs-dark .kicker-electricite{ color:#EFE6B3; }
+body.docs-dark .kicker-plomberie{ color:#B3E0D6; }
 
 /* Hub Solutions + fil d'Ariane + voir-aussi : classes creees apres le
    dernier chantier docs-dark, jamais encore couvertes. Meme traitement

@@ -158,6 +158,12 @@
     <loc>https://heurix.fr/solutions/automobile.html</loc>
   </url>
   <url>
+    <loc>https://heurix.fr/solutions/electricite.html</loc>
+  </url>
+  <url>
+    <loc>https://heurix.fr/solutions/plomberie.html</loc>
+  </url>
+  <url>
     <loc>https://heurix.fr/solutions/mode.html</loc>
   </url>
   <url>
@@ -262,6 +268,8 @@
   <url><loc>https://heurix.fr/en/solutions/outillage.html</loc></url>
   <url><loc>https://heurix.fr/en/solutions/industrie.html</loc></url>
   <url><loc>https://heurix.fr/en/solutions/automobile.html</loc></url>
+  <url><loc>https://heurix.fr/en/solutions/electricite.html</loc></url>
+  <url><loc>https://heurix.fr/en/solutions/plomberie.html</loc></url>
   <url><loc>https://heurix.fr/en/solutions/mode.html</loc></url>
   <url><loc>https://heurix.fr/en/solutions/electronique.html</loc></url>
   <url><loc>https://heurix.fr/en/solutions/livres.html</loc></url>
