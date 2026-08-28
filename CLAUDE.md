@@ -1583,6 +1583,94 @@ sont cinq ou six — les scripts, les tests, les données. C'est là que se
 cachent les fichiers d'autrui, et un coup d'œil suffit à voir celui qu'on ne
 reconnaît pas.
 
+### Trois fois dans la journée, le correctif a refait ce qu'il corrigeait
+
+Le 28 août 2026, trois occurrences de la même forme, sur trois sujets sans
+rapport. Ce n'est pas une distraction : c'est que **la zone la plus exposée à
+un défaut est le texte qui le décrit**, parce qu'on y écrit le motif fautif
+pour le montrer.
+
+| | le défaut | où il a été refait |
+|---|---|---|
+| 1 | trois paragraphes se partageant un bloc de 46 caractères | en réécrivant les trois d'affilée, ce qui a recréé le bloc |
+| 2 | `--` interdit dans un commentaire XML | dans le commentaire qui explique que `--` est interdit |
+| 3 | lire `$?` derrière un tuyau, donc le code du dernier maillon | en mesurant un garde avec `python3 … \| sed`, deux heures après l'avoir noté |
+
+Le deuxième est le plus net. Un commentaire XML ne peut pas contenir deux
+tirets consécutifs ; j'avais écrit les noms de tokens CSS tels quels dans
+`img/og-image.svg`, le fichier ne parsait **dans aucun moteur**, et l'image
+sortait « broken » sans un mot. En corrigeant, j'ai écrit la phrase
+« un commentaire XML ne peut pas contenir « ­-­- » » — avec les deux tirets
+dedans. Le fichier est resté invalide, pour la raison qu'il venait d'expliquer.
+
+**Une session voisine l'avait rencontré le matin même**, en marquant
+`prisme-marketing-double.svg` pour le garde de classement par fond. Deux
+sessions, le même piège, à quelques heures d'écart, sans se le transmettre.
+
+Le troisième est le plus humiliant et le moins grave : `$?` derrière un tuyau
+lit le code du **dernier** maillon. C'est écrit plus haut dans ce fichier
+depuis le matin. Je l'ai refait en vérifiant qu'un garde mordait — le garde
+mordait, ma mesure disait « code 0 ».
+
+**CE QUI SORT DE CES TROIS N'EST PAS « RELISEZ-VOUS ».** Relire ne les attrape
+pas : dans les trois cas le texte était juste à la lecture, et faux à
+l'exécution. Ce qui les attrape est de **faire tourner la chose sur elle-même**
+— parser le XML qu'on vient d'écrire, remesurer la densité après chaque page,
+lire le code de sortie sans tuyau.
+
+D'où le garde, qui vaut mieux que cette note :
+`scripts/exporter-og-image.py` **valide le XML avant de fabriquer quoi que ce
+soit**. Vérifié dans les deux sens le jour même — sortie `1` et aucun harnais
+produit avec un `--` réinjecté, sortie `0` sur le fichier sain, restauration
+par l'opération inverse. Les 27 autres SVG du dépôt passent le même contrôle :
+
+```bash
+for f in $(git ls-files '*.svg'); do python3 -c "
+import xml.dom.minidom as m, sys
+try: m.parse('$f')
+except Exception as e: print('INVALIDE $f :', e)"; done
+```
+
+### Les onze pages sans balise sociale sont les bonnes onze
+
+Mesuré le 28 août 2026, en refaisant la carte de partage. Sur 134 pages HTML,
+**123 déclarent une `og:image`** — dont **103 pointent vers `og-image.png`** et
+20 sont les pages `solutions/*`, qui ont la leur. Remplacer le fichier atteint
+donc 103 pages sans qu'aucune balise ne bouge.
+
+Les **11 sans aucune balise sociale** ne sont pas un oubli : dix portent
+`noindex`, et **aucune des onze n'est au sitemap**. Ce sont les deux `404`,
+l'écran de bienvenue, les deux consoles, la supervision et les quatre pages de
+`demo/`. Des pages qu'on ne partage pas.
+
+**Deux écarts réels, notés et non corrigés dans ce lot :**
+
+- `confidentialite.html` et `mentions-legales.html` déclarent `og:image` **sans
+  `twitter:image`**. Deux pages sur 123 — la forme exacte de la famille « une
+  valeur dupliquée partout, une seule manquante ».
+- `downloads/heurix-conversion-snippet.html` est la seule des onze **sans
+  `noindex`**, et elle n'a **pas de `<title>`**. Ce n'est pas une page : c'est
+  un fragment de code à copier, servi en `.html`. Un robot peut l'indexer.
+
+#### Et mon premier relevé de ces onze était faux, par sous-chaîne
+
+Mon test d'appartenance au sitemap était `p in sitemap`. Il a rendu « console.html
+est au sitemap », ce qui contredisait son `noindex`. C'était un **faux positif** :
+la chaîne `console.html` apparaît dans `blog/guide-utilisation-console.html`,
+qui, lui, y est.
+
+Remesuré par URL exacte, extraite des `<loc>` : aucune des onze n'y figure, et
+la contradiction n'existait pas.
+
+> **Un test d'appartenance par sous-chaîne répond sur autre chose que ce qu'on
+> lui demande, et sa réponse a la même forme que la bonne.**
+
+C'est la famille de l'identité d'un actif — « son chemin, pas son nom de
+fichier » — sous un autre angle : là on groupait trop large, ici on
+appartient trop facilement. Le remède est le même : **extraire les identités,
+puis comparer des égalités**, jamais chercher un fragment dans un fichier
+entier.
+
 ### La vérification qui attrape le motif n'est jamais celle qu'on est en train de faire
 
 Neuvième cas de la semaine, et le seul qui ait cette forme : **il a été

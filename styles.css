@@ -62,6 +62,17 @@
                                                       et il ne doit pas baisser */
   --ink-on-dark:#F5F6FF;
   --ink-muted-on-dark:#CDD2F0;
+  /* ATTENUES, pour l'etat de chargement de la modale de recherche.
+     Ils existent parce que `opacity` COUPLE deux choses : paraitre estompe et
+     perdre du contraste. On ne peut pas rendre un bloc nettement plus discret
+     sans le rendre moins lisible. Une couleur explicite les decouple : on
+     choisit la discretion ET le contraste.
+     Mesures sur le panneau #101B4D, seuil AA 4,5:1 :
+        titre    #A9B2E0  7,88:1   (normal #F5F6FF 15,17:1)
+        extrait  #8493D2  5,51:1   (normal #CDD2F0 10,94:1)
+     Le contraste est divise par deux environ : l'attenuation se voit. */
+  --ink-on-dark-attenue:#A9B2E0;
+  --ink-muted-on-dark-attenue:#8493D2;
   --blue:#5468FF;
   --blue-deep:#3F52E8;
   --blue-deeper:#2A3CD1;
@@ -541,7 +552,21 @@ header{
 .search-contact{ font-size:12.5px; color:var(--ink-muted-on-dark); margin:0; }
 .search-contact a{ color:#5AB8E8; font-weight:600; }
 
-.search-results[data-chargement] .search-result{ opacity:.45; }
+/* L'ETAT DE CHARGEMENT NE S'OBTIENT PLUS PAR `opacity` (28 aout 2026).
+   `opacity:.45` posait le titre a 4,09:1, l'extrait a 3,25:1 et la pastille a
+   3,56:1 sur le panneau sombre -- les trois sous le seuil AA de 4,5:1. C'etait
+   pire encore avant le passage au fond sombre : 2,97 et 2,00. Une condition
+   preexistante, amelioree sans avoir ete corrigee.
+   AUCUN GARDE NE POUVAIT LE VOIR : `opacity` ne declare aucune couleur et n'en
+   herite d'aucune, elle module ce qu'il y a dessous. `classement-fond.test.js`
+   cherche `color:var(--ink...)` ; il ne voit ni une opacite, ni d'ailleurs un
+   jeton `-on-dark`, dont le nom ne correspond pas a son motif.
+   La pastille etait concernee elle aussi, ce que le releve d'origine ne disait
+   pas : son texte dimait avec le reste. */
+.search-results[data-chargement] .search-result-title{ color:var(--ink-on-dark-attenue); }
+.search-results[data-chargement] .search-result-excerpt,
+.search-results[data-chargement] .search-result-parent{ color:var(--ink-muted-on-dark-attenue); }
+.search-results[data-chargement] .search-pill{ color:var(--ink-on-dark-attenue); }
 
 @media (max-width:768px){
   .search-modal{ padding-top:0; }
