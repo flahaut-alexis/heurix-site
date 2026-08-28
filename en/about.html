@@ -118,10 +118,17 @@
       <p>Heurix was born twice.</p>
       <p>The first time was in 2015: a prototype annotation engine, ahead of its time on one thing — how it used regular expressions. Rules compiled into automata, composed, applied in cascade: level 1 recognizes raw patterns, level 2 combines them into concepts. We called these rule sets <strong>prisms</strong>, and the image says it all: place a prism in front of light — the raw data — and it reveals what the light contains. Named entities appear, each with its own color. What looked like a string of characters becomes meaning.</p>
       <p><figure class="portrait">
-        <!-- Drop photo-alexis.jpg into img/. If the file is missing, the
-             block hides itself: a broken image would do more harm than no
-             image at all. -->
-        <img src="../img/photo-alexis.jpg" alt="Alexis Flahaut, founder of Heurix"
+        <!-- THE FILE IS IN PLACE (28 August 2026): img/photo-alexis.jpg,
+             800x800, 80 kB. The previous comment said "drop it in" and would
+             have become a stale instruction.
+
+             THE onerror STAYS, even though the case no longer occurs. It hides
+             the whole block if the image is missing — a broken portrait on the
+             founder's page costs more than an absent one. What it guards
+             against did not disappear when the file landed: a rename, a deploy
+             exclusion or a broken path would replay it, and those are exactly
+             the defects nobody sees locally. -->
+        <img src="../img/photo-alexis.jpg?v=1787905885" alt="Alexis Flahaut, founder of Heurix"
              loading="lazy" onerror="this.closest('.portrait').hidden=true;">
         <figcaption>Alexis Flahaut — founder</figcaption>
       </figure>

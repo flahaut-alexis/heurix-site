@@ -132,10 +132,17 @@
       <p>Heurix est né deux fois.</p>
       <p>La première fois, c'était en 2015 : un prototype de moteur d'annotation, en avance sur son temps sur un point — la façon d'utiliser les expressions régulières. Des règles compilées en automates, composées, appliquées en cascade : le niveau 1 reconnaît les motifs bruts, le niveau 2 les combine en concepts. Nous appelions ces jeux de règles des <strong>prismes</strong>, et l'image dit tout : on place un prisme devant la lumière — les données brutes — et il révèle ce qu'elle contient. Les entités nommées apparaissent, chacune avec sa couleur. Ce qui semblait une chaîne de caractères devient du sens.</p>
       <p><figure class="portrait">
-        <!-- Déposez photo-alexis.jpg dans img/. Si le fichier est absent, le
-             bloc se masque tout seul : une image cassée ferait plus de mal
-             qu'une absence d'image. -->
-        <img src="img/photo-alexis.jpg" alt="Alexis Flahaut, fondateur de Heurix"
+        <!-- LE FICHIER EST DÉPOSÉ (28 août 2026) : img/photo-alexis.jpg,
+             800x800, 80 ko. Le commentaire précédent disait « déposez-le » et
+             serait devenu une consigne périmée.
+
+             LE onerror RESTE, alors que le cas ne se produit plus. Il masque le
+             bloc entier si l'image manque — un portrait cassé sur la page du
+             fondateur coûte plus qu'un portrait absent. Ce qu'il protège n'a
+             pas disparu avec le dépôt du fichier : un renommage, une exclusion
+             de déploiement ou un chemin cassé le rejoueraient, et ce sont
+             précisément les défauts qu'on ne voit pas en local. -->
+        <img src="img/photo-alexis.jpg?v=1787905885" alt="Alexis Flahaut, fondateur de Heurix"
              loading="lazy" onerror="this.closest('.portrait').hidden=true;">
         <figcaption>Alexis Flahaut — fondateur</figcaption>
       </figure>
