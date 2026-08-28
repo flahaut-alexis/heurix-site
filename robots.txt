@@ -1,4 +1,28 @@
 User-agent: *
 Allow: /
 
+# UN FRAGMENT N'EST PAS UNE PAGE, mais il porte une extension .html et un robot
+# qui atteint son URL le traite comme un document. Celui-ci est un extrait de
+# code a coller dans une boutique : il n'a ni <html>, ni <head>, ni <body>, ni
+# <title>. Il est propose en telechargement depuis docs.html et en/docs.html
+# avec l'attribut `download`, jamais comme une page a lire.
+#
+# POURQUOI PAS UN noindex, QUI SERAIT LE BON OUTIL. Une balise <meta> exige un
+# <head>, et lui en poser un corromprait ce que le marchand colle dans son
+# site. L'en-tete HTTP X-Robots-Tag ferait l'affaire sans toucher au contenu,
+# mais GitHub Pages ne permet pas d'en definir. robots.txt est donc le seul
+# levier disponible ici, et c'est pour cette raison qu'il est employe plutot
+# que par preference.
+#
+# LA REGLE EST DERIVEE, PAS ENUMEREE : tests/fragments-non-indexables.test.js
+# reconstruit la liste des fichiers .html SUIVIS qui n'ont pas de <html> et
+# exige que chacun soit refuse ici. Un nouveau fragment fait echouer le test au
+# lieu de passer inapercu, et un fragment devenu page vraie fait echouer la
+# ligne devenue inutile.
+#
+# Le critere « pas de <html> » n'est pas invente ici : tests/canonical.test.js
+# l'emploie deja depuis le 27 aout 2026 pour decider qu'une page n'a pas
+# d'adresse canonique a declarer. Meme identite, deux consequences.
+Disallow: /downloads/heurix-conversion-snippet.html
+
 Sitemap: https://heurix.fr/sitemap.xml
