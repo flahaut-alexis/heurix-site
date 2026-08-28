@@ -1,0 +1,66 @@
+<svg viewBox="0 0 680 476" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="dp-title dp-desc">
+  <title id="dp-title">La cascade en deux passes : la seconde ne lit plus la fiche, elle lit ce que la première a produit</title>
+  <desc id="dp-desc">Sur la fiche « Plaquettes de frein avant Bosch 0986494574 », la passe 1 reconnaît chaque motif isolément et produit trois annotations : FAM_FREINAGE depuis « Plaquettes », POS_AVANT depuis « avant », REF_BOSCH_0986494574 depuis le numéro. La passe 2 ne lit plus la fiche : elle lit ce flux d'annotations. FAM_FREINAGE combiné à POS_AVANT donne FREIN_AVANT. FREIN_ARRIERE ne se produit pas, parce que POS_ARRIERE est absent du flux — c'est cette exclusion qui empêche une plaquette arrière de remonter sur une recherche de frein avant.</desc>
+
+  <text x="340" y="26" text-anchor="middle" font-family="'Plus Jakarta Sans',sans-serif" font-size="13" font-weight="700" fill="#12142B">Deux passes, et la seconde ne lit plus la fiche</text>
+
+  <!-- ═══ LA FICHE ═══ -->
+  <text x="24" y="70" font-family="'Plus Jakarta Sans',sans-serif" font-size="10" font-weight="700" fill="#888780" letter-spacing="0.5">LA FICHE</text>
+  <text x="382" y="70" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="13"><tspan fill="#1FAA6B" font-weight="700">Plaquettes</tspan><tspan fill="#888780"> de frein </tspan><tspan fill="#BA7517" font-weight="700">avant</tspan><tspan fill="#888780"> Bosch </tspan><tspan fill="#5B5E76" font-weight="700">0986494574</tspan></text>
+
+  <!-- ═══ PASSE 1 · le flux ═══ -->
+  <text x="24" y="132" font-family="'Plus Jakarta Sans',sans-serif" font-size="10" font-weight="700" fill="#888780" letter-spacing="0.5">PASSE 1</text>
+  <text x="24" y="147" font-family="'Plus Jakarta Sans',sans-serif" font-size="9.5" fill="#888780">chaque motif,</text>
+  <text x="24" y="159" font-family="'Plus Jakarta Sans',sans-serif" font-size="9.5" fill="#888780">reconnu seul</text>
+
+  <rect x="108" y="98" width="548" height="88" rx="12" fill="#FBFBFD" stroke="#E7E9F2" stroke-width="1"/>
+  <text x="124" y="116" font-family="'Plus Jakarta Sans',sans-serif" font-size="9" font-weight="700" fill="#888780" letter-spacing="0.6">LE FLUX D'ANNOTATIONS</text>
+
+  <rect x="164" y="130" width="124" height="30" rx="15" fill="#E8F8F0" stroke="#1FAA6B" stroke-width="1.3"/>
+  <text x="226" y="150" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="11" font-weight="700" fill="#1FAA6B">FAM_FREINAGE</text>
+
+  <rect x="304" y="130" width="100" height="30" rx="15" fill="#FAEEDA" stroke="#BA7517" stroke-width="1.3"/>
+  <text x="354" y="150" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="11" font-weight="700" fill="#BA7517">POS_AVANT</text>
+
+  <rect x="420" y="130" width="180" height="30" rx="15" fill="#FFFFFF" stroke="#C9CCDA" stroke-width="1.3"/>
+  <text x="510" y="150" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="11" font-weight="700" fill="#5B5E76">REF_BOSCH_0986494574</text>
+
+  <!-- l'entree de la passe 2, montree comme telle -->
+  <path d="M382 186 L382 214" fill="none" stroke="#3F52E8" stroke-width="2" stroke-linecap="round"/>
+  <path d="M375 207 L382 215 L389 207" fill="none" stroke="#3F52E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="398" y="207" font-family="'Plus Jakarta Sans',sans-serif" font-size="10.5" font-weight="700" fill="#3F52E8">c'est CE cadre que lit la passe 2</text>
+
+  <!-- ═══ PASSE 2 · les deux issues ═══ -->
+  <text x="24" y="262" font-family="'Plus Jakarta Sans',sans-serif" font-size="10" font-weight="700" fill="#888780" letter-spacing="0.5">PASSE 2</text>
+  <text x="24" y="277" font-family="'Plus Jakarta Sans',sans-serif" font-size="9.5" fill="#888780">lit le flux,</text>
+  <text x="24" y="289" font-family="'Plus Jakarta Sans',sans-serif" font-size="9.5" fill="#888780">jamais la fiche</text>
+
+  <!-- issue 1 : la regle se declenche -->
+  <rect x="140" y="244" width="124" height="30" rx="15" fill="#E8F8F0" stroke="#1FAA6B" stroke-width="1.3"/>
+  <text x="202" y="264" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="11" font-weight="700" fill="#1FAA6B">FAM_FREINAGE</text>
+  <text x="276" y="265" text-anchor="middle" font-family="'Plus Jakarta Sans',sans-serif" font-size="14" font-weight="700" fill="#888780">+</text>
+  <rect x="288" y="244" width="100" height="30" rx="15" fill="#FAEEDA" stroke="#BA7517" stroke-width="1.3"/>
+  <text x="338" y="264" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="11" font-weight="700" fill="#BA7517">POS_AVANT</text>
+  <path d="M400 259 L446 259" fill="none" stroke="#3F52E8" stroke-width="2" stroke-linecap="round"/>
+  <path d="M439 252 L447 259 L439 266" fill="none" stroke="#3F52E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="458" y="240" width="182" height="38" rx="12" fill="#EEF1FF" stroke="#3F52E8" stroke-width="1.6"/>
+  <text x="549" y="264" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="13" font-weight="700" fill="#3F52E8">FREIN_AVANT</text>
+
+  <!-- issue 2 : la regle NE se declenche PAS. C'est le coeur. -->
+  <rect x="140" y="322" width="124" height="30" rx="15" fill="#E8F8F0" stroke="#1FAA6B" stroke-width="1.3"/>
+  <text x="202" y="342" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="11" font-weight="700" fill="#1FAA6B">FAM_FREINAGE</text>
+  <text x="276" y="343" text-anchor="middle" font-family="'Plus Jakarta Sans',sans-serif" font-size="14" font-weight="700" fill="#888780">+</text>
+  <rect x="288" y="322" width="112" height="30" rx="15" fill="#FFFFFF" stroke="#C9CCDA" stroke-width="1.3" stroke-dasharray="4 4"/>
+  <text x="344" y="342" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="11" font-weight="700" fill="#C9CCDA">POS_ARRIERE</text>
+  <text x="344" y="366" text-anchor="middle" font-family="'Plus Jakarta Sans',sans-serif" font-size="9.5" font-weight="700" fill="#888780">absent du flux</text>
+
+  <path d="M412 337 L446 337" fill="none" stroke="#C9CCDA" stroke-width="2" stroke-linecap="round" stroke-dasharray="4 4"/>
+  <rect x="458" y="318" width="182" height="38" rx="12" fill="#FFFFFF" stroke="#C9CCDA" stroke-width="1.3"/>
+  <text x="549" y="342" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="13" font-weight="700" fill="#888780">FREIN_ARRIERE</text>
+  <line x1="494" y1="337" x2="604" y2="337" stroke="#888780" stroke-width="1.6" stroke-linecap="round"/>
+  <text x="549" y="372" text-anchor="middle" font-family="'Plus Jakarta Sans',sans-serif" font-size="10" font-weight="700" fill="#888780">ne se produit pas</text>
+
+  <line x1="24" y1="400" x2="656" y2="400" stroke="#E7E9F2" stroke-width="1"/>
+  <text x="340" y="424" text-anchor="middle" font-family="'Plus Jakarta Sans',sans-serif" font-size="11" fill="#5B5E76">C'est cette exclusion qui empêche une plaquette ARRIÈRE de remonter sur une recherche de frein AVANT.</text>
+  <text x="340" y="452" text-anchor="middle" font-family="'Plus Jakarta Sans',sans-serif" font-size="10.5" fill="#888780">Retirez « avant » de la fiche et la passe 2 ne produit plus rien du tout : elle n'a que le flux, et il lui manque une moitié.</text>
+</svg>
