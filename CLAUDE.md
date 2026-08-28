@@ -800,6 +800,113 @@ branche protégée, donc elle impose de passer par une PR — un changement de
 méthode de travail, pas de déploiement. À évaluer comme telle, pas comme une
 variante des deux premières.
 
+##### La troisième voie est mécanique — à un réglage près, et c'est lui qui décide
+
+Mesuré sur la documentation GitHub le 28 août 2026, pas supposé. La question
+est : une session peut-elle ouvrir une PR et la fusionner elle-même une fois la
+CI verte ? **La réponse dépend d'une seule case, et les deux réponses sont
+opposées.**
+
+Deux faits de la documentation :
+
+- « Require approvals » est une case **distincte et optionnelle** sous
+  « Require a pull request before merging ». Exiger une PR n'exige donc pas
+  d'approbation.
+- Et, textuellement : « Pull request authors cannot approve their own pull
+  requests. »
+
+D'où les deux configurations, à ne pas confondre :
+
+| « Require approvals » | qui fusionne | coût réel |
+|---|---|---|
+| **décochée** | l'auteur, dès que les contrôles passent | **mécanique** — le flux reste fluide |
+| cochée (≥ 1) | **personne**, sur un dépôt solo | chaque lot attend un tiers |
+
+La seconde ligne n'est pas une gêne, c'est un blocage total : sur un dépôt à un
+seul humain, une approbation obligatoire ne peut jamais être satisfaite par
+l'auteur, et il n'y a personne d'autre.
+
+**L'auto-fusion rend le flux entièrement automatique.** Elle fusionne la PR dès
+que les contrôles requis passent ; une personne ayant le droit d'écriture peut
+l'activer sur sa propre PR. Deux conditions mesurées : elle doit être activée
+au niveau du dépôt — ici `allow_auto_merge: false`, donc à activer — et l'option
+n'apparaît que sur une PR **non fusionnable immédiatement**, donc elle suppose
+la règle de protection. Les deux vont ensemble.
+
+Le flux d'une session deviendrait alors, sans intervention humaine :
+
+```bash
+git switch -c lot-xxx && git push -u origin lot-xxx
+gh pr create --fill && gh pr merge --auto --squash
+```
+
+**MAIS LA PROTECTION GARDE LA FUSION, PAS LE DÉPLOIEMENT.** La fusion produit
+un **nouveau** commit sur `main`, et Pages se déclenche dessus sans condition —
+c'est structurel, et ça ne change pas. La CI a tourné sur la tête de la PR, pas
+sur le résultat de la fusion. Avec trois sessions en parallèle, les deux
+peuvent différer.
+
+Le réglage qui ferme cet écart est nommé dans la même page : « Require branches
+to be up to date before merging », qui force la PR à être testée sur le dernier
+état de la branche protégée. **Sur ce dépôt, c'est lui qui compte** — sans lui,
+la garantie obtenue est « la CI était verte sur ce qui a été testé », pas
+« sur ce qui est parti ».
+
+État mesuré aujourd'hui : aucune protection de branche, aucun ruleset,
+`allow_auto_merge: false`, `allow_squash_merge: true`.
+
+##### La quatrième voie ne peut pas copier le moteur, et la raison est structurelle
+
+`deploy/deploy-complet.sh` de `heurix-engine` interroge la CI du commit qu'il
+va déployer et refuse en trois cas distincts — elle tourne encore, elle est
+rouge, ou **elle est verte sur un autre SHA que HEAD**. Ce dernier contrôle est
+le meilleur des trois.
+
+**Le site ne peut pas le reprendre, et pas par manque d'outillage.** Pour le
+moteur, déployer est un acte séparé et postérieur : quand le script s'exécute,
+la CI a déjà tourné sur ce commit, il y a quelque chose à interroger. **Pour le
+site, le push EST le déploiement.** Au moment où le contrôle s'exécuterait, la
+CI de ce commit n'a pas tourné et ne peut pas avoir tourné. Il n'y a rien à
+interroger.
+
+La quatrième voie n'est donc pas « vérifier l'état de la CI » mais **exécuter
+ses contrôles en local avant de pousser**. Mesuré, les quatre blocs `run:` de
+`CI.yml` rejoués sur cette machine :
+
+| bloc | durée |
+|---|---|
+| `Index de recherche a jour` | 2,5 s |
+| `Suite de tests` | 15,6 s |
+| `Clefs de cache` — clef bougée | 0,1 s |
+| `Clefs de cache` — clef unique | 1,0 s |
+| **total** | **19,4 s** |
+
+Tous verts. C'est **moins que les 36 s de la CI distante**, qui paie en plus son
+checkout et son installation.
+
+**Contrainte de conception, et elle est déjà écrite plus haut dans ce
+fichier : le crochet doit EXTRAIRE les blocs de `CI.yml`, pas les recopier.**
+Un contrôle qui réimplémente sa cible finit par mesurer sa propre
+réimplémentation — c'est le défaut de `--verifier` et ses 2 801 termes
+sous-comptés. `python3 -c "import yaml"` suffit à lire le fichier ; la mesure
+ci-dessus a été faite comme ça.
+
+**Ce que cette voie ne donne pas, et qu'il faut dire avant de la choisir :**
+
+- `.git/hooks` **n'est pas versionné**. Chaque session l'installe, ou on pointe
+  `core.hooksPath` sur un dossier suivi — mais ce `git config` est lui-même par
+  clone. Mesuré ici : aucun crochet installé, `core.hooksPath` non défini.
+- `git push --no-verify` la contourne. C'est un rappel, pas une porte.
+- Elle teste **l'arbre local**, pas le commit poussé, et pas les commits
+  intermédiaires d'une série.
+- **`npm ci` est sauté en local** — je l'ai sauté dans la mesure. Une dépendance
+  périmée localement diverge de la CI sans que rien ne le dise. C'est
+  exactement la famille de l'instrument qui mesure autre chose que sa cible.
+
+Elle a en revanche l'avantage que rien d'autre n'a : **elle ne demande rien à
+personne**, ne change pas la méthode de travail, et ne retarde pas le
+déploiement d'une seconde.
+
 ##### Et mon rejeu du contrôle a rendu l'inverse, parce que je l'avais changé de shell
 
 J'ai d'abord rapporté que la CI groupait par **chemin** quand mon contrôle
