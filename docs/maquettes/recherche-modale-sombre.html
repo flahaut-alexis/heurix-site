@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Maquette A — modale de recherche, version sombre</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --bg:#FFFFFF; --bg-soft:#F7F8FC; --ink:#12142B; --ink-muted:#5B5E76;
+    --blue:#5468FF; --blue-deep:#3F52E8; --line:#E7E9F2;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#101B4D; --bg-soft:#16224F; --ink:#F5F6FF; --ink-muted:#B9C0E8; --line:rgba(255,255,255,.16);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#101B4D; --bg-soft:#16224F; --ink:#F5F6FF; --ink-muted:#B9C0E8; --line:rgba(255,255,255,.16);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;}
+  body{
+    font-family:'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
+    background:var(--bg); color:var(--ink); line-height:1.55; padding:0 0 64px;
+  }
+  .wrap{max-width:1180px; margin:0 auto; padding:0 28px;}
+  header.doc{padding:28px 0 20px; border-bottom:1px solid var(--line); margin-bottom:8px;}
+  header.doc h1{font-size:22px; margin:0 0 6px; letter-spacing:-0.01em;}
+  header.doc p{font-size:13.5px; color:var(--ink-muted); margin:2px 0; max-width:760px;}
+  header.doc code{font-family:'IBM Plex Mono', ui-monospace, monospace; background:var(--bg-soft); border:1px solid var(--line); border-radius:4px; padding:1px 5px; font-size:12.5px;}
+  section.demo{margin-top:40px;}
+  section.demo h2{font-size:15px; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-muted); margin:0 0 4px; font-weight:700;}
+  section.demo .sub{font-size:13px; color:var(--ink-muted); margin:0 0 18px;}
+  .frame-row{display:flex; gap:22px; flex-wrap:wrap; align-items:flex-start;}
+  figure{margin:0;}
+  figcaption{font-size:12.5px; font-weight:600; color:var(--ink); margin-bottom:8px; display:flex; align-items:center; gap:6px;}
+  figcaption .n{display:inline-flex; align-items:center; justify-content:center; width:16px; height:16px; border-radius:50%; background:var(--ink); color:#fff; font-size:10px; font-weight:700;}
+  .scrollx{overflow-x:auto; padding-bottom:6px;}
+  .legend-box{border:1px solid var(--line); border-radius:12px; padding:22px 24px; background:var(--bg-soft);}
+  .legend-row{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:12px;}
+  .swatch{display:inline-flex; align-items:center; gap:8px; background:#101B4D; padding:10px 14px; border-radius:10px;}
+  .pill-dark{font-size:10.5px; font-weight:600; letter-spacing:.2px; padding:4px 8px; border-radius:5px; background:rgba(255,255,255,.12); color:#F5F6FF; white-space:nowrap;}
+  .ratio{font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:11px; color:var(--ink-muted);}
+  .note{font-size:12.5px; color:var(--ink-muted); margin-top:14px; max-width:820px;}
+  .callout{background:#FFF6E6; border:1px solid #F0D5A3; border-radius:8px; padding:12px 14px; font-size:13px; color:var(--ink); margin-top:16px; max-width:820px;}
+  footer.doc{margin-top:56px; padding-top:20px; border-top:1px solid var(--line); font-size:12px; color:var(--ink-muted);}
+
+/* ===== Aperçu — cadre de taille fixe (remplace l'ancien système iframe+JS) ===== */
+.preview-frame{
+  position:relative; overflow:hidden; flex:none; display:block;
+  border:1px solid var(--line); border-radius:10px;
+  box-shadow:0 8px 24px -12px rgba(18,20,43,0.18);
+  font-family:'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  background: radial-gradient(ellipse 1400px 900px at 50% 0%, #4C3FE0 0%, #3648A8 45%, #101B4D 100%);
+  background-color:#101B4D; color:#F5F6FF;
+}
+.preview-frame.frame-desktop{ width:1000px; height:640px; max-width:100%; }
+.preview-frame.frame-mobile{ width:390px; height:730px; }
+
+.site-header{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 24px; position:relative; z-index:1;
+}
+.site-header .logo{display:flex; align-items:center; gap:8px; font-weight:700; font-size:15px; color:#F5F6FF;}
+.site-header .logo svg{flex:none;}
+.trigger{
+  display:flex; align-items:center; gap:8px; height:34px; padding:0 10px;
+  border-radius:8px; background:rgba(255,255,255,.10); border:1px solid rgba(255,255,255,.16);
+  color:#CDD2F0; font-size:12.5px;
+}
+.hero-hint{padding:8px 24px 60px; opacity:.55; font-size:26px; font-weight:800; letter-spacing:-0.02em; max-width:520px; position:relative; z-index:1;}
+
+/* ===== Modale — mêmes classes que .search-* de styles.css, couleurs recolorées ===== */
+.search-modal{ position:absolute; inset:0; z-index:200; display:flex; align-items:flex-start; justify-content:center; padding-top:57.6px; }
+.search-backdrop{ position:absolute; inset:0; background:rgba(9,11,31,0.55); backdrop-filter:blur(2px); }
+.search-panel{
+  position:relative; z-index:1; width:860px; max-height:460.8px;
+  background:#101B4D; color:#F5F6FF; border-radius:16px; border:1px solid rgba(255,255,255,.14);
+  box-shadow:0 30px 60px -20px rgba(0,0,0,0.45);
+  display:flex; flex-direction:column; overflow:hidden;
+}
+.search-panel-head{ display:flex; align-items:center; gap:11px; padding:15px 18px; border-bottom:1px solid rgba(255,255,255,.14); color:#CDD2F0; }
+.search-panel-head svg{flex:none;}
+.search-panel-head input{ flex:1; border:none; outline:none; font-size:16px; color:#F5F6FF; background:transparent; font-family:inherit; }
+.search-panel-head input::placeholder{ color:#CDD2F0; opacity:1; }
+.search-count{ font-size:12.5px; color:#CDD2F0; white-space:nowrap; }
+.search-close{ font-size:11.5px; font-weight:600; color:#CDD2F0; background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.14); border-radius:6px; padding:5px 8px; font-family:inherit; }
+.search-body{ display:flex; flex:1; min-height:0; }
+.search-rail{ width:210px; flex:none; border-right:1px solid rgba(255,255,255,.14); padding:14px 12px; overflow:auto; }
+.search-rail h3{ font-size:11px; font-weight:700; letter-spacing:.6px; text-transform:uppercase; color:#CDD2F0; margin:0 0 8px; padding:0 2px; }
+.search-filtre{ display:flex; align-items:center; gap:9px; padding:7px 8px; border-radius:7px; cursor:pointer; font-size:13.5px; color:#F5F6FF; }
+.search-filtre:hover{ background:rgba(255,255,255,.06); }
+.search-filtre input{ accent-color:#5468FF; width:15px; height:15px; flex:none; }
+.search-filtre:focus-within{ background:rgba(255,255,255,.06); outline:2px solid #5AB8E8; outline-offset:-2px; }
+.search-filtre-nom{ min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.search-filtre-n{ margin-left:auto; font-size:12px; color:#CDD2F0; font-variant-numeric:tabular-nums; flex:none; }
+.search-filtre.vide{ opacity:.42; cursor:default; }
+.search-filtre.vide:hover{ background:transparent; }
+.search-effacer{ margin-top:10px; font:600 12px/1 inherit; color:#5AB8E8; background:none; border:0; padding:7px 8px; cursor:pointer; border-radius:6px; }
+.search-effacer:hover{ background:rgba(255,255,255,.06); }
+.search-results{ flex:1; overflow:auto; padding:8px; }
+.search-result{ display:block; text-decoration:none; color:inherit; padding:11px 12px; border-radius:12px; }
+.search-result:hover, .search-result.on{ background:rgba(255,255,255,.12); }
+.search-result.on{ outline:2px solid #5AB8E8; outline-offset:-2px; }
+.search-result-title{ font-weight:600; font-size:14.5px; letter-spacing:-.1px; color:#F5F6FF; }
+.search-result-excerpt{ font-size:13px; color:#CDD2F0; margin-top:3px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.search-result-meta{ display:flex; align-items:center; gap:7px; margin-top:7px; }
+.search-pill{ font-size:10.5px; font-weight:600; letter-spacing:.2px; padding:4px 8px; border-radius:5px; white-space:nowrap; background:rgba(255,255,255,.12); color:#F5F6FF; }
+.search-result mark{ background:rgba(255,255,255,.14); color:#5AB8E8; border-radius:3px; padding:0 2px; font-weight:600; }
+.search-foot{ display:flex; align-items:center; gap:14px; flex-wrap:wrap; padding:10px 16px; border-top:1px solid rgba(255,255,255,.14); font-size:12px; color:#CDD2F0; }
+.search-key{ display:inline-flex; align-items:center; gap:5px; }
+.search-foot kbd{ font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:10.5px; font-weight:600; background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.14); border-bottom-width:2px; border-radius:4px; padding:3px 5px; color:#F5F6FF; }
+.search-suggest-label{ font-size:11px; font-weight:700; letter-spacing:.6px; text-transform:uppercase; color:#CDD2F0; padding:12px 16px 4px; margin:0; }
+.search-empty{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:13px; padding:30px 22px; text-align:center; }
+.search-vide-titre{ font-size:16px; font-weight:600; color:#F5F6FF; }
+.search-correction{ font-size:14px; color:#CDD2F0; margin:0; }
+.search-alt-titre{ font-size:12.5px; color:#CDD2F0; margin-bottom:9px; }
+.search-alt-liste{ display:flex; flex-wrap:wrap; gap:8px; justify-content:center; }
+.search-chip{ font:600 13px/1 inherit; color:#F5F6FF; background:rgba(255,255,255,.12); border:1px solid transparent; border-radius:999px; padding:7px 13px; cursor:pointer; }
+.search-chip:hover{ border-color:#5AB8E8; }
+.search-contact{ font-size:12.5px; color:#CDD2F0; margin:0; }
+.search-contact a{ color:#5AB8E8; font-weight:600; }
+
+/* Sous 768px dans styles.css -> ici, cadre .frame-mobile (390×730), toujours actif */
+.frame-mobile .search-modal{ padding-top:0; }
+.frame-mobile .search-panel{ width:390px; max-height:730px; height:730px; border-radius:0; border:0; }
+.frame-mobile .search-body{ flex-direction:column; }
+.frame-mobile .search-rail{ width:100%; border-right:0; border-bottom:1px solid rgba(255,255,255,.14); padding:8px 12px; display:flex; gap:8px; overflow-x:auto; scrollbar-width:none; }
+.frame-mobile .search-rail h3{ display:none; }
+.frame-mobile .search-filtre{ flex:none; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.14); padding:6px 10px; border-radius:999px; gap:7px; }
+.frame-mobile .search-effacer{ margin-top:0; flex:none; align-self:center; white-space:nowrap; }
+.frame-mobile .search-empty{ justify-content:flex-start; padding-top:34px; }
+
+@media (prefers-reduced-motion: reduce){
+  .search-backdrop{ backdrop-filter:none; }
+  .preview-frame *{ transition:none !important; }
+}
+
+</style>
+  <div class="wrap">
+    <header class="doc">
+      <h1>Maquette A — modale de recherche, version sombre</h1>
+      <p>Panneau aligné sur le fond de heurix.fr (dégradé indigo → marine de <code>body.docs-dark</code>) au lieu du bloc blanc actuel. Rail, compteurs, cinq états et clavier inchangés — seul l'habillage change.</p>
+      <p>Données réelles issues de <code>search-index-fr.json</code> (déployé) et des règles <code>.search-*</code> de <code>styles.css</code> (déployé). Voir <code>rapport.md</code> pour la provenance de chaque valeur et les ratios de contraste mesurés.</p>
+    </header>
+
+    <section class="demo">
+      <h2>Desktop — testé à 1440px (aucun palier CSS de la modale entre 768 et 1440 : la maquette est montrée à 1000px, cadre fixe, rendu identique)</h2>
+      <p class="sub">Rail de filtres à gauche, résultats à droite.</p>
+      <div class="scrollx">
+        <div class="frame-row">
+          <figure>
+            <figcaption><span class="n">1</span> État au repos</figcaption>
+            <div class="preview-frame frame-desktop">
+            <div class="site-header">
+    <div class="logo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#F5F6FF" stroke-width="2"/><line x1="16.2" y1="16.2" x2="21" y2="21" stroke="#F5F6FF" stroke-width="2" stroke-linecap="round"/></svg>Heurix</div>
+    <div class="trigger"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#CDD2F0" stroke-width="2"/><line x1="16.2" y1="16.2" x2="21" y2="21" stroke="#CDD2F0" stroke-width="2" stroke-linecap="round"/></svg>Chercher sur le site</div>
+  </div>
+  <div class="hero-hint">Un moteur de recherche qui connaît déjà votre métier.</div>
+            <div class="search-modal open">
+    <div class="search-backdrop"></div>
+    <div class="search-panel">
+      <div class="search-panel-head"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><line x1="16.2" y1="16.2" x2="21" y2="21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><input placeholder="Rechercher sur heurix.fr…" readonly><span class="search-close">Échap</span></div>
+      <div class="search-body">
+        <div class="search-rail">
+      <h3>Sources</h3>
+      <label class="search-filtre">
+        <input type="checkbox">
+        <span class="search-filtre-nom">Blog</span>
+        <span class="search-filtre-n">—</span>
+      </label>
+      <label class="search-filtre">
+        <input type="checkbox">
+        <span class="search-filtre-nom">Secteurs</span>
+        <span class="search-filtre-n">—</span>
+      </label>
+      <label class="search-filtre">
+        <input type="checkbox">
+        <span class="search-filtre-nom">Produit</span>
+        <span class="search-filtre-n">—</span>
+      </label>
+      <label class="search-filtre">
+        <input type="checkbox">
+        <span class="search-filtre-nom">Documentation</span>
+        <span class="search-filtre-n">—</span>
+      </label>
+      <label class="search-filtre">
+        <input type="checkbox">
+        <span class="search-filtre-nom">Plateformes</span>
+        <span class="search-filtre-n">—</span>
+      </label>
+    </div>
+        <div class="search-results">
+          <p class="search-suggest-label">À lire en premier</p>
+          <a class="search-result" href="#"><div class="search-result-title">Preparer une operation commerciale cote recherche — Heurix</div>
+            <div class="search-result-excerpt">Soldes, Black Friday, lancement de gamme : le trafic monte et le cout de chaque recherche qui echoue avec lui. Ce qui se verifie avant, pendant et apres.</div>
+            <div class="search-result-meta"><span class="search-pill">Blog</span></div></a>
+          <a class="search-result" href="#"><div class="search-result-title">Vos statistiques de recherche : lesquelles regarder — Heurix</div>
+            <div class="search-result-excerpt">Un tableau de bord affiche plus de chiffres qu on n a de decisions a prendre. Les trois qui meritent votre attention chaque semaine, et ce qu ils declenchent.</div>
+            <div class="search-result-meta"><span class="search-pill">Blog</span></div></a>
+          <a class="search-result" href="#"><div class="search-result-title">Calculer le ROI d'un moteur de recherche e-commerce — Heurix</div>
+            <div class="search-result-excerpt">Quelle part de votre chiffre d affaires passe par la recherche interne, et combien vous coute chaque recherche qui echoue.</div>
+            <div class="search-result-meta"><span class="search-pill">Blog</span></div></a>
+        </div>
+      </div>
+      <div class="search-foot"><span class="search-key"><kbd>↑↓</kbd> naviguer</span><span class="search-key"><kbd>↵</kbd> ouvrir</span><span class="search-key"><kbd>Esc</kbd> effacer, puis fermer</span></div>
+    </div>
+  </div>
+          </div>
+          </figure>
+          <figure>
+            <figcaption><span class="n">2</span> Résultats + rail</figcaption>
+            <div class="preview-frame frame-desktop">
+            <div class="site-header">
+    <div class="logo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#F5F6FF" stroke-width="2"/><line x1="16.2" y1="16.2" x2="21" y2="21" stroke="#F5F6FF" stroke-width="2" stroke-linecap="round"/></svg>Heurix</div>
+    <div class="trigger"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#CDD2F0" stroke-width="2"/><line x1="16.2" y1="16.2" x2="21" y2="21" stroke="#CDD2F0" stroke-width="2" stroke-linecap="round"/></svg>Chercher sur le site</div>
+  </div>
+  <div class="hero-hint">Un moteur de recherche qui connaît déjà votre métier.</div>
+            <div class="search-modal open">
+    <div class="search-backdrop"></div>
+    <div class="search-panel">
+      <div class="search-panel-head"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><line x1="16.2" y1="16.2" x2="21" y2="21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><input value="recherche" readonly><span class="search-count">52 résultats</span><span class="search-close">Échap</span></div>
+      <div class="search-body">
+        <div class="search-rail">
+      <h3>Sources</h3>
+      <label class="search-filtre">
+        <input type="checkbox">
+        <span class="search-filtre-nom">Blog</span>
+        <span class="search-filtre-n">30</span>
+      </label>
+      <label class="search-filtre">
+        <input type="checkbox">
+        <span class="search-filtre-nom">Secteurs</span>
+        <span class="search-filtre-n">7</span>
+      </label>
+      <label class="search-filtre">
+        <input type="checkbox">
+        <span class="search-filtre-nom">Produit</span>
+        <span class="search-filtre-n">10</span>
+      </label>
+      <label class="search-filtre">
+        <input type="checkbox">
+        <span class="search-filtre-nom">Documentation</span>
+        <span class="search-filtre-n">1</span>
+      </label>
+      <label class="search-filtre">
+        <input type="checkbox">
+        <span class="search-filtre-nom">Plateformes</span>
+        <span class="search-filtre-n">4</span>
+      </label>
+    </div>
+        <div class="search-results">
+          <a class="search-result" href="#"><div class="search-result-title"><mark>Recherche</mark> interne e-commerce : guides et analyses — Heurix</div>
+            <div class="search-result-excerpt">Notes sur la <mark>recherche</mark> interne et le e-commerce, publiées chaque mois par Heurix.</div>
+            <div class="search-result-meta"><span class="search-pill">Produit</span></div></a>
+          <a class="search-result on" href="#"><div class="search-result-title"><mark>Recherche</mark> à facettes en B2B : comment structurer vos filtres pour des produits multi-attributs ? — Heurix</div>
+            <div class="search-result-excerpt">Concevoir des facettes dynamiques et bien ordonnées pour des catalogues techniques à attributs multiples.</div>
+            <div class="search-result-meta"><span class="search-pill">Blog</span></div></a>
+          <a class="search-result" href="#"><div class="search-result-title"><mark>Recherches</mark> sans résultat : le tableau de bord que la plupart des sites n'ont pas — Heurix</div>
+            <div class="search-result-excerpt">Vos clients tapent exactement ce qu'ils veulent acheter dans la barre de <mark>recherche</mark>. La plupart des sites ne savent jamais quand cette recherche échoue.</div>
+            <div class="search-result-meta"><span class="search-pill">Blog</span></div></a>
+          <a class="search-result" href="#"><div class="search-result-title"><mark>Recherche</mark> visserie : M8x20, DIN 933, inox A2 | Heurix</div>
+            <div class="search-result-excerpt">Une vis M8x20 et une vis M8x25 n'ont rien en commun pour votre client. Elles sont quasi identiques pour un moteur de <mark>recherche</mark> généraliste.</div>
+            <div class="search-result-meta"><span class="search-pill">Secteurs</span></div></a>
+        </div>
+      </div>
+      <div class="search-foot"><span class="search-key"><kbd>↑↓</kbd> naviguer</span><span class="search-key"><kbd>↵</kbd> ouvrir</span><span class="search-key"><kbd>⌘ ↵</kbd> nouvel onglet</span><span class="search-key"><kbd>Esc</kbd> effacer, puis fermer</span></div>
+    </div>
+  </div>
+          </div>
+          </figure>
+        </div>
+      </div>
+      <div class="scrollx" style="margin-top:22px;">
+        <div class="frame-row">
+          <figure>
+            <figcaption><span class="n">3</span> Aucun résultat</figcaption>
+            <div class="preview-frame frame-desktop">
+            <div class="site-header">
+    <div class="logo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#F5F6FF" stroke-width="2"/><line x1="16.2" y1="16.2" x2="21" y2="21" stroke="#F5F6FF" stroke-width="2" stroke-linecap="round"/></svg>Heurix</div>
+    <div class="trigger"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#CDD2F0" stroke-width="2"/><line x1="16.2" y1="16.2" x2="21" y2="21" stroke="#CDD2F0" stroke-width="2" stroke-linecap="round"/></svg>Chercher sur le site</div>
+  </div>
+  <div class="hero-hint">Un moteur de recherche qui connaît déjà votre métier.</div>
+            <div class="search-modal open">
+    <div class="search-backdrop"></div>
+    <div class="search-panel">
+      <div class="search-panel-head"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><line x1="16.2" y1="16.2" x2="21" y2="21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><input value="xkqzvyjw" readonly><span class="search-close">Échap</span></div>
+      <div class="search-body">
+        <div class="search-rail">
+      <h3>Sources</h3>
+      <label class="search-filtre vide">
+        <input type="checkbox" disabled>
+        <span class="search-filtre-nom">Blog</span>
+        <span class="search-filtre-n">0</span>
+      </label>
+      <label class="search-filtre vide">
+        <input type="checkbox" disabled>
+        <span class="search-filtre-nom">Secteurs</span>
+        <span class="search-filtre-n">0</span>
+      </label>
+      <label class="search-filtre vide">
+        <input type="checkbox" disabled>
+        <span class="search-filtre-nom">Produit</span>
+        <span class="search-filtre-n">0</span>
+      </label>
+      <label class="search-filtre vide">
+        <input type="checkbox" disabled>
+        <span class="search-filtre-nom">Documentation</span>
+        <span class="search-filtre-n">0</span>
+      </label>
+      <label class="search-filtre vide">
+        <input type="checkbox" disabled>
+        <span class="search-filtre-nom">Plateformes</span>
+        <span class="search-filtre-n">0</span>
+      </label>
+    </div>
+        <div class="search-results">
+          <div class="search-empty">
+            <div class="search-vide-titre">Rien pour « xkqzvyjw »</div>
+            <div><div class="search-alt-titre">Ou essayez</div>
+              <div class="search-alt-liste">
+                <button class="search-chip">indexer un catalogue</button>
+                <button class="search-chip">tolérance aux fautes</button>
+                <button class="search-chip">recherche par référence</button>
+              </div>
+            </div>
+            <p class="search-contact">Toujours rien ? <a href="#">Décrivez-nous votre besoin</a></p>
+          </div>
+        </div>
+      </div>
+      <div class="search-foot"><span class="search-key"><kbd>Esc</kbd> effacer, puis fermer</span></div>
+    </div>
+  </div>
+          </div>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="demo">
+      <h2>Mobile — 390px (cadre de largeur fixe, indépendant de la fenêtre du visualiseur)</h2>
+      <p class="sub">Sous 768px le rail devient une rangée de pastilles de filtre qui défile — comportement inchangé, seules les couleurs changent.</p>
+      <div class="scrollx">
+        <div class="frame-row">
+          <figure>
+            <figcaption><span class="n">1</span> État au repos</figcaption>
+            <div class="preview-frame frame-mobile">
+            <div class="site-header">
+    <div class="logo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#F5F6FF" stroke-width="2"/><line x1="16.2" y1="16.2" x2="21" y2="21" stroke="#F5F6FF" stroke-width="2" stroke-linecap="round"/></svg>Heurix</div>
+    <div class="trigger"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#CDD2F0" stroke-width="2"/><line x1="16.2" y1="16.2" x2="21" y2="21" stroke="#CDD2F0" stroke-width="2" stroke-linecap="round"/></svg>Chercher sur le site</div>
+  </div>
+  <div class="hero-hint">Un moteur de recherche qui connaît déjà votre métier.</div>
+            <div class="search-modal open">
+    <div class="search-backdrop"></div>
+    <div class="search-panel">
+      <div class="search-panel-head"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><line x1="16.2" y1="16.2" x2="21" y2="21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><input placeholder="Rechercher sur heurix.fr…" readonly><span class="search-close">Échap</span></div>
+      <div class="search-body">
+        <div class="search-rail">
+      <h3>Sources</h3>
+      <label class="search-filtre">
+        <input type="checkbox">
+        <span class="search-filtre-nom">Blog</span>
+        <span class="search-filtre-n">—</span>
+      </label>
+      <label class="search-filtre">
+        <input type="checkbox">
+        <span class="search-filtre-nom">Secteurs</span>
+        <span class="search-filtre-n">—</span>
+      </label>
+      <label class="search-filtre">
+        <input type="checkbox">
+        <span class="search-filtre-nom">Produit</span>
+        <span class="search-filtre-n">—</span>
+      </label>
+      <label class="search-filtre">
+        <input type="checkbox">
+        <span class="search-filtre-nom">Documentation</span>
+        <span class="search-filtre-n">—</span>
+      </label>
+      <label class="search-filtre">
+        <input type="checkbox">
+        <span class="search-filtre-nom">Plateformes</span>
+        <span class="search-filtre-n">—</span>
+      </label>
+    </div>
+        <div class="search-results">
+          <p class="search-suggest-label">À lire en premier</p>
+          <a class="search-result" href="#"><div class="search-result-title">Preparer une operation commerciale cote recherche — Heurix</div>
+            <div class="search-result-excerpt">Soldes, Black Friday, lancement de gamme : le trafic monte et le cout de chaque recherche qui echoue avec lui. Ce qui se verifie avant, pendant et apres.</div>
+            <div class="search-result-meta"><span class="search-pill">Blog</span></div></a>
+          <a class="search-result" href="#"><div class="search-result-title">Vos statistiques de recherche : lesquelles regarder — Heurix</div>
+            <div class="search-result-excerpt">Un tableau de bord affiche plus de chiffres qu on n a de decisions a prendre. Les trois qui meritent votre attention chaque semaine, et ce qu ils declenchent.</div>
+            <div class="search-result-meta"><span class="search-pill">Blog</span></div></a>
+          <a class="search-result" href="#"><div class="search-result-title">Calculer le ROI d'un moteur de recherche e-commerce — Heurix</div>
+            <div class="search-result-excerpt">Quelle part de votre chiffre d affaires passe par la recherche interne, et combien vous coute chaque recherche qui echoue.</div>
+            <div class="search-result-meta"><span class="search-pill">Blog</span></div></a>
+        </div>
+      </div>
+      <div class="search-foot"><span class="search-key"><kbd>↑↓</kbd> naviguer</span><span class="search-key"><kbd>↵</kbd> ouvrir</span><span class="search-key"><kbd>Esc</kbd> effacer, puis fermer</span></div>
+    </div>
+  </div>
+          </div>
+          </figure>
+          <figure>
+            <figcaption><span class="n">2</span> Résultats + rail</figcaption>
+            <div class="preview-frame frame-mobile">
+            <div class="site-header">
+    <div class="logo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#F5F6FF" stroke-width="2"/><line x1="16.2" y1="16.2" x2="21" y2="21" stroke="#F5F6FF" stroke-width="2" stroke-linecap="round"/></svg>Heurix</div>
+    <div class="trigger"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#CDD2F0" stroke-width="2"/><line x1="16.2" y1="16.2" x2="21" y2="21" stroke="#CDD2F0" stroke-width="2" stroke-linecap="round"/></svg>Chercher sur le site</div>
+  </div>
+  <div class="hero-hint">Un moteur de recherche qui connaît déjà votre métier.</div>
+            <div class="search-modal open">
+    <div class="search-backdrop"></div>
+    <div class="search-panel">
+      <div class="search-panel-head"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><line x1="16.2" y1="16.2" x2="21" y2="21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><input value="recherche" readonly><span class="search-count">52 résultats</span><span class="search-close">Échap</span></div>
+      <div class="search-body">
+        <div class="search-rail">
+      <h3>Sources</h3>
+      <label class="search-filtre">
+        <input type="checkbox">
+        <span class="search-filtre-nom">Blog</span>
+        <span class="search-filtre-n">30</span>
+      </label>
+      <label class="search-filtre">
+        <input type="checkbox">
+        <span class="search-filtre-nom">Secteurs</span>
+        <span class="search-filtre-n">7</span>
+      </label>
+      <label class="search-filtre">
+        <input type="checkbox">
+        <span class="search-filtre-nom">Produit</span>
+        <span class="search-filtre-n">10</span>
+      </label>
+      <label class="search-filtre">
+        <input type="checkbox">
+        <span class="search-filtre-nom">Documentation</span>
+        <span class="search-filtre-n">1</span>
+      </label>
+      <label class="search-filtre">
+        <input type="checkbox">
+        <span class="search-filtre-nom">Plateformes</span>
+        <span class="search-filtre-n">4</span>
+      </label>
+    </div>
+        <div class="search-results">
+          <a class="search-result" href="#"><div class="search-result-title"><mark>Recherche</mark> interne e-commerce : guides et analyses — Heurix</div>
+            <div class="search-result-excerpt">Notes sur la <mark>recherche</mark> interne et le e-commerce, publiées chaque mois par Heurix.</div>
+            <div class="search-result-meta"><span class="search-pill">Produit</span></div></a>
+          <a class="search-result on" href="#"><div class="search-result-title"><mark>Recherche</mark> à facettes en B2B : comment structurer vos filtres pour des produits multi-attributs ? — Heurix</div>
+            <div class="search-result-excerpt">Concevoir des facettes dynamiques et bien ordonnées pour des catalogues techniques à attributs multiples.</div>
+            <div class="search-result-meta"><span class="search-pill">Blog</span></div></a>
+          <a class="search-result" href="#"><div class="search-result-title"><mark>Recherches</mark> sans résultat : le tableau de bord que la plupart des sites n'ont pas — Heurix</div>
+            <div class="search-result-excerpt">Vos clients tapent exactement ce qu'ils veulent acheter dans la barre de <mark>recherche</mark>. La plupart des sites ne savent jamais quand cette recherche échoue.</div>
+            <div class="search-result-meta"><span class="search-pill">Blog</span></div></a>
+          <a class="search-result" href="#"><div class="search-result-title"><mark>Recherche</mark> visserie : M8x20, DIN 933, inox A2 | Heurix</div>
+            <div class="search-result-excerpt">Une vis M8x20 et une vis M8x25 n'ont rien en commun pour votre client. Elles sont quasi identiques pour un moteur de <mark>recherche</mark> généraliste.</div>
+            <div class="search-result-meta"><span class="search-pill">Secteurs</span></div></a>
+        </div>
+      </div>
+      <div class="search-foot"><span class="search-key"><kbd>↑↓</kbd> naviguer</span><span class="search-key"><kbd>↵</kbd> ouvrir</span><span class="search-key"><kbd>⌘ ↵</kbd> nouvel onglet</span><span class="search-key"><kbd>Esc</kbd> effacer, puis fermer</span></div>
+    </div>
+  </div>
+          </div>
+          </figure>
+          <figure>
+            <figcaption><span class="n">3</span> Aucun résultat</figcaption>
+            <div class="preview-frame frame-mobile">
+            <div class="site-header">
+    <div class="logo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#F5F6FF" stroke-width="2"/><line x1="16.2" y1="16.2" x2="21" y2="21" stroke="#F5F6FF" stroke-width="2" stroke-linecap="round"/></svg>Heurix</div>
+    <div class="trigger"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#CDD2F0" stroke-width="2"/><line x1="16.2" y1="16.2" x2="21" y2="21" stroke="#CDD2F0" stroke-width="2" stroke-linecap="round"/></svg>Chercher sur le site</div>
+  </div>
+  <div class="hero-hint">Un moteur de recherche qui connaît déjà votre métier.</div>
+            <div class="search-modal open">
+    <div class="search-backdrop"></div>
+    <div class="search-panel">
+      <div class="search-panel-head"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><line x1="16.2" y1="16.2" x2="21" y2="21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><input value="xkqzvyjw" readonly><span class="search-close">Échap</span></div>
+      <div class="search-body">
+        <div class="search-rail">
+      <h3>Sources</h3>
+      <label class="search-filtre vide">
+        <input type="checkbox" disabled>
+        <span class="search-filtre-nom">Blog</span>
+        <span class="search-filtre-n">0</span>
+      </label>
+      <label class="search-filtre vide">
+        <input type="checkbox" disabled>
+        <span class="search-filtre-nom">Secteurs</span>
+        <span class="search-filtre-n">0</span>
+      </label>
+      <label class="search-filtre vide">
+        <input type="checkbox" disabled>
+        <span class="search-filtre-nom">Produit</span>
+        <span class="search-filtre-n">0</span>
+      </label>
+      <label class="search-filtre vide">
+        <input type="checkbox" disabled>
+        <span class="search-filtre-nom">Documentation</span>
+        <span class="search-filtre-n">0</span>
+      </label>
+      <label class="search-filtre vide">
+        <input type="checkbox" disabled>
+        <span class="search-filtre-nom">Plateformes</span>
+        <span class="search-filtre-n">0</span>
+      </label>
+    </div>
+        <div class="search-results">
+          <div class="search-empty">
+            <div class="search-vide-titre">Rien pour « xkqzvyjw »</div>
+            <div><div class="search-alt-titre">Ou essayez</div>
+              <div class="search-alt-liste">
+                <button class="search-chip">indexer un catalogue</button>
+                <button class="search-chip">tolérance aux fautes</button>
+                <button class="search-chip">recherche par référence</button>
+              </div>
+            </div>
+            <p class="search-contact">Toujours rien ? <a href="#">Décrivez-nous votre besoin</a></p>
+          </div>
+        </div>
+      </div>
+      <div class="search-foot"><span class="search-key"><kbd>Esc</kbd> effacer, puis fermer</span></div>
+    </div>
+  </div>
+          </div>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="demo">
+      <h2>Pastilles de source — traitement unifié</h2>
+      <p class="sub">Une seule variante pour les cinq sources (au lieu de quatre familles de teinte). Voir le rapport pour l'argumentaire complet.</p>
+      <div class="legend-box">
+        <div class="legend-row">
+          <span class="swatch"><span class="pill-dark">Blog</span></span>
+          <span class="swatch"><span class="pill-dark">Secteurs</span></span>
+          <span class="swatch"><span class="pill-dark">Produit</span></span>
+          <span class="swatch"><span class="pill-dark">Documentation</span></span>
+          <span class="swatch"><span class="pill-dark">Plateformes</span></span>
+        </div>
+        <p class="note">Fond <code>rgba(255,255,255,.12)</code> sur panneau <code>#101B4D</code>, texte <code>#F5F6FF</code> — 10,75:1 mesuré (seuil requis 4,5:1 à 10,5px). Détail dans le rapport.</p>
+      </div>
+    </section>
+
+    <footer class="doc">
+      Maquette statique — aucune fonctionnalité modifiée. Typographie : Plus Jakarta Sans / IBM Plex Mono, chargées depuis Google Fonts (mêmes familles que la production, fichiers .woff2 propriétaires non accessibles depuis cette session). Voir rapport.md pour la méthode complète et les limites.
+    </footer>
+  </div>

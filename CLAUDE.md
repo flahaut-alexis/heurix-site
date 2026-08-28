@@ -229,6 +229,52 @@ Corollaire : **une page qui dépend d'un appel réseau n'est vérifiée qu'aprè
 cet appel.** Sur ce site, ça vise `demo/`, la console, le simulateur ROI et
 tout bloc alimenté par l'API — pas les pages statiques.
 
+### `docs-dark` n'est pas la marque des pages sombres
+
+C'est la marque de **presque toutes les pages**. Mesuré le 28 août 2026 :
+
+```
+133 pages     122 portent body.docs-dark      11 ne la portent pas
+```
+
+Les onze sont `404.html`, `bienvenue.html`, `console.html`, `supervision.html`,
+les quatre pages de `demo/`, et leurs équivalents anglais. Tout le reste
+l'a — y compris `docs.html` et `pricing.html`, que l'on désigne couramment
+comme « les pages claires ».
+
+**LE NOM MENT, ET IL MENT DANS LE SENS QUI COÛTE.** « docs-dark » se lit comme
+un marqueur d'exception — quelques pages en mode sombre. C'est l'inverse : la
+règle est la classe, l'exception est son absence. 219 règles de `styles.css`
+s'y accrochent, ce qui en fait le sélecteur le plus employé du fichier.
+
+Conséquence pratique, rencontrée en mesurant si la modale de recherche dépend
+du contexte de sa page : **une mesure faite sur n'importe laquelle des 122 est
+vide, et rien ne le dit.** Comparer `index.html` à `docs.html` pour voir si un
+composant change entre fond sombre et fond clair ne compare rien — les deux
+portent la même classe. Il faut aller chercher `404.html` ou `bienvenue.html`,
+et ce sont précisément les pages auxquelles personne ne pense.
+
+Deux règles en découlent :
+
+**Pour distinguer les deux familles, ne pas s'appuyer sur `docs-dark`.** Elle ne
+sépare pas ce que son nom suggère. Le jour où il faudra vraiment opposer clair
+et sombre, il faudra un autre marqueur — et le poser sur les onze, pas sur les
+122.
+
+**Et pour toute mesure « ce composant dépend-il de sa page ? », choisir sa page
+témoin dans les onze**, jamais dans les 122. Le contrôle qui l'établit tient en
+une commande :
+
+```bash
+python3 -c "
+import glob, io, re
+for p in sorted(glob.glob('**/*.html', recursive=True)):
+    if 'node_modules' in p: continue
+    m = re.search(r'<body([^>]*)>', io.open(p, encoding='utf-8').read())
+    if m and 'docs-dark' not in m.group(1): print(p)
+"
+```
+
 ### Ce que le test de classement ne couvre pas
 
 `tests/classement-fond.test.js` refuse tout sélecteur qui pose

@@ -44,6 +44,24 @@
   --bg-soft:#F7F8FC;
   --ink:#12142B;
   --ink-muted:#5B5E76;
+
+  /* L'ENCRE DU FOND SOMBRE, NOMMEE (28 aout 2026).
+     Ces deux valeurs existaient depuis des semaines, en litteraux, dans 116
+     declarations -- `.pb-carte`, `.hero-tarif`, `.docs-section`, le pied de
+     page, les tarifs. Chacune repetait la meme decision sans la nommer.
+     Les nommer maintenant est une condition, pas un confort : la modale de
+     recherche va les employer, et les reprendre en litteral aurait cree une
+     SECONDE source de verite pour la meme paire.
+     Le remplacement des 116 est fait dans le meme commit -- declarer sans
+     remplacer laisserait la duplication intacte, un token de plus a cote de
+     116 litteraux inchanges.
+     Mesures (contre les trois arrets du degrade de body.docs-dark) :
+       --ink-on-dark        6,30 / 7,36 / 15,17 : 1   AA partout
+       --ink-muted-on-dark  4,55 / 5,31 / 10,94 : 1   AA partout, 4,55 au plus
+                                                      clair -- c'est le plancher
+                                                      et il ne doit pas baisser */
+  --ink-on-dark:#F5F6FF;
+  --ink-muted-on-dark:#CDD2F0;
   --blue:#5468FF;
   --blue-deep:#3F52E8;
   --blue-deeper:#2A3CD1;
@@ -339,32 +357,51 @@ header{
   position:absolute; inset:0;
   background:rgba(18,20,43,0.45); backdrop-filter:blur(2px);
 }
+/* L'APLAT #101B4D, PAS LE DEGRADE — ET C'EST UNE MESURE (28 aout 2026).
+   Le panneau etait #fff : une troisieme surface, blanche et opaque, posee sur
+   un fond qui n'est ni blanc ni translucide. Il prend desormais l'arret FINAL
+   du degrade de body.docs-dark, en APLAT.
+   REPRODUIRE LE DEGRADE COMPLET CASSE LE CONTRASTE, mesure au point le plus
+   clair (#4C3FE0), sur une carte a 6 % de blanc :
+       --ink-muted-on-dark   4,01:1   sous le seuil AA de 4,5:1
+       l'accent #5AB8E8      2,69:1   sous le seuil texte ET sous 3:1 non-texte
+   L'aplat rend le contraste independant de la position dans le panneau. Un
+   futur retour au degrade casserait les deux sans que rien ne le signale.
+   LA MODALE NE DEPEND PAS DE SA PAGE, verifie avant d'ecrire ces regles :
+   aucune regle .search-* sous body.docs-dark, aucune des variables employees
+   redefinie hors de :root, et valeurs calculees identiques sur index.html
+   (docs-dark) et 404.html (aucune classe). UN SEUL JEU DE REGLES SUFFIT —
+   le panneau est sombre partout, y compris sur les onze pages claires. */
 .search-panel{
   position:relative; z-index:1;
   width:min(920px, 94vw); max-height:72vh;
-  background:#fff; color:var(--ink); border-radius:16px; border:1px solid var(--line);
-  box-shadow:0 30px 60px -20px rgba(18,20,43,0.35);
+  background:#101B4D; color:var(--ink-on-dark); border-radius:16px;
+  border:1px solid rgba(255,255,255,.14);
+  box-shadow:0 30px 60px -20px rgba(6,10,32,0.55);
   display:flex; flex-direction:column; overflow:hidden;
 }
 .search-panel-head{
   display:flex; align-items:center; gap:11px;
-  padding:15px 18px; border-bottom:1px solid var(--line); color:var(--ink-muted);
+  padding:15px 18px; border-bottom:1px solid rgba(255,255,255,.14);
+  color:var(--ink-muted-on-dark);
 }
 .search-panel-head svg{ flex:none; }
 .search-panel-head input{
-  flex:1; border:none; outline:none; font-size:16px; color:var(--ink);
+  flex:1; border:none; outline:none; font-size:16px; color:var(--ink-on-dark);
   font-family:'Plus Jakarta Sans', sans-serif; background:transparent;
 }
-.search-count{ font-size:12.5px; color:var(--ink-muted); white-space:nowrap; }
+.search-count{ font-size:12.5px; color:var(--ink-muted-on-dark); white-space:nowrap; }
+.search-panel-head input::placeholder{ color:var(--ink-muted-on-dark); opacity:.75; }
 .search-close{
-  font-size:11.5px; font-weight:600; color:var(--ink-muted);
-  background:var(--bg-soft); border:1px solid var(--line); border-radius:6px;
+  font-size:11.5px; font-weight:600; color:var(--ink-muted-on-dark);
+  background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.14);
+  border-radius:6px;
   padding:5px 8px; cursor:pointer; font-family:inherit;
 }
 .search-body{ display:flex; flex:1; min-height:0; }
 .search-rail{
-  width:220px; flex:none; border-right:1px solid var(--line);
-  padding:14px 12px; overflow:auto; background:var(--bg-soft);
+  width:220px; flex:none; border-right:1px solid rgba(255,255,255,.14);
+  padding:14px 12px; overflow:auto; background:rgba(255,255,255,.04);
 }
 /* Le rail nait vide : l'etape « filtres » y versera les sources et leurs
    compteurs. Tant qu'il n'a aucun enfant, il ne reserve pas 220 px de gris --
@@ -373,20 +410,20 @@ header{
 .search-rail:empty{ display:none; }
 .search-rail h3{
   font-size:11px; font-weight:700; letter-spacing:.6px; text-transform:uppercase;
-  color:var(--ink-muted); margin:0 0 8px; padding:0 2px;
+  color:var(--ink-muted-on-dark); margin:0 0 8px; padding:0 2px;
 }
 .search-filtre{
   display:flex; align-items:center; gap:9px;
   padding:7px 8px; border-radius:7px; cursor:pointer; font-size:13.5px;
 }
-.search-filtre:hover{ background:#fff; }
+.search-filtre:hover{ background:rgba(255,255,255,.12); }
 .search-filtre input{ accent-color:var(--blue); width:15px; height:15px; flex:none; }
 /* Le focus clavier doit se voir sur la LIGNE, pas seulement sur la case :
    la case fait 15 px dans un rail de 220. */
-.search-filtre:focus-within{ background:#fff; outline:2px solid var(--blue); outline-offset:-2px; }
+.search-filtre:focus-within{ background:rgba(255,255,255,.12); outline:2px solid var(--blue); outline-offset:-2px; }
 .search-filtre-nom{ min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .search-filtre-n{
-  margin-left:auto; font-size:12px; color:var(--ink-muted);
+  margin-left:auto; font-size:12px; color:var(--ink-muted-on-dark);
   font-variant-numeric:tabular-nums; flex:none;
 }
 /* Une source qui ne rend rien pour cette requete. Grisee ET desactivee : le
@@ -395,10 +432,10 @@ header{
 .search-filtre.vide{ opacity:.42; cursor:default; }
 .search-filtre.vide:hover{ background:transparent; }
 .search-effacer{
-  margin-top:10px; font:600 12px/1 inherit; color:var(--blue-deep);
+  margin-top:10px; font:600 12px/1 inherit; color:#5AB8E8;
   background:none; border:0; padding:7px 8px; cursor:pointer; border-radius:6px;
 }
-.search-effacer:hover{ background:#fff; }
+.search-effacer:hover{ background:rgba(255,255,255,.12); }
 .search-effacer:focus-visible{ outline:2px solid var(--blue); outline-offset:1px; }
 .search-results{ flex:1; overflow:auto; padding:8px; }
 /* UNE LISTE VIDE GARDE SON `flex:1` ET MANGE LA MOITIE DE LA HAUTEUR.
@@ -412,17 +449,17 @@ header{
   display:block; text-decoration:none; color:inherit;
   padding:11px 12px; border-radius:9px;
 }
-.search-result:hover, .search-result.on{ background:var(--blue-tint); }
+.search-result:hover, .search-result.on{ background:rgba(255,255,255,.12); }
 /* Le focus visible ne doit pas dépendre du survol : au clavier, `.on` est le
    seul signal, et il doit se voir sans souris. */
 .search-result.on{ outline:2px solid var(--blue); outline-offset:-2px; }
 .search-result-title{ font-weight:600; font-size:14.5px; letter-spacing:-.1px; }
 .search-result-excerpt{
-  font-size:13px; color:var(--ink-muted); margin-top:3px;
+  font-size:13px; color:var(--ink-muted-on-dark); margin-top:3px;
   display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
 }
 .search-result-meta{ display:flex; align-items:center; gap:7px; margin-top:6px; }
-.search-result-parent{ font-size:11.5px; color:var(--ink-muted); }
+.search-result-parent{ font-size:11.5px; color:var(--ink-muted-on-dark); }
 
 /* PASTILLES DE SOURCE. Contraste vérifié AA sur fond blanc ET sur --blue-tint,
    qui est le fond de la ligne survolée ou active. */
@@ -430,37 +467,43 @@ header{
   font-size:10.5px; font-weight:600; letter-spacing:.2px;
   padding:4px 7px; border-radius:5px; white-space:nowrap;
 }
-/* CINQ SOURCES, QUATRE FAMILLES DE COULEUR. La palette porte blue, green,
-   amber et red ; red est réservé à l'erreur et ne doit pas devenir une
-   catégorie. La cinquième source se distingue donc par le TRAITEMENT —
-   contour au lieu de fond — plutôt que par une teinte inventée. */
-/* L'IDENTITE EST PORTEE PAR LE FOND, LA LISIBILITE PAR --ink. Premiere
-   version : chaque pastille prenait la couleur SATUREE de sa famille sur son
-   fond clair. Mesure du contraste, texte de 10,5 px donc seuil AA de 4,5:1 --
-   Documentation 2,72:1 et Secteurs 3,95:1 ECHOUAIENT. Et la palette n'a pas
-   de vert ni d'ambre plus sombres : --green et --amber sont deja les plus
-   foncés de leur famille.
-   Le fond suffit a distinguer cinq sources ; le texte n'a pas a le repeter. */
-.search-pill-blog{ background:var(--blue-tint); color:var(--ink); }
-.search-pill-documentation{ background:var(--green-tint); color:var(--ink); }
-.search-pill-secteurs{ background:var(--amber-tint); color:var(--ink); }
-.search-pill-plateformes{
-  background:#fff; color:var(--ink); border:1px solid var(--blue-tint);
-  padding:3px 6px;
-}
-/* Produit est le fourre-tout : neutre, il ne revendique aucune identité. */
-.search-pill-produit{ background:var(--bg-soft); color:var(--ink); border:1px solid var(--line); padding:3px 6px; }
+/* UN SEUL TRAITEMENT POUR LES CINQ SOURCES (28 aout 2026).
+   Il y avait cinq regles pour quatre familles de teinte plus un contour
+   d'exception. Elles sont remplacees par une seule.
+
+   TROIS RAISONS, ET AUCUNE N'EST L'ACCESSIBILITE. Les cinq etaient conformes
+   -- 16 a 18:1, mesure. Ce qui les condamne est ailleurs :
+
+   1. DEUX DES QUATRE TEINTES SONT RESERVEES AU STATUT AILLEURS SUR LE SITE.
+      --green sert de point d'etat aux badges (.badge::before), --amber a ete
+      ajoute pour l'etat « brouillon » de la console. La modale les employait
+      pour coder une CATEGORIE : deux conventions en conflit sur la meme
+      couleur.
+   2. LA COULEUR DOUBLAIT UNE INFORMATION DEJA ECRITE. Chaque pastille affiche
+      son nom en toutes lettres. Personne n'a besoin de retenir que le vert est
+      la doc -- et le WCAG 1.4.1 demande justement qu'une distinction ne repose
+      pas sur la seule couleur.
+   3. LE SYSTEME AVAIT DEJA MANQUE DE TEINTES. La cinquieme source etait traitee
+      par un contour faute de cinquieme couleur sure : une exception nee d'une
+      penurie, pas d'un choix.
+
+   CINQ USAGES SUPPRIMES, PAS TROIS : --green-tint et --amber-tint, mais aussi
+   --bg-soft, --line et #fff, que les deux dernieres pastilles employaient.
+   Compte avant de reprendre le chiffre du rapport, qui ne comptait que les
+   teintes de famille. */
+.search-pill{ background:rgba(255,255,255,.12); color:var(--ink-on-dark); }
 
 .search-foot{
   display:flex; align-items:center; gap:14px; flex-wrap:wrap;
-  padding:10px 16px; border-top:1px solid var(--line);
-  background:var(--bg-soft); font-size:12px; color:var(--ink-muted);
+  padding:10px 16px; border-top:1px solid rgba(255,255,255,.14);
+  background:rgba(255,255,255,.04); font-size:12px; color:var(--ink-muted-on-dark);
 }
 .search-key{ display:inline-flex; align-items:center; gap:5px; }
 .search-foot kbd{
   font-family:'IBM Plex Mono', monospace; font-size:10.5px; font-weight:600;
-  background:#fff; border:1px solid var(--line); border-bottom-width:2px;
-  border-radius:4px; padding:3px 5px; color:var(--ink);
+  background:rgba(255,255,255,.10); border:1px solid rgba(255,255,255,.20);
+  border-bottom-width:2px; border-radius:4px; padding:3px 5px;
+  color:var(--ink-on-dark);
 }
 
 /* Lue par les lecteurs d'écran, invisible à l'œil. `display:none` la rendrait
@@ -472,7 +515,7 @@ header{
 
 .search-suggest-label{
   font-size:11px; font-weight:700; letter-spacing:.6px; text-transform:uppercase;
-  color:var(--ink-muted); padding:12px 16px 0; margin:0;
+  color:var(--ink-muted-on-dark); padding:12px 16px 0; margin:0;
 }
 /* LA ZONE « RIEN TROUVE ». Elle etait declaree DEUX FOIS dans ce fichier, a
    trente lignes d'ecart : la seconde gagnait, et la premiere ne servait a
@@ -482,20 +525,21 @@ header{
   flex:1; display:flex; flex-direction:column; align-items:center;
   justify-content:center; gap:13px; padding:30px 22px; text-align:center;
 }
-.search-vide-titre{ font-size:16px; font-weight:600; color:var(--ink); }
-.search-correction{ font-size:14px; color:var(--ink-muted); margin:0; }
-.search-correction-n{ font-size:12.5px; color:var(--ink-muted); }
-.search-alt-titre{ font-size:12.5px; color:var(--ink-muted); margin-bottom:9px; }
+.search-vide-titre{ font-size:16px; font-weight:600; color:var(--ink-on-dark); }
+.search-correction{ font-size:14px; color:var(--ink-muted-on-dark); margin:0; }
+.search-correction-n{ font-size:12.5px; color:var(--ink-muted-on-dark); }
+.search-alt-titre{ font-size:12.5px; color:var(--ink-muted-on-dark); margin-bottom:9px; }
 .search-alt-liste{ display:flex; flex-wrap:wrap; gap:8px; justify-content:center; }
 .search-chip{
-  font:600 13px/1 inherit; color:var(--blue-deep); background:var(--blue-tint);
-  border:1px solid transparent; border-radius:999px; padding:7px 13px; cursor:pointer;
+  font:600 13px/1 inherit; color:var(--ink-on-dark); background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.14); border-radius:999px; padding:7px 13px;
+  cursor:pointer;
 }
 .search-chip:hover{ border-color:var(--blue); }
 .search-chip:focus-visible{ outline:2px solid var(--blue); outline-offset:2px; }
-.search-chip-fort{ background:var(--blue); color:#fff; }
-.search-contact{ font-size:12.5px; color:var(--ink-muted); margin:0; }
-.search-contact a{ color:var(--blue-deep); font-weight:600; }
+.search-chip-fort{ background:var(--blue); color:#fff; border-color:transparent; }
+.search-contact{ font-size:12.5px; color:var(--ink-muted-on-dark); margin:0; }
+.search-contact a{ color:#5AB8E8; font-weight:600; }
 
 .search-results[data-chargement] .search-result{ opacity:.45; }
 
@@ -511,14 +555,14 @@ header{
      reduire une liste sert le plus. Le titre « Sources » saute -- il coutait
      une ligne pour nommer ce que cinq cases nomment deja. */
   .search-rail{
-    width:100%; border-right:0; border-bottom:1px solid var(--line);
+    width:100%; border-right:0; border-bottom:1px solid rgba(255,255,255,.14);
     padding:8px 12px; display:flex; gap:8px; overflow-x:auto;
     scrollbar-width:none;
   }
   .search-rail::-webkit-scrollbar{ display:none; }
   .search-rail h3{ display:none; }
   .search-filtre{
-    flex:none; background:#fff; border:1px solid var(--line);
+    flex:none; background:rgba(255,255,255,.10); border:1px solid rgba(255,255,255,.16);
     padding:6px 10px; border-radius:999px; gap:7px;
   }
   .search-effacer{ margin-top:0; flex:none; align-self:center; white-space:nowrap; }
@@ -539,8 +583,15 @@ header{
 @media (prefers-reduced-motion: reduce){
   .search-backdrop{ backdrop-filter:none; }
 }
+/* LE SURLIGNAGE PORTE LA MARGE DE CONTRASTE LA PLUS JUSTE DE LA MODALE.
+   #5AB8E8 sur le fond du panneau a 14 % de blanc (#313B66) mesure 4,85:1 pour
+   un seuil de 4,5:1 -- 0,35 point de marge, la plus etroite du composant.
+   Deux consequences : cette paire se REMESURE a tout changement du fond du
+   panneau ou de l'accent, et #5AB8E8 est la seule teinte du site deja choisie
+   pour porter du texte sur le degrade (.hero h1 span). En prendre une autre
+   demanderait la meme mesure. */
 .search-result mark, .search-result-title mark, .search-result-excerpt mark{
-  background:var(--blue-tint); color:var(--blue-deep); border-radius:3px; padding:0 2px;
+  background:rgba(255,255,255,.14); color:#5AB8E8; border-radius:3px; padding:0 2px;
 }
 
 /* HERO */
@@ -1271,8 +1322,8 @@ section.soft{ background:var(--bg-soft); color:var(--ink); }
 /* Ligne tarif du hero (26 aout 2026) : discrete par construction -- taille et
    couleur du texte secondaire, pas de fond, pas de bordure. Elle repond a une
    question (« est-ce dans mes moyens »), elle ne vend pas. */
-.hero-tarif{ margin:14px 0 0; font-size:14px; color:#CDD2F0; }
-.hero-tarif strong{ color:#F5F6FF; font-weight:700; }
+.hero-tarif{ margin:14px 0 0; font-size:14px; color:var(--ink-muted-on-dark); }
+.hero-tarif strong{ color:var(--ink-on-dark); font-weight:700; }
 
 #tarif-encart{ padding:44px 0; }
 /* Repere sectoriel unique sur l'accueil (26 aout 2026) : discret, mais lisible
@@ -2093,24 +2144,24 @@ body.docs-dark .solutions-hub-card,
 body.docs-dark .solutions-hub-fallback{
   background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.14);
 }
-body.docs-dark .solutions-hub-card h2{ color:#F5F6FF; }
+body.docs-dark .solutions-hub-card h2{ color:var(--ink-on-dark); }
 body.docs-dark .solutions-hub-card p,
-body.docs-dark .solutions-hub-fallback p{ color:#CDD2F0; }
+body.docs-dark .solutions-hub-fallback p{ color:var(--ink-muted-on-dark); }
 body.docs-dark .solutions-hub-card-link{ color:#AEB9FF; }
 
-body.docs-dark .breadcrumb{ color:#CDD2F0; }
-body.docs-dark .breadcrumb a{ color:#CDD2F0; }
-body.docs-dark .breadcrumb a:hover{ color:#F5F6FF; }
+body.docs-dark .breadcrumb{ color:var(--ink-muted-on-dark); }
+body.docs-dark .breadcrumb a{ color:var(--ink-muted-on-dark); }
+body.docs-dark .breadcrumb a:hover{ color:var(--ink-on-dark); }
 body.docs-dark .breadcrumb-sep{ color:rgba(255,255,255,0.25); }
-body.docs-dark .breadcrumb-current{ color:#F5F6FF; }
+body.docs-dark .breadcrumb-current{ color:var(--ink-on-dark); }
 
 body.docs-dark .solutions-see-also{ border-top-color:rgba(255,255,255,0.14); }
-body.docs-dark .solutions-see-also h2{ color:#F5F6FF; }
+body.docs-dark .solutions-see-also h2{ color:var(--ink-on-dark); }
 
 /* produit.html (11 aout 2026) -- page jamais harmonisee en sombre avant
    ce chantier, structure entierement differente des articles de blog
    (pas de .post-body/.post-wrap : composants marketing dedies). */
-body.docs-dark #probleme h1{ color:#F5F6FF; }
+body.docs-dark #probleme h1{ color:var(--ink-on-dark); }
 /* Filet de securite : h2 generique n'a jamais de couleur propre (herite
    de --ink), donc invisible sur fond sombre partout ou aucune regle
    plus specifique n'existe deja -- plus fiable que de chasser chaque
@@ -2121,8 +2172,8 @@ body.docs-dark #probleme h1{ color:#F5F6FF; }
    danger ici. h3 reste traite composant par composant : trop souvent
    utilise dans de petits blocs a fond variable pour une regle
    generique sans risque.*/
-body.docs-dark h2{ color:#F5F6FF; }
-body.docs-dark section.soft{ background:transparent; color:#CDD2F0; }
+body.docs-dark h2{ color:var(--ink-on-dark); }
+body.docs-dark section.soft{ background:transparent; color:var(--ink-muted-on-dark); }
 /* L'ENCRE MANQUAIT A CETTE SURCOUCHE (26 aout 2026). Meme forme exacte que
    le defaut de `body{ color:var(--ink) }` corrige la veille : la regle
    changeait le FOND sans toucher a la couleur posee par
@@ -2139,17 +2190,17 @@ body.docs-dark section.soft{ background:transparent; color:#CDD2F0; }
    existait -- elle ne traitait simplement pas la couleur. */
 body.docs-dark .mission-section{ background:transparent; }
 body.docs-dark .mission-pillar{ background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.14); }
-body.docs-dark .mission-pillar h3{ color:#F5F6FF; }
-body.docs-dark .mission-pillar p{ color:#CDD2F0; }
+body.docs-dark .mission-pillar h3{ color:var(--ink-on-dark); }
+body.docs-dark .mission-pillar p{ color:var(--ink-muted-on-dark); }
 
 body.docs-dark .pb-carte{ background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.14); }
 body.docs-dark .tarif-bloc{ background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.14); }
-body.docs-dark .pb-carte h3{ color:#F5F6FF; }
-body.docs-dark .pb-carte p{ color:#CDD2F0; }
-body.docs-dark .pb-sortie{ color:#F5F6FF; }
+body.docs-dark .pb-carte h3{ color:var(--ink-on-dark); }
+body.docs-dark .pb-carte p{ color:var(--ink-muted-on-dark); }
+body.docs-dark .pb-sortie{ color:var(--ink-on-dark); }
 
-body.docs-dark .regex-copy h3{ color:#F5F6FF; }
-body.docs-dark .regex-copy > p{ color:#CDD2F0; }
+body.docs-dark .regex-copy h3{ color:var(--ink-on-dark); }
+body.docs-dark .regex-copy > p{ color:var(--ink-muted-on-dark); }
 /* .regex-copy code et .regex-reassure gardent leur fond clair propre
    (var(--blue-tint) + texte var(--blue-deep)) -- contraste interne
    autonome, meme raisonnement que les badges/pastilles deja traites. */
@@ -2528,31 +2579,9 @@ body.docs-dark .regex-copy > p{ color:#CDD2F0; }
      .roi-field input[type="range"]::-moz-range-track
      .roi-field input[type="range"]::-webkit-slider-runnable-track
      .rp-search-result
-     .search-alt-titre
-     .search-close
-     .search-contact
-     .search-correction
-     .search-correction-n
-     .search-count
-     .search-filtre-n
-     .search-foot
-     .search-foot kbd
-     .search-panel
-     .search-panel-head
-     .search-panel-head input
-     .search-pill-blog
-     .search-pill-documentation
-     .search-pill-plateformes
-     .search-pill-produit
-     .search-pill-secteurs
-     .search-rail h3
-     .search-result-excerpt
-     .search-result-parent
-     .search-suggest-label
      .search-trigger
      .search-trigger-kbd
      .search-trigger-text
-     .search-vide-titre
      .seg-total-ligne
      .seg-total-ligne strong
      .service
@@ -2660,29 +2689,29 @@ body.docs-dark .pb-repere,
 body.docs-dark .copilot-point-source,
 body.docs-dark .form-note,
 body.docs-dark .contact-direct,
-body.docs-dark .how-note{ color:#CDD2F0; }
+body.docs-dark .how-note{ color:var(--ink-muted-on-dark); }
 /* LOGO DU FOOTER (26 aout 2026). `.wordmark` retombait sur --ink (#12142B)
    a 1,11:1 sur la fin du degrade -- le nom du produit, invisible, sur 118
    pages. SCOPE AU FOOTER : l'instance de l'en-tete est saine, elle a son
    propre fond blanc a 92 % avec flou qui l'isole du degrade. */
-body.docs-dark footer .wordmark{ color:#F5F6FF; }
+body.docs-dark footer .wordmark{ color:var(--ink-on-dark); }
 
 /* Le TEXTE COURANT du meme paragraphe que le prix (26 aout 2026). Le
    correctif precedent n'avait cible que le <strong> : la phrase se coupait
    en deux, « A partir de 19 EUR/mois » net puis « Essai gratuit de 14 jours,
    sans carte bancaire. » invisible. */
-body.docs-dark .tarif-ligne{ color:#CDD2F0; }
+body.docs-dark .tarif-ligne{ color:var(--ink-muted-on-dark); }
 
 body.docs-dark .tarif-ligne strong,
-body.docs-dark .pb-repere strong{ color:#F5F6FF; }
+body.docs-dark .pb-repere strong{ color:var(--ink-on-dark); }
 /* Un lien doit se distinguer du texte qui l'entoure, pas s'y fondre. */
 body.docs-dark .pb-repere a,
 body.docs-dark .how-note a,
-body.docs-dark .contact-direct a{ color:#F5F6FF; text-decoration-color:rgba(255,255,255,.45); }
+body.docs-dark .contact-direct a{ color:var(--ink-on-dark); text-decoration-color:rgba(255,255,255,.45); }
 
 body.docs-dark .vertical-card{ background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.14); }
-body.docs-dark .vertical-card h4{ color:#F5F6FF; }
-body.docs-dark .vertical-card p{ color:#CDD2F0; }
+body.docs-dark .vertical-card h4{ color:var(--ink-on-dark); }
+body.docs-dark .vertical-card p{ color:var(--ink-muted-on-dark); }
 /* .vertical-card-cta garde un fond clair distinct (var(--blue-tint)) --
    ne doit jamais heriter du texte clair de la regle generique
    .vertical-card ci-dessus, ce serait illisible sur son propre fond. */
@@ -2691,8 +2720,8 @@ body.docs-dark .vertical-card-cta p{ color:var(--ink); }
 body.docs-dark .vertical-card-cta p a{ color:var(--blue-deep); }
 
 body.docs-dark .why-card{ background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.14); }
-body.docs-dark .why-card h3{ color:#F5F6FF; }
-body.docs-dark .why-card p{ color:#CDD2F0; }
+body.docs-dark .why-card h3{ color:var(--ink-on-dark); }
+body.docs-dark .why-card p{ color:var(--ink-muted-on-dark); }
 
 .docs-params{
   width:100%; max-width:720px; border-collapse:collapse; margin:0 0 16px;
@@ -3670,19 +3699,19 @@ body.docs-dark{
      Les composants a fond clair ne dependent plus de cet heritage : le lot
      precedent leur a donne leur `color:var(--ink)` explicite, sans changer
      un seul pixel (empreintes identiques sur 2 013 elements de texte). */
-  color:#CDD2F0;
+  color:var(--ink-muted-on-dark);
 }
 body.docs-dark .docs-hero{ background:transparent; border-bottom-color:rgba(255,255,255,0.14); }
 body.docs-dark .docs-hero h1,
 body.docs-dark .docs-section h2,
 body.docs-dark .docs-section h3,
 body.docs-dark .docs-section h4,
-body.docs-dark .docs-section h5{ color:#F5F6FF; }
+body.docs-dark .docs-section h5{ color:var(--ink-on-dark); }
 body.docs-dark .docs-hero p,
 body.docs-dark .docs-section p,
-body.docs-dark .docs-section li{ color:#CDD2F0; }
-body.docs-dark .docs-section p strong{ color:#CDD2F0; } /* bug corrige (10 aout) : cette regle de base (color:var(--ink), tres sombre) l'emportait sur l'heritage du <p> parent -- seuls les <strong> directement enfants d'un <p> etaient touches, jamais ceux des <li> */
-body.docs-dark .docs-section a:not(.btn){ color:#CDD2F0; font-weight:700; } /* deja en gras par defaut (.docs-section a) ; le poids fait deja la distinction visuelle du lien, la couleur n'a plus a s'en charger seule */
+body.docs-dark .docs-section li{ color:var(--ink-muted-on-dark); }
+body.docs-dark .docs-section p strong{ color:var(--ink-muted-on-dark); } /* bug corrige (10 aout) : cette regle de base (color:var(--ink), tres sombre) l'emportait sur l'heritage du <p> parent -- seuls les <strong> directement enfants d'un <p> etaient touches, jamais ceux des <li> */
+body.docs-dark .docs-section a:not(.btn){ color:var(--ink-muted-on-dark); font-weight:700; } /* deja en gras par defaut (.docs-section a) ; le poids fait deja la distinction visuelle du lien, la couleur n'a plus a s'en charger seule */
 body.docs-dark .docs-section{ border-bottom-color:rgba(255,255,255,0.14); }
 
 body.docs-dark .callout-info{ background:rgba(255,255,255,0.06); border-color:rgba(174,185,255,0.35); color:#E4E7FF; }
@@ -3695,9 +3724,9 @@ body.docs-dark .callout-warning .callout-icon{ color:#FFB4A0; } /* icone, meme r
    total de cette meme sidebar sur une page qui n'a jamais ete paginee.
    Le scrollspy qui anime .active ici est toujours actif, juste plus
    couple a un panneau de droite pour exister. */
-body.docs-dark .docs-sidebar-group{ color:#CDD2F0; }
-body.docs-dark .docs-sidebar a{ color:#CDD2F0; }
-body.docs-dark .docs-sidebar a:hover{ color:#F5F6FF; background:rgba(255,255,255,0.06); }
+body.docs-dark .docs-sidebar-group{ color:var(--ink-muted-on-dark); }
+body.docs-dark .docs-sidebar a{ color:var(--ink-muted-on-dark); }
+body.docs-dark .docs-sidebar a:hover{ color:var(--ink-on-dark); background:rgba(255,255,255,0.06); }
 /* Etat actif (10 aout) : la pastille claire d'origine (var(--blue-tint)
    sur var(--blue-deep)) etait concue pour un sommaire a fond clair --
    .docs-sidebar a ci-dessus, plus specifique a cause du prefixe
@@ -3707,24 +3736,24 @@ body.docs-dark .docs-sidebar a:hover{ color:#F5F6FF; background:rgba(255,255,255
    semi-opaque (11.68:1 de contraste reel calcule, pas suppose) plutot que
    la pastille claire, barre verticale pleine pour un vrai repere net.  */
 body.docs-dark .docs-sidebar a.active{
-  color:#F5F6FF; font-weight:700;
+  color:var(--ink-on-dark); font-weight:700;
   background:rgba(84,104,255,0.22);
   border-left-color:var(--blue);
 }
 body.docs-dark .docs-page-search input{
-  background:rgba(255,255,255,0.08); color:#F5F6FF; border-color:rgba(255,255,255,0.2);
+  background:rgba(255,255,255,0.08); color:var(--ink-on-dark); border-color:rgba(255,255,255,0.2);
 }
-body.docs-dark .docs-page-search input::placeholder{ color:#CDD2F0; }
+body.docs-dark .docs-page-search input::placeholder{ color:var(--ink-muted-on-dark); }
 
 /* Endpoints, parametres, tableaux -- les badges de methode (GET/POST/...)
    sont deja des pastilles pleines blanc-sur-couleur, autonomes, laissees
    telles quelles. */
-body.docs-dark .docs-endpoint code{ color:#F5F6FF; }
-body.docs-dark .docs-params th{ color:#CDD2F0; border-bottom-color:rgba(255,255,255,0.2); }
-body.docs-dark .docs-params td{ color:#CDD2F0; border-bottom-color:rgba(255,255,255,0.14); }
+body.docs-dark .docs-endpoint code{ color:var(--ink-on-dark); }
+body.docs-dark .docs-params th{ color:var(--ink-muted-on-dark); border-bottom-color:rgba(255,255,255,0.2); }
+body.docs-dark .docs-params td{ color:var(--ink-muted-on-dark); border-bottom-color:rgba(255,255,255,0.14); }
 body.docs-dark .docs-required{ color:#FFCEC1; } /* texte reel ("REQUIS"), pas une icone : #FFB4A0 (3.97:1) ne suffisait pas pour du texte, #FFCEC1 (4.8:1) si */
-body.docs-dark .icp-table td{ border-bottom-color:rgba(255,255,255,0.14); color:#CDD2F0; }
-body.docs-dark .icp-table td:first-child{ color:#CDD2F0; }
+body.docs-dark .icp-table td{ border-bottom-color:rgba(255,255,255,0.14); color:var(--ink-muted-on-dark); }
+body.docs-dark .icp-table td:first-child{ color:var(--ink-muted-on-dark); }
 body.docs-dark .table-scroll{
   background:
     linear-gradient(to right, #101B4D 30%, rgba(16,27,77,0)) left / 44px 100% no-repeat,
@@ -3736,8 +3765,8 @@ body.docs-dark .table-scroll{
 body.docs-dark footer{ border-top-color:rgba(255,255,255,0.14); }
 body.docs-dark .foot-legal,
 body.docs-dark .foot-links a,
-body.docs-dark .foot-social-label{ color:#CDD2F0; }
-body.docs-dark .foot-links a:hover{ color:#F5F6FF; }
+body.docs-dark .foot-social-label{ color:var(--ink-muted-on-dark); }
+body.docs-dark .foot-links a:hover{ color:var(--ink-on-dark); }
 
 /* Exemple interactif "Demarrage rapide" (chantier UX, 9 août 2026) --
    champs editables qui regenerent la commande curl en temps reel, sans
@@ -3754,7 +3783,7 @@ body.docs-dark .foot-links a:hover{ color:#F5F6FF; }
 .docs-live-input{
   display:block; width:100%; box-sizing:border-box; margin-top:5px;
   background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.2);
-  border-radius:8px; padding:9px 12px; font-size:13.5px; color:#F5F6FF;
+  border-radius:8px; padding:9px 12px; font-size:13.5px; color:var(--ink-on-dark);
   font-family:'IBM Plex Mono', monospace;
 }
 .docs-live-input:focus{ outline:2px solid #AEB9FF; outline-offset:1px; border-color:transparent; }
@@ -6790,10 +6819,10 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 /* Guide de mise en route -- article structure comme une page de doc */
 body.docs-dark .post-lede,
 body.docs-dark .post-body,
-body.docs-dark .console-panel-note{ color:#CDD2F0; }
+body.docs-dark .console-panel-note{ color:var(--ink-muted-on-dark); }
 body.docs-dark .post-body h2,
-body.docs-dark .post-body h3{ color:#F5F6FF; }
-body.docs-dark .docs-layout h1{ color:#F5F6FF; }
+body.docs-dark .post-body h3{ color:var(--ink-on-dark); }
+body.docs-dark .docs-layout h1{ color:var(--ink-on-dark); }
 /* Simplifie (11 aout 2026) -- trois regles specifiques a des conteneurs
    differents (post-wrap, section.wrap, blog-hero) remplacees par une
    seule regle globale. Trouvees une par une au fil du chantier, chacune
@@ -6802,16 +6831,16 @@ body.docs-dark .docs-layout h1{ color:#F5F6FF; }
    couvrir tous les h1 sans restriction de parent des le depart. Aucun
    h1 ne vit jamais dans une carte volontairement restee claire (price-
    tier-card etc.) -- pas de risque de sur-couverture identifie. */
-body.docs-dark h1{ color:#F5F6FF; }
-body.docs-dark .guide-quiz p{ color:#CDD2F0; }
+body.docs-dark h1{ color:var(--ink-on-dark); }
+body.docs-dark .guide-quiz p{ color:var(--ink-muted-on-dark); }
 body.docs-dark .kicker,
-body.docs-dark .back-link{ color:#CDD2F0; }
-body.docs-dark .why-num{ color:#F5F6FF; }
+body.docs-dark .back-link{ color:var(--ink-muted-on-dark); }
+body.docs-dark .why-num{ color:var(--ink-on-dark); }
 body.docs-dark .post-footer-cta,
 body.docs-dark .guide-quiz{
   background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.14);
 }
-body.docs-dark .post-footer-cta p{ color:#CDD2F0; }
+body.docs-dark .post-footer-cta p{ color:var(--ink-muted-on-dark); }
 
 /* Le stepper (chantier du 9 aout) avait ses cartes en blanc fixe -- sur
    .post-body, la regle h3 generique ci-dessus les rendait illisibles
@@ -6820,20 +6849,20 @@ body.docs-dark .post-footer-cta p{ color:#CDD2F0; }
 body.docs-dark .setup-step-card{
   background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.14);
 }
-body.docs-dark .setup-step-card h3{ color:#F5F6FF; }
-body.docs-dark .setup-step-card p{ color:#CDD2F0; }
+body.docs-dark .setup-step-card h3{ color:var(--ink-on-dark); }
+body.docs-dark .setup-step-card p{ color:var(--ink-muted-on-dark); }
 
 /* Page Integrations -- onglets et encarts specifiques */
-body.docs-dark .integ-tab{ color:#CDD2F0; }
-body.docs-dark .integ-tab:hover{ color:#F5F6FF; }
-body.docs-dark .integ-tab.active{ color:#F5F6FF; }
+body.docs-dark .integ-tab{ color:var(--ink-muted-on-dark); }
+body.docs-dark .integ-tab:hover{ color:var(--ink-on-dark); }
+body.docs-dark .integ-tab.active{ color:var(--ink-on-dark); }
 body.docs-dark .integ-tabs{ border-bottom-color:rgba(255,255,255,0.14); }
 body.docs-dark .integ-notice{
   background:rgba(255,255,255,0.06); border-color:rgba(174,185,255,0.35); color:#E4E7FF;
 }
-body.docs-dark .integ-notice strong{ color:#F5F6FF; }
-body.docs-dark .integ-panel h2{ color:#F5F6FF; }
-body.docs-dark .integ-panel p{ color:#CDD2F0; }
+body.docs-dark .integ-notice strong{ color:var(--ink-on-dark); }
+body.docs-dark .integ-panel h2{ color:var(--ink-on-dark); }
+body.docs-dark .integ-panel p{ color:var(--ink-muted-on-dark); }
 
 /* .badge et .setup-step-marker (pastille inactive) restent inchanges :
    fond clair + texte fonce, un contraste interne autonome deja verifie,
@@ -6950,11 +6979,11 @@ body.docs-dark .feat-card{
 body.docs-dark .feat-card-highlight{
   background:rgba(84,104,255,0.12); border-color:rgba(84,104,255,0.4);
 }
-body.docs-dark .feat-card h3{ color:#F5F6FF; }
-body.docs-dark .feat-card p{ color:#CDD2F0; }
+body.docs-dark .feat-card h3{ color:var(--ink-on-dark); }
+body.docs-dark .feat-card p{ color:var(--ink-muted-on-dark); }
 body.docs-dark .feat-card a{ color:#AEB9FF; }
-body.docs-dark .feat-group-title{ color:#CDD2F0; }
-body.docs-dark .section-lede{ color:#CDD2F0; }
+body.docs-dark .feat-group-title{ color:var(--ink-muted-on-dark); }
+body.docs-dark .section-lede{ color:var(--ink-muted-on-dark); }
 
 /* Harmonisation sombre des pages d'integration -- prestashop/woocommerce/
    shopify.html (11 aout 2026). Meme gabarit sur les 3 (classes identiques
@@ -6962,8 +6991,8 @@ body.docs-dark .section-lede{ color:#CDD2F0; }
 body.docs-dark .int-card{
   background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.14);
 }
-body.docs-dark .int-card h3{ color:#F5F6FF; }
-body.docs-dark .int-card p{ color:#CDD2F0; }
+body.docs-dark .int-card h3{ color:var(--ink-on-dark); }
+body.docs-dark .int-card p{ color:var(--ink-muted-on-dark); }
 
 /* Articles de blog (11 aout 2026) -- .table-scroll a une seconde
    definition plus bas dans ce fichier (tableaux de la console), qui
@@ -6981,7 +7010,7 @@ body.docs-dark .table-scroll{ background:none; }
    dans sa premiere colonne (guide-utilisation-console.html), jamais
    couvert par le correctif du guide-quiz de ce matin, contexte different.
    Correctif cible, ne touche pas le strong generique du texte courant. */
-body.docs-dark .docs-params strong{ color:#F5F6FF; }
+body.docs-dark .docs-params strong{ color:var(--ink-on-dark); }
 
 /* Correctif global (11 aout 2026) -- .post-body strong reste sombre par
    defaut, correct hors contexte sombre (texte courant). Decouvert sur
@@ -6992,51 +7021,51 @@ body.docs-dark .docs-params strong{ color:#F5F6FF; }
    docs-params y sont deja inclus, leurs regles specifiques ci-dessus
    restent neanmoins necessaires pour docs.html, qui n'utilise jamais
    post-body). */
-body.docs-dark .post-body strong{ color:#F5F6FF; }
+body.docs-dark .post-body strong{ color:var(--ink-on-dark); }
 
 /* cgv.html (11 aout 2026) -- bloc mis en avant, jamais dans post-body,
    pas couvert par le correctif global ci-dessus. Meme traitement
    translucide deja etabli. */
 body.docs-dark .cgv-notice{
   background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.3);
-  color:#CDD2F0;
+  color:var(--ink-muted-on-dark);
 }
-body.docs-dark .cgv-notice strong{ color:#F5F6FF; }
+body.docs-dark .cgv-notice strong{ color:var(--ink-on-dark); }
 
 /* faq.html (11 aout 2026) -- jamais dans post-body, pas couvert par le
    correctif global strong. Bordure de separation adaptee au fond sombre
    (var(--line) restait un gris clair invisible ici). */
 body.docs-dark .faq-item{ border-bottom-color:rgba(255,255,255,0.14); }
-body.docs-dark .faq-item summary{ color:#F5F6FF; }
-body.docs-dark .faq-answer p{ color:#CDD2F0; }
-body.docs-dark .faq-answer strong{ color:#F5F6FF; }
+body.docs-dark .faq-item summary{ color:var(--ink-on-dark); }
+body.docs-dark .faq-answer p{ color:var(--ink-muted-on-dark); }
+body.docs-dark .faq-answer strong{ color:var(--ink-on-dark); }
 body.docs-dark .faq-answer a{ color:#AEB9FF; }
 
 /* about.html (11 aout 2026) -- recit personnel, jamais dans post-body. */
-body.docs-dark .about-text p{ color:#CDD2F0; }
-body.docs-dark .about-text strong{ color:#F5F6FF; }
-body.docs-dark .about-text p:first-child{ color:#F5F6FF; }
-body.docs-dark .about-signature{ color:#CDD2F0; }
+body.docs-dark .about-text p{ color:var(--ink-muted-on-dark); }
+body.docs-dark .about-text strong{ color:var(--ink-on-dark); }
+body.docs-dark .about-text p:first-child{ color:var(--ink-on-dark); }
+body.docs-dark .about-signature{ color:var(--ink-muted-on-dark); }
 
 /* .btn-ghost (11 aout 2026) -- bouton secondaire jamais traite malgre sa
    presence sur plusieurs pages deja livrees aujourd'hui (fonctionnalites,
    guide-mise-en-route, prestashop) -- discret, rate visuellement jusqu'ici.
    Correctif global : s'applique retroactivement partout ou la classe
    apparait deja, sans rien modifier sur ces pages individuellement. */
-body.docs-dark .btn-ghost{ color:#F5F6FF; border-color:rgba(255,255,255,0.35); }
+body.docs-dark .btn-ghost{ color:var(--ink-on-dark); border-color:rgba(255,255,255,0.35); }
 body.docs-dark .btn-ghost:hover{ background:rgba(255,255,255,0.08); }
 
 /* pricing.html (11 aout 2026). price-tier-card, calc-results, integration-
    code, icp-table, .addon-row (deuxieme definition, deja vue sur fond
    clair de la carte) restent volontairement inchanges -- deja sombres ou
    deja traites ailleurs, voir la revue complete avant ce commit. */
-body.docs-dark .roi-field label{ color:#CDD2F0; }
+body.docs-dark .roi-field label{ color:var(--ink-muted-on-dark); }
 body.docs-dark .calc-inputs{ background:rgba(255,255,255,0.06); }
 body.docs-dark .integration-card{
   background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.14);
 }
-body.docs-dark .integration-card-desc{ color:#CDD2F0; }
-body.docs-dark .integration-card-label{ color:#F5F6FF; }
+body.docs-dark .integration-card-desc{ color:var(--ink-muted-on-dark); }
+body.docs-dark .integration-card-label{ color:var(--ink-on-dark); }
 /* billing-toggle vit deja dans pricing-hero-etendu (fond sombre depuis
    le 2 aout), mais n'avait jamais recu son propre correctif -- oubli,
    pas un choix comme price-tier-card qui, lui, est explicitement
@@ -7044,8 +7073,8 @@ body.docs-dark .integration-card-label{ color:#F5F6FF; }
    logique que price-tier-card : du blanc reserve aux elements cles pour
    qu'ils ressortent, pas une regle uniforme. */
 body.docs-dark .billing-toggle{ background:rgba(255,255,255,0.08); border-color:rgba(255,255,255,0.18); }
-body.docs-dark .billing-toggle-opt{ color:#CDD2F0; }
-body.docs-dark .billing-toggle-opt:hover{ color:#F5F6FF; }
+body.docs-dark .billing-toggle-opt{ color:var(--ink-muted-on-dark); }
+body.docs-dark .billing-toggle-opt:hover{ color:var(--ink-on-dark); }
 /* Meme vert clair (#8FE3BC) deja utilise en style inline sur cette page
    (kicker "Estimation") -- legerement eclairci (#A3E8C8) pour vraiment
    depasser 4.5:1 sur le point le plus clair du degrade (8FE3BC seul
@@ -7070,19 +7099,19 @@ body.docs-dark .how-step{
 body.docs-dark .feature-card{
   background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.14);
 }
-body.docs-dark .copilot-label{ color:#CDD2F0; }
-body.docs-dark .copilot-pill{ background:rgba(255,255,255,0.08); border-color:rgba(255,255,255,0.18); color:#CDD2F0; }
-body.docs-dark .copilot-pill:hover{ color:#F5F6FF; }
+body.docs-dark .copilot-label{ color:var(--ink-muted-on-dark); }
+body.docs-dark .copilot-pill{ background:rgba(255,255,255,0.08); border-color:rgba(255,255,255,0.18); color:var(--ink-muted-on-dark); }
+body.docs-dark .copilot-pill:hover{ color:var(--ink-on-dark); }
 body.docs-dark .copilot-bubble{ background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.18); }
-body.docs-dark .copilot-points li{ color:#CDD2F0; }
+body.docs-dark .copilot-points li{ color:var(--ink-muted-on-dark); }
 body.docs-dark .copilot-source{ color:rgba(255,255,255,0.55); border-top-color:rgba(255,255,255,0.14); }
 body.docs-dark .copilot-disclaimer{ color:rgba(255,255,255,0.55); }
 /* .roi-inputs assombri pour rester coherent avec le meme traitement deja
    applique a .calc-inputs sur pricing.html (meme fonction, meme fond
    clair d'origine). */
 body.docs-dark .roi-inputs{ background:rgba(255,255,255,0.06); }
-body.docs-dark .roi-inputs h3{ color:#F5F6FF; }
-body.docs-dark .roi-inputs-intro{ color:#CDD2F0; }
+body.docs-dark .roi-inputs h3{ color:var(--ink-on-dark); }
+body.docs-dark .roi-inputs-intro{ color:var(--ink-muted-on-dark); }
 body.docs-dark .roi-range-hint{ color:rgba(255,255,255,0.55); }
 
 /* cta-section (formulaire de contact, juste avant le footer) restait
@@ -7113,7 +7142,7 @@ body.docs-dark .blog-hero .lede{ color:rgba(255,255,255,0.88); }
    Mesure avant : 2,57:1. Le --blue de la bordure gauche, lui, ressort deja.
    Trouve en allongeant le texte d'une de ces citations, d'une ligne a quatre
    -- ce qui a rendu visible ce que personne ne lisait. */
-body.docs-dark .post-body blockquote{ color:#CDD2F0; }
+body.docs-dark .post-body blockquote{ color:var(--ink-muted-on-dark); }
 
 
 /* Signale par Alexis (11 aout 2026), confirme empiriquement. Le titre de
@@ -7123,18 +7152,18 @@ body.docs-dark .post-body blockquote{ color:#CDD2F0; }
    son p heritaient toujours du texte sombre d'origine, jamais adaptes
    pour cette variante ; son lien utilise le meme bleu (--blue-deep) que
    why-num, meme insuffisance de contraste. */
-body.docs-dark .verticals h3{ color:#F5F6FF; }
-body.docs-dark .vertical-card-cta h4{ color:#F5F6FF; }
-body.docs-dark .vertical-card-cta p{ color:#CDD2F0; }
+body.docs-dark .verticals h3{ color:var(--ink-on-dark); }
+body.docs-dark .vertical-card-cta h4{ color:var(--ink-on-dark); }
+body.docs-dark .vertical-card-cta p{ color:var(--ink-muted-on-dark); }
 body.docs-dark .vertical-card-cta a{ color:#AEB9FF; }
 
 /* Meme oubli que vertical-card-cta juste au-dessus : le fond de
    .how-step et .feature-card avait deja ete assombri, mais leur vrai
    texte interieur (h3, p) jamais verifie ni corrige separement. */
-body.docs-dark .how-step h3{ color:#F5F6FF; }
-body.docs-dark .how-step p{ color:#CDD2F0; }
-body.docs-dark .feature-card h3{ color:#F5F6FF; }
-body.docs-dark .feature-card p{ color:#CDD2F0; }
+body.docs-dark .how-step h3{ color:var(--ink-on-dark); }
+body.docs-dark .how-step p{ color:var(--ink-muted-on-dark); }
+body.docs-dark .feature-card h3{ color:var(--ink-on-dark); }
+body.docs-dark .feature-card p{ color:var(--ink-muted-on-dark); }
 body.docs-dark .feature-card a{ color:#AEB9FF; }
 
 /* .demo/.play-card (11 aout, correction) -- annule les correctifs
@@ -7156,7 +7185,7 @@ body.docs-dark .feature-card a{ color:#AEB9FF; }
    regle globale docs-dark deja etablie ailleurs (blanc sur fond
    sombre), pas besoin de surcharge specifique a cette carte. */
 body.docs-dark .price-tier-card .btn-ghost{
-  color:#F5F6FF; border-color:rgba(255,255,255,0.35);
+  color:var(--ink-on-dark); border-color:rgba(255,255,255,0.35);
 }
 body.docs-dark .price-tier-card .btn-ghost:hover{
   background:rgba(255,255,255,0.08);
@@ -7168,7 +7197,7 @@ body.docs-dark .price-tier-card .btn-ghost:hover{
    (4.5:1). Plus grave que ce que le rapport initial decrivait ("bleu-
    gris sombre, contraste possiblement limite") -- vraiment illisible,
    pas juste limite. */
-body.docs-dark .integration-doclist li{ color:#CDD2F0; border-top-color:rgba(255,255,255,0.14); }
+body.docs-dark .integration-doclist li{ color:var(--ink-muted-on-dark); border-top-color:rgba(255,255,255,0.14); }
 
 /* Demande directe d'Alexis (13 aout 2026) -- vrai choix de design
    general, pas specifique au theme sombre : les entetes de cartes
@@ -7220,23 +7249,23 @@ body.docs-dark .price-tier-card{
 /* var(--blue-deep), deja applique globalement (point 1/2, plus tot
    aujourd'hui), serait quasi invisible sur fond desormais sombre. */
 body.docs-dark .price-tier-name{ color:#AEB9FF; }
-body.docs-dark .price-tier-amount{ color:#F5F6FF; }
-body.docs-dark .price-tier-desc{ color:#CDD2F0; }
+body.docs-dark .price-tier-amount{ color:var(--ink-on-dark); }
+body.docs-dark .price-tier-desc{ color:var(--ink-muted-on-dark); }
 body.docs-dark .price-tier-features li{
-  color:#CDD2F0; border-top-color:rgba(255,255,255,0.14);
+  color:var(--ink-muted-on-dark); border-top-color:rgba(255,255,255,0.14);
 }
-body.docs-dark .price-tier-overage{ color:#CDD2F0; }
+body.docs-dark .price-tier-overage{ color:var(--ink-muted-on-dark); }
 /* Coche : reste verte, perimetre du point 4 deja convenu avec Alexis. */
 
 /* Toggle Ranking (addon-row) : meme fond blanc, meme traitement. */
 body.docs-dark .addon-row{
   background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.14);
 }
-body.docs-dark .addon-row-name{ color:#F5F6FF; }
+body.docs-dark .addon-row-name{ color:var(--ink-on-dark); }
 body.docs-dark .addon-row-name strong{ color:#AEB9FF; }
-body.docs-dark .addon-row-desc{ color:#CDD2F0; }
-body.docs-dark .addon-row-price{ color:#F5F6FF; }
-body.docs-dark .addon-row-price em{ color:#CDD2F0; }
+body.docs-dark .addon-row-desc{ color:var(--ink-muted-on-dark); }
+body.docs-dark .addon-row-price{ color:var(--ink-on-dark); }
+body.docs-dark .addon-row-price em{ color:var(--ink-muted-on-dark); }
 
 /* Point 3, suite (13 aout 2026) -- signale par Alexis apres deploiement.
    Ces quatre elements sont generes/reveles dynamiquement par JS
@@ -7244,10 +7273,10 @@ body.docs-dark .addon-row-price em{ color:#CDD2F0; }
    de mes propres verifications, qui ne declenchaient jamais le vrai
    bouton "Annuel". var(--ink-muted) partout, jamais adapte pour
    docs-dark, meme si la carte parente l'est desormais. */
-body.docs-dark .prix-plein{ color:#CDD2F0; }
-body.docs-dark .price-tier-period{ color:#CDD2F0; }
-body.docs-dark .prix-facture{ color:#CDD2F0; }
-body.docs-dark .addon-breakdown{ color:#CDD2F0; }
+body.docs-dark .prix-plein{ color:var(--ink-muted-on-dark); }
+body.docs-dark .price-tier-period{ color:var(--ink-muted-on-dark); }
+body.docs-dark .prix-facture{ color:var(--ink-muted-on-dark); }
+body.docs-dark .addon-breakdown{ color:var(--ink-muted-on-dark); }
 /* var(--blue-deep) pour le chiffre en gras : 2.78:1 sur fond desormais
    sombre, mesure, tres insuffisant -- jamais signale par Alexis mais
    corrige par coherence, meme famille de bleu clair que le reste. */
@@ -7269,8 +7298,8 @@ body.docs-dark .addon-breakdown strong{ color:#AEB9FF; }
    sombre -- mesure empiriquement : les deux sont en realite sombres
    (var(--ink-muted) et var(--ink)), aucun des deux vraiment correct en
    valeur absolue. Corrige les deux par coherence. */
-body.docs-dark .addon-ref{ color:#CDD2F0; }
-body.docs-dark .addon-net{ color:#F5F6FF; }
+body.docs-dark .addon-ref{ color:var(--ink-muted-on-dark); }
+body.docs-dark .addon-net{ color:var(--ink-on-dark); }
 
 
 /* Demonstration d'epinglage, pages marketing (21 aout 2026). Interactive
