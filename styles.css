@@ -364,9 +364,34 @@ header{
   padding-top:min(10vh, 90px);
 }
 .search-modal.open{ display:flex; }
+/* LE VOILE PORTE LE CONTRASTE DU CONTOUR, ET IL DOIT COUVRIR DEUX FONDS
+   OPPOSES (28 aout 2026). Le panneau est un aplat #101B4D, soit l'arret FINAL
+   du degrade : sur la majorite du pourtour, panneau et page ont exactement la
+   meme couleur, et seule la bordure separe les deux. Mesure de l'etat d'avant,
+   bordure blanc 14 % :
+
+       cote interieur (vs le panneau)              1,52:1
+       cote exterieur, haut du degrade             1,05:1
+       cote exterieur, aplat final                 1,59:1
+
+   soit trois fois sous le seuil de 3:1 de WCAG 1.4.11 pour un contour.
+
+   L'OPACITE MONTE DE .45 A .60 A CAUSE DES PAGES BLANCHES, PAS DU DEGRADE.
+   La modale ne depend pas de sa page (voir plus bas), mais le voile, lui, est
+   pose sur ce que la page peint. Mesure sur 404.html : le hero s'arrete au
+   milieu du panneau et la bordure BASSE longe du blanc pur. Le voile est donc
+   la seule chose qui rapproche les deux familles -- les 122 pages a degrade et
+   les onze sans -- assez pour qu'UNE bordure convienne aux deux. A .45, le
+   blanc voile reste a rgb(148,149,160) et aucune bordure ne tient 3:1 des deux
+   cotes a la fois. A .60 il tombe a rgb(106,108,118), ce qui laisse passer les
+   bordures tres claires.
+   Le flou n'entre dans aucun de ces calculs : il ne deplace pas la couleur
+   moyenne. Sans `backdrop-filter`, le voile seul tient tout le contraste. */
 .search-backdrop{
   position:absolute; inset:0;
-  background:rgba(18,20,43,0.45); backdrop-filter:blur(2px);
+  background:rgba(7,10,26,0.6);
+  -webkit-backdrop-filter:blur(3px);
+  backdrop-filter:blur(3px);
 }
 /* L'APLAT #101B4D, PAS LE DEGRADE — ET C'EST UNE MESURE (28 aout 2026).
    Le panneau etait #fff : une troisieme surface, blanche et opaque, posee sur
@@ -387,8 +412,23 @@ header{
   position:relative; z-index:1;
   width:min(920px, 94vw); max-height:72vh;
   background:#101B4D; color:var(--ink-on-dark); border-radius:16px;
-  border:1px solid rgba(255,255,255,.14);
-  box-shadow:0 30px 60px -20px rgba(6,10,32,0.55);
+  /* .95 ET NON .45 : LA VALEUR EST FIXEE PAR LE BLANC, PAS PAR LE DEGRADE.
+     La teinte #CDD2F0 est celle deja employee pour l'encre attenuee sur fond
+     sombre -- aucune couleur inventee. Son opacite, elle, est contrainte des
+     DEUX cotes a la fois : la bordure doit s'ecarter de 3:1 du panneau
+     (tres sombre) ET du blanc voile de 404.html (rgb(106,108,118), clair).
+     Une bordure intermediaire satisfait l'un en manquant l'autre ; il faut
+     sortir par le haut. Mesure sur les deux familles, voile a .60 :
+
+         .45   3,27:1 interieur   2,88:1 degrade   1,04:1 blanc   ECHEC
+         .55   4,22:1 interieur   3,73:1 degrade   1,35:1 blanc   ECHEC
+         .95   9,98:1 interieur   8,82:1 degrade   3,19:1 blanc   OK
+
+     Le blanc reste le point le plus juste (3,19:1) : toute baisse de l'opacite
+     du voile OU de la bordure repasse sous le seuil, et c'est 404.html qu'il
+     faut rouvrir pour le voir, jamais l'accueil. */
+  border:1px solid rgba(205,210,240,.95);
+  box-shadow:0 30px 65px -18px rgba(6,10,32,0.6);
   display:flex; flex-direction:column; overflow:hidden;
 }
 .search-panel-head{
@@ -606,7 +646,10 @@ header{
 }
 
 @media (prefers-reduced-motion: reduce){
-  .search-backdrop{ backdrop-filter:none; }
+  /* Le prefixe doit tomber avec la propriete standard, sinon Safari garde le
+     flou que ce bloc croit avoir retire. Le contraste ne bouge pas : il vient
+     du voile, pas du flou. */
+  .search-backdrop{ -webkit-backdrop-filter:none; backdrop-filter:none; }
 }
 /* LE SURLIGNAGE PORTE LA MARGE DE CONTRASTE LA PLUS JUSTE DE LA MODALE.
    #5AB8E8 sur le fond du panneau a 14 % de blanc (#313B66) mesure 4,85:1 pour
