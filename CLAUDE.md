@@ -326,6 +326,53 @@ est correct. Les corriger explicitement permettrait de poser
 La règle du regard reste donc nécessaire. Le test réduit la surface, il ne
 la supprime pas.
 
+#### Une opacité n'est pas une couleur, et aucun garde ne la voit
+
+Défaut mesuré le 28 août 2026, pas une observation : l'état de chargement de
+la modale de recherche est **sous le seuil AA sur les deux fonds**, l'ancien
+comme le nouveau.
+
+Une seule règle le produit :
+
+```css
+.search-results[data-chargement] .search-result{ opacity:.45; }
+```
+
+Mesuré en composant la couleur résultante sur chaque fond :
+
+| | avant (`#fff`) | après (`#101B4D`) |
+|---|---|---|
+| titre atténué | 2,97:1 | 4,09:1 |
+| extrait atténué | **2,00:1** | **3,25:1** |
+
+Le passage au fond sombre remonte les deux et n'en sauve aucun. 4,5:1 reste
+hors de portée dans les deux cas.
+
+**LA SECTION CI-DESSUS NOMME DEUX FAMILLES, ET CELLE-CI EST UNE TROISIÈME.**
+Le test attrape les composants qui **déclarent** `color:var(--ink*)`. Il rate
+ceux qui **héritent** — c'est la limite déjà écrite. Cette règle-ci ne fait ni
+l'un ni l'autre : elle ne déclare aucune couleur et n'en hérite d'aucune, elle
+**module ce qu'il y a dessous**. La couleur composée n'existe qu'au rendu, et
+aucune règle CSS ne la contient. Un test qui lit le fichier ne peut pas la
+lire.
+
+**Et sa valeur dépend du fond, alors que la règle ne le mentionne pas.** Le
+même `.45` rend 2,00:1 sur blanc et 3,25:1 sur `#101B4D`. Changer le fond d'un
+panneau change donc le contraste d'un état qui n'est écrit nulle part dans le
+diff — et personne ne l'avait mesuré sur **aucun** des deux fonds. C'est
+exactement ce qui reste sous le seuil pendant des mois : l'état dure quelques
+centaines de millisecondes, ne se produit que sur un index froid, et son
+défaut n'est visible dans aucun fichier.
+
+Corollaire : **toute propriété qui compose une couleur sans en déclarer une
+se mesure au rendu ou ne se mesure pas.** `opacity`, `filter`, `mix-blend-mode`
+et `backdrop-filter` sont dans ce cas. Le contrôle est le même que pour le
+reste — composer et calculer le rapport — mais rien ne rappelle qu'il faut le
+faire, parce qu'aucune couleur n'apparaît à l'endroit du défaut.
+
+Non corrigé ici : le lot était « rien d'autre que l'habillage ». Dette
+mesurée, à traiter à part.
+
 ### Déplacer une section = balayer les ancres
 
 Tout déplacement d'une section vers une autre page doit être suivi d'un
@@ -629,6 +676,85 @@ trace, et le compte affiché à la fin ne compte que ce qu'elle a laissé
 passer. D'où son seul garde-fou possible, désormais dans `bust-cache.sh` :
 **dire ce qu'on n'a pas touché**, en comparant au total des références
 portant le même nom de fichier, quel que soit leur chemin.
+
+#### Le garde a échoué, l'a dit dans les bons termes, et le site s'est déployé quand même
+
+Le pendant exact de la section ci-dessus, et il est pire. Là, le garde-fou
+disait vert en ayant tort. Ici il dit **rouge en ayant raison**, et ça ne
+change rien.
+
+Le 28 août 2026, quatre schémas portaient deux clefs `?v=` selon la langue de
+la page. Le job `Clefs de cache a jour` a échoué sur `0a9de34c` à 10:15, en
+nommant les fautifs un par un :
+
+```
+ECHEC img/architecture-integrations.svg : 2 clefs ?v= differentes selon la page.
+ECHEC img/deux-passes-automobile.svg    : 2 clefs ?v= differentes selon la page.
+```
+
+Rien à reprocher au contrôle : périmètre dérivé, identité par chemin
+normalisé, message actionnable. **Il a fait son travail exactement.**
+
+Et sur le même SHA, la même minute :
+
+```
+failure  0a9de34c  CI
+success  0a9de34c  pages-build-deployment
+```
+
+**Ce sont deux workflows séparés, et le déploiement ne dépend pas de la CI.**
+Il ne peut pas en dépendre : le déploiement Pages par branche se déclenche sur
+le push, pas sur un résultat. Le défaut est donc parti en production avec son
+alarme rouge allumée à côté, et la session qui l'avait produit s'est terminée
+sans la lire.
+
+Deux échecs de nature différente, et le second ne se corrige pas en
+améliorant les gardes :
+
+| | le garde | ce qui manque |
+|---|---|---|
+| famille ci-dessus | se trompe | un périmètre dérivé |
+| **celle-ci** | **a raison** | **quelqu'un ou quelque chose qui l'écoute** |
+
+Aucun contrôle supplémentaire ne répare un contrôle juste que personne ne lit
+et que rien n'applique. Le remède est ailleurs : **avant de considérer un lot
+fini, lire le résultat de la CI sur le commit qu'on vient de pousser.** Une
+commande, et elle nomme le job :
+
+```bash
+gh run list --limit 3 --json conclusion,headSha,workflowName,displayTitle \
+  --jq '.[] | "\(.conclusion)  \(.headSha[0:8])  \(.workflowName)"'
+```
+
+##### Et mon rejeu du contrôle a rendu l'inverse, parce que je l'avais changé de shell
+
+J'ai d'abord rapporté que la CI groupait par **chemin** quand mon contrôle
+groupait par **nom de fichier**, et qu'elle aurait donc manqué ces quatre-là.
+**C'était faux, et j'allais l'écrire ici comme un constat.**
+
+La CI fait `sed -E 's|^"(\.\./)*||'` : elle retire la remontée avant de
+comparer. Son identité est le chemin normalisé — plus fine que mon nom de
+fichier, pas plus grossière. Les deux attrapent le cas.
+
+Ce qui m'a trompé est mon propre rejeu. J'ai recopié la boucle de la CI dans
+le shell de la session, **zsh**, où `for BASE in $ASSETS` ne découpe pas une
+variable non quotée en mots. La boucle a donc itéré **une seule fois**, sur la
+chaîne entière, n'a rien trouvé, et a rendu « la CI aurait laissé passer ».
+Relancée sous `bash -c`, la même boucle nomme les quatre.
+
+> **Un fragment de script transplanté dans un autre shell ne mesure plus la
+> même chose, et ne le signale pas.**
+
+C'est la famille des instruments qui changent de cible, sous une forme qui ne
+laisse aucune trace : pas d'erreur, pas de sortie vide, une réponse
+d'apparence normale — « aucun échec » — qui est exactement la réponse qu'on
+attendait à moitié. Le seul contrôle qui l'attrape est celui qui a servi ici :
+**prendre un cas dont on connaît déjà la réponse** — familles-moteurs portait
+visiblement deux clefs — **et vérifier que l'instrument la donne** avant de
+lui faire dire quoi que ce soit du reste.
+
+Rejouer un fragment de CI se fait donc sous `bash -c`, jamais dans le shell
+interactif.
 
 ### La version anglaise est une zone que personne ne regarde
 
