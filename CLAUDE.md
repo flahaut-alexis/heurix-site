@@ -799,6 +799,61 @@ print({k: sorted(v) for k, v in c.items() if len(v) > 1} or "aucun asset à clef
 EOF
 ```
 
+#### Sixième défaut : il entretient une clef, il n'en crée pas
+
+Les cinq précédents disaient trop peu sur un périmètre trop étroit, ou se
+taisaient sur un argument. Celui-ci répond exactement, et sa réponse est
+inexploitable.
+
+Le motif de substitution est `"((\.\./)*)<fichier>\?v=[0-9]+` : il exige un
+`?v=` **déjà présent**. Lancé sur une référence qui n'en a pas, le script
+répondait :
+
+```
+⚠ img/photo-alexis.jpg : aucune référence "img/photo-alexis.jpg?v=..." trouvée
+  -- nom correct ? rien à faire.
+```
+
+Chaque mot est vrai. « Nom correct ? » oriente pourtant vers une faute de
+frappe, alors que la cause ordinaire est autre : **l'actif est bien référencé,
+mais sans clef, et ce script n'en pose pas.** Le lecteur vérifie son
+orthographe, la trouve juste, et conclut que l'actif est à jour.
+
+C'est la distinction *écart* / *incapacité*, une troisième fois : « je n'ai
+rien trouvé à changer » et « il n'y a rien à changer » sont deux réponses
+différentes, et une seule autorise à passer au suivant. Le script les sépare
+désormais, et la première nomme les pages fautives.
+
+**LE CONSTAT QUI DÉPASSE L'OUTIL — un actif sans `?v=` est hors de portée de
+TOUS les gardes.** Le contrôle de cohérence de la CI dérive son périmètre des
+références **versionnées** :
+
+```
+git grep -hoE "\"(\.\./)*[A-Za-z0-9_/-]+\.[a-z0-9]{2,4}\?v=[0-9]+"
+```
+
+Un actif qui n'en porte pas n'y figure pas — non parce qu'on l'a exclu, mais
+parce qu'il n'a jamais été vu. **Le périmètre dérivé ne protège que ce qui a
+déjà franchi son seuil d'entrée.**
+
+Mesuré le 28 août 2026 : **11 actifs référencés sans clef**, dont
+`nav-dropdown.js` sur 128 pages et `pricing-nudge.js` sur 116.
+
+Et un cas mixte, qui est le défaut vivant : `docs-copy.js` était référencé sur
+**quatre** pages, **une seule** avec clef. Un bump atteignait `docs.html` et
+laissait `en/docs.html` et les deux guides servir leur version en cache
+indéfiniment — pendant que le contrôle de cohérence voyait une clef unique et
+concluait « cohérent ». C'est la forme exacte du défaut des 38 pages, un cran
+plus haut : là le motif ne voyait pas certaines références ; ici il ne voit pas
+qu'il en manque.
+
+`tests/actifs-versionnes.test.js` ferme la famille : il refuse tout actif
+référencé **à la fois** avec et sans clef, et exige que les non versionnés
+soient nommés avec leur raison. Deux assertions policent cette liste — aucune
+raison périmée, aucun renvoi en guise de raison. La seconde a mordu sur son
+auteur le jour même : ma justification d'`apple-touch-icon.png` commençait par
+« Même cas que… ».
+
 ### Trois commandes dont la portée vient de l'arbre, et non d'une liste
 
 Trois formes en deux jours, même racine, dégâts différents :

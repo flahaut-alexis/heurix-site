@@ -136,7 +136,33 @@ for FICHIER in "$@"; do
   FICHIERS_TOUCHES=$(git ls-files --cached --others --exclude-standard "*.html" "*.js" | xargs grep -lE "$ANCRE" 2>/dev/null || true)
 
   if [ -z "$FICHIERS_TOUCHES" ]; then
-    echo "⚠ $FICHIER : aucune référence \"${FICHIER}?v=...\" trouvée -- nom correct ? rien à faire." >&2
+    # DEUX CAUSES, DEUX MESSAGES (28 août 2026). « Rien à faire » était juste et
+    # trompeur : il suggérait une faute de frappe alors que la cause la plus
+    # fréquente est autre -- l'actif EST référencé, mais SANS clef, et ce script
+    # n'en crée pas, il en entretient.
+    #
+    # C'est la distinction écart / incapacité appliquée ici : « je n'ai rien
+    # trouvé à changer » et « il n'y a rien à changer » sont deux réponses
+    # différentes, et seule la seconde autorise à passer au suivant.
+    #
+    # Mesuré le jour de ce correctif : 11 actifs du dépôt sont référencés sans
+    # clef, dont `docs-copy.js` sur 3 pages contre 1 avec. Sans ce message,
+    # lancer le script sur l'un d'eux rend un compte rendu d'apparence normale
+    # et ne change rien.
+    SANS_CLEF=$(git ls-files --cached --others --exclude-standard "*.html" \
+      | xargs grep -lE "(src|href)=\"(\.\./)*${MOTIF}\"" 2>/dev/null || true)
+    if [ -n "$SANS_CLEF" ]; then
+      NB_SANS=$(echo "$SANS_CLEF" | grep -c .)
+      echo "⚠ $FICHIER : 0 fichier touché -- aucune référence VERSIONNÉE trouvée." >&2
+      echo "  Mais $NB_SANS page(s) le référencent SANS clef. Ce script entretient une" >&2
+      echo "  clef, il n'en crée pas : posez d'abord \"?v=<horodatage>\" sur ces" >&2
+      echo "  références, puis relancez. Tant qu'elles n'en portent pas, cet actif est" >&2
+      echo "  hors du périmètre de TOUS les gardes -- le contrôle de cohérence de la CI" >&2
+      echo "  dérive le sien des références versionnées." >&2
+      echo "$SANS_CLEF" | sed 's/^/    /' >&2
+    else
+      echo "⚠ $FICHIER : aucune référence, versionnée ou non -- nom correct ? rien à faire." >&2
+    fi
     # RENDU COMPTE, meme si rien n'a ete fait : « rien a faire » est une
     # reponse sur cet argument. Ce qui doit rester invisible, c'est
     # l'argument dont le script ne dit RIEN.
