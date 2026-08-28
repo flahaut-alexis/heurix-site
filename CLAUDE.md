@@ -950,6 +950,49 @@ Elle a en revanche l'avantage que rien d'autre n'a : **elle ne demande rien à
 personne**, ne change pas la méthode de travail, et ne retarde pas le
 déploiement d'une seconde.
 
+##### Le geste qui rendrait le crochet impossible à oublier existe, et il a un piège
+
+**C'est la limite qui décide si le crochet vaut quelque chose.** Installé sur
+un clone et absent des deux autres, il protège un tiers des pushs en donnant
+l'impression d'en protéger trois tiers — et l'impression est le vrai coût, pas
+le tiers manquant.
+
+Mesuré : `npm` exécute le script `prepare` d'un `package.json` **à la fois sur
+`npm install` et sur `npm ci`** (npm 11.16.0, vérifié sur un paquet d'essai).
+
+C'est ce qui le rend presque impossible à oublier : **on ne peut pas lancer la
+suite de tests sans `node_modules`, et on ne peut pas obtenir `node_modules`
+sans passer par npm.** Le geste qu'aucune session ne saute est donc exactement
+celui qui poserait le crochet.
+
+```json
+"scripts": { "prepare": "scripts/installer-crochets.sh || true" }
+```
+
+**LE `|| true` N'EST PAS UNE PRÉCAUTION, IL EST OBLIGATOIRE, et mesurer
+pourquoi a évité de casser la CI.** Le job « Suite de tests » lance `npm ci`
+(ligne 95 de `CI.yml`) et utilise `setup-node`, **pas `setup-python`**. Or
+`scripts/installer-crochets.sh` sort en 1 quand PyYAML manque — délibérément,
+pour que l'absence se découvre à l'installation plutôt qu'au premier push. Sans
+le `|| true`, ce refus remonterait dans `npm ci` et **ferait échouer le job de
+tests**.
+
+Et rien n'établit que PyYAML soit présent sur le runner : **aucun script
+tournant aujourd'hui en CI n'importe `yaml`** — vérifié un par un. La question
+ne se pose pas si le `prepare` ne peut pas échouer.
+
+C'est un garde qui casserait ce qu'il protège, et il ne se serait pas vu à
+l'écriture : la ligne `prepare` est correcte, l'installateur est correct, c'est
+leur composition qui ne l'est pas. Seule la question « où tourne `npm ci`, et
+avec quel python ? » le montre.
+
+**Ce que ce geste ne ferme toujours pas**, et il faut le dire avec :
+`npm install --ignore-scripts` le saute ; un `node_modules` recopié à la main
+ne déclenche rien ; et la limite 2 du crochet, `--no-verify`, reste entière.
+Seule une protection de branche est une porte.
+
+Non posé ici : la consigne était de mesurer, pas de configurer.
+
 ##### « Up to date » impose une mise à jour MANUELLE, et c'est là qu'est l'embouteillage
 
 Mesuré sur la documentation GitHub le 28 août 2026, parce que la différence
@@ -976,19 +1019,34 @@ doc l'écrit dans ces termes : elle donne les mêmes garanties que
 de mettre sa branche à jour ni d'attendre que les contrôles refinissent. Elle
 teste chaque PR contre la base **plus les PR déjà en file**, puis fusionne.
 
-**NON VÉRIFIÉ, et c'est le point à trancher avant de choisir :** la page que
-j'ai lue ne dit pas pour quels types de dépôt ni quels plans la file de fusion
-est disponible. `heurix-site` est public, ce qui joue en sa faveur, mais je ne
-l'ai pas établi. Le contrôle se fait en ouvrant la règle de protection : soit
-l'option y figure, soit non.
+**VÉRIFIÉ LE 28 AOÛT 2026 : LA FILE DE FUSION N'EST PAS DISPONIBLE ICI.**
+L'annonce de disponibilité générale la donne « on private and public repos on
+the GitHub Enterprise Cloud plan and all public repos owned by organizations ».
+La condition n'est pas la visibilité, c'est **le type de propriétaire** — et
+c'est exactement celle qu'on ne pense pas à vérifier, parce que « dépôt
+public » semble suffire.
 
-D'où trois configurations, et non deux :
+```
+owner: flahaut-alexis    type: User    visibility: public
+```
+
+`heurix-site` appartient à un **compte personnel**, pas à une organisation. Il
+est public et cela ne suffit pas. Le champ GraphQL `mergeQueue` résout pourtant
+sur ce dépôt et rend `null` — **ce `null` dit « aucune file configurée », pas
+« file indisponible »**, et le lire comme une réponse à la question de la
+disponibilité serait exactement l'erreur du zéro pris pour une absence.
+
+Il reste donc **deux** configurations, pas trois :
 
 | | mise à jour de branche | ce qui garantit ce qui part |
 |---|---|---|
 | protection seule | — | **non** : la CI a testé autre chose que le résultat de la fusion |
 | + « up to date » | **manuelle**, à chaque fusion d'autrui | oui, au prix d'un embouteillage à trois sessions |
-| + file de fusion | **aucune** | oui, sans l'embouteillage — *si elle est disponible ici* |
+| ~~+ file de fusion~~ | — | **hors de portée** tant que le dépôt appartient à un compte personnel |
+
+La seule chose qui la débloquerait est de transférer le dépôt à une
+organisation. C'est une décision d'une autre nature que le choix d'un garde, et
+elle n'est pas prise ici.
 
 ##### Et mon rejeu du contrôle a rendu l'inverse, parce que je l'avais changé de shell
 
