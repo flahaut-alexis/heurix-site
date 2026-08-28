@@ -1,0 +1,150 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630"
+     role="img" aria-labelledby="og-titre og-desc">
+  <title id="og-titre">Heurix — une référence produit décomposée en ses attributs</title>
+  <desc id="og-desc">La référence « M8 x 20 – Inox A2 », telle qu'un marchand la fournit, entre
+  dans la loupe Heurix et en ressort en trois attributs nommés : M8 pour le diamètre, 20 mm pour la
+  longueur, Inox A2 pour la matière.</desc>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       CARTE DE PARTAGE GÉNÉRIQUE — source. Le PNG exporté depuis ce fichier
+       est servi en og:image par 103 pages ; les 20 pages solutions/* ont la
+       leur. Mesuré le 28 août 2026 : 134 pages HTML, 123 déclarent une
+       og:image, 103 pointent ici.
+
+       CE QU'ELLE MONTRE, ET POURQUOI CE CHOIX. Ce que Heurix FAIT, pas ce
+       qu'il est. La version précédente portait « Conseil en moteurs de
+       recherche pour le e-commerce » — un positionnement de prestation quitté
+       depuis pour un produit self-service, resté affiché parce qu'une image
+       ne se relit pas. Une référence décomposée en attributs ne se périme pas :
+       c'est la mécanique du produit, pas sa formulation commerciale.
+
+       LE MOTIF VIENT DE logo.svg, ET CE N'EST PAS UN ORNEMENT. Le logo est
+       une loupe qui LIT une structure — trois barres à l'intérieur du verre
+       plutôt qu'un verre vide. Les trois barres deviennent ici les trois
+       attributs qui en sortent. Le langage est celui de
+       img/prisme-marketing-double.svg : référence en mono, faisceau
+       convergent, loupe, rayons divergents, badges.
+
+       LES DEUX TOKENS DE MARQUE ÉCHOUENT SUR CE FOND, ET C'EST MESURÉ.
+       Sur #101B4D, le token « blue » #5468FF rend 3,73:1 et le token « amber »
+       #B26A00 rend 3,85:1 — tous deux sous le seuil AA de 4,5. Ils sont
+       remontés ici, en gardant la teinte :
+
+         #8AA0FF  bleu    6,65:1        #F5F6FF  encre       15,17:1
+         #3FD69A  vert    8,78:1        #CDD2F0  encre douce 10,94:1
+         #E9A93C  ambre   7,94:1
+
+       Les noms de tokens sont écrits entre guillemets plutôt qu'avec leur
+       préfixe habituel, parce qu'UN COMMENTAIRE XML NE PEUT PAS CONTENIR DEUX
+       TIRETS CONSÉCUTIFS. Écrits tels quels, ils rendaient ce fichier non
+       parsable dans TOUS les moteurs, et l'image sortait « broken » sans un
+       mot d'explication. Le contrôle qui l'attrape tient en une ligne, et il
+       vaut pour tout SVG commenté de ce dépôt :
+
+         python3 -c "import xml.dom.minidom as m; m.parse('img/og-image.svg')"
+
+       Le fond est un APLAT, pas un dégradé : un dégradé ferait dépendre le
+       contraste de la position de chaque élément, et il faudrait le mesurer
+       en son point le plus clair. C'est la leçon de la modale de recherche.
+
+       LISIBILITÉ EN PETIT. Une carte de partage fait ~340 px de large dans un
+       fil mobile, soit un facteur 0,283. Les tailles sont posées pour ça :
+       la référence à 42 px rend 11,9 px, les valeurs à 46 px rendent 13,0 px.
+       Les libellés à 25 px tombent à 7,1 px et sont assumés comme secondaires
+       — « M8 », « 20 mm », « Inox A2 » se lisent sans eux.
+
+       PAS DE PHOTO, PAS DE VISAGE, AUCUNE FORMULATION DE PRESTATION.
+       ═══════════════════════════════════════════════════════════════════════ -->
+
+  <rect width="1200" height="630" fill="#101B4D"/>
+
+  <!-- PAS DE HALO, ET C'EST UNE DÉCISION MESURÉE. Un dégradé radial très
+       faible en haut à droite donnait un peu de volume. Exporté des deux
+       façons : 383 Ko avec, 91 Ko sans — il coûtait 292 Ko, un facteur 4,2.
+       Un dégradé sur un aplat détruit la compression PNG, qui vit de plages
+       identiques. Et il était INVISIBLE à 340 px, la seule taille à laquelle
+       cette image est réellement regardée. Un effet qu'on ne voit pas au prix
+       de quatre fois le fichier, sur une image que les robots des réseaux
+       vont chercher à chaque partage. -->
+
+  <!-- ── Signature ─────────────────────────────────────────────────────── -->
+  <g transform="translate(64,44) scale(0.72)" stroke="#8AA0FF" stroke-linecap="round" fill="none">
+    <circle cx="27" cy="27" r="17" stroke-width="6"/>
+    <path d="M19 21h16M19 27h16M19 33h16" stroke-width="4"/>
+    <path d="M40 40 L54 54" stroke-width="7"/>
+  </g>
+  <text x="124" y="87" font-family="'Plus Jakarta Sans',sans-serif" font-size="40"
+        font-weight="800" fill="#F5F6FF" letter-spacing="-0.5">Heurix</text>
+
+  <!-- ── Entrée : la référence telle que le marchand la fournit ────────── -->
+  <rect x="64" y="176" width="146" height="40" rx="20" fill="#8AA0FF" fill-opacity="0.16"/>
+  <text x="137" y="203" text-anchor="middle" font-family="'Plus Jakarta Sans',sans-serif"
+        font-size="21" font-weight="700" fill="#8AA0FF">Outillage</text>
+
+  <!-- POIDS 500, PAS 700 : IBM Plex Mono n'est auto-hébergé qu'en 400 et 500
+       (styles.css). Demander 700 déclencherait un GRAS SYNTHÉTIQUE, que chaque
+       moteur épaissit à sa façon — invisible à l'écran, figé dans le PNG.
+       img/prisme-marketing-double.svg demande 700 et vit avec ; une image
+       exportée ne le peut pas. -->
+  <text x="64" y="292" font-family="'IBM Plex Mono',monospace" font-size="42"
+        font-weight="500" fill="#F5F6FF">« M8 x 20 – Inox A2 »</text>
+  <text x="64" y="336" font-family="'Plus Jakarta Sans',sans-serif" font-size="25"
+        fill="#CDD2F0">référence telle que reçue</text>
+
+  <!-- ── Faisceau convergent ──────────────────────────────────────────── -->
+  <g stroke="#CDD2F0" stroke-width="2.4" stroke-linecap="round" opacity="0.45">
+    <line x1="614" y1="196" x2="700" y2="268"/>
+    <line x1="614" y1="240" x2="702" y2="277"/>
+    <line x1="614" y1="284" x2="704" y2="286"/>
+    <line x1="614" y1="328" x2="702" y2="295"/>
+    <line x1="614" y1="372" x2="700" y2="304"/>
+  </g>
+
+  <!-- ── La loupe : le logo, à l'échelle. Les trois barres du verre sont
+         les trois attributs, avant qu'ils n'en sortent. ───────────────── -->
+  <g transform="translate(676,206) scale(2.9)" stroke="#8AA0FF" stroke-linecap="round" fill="none">
+    <circle cx="27" cy="27" r="17" stroke-width="6" fill="#101B4D" fill-opacity="0.85"/>
+    <path d="M19 21h16" stroke-width="4" stroke="#8AA0FF"/>
+    <path d="M19 27h16" stroke-width="4" stroke="#3FD69A"/>
+    <path d="M19 33h16" stroke-width="4" stroke="#E9A93C"/>
+    <path d="M40 40 L54 54" stroke-width="7"/>
+  </g>
+
+  <!-- ── Rayons divergents ────────────────────────────────────────────── -->
+  <path d="M800 254 L872 198" fill="none" stroke="#8AA0FF" stroke-width="3" stroke-linecap="round" opacity="0.9"/>
+  <path d="M806 292 L872 292" fill="none" stroke="#3FD69A" stroke-width="3" stroke-linecap="round" opacity="0.9"/>
+  <path d="M800 330 L872 386" fill="none" stroke="#E9A93C" stroke-width="3" stroke-linecap="round" opacity="0.9"/>
+
+  <!-- ── Sortie : trois attributs nommés ──────────────────────────────── -->
+  <g>
+    <circle cx="904" cy="198" r="15" fill="none" stroke="#8AA0FF" stroke-width="3.5"/>
+    <circle cx="904" cy="198" r="6"  fill="#8AA0FF"/>
+    <text x="942" y="192" font-family="'Plus Jakarta Sans',sans-serif" font-size="46"
+          font-weight="800" fill="#8AA0FF">M8</text>
+    <text x="942" y="226" font-family="'Plus Jakarta Sans',sans-serif" font-size="25"
+          fill="#CDD2F0">Diamètre</text>
+  </g>
+  <g>
+    <circle cx="904" cy="292" r="15" fill="none" stroke="#3FD69A" stroke-width="3.5"/>
+    <path d="M896 292h16M896 286v12M912 286v12" stroke="#3FD69A" stroke-width="3" stroke-linecap="round"/>
+    <text x="942" y="286" font-family="'Plus Jakarta Sans',sans-serif" font-size="46"
+          font-weight="800" fill="#3FD69A">20 mm</text>
+    <text x="942" y="320" font-family="'Plus Jakarta Sans',sans-serif" font-size="25"
+          fill="#CDD2F0">Longueur</text>
+  </g>
+  <g>
+    <circle cx="904" cy="386" r="15" fill="none" stroke="#E9A93C" stroke-width="3.5"/>
+    <path d="M897 379h14M897 386h14M897 393h14" stroke="#E9A93C" stroke-width="2.6" stroke-linecap="round"/>
+    <text x="942" y="380" font-family="'Plus Jakarta Sans',sans-serif" font-size="46"
+          font-weight="800" fill="#E9A93C">Inox A2</text>
+    <text x="942" y="414" font-family="'Plus Jakarta Sans',sans-serif" font-size="25"
+          fill="#CDD2F0">Matière</text>
+  </g>
+
+  <!-- ── Pied ─────────────────────────────────────────────────────────── -->
+  <line x1="64" y1="510" x2="1136" y2="510" stroke="#F5F6FF" stroke-width="1.5" opacity="0.14"/>
+  <text x="64" y="570" font-family="'Plus Jakarta Sans',sans-serif" font-size="27"
+        font-weight="500" fill="#CDD2F0">Outillage, mode, industrie : chaque référence, décomposée en attributs.</text>
+  <text x="1136" y="570" text-anchor="end" font-family="'Plus Jakarta Sans',sans-serif"
+        font-size="27" font-weight="700" fill="#F5F6FF">heurix.fr</text>
+</svg>
