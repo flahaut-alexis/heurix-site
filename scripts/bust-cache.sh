@@ -31,15 +31,24 @@
 #   scripts/bust-cache.sh console.js
 #   scripts/bust-cache.sh styles.css console.js demo-boutique.js
 #
-# NE MARCHE PAS SUR downloads/ (mesuré le 26 août 2026). Lancer
-# `bust-cache.sh heurix-search.js` -- ce que cette ligne proposait -- ne
-# touche PAS les références réelles `"../downloads/heurix-search.js?v="`,
-# qui portent un sous-chemin : il réécrit à la place les SNIPPETS DE
-# DOCUMENTATION de docs.html et du guide de mise en route, où le même nom
-# apparaît sans dossier parce qu'il désigne le fichier chez le client.
-# Deux populations disjointes, dont le script ne voit que la mauvaise.
-# Sans conséquence aujourd'hui (la clef du 25 août est postérieure aux
-# dernières modifications des widgets), mais à savoir avant d'y toucher.
+# UN ACTIF DANS UN SOUS-DOSSIER SE PASSE AVEC SON CHEMIN :
+#   scripts/bust-cache.sh img/familles-moteurs.svg
+#   scripts/bust-cache.sh downloads/heurix-search.js
+#
+# CE PARAGRAPHE DISAIT LE CONTRAIRE JUSQU'AU 28 AOUT 2026, et il avait raison
+# le 26 : « NE MARCHE PAS SUR downloads/ », parce que le chemin ne faisait pas
+# alors partie de l'argument. Le correctif du 27 août l'a rendu faux (voir
+# « LE SOUS-DOSSIER EST DANS L'ARGUMENT », plus bas dans ce fichier), et la
+# note d'usage a survécu à son propre correctif, dans le MÊME fichier, soixante
+# lignes plus haut que lui.
+#
+# Ce qu'elle a coûté : un lecteur du 28 août l'a prise pour vraie, a lancé
+# `bust-cache.sh familles-moteurs.svg` SANS le chemin -- la seule forme que son
+# hypothèse prévoyait --, a lu « aucune référence, versionnée ou non », y a vu
+# la confirmation d'un septième défaut de l'outil, et a écrit cinquante-huit
+# lignes de documentation fausse avant de tester l'autre forme.
+#
+# La mesure ne l'a pas protégé : elle ne testait que ce qu'il croyait déjà.
 
 set -euo pipefail
 

@@ -932,62 +932,53 @@ auteur le jour même : ma justification d'`apple-touch-icon.png` commençait par
 « Même cas que… ».
 
 
-#### Septième défaut : le motif ancre sur le NOM, jamais sur le chemin
+#### Le septième défaut n'existait pas, et c'est la note d'usage qui mentait
 
-Le sixième a été refermé en ajoutant un second compte — « N page(s) le
-référencent SANS clef ». Ce correctif a un angle mort, et c'est ce défaut-ci :
-**les deux compteurs ratent un actif rangé dans un sous-dossier.**
+*Écrit le 28 août 2026, puis corrigé le même jour. La version précédente de
+cette section affirmait un septième défaut de `bust-cache.sh` : « le motif
+ancre sur le nom, jamais sur le chemin ». **C'était faux.***
 
-Le motif est `"((\.\./)*)<fichier>\?v=[0-9]+`. Il accepte des `../` répétés
-devant le NOM, jamais un segment de chemin entre les deux. Or les quatre
-schémas vivent dans `img/` et sont référencés depuis `blog/` et `solutions/` :
+`scripts/bust-cache.sh img/familles-moteurs.svg` fonctionne, et rend
+`✓ propagé dans 1 fichier(s) (1 référence(s))`. Le chemin se passe en argument
+depuis le correctif du 27 août, documenté dans le script sous
+« LE SOUS-DOSSIER EST DANS L'ARGUMENT ».
 
-```
-"../img/familles-moteurs.svg?v=1787908454"
-      ^^^^ le segment que le motif n'accepte pas
-```
+**Ce qui m'a trompé est dans le même fichier, soixante lignes plus haut :** le
+bloc USAGE portait encore, daté du 26 août, « NE MARCHE PAS SUR `downloads/` »
+— vrai ce jour-là, rendu faux le lendemain par un correctif qui n'a pas mis à
+jour la note qui le contredisait. **Une instruction d'usage qui survit à son
+propre correctif**, dans le fichier qu'elle décrit. C'est la famille du
+« 850 € HT/jour » et de la ligne « Conseil en moteurs de recherche » de
+l'image générique : une valeur qui survit à un changement en devenant fausse.
+Le bloc est corrigé.
 
-Mesuré le 28 août 2026 :
+#### Et la mesure ne m'a pas protégé, parce qu'elle ne testait que mon hypothèse
+
+C'est le point qui vaut d'être gardé. J'ai mesuré avant d'écrire, comme la
+règle l'exige. J'ai lancé :
 
 ```
 $ scripts/bust-cache.sh familles-moteurs.svg
 ⚠ familles-moteurs.svg : aucune référence, versionnée ou non -- nom correct ? rien à faire.
 ```
 
-**« Aucune référence, versionnée ou non » est faux.** Le fichier est référencé,
-avec une clef, depuis une page suivie. Le script affirme une absence là où il y
-a une présence — et « nom correct ? » oriente vers une faute de frappe qu'on ne
-trouvera pas.
+et j'y ai lu la confirmation. Mais **je n'ai lancé que la forme que mon
+hypothèse prévoyait.** Je croyais le chemin non supporté, donc je n'ai pas
+essayé le chemin. La sortie était exacte — sans le chemin, il n'y a
+effectivement aucune référence — et elle confirmait une conclusion fausse.
 
-C'est plus grave que le sixième, qui disait au moins que l'actif existait
-quelque part. Celui-ci le déclare inexistant, et la conclusion naturelle est
-« fichier mort, rien à faire ». Deux causes, un seul symptôme : celui qui a
-appris la leçon du sixième — « l'actif n'a pas de clef » — diagnostiquera
-justement l'inverse de la réalité, puisque ici la clef est là et c'est le
-chemin qui gêne.
+> **Une mesure qui ne teste que l'hypothèse qu'on a déjà ne peut que la
+> confirmer. Ce n'est pas une mesure, c'est une illustration.**
 
-**Ce n'est pas une nouveauté, et c'est ce qui le rend intéressant.** L'en-tête
-du script documente déjà le cas depuis le 26 août, mesuré sur `downloads/` :
+Le remède est le même que celui de la contradiction comme signal, pris par
+l'autre bout : au lieu d'attendre que deux sorties se contredisent, **produire
+soi-même la sortie qui pourrait contredire**. Ici : lancer les DEUX formes,
+avec et sans chemin. Trente secondes, et cinquante-huit lignes de documentation
+fausse en moins.
 
-> NE MARCHE PAS SUR `downloads/`. […] il réécrit à la place les SNIPPETS DE
-> DOCUMENTATION […]. Deux populations disjointes, dont le script ne voit que la
-> mauvaise.
-
-C'était écrit comme **la limite d'un dossier**. C'est en réalité **une propriété
-du motif**, qui vaut pour tout sous-dossier — `img/` aujourd'hui, n'importe
-lequel demain. Une limite décrite au singulier se relit comme un cas
-particulier, et personne ne la généralise.
-
-**Contourné, pas corrigé.** Les deux clefs des schémas ont été bumpées à la
-main, ancrées sur la référence complète. Les deux schémas restants auront le
-même problème.
-
-**Le correctif est probablement simple** — ancrer sur le chemin de référence
-plutôt que sur le nom seul — et il va dans le sens du garde-fou existant : un
-motif qui inclut le sous-chemin est *plus* strict, pas moins, donc il ne rouvre
-pas le risque de fuite vers un homonyme que l'ancrage sur le guillemet
-protégeait. Mais c'est un chantier à part, et il se mesure : il faut vérifier ce
-qu'il change sur les actifs déjà versionnés avant de le lancer.
+Le coût réel : ces lignes ont été écrites, commitées, poussées, et lues comme
+un fait — au point qu'on m'a demandé de traiter ce défaut en priorité, avant
+les schémas. Un rapport faux mobilise le temps de quelqu'un d'autre.
 
 ### Trois commandes dont la portée vient de l'arbre, et non d'une liste
 
