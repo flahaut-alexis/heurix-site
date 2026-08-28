@@ -139,16 +139,45 @@ describe("index derive — le verificateur", () => {
     expect(r.code, r.sortie).toBe(0);
   });
 
+  // LA RESTAURATION NE REECRIT PLUS UN INSTANTANE (28 aout 2026).
+  //
+  // Cette assertion mute un fichier SUIVI de l'arbre. Avec un instantane pris
+  // au debut et reecrit a la fin, deux executions simultanees se defont :
+  //
+  //     A lit docs.html propre        A ecrit le marqueur
+  //                                   B lit docs.html DEJA MARQUE
+  //     A restaure -> propre          B restaure -> MARQUE, definitivement
+  //
+  // Mesure du 28 aout : le marqueur est reste dans l'arbre, le verificateur
+  // d'index a vu « docs.html : son contenu indexable a change », le crochet
+  // pre-push a refuse, et CINQ commits de TROIS sessions sont restes bloques.
+  // Le danger reel n'etait pas le blocage : le message du verificateur dit
+  // « Regenerez », et regenerer aurait grave « Documentation API — Heurix
+  // modifie » dans l'index servi aux visiteurs.
+  //
+  // Deux changements, et le second compte autant que le premier :
+  //   - on restaure en RETIRANT le marqueur du fichier tel qu'il est alors,
+  //     jamais en reecrivant un etat lu avant ; deux executions convergent.
+  //   - on REFUSE de tourner si le marqueur est deja la. C'est le cas
+  //     « je ne peux pas mesurer » : une autre execution est en vol, et
+  //     muter par-dessus corromprait son etat. Echouer en le nommant vaut
+  //     mieux que passer au vert sur un fichier qu'on vient d'abimer.
+  const MARQUEUR = " modifie</title>";
+
   it("NOMME la page fautive plutot que de sortir 1 en silence", () => {
     const page = path.join(RACINE, "docs.html");
-    const avant = fs.readFileSync(page, "utf8");
+    expect(fs.readFileSync(page, "utf8").includes(MARQUEUR),
+      "docs.html porte deja le marqueur : une autre execution est en vol, " +
+      "ou une precedente ne s'est pas nettoyee. Retirez-le avant de relancer."
+    ).toBe(false);
     try {
-      fs.writeFileSync(page, avant.replace("</title>", " modifie</title>"));
+      fs.writeFileSync(page, fs.readFileSync(page, "utf8").replace("</title>", MARQUEUR));
       const r = verifier();
       expect(r.code).toBe(1);
       expect(r.sortie).toContain("docs.html");
     } finally {
-      fs.writeFileSync(page, avant);
+      const s = fs.readFileSync(page, "utf8");
+      if (s.includes(MARQUEUR)) fs.writeFileSync(page, s.replace(MARQUEUR, "</title>"));
     }
   });
 
@@ -163,18 +192,47 @@ describe("index derive — le verificateur", () => {
   // dont il n'a pas trace -- et rien ne sort du fichier d'index.
   it("detecte une page AJOUTEE — celle qui ne change aucune empreinte", () => {
     const f = path.join(RACINE, "search-index-fr.json");
+    // MEME CORRECTION QUE CI-DESSUS, ET LE MEME SOIR ELLE A LAISSE UNE TRACE.
+    // L'instantane reecrit a la fin a fait disparaitre DEFINITIVEMENT
+    // l'empreinte d'about.html du fichier suivi : le verificateur annoncait
+    // « about.html : AJOUTEE depuis la generation », et une session a failli
+    // regenerer l'index pour reparer un defaut qui n'existait pas.
+    //
+    // On restaure donc en REMETTANT LA SEULE CLEF retiree, dans le fichier tel
+    // qu'il est alors -- jamais en reecrivant les 170 Ko lus au debut, qui
+    // emporteraient au passage tout ce qu'une autre execution y aurait fait.
     const avant = fs.readFileSync(f, "utf8");
+    const idxAvant = JSON.parse(avant);
+    const orpheline = Object.keys(idxAvant.empreintes)[0];
+    const valeur = idxAvant.empreintes[orpheline];
+    expect(valeur, `${orpheline} : empreinte deja absente, une autre execution est en vol`)
+      .toBeDefined();
+    const mute = JSON.stringify((delete idxAvant.empreintes[orpheline], idxAvant));
     try {
-      const idx = JSON.parse(avant);
-      const orpheline = Object.keys(idx.empreintes)[0];
-      delete idx.empreintes[orpheline];
-      fs.writeFileSync(f, JSON.stringify(idx));
+      fs.writeFileSync(f, mute);
       const r = verifier();
       expect(r.code).toBe(1);
       expect(r.sortie).toContain(orpheline);
       expect(r.sortie).toContain("AJOUTEE");
     } finally {
-      fs.writeFileSync(f, avant);
+      const apres = fs.readFileSync(f, "utf8");
+      if (apres === mute) {
+        // CAS NORMAL : le fichier est exactement ce que nous y avons ecrit,
+        // donc personne n'a touche a rien. On repose LES OCTETS D'ORIGINE.
+        // Reserialiser reordonnerait les clefs et laisserait un diff d'une
+        // ligne sur 170 Ko dont rien n'a bouge -- un test ne doit pas salir
+        // l'arbre, meme cosmetiquement : c'est ce qui fait perdre du temps a
+        // la session suivante qui lit `git status`.
+        fs.writeFileSync(f, avant);
+      } else {
+        // Quelqu'un a ecrit entre-temps. On remet LA SEULE CLEF retiree, sans
+        // toucher au reste de son travail.
+        const idx = JSON.parse(apres);
+        if (!(orpheline in idx.empreintes)) {
+          idx.empreintes[orpheline] = valeur;
+          fs.writeFileSync(f, JSON.stringify(idx));
+        }
+      }
     }
   });
 });
