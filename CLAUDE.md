@@ -1399,6 +1399,55 @@ du code qu'il ne contient pas.** Celui de `vins` décrivait `fold()`, à deux
 dépôts de distance. Les trois formulations successives ont été fausses tour à
 tour, et aucune ne pouvait être vérifiée depuis le fichier qui la portait.
 
+#### Le symétrique : un commentaire vrai, et aveuglant par ce qu'il ne couvre pas
+
+Tout ce qui précède décrit des affirmations qui ont **cessé** d'être vraies.
+Le 28 août 2026, la même famille s'est présentée à l'envers, et cette
+occurrence-là est la plus difficile des deux.
+
+`styles.css` porte, écrit en capitales juste au-dessus des règles de la modale
+de recherche :
+
+> LA MODALE NE DÉPEND PAS DE SA PAGE, vérifié avant d'écrire ces règles :
+> aucune règle `.search-*` sous `body.docs-dark`, aucune des variables
+> employées redéfinie hors de `:root`, et valeurs calculées identiques sur
+> `index.html` (docs-dark) et `404.html` (aucune classe).
+
+**Chaque mot est exact, la vérification a réellement eu lieu, et elle est
+toujours valable aujourd'hui.** Le commentaire n'a jamais été faux une seule
+seconde. Il ne le deviendra pas.
+
+Il énonce pourtant une indépendance **du panneau**, et se lit comme une
+indépendance **du composant**. Le voile — `.search-backdrop`, un frère du
+panneau dans le même conteneur — est posé sur ce que la page peint, donc il
+dépend de sa page entièrement. C'est ce qui a fait qu'une valeur de contraste
+mesurée sur le seul accueil a failli partir en production : le commentaire
+répondait d'avance, et par l'affirmative, à la question qu'il fallait poser.
+
+**C'EST PIRE QU'UN COMMENTAIRE FAUX, ET POUR UNE RAISON MÉCANIQUE.** Un
+commentaire faux finit par rencontrer une mesure qui le contredit — c'est ce
+qui a sauvé les trois cas ci-dessus, et le septième défaut de
+`bust-cache.sh`. Celui-ci ne rencontrera jamais de contradiction, puisqu'il
+est vrai. Aucune mesure ne le démentira, aucun test ne mordra, et sa portée
+réelle ne sera jamais mise en cause par les faits.
+
+| | ce qui finit par l'attraper |
+|---|---|
+| commentaire devenu faux | n'importe quelle mesure de ce qu'il affirme |
+| **commentaire vrai et étroit** | **rien — il faut penser à demander sa portée** |
+
+Le geste, et c'est le seul qui marche ici : **quand un commentaire affirme une
+indépendance, demander de quoi exactement, et sur quel élément.** Pas
+« est-ce vrai ? » — ça l'est — mais « qu'est-ce que ça ne couvre pas ? ».
+Ici : quels autres éléments ce composant pose-t-il, et ceux-là dépendent-ils
+de la page ? Deux minutes, et la réponse était dans le même fichier, dix
+lignes plus haut.
+
+Corollaire d'écriture : **une affirmation de portée nomme son sujet.** « La
+modale ne dépend pas de sa page » et « le panneau ne dépend pas de sa page »
+coûtent le même nombre de mots. La seconde n'aurait rendu personne aveugle au
+voile.
+
 ### Quatre divergences silencieuses, et la quatrième traverse les sessions
 
 Quatre fois en une semaine, un instrument et sa cible ont divergé sans qu'un
