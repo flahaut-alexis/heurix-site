@@ -75,9 +75,23 @@ describe("recherche du site — le bouton doit avoir son moteur", () => {
     expect(restantes.map((p) => path.relative(RACINE, p))).toEqual([]);
   });
 
-  it("plus aucune page ne charge les anciens index", () => {
+  // L'IDENTITE D'UN SCRIPT EST SON NOM DE FICHIER ENTIER, PAS UN SUFFIXE.
+  // Le motif portait `\bsearch(-en)?\.js`. Un tiret n'est pas un caractere de
+  // mot, donc `\b` tombe AUSSI entre `heurix-` et `search` : la regle visait
+  // les anciens `search.js` / `search-en.js` du site et attrapait
+  // `downloads/heurix-search.js`, qui est le widget livre aux clients -- un
+  // fichier different, au role oppose.
+  //
+  // Trouve le 28 aout 2026 en branchant ce widget sur les quatre pages de
+  // demo/ : le test a echoue en les nommant, sur un chargement legitime.
+  //
+  // La forme juste exige que ce qui precede `search` soit un separateur de
+  // chemin ou rien : `(?:[^"]*\/)?`. C'est la meme lecon que « l'identite d'un
+  // actif est son chemin, pas son nom de fichier », prise par l'autre bout --
+  // la on groupait trop large, ici on matchait trop facilement.
+  it("plus aucune page ne charge les anciens index du site", () => {
     const fautives = pagesHtml().filter((p) =>
-      /<script[^>]*src="[^"]*\bsearch(-en)?\.js/.test(fs.readFileSync(p, "utf8")));
+      /<script[^>]*src="(?:[^"]*\/)?search(-en)?\.js/.test(fs.readFileSync(p, "utf8")));
     expect(fautives.map((p) => path.relative(RACINE, p))).toEqual([]);
   });
 });
