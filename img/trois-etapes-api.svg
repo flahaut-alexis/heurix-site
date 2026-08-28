@@ -1,0 +1,71 @@
+<svg viewBox="0 0 680 344" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="te-title te-desc">
+  <title id="te-title">Les trois étapes, et ce qui passe de l'une à l'autre</title>
+  <desc id="te-desc">Étape 1 : votre catalogue est indexé par un appel API, et le pack de règles de votre secteur s'active. Étape 2 : la cascade annote chaque produit, symbolisée par la même loupe que le schéma du prisme plus haut sur la page ; la fiche « M8 x 20 — A2 » produit DIAM_M8, LONG_20, MAT_INOX et VIS_M8X20. Étape 3 : la requête d'un client, écrite autrement — « vis m8 inox » — retrouve le produit, parce que les deux se réduisent aux mêmes annotations.</desc>
+  <rect x="0" y="0" width="680" height="344" rx="14" fill="#FFFFFF" stroke="#E7E9F2" stroke-width="1"/>
+
+  <text x="340" y="28" text-anchor="middle" font-family="'Plus Jakarta Sans',sans-serif" font-size="13" font-weight="700" fill="#12142B">Trois étapes, et ce qui passe de l'une à l'autre</text>
+
+  <!-- ═══ 1 · le catalogue ═══ -->
+  <circle cx="46" cy="66" r="13" fill="#3F52E8"/>
+  <text x="46" y="71" text-anchor="middle" font-family="'Plus Jakarta Sans',sans-serif" font-size="12" font-weight="700" fill="#FFFFFF">1</text>
+  <text x="68" y="71" font-family="'Plus Jakarta Sans',sans-serif" font-size="12.5" font-weight="700" fill="#12142B">Indexez votre catalogue</text>
+
+  <rect x="24" y="90" width="180" height="86" rx="10" fill="#FBFBFD" stroke="#E7E9F2" stroke-width="1"/>
+  <text x="114" y="112" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="11" fill="#5B5E76">M8 x 20 — A2</text>
+  <text x="114" y="132" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="11" fill="#5B5E76">vis M8 inox</text>
+  <text x="114" y="152" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="11" fill="#5B5E76">m8x20 A2</text>
+  <text x="114" y="168" text-anchor="middle" font-family="'Plus Jakarta Sans',sans-serif" font-size="9.5" fill="#888780">vos fiches, telles qu'elles sont</text>
+
+  <path d="M212 133 L242 133" fill="none" stroke="#3F52E8" stroke-width="2" stroke-linecap="round"/>
+  <path d="M235 126 L243 133 L235 140" fill="none" stroke="#3F52E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="227" y="122" text-anchor="middle" font-family="'Plus Jakarta Sans',sans-serif" font-size="9.5" font-weight="700" fill="#3F52E8">un appel</text>
+  <text x="227" y="154" text-anchor="middle" font-family="'Plus Jakarta Sans',sans-serif" font-size="9.5" font-weight="700" fill="#3F52E8">API</text>
+
+  <!-- ═══ 2 · la cascade · MEME LOUPE QUE LE PRISME, plus haut sur la page ═══ -->
+  <circle cx="278" cy="66" r="13" fill="#3F52E8"/>
+  <text x="278" y="71" text-anchor="middle" font-family="'Plus Jakarta Sans',sans-serif" font-size="12" font-weight="700" fill="#FFFFFF">2</text>
+  <text x="300" y="71" font-family="'Plus Jakarta Sans',sans-serif" font-size="12.5" font-weight="700" fill="#12142B">La cascade annote</text>
+
+  <rect x="252" y="90" width="176" height="86" rx="10" fill="#FBFBFD" stroke="#E7E9F2" stroke-width="1"/>
+  <g>
+    <circle cx="326" cy="126" r="26" fill="#EEF1FF" stroke="#3F52E8" stroke-width="1.6"/>
+    <line x1="345" y1="145" x2="361" y2="161" stroke="#3F52E8" stroke-width="5" stroke-linecap="round"/>
+  </g>
+  <text x="340" y="168" text-anchor="middle" font-family="'Plus Jakarta Sans',sans-serif" font-size="9.5" fill="#888780">le pack de votre secteur</text>
+
+  <path d="M436 133 L466 133" fill="none" stroke="#3F52E8" stroke-width="2" stroke-linecap="round"/>
+  <path d="M459 126 L467 133 L459 140" fill="none" stroke="#3F52E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- ═══ 3 · la recherche ═══ -->
+  <circle cx="498" cy="66" r="13" fill="#3F52E8"/>
+  <text x="498" y="71" text-anchor="middle" font-family="'Plus Jakarta Sans',sans-serif" font-size="12" font-weight="700" fill="#FFFFFF">3</text>
+  <text x="520" y="71" font-family="'Plus Jakarta Sans',sans-serif" font-size="12.5" font-weight="700" fill="#12142B">Vos clients trouvent</text>
+
+  <rect x="476" y="90" width="180" height="86" rx="10" fill="#FBFBFD" stroke="#E7E9F2" stroke-width="1"/>
+  <rect x="490" y="104" width="152" height="24" rx="12" fill="#FFFFFF" stroke="#C9CCDA" stroke-width="1"/>
+  <text x="566" y="120" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="11" fill="#12142B">vis m8 inox</text>
+  <text x="566" y="146" text-anchor="middle" font-family="'Plus Jakarta Sans',sans-serif" font-size="10.5" font-weight="700" fill="#1FAA6B">la fiche remonte</text>
+  <text x="566" y="168" text-anchor="middle" font-family="'Plus Jakarta Sans',sans-serif" font-size="9.5" fill="#888780">écrite autrement, et trouvée</text>
+
+  <!-- ═══ ce qui passe entre 2 et 3 : le flux d'annotations ═══ -->
+  <line x1="24" y1="204" x2="656" y2="204" stroke="#E7E9F2" stroke-width="1"/>
+  <text x="24" y="228" font-family="'Plus Jakarta Sans',sans-serif" font-size="9" font-weight="700" fill="#888780" letter-spacing="0.6">CE QUE L'ÉTAPE 2 PRODUIT, ET QUE L'ÉTAPE 3 COMPARE</text>
+
+  <rect x="24" y="240" width="94" height="26" rx="13" fill="#EEF1FF" stroke="#3F52E8" stroke-width="1.3"/>
+  <text x="71" y="257" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="10.5" font-weight="700" fill="#3F52E8">DIAM_M8</text>
+  <rect x="128" y="240" width="94" height="26" rx="13" fill="#FAEEDA" stroke="#BA7517" stroke-width="1.3"/>
+  <text x="175" y="257" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="10.5" font-weight="700" fill="#BA7517">LONG_20</text>
+  <rect x="232" y="240" width="98" height="26" rx="13" fill="#E8F8F0" stroke="#1FAA6B" stroke-width="1.3"/>
+  <text x="281" y="257" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="10.5" font-weight="700" fill="#1FAA6B">MAT_INOX</text>
+  <rect x="340" y="240" width="104" height="26" rx="13" fill="#FFFFFF" stroke="#C9CCDA" stroke-width="1.3"/>
+  <text x="392" y="257" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="10.5" font-weight="700" fill="#5B5E76">VIS_M8X20</text>
+  <rect x="24" y="272" width="128" height="26" rx="13" fill="#EEF1FF" stroke="#3F52E8" stroke-width="1.3"/>
+  <text x="88" y="289" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="10.5" font-weight="700" fill="#3F52E8">DIAM_M8_INOX</text>
+  <text x="162" y="289" font-family="'Plus Jakarta Sans',sans-serif" font-size="9.5" fill="#888780">produite au niveau 2, en combinant les deux précédentes</text>
+
+  <text x="462" y="250" font-family="'Plus Jakarta Sans',sans-serif" font-size="10" fill="#5B5E76">La requête « vis m8 inox » en rend</text>
+  <text x="462" y="263" font-family="'Plus Jakarta Sans',sans-serif" font-size="10" fill="#5B5E76">trois des cinq. Trois en commun,</text>
+  <text x="462" y="276" font-family="'Plus Jakarta Sans',sans-serif" font-size="10" fill="#5B5E76">et la fiche remonte.</text>
+
+  <text x="340" y="326" text-anchor="middle" font-family="'Plus Jakarta Sans',sans-serif" font-size="10.5" fill="#888780">Le moteur n'invente rien : « vis M8 inox » ne dit pas la longueur, donc il n'en annote pas.</text>
+</svg>
