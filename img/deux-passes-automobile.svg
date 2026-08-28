@@ -2,6 +2,8 @@
   <title id="dp-title">La cascade en deux passes : la seconde ne lit plus la fiche, elle lit ce que la première a produit</title>
   <desc id="dp-desc">Sur la fiche « Plaquettes de frein avant Bosch 0986494574 », la passe 1 reconnaît chaque motif isolément et produit trois annotations : FAM_FREINAGE depuis « Plaquettes », POS_AVANT depuis « avant », REF_BOSCH_0986494574 depuis le numéro. La passe 2 ne lit plus la fiche : elle lit ce flux d'annotations. FAM_FREINAGE combiné à POS_AVANT donne FREIN_AVANT. FREIN_ARRIERE ne se produit pas, parce que POS_ARRIERE est absent du flux — c'est cette exclusion qui empêche une plaquette arrière de remonter sur une recherche de frein avant.</desc>
 
+  <rect x="0" y="0" width="680" height="476" rx="14" fill="#FFFFFF" stroke="#E7E9F2" stroke-width="1"/>
+
   <text x="340" y="26" text-anchor="middle" font-family="'Plus Jakarta Sans',sans-serif" font-size="13" font-weight="700" fill="#12142B">Deux passes, et la seconde ne lit plus la fiche</text>
 
   <!-- ═══ LA FICHE ═══ -->

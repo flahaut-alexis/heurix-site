@@ -2,6 +2,8 @@
   <title id="fam-title">Trois familles d'outils de recherche e-commerce, et le terrain propre à chacune</title>
   <desc id="fam-desc">Les API généralistes (Algolia, Typesense) fournissent une infrastructure brute dont les règles restent à écrire ; le texte libre est leur terrain. Les solutions plug-and-play (Doofinder, Sensefuel) s'installent sans développeur et pilotent le merchandising depuis un tableau de bord. Les moteurs spécialisés comme Heurix comprennent la structure d'une référence produit dès l'indexation. Aucun des trois terrains ne recouvre les autres.</desc>
 
+  <rect x="0" y="0" width="680" height="392" rx="14" fill="#FFFFFF" stroke="#E7E9F2" stroke-width="1"/>
+
   <text x="340" y="26" text-anchor="middle" font-family="'Plus Jakarta Sans',sans-serif" font-size="13" font-weight="700" fill="#12142B">Trois familles d'outils, pas une seule catégorie</text>
 
   <!-- ═══ 1 · API généralistes ═══ -->

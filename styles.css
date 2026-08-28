@@ -2895,6 +2895,16 @@ body.docs-dark .why-card p{ color:#CDD2F0; }
 .calc-results-note a{ color:rgba(255,255,255,0.8); }
 
 .table-scroll{ overflow-x:auto; -webkit-overflow-scrolling:touch; margin:0 0 16px; }
+/* LES SCHEMAS DEFILENT AU LIEU DE RETRECIR SOUS 700 PX.
+   Mesure du 28 aout : un schema de 680 de large tombe a 334 px dans une
+   colonne de telephone, et son texte mono de 11 px y rend 5,4 px -- illisible.
+   Il garde donc sa taille et defile horizontalement, comme les tableaux larges
+   juste au-dessus. Le prisme de index.html et produit.html N'EST PAS concerne :
+   il est en production depuis des semaines sans plainte, et le changer
+   toucherait une page vue par tous pour un defaut que personne n'a signale. */
+@media (max-width:700px){
+  .schema-scroll img{ min-width:640px; }
+}
 .table-scroll table{ margin-bottom:0; }
 @media (max-width:600px){
   .table-scroll table{ min-width:480px; }
