@@ -45,18 +45,13 @@ const RACINE = path.resolve(__dirname, "..");
  * Un lien mort absent d'ici fait echouer le test ; une exception dont le
  * lien resout desormais le fait echouer aussi.
  */
-const EXCEPTIONS = new Map([
-  ["about.html :: img/photo-alexis.jpg",
-   "Emplacement volontaire, pas un lien casse : le fichier n'a jamais ete " +
-   "depose. La page porte un onerror qui masque tout le <figure>, et son " +
-   "commentaire dit pourquoi -- une image cassee ferait plus de mal qu'une " +
-   "absence d'image. A retirer d'ici le jour ou la photo arrive dans img/."],
-  ["en/about.html :: ../img/photo-alexis.jpg",
-   "Meme emplacement volontaire que about.html. Le CHEMIN, lui, etait faux " +
-   "-- « img/ » recopie de la page francaise, qui depuis en/ visait " +
-   "en/img/. Corrige le 27 aout 2026 : deposer la photo reparera desormais " +
-   "les deux pages, pas seulement la francaise."],
-]);
+// LA LISTE EST VIDE DEPUIS LE 28 AOUT 2026, et c'est le garde qui l'a exige.
+// Elle portait les deux emplacements de `img/photo-alexis.jpg`, avec la
+// mention « a retirer d'ici le jour ou la photo arrive dans img/ ». La photo
+// est arrivee, le test « aucune exception n'est perimee » est tombe, et les
+// deux entrees sont parties. C'est exactement ce que ce test-la sert a
+// produire : une exception qui survit a sa raison est un mensonge qui passe.
+const EXCEPTIONS = new Map([]);
 
 /** Schemas qui ne designent pas un fichier du depot. */
 const SCHEMA = /^(https?:|\/\/|mailto:|tel:|data:|javascript:)/;
