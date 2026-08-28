@@ -66,6 +66,89 @@ Les trois trous que `prepare` ne ferme pas — `--ignore-scripts`, un
 `scripts/installer-crochets.sh`, et les limites du crochet lui-même en tête de
 `scripts/hooks/pre-push`. Elles s'y lisent avant de lui faire confiance.
 
+### UN WORKTREE PAR SESSION, quand plusieurs sessions travaillent en même temps
+
+**Le crochet lit l'arbre de travail, pas le commit poussé** (trou n°4, en tête
+de `scripts/hooks/pre-push`). Dans un arbre partagé, cela veut dire qu'un
+fichier de travail non commité, chez n'importe qui, **bloque le déploiement de
+tout le monde**. Mesuré le 28 août 2026 : trois blocages en vingt minutes,
+trois causes différentes, aucune chez celui qui poussait — un harnais `.html`
+non suivi, un test juste mais indexé avant son correctif, un index de recherche
+en cours de régénération. Cinq commits en file derrière.
+
+Le worktree supprime la cause. **Mesuré, même plage de commits, au même
+instant :**
+
+```
+worktree      code 0     index-recherche OK   tests OK
+arbre partagé code 1     index-recherche OK   tests ÉCHEC   -> PUSH REFUSÉ
+```
+
+#### Le geste, que chaque session fait elle-même
+
+```bash
+git worktree add --detach ~/wt/heurix-site-<session> HEAD
+cd ~/wt/heurix-site-<session> && npm ci
+```
+
+**Aucune préparation centrale n'est requise** : `git worktree add` sort en 0
+sans privilège particulier. Personne n'est un goulot.
+
+`npm ci` est nécessaire parce que `node_modules` n'est pas dans le worktree —
+sans lui le bloc « Suite de tests » échoue (`0 test` collecté sur chaque
+fichier), et c'est le seul des cinq blocs qui en dépend. Il lance aussi
+`prepare`, donc `installer-crochets.sh`.
+
+Quand le lot est fini : `git worktree remove <chemin>` depuis l'arbre principal.
+
+#### Le crochet suit tout seul
+
+`core.hooksPath` vit dans le `.git/config` **commun**, donc il est hérité ; et
+il vaut `scripts/hooks`, un chemin **relatif**, donc il se résout dans le
+worktree. Vérifié : `git rev-parse --git-path hooks` y rend `scripts/hooks`, le
+fichier est exécutable, et le crochet lancé depuis le worktree fait bien
+`cd $(git rev-parse --show-toplevel)` **vers le worktree**. Rien à installer.
+
+#### Coût mesuré
+
+| poste | mesure |
+|---|---|
+| création | **0,3 s** |
+| copie de travail | 17 Mo |
+| `npm ci` | 2 s (cache chaud), 39 Mo |
+| **total par worktree** | **56 Mo** |
+| dépôt `.git` (73 Mo) | **non dupliqué** — le `.git` du worktree est un fichier de 4 Ko |
+
+#### Deux worktrees sur le même fichier : git ne refuse rien
+
+C'est la question qui décide de la méthode, et la réponse est **non**. Les deux
+copies acceptent la modification sans un mot ; il n'y a **aucun garde au moment
+de l'écriture**. Le conflit n'apparaît qu'à la réunion des deux branches :
+
+```
+CONFLICT (content): Merge conflict in styles.css
+    styles.css : UU     <<<<<<< HEAD ... ======= ... >>>>>>>
+```
+
+Ce n'est donc pas « au push que ça se règle » au sens où le push arbitrerait :
+le push du second est refusé en non-fast-forward, et c'est le `rebase` qui
+suit qui produit le conflit, à résoudre à la main comme n'importe lequel.
+
+**Ce que le worktree échange, ce n'est pas moins de conflits — c'est des
+conflits à un moment choisi plutôt qu'un blocage permanent.** Dans l'arbre
+partagé, deux sessions sur `styles.css` se marchent dessus en continu et sans
+signal. En worktrees, elles ne se gênent pas du tout jusqu'à la réunion, où
+git nomme précisément les lignes en désaccord.
+
+#### Ce que ça ne règle pas
+
+Les gardes de `.scratch/outillage-git/01` restent utiles pour un arbre à un
+seul auteur, et la neuvième forme — deux sessions écrivant dans le **même
+fichier** — reste possible dès qu'on réunit les branches. Le worktree ne
+supprime que la classe « le désordre d'autrui est dans mon `git status` », qui
+est celle qui a coûté la journée du 28 août.
+
+
 ### Le geste de publication
 
 Statique, servi par GitHub Pages. Après toute modification :
@@ -1301,6 +1384,80 @@ déclaration de `maturin` :
   (`git -C ../heurix-engine-fst log --oneline -1`) ;
 - **si vous reconstruisez pendant que d'autres sessions travaillent dans cet
   arbre, dites-le-leur.** Aucun outil ne le fera.
+
+### Une clef absente ne lève pas : elle rend vide, et le vide ressemble à un « non »
+
+Deux occurrences le 28 août 2026, à quelques heures d'écart, et une forme
+qu'aucune des divergences précédentes n'avait.
+
+| | interrogé | clef réelle | ce que l'instrument a répondu |
+|---|---|---|---|
+| 1 | `d["pages"]` | `entrees` | « 0 page sport dans l'index » |
+| 2 | `x.get("url","")` | `p` | « about.html absente de l'index, sur les 11 commits » |
+
+**Les deux réponses étaient fausses, et les deux avaient la forme d'un
+résultat.** `about.html` et `blog.html` sont dans l'index depuis sa création,
+avec 415 et 431 termes indexés ; la page du fondateur se trouve, et je l'avais
+vue à l'écran le soir même en vérifiant la modale, sans faire le rapprochement.
+
+**CECI EST PIRE QU'UN INSTRUMENT QUI ÉCHOUE.** Un instrument qui plante se
+signale ; on va voir. Celui-ci **répond**. `dict.get(clef, "")` sur une clef
+absente rend la chaîne vide, `"about" in ""` est faux, et le programme continue
+en affichant `non`. Rien ne distingue ce `non` d'un vrai. Pire encore : il est
+*stable*. Répété sur onze commits, il a rendu onze fois `non`, et cette
+constance s'est lue comme une confirmation alors qu'elle était la signature
+même du défaut — un test qui ne peut rendre qu'une seule réponse la rend
+partout.
+
+C'est la famille de « la mesure qui ne teste que son hypothèse », déplacée d'un
+cran : là on ne lançait que la forme qui confirmait ; ici on lance la bonne
+forme sur un champ qui n'existe pas, et c'est le langage qui fabrique la
+confirmation.
+
+**LE GESTE, ET IL TIENT EN UNE LIGNE.** Avant d'interroger une clef, imprimer
+les clefs réelles :
+
+```python
+print(sorted(entrees[0].keys()))     # ['e', 'k', 'p', 's', 't'] -- pas 'url'
+```
+
+Il ne coûte rien, il se fait une fois par structure, et il rend le défaut
+impossible : on ne peut pas écrire `x["url"]` après avoir lu qu'il n'y a pas
+d'`url`. Le faire systématiquement au premier accès d'une structure qu'on
+n'a pas écrite soi-même.
+
+Le corollaire vaut pour toute lecture indexée dont l'absence est silencieuse :
+`.get()`, `getattr(o, n, None)`, `os.environ.get()`, un `?.` en JavaScript, un
+`grep` sur un champ mal nommé. Chacun transforme « ce champ n'existe pas » en
+« ce champ est vide », et les deux ne veulent pas dire la même chose — c'est
+la distinction entre *écart* et *incapacité*, à l'échelle d'une expression.
+
+#### Et la consigne qui l'a lancée était pressante, ce qui est la vraie limite
+
+Ce défaut n'est pas né de ma mesure. Il est né d'une mesure reçue, transmise
+dans une consigne urgente — « deux pages manquent à l'index, personne ne trouve
+la page du fondateur, mesurez depuis quand » — et j'ai couru la vérifier au lieu
+de commencer par vérifier qu'elle était vraie.
+
+**C'est la limite de tout ce qui est écrit dans ce fichier.** Les gardes, les
+périmètres dérivés, les listes d'exceptions qui se policent : tous supposent
+qu'on prenne le temps de mesurer avant d'agir. Une consigne pressante demande
+exactement l'inverse, et elle l'obtient — non pas en désactivant les gardes,
+mais en déplaçant la question. On vérifie *ce qu'on nous a demandé de vérifier*,
+avec application, sans jamais vérifier *la prémisse de la demande*.
+
+Le remède n'est pas de se méfier des consignes. C'est que **l'urgence porte sur
+l'action, jamais sur la première mesure** : la question « cette page est-elle
+vraiment absente ? » coûtait dix secondes et venait avant « depuis quand ».
+Reprendre la mesure d'un autre, c'est d'abord la refaire — et c'est exactement
+ce que dit déjà la section sur le périmètre qui ne voyage pas avec le chiffre,
+appliqué au cas où le chiffre vient de la personne qui presse.
+
+Corollaire, valable dans les deux sens : **une demande urgente mérite qu'on
+en établisse la prémisse à voix haute avant d'agir**, ne serait-ce qu'en une
+phrase. Ici, « je confirme d'abord que les deux pages manquent » aurait clos
+l'affaire en une commande, avant l'enquête sur le générateur, avant la lecture
+du sitemap, et avant qu'un rapport faux ne remonte.
 
 ### Un chiffre porte son périmètre, et le périmètre ne voyage pas avec lui
 
