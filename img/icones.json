@@ -1,0 +1,19 @@
+{
+  "_lisez-moi": "Ce qui est derive de quoi. scripts/exporter-icones.py FABRIQUE ces PNG depuis ces SVG ; tests/icones-derivees.test.js VERIFIE qu'ils n'ont pas pris de retard. Les deux lisent ce fichier, donc ajouter une icone se fait ici et nulle part ailleurs.",
+  "icones": [
+    {
+      "png": "favicon-32.png",
+      "source": "img/favicon-source.svg",
+      "taille": 32,
+      "fond": "#ffffff",
+      "pourquoi": "Source PROPRE, pas logo.svg reduit. Mesure du 28 aout 2026 sur le rendu du navigateur : a 32 px les trois barres de logo.svg ne se separent pas, les lignes 9 a 17 sont continues ; reduit a 16 l'interieur est un aplat. Deux barres a pas de 6 laissent deux lignes de vide franc."
+    },
+    {
+      "png": "apple-touch-icon.png",
+      "source": "logo.svg",
+      "taille": 180,
+      "fond": "#ffffff",
+      "pourquoi": "180 est la convention iOS et la taille du fichier deja en place. A cette taille les trois barres de la marque sont largement lisibles : aucune simplification n'est justifiee. Fond opaque OBLIGATOIRE, iOS compose un PNG transparent sur du noir."
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none" role="img" aria-label="Heurix">
+  <!-- SOURCE DU FAVICON, distincte de logo.svg et pas une reduction de lui.
+       Mesure du 28 aout 2026 : a 32 px, les trois barres de logo.svg ne se
+       separent pas. Relu pixel par pixel sur le rendu du navigateur, les
+       lignes 9 a 17 sont continues, chaque inter-barre portant l'alpha des
+       deux voisines. A 16 px l'interieur est un aplat uniforme.
+       Deux barres a pas de 6 px laissent 3 px de vide franc entre elles.
+       Le viewBox est en 32 pour que les traits tombent sur la grille de
+       pixels a la taille reelle du favicon. -->
+  <g stroke="#4F63FF" stroke-linecap="round" fill="none">
+    <circle cx="13" cy="13" r="9" stroke-width="3"/>
+    <path d="M9 10h8M9 16h8" stroke-width="3"/>
+    <path d="M20 20 L28 28" stroke-width="3.5"/>
+  </g>
+</svg>
