@@ -42,10 +42,29 @@ donc qu'un signal *a posteriori*. Mesuré du 21 au 28 août 2026 : **onze CI
 rouges, onze déploiements réussis**, dont quatre avec une suite de tests
 rouge.
 
-`.git/` n'étant pas versionné, **ce réglage est propre à chaque clone**. Une
-session qui ne lance pas l'installateur pousse sans aucun contrôle et rien ne
-le lui dit. Les trois autres limites sont en tête de `scripts/hooks/pre-push`,
-et elles s'y lisent avant de lui faire confiance.
+**Vous n'avez normalement pas à le lancer :** `npm install` et `npm ci` le
+font tout seuls, via le script `prepare` de `package.json`. C'est ce qui
+répond à la limite « pas actif par défaut », et la réponse tient à un fait de
+méthode plutôt qu'à de la discipline — **on ne peut pas lancer la suite sans
+`node_modules`, ni obtenir `node_modules` sans passer par npm.**
+
+Prouvé sur un clone neuf depuis GitHub, le 28 août 2026 :
+
+```
+avant npm ci   core.hooksPath : (NON DÉFINI)
+npm ci         ✓ core.hooksPath -> scripts/hooks
+               ✓ PyYAML présent -- le crochet peut lire CI.yml
+après npm ci   core.hooksPath : scripts/hooks     pre-push : exécutable
+```
+
+Vérifié aussi qu'un push **depuis un sous-dossier** déclenche bien le crochet :
+`core.hooksPath` est relatif, et git 2.50.1 le résout depuis la racine de
+l'arbre, pas depuis le répertoire courant.
+
+Les trois trous que `prepare` ne ferme pas — `--ignore-scripts`, un
+`node_modules` recopié à la main, et `--no-verify` — sont écrits en tête de
+`scripts/installer-crochets.sh`, et les limites du crochet lui-même en tête de
+`scripts/hooks/pre-push`. Elles s'y lisent avant de lui faire confiance.
 
 ### Le geste de publication
 
@@ -1044,9 +1063,19 @@ Il reste donc **deux** configurations, pas trois :
 | + « up to date » | **manuelle**, à chaque fusion d'autrui | oui, au prix d'un embouteillage à trois sessions |
 | ~~+ file de fusion~~ | — | **hors de portée** tant que le dépôt appartient à un compte personnel |
 
-La seule chose qui la débloquerait est de transférer le dépôt à une
-organisation. C'est une décision d'une autre nature que le choix d'un garde, et
-elle n'est pas prise ici.
+**La condition est le type de propriétaire, pas la visibilité du dépôt.**
+C'est le genre de fait qu'on redécouvre en le supposant : « dépôt public » se
+lit comme suffisant, et ne l'est pas. Le contrôle tient en une ligne, et il
+ne suppose rien :
+
+```bash
+gh api repos/<owner>/<repo> --jq '{owner:.owner.login, type:.owner.type, visibility}'
+```
+
+Transférer le dépôt à une organisation débloquerait la file. **Décision prise
+le 28 août 2026 : non, pas aujourd'hui** — c'est un changement d'une autre
+nature que le choix d'un garde. Le crochet seul, et réévaluation dans quelques
+jours : **si les onze déploiements rouges deviennent zéro, il aura suffi.**
 
 ##### Et mon rejeu du contrôle a rendu l'inverse, parce que je l'avais changé de shell
 
