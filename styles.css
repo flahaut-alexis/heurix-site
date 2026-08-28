@@ -1940,6 +1940,24 @@ h2{ font-size:clamp(26px,3.4vw,34px); font-weight:800; margin:0 0 18px; max-widt
 }
 .post-footer-cta p{ margin:0 0 16px; color:var(--ink-muted); }
 
+/* LA LIGNE SUBORDONNEE SOUS LE BOUTON. Elle ne declare AUCUNE couleur, et
+   c'est ce qui la rend correcte sur les DEUX familles de fond.
+
+   Etant un <p> dans .post-footer-cta, elle est visee par les deux regles qui
+   existent deja : `.post-footer-cta p` lui donne --ink-muted sur fond clair,
+   et `body.docs-dark .post-footer-cta p` (l.6918) lui donne
+   --ink-muted-on-dark sur les 122 pages a fond sombre. Mesure a l'ecran sur
+   solutions/outillage.html : rgb(205,210,240), identique au paragraphe qui la
+   precede.
+
+   DECLARER UNE COULEUR ICI SERAIT UN PIEGE, pas seulement une redite : il
+   faudrait classer le selecteur pour classement-fond.test.js, et surtout la
+   couleur choisie ne suivrait plus la surcouche sombre. L'heritage fait
+   gratuitement ce qu'une declaration ferait a moitie.
+
+   Seuls la taille et l'ecart au bouton sont poses ici. */
+.post-footer-cta-alt{ margin:14px 0 0; font-size:13.5px; }
+
 /* INTEGRATIONS & DOCS */
 .integrations-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
 @media (max-width:900px){ .integrations-grid{ grid-template-columns:1fr; } }

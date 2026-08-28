@@ -714,6 +714,35 @@ liste de dettes oubliées.
 Corollaire : **quand on s'autorise une liste d'exceptions, on écrit dans le
 même mouvement ce qui la fera rétrécir.** Sinon elle ne fait que croître.
 
+### Le menu est protégé : une modification partielle serait nommée
+
+Fait mesuré le 28 août 2026, à garder pour le jour où quelqu'un voudra y
+toucher.
+
+**Le menu principal est écrit en dur dans chaque page** — `nav-dropdown.js`
+n'anime que le déroulant, il ne construit rien. Y ajouter une entrée est donc
+une modification de **128 pages**, exactement la forme qui a produit trois
+incidents en une semaine : `index.html#tarifs` mort sur 116 pages, le lien
+mobile absent de 77, PrestaShop/WooCommerce/Shopify absents du menu Developers
+de 77.
+
+**Mais cette famille-là a désormais son garde, et c'est le seul point qui
+compte.** `tests/entete-structure.test.js` compare la structure d'en-tête de
+toutes les pages entre elles et échoue dès qu'une diverge sans figurer dans
+une liste d'exceptions justifiées. Une modification appliquée à 127 pages sur
+128 serait donc **nommée**, pas servie en silence — ce qui manquait aux trois
+incidents ci-dessus.
+
+Le fait est écrit ici parce qu'il est contre-intuitif dans le bon sens : la
+lecture spontanée de « 128 pages à modifier » est « trop risqué », et elle
+était juste avant ce test. Elle ne l'est plus. Le coût réel est la surface, pas
+le risque.
+
+**Décision du 28 août 2026 : le lien vers la démo n'entre PAS au menu.** Il
+existe déjà sur les 22 pages `solutions/`, la documentation et les trois pages
+plateformes ; le gain marginal ne valait pas 128 pages. Le refus porte sur le
+rapport, pas sur le danger.
+
 ### Vérifier une liste prouve la liste, pas la page
 
 Le 26 août 2026, le sélecteur de langue de six pages créées la veille menait
