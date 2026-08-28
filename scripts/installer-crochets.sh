@@ -3,13 +3,42 @@
 # Installe les crochets git versionnés de ce dépôt, en pointant `core.hooksPath`
 # sur `scripts/hooks/`.
 #
-# À LANCER UNE FOIS PAR CLONE. C'est la limite nº 1 de `scripts/hooks/pre-push`
-# et elle ne peut pas être supprimée : `.git/` n'est pas versionné, et
-# `core.hooksPath` est un réglage local. Aucun dépôt ne peut imposer un crochet
-# à un clone qui ne l'a pas demandé -- c'est une propriété de git, pas un
-# oubli.
+# LANCÉ TOUT SEUL PAR `npm install` ET `npm ci`, via le script `prepare` de
+# `package.json`. Mesuré sur npm 11.16.0 : `prepare` tourne sur les deux.
+#
+# C'est ce qui répond à la limite nº 1 de `scripts/hooks/pre-push` -- « pas
+# actif par défaut » --, et la réponse tient à un fait de méthode, pas à de la
+# discipline : **on ne peut pas lancer la suite de tests sans `node_modules`,
+# ni obtenir `node_modules` sans passer par npm.** Le geste qu'aucune session
+# ne saute est donc exactement celui qui pose le crochet.
+#
+# À lancer à la main seulement si l'on n'est pas passé par npm :
 #
 #   scripts/installer-crochets.sh
+#
+# ─────────────────────────────────────────────────────────────────────────────
+# CE QUE `prepare` NE FERME PAS. Un garde qui annonce sa portée vaut mieux
+# qu'un garde qu'on croit total, et ces trois-là restent ouverts :
+#
+#   - `npm install --ignore-scripts` saute `prepare`. Le clone est complet, la
+#     suite tourne, et aucun crochet n'est posé.
+#   - Un `node_modules` recopié à la main depuis un autre clone ne déclenche
+#     rien : il n'y a pas d'installation, donc pas de `prepare`.
+#   - `git push --no-verify` contourne le crochet même posé. C'est la limite
+#     nº 2, et `prepare` ne la touche pas.
+#
+# Les trois se referment par une protection de branche côté GitHub, et par
+# rien d'autre : un crochet local est un rappel, jamais une porte.
+# ─────────────────────────────────────────────────────────────────────────────
+#
+# APPELÉ DEPUIS `prepare`, IL EST SUIVI DE `|| true`, ET C'EST OBLIGATOIRE.
+# Ce script sort en 1 quand PyYAML manque -- délibérément, pour que l'absence
+# se découvre maintenant plutôt qu'au premier push refusé. Mais le job
+# « Suite de tests » de la CI lance `npm ci` avec `setup-node` et **sans**
+# `setup-python`, et aucun script tournant aujourd'hui en CI n'importe `yaml` :
+# rien n'établit que PyYAML soit sur le runner. Sans le `|| true`, ce refus
+# remonterait dans `npm ci` et ferait échouer le job de tests. Un garde qui
+# casse ce qu'il protège.
 #
 # Ce que ça change : `git push` rejoue d'abord les contrôles de
 # `.github/workflows/CI.yml` (19,4 s mesurées) et refuse de pousser s'ils

@@ -5,6 +5,8 @@
   "description": "Suite de tests pour les widgets Heurix distribues aux clients",
   "type": "module",
   "scripts": {
+    "//prepare": "npm lance `prepare` sur install ET sur ci (mesure, npm 11.16.0). C'est le seul geste qu'aucune session ne saute : pas de node_modules sans npm, pas de suite de tests sans node_modules. Il pose donc le crochet pre-push sur tout clone neuf. LE `|| true` EST OBLIGATOIRE, PAS PRUDENTIEL : le job « Suite de tests » lance `npm ci` avec setup-node et SANS setup-python, or l'installateur sort en 1 quand PyYAML manque -- sans lui, ce refus ferait echouer la CI. Portee et trous : voir scripts/installer-crochets.sh.",
+    "prepare": "scripts/installer-crochets.sh || true",
     "test": "vitest run",
     "test:watch": "vitest",
     "fixtures": "python3 tests/fixtures/generate.py"
