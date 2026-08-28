@@ -1,4 +1,14 @@
 <svg viewBox="0 0 680 600" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="prism-title prism-desc">
+  <!-- @fond-clair
+       Ce schema n'a PAS de fond a lui : son texte #12142B depend de la page.
+       Mesure du 28 aout 2026 : servi par index.html et produit.html, dans
+       `.demo-video`, dont le fond calcule est rgb(255,255,255). Il est donc
+       correct la ou il vit, mais il le serait par accident si personne ne
+       l'ecrivait. Le poser sur une section sombre le rendrait illisible.
+       Les schemas ECRITS DEPUIS le 28 aout portent leur propre fond blanc
+       plutot que de dependre de la page ; celui-ci est anterieur et sert une
+       page vue par tous, on ne le change pas pour un defaut qui n'existe pas
+       la ou il est. -->
   <title id="prism-title">Comment Heurix décompose une référence produit, comme un prisme décompose la lumière — même mécanique sur deux secteurs différents</title>
   <desc id="prism-desc">Deux références brutes, une outillage (M8 x 20 - Inox A2) et une mode (Jean W32/L34 - Denim brut), traversent chacune la loupe Heurix et ressortent décomposées en trois informations distinctes et exploitables.</desc>
 

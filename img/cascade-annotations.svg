@@ -1,4 +1,7 @@
 <svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="cascade-title cascade-desc">
+  <!-- @fond-clair
+       Pas de fond a lui non plus. Servi par console.html et en/console.html
+       dans `.console-panel`, fond calcule rgb(255,255,255) le 28 aout 2026. -->
   <title id="cascade-title">Comment Heurix décompose une référence produit</title>
   <desc id="cascade-desc">La référence M8 x 20 - Inox A2 est reconnue par trois règles du pack outillage (diamètre, longueur, matière), qui se combinent en trois annotations exploitables pour la recherche.</desc>
   <defs>

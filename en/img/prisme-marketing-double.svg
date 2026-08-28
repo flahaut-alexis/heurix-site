@@ -1,4 +1,9 @@
 <svg viewBox="0 0 680 600" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="prism-title prism-desc">
+  <!-- @fond-clair
+       Copie anglaise du precedent, servie par en/index.html et en/produit.html
+       dans le meme `.demo-video` a fond blanc (mesure le 28 aout 2026).
+       La copie existe parce que les pages EN referencent « img/... » sans
+       « ../ » : depuis en/, cela designe en/img/. -->
   <title id="prism-title">How Heurix decomposes a product reference, the way a prism splits light — same mechanic across two different sectors</title>
   <desc id="prism-desc">Two raw references, one hardware (M8 x 20 - Stainless A2) and one fashion (Jeans W32/L34 - Raw denim), each pass through the Heurix lens and come out decomposed into three distinct, usable pieces of information.</desc>
 
