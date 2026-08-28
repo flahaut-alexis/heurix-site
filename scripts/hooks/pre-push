@@ -40,6 +40,46 @@
 #      d'une série de commits, seul l'état final est contrôlé.
 # ─────────────────────────────────────────────────────────────────────────────
 #
+# ─────────────────────────────────────────────────────────────────────────────
+# PREMIÈRE MORSURE SUR DU RÉEL, 28 AOÛT 2026 -- ET C'EST LE TROU N°4 QUI MORD.
+#
+# Le crochet a refusé un push dont le contenu était propre. La cause :
+# `_export-icones.html`, harnais d'export laissé à la racine par une TROISIÈME
+# session, NON SUIVI. Deux assertions de `tests/canonical.test.js` le nomment --
+# « toute page indexable porte un canonical » et « aucune page indexable n'est
+# absente du sitemap » -- parce que ce test énumère le DISQUE (`fs.readdirSync`,
+# ligne 50) et non l'index git, avec pour seules exclusions `node_modules` et
+# les noms commençant par un point.
+#
+# CE QUE ÇA N'ÉTABLIT PAS. Le fichier n'était pas en route vers la production :
+# il faut un geste d'indexation pour l'y mettre, et ce geste n'avait pas eu
+# lieu. Dire « sans le crochet il serait parti en production » surestime ce qui
+# est mesuré. Le risque reste réel -- deux commits de la même journée ont
+# emporté du non-commité via une liste dérivée de l'arbre -- mais il est
+# conditionnel, et un garde se documente sur ce qu'il a fait, pas sur ce qu'il
+# aurait pu faire.
+#
+# CE QUE ÇA ÉTABLIT, ET QUI EST NEUF. Le trou n°4 a les DEUX signes. Tester
+# l'arbre de travail fait voir au crochet ce qui n'ira pas dans le push : c'est
+# une fausse alerte du point de vue du pousseur, et c'est en même temps le seul
+# endroit du dispositif où le défaut d'une session devient visible à une autre.
+# Corollaire opérationnel, qui n'était écrit nulle part :
+#
+#     UN FICHIER DE TRAVAIL NON COMMITÉ, CHEZ N'IMPORTE QUI, BLOQUE LE
+#     DÉPLOIEMENT DE TOUT LE MONDE.
+#
+# Un crochet est pourtant local et facultatif (voir le trou n°1) : il protège
+# donc l'arbre partagé sans être un dispositif partagé, et il fait payer à
+# chacun le désordre de tous. Ce n'est pas un défaut à corriger ici -- c'est la
+# propriété qu'il faut connaître avant de chercher pourquoi un push refuse un
+# commit qu'on vient de relire.
+#
+# LES DEUX SORTIES, pour la session qui tient le fichier : le supprimer après
+# usage, ou lui poser `<meta name="robots" content="noindex, nofollow">`, qui
+# le fait sortir du prédicat `estIndexable` -- c'est le mécanisme des trois
+# fichiers de `docs/maquettes/`, vérifié.
+# ─────────────────────────────────────────────────────────────────────────────
+#
 # IL EXTRAIT LES BLOCS DE CI.yml, IL NE LES RECOPIE PAS. Un contrôle qui
 # réimplémente sa cible finit par mesurer sa propre réimplémentation : c'est le
 # défaut de `generer_catalogue_pack.py --verifier`, qui avait sous-compté
