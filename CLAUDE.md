@@ -26,16 +26,59 @@ c'est publié.
 
 ## Déploiement du site (`heurix-site`)
 
+### À FAIRE UNE FOIS PAR CLONE, avant tout le reste
+
+```bash
+scripts/installer-crochets.sh
+```
+
+Règle `core.hooksPath` sur `scripts/hooks/`, d'où un crochet `pre-push` qui
+rejoue les contrôles de `.github/workflows/CI.yml` **avant** que le push parte
+— 19,4 s mesurées, contre 36 s pour la CI distante.
+
+Il existe parce que **sur ce dépôt le push EST le déploiement** : Pages par
+branche se déclenche sur le push, ne peut pas dépendre de la CI, et la CI n'est
+donc qu'un signal *a posteriori*. Mesuré du 21 au 28 août 2026 : **onze CI
+rouges, onze déploiements réussis**, dont quatre avec une suite de tests
+rouge.
+
+`.git/` n'étant pas versionné, **ce réglage est propre à chaque clone**. Une
+session qui ne lance pas l'installateur pousse sans aucun contrôle et rien ne
+le lui dit. Les trois autres limites sont en tête de `scripts/hooks/pre-push`,
+et elles s'y lisent avant de lui faire confiance.
+
+### Le geste de publication
+
 Statique, servi par GitHub Pages. Après toute modification :
 ```bash
-git add -A
+git add <chemins explicites>
 git commit -m "description du changement"
 git push
 ```
+
+**JAMAIS `git add -A`.** L'arbre est partagé par plusieurs sessions
+simultanées : `-A` demande à git « ce qui a changé » au lieu de lui donner
+« ce que j'ai changé », et la réponse contient le travail des autres. Il a
+emporté 1 770 lignes d'une session voisine dans deux commits. Le remède n'est
+pas la vigilance, c'est de nommer les chemins, toujours. Le contrôle d'une
+seconde avant de commiter :
+
+```bash
+git diff --cached --name-only | grep -v '\.html$'
+```
+
 Le déploiement GitHub Pages se fait automatiquement après le push —
 compter 1 à 2 minutes de propagation. **Toujours faire un hard refresh**
 (Cmd+Shift+R) pour vérifier, le cache navigateur masque souvent un
 déploiement pourtant réussi.
+
+Et **lire la CI du commit qu'on vient de pousser** : le crochet teste l'arbre
+local, pas le commit poussé, et il se contourne.
+
+```bash
+gh run list --limit 3 --json conclusion,headSha,workflowName \
+  --jq '.[] | "\(.conclusion)  \(.headSha[0:8])  \(.workflowName)"'
+```
 
 **Cache-busting** : chaque asset statique (JS/CSS) référencé avec un
 paramètre `?v=<timestamp>` porte sa propre version, indépendante des
@@ -906,6 +949,46 @@ ci-dessus a été faite comme ça.
 Elle a en revanche l'avantage que rien d'autre n'a : **elle ne demande rien à
 personne**, ne change pas la méthode de travail, et ne retarde pas le
 déploiement d'une seconde.
+
+##### « Up to date » impose une mise à jour MANUELLE, et c'est là qu'est l'embouteillage
+
+Mesuré sur la documentation GitHub le 28 août 2026, parce que la différence
+entre une contrainte et un embouteillage se joue entièrement là.
+
+**GitHub ne met pas la branche à jour tout seul.** L'auteur clique
+« Update branch » — une fusion de la base dans la branche par défaut, ou
+« Update with rebase » depuis le menu. Le bouton n'apparaît que s'il n'y a pas
+de conflit et que la branche est en retard.
+
+Et une fois la branche mise à jour, **les contrôles repartent de zéro**. Le
+coût réel n'est donc pas le clic, c'est le clic **plus** l'attente.
+
+Sur un dépôt à trois sessions parallèles, la conséquence est mécanique :
+**chaque fusion sur `main` met toutes les PR ouvertes en retard d'un coup.**
+Trois PR en vol, une fusion, et les deux autres doivent être remises à jour et
+recontrôlées. Plus il y a de sessions, plus la fenêtre entre « vert » et
+« fusionné » se referme sur quelqu'un d'autre. C'est bien un embouteillage, et
+il croît avec le nombre de sessions, pas avec la taille des lots.
+
+**La file de fusion est la réponse documentée à exactement ce problème**, et la
+doc l'écrit dans ces termes : elle donne les mêmes garanties que
+« Require branches to be up to date before merging » sans demander à l'auteur
+de mettre sa branche à jour ni d'attendre que les contrôles refinissent. Elle
+teste chaque PR contre la base **plus les PR déjà en file**, puis fusionne.
+
+**NON VÉRIFIÉ, et c'est le point à trancher avant de choisir :** la page que
+j'ai lue ne dit pas pour quels types de dépôt ni quels plans la file de fusion
+est disponible. `heurix-site` est public, ce qui joue en sa faveur, mais je ne
+l'ai pas établi. Le contrôle se fait en ouvrant la règle de protection : soit
+l'option y figure, soit non.
+
+D'où trois configurations, et non deux :
+
+| | mise à jour de branche | ce qui garantit ce qui part |
+|---|---|---|
+| protection seule | — | **non** : la CI a testé autre chose que le résultat de la fusion |
+| + « up to date » | **manuelle**, à chaque fusion d'autrui | oui, au prix d'un embouteillage à trois sessions |
+| + file de fusion | **aucune** | oui, sans l'embouteillage — *si elle est disponible ici* |
 
 ##### Et mon rejeu du contrôle a rendu l'inverse, parce que je l'avais changé de shell
 

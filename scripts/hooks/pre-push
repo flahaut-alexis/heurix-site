@@ -1,0 +1,161 @@
+#!/usr/bin/env bash
+#
+# Crochet pre-push : rejoue les contrôles de .github/workflows/CI.yml AVANT
+# que le push parte.
+#
+# POURQUOI IL EXISTE. Sur ce dépôt, LE PUSH EST LE DÉPLOIEMENT. GitHub Pages
+# par branche se déclenche sur le push et ne peut pas dépendre de la CI : ce
+# sont deux workflows séparés, et le workflow de déploiement est généré, pas
+# écrit. La CI est donc un signal *a posteriori*.
+#
+# Mesuré du 21 au 28 août 2026, sur 121 SHA : ONZE CI ROUGES, ONZE
+# DÉPLOIEMENTS RÉUSSIS. Aucune exception. Et pas une classe unique de défaut --
+# « Clefs de cache » 7 fois, « SUITE DE TESTS » 4 fois, « Index de recherche »
+# 2 fois. Une suite de tests rouge est partie en production quatre fois en une
+# semaine.
+#
+# Coût mesuré de ce crochet : 19,4 s, soit moins que les 36 s de la CI
+# distante, qui paie en plus son checkout et son installation.
+#
+# ─────────────────────────────────────────────────────────────────────────────
+# CE QU'IL NE COUVRE PAS. Lisez ces quatre lignes avant de lui faire confiance.
+# Un garde qui annonce ses trous vaut mieux qu'un garde qu'on croit complet.
+#
+#   1. IL N'EST PAS ACTIF PAR DÉFAUT. Ce fichier est versionné, mais le
+#      réglage qui le désigne -- `core.hooksPath` -- est propre à chaque clone
+#      et n'est pas versionné. Une session qui n'a pas lancé
+#      `scripts/installer-crochets.sh` pousse sans aucun contrôle, et RIEN ne
+#      le lui dit.
+#
+#   2. `git push --no-verify` LE CONTOURNE. C'est un rappel, pas une porte.
+#      Seule une protection de branche côté GitHub est une porte.
+#
+#   3. `npm ci` EST SAUTÉ. Le crochet réutilise le `node_modules` local au
+#      lieu de réinstaller depuis `package-lock.json`. Une dépendance périmée
+#      ici diverge de la CI sans que rien ne le signale -- c'est exactement la
+#      famille de l'instrument qui mesure autre chose que sa cible.
+#
+#   4. IL TESTE L'ARBRE DE TRAVAIL, PAS LE COMMIT POUSSÉ. Un fichier modifié
+#      et non commité est vu par le crochet et n'ira pas dans le push ; et
+#      d'une série de commits, seul l'état final est contrôlé.
+# ─────────────────────────────────────────────────────────────────────────────
+#
+# IL EXTRAIT LES BLOCS DE CI.yml, IL NE LES RECOPIE PAS. Un contrôle qui
+# réimplémente sa cible finit par mesurer sa propre réimplémentation : c'est le
+# défaut de `generer_catalogue_pack.py --verifier`, qui avait sous-compté
+# 2 801 termes en réécrivant la tokenisation qu'il devait vérifier. Ici la
+# seule source est le fichier de la CI ; ajouter un job là-bas l'ajoute ici,
+# sans toucher à ce fichier.
+#
+# TROIS SORTIES DISTINCTES, parce que « j'ai regardé et c'est faux » et « je
+# n'ai pas pu regarder » ne demandent pas la même chose :
+#
+#   0  tout passe                      -> le push part
+#   1  un contrôle ÉCHOUE              -> push refusé, corrigez
+#   2  les contrôles sont INEXÉCUTABLES -> push refusé, réparez l'outillage
+#
+set -uo pipefail
+
+cd "$(git rev-parse --show-toplevel)" || exit 2
+
+# Git envoie la liste des références sur l'entrée standard. On la vide pour ne
+# pas laisser l'appelant sur un SIGPIPE, et on en profite pour ne rien faire
+# quand le push ne fait que SUPPRIMER une branche distante : il n'y a alors
+# aucun contenu à contrôler.
+SUPPRESSION_SEULE=1
+while read -r _local_ref local_sha _remote_ref _remote_sha; do
+  [ "$local_sha" = "0000000000000000000000000000000000000000" ] || SUPPRESSION_SEULE=0
+done
+if [ "$SUPPRESSION_SEULE" -eq 1 ]; then
+  exit 0
+fi
+
+CI="./.github/workflows/CI.yml"
+[ -f "$CI" ] || { echo "pre-push : $CI introuvable -- contrôles inexécutables." >&2; exit 2; }
+
+# L'extraction est en Python parce que lire du YAML au sed est précisément la
+# réimplémentation qu'on refuse. Si PyYAML manque, on SORT EN 2 : on ne peut
+# pas savoir, et se taire reviendrait à répondre « tout va bien ».
+BLOCS="$(python3 - "$CI" <<'PY' 2>/dev/null
+import sys, yaml, io, json
+w = yaml.safe_load(io.open(sys.argv[1], encoding="utf-8"))
+sortie = []
+for jid, job in (w.get("jobs") or {}).items():
+    for i, s in enumerate(job.get("steps") or []):
+        if "run" not in s:
+            continue
+        sortie.append({
+            "job": jid,
+            "nom": s.get("name") or f"{jid}[{i}]",
+            "run": s["run"],
+        })
+print(json.dumps(sortie))
+PY
+)"
+
+if [ -z "$BLOCS" ]; then
+  cat >&2 <<'MSG'
+pre-push : IMPOSSIBLE DE LIRE .github/workflows/CI.yml (PyYAML absent ?).
+
+  Ce n'est pas un échec de contrôle, c'est une incapacité à contrôler -- les
+  deux ne demandent pas la même chose, et confondre les deux ferait passer un
+  push non vérifié pour un push vérifié.
+
+  Réparez :   python3 -m pip install pyyaml
+  Ou passez :  git push --no-verify      (et sachez que rien n'aura été vu)
+MSG
+  exit 2
+fi
+
+echo "pre-push : contrôles de CI.yml (le push EST le déploiement sur ce dépôt)"
+
+export BLOCS
+python3 - <<'PY'
+import json, subprocess, sys, time, os
+blocs = json.loads(os.environ["BLOCS"])
+echec = 0
+saute = []
+rendus = 0
+t0 = time.time()
+for b in blocs:
+    # `npm ci` est sauté SCIEMMENT : réinstaller les dépendances à chaque push
+    # coûterait plus que tout le reste réuni. Le prix est en tête de fichier,
+    # limite 3 -- il n'est pas caché ici.
+    if b["run"].strip().startswith(("npm ci", "npm install")):
+        saute.append(b["nom"])
+        rendus += 1
+        continue
+    d = time.time()
+    p = subprocess.run(["bash", "-c", b["run"]], capture_output=True, text=True)
+    duree = time.time() - d
+    rendus += 1
+    etat = "OK  " if p.returncode == 0 else "ECHEC"
+    print(f"  {etat}  {duree:5.1f}s  {b['job']} :: {b['nom'][:52]}", file=sys.stderr)
+    if p.returncode != 0:
+        echec = 1
+        for flux in (p.stdout, p.stderr):
+            for ligne in (flux or "").strip().splitlines()[-25:]:
+                print(f"         | {ligne}", file=sys.stderr)
+print(f"  {len(blocs)} bloc(s) trouvé(s), {rendus} avec un compte rendu, "
+      f"{time.time()-t0:.1f}s au total.", file=sys.stderr)
+for n in saute:
+    print(f"  SAUTÉ  {n} -- voir limite 3 en tête de scripts/hooks/pre-push", file=sys.stderr)
+sys.exit(echec)
+PY
+CODE=$?
+
+if [ "$CODE" -ne 0 ]; then
+  cat >&2 <<'MSG'
+
+pre-push : PUSH REFUSÉ -- un contrôle de la CI échoue en local.
+
+  Sur ce dépôt le push déclenche le déploiement : pousser maintenant mettrait
+  ce défaut en production, et la CI ne le dirait qu'après coup.
+
+  Corrigez, ou forcez en connaissance de cause :  git push --no-verify
+MSG
+  exit 1
+fi
+
+echo "pre-push : tous les contrôles passent."
+exit 0
