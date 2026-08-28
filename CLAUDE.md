@@ -154,6 +154,46 @@ arrière-plan, viewport à 0), **le dire** et demander une vérification humaine
 plutôt que de conclure depuis le DOM. Un DOM correct ne prouve pas un rendu
 correct.
 
+### Les pages HTML n'ont pas de clef de cache. Forcez le rechargement.
+
+Chaque asset porte son `?v=`. **Le document qui les référence n'en porte
+aucun.** Une page corrigée puis rouverte peut donc être servie depuis le cache
+du navigateur, avec son ancien balisage — et la vérification à l'écran, qui est
+la règle de ce fichier, porte alors sur l'état d'avant.
+
+Le 28 août 2026, après avoir posé une clef sur `img/photo-alexis.jpg` et
+retiré un `<p>` fautif d'`about.html`, la mesure à l'écran a rendu :
+
+```
+src : "img/photo-alexis.jpg"          <- sans clef
+```
+
+La clef était dans le fichier. **J'allais rapporter un défaut inexistant.**
+Rechargée avec un paramètre de contournement, la même mesure a rendu la clef,
+le `<p>` disparu et le portrait entier.
+
+**LE CAS EST CELUI QUE LE GARDE DU JOUR VENAIT DE RENDRE VISIBLE**, appliqué à
+son auteur pendant qu'il l'écrivait : un fichier sans clef sert sa version en
+cache indéfiniment. `tests/actifs-versionnes.test.js` ferme ce trou pour les
+assets ; il ne peut rien pour les documents, qui n'en portent pas et n'en
+porteront pas.
+
+Trois conséquences pratiques :
+
+**Toute vérification à l'écran APRÈS correction force le rechargement.** Un
+paramètre suffit — `?nocache=1` — et il ne coûte rien. Sans lui, on regarde
+peut-être l'état d'avant, et rien ne le dit.
+
+**Une mesure qui contredit le fichier est suspecte avant d'être un défaut.**
+Le réflexe juste est de relire le fichier sur disque, pas de conclure. Ici les
+deux se contredisaient et c'est le navigateur qui avait tort.
+
+**Cela vaut pour toutes les vérifications, pas seulement les siennes.** Une
+capture prise avant le rechargement est un instrument qui mesure autre chose
+que ce qu'on croit — la famille documentée plus bas, sous une forme que la
+vigilance ne ferme pas, parce qu'aucun signal ne distingue une page fraîche
+d'une page servie du cache.
+
 ### Une page peut répondre 200 et ne rien montrer
 
 Le 26 août 2026, trois liens « Voir le moteur en action » ont été pointés vers
@@ -742,6 +782,43 @@ résultat, pas seulement le résultat.** « Zéro ligature du bloc U+FB00–FB06
 n'aurait pas pu être lu comme « zéro `œ` ». C'est trois mots de plus, et ils
 sont la moitié de l'information.
 
+#### L'occurrence inverse : le périmètre absent fait chercher un défaut qui n'existe pas
+
+Le cas ci-dessus fait **manquer** un défaut : « zéro ligature » lu comme
+« zéro `œ` ». Le 28 août 2026, le même geste a produit l'inverse.
+
+Après avoir resserré les tirages d'attribut de deux référentiels, `--verifier`
+annonçait **4,3 annotations par produit**. Le message de commit de la veille
+disait **5,8**. J'ai conclu à une régression de 26 %, ouvert une enquête, et
+comparé les comptes règle par règle avant et après.
+
+Le total était stable — 13 505 contre 13 517. **Il n'y avait rien à chercher.**
+
+Le 5,8 datait d'avant le correctif de `GENRE_MALE`, qui avait retiré 565
+annotations parasites de « mm » lu comme « mâle ». Les deux chiffres étaient
+justes, sur deux référentiels différents, à un correctif d'intervalle. Mesurés
+sur les deux états du jour : **4,3 avant, 4,3 après.**
+
+**Les deux erreurs viennent du même geste** — reprendre un chiffre d'un message
+de commit sans vérifier ce qu'il couvrait. Un message de commit est
+précisément l'endroit où un chiffre perd son périmètre : il est écrit pour
+décrire un état, il est lu plus tard comme une valeur de référence, et rien
+dans sa forme ne dit lequel des deux.
+
+| sens | ce que le chiffre fait croire | coût |
+|---|---|---|
+| celui du 27 août | « zéro » lu comme « absent » | un défaut **manqué**, resté un mois |
+| celui du 28 août | « 5,8 » lu comme « l'état d'avant » | une enquête sur un défaut **inexistant** |
+
+Le second se referme tout seul — la mesure finit par le démentir. Le premier
+non, parce qu'un « zéro » ne se démentit pas : rien ne le contredit tant qu'on
+ne cherche pas ailleurs.
+
+Corollaire pratique, et il ne coûte rien : **quand un chiffre du passé
+contredit une mesure du présent, remesurer les DEUX états avant de conclure.**
+Ici la même commande, lancée sur `git stash` puis sur l'arbre, a réglé la
+question en deux minutes et remplacé une hypothèse par un fait.
+
 #### Dire ce qu'on n'a pas touché ne suffit pas s'il reste des arguments muets
 
 Cinquième défaut de `bust-cache.sh` en une semaine, et **le premier qui mente
@@ -853,6 +930,64 @@ soient nommés avec leur raison. Deux assertions policent cette liste — aucune
 raison périmée, aucun renvoi en guise de raison. La seconde a mordu sur son
 auteur le jour même : ma justification d'`apple-touch-icon.png` commençait par
 « Même cas que… ».
+
+
+#### Septième défaut : le motif ancre sur le NOM, jamais sur le chemin
+
+Le sixième a été refermé en ajoutant un second compte — « N page(s) le
+référencent SANS clef ». Ce correctif a un angle mort, et c'est ce défaut-ci :
+**les deux compteurs ratent un actif rangé dans un sous-dossier.**
+
+Le motif est `"((\.\./)*)<fichier>\?v=[0-9]+`. Il accepte des `../` répétés
+devant le NOM, jamais un segment de chemin entre les deux. Or les quatre
+schémas vivent dans `img/` et sont référencés depuis `blog/` et `solutions/` :
+
+```
+"../img/familles-moteurs.svg?v=1787908454"
+      ^^^^ le segment que le motif n'accepte pas
+```
+
+Mesuré le 28 août 2026 :
+
+```
+$ scripts/bust-cache.sh familles-moteurs.svg
+⚠ familles-moteurs.svg : aucune référence, versionnée ou non -- nom correct ? rien à faire.
+```
+
+**« Aucune référence, versionnée ou non » est faux.** Le fichier est référencé,
+avec une clef, depuis une page suivie. Le script affirme une absence là où il y
+a une présence — et « nom correct ? » oriente vers une faute de frappe qu'on ne
+trouvera pas.
+
+C'est plus grave que le sixième, qui disait au moins que l'actif existait
+quelque part. Celui-ci le déclare inexistant, et la conclusion naturelle est
+« fichier mort, rien à faire ». Deux causes, un seul symptôme : celui qui a
+appris la leçon du sixième — « l'actif n'a pas de clef » — diagnostiquera
+justement l'inverse de la réalité, puisque ici la clef est là et c'est le
+chemin qui gêne.
+
+**Ce n'est pas une nouveauté, et c'est ce qui le rend intéressant.** L'en-tête
+du script documente déjà le cas depuis le 26 août, mesuré sur `downloads/` :
+
+> NE MARCHE PAS SUR `downloads/`. […] il réécrit à la place les SNIPPETS DE
+> DOCUMENTATION […]. Deux populations disjointes, dont le script ne voit que la
+> mauvaise.
+
+C'était écrit comme **la limite d'un dossier**. C'est en réalité **une propriété
+du motif**, qui vaut pour tout sous-dossier — `img/` aujourd'hui, n'importe
+lequel demain. Une limite décrite au singulier se relit comme un cas
+particulier, et personne ne la généralise.
+
+**Contourné, pas corrigé.** Les deux clefs des schémas ont été bumpées à la
+main, ancrées sur la référence complète. Les deux schémas restants auront le
+même problème.
+
+**Le correctif est probablement simple** — ancrer sur le chemin de référence
+plutôt que sur le nom seul — et il va dans le sens du garde-fou existant : un
+motif qui inclut le sous-chemin est *plus* strict, pas moins, donc il ne rouvre
+pas le risque de fuite vers un homonyme que l'ancrage sur le guillemet
+protégeait. Mais c'est un chantier à part, et il se mesure : il faut vérifier ce
+qu'il change sur les actifs déjà versionnés avant de le lancer.
 
 ### Trois commandes dont la portée vient de l'arbre, et non d'une liste
 
