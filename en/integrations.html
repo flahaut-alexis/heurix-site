@@ -209,6 +209,16 @@ async function handleWebhook(request, env) {
     <div class="integ-notice">
       <strong>PrestaShop advantage.</strong> PrestaShop runs server-side PHP — no need for an external relay like Shopify. A PrestaShop module can call the Heurix API directly, the key stays in server config, never sent to the browser.
     </div>
+      <div class="integ-notice">
+        <strong>A module already exists for PrestaShop.</strong> It replaces the
+        native search with Heurix, without touching the theme — exactly what
+        step 1 below describes. It does <strong>not fill the catalog</strong>,
+        though: your product records have to get there another way, through the
+        <a href="docs.html#import-csv">CSV or XML import from the console</a> or through
+        the API. That is what the code in step 2 is for — it is how you wire the
+        synchronisation yourself. Write to us through the
+        <a href="contact.html">contact form</a> if you want the module.
+      </div>
 
     <h2>1. Wiring up search</h2>
     <p>In a custom module, hook <code class="docs-inline-code">displaySearchResults</code> or override the search controller:</p>

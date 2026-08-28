@@ -205,6 +205,16 @@ async function handleWebhook(request, env) {
     <div class="integ-notice">
       <strong>Avantage PrestaShop.</strong> PrestaShop tourne en PHP côté serveur — pas besoin de relais externe comme pour Shopify. Un module PrestaShop peut appeler l'API Heurix directement, la clé reste dans la configuration serveur, jamais envoyée au navigateur.
     </div>
+      <div class="integ-notice">
+        <strong>Un module existe déjà pour PrestaShop.</strong> Il remplace la
+        recherche native par Heurix, sans toucher au thème — c'est exactement ce
+        que décrit l'étape 1 ci-dessous. En revanche il <strong>n'alimente pas le
+        catalogue</strong> : les fiches doivent y arriver autrement, par
+        l'<a href="docs.html#import-csv">import CSV ou XML depuis la console</a> ou par
+        l'API. Le code de l'étape 2 est là pour ça — c'est la façon de brancher
+        la synchronisation vous-même. Écrivez-nous par le
+        <a href="contact.html">formulaire</a> si vous voulez le module.
+      </div>
 
     <h2>1. Brancher la recherche</h2>
     <p>Dans un module custom, on hook <code class="docs-inline-code">displaySearchResults</code> ou on surcharge le contrôleur de recherche :</p>
