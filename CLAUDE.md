@@ -996,9 +996,29 @@ pour que l'absence se découvre à l'installation plutôt qu'au premier push. Sa
 le `|| true`, ce refus remonterait dans `npm ci` et **ferait échouer le job de
 tests**.
 
-Et rien n'établit que PyYAML soit présent sur le runner : **aucun script
-tournant aujourd'hui en CI n'importe `yaml`** — vérifié un par un. La question
-ne se pose pas si le `prepare` ne peut pas échouer.
+**MESURÉ APRÈS COUP, ET ÇA CORRIGE MA PROPRE JUSTIFICATION.** Le log de la
+CI de `6657984d` montre `prepare` s'exécutant dans `npm ci` sur le runner, et
+rendant :
+
+```
+✓ core.hooksPath -> scripts/hooks
+✓ PyYAML présent -- le crochet peut lire CI.yml.
+```
+
+**PyYAML est donc là, et le `|| true` n'a pas servi.** Il n'a pas sauvé la CI :
+il n'a simplement pas eu à jouer. J'avais écrit « rien n'établit que PyYAML
+soit sur le runner » — c'était vrai comme constat sur le dépôt, et faux comme
+prédiction sur la machine.
+
+Le `|| true` reste néanmoins obligatoire, pour une raison **différente de
+celle que je lui donnais** : la présence de PyYAML n'est déclarée nulle part.
+Aucun `setup-python` dans ce job, aucun `pip install`, aucun script de la CI
+qui importe `yaml` — vérifié un par un. Elle est un accident de l'image
+`ubuntu-latest`, et une image change sans prévenir. **Le `|| true` protège
+contre une dépendance non déclarée, pas contre une dépendance absente.**
+
+C'est la distinction entre un garde qui a mordu et un garde qui n'a pas eu à
+mordre. Les deux sont verts ; un seul est prouvé.
 
 C'est un garde qui casserait ce qu'il protège, et il ne se serait pas vu à
 l'écriture : la ligne `prepare` est correcte, l'installateur est correct, c'est
