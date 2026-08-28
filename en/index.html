@@ -400,6 +400,10 @@
         <p>Despite typos, despite different spellings, sorted by relevance then availability. And every result explains why it matches.</p>
       </div>
     </div>
+    <div class="table-scroll schema-scroll" style="margin:28px 0;">
+      <img src="img/trois-etapes-api.svg?v=1787912077" width="680" height="344" alt="Diagram: the three steps and what passes between them. Your records are indexed with one API call; the cascade annotates them, shown by the same lens as the prism diagram higher on the page; the query “m8 stainless screw”, written differently, finds the record."
+           loading="lazy" style="width:100%; max-width:680px; height:auto; display:block; margin:0 auto;">
+    </div>
     <pre class="docs-code how-code"><code>curl -X POST https://api.heurix.fr/v1/index/mycatalog/search \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -d '{"q": "m8x20 stainless"}'

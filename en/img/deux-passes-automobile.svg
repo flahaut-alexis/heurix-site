@@ -1,0 +1,68 @@
+<svg viewBox="0 0 680 476" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="dp-title dp-desc">
+  <title id="dp-title">The two-pass cascade: the second no longer reads the record, it reads what the first produced</title>
+  <desc id="dp-desc">On the record “Brake pads front Bosch 0986494574”, pass 1 matches each pattern on its own and produces three annotations: FAM_FREINAGE from “Brake”, POS_AVANT from “front”, REF_BOSCH_0986494574 from the number. Pass 2 no longer reads the record: it reads that annotation stream. FAM_FREINAGE combined with POS_AVANT yields FREIN_AVANT. FREIN_ARRIERE is not produced, because POS_ARRIERE is absent from the stream.</desc>
+
+  <rect x="0" y="0" width="680" height="476" rx="14" fill="#FFFFFF" stroke="#E7E9F2" stroke-width="1"/>
+
+  <text x="340" y="26" text-anchor="middle" font-family="'Plus Jakarta Sans',sans-serif" font-size="13" font-weight="700" fill="#12142B">Two passes, and the second no longer reads the record</text>
+
+  <!-- ═══ THE RECORD ═══ -->
+  <text x="24" y="70" font-family="'Plus Jakarta Sans',sans-serif" font-size="10" font-weight="700" fill="#888780" letter-spacing="0.5">THE RECORD</text>
+  <text x="382" y="70" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="13"><tspan fill="#1FAA6B" font-weight="700">Brake pads</tspan><tspan fill="#888780"> </tspan><tspan fill="#BA7517" font-weight="700">front</tspan><tspan fill="#888780"> Bosch </tspan><tspan fill="#5B5E76" font-weight="700">0986494574</tspan></text>
+
+  <!-- ═══ PASS 1 · le flux ═══ -->
+  <text x="24" y="132" font-family="'Plus Jakarta Sans',sans-serif" font-size="10" font-weight="700" fill="#888780" letter-spacing="0.5">PASS 1</text>
+  <text x="24" y="147" font-family="'Plus Jakarta Sans',sans-serif" font-size="9.5" fill="#888780">each pattern,</text>
+  <text x="24" y="159" font-family="'Plus Jakarta Sans',sans-serif" font-size="9.5" fill="#888780">matched alone</text>
+
+  <rect x="108" y="98" width="548" height="88" rx="12" fill="#FBFBFD" stroke="#E7E9F2" stroke-width="1"/>
+  <text x="124" y="116" font-family="'Plus Jakarta Sans',sans-serif" font-size="9" font-weight="700" fill="#888780" letter-spacing="0.6">THE ANNOTATION STREAM</text>
+
+  <rect x="164" y="130" width="124" height="30" rx="15" fill="#E8F8F0" stroke="#1FAA6B" stroke-width="1.3"/>
+  <text x="226" y="150" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="11" font-weight="700" fill="#1FAA6B">FAM_FREINAGE</text>
+
+  <rect x="304" y="130" width="100" height="30" rx="15" fill="#FAEEDA" stroke="#BA7517" stroke-width="1.3"/>
+  <text x="354" y="150" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="11" font-weight="700" fill="#BA7517">POS_AVANT</text>
+
+  <rect x="420" y="130" width="180" height="30" rx="15" fill="#FFFFFF" stroke="#C9CCDA" stroke-width="1.3"/>
+  <text x="510" y="150" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="11" font-weight="700" fill="#5B5E76">REF_BOSCH_0986494574</text>
+
+  <!-- l'entree de la passe 2, montree comme telle -->
+  <path d="M382 186 L382 214" fill="none" stroke="#3F52E8" stroke-width="2" stroke-linecap="round"/>
+  <path d="M375 207 L382 215 L389 207" fill="none" stroke="#3F52E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="398" y="207" font-family="'Plus Jakarta Sans',sans-serif" font-size="10.5" font-weight="700" fill="#3F52E8">THIS box is what pass 2 reads</text>
+
+  <!-- ═══ PASS 2 · les deux issues ═══ -->
+  <text x="24" y="262" font-family="'Plus Jakarta Sans',sans-serif" font-size="10" font-weight="700" fill="#888780" letter-spacing="0.5">PASS 2</text>
+  <text x="24" y="277" font-family="'Plus Jakarta Sans',sans-serif" font-size="9.5" fill="#888780">reads the stream,</text>
+  <text x="24" y="289" font-family="'Plus Jakarta Sans',sans-serif" font-size="9.5" fill="#888780">never the record</text>
+
+  <!-- issue 1 : la regle se declenche -->
+  <rect x="140" y="244" width="124" height="30" rx="15" fill="#E8F8F0" stroke="#1FAA6B" stroke-width="1.3"/>
+  <text x="202" y="264" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="11" font-weight="700" fill="#1FAA6B">FAM_FREINAGE</text>
+  <text x="276" y="265" text-anchor="middle" font-family="'Plus Jakarta Sans',sans-serif" font-size="14" font-weight="700" fill="#888780">+</text>
+  <rect x="288" y="244" width="100" height="30" rx="15" fill="#FAEEDA" stroke="#BA7517" stroke-width="1.3"/>
+  <text x="338" y="264" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="11" font-weight="700" fill="#BA7517">POS_AVANT</text>
+  <path d="M400 259 L446 259" fill="none" stroke="#3F52E8" stroke-width="2" stroke-linecap="round"/>
+  <path d="M439 252 L447 259 L439 266" fill="none" stroke="#3F52E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="458" y="240" width="182" height="38" rx="12" fill="#EEF1FF" stroke="#3F52E8" stroke-width="1.6"/>
+  <text x="549" y="264" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="13" font-weight="700" fill="#3F52E8">FREIN_AVANT</text>
+
+  <!-- issue 2 : la regle NE se declenche PAS. C'est le coeur. -->
+  <rect x="140" y="322" width="124" height="30" rx="15" fill="#E8F8F0" stroke="#1FAA6B" stroke-width="1.3"/>
+  <text x="202" y="342" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="11" font-weight="700" fill="#1FAA6B">FAM_FREINAGE</text>
+  <text x="276" y="343" text-anchor="middle" font-family="'Plus Jakarta Sans',sans-serif" font-size="14" font-weight="700" fill="#888780">+</text>
+  <rect x="288" y="322" width="112" height="30" rx="15" fill="#FFFFFF" stroke="#C9CCDA" stroke-width="1.3" stroke-dasharray="4 4"/>
+  <text x="344" y="342" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="11" font-weight="700" fill="#C9CCDA">POS_ARRIERE</text>
+  <text x="344" y="366" text-anchor="middle" font-family="'Plus Jakarta Sans',sans-serif" font-size="9.5" font-weight="700" fill="#888780">absent from the stream</text>
+
+  <path d="M412 337 L446 337" fill="none" stroke="#C9CCDA" stroke-width="2" stroke-linecap="round" stroke-dasharray="4 4"/>
+  <rect x="458" y="318" width="182" height="38" rx="12" fill="#FFFFFF" stroke="#C9CCDA" stroke-width="1.3"/>
+  <text x="549" y="342" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="13" font-weight="700" fill="#888780">FREIN_ARRIERE</text>
+  <line x1="494" y1="337" x2="604" y2="337" stroke="#888780" stroke-width="1.6" stroke-linecap="round"/>
+  <text x="549" y="372" text-anchor="middle" font-family="'Plus Jakarta Sans',sans-serif" font-size="10" font-weight="700" fill="#888780">is not produced</text>
+
+  <line x1="24" y1="400" x2="656" y2="400" stroke="#E7E9F2" stroke-width="1"/>
+  <text x="340" y="424" text-anchor="middle" font-family="'Plus Jakarta Sans',sans-serif" font-size="11" fill="#5B5E76">This exclusion is what keeps a REAR pad off a FRONT brake search.</text>
+  <text x="340" y="452" text-anchor="middle" font-family="'Plus Jakarta Sans',sans-serif" font-size="10.5" fill="#888780">Remove “front” from the record and pass 2 produces nothing at all: it only has the stream, and half of it is missing.</text>
+</svg>
