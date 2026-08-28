@@ -518,6 +518,65 @@ faire, parce qu'aucune couleur n'apparaît à l'endroit du défaut.
 Non corrigé ici : le lot était « rien d'autre que l'habillage ». Dette
 mesurée, à traiter à part.
 
+#### Une valeur validée sur un fond et appliquée à deux
+
+Le 28 août 2026, un audit externe demande de rendre visible le contour de la
+modale de recherche. Le constat est juste : bordure blanc 14 % sur un panneau
+`#101B4D` posé sur le même `#101B4D`, mesuré à **1,05:1** en haut du dégradé,
+loin sous les 3:1 de WCAG 1.4.11. Les valeurs proposées sont précises, la
+teinte est reprise d'un jeton existant, et le rapport nomme même la page à
+vérifier : l'accueil, « dégradé le plus marqué ».
+
+**Appliquées telles quelles, elles auraient dégradé le contour sur onze
+pages en le corrigeant sur 122.**
+
+| bordure `#CDD2F0` | intérieur | dégradé | **blanc** |
+|---|---|---|---|
+| `.45`, la valeur proposée | 3,27:1 | 2,88:1 | **1,04:1** |
+| état d'avant, blanc 14 % | 1,51:1 | 1,05:1 | **3,63:1** |
+| `.95`, retenu | 9,91:1 | 8,76:1 | 3,17:1 |
+
+La colonne qui décide n'avait pas été mesurée. Sur `404.html`, le hero
+s'arrête à `y=640` et le panneau descend à `y=705` : **les 65 derniers pixels
+de bordure longent du blanc pur.** Une bordure claire y devient invisible.
+
+**C'EST LA SECTION `docs-dark` QUI SE REJOUE, D'UN CRAN PLUS BAS.** Elle
+avertit déjà que pour toute mesure « ce composant dépend-il de sa page ? », la
+page témoin se choisit dans les onze, jamais dans les 122 — et le CSS de cette
+modale porte, écrit juste au-dessus des règles touchées, le résultat de cette
+vérification : « LA MODALE NE DÉPEND PAS DE SA PAGE ». C'était vrai, et ça
+reste vrai : aucune règle `.search-*` sous `body.docs-dark`, valeurs calculées
+identiques partout. **Le panneau ne dépend pas de sa page. Le voile, lui, est
+posé sur ce que la page peint.** Un composant peut être indépendant de son
+contexte et poser quand même, à un pixel de là, une surface qui ne l'est pas.
+
+La contrainte réelle est bilatérale, et c'est ce qui la rend contre-intuitive :
+la bordure doit s'écarter de 3:1 du panneau **très sombre** et du blanc voilé
+**clair**. Aucune valeur intermédiaire ne satisfait les deux — il faut sortir
+par le haut, à `.95`, loin de ce que « bordure discrète » suggère.
+
+C'est le motif de l'opacité ci-dessus, à l'envers. Là, `opacity:.45` était sous
+AA sur les **deux** fonds et personne ne l'avait mesurée sur **aucun**. Ici la
+valeur est mesurée, et sur un seul.
+
+| | mesuré sur | manqué |
+|---|---|---|
+| l'opacité | aucun fond | les deux |
+| **le contour** | **un fond** | **l'autre** |
+
+Corollaire : **une valeur de contraste n'est validée que sur les fonds où on
+l'a composée.** Le nombre est juste, il est simplement plus étroit que la règle
+CSS qui le porte — une règle sans `body.docs-dark` s'applique aux 133 pages,
+la mesure qui la justifie n'en couvrait qu'une. C'est « un chiffre porte son
+périmètre » appliqué à un rapport de contraste : le périmètre d'une mesure de
+couleur, ce sont les **fonds** composés, et il ne voyage pas avec le chiffre.
+
+Le contrôle, et il ne coûte rien puisque le compositeur du navigateur le fait :
+composer la couleur sur **chaque famille de fond où le composant peut
+s'ouvrir**, pas sur celle qu'on avait sous les yeux. Les deux familles de ce
+site se listent en une commande, déjà écrite plus haut — et ce sont les onze
+qu'il faut ouvrir, parce que ce sont celles auxquelles personne ne pense.
+
 ### Déplacer une section = balayer les ancres
 
 Tout déplacement d'une section vers une autre page doit être suivi d'un
