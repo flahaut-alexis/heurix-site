@@ -115,6 +115,10 @@
 
 <div class="wrap integ-page">
 
+  <div class="table-scroll schema-scroll" style="margin:28px 0;">
+    <img src="img/architecture-integrations.svg?v=1787911240" width="680" height="356" alt="Schéma : deux flux relient votre boutique à l'API Heurix. La synchronisation part de la boutique et pousse chaque fiche vers POST /v1/index/catalogue/items à chaque création, modification ou suppression. La recherche part de la requête d'un client et revient en résultats classés. Seul point où les plateformes diffèrent : PrestaShop, WooCommerce et Magento appellent l'API depuis leur code serveur, la clé restant dans la configuration, tandis que Shopify, dont un thème ne peut détenir de clé secrète, passe par un relais serverless qui la détient."
+         loading="lazy" style="width:100%; max-width:680px; height:auto; display:block; margin:0 auto;">
+  </div>
   <div class="integ-tabs" role="tablist">
     <button type="button" class="integ-tab active" data-platform="shopify" role="tab" aria-selected="true">
       <span>Shopify</span>
