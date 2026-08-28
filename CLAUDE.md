@@ -726,6 +726,80 @@ gh run list --limit 3 --json conclusion,headSha,workflowName,displayTitle \
   --jq '.[] | "\(.conclusion)  \(.headSha[0:8])  \(.workflowName)"'
 ```
 
+##### Ce n'est pas un accident : onze fois en sept jours
+
+Mesure du 21 au 28 août 2026, sur les 121 SHA de la fenêtre : **onze CI
+rouges, onze déploiements réussis.** Aucune exception. Un push sur onze
+(9,1 %) est parti en production avec un contrôle en échec.
+
+Et ce n'est pas une classe unique de défaut :
+
+| job en échec | occurrences |
+|---|---|
+| `Clefs de cache a jour` | 7 |
+| **`Suite de tests`** | **4** |
+| `Index de recherche a jour` | 2 |
+
+**Une suite de tests rouge est partie en production quatre fois cette
+semaine.** Le chiffre est ce qui distingue un incident d'un mode de
+fonctionnement, et il tranche : ce n'est pas qu'on a raté une alerte, c'est
+qu'aucune alerte n'a jamais rien arrêté.
+
+##### Le coût de fermer la porte, mesuré et non estimé
+
+Deux voies : passer le déploiement à un workflow Actions qui exige une CI
+verte, ou garder Pages par branche et s'imposer de lire la CI. Ce qui suit est
+mesuré ; la décision ne l'est pas.
+
+**Configuration actuelle**, lue sur l'API :
+
+```
+build_type: "legacy"   source: {branch: main, path: /}
+cname: "heurix.fr"     https_enforced: true
+```
+
+**Rien de ce que le site utilise ne dépend du mode par branche.** Vérifié un
+par un : pas de `_config.yml`, pas de `_layouts`, pas de `_includes`, pas de
+`Gemfile`, **zéro** page à front matter Jekyll, **zéro** balise Liquid sur 869
+fichiers suivis. Le site est statique au sens strict, Jekyll ne fait que le
+recopier.
+
+`cname` est un champ **de premier niveau** de l'API, frère de `source` et de
+`build_type`, donc pas une propriété du mode de build. Non vérifié pour
+autant : je n'ai pas fait la bascule.
+
+**La seule différence observable** est que Jekyll masque les fichiers commençant
+par `.`. Mesuré en production : `docs/maquettes/README.md`, `tests/*.js`,
+`scripts/bust-cache.sh` et `package.json` répondent **200** aujourd'hui — le
+mode par branche ne cache donc rien d'utile — tandis que `.gitignore` rend
+**404**. Passer à Actions publierait quatre fichiers de plus : `.gitignore`,
+`.gitleaks.toml`, `.github/workflows/CI.yml` et `.DS_Store`. Les trois premiers
+sont déjà publics, le dépôt l'étant. Le quatrième ne devrait pas être suivi du
+tout.
+
+**La vitesse**, sur les runs réussis récents :
+
+| | n | médiane | min | max |
+|---|---|---|---|---|
+| `CI` | 19 | **36 s** | 26 s | 44 s |
+| `pages-build-deployment` | 30 | **45 s** | 36 s | 64 s |
+
+Aujourd'hui les deux tournent **en parallèle** : la mise en production coûte
+45 s et la CI ne la retarde pas. Exiger une CI verte les **sérialise**. Le
+plancher devient donc 36 s plus la durée du déploiement Actions, quelle qu'elle
+soit — et cette dernière n'est pas mesurable sans faire la bascule. Ce qui est
+certain sans la faire : **la mise en production passe d'environ 45 s à au moins
+80 s**, même si le déploiement Actions était gratuit.
+
+L'artefact serait de 17 Mo pour 869 fichiers, `node_modules` n'étant pas suivi.
+
+**Une troisième voie existe et n'a pas le même prix.** Une protection de
+branche avec contrôle obligatoire ne retarde pas le déploiement : elle empêche
+le commit rouge d'atteindre `main`. Mais elle interdit le push direct sur une
+branche protégée, donc elle impose de passer par une PR — un changement de
+méthode de travail, pas de déploiement. À évaluer comme telle, pas comme une
+variante des deux premières.
+
 ##### Et mon rejeu du contrôle a rendu l'inverse, parce que je l'avais changé de shell
 
 J'ai d'abord rapporté que la CI groupait par **chemin** quand mon contrôle
@@ -748,13 +822,42 @@ Relancée sous `bash -c`, la même boucle nomme les quatre.
 C'est la famille des instruments qui changent de cible, sous une forme qui ne
 laisse aucune trace : pas d'erreur, pas de sortie vide, une réponse
 d'apparence normale — « aucun échec » — qui est exactement la réponse qu'on
-attendait à moitié. Le seul contrôle qui l'attrape est celui qui a servi ici :
-**prendre un cas dont on connaît déjà la réponse** — familles-moteurs portait
-visiblement deux clefs — **et vérifier que l'instrument la donne** avant de
-lui faire dire quoi que ce soit du reste.
+attendait à moitié.
+
+**CE QUI L'A ATTRAPÉ COMPTE PLUS QUE LA CAUSE**, parce que la cause est
+particulière — zsh, un `for` non quoté — et que le geste, lui, se réemploie
+partout.
+
+Le geste : **prendre un cas dont on connaît déjà la réponse, et vérifier que
+l'instrument la donne, avant de lui faire dire quoi que ce soit du reste.**
+Ici `familles-moteurs.svg` portait visiblement deux clefs — je venais de les
+lire. La boucle a répondu « aucun échec ». C'est la contradiction entre une
+réponse connue et une réponse rendue qui a ouvert l'enquête, pas une relecture
+du code : relire ma boucle ne montrait rien, elle est une copie fidèle de celle
+de la CI.
+
+C'est **exactement le geste que réclame la note sur la mesure qui ne teste que
+son hypothèse**, tourné vers un autre objet :
+
+| | ce qu'on soumet à la contradiction |
+|---|---|
+| note du 28 août, `bust-cache.sh` | une **hypothèse** — lancer aussi la forme qu'on croit non supportée |
+| celle-ci | un **instrument** — lui donner un cas dont la réponse est déjà connue |
+
+Dans les deux cas on produit soi-même la sortie qui pourrait démentir, au lieu
+d'attendre qu'une contradiction se présente. La différence est ce qu'on teste :
+là ce qu'on croit, ici ce avec quoi on le vérifie. **Le second est plus
+sournois, parce qu'un instrument ne se soupçonne pas** — il n'a pas d'opinion,
+donc on ne lui en prête pas.
+
+Corollaire opérationnel : **un instrument n'a le droit de répondre sur
+l'inconnu qu'après avoir répondu juste sur le connu.** Un cas témoin coûte une
+ligne, et sans lui « aucun échec » et « je n'ai rien regardé » sont la même
+sortie — la distinction que la note sur l'incapacité de mesurer réclame déjà
+des outils, appliquée cette fois à un outil qu'on vient d'écrire soi-même.
 
 Rejouer un fragment de CI se fait donc sous `bash -c`, jamais dans le shell
-interactif.
+interactif — et avec un cas témoin.
 
 ### La version anglaise est une zone que personne ne regarde
 
