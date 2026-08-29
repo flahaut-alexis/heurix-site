@@ -184,6 +184,79 @@ partagé, deux sessions sur `styles.css` se marchent dessus en continu et sans
 signal. En worktrees, elles ne se gênent pas du tout jusqu'à la réunion, où
 git nomme précisément les lignes en désaccord.
 
+#### CE QUE LE CROCHET NE PEUT PAS VOIR : le défaut né de la RÉUNION
+
+Trouvé le 29 août 2026, premier de sa forme. Trois worktrees du moteur,
+**verts chacun isolément**, poussés et réunis : `mypy` rouge sur `main`.
+
+```
+heurix/routers/browse.py:107 et :151
+Argument "filters" to "browse" has incompatible type
+  list[tuple[str, tuple[str, ...]]]
+expected
+  list[tuple[str, tuple[str, ...] | str]] | None
+```
+
+Une session avait élargi la signature de `browse()`, une autre travaillait
+ses appelants. Chacune était juste chez elle ; `list` étant invariant, leur
+réunion ne l'était pas.
+
+**Le crochet `pre-push` rejoue les contrôles sur l'ARBRE LOCAL, avant le
+push — jamais sur le résultat du rebase, qui n'existe pas encore au moment
+où il tourne.** Un défaut qui ne naît que de la réunion de deux branches lui
+est donc *structurellement* invisible, exactement comme le worktree est
+structurellement aveugle au désordre d'autrui. C'est le prix nommé plus
+haut : « des conflits à un moment choisi plutôt qu'un blocage permanent ».
+Le moment choisi, c'est le rebase — et rien n'y tourne automatiquement.
+
+Deux conséquences pratiques :
+
+- **Rebaser tôt, pas au moment de pousser.** Un lot qui prend une matinée
+  doit se réunir en cours de route, pas une fois fini : c'est là que le
+  coût d'un désaccord de types est le plus bas.
+- **Relancer les contrôles APRÈS le rebase, à la main.** Le crochet les a
+  passés sur l'arbre d'avant ; il ne les repassera pas sur l'arbre d'après.
+
+S'y ajoute une limite de périmètre : **le crochet de `heurix-site` rejoue
+les blocs de `CI.yml` du SITE.** Il ne lance pas `mypy`, qui est un contrôle
+du moteur. Sur `heurix-engine`, `python -m mypy heurix` avant tout push, en
+plus des tests.
+
+#### Comparer DEUX versions du moteur sur le même catalogue
+
+Le geste qui a rendu vérifiable une détection de capacité, le 29 août 2026,
+plutôt que raisonnée.
+
+Le widget de rayon doit savoir si le moteur déployé comprend la syntaxe
+`champ:A|B`. Il le déduit d'une contradiction — un total nul pendant que le
+décompte d'une valeur cochée est positif. L'argument est solide sur le
+papier ; il restait à montrer qu'il ne se déclenche jamais à tort.
+
+**La mesure exige les deux moteurs en même temps, sur le MÊME catalogue.**
+
+```bash
+# le moteur patché, en local, sur le port 8010
+PORT=8010 .venv/bin/python -m uvicorn heurix.main:app --port 8010
+# une clé, un plan Browse, et le même catalogue indexé dedans
+```
+
+Résultat, 50 combinaisons sur chacun :
+
+| | signature déclenchée |
+|---|---|
+| moteur avec la syntaxe (local) | **0 / 50** |
+| moteur déployé (production) | **50 / 50** |
+
+Sans le moteur local, on n'aurait mesuré que la moitié qui déclenche — et
+c'est l'autre moitié qui décide, parce qu'un faux positif y désactiverait
+définitivement une fonction qui marche.
+
+**Généralisation** : dès qu'un client doit *détecter* une capacité serveur
+plutôt que la supposer, la version qui A la capacité est aussi nécessaire à
+la mesure que celle qui ne l'a pas. Le catalogue doit être identique des
+deux côtés, sans quoi on compare deux jeux de données autant que deux
+moteurs.
+
 #### Ce que ça ne règle pas
 
 Les gardes de `.scratch/outillage-git/01` restent utiles pour un arbre à un
