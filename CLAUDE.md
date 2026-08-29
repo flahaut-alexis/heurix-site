@@ -107,14 +107,38 @@ partagé en porte vingt et un dossiers. **Les fiches vivent dans l'arbre partag�
 — on y écrit et on y lit, depuis n'importe quel worktree**, par son chemin
 absolu.
 
-Ce que ça coûte si on l'ignore, et pourquoi c'est écrit ici plutôt qu'ailleurs :
-une session qui rédige une fiche depuis son worktree **la perd au
-`worktree remove`, sans que rien ne le dise**. Mesuré le 29 août 2026 : une
-fiche déposée sous `.scratch/` d'un worktree, `git worktree remove` **sans**
-`--force` sort en **0**, n'affiche rien, et le fichier n'existe plus. La
-commande refuse pourtant de partir sur un fichier suivi modifié — c'est le
-statut « ignoré » qui la rend muette, exactement là où on range ce qu'on veut
-garder. C'est exactement la famille qu'on documente dans ces
+Ce que ça coûte si on l'ignore : une session qui rédige une fiche depuis son
+worktree **la perd au `worktree remove`**. Mesuré le 29 août 2026 — une fiche
+déposée sous `.scratch/` d'un worktree, puis `git worktree remove` **sans**
+`--force` :
+
+```
+code de sortie : 0
+sortie         : (rien)
+la fiche       : supprimee
+```
+
+**`git worktree remove` n'est pas une commande silencieuse : c'est une commande
+dont le silence dépend du statut du fichier.** Elle sait parler — mesuré les
+deux cas :
+
+```
+fichier suivi modifie        code 128   « contains modified or untracked
+fichier non suivi, non ignore  code 128     files, use --force to delete it »
+fichier IGNORE               code   0   (rien, et il est supprime)
+```
+
+La frontière n'est donc pas « suivi / non suivi » : un fichier non suivi
+protège le worktree aussi bien qu'un fichier modifié. **La frontière est
+l'ignorance.** Ce que la commande protège est tout ce que git *voit*, et
+`.gitignore` est précisément la déclaration qu'on ne veut plus être vu.
+
+C'est la règle des onze actifs sans clef de cache, transposée : « le périmètre
+dérivé ne protège que ce qui a déjà franchi son seuil d'entrée » (voir plus
+bas, `actifs-versionnes`). Un `.gitignore` est un seuil d'entrée comme un
+autre. **Ce qui n'entre pas dans le périmètre d'un outil n'est surveillé par
+personne, et personne ne le dit** — parce que le dire supposerait de regarder,
+et regarder est précisément ce que le périmètre a exclu. C'est exactement la famille qu'on documente dans ces
 fiches : un défaut silencieux, dont le seul signal serait de savoir d'avance
 qu'il existe. D'où ces lignes, au moment où quelqu'un crée son worktree.
 
