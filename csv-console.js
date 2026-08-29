@@ -314,7 +314,7 @@ function rendreCorrespondance() {
     const choisie = etat.correspondance[cle];
     let options = "<option value=''>" + T("— ignorer —") + "</option>";
     etat.entetes.forEach((e, i) => {
-      options += "<option value='" + i + "'" + (choisie === i ? " selected" : "") + ">" +
+      options += "<option value='" + escAttr(i) + "'" + (choisie === i ? " selected" : "") + ">" +
                  escaper(e || T("colonne {0}", i + 1)) + "</option>";
     });
     const apercu = choisie === undefined ? "—"
@@ -324,7 +324,7 @@ function rendreCorrespondance() {
       "<td><strong>" + libelle + "</strong>" +
         (cle === "id" ? " <span class='csv-requis'>" + T("requis") + "</span>" : "") +
         (aide ? "<br><span class='csv-aide-champ'>" + aide + "</span>" : "") + "</td>" +
-      "<td><select data-champ='" + cle + "'>" + options + "</select></td>" +
+      "<td><select data-champ='" + escAttr(cle) + "'>" + options + "</select></td>" +
       "<td class='mono csv-apercu'>" + apercu + "</td>" +
     "</tr>";
   }
@@ -351,7 +351,7 @@ function rendreCorrespondanceXml() {
     const choisi = etat.correspondance[cle];
     let options = "<option value=''>" + T("— ignorer —") + "</option>";
     etat.entetes.forEach((champXml) => {
-      options += "<option value='" + escaper(champXml) + "'" + (choisi === champXml ? " selected" : "") + ">" +
+      options += "<option value='" + escAttr(champXml) + "'" + (choisi === champXml ? " selected" : "") + ">" +
                  escaper(champXml) + "</option>";
     });
     const apercu = !choisi ? "—"
@@ -361,7 +361,7 @@ function rendreCorrespondanceXml() {
       "<td><strong>" + libelle + "</strong>" +
         (cle === "id" ? " <span class='csv-requis'>" + T("requis") + "</span>" : "") +
         (aide ? "<br><span class='csv-aide-champ'>" + aide + "</span>" : "") + "</td>" +
-      "<td><select data-champ='" + cle + "'>" + options + "</select></td>" +
+      "<td><select data-champ='" + escAttr(cle) + "'>" + options + "</select></td>" +
       "<td class='mono csv-apercu'>" + apercu + "</td>" +
     "</tr>";
   }
@@ -661,6 +661,27 @@ function afficherRapport(envoyes, erreurs, echecs, catalogue) {
 function escaper(s) {
   return String(s === undefined || s === null ? "" : s)
     .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+/* Échappement pour un attribut entre guillemets SIMPLES (29 août 2026).
+ *
+ * POURQUOI UNE SECONDE FONCTION plutôt qu'étendre `escaper()`. Celui-ci sert
+ * douze fois, toutes sur du CONTENU TEXTE — un nom de colonne affiché, un
+ * extrait de valeur. L'apostrophe n'y a pas à être échappée : « L'Écrou » doit
+ * s'afficher « L'Écrou », pas « L&#39;Écrou ». Étendre `escaper()` corrigerait
+ * un appel et changerait le comportement des onze autres. Mauvais échange.
+ *
+ * CE QU'IL PROTÈGE, et rien de plus : `value='...'` et `data-champ='...'`,
+ * où une apostrophe ferme l'attribut. `etat.entetes` porte les noms d'éléments
+ * du XML que le marchand téléverse : un élément nommé `it's` cassait l'écran
+ * de correspondance et faisait sélectionner le mauvais champ.
+ *
+ * IL N'ÉCHAPPE PAS LE GUILLEMET DOUBLE — correct pour un attribut simple-quote,
+ * PIÈGE si on l'emploie sur un double-quote. Même réserve que le `escAttr()` de
+ * `console.js`, écrite ici parce que c'est ici qu'on la lira.
+ */
+function escAttr(s) {
+  return escaper(s).replace(/'/g, "&#39;");
 }
 
 
