@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import fs from "node:fs";
 import path from "node:path";
+import os from "node:os";
 import { execFileSync } from "node:child_process";
 
 const RACINE = path.resolve(__dirname, "..");
@@ -107,10 +108,67 @@ describe("index derive — ce que l'index ecrit a la main ne trouvait pas", () =
 });
 
 describe("index derive — le verificateur", () => {
-  const verifier = () => {
+  // LE SABOTAGE VIT DANS UNE COPIE, JAMAIS DANS L'ARBRE (29 aout 2026).
+  //
+  // Deux de ces tests doivent abimer un fichier pour verifier que le
+  // verificateur le remarque. Ils le faisaient dans l'arbre SUIVI, avec une
+  // restauration en `finally` -- et un `finally` ne s'execute pas quand le
+  // processus meurt : delai vitest depasse, Ctrl-C, plantage.
+  //
+  // CE QUE CA A COUTE, mesure le 29 aout : quatre tentatives de push refusees,
+  // dont deux ou docs.html portait encore « Documentation API — Heurix
+  // modifie ». Le cycle s'entretient tout seul -- le test sabote, depasse son
+  // delai, la trace reste, le controle suivant echoue A CAUSE de la trace,
+  // relance le test, qui sabote a nouveau. La veille, ce marqueur avait atteint
+  // la PRODUCTION et y etait reste des heures.
+  //
+  // La restauration en `finally` avait deja ete durcie deux fois -- refus de
+  // tourner si le marqueur est la, restauration par retrait plutot que par
+  // instantane. Les deux vivent dans le processus, donc les deux sautent avec
+  // lui. On ne durcit plus : on ne touche plus au fichier suivi.
+  //
+  // COUT MESURE de la copie : `git worktree add --detach` 216 ms, 17 Mo,
+  // `git worktree remove --force` 70 ms -- environ 10 % des 2,9 s que prend le
+  // verificateur lui-meme. Une copie simple ne suffit PAS : le verificateur
+  // appelle `derniers_articles()` -> `date_ajout()` -> `git -C RACINE log`, et
+  // un repertoire sans `.git` le fait echouer sur « clone superficiel ».
+  //
+  // Si le processus meurt pendant la copie, c'est la copie qui reste sale.
+  // `git worktree prune` la nettoie, et surtout AUCUN fichier suivi n'a bouge.
+  let nCopie = 0;
+  const dansUneCopie = (fn) => {
+    const copie = path.join(os.tmpdir(),
+      `heurix-verif-${process.pid}-${Date.now()}-${nCopie++}`);
+    execFileSync("git", ["-C", RACINE, "worktree", "add", "--detach", "-q", copie, "HEAD"]);
     try {
-      execFileSync("python3", [path.join(RACINE, "scripts/index-recherche.py"), "--verifier"],
-                   { cwd: RACINE, encoding: "utf8" });
+      return fn(copie);
+    } finally {
+      try {
+        execFileSync("git", ["-C", RACINE, "worktree", "remove", "--force", copie]);
+      } catch { /* la copie survit ; l'arbre suivi, lui, n'a rien vu */ }
+    }
+  };
+
+
+  // DELAI EXPLICITE SUR CES QUATRE TESTS (29 aout 2026). L'hypothese que
+  // `tests/README.md` laissait ouverte est CONFIRMEE, et par un echec
+  // reproductible : chacun lance `scripts/index-recherche.py --verifier`, un
+  // sous-processus Python de ~3 s a vide.
+  //
+  //     a vide, machine calme        3.0 - 3.4 s
+  //     sous charge (load 36, trois  6.0 - 6.6 s   -> DEPASSEMENT du plafond
+  //     suites en parallele)                          vitest de 5 000 ms
+  //
+  // Quatre push refuses de suite, et le refus n'avait rien a voir avec le
+  // commit pousse. Le plafond est donc mis a 30 s ICI SEULEMENT : les 560
+  // autres tests du depot gardent les 5 s par defaut, qui les protegent d'un
+  // blocage reel. Un sous-processus Python qui met 30 s est pendu, pas charge.
+  const DELAI = 30_000;
+
+  const verifier = (racine = RACINE) => {
+    try {
+      execFileSync("python3", [path.join(racine, "scripts/index-recherche.py"), "--verifier"],
+                   { cwd: racine, encoding: "utf8" });
       return { code: 0, sortie: "" };
     } catch (e) {
       return { code: e.status, sortie: (e.stdout || "") + (e.stderr || "") };
@@ -130,56 +188,28 @@ describe("index derive — le verificateur", () => {
   it("sort 0 quand l'index correspond aux pages", () => {
     const r = verifier();
     expect(r.code, r.sortie).toBe(0);
-  });
+  }, DELAI);
 
   it("tourne SANS le moteur ni sa wheel — c'est sa raison d'etre", () => {
     // Si le generateur importait le moteur au chargement, cet appel
     // echouerait ici comme il echouerait dans la CI du site.
     const r = verifier();
     expect(r.code, r.sortie).toBe(0);
-  });
-
-  // LA RESTAURATION NE REECRIT PLUS UN INSTANTANE (28 aout 2026).
-  //
-  // Cette assertion mute un fichier SUIVI de l'arbre. Avec un instantane pris
-  // au debut et reecrit a la fin, deux executions simultanees se defont :
-  //
-  //     A lit docs.html propre        A ecrit le marqueur
-  //                                   B lit docs.html DEJA MARQUE
-  //     A restaure -> propre          B restaure -> MARQUE, definitivement
-  //
-  // Mesure du 28 aout : le marqueur est reste dans l'arbre, le verificateur
-  // d'index a vu « docs.html : son contenu indexable a change », le crochet
-  // pre-push a refuse, et CINQ commits de TROIS sessions sont restes bloques.
-  // Le danger reel n'etait pas le blocage : le message du verificateur dit
-  // « Regenerez », et regenerer aurait grave « Documentation API — Heurix
-  // modifie » dans l'index servi aux visiteurs.
-  //
-  // Deux changements, et le second compte autant que le premier :
-  //   - on restaure en RETIRANT le marqueur du fichier tel qu'il est alors,
-  //     jamais en reecrivant un etat lu avant ; deux executions convergent.
-  //   - on REFUSE de tourner si le marqueur est deja la. C'est le cas
-  //     « je ne peux pas mesurer » : une autre execution est en vol, et
-  //     muter par-dessus corromprait son etat. Echouer en le nommant vaut
-  //     mieux que passer au vert sur un fichier qu'on vient d'abimer.
-  const MARQUEUR = " modifie</title>";
+  }, DELAI);
 
   it("NOMME la page fautive plutot que de sortir 1 en silence", () => {
-    const page = path.join(RACINE, "docs.html");
-    expect(fs.readFileSync(page, "utf8").includes(MARQUEUR),
-      "docs.html porte deja le marqueur : une autre execution est en vol, " +
-      "ou une precedente ne s'est pas nettoyee. Retirez-le avant de relancer."
-    ).toBe(false);
-    try {
-      fs.writeFileSync(page, fs.readFileSync(page, "utf8").replace("</title>", MARQUEUR));
-      const r = verifier();
-      expect(r.code).toBe(1);
+    dansUneCopie((copie) => {
+      const page = path.join(copie, "docs.html");
+      fs.writeFileSync(page,
+        fs.readFileSync(page, "utf8").replace("</title>", " modifie</title>"));
+      const r = verifier(copie);
+      expect(r.code, r.sortie).toBe(1);
       expect(r.sortie).toContain("docs.html");
-    } finally {
-      const s = fs.readFileSync(page, "utf8");
-      if (s.includes(MARQUEUR)) fs.writeFileSync(page, s.replace(MARQUEUR, "</title>"));
-    }
-  });
+    });
+    // L'ARBRE SUIVI N'A PAS BOUGE, et on l'affirme plutot que de l'esperer.
+    expect(fs.readFileSync(path.join(RACINE, "docs.html"), "utf8"))
+      .not.toContain(" modifie</title>");
+  }, DELAI);
 
   // NE CREE AUCUN FICHIER DANS LE DEPOT. Premiere version : elle ecrivait une
   // vraie page a la racine et l'ajoutait au sitemap. D'autres fichiers de
@@ -188,53 +218,22 @@ describe("index derive — le verificateur", () => {
   // reproduisait pas a l'execution isolee.
   //
   // On retire donc l'empreinte d'une page EXISTANTE de l'index : du point de
-  // vue du verificateur, c'est exactement le meme cas -- une page du sitemap
-  // dont il n'a pas trace -- et rien ne sort du fichier d'index.
+  // vue du verificateur, cette page vient d'etre AJOUTEE.
   it("detecte une page AJOUTEE — celle qui ne change aucune empreinte", () => {
-    const f = path.join(RACINE, "search-index-fr.json");
-    // MEME CORRECTION QUE CI-DESSUS, ET LE MEME SOIR ELLE A LAISSE UNE TRACE.
-    // L'instantane reecrit a la fin a fait disparaitre DEFINITIVEMENT
-    // l'empreinte d'about.html du fichier suivi : le verificateur annoncait
-    // « about.html : AJOUTEE depuis la generation », et une session a failli
-    // regenerer l'index pour reparer un defaut qui n'existait pas.
-    //
-    // On restaure donc en REMETTANT LA SEULE CLEF retiree, dans le fichier tel
-    // qu'il est alors -- jamais en reecrivant les 170 Ko lus au debut, qui
-    // emporteraient au passage tout ce qu'une autre execution y aurait fait.
-    const avant = fs.readFileSync(f, "utf8");
-    const idxAvant = JSON.parse(avant);
-    const orpheline = Object.keys(idxAvant.empreintes)[0];
-    const valeur = idxAvant.empreintes[orpheline];
-    expect(valeur, `${orpheline} : empreinte deja absente, une autre execution est en vol`)
-      .toBeDefined();
-    const mute = JSON.stringify((delete idxAvant.empreintes[orpheline], idxAvant));
-    try {
-      fs.writeFileSync(f, mute);
-      const r = verifier();
-      expect(r.code).toBe(1);
+    dansUneCopie((copie) => {
+      const f = path.join(copie, "search-index-fr.json");
+      const idx = JSON.parse(fs.readFileSync(f, "utf8"));
+      const orpheline = Object.keys(idx.empreintes)[0];
+      delete idx.empreintes[orpheline];
+      fs.writeFileSync(f, JSON.stringify(idx));
+      const r = verifier(copie);
+      expect(r.code, r.sortie).toBe(1);
       expect(r.sortie).toContain(orpheline);
       expect(r.sortie).toContain("AJOUTEE");
-    } finally {
-      const apres = fs.readFileSync(f, "utf8");
-      if (apres === mute) {
-        // CAS NORMAL : le fichier est exactement ce que nous y avons ecrit,
-        // donc personne n'a touche a rien. On repose LES OCTETS D'ORIGINE.
-        // Reserialiser reordonnerait les clefs et laisserait un diff d'une
-        // ligne sur 170 Ko dont rien n'a bouge -- un test ne doit pas salir
-        // l'arbre, meme cosmetiquement : c'est ce qui fait perdre du temps a
-        // la session suivante qui lit `git status`.
-        fs.writeFileSync(f, avant);
-      } else {
-        // Quelqu'un a ecrit entre-temps. On remet LA SEULE CLEF retiree, sans
-        // toucher au reste de son travail.
-        const idx = JSON.parse(apres);
-        if (!(orpheline in idx.empreintes)) {
-          idx.empreintes[orpheline] = valeur;
-          fs.writeFileSync(f, JSON.stringify(idx));
-        }
-      }
-    }
-  });
+    });
+    expect(fs.readFileSync(path.join(RACINE, "search-index-fr.json"), "utf8").length)
+      .toBeGreaterThan(1000);
+  }, DELAI);
 });
 
 // ---------------------------------------------------------------------------
