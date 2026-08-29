@@ -39,6 +39,40 @@ qu'ils se suivent. Verifie sur le cas emblematique -- 7 pages remontees, 7
 pages qui en parlent reellement, ZERO faux positif. La parade (des bigrammes
 sur les sequences chiffre-lettre) est donc reportable, pas necessaire.
 
+CES DEUX FICHIERS NE SE FUSIONNENT PAS. C'EST UN FAIT SUR EUX, PAS UN CONSEIL
+GENERAL (29 aout 2026).
+
+Un rebase sur quatre commits d'autres sessions a produit exactement deux
+conflits, et c'etaient ceux-la :
+
+    search-index-fr.json    CONFLICT (content)
+    search-index-en.json    CONFLICT (content)
+
+Les quinze autres fichiers du lot se sont reunis sans un mot -- y compris
+CLAUDE.md, ou deux sessions avaient ajoute une section.
+
+RESOUDRE A LA MAIN PRODUIRAIT UN FICHIER QUI NE DECRIT AUCUN ETAT DES PAGES :
+ni celui d'en face, ni le sien, ni leur reunion. Un index est une FONCTION des
+pages ; melanger deux sorties d'une fonction ne donne pas la sortie sur
+l'entree melangee. Et rien ne le signalerait tout de suite : `git` accepte,
+la recherche du site continue de rendre des resultats, et c'est `--verifier`
+qui finit par le dire -- ou personne, si on l'a resolu « proprement ».
+
+LA SEULE VOIE, dans cet ordre :
+
+    git checkout origin/main -- search-index-fr.json search-index-en.json
+    git rebase --continue
+    HEURIX_ENGINE=... <python-du-moteur> scripts/index-recherche.py
+
+Prendre la version d'en face n'est pas un choix entre deux contenus, c'est
+seulement se donner un fichier syntaxiquement valide pour finir le rebase.
+Ce qui vaut est la regeneration qui suit, sur l'arbre REUNI.
+
+Mesure du jour, qui montre pourquoi aucun des deux n'etait bon :
+
+    apres le rebase, avant regeneration   6 ecarts -- 3 pages a eux, 3 a moi
+    apres regeneration                    index a jour (119 pages), code 0
+
 USAGE :
     scripts/index-recherche.py              # ecrit les deux index
     scripts/index-recherche.py --verifier   # n'ecrit pas, sort 1 si perime

@@ -19,9 +19,10 @@ coverage/
 
 # Skills d'agent installes par `npx skills add` (24 aout 2026) -- outillage
 # de developpement local, jamais du contenu de site. Ignores explicitement
-# parce que la procedure de deploiement documentee dans CLAUDE.md est
-# `git add -A` : sans cette regle, 115 fichiers de skills tiers partiraient
-# dans le prochain commit de deploiement.
+# parce qu'un `git add -A` -- que CLAUDE.md interdit depuis, mais qui reste a
+# portee de main -- emporterait 115 fichiers de skills tiers dans le prochain
+# commit. La regle protege contre le geste, pas contre la procedure : c'est
+# pour ca qu'elle reste utile maintenant que la procedure a change.
 .agents/
 .claude/
 skills-lock.json
@@ -30,16 +31,14 @@ skills-lock.json
 # est un EXPORT genere (« schemaVersion », « generatedAt »), pas une source :
 # son contenu redit celui de DESIGN.md, qui est la version tenue a la main et
 # lisible en revue. Rien dans le depot ne le reference. Meme raisonnement que
-# .agents/ et .claude/ ci-dessus, et meme motif : la procedure de deploiement
-# documentee est `git add -A`, donc tout dossier d'outil non ignore finit par
-# partir dans un commit de deploiement sans que personne l'ait voulu.
+# .agents/ et .claude/ ci-dessus, et meme motif : un `git add -A` emporte tout
+# dossier d'outil non ignore, sans que personne l'ait voulu.
 .impeccable/
 
 # .scratch/ -- tickets et notes de travail locaux (25 aout 2026). Meme
 # convention que dans heurix-engine, ou elle existe deja ; elle manquait
 # ici, et le risque n'est pas theorique : ce depot est PUBLIE par GitHub
-# Pages, et la procedure de deploiement documentee dans CLAUDE.md est
-# `git add -A`. Une note de travail deposee dans .scratch/ serait donc
-# publiee sur le site au prochain deploiement, sans que personne l'ait
-# voulu -- exactement le motif deja invoque pour .agents/ et .impeccable/.
+# Pages. Une note de travail deposee dans .scratch/ et emportee par un
+# `git add -A` serait publiee sur le site au prochain deploiement, sans que
+# personne l'ait voulu -- meme motif que .agents/ et .impeccable/.
 .scratch/

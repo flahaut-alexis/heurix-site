@@ -1941,6 +1941,62 @@ vous reprenez la mesure d'un autre, demandez ce qu'elle a exclu ». Un rapport
 arrive avec sa cause, jamais avec le nombre d'essais qui l'ont établie. Ici il
 y en avait un, et la conclusion en demandait quatre.
 
+### Ce fichier grandit par réunions automatiques que personne ne relit
+
+Le 29 août 2026, un rebase sur quatre commits d'autres sessions a produit deux
+conflits — les deux index de recherche — et **aucun sur ce fichier**, alors que
+deux sessions y avaient ajouté une section. Git a fait exactement ce qu'il
+devait : les ajouts étaient à des endroits différents, il les a mis bout à
+bout.
+
+C'est le bon comportement, et c'est aussi une propriété à connaître.
+
+```
+2 136 lignes · 53 sections · 42 commits, dont 36 en trois jours
+```
+
+**Deux sections qui se contrediraient se réuniraient de la même façon.** Rien
+dans un merge propre ne lit ce qui est écrit ; il lit où c'est écrit. Un
+fichier qui grandit de douze commits par jour, chacun ajoutant une section que
+son auteur seul a lue, accumule donc des contradictions sans qu'un seul
+conflit ne se déclare.
+
+**CE N'EST PAS UNE CRAINTE, C'EN EST UNE MESURÉE.** Le jour où cette note est
+écrite, `.gitignore` justifiait trois de ses règles ainsi :
+
+```
+# la procedure de deploiement documentee dans CLAUDE.md est `git add -A`
+```
+
+Pendant que ce fichier-ci écrit, ligne 205 :
+
+> **JAMAIS `git add -A`.**
+
+La recette invoquait, comme argument, la commande que la règle interdit. Les
+deux sont arrivées par des commits différents, aucun n'a produit de conflit, et
+la contradiction a vécu jusqu'à ce qu'on la cherche. Les trois justifications
+sont corrigées dans le même lot que cette note — les règles, elles, restaient
+bonnes : c'est leur *raison* qui avait vieilli.
+
+Cette famille est déjà nommée plus haut sous « un commentaire qui décrit un
+comportement se périme au rythme du code qu'il ne contient pas ». Ce qui est
+propre à ce fichier-ci est le **mécanisme d'accumulation** : ailleurs une
+contradiction finit par rencontrer une mesure qui la démente ; ici les deux
+énoncés sont de la prose, personne ne les exécute, et rien ne les confronte
+jamais.
+
+Deux conséquences pratiques :
+
+**Avant d'ajouter une section, chercher ce que le fichier dit déjà du sujet.**
+Un `grep` sur le terme central coûte cinq secondes. Ce n'est pas de la
+politesse envers les autres sessions : c'est le seul moment où les deux
+énoncés sont sous les mêmes yeux.
+
+**Et quand un texte cite ce fichier, il cite une cible mouvante.** Les renvois
+« comme documenté dans CLAUDE.md » sont exactement ce qui s'est périmé ici. Une
+règle qui porte sa propre raison — « un `git add -A` emporterait 115 fichiers »
+— reste vraie quoi qu'il arrive à la section citée.
+
 ### Trois commandes dont la portée vient de l'arbre, et non d'une liste
 
 Trois formes en deux jours, même racine, dégâts différents :
