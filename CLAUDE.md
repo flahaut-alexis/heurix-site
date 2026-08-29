@@ -621,6 +621,58 @@ s'ouvrir**, pas sur celle qu'on avait sous les yeux. Les deux familles de ce
 site se listent en une commande, déjà écrite plus haut — et ce sont les onze
 qu'il faut ouvrir, parce que ce sont celles auxquelles personne ne pense.
 
+#### Le fond qu'on croit avoir trouvé, et qui n'est pas celui qui peint
+
+**Troisième fois, le 29 août 2026, que c'est un fond non composé qui fausse un
+rapport** — après l'opacité mesurée sur aucun fond et le contour mesuré sur un
+seul. Cette fois le fond n'était pas *mal choisi* : il était **introuvable par
+la méthode qui le cherchait**, et la mesure a quand même rendu un nombre.
+
+Deux ratios faux dans la même passe, sur `docs.html` en `body.docs-dark`, tous
+deux **sous-estimés** — donc tous deux ressemblant à un défaut d'accessibilité
+qui n'existait pas :
+
+| élément | mesuré | réel | ce que la mesure avait pris pour fond |
+|---|---|---|---|
+| texte du paragraphe | 1,49:1 | **10,94:1** | `#fff`, par repli |
+| `code.docs-inline-code` | 2,79:1 | **5,21:1** | le fond de la page |
+
+Les deux causes sont distinctes, et c'est ce qui rend le motif difficile à
+voir d'un coup :
+
+- **Remonter les ancêtres en cherchant un `background-color` opaque ne trouve
+  rien sur ce site.** Le fond sombre est un `background-image:
+  radial-gradient(...)` posé sur `body` ; `body` et `html` ont tous deux
+  `background-color: rgba(0,0,0,0)`. Une fonction qui s'arrête au premier
+  `background-color` non transparent remonte jusqu'à la racine, ne trouve
+  rien, et **retombe sur du blanc** — en rendant un chiffre d'apparence
+  normale. Le fond réel, loin dans la page, est la borne finale du dégradé,
+  `rgb(16,27,77)`.
+- **À l'inverse, un élément peut porter son propre fond opaque** et ne pas
+  devoir être mesuré sur celui de la page du tout. `.docs-inline-code` a une
+  puce `rgb(238,241,255)` : mesurer son texte sur le fond sombre le déclare
+  sous AA alors qu'il ne touche jamais ce fond.
+
+Corollaire, et c'est la forme générale des trois occurrences : **le fond qui
+décide d'un rapport est celui qui PEINT sous le glyphe, et aucune propriété
+CSS ne le nomme.** Ni `background-color` sur un ancêtre, ni le fond de la
+page : la composition seule le donne. Un repli silencieux vers le blanc est le
+pire des comportements, parce qu'il rend un nombre plausible au lieu d'échouer.
+
+Le contrôle qui aurait évité les deux : avant de croire un rapport, **vérifier
+que le fond employé a bien été trouvé, et pas remplacé par un défaut** — une
+fonction de mesure doit signaler « aucun fond opaque trouvé » plutôt que
+supposer `#fff`.
+
+Et si la capture d'écran avait été disponible, elle aurait tranché en une
+image. Elle ne l'était pas : le pane du navigateur ne peint pas `docs.html`
+sous la ligne de flottaison, quelle que soit la méthode de défilement
+(`scrollTo`, `scrollTop`, ancre `#facettes`, `scroll-behavior:auto`) — la
+capture revient noire alors que le DOM place bien le paragraphe à 140 px du
+haut. **Quand l'instrument visuel tombe, le calcul reste le bon repli — mais
+il faut alors le dire, et vérifier le repli lui-même**, ce que les deux
+chiffres ci-dessus montrent nécessaire.
+
 ### Déplacer une section = balayer les ancres
 
 Tout déplacement d'une section vers une autre page doit être suivi d'un
