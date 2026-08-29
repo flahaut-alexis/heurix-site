@@ -168,6 +168,7 @@
       <a href="#ep-search">Search</a>
       <a href="#ep-search-overrides">Query priorities</a>
       <a href="#facettes">Facets and filters</a>
+      <a href="#ep-prix-par-cle">Per-key pricing</a>
       <a href="#ep-browse">Browse &amp; Discovery</a>
       <a href="#ep-federated">Federated search</a>
       <a href="#ep-items">Indexing</a>
@@ -408,6 +409,31 @@
         <tr><td>Key required</td><td><strong>Server</strong> key only. A public key gets a <code class="docs-inline-code">403</code> — this is an admin tool, not visitor traffic.</td></tr>
       </table></div>
 
+      <h3 id="ep-prix-par-cle">Per-key pricing</h3>
+      <p>A B2B distributor has list prices and net prices per customer population, and many show no price at all without a trade account. A public key therefore carries <strong>which product field stands as the price</strong>, and <strong>whether it is served at all</strong>.</p>
+      <p>You push your prices as ordinary product fields — <code class="docs-inline-code">price</code>, <code class="docs-inline-code">price_pro</code>, whatever you name them — then create one public key per population and serve the right one from your own back office, the only place where the customer's identity exists.</p>
+      <pre class="docs-code"><code>curl -X PUT https://api.heurix.fr/v1/keys/public/hxp_xxx/pricing \
+  -H "Authorization: Bearer YOUR_SERVER_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"catalog": "mycatalog", "price_field": "price_pro"}'</code></pre>
+      <div class="table-scroll"><table class="docs-params">
+        <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+        <tr><td><code class="docs-inline-code">catalog</code></td><td>string</td><td><strong>Required.</strong> The catalog to validate the requested field against — without it a typo would go through and every product would look priceless.</td></tr>
+        <tr><td><code class="docs-inline-code">price_field</code></td><td>string</td><td>The product field served as the price. Defaults to <code class="docs-inline-code">price</code>.</td></tr>
+        <tr><td><code class="docs-inline-code">price_visible</code></td><td>bool</td><td>At <code class="docs-inline-code">false</code>, no price is served. Defaults to <code class="docs-inline-code">true</code>.</td></tr>
+      </table></div>
+      <p><strong>Server keys only.</strong> A public key lives in a browser: if it could declare its own price, any visitor would read trade prices by changing one parameter. For the same reason there is <strong>no price parameter in a search request</strong> — the configuration comes from the key, never from the call.</p>
+      <p><strong>A field no product carries is refused</strong>, and the message lists the ones that exist:</p>
+      <pre class="docs-code"><code>{"detail": "None of the 5000 products in « mycatalog » carries the field
+ « price_prro ». Price fields present: price, price_pro."}</code></pre>
+      <p>Partial coverage is accepted and counted. Products without the field <strong>have no price at all</strong> — never a silent fallback to <code class="docs-inline-code">price</code>, which would serve the list price to a trade buyer without saying so.</p>
+      <p><strong>Hiding removes every price field</strong>, not just <code class="docs-inline-code">price</code>: "no price without an account" would mean nothing if <code class="docs-inline-code">price_pro</code> kept coming out because it isn't called <code class="docs-inline-code">price</code>. Fields whose name contains <code class="docs-inline-code">price</code>, <code class="docs-inline-code">prix</code> or <code class="docs-inline-code">tarif</code> are removed — and the response lists them rather than letting you find out later:</p>
+      <pre class="docs-code"><code>{"price_visible": false,
+ "removed_fields": ["price", "price_pro", "tarif_livraison"]}</code></pre>
+      <p><strong>What search returns.</strong> The product carries a single price, under the <code class="docs-inline-code">price</code> key whatever its source: your front end doesn't change. The response adds <code class="docs-inline-code">"custom_price": true</code> when it isn't the list price, or <code class="docs-inline-code">"price_visible": false</code> when no price is served. The field <em>name</em> never reaches the browser — it says something about your pricing structure; you read it back on <code class="docs-inline-code">GET /v1/keys/public</code>.</p>
+      <p><strong>An unconfigured key behaves exactly as before:</strong> the <code class="docs-inline-code">price</code> field, served, and neither of those two keys in the response.</p>
+      <div class="callout"><p><strong>The limit, and it is a clear one: one set of prices per public key, not one price per customer.</strong> A distributor creates one key per population — anonymous visitors, trade accounts, key accounts — and serves the right one from their back office, the only place where the customer's identity exists. Heurix does not carry individual pricing: a price negotiated per customer calls for a pricing-rules engine, which is not what Heurix does.</p></div>
+
       <h3>Natural-language price constraints</h3>
       <p>A price constraint phrased in plain language is recognized in the query and converted into a filter — "stainless screws <strong>under €2</strong>" filters on price instead of searching for the words "under" and "euros" in your catalog. English, French, Italian, Spanish, German and Portuguese phrasings are recognized.</p>
       <pre class="docs-code"><code>{"query": "stainless screws", "total": 3, "hits": [...],
@@ -422,7 +448,8 @@
       </table></div>
       <p>The currency marker is optional on every phrasing above, and it may sit on either side of the number: <code class="docs-inline-code">under €2</code>, <code class="docs-inline-code">under 2 euros</code> and <code class="docs-inline-code">under 2</code> are read the same way, and <code class="docs-inline-code">$</code> and <code class="docs-inline-code">£</code> work like <code class="docs-inline-code">€</code>. Only <code class="docs-inline-code">max X</code> and <code class="docs-inline-code">min X</code> require a currency, because "max 20" could just as easily mean 20&nbsp;mm. The decimal comma is accepted (<code class="docs-inline-code">3,50</code> just like <code class="docs-inline-code">3.50</code>).</p>
       <p>The engine reads a number, never a currency: it does not convert. <code class="docs-inline-code">under $2</code> on a catalog priced in euros filters on 2, not on a converted amount.</p>
-      <p><strong>A product with no <code class="docs-inline-code">price</code> field is excluded</strong> as soon as a constraint is active: there's no way to confirm it satisfies it, and surfacing it anyway would be misleading. It stays findable through a search with no price constraint.</p>
+      <p>The constraint applies to <strong>the price the calling key serves</strong>, not necessarily to <code class="docs-inline-code">price</code> — "under €5" filters on the trade price for a key configured that way (see <a href="#ep-prix-par-cle">Per-key pricing</a>).</p>
+      <p><strong>A product with no price field is excluded</strong> as soon as a constraint is active: there's no way to confirm it satisfies it, and surfacing it anyway would be misleading. It stays findable through a search with no price constraint.</p>
 
       <h3>Query still being typed</h3>
       <p>A word of 3 characters or more that matches the <strong>start</strong> of a vocabulary word also surfaces results — not just an exact match or a full typo correction. Typing "per" already finds "perceuse" (drill), without waiting for the whole word. A result found this way always counts for less than an exact match or an ordinary typo correction: as soon as the query is complete, ranking shifts back toward the most relevant results. Below 3 characters, no prefix matching is attempted at all — too many vocabulary words would share a 1- or 2-letter start by pure coincidence.</p>
@@ -515,7 +542,7 @@ curl "https://api.heurix.fr/v1/browse/mycatalog/drills-drivers?sort=price_asc" \
       <div class="table-scroll"><table class="docs-params">
         <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
         <tbody>
-          <tr><td><code class="docs-inline-code">sort</code></td><td>string</td><td><code class="docs-inline-code">stock</code> (default) · <code class="docs-inline-code">recent</code> · <code class="docs-inline-code">alphabetical</code> · <code class="docs-inline-code">price_asc</code> / <code class="docs-inline-code">price_desc</code> (reads the <code class="docs-inline-code">price</code> field) · <code class="docs-inline-code">margin</code> (reads the <code class="docs-inline-code">margin</code> field, highest first) · <code class="docs-inline-code">popular</code> (see below)</td></tr>
+          <tr><td><code class="docs-inline-code">sort</code></td><td>string</td><td><code class="docs-inline-code">stock</code> (default) · <code class="docs-inline-code">recent</code> · <code class="docs-inline-code">alphabetical</code> · <code class="docs-inline-code">price_asc</code> / <code class="docs-inline-code">price_desc</code> (reads the calling key's price field, <code class="docs-inline-code">price</code> by default — see <a href="#ep-prix-par-cle">Per-key pricing</a>) · <code class="docs-inline-code">margin</code> (reads the <code class="docs-inline-code">margin</code> field, highest first) · <code class="docs-inline-code">popular</code> (see below)</td></tr>
           <tr><td><code class="docs-inline-code">filters</code></td><td>string</td><td><code class="docs-inline-code">"field:value,field2:value2"</code> — narrows on any free product attribute (brand, color…), in addition to the category. Any non-reserved text field automatically becomes filterable at indexing time, no configuration needed.<br><strong>The comma is an AND, the pipe is an OR.</strong> <code class="docs-inline-code">brand:Makita|Bosch</code> returns one <em>or</em> the other; <code class="docs-inline-code">brand:Makita,color:blue</code> requires both. Two pairs on the same field stay cumulative — <code class="docs-inline-code">tags:promo,tags:clearance</code> only returns products carrying <em>both</em> tags, which is meaningful on a multi-valued field.</td></tr>
           <tr><td><code class="docs-inline-code">facets</code></td><td>string</td><td><code class="docs-inline-code">"field,field2"</code> — returns a count per value for each requested field, disjunctive (filtering on one value of a field doesn't remove the field's other values from the count, same as on the search side).</td></tr>
           <tr><td><code class="docs-inline-code">limit</code> / <code class="docs-inline-code">offset</code></td><td>int</td><td>Pagination, same as search.</td></tr>

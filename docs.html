@@ -182,6 +182,7 @@
       <a href="#ep-search">Recherche</a>
       <a href="#ep-search-overrides">Priorités de requête</a>
       <a href="#facettes">Facettes et filtres</a>
+      <a href="#ep-prix-par-cle">Prix par clé publique</a>
       <a href="#ep-browse">Browse &amp; Discovery</a>
       <a href="#ep-federated">Recherche fédérée</a>
       <a href="#ep-items">Indexation</a>
@@ -421,6 +422,31 @@
         <tr><td>Clé requise</td><td>Clé <strong>serveur</strong> uniquement. Une clé publique reçoit un <code class="docs-inline-code">403</code> — c'est un outil d'administration, pas du trafic visiteur.</td></tr>
       </table></div>
 
+      <h3 id="ep-prix-par-cle">Prix par clé publique</h3>
+      <p>Un distributeur B2B a des prix catalogue et des prix nets par population de clients, et beaucoup n'affichent aucun prix sans compte pro. Une clé publique porte donc <strong>quel champ du produit tient lieu de prix</strong>, et <strong>s'il est servi du tout</strong>.</p>
+      <p>Le marchand pousse ses prix comme des champs ordinaires du produit — <code class="docs-inline-code">price</code>, <code class="docs-inline-code">price_pro</code>, le nom qu'il veut — puis crée une clé publique par population et la sert depuis son back-office, seul endroit où l'identité du client existe.</p>
+      <pre class="docs-code"><code>curl -X PUT https://api.heurix.fr/v1/keys/public/hxp_xxx/pricing \
+  -H "Authorization: Bearer VOTRE_CLE_SERVEUR" \
+  -H "Content-Type: application/json" \
+  -d '{"catalog": "moncatalogue", "price_field": "price_pro"}'</code></pre>
+      <div class="table-scroll"><table class="docs-params">
+        <tr><th>Champ</th><th>Type</th><th>Description</th></tr>
+        <tr><td><code class="docs-inline-code">catalog</code></td><td>string</td><td><strong>Obligatoire.</strong> Le catalogue contre lequel valider le champ demandé — sans lui, une faute de frappe passerait et tous les produits paraîtraient sans prix.</td></tr>
+        <tr><td><code class="docs-inline-code">price_field</code></td><td>string</td><td>Le champ du produit servi comme prix. Défaut <code class="docs-inline-code">price</code>.</td></tr>
+        <tr><td><code class="docs-inline-code">price_visible</code></td><td>bool</td><td>À <code class="docs-inline-code">false</code>, aucun prix n'est servi. Défaut <code class="docs-inline-code">true</code>.</td></tr>
+      </table></div>
+      <p><strong>Réservé aux clés serveur.</strong> Une clé publique vit dans un navigateur : si elle pouvait déclarer son propre prix, n'importe quel visiteur lirait les prix pro en changeant un paramètre. Il n'y a pour la même raison <strong>aucun paramètre de prix dans une requête de recherche</strong> — la configuration vient de la clé, jamais de l'appel.</p>
+      <p><strong>Un champ qu'aucun produit ne porte est refusé</strong>, et le message liste ceux qui existent :</p>
+      <pre class="docs-code"><code>{"detail": "Aucun des 5000 produits de « moncatalogue » ne porte le champ
+ « price_prro ». Champs de prix présents : price, price_pro."}</code></pre>
+      <p>Une couverture partielle est acceptée et chiffrée. Les produits sans le champ <strong>n'ont pas de prix du tout</strong> — jamais un repli silencieux sur <code class="docs-inline-code">price</code>, qui servirait le prix catalogue à un acheteur pro sans le dire.</p>
+      <p><strong>Le masquage retire tout champ de prix</strong>, pas seulement <code class="docs-inline-code">price</code> : « pas de prix sans compte » ne voudrait rien dire si <code class="docs-inline-code">price_pro</code> continuait de sortir parce qu'il ne s'appelle pas <code class="docs-inline-code">price</code>. Sont retirés les champs dont le nom contient <code class="docs-inline-code">price</code>, <code class="docs-inline-code">prix</code> ou <code class="docs-inline-code">tarif</code> — et la réponse les liste, plutôt que de vous les faire découvrir :</p>
+      <pre class="docs-code"><code>{"price_visible": false,
+ "removed_fields": ["price", "price_pro", "tarif_livraison"]}</code></pre>
+      <p><strong>Ce que la recherche renvoie.</strong> Le produit porte un seul prix, sous la clef <code class="docs-inline-code">price</code> quelle que soit sa source : votre front ne change pas. La réponse ajoute <code class="docs-inline-code">"custom_price": true</code> quand ce n'est pas le prix catalogue, ou <code class="docs-inline-code">"price_visible": false</code> quand aucun prix n'est servi. Le <em>nom</em> du champ ne descend jamais dans le navigateur — c'est une information sur votre structure de prix ; vous la relisez sur <code class="docs-inline-code">GET /v1/keys/public</code>.</p>
+      <p><strong>Une clé non configurée se comporte exactement comme avant :</strong> le champ <code class="docs-inline-code">price</code>, servi, et aucune de ces deux clefs dans la réponse.</p>
+      <div class="callout"><p><strong>La limite, et elle est nette : un jeu de prix par clé publique, pas un tarif par client.</strong> Un distributeur crée une clé par population — visiteurs anonymes, comptes pro, grands comptes — et sert la bonne depuis son back-office, seul endroit où l'identité du client existe. Heurix ne porte pas de tarification individuelle : un tarif négocié par client demande un moteur de règles tarifaires, qui n'est pas ce que Heurix fait.</p></div>
+
       <h3>Contraintes de prix en langage naturel</h3>
       <p>Une contrainte de prix formulée en langage naturel est reconnue dans la requête et convertie en filtre — « vis inox <strong>moins de 5 €</strong> » filtre sur le prix au lieu de chercher les mots « moins » et « euros » dans votre catalogue. Le français, l'anglais, l'italien, l'espagnol, l'allemand et le portugais sont reconnus.</p>
       <pre class="docs-code"><code>{"query": "vis inox", "total": 3, "hits": [...],
@@ -435,7 +461,8 @@
       </table></div>
       <p>Le marqueur de monnaie est optionnel sur la plupart des tournures, et il peut se placer des deux côtés du nombre : <code class="docs-inline-code">moins de 5 €</code>, <code class="docs-inline-code">moins de €5</code> et <code class="docs-inline-code">moins de 5</code> se lisent de la même façon, et <code class="docs-inline-code">$</code> comme <code class="docs-inline-code">£</code> valent <code class="docs-inline-code">€</code>. Quatre tournures en exigent un — <code class="docs-inline-code">sous X</code>, <code class="docs-inline-code">jusqu'à X</code>, <code class="docs-inline-code">max X</code> et <code class="docs-inline-code">min X</code> — parce que « sous 5 » pourrait tout aussi bien désigner 5&nbsp;mm. La virgule décimale française est acceptée (<code class="docs-inline-code">3,50</code> comme <code class="docs-inline-code">3.50</code>).</p>
       <p>Le moteur lit un nombre, jamais une monnaie : il ne convertit pas. <code class="docs-inline-code">moins de $5</code> sur un catalogue en euros filtre sur 5, pas sur un montant converti.</p>
-      <p><strong>Un produit sans champ <code class="docs-inline-code">price</code> est exclu</strong> dès qu'une contrainte est active : on ne peut pas affirmer qu'il la respecte, et le faire remonter serait trompeur. Il reste trouvable par une recherche sans contrainte de prix.</p>
+      <p>La contrainte porte sur <strong>le prix que la clé appelante sert</strong>, pas nécessairement sur <code class="docs-inline-code">price</code> — « moins de 5 € » filtre sur le prix pro pour une clé configurée ainsi (voir <a href="#ep-prix-par-cle">Prix par clé publique</a>).</p>
+      <p><strong>Un produit sans champ de prix est exclu</strong> dès qu'une contrainte est active : on ne peut pas affirmer qu'il la respecte, et le faire remonter serait trompeur. Il reste trouvable par une recherche sans contrainte de prix.</p>
 
       <h3>Recherche en train d'être tapée</h3>
       <p>Un mot de 3 caractères ou plus qui correspond au <strong>début</strong> d'un mot du vocabulaire remonte aussi des résultats — pas seulement une correspondance exacte ou une faute de frappe complète. Taper « per » retrouve déjà « perceuse », sans attendre le mot entier. Un résultat trouvé par ce biais compte toujours moins qu'une correspondance exacte ou une faute de frappe classique : dès que la requête est complète, le classement se réajuste vers les résultats les plus pertinents. En dessous de 3 caractères, aucune correspondance par préfixe n'est tentée — trop de mots du vocabulaire partageraient un début de 1 ou 2 lettres par pur hasard.</p>
@@ -528,7 +555,7 @@ curl "https://api.heurix.fr/v1/browse/moncatalogue/perceuses-visseuses?sort=pric
       <div class="table-scroll"><table class="docs-params">
         <thead><tr><th>Paramètre</th><th>Type</th><th>Description</th></tr></thead>
         <tbody>
-          <tr><td><code class="docs-inline-code">sort</code></td><td>string</td><td><code class="docs-inline-code">stock</code> (défaut) · <code class="docs-inline-code">recent</code> · <code class="docs-inline-code">alphabetical</code> · <code class="docs-inline-code">price_asc</code> / <code class="docs-inline-code">price_desc</code> (lit le champ <code class="docs-inline-code">price</code>) · <code class="docs-inline-code">margin</code> (lit le champ <code class="docs-inline-code">margin</code>, la plus forte d'abord) · <code class="docs-inline-code">popular</code> (voir ci-dessous)</td></tr>
+          <tr><td><code class="docs-inline-code">sort</code></td><td>string</td><td><code class="docs-inline-code">stock</code> (défaut) · <code class="docs-inline-code">recent</code> · <code class="docs-inline-code">alphabetical</code> · <code class="docs-inline-code">price_asc</code> / <code class="docs-inline-code">price_desc</code> (lit le champ de prix de la clé appelante, <code class="docs-inline-code">price</code> par défaut — voir <a href="#ep-prix-par-cle">Prix par clé publique</a>) · <code class="docs-inline-code">margin</code> (lit le champ <code class="docs-inline-code">margin</code>, la plus forte d'abord) · <code class="docs-inline-code">popular</code> (voir ci-dessous)</td></tr>
           <tr><td><code class="docs-inline-code">filters</code></td><td>string</td><td><code class="docs-inline-code">"champ:valeur,champ2:valeur2"</code> — affine sur n'importe quel attribut libre du produit (marque, couleur…), en plus de la catégorie. Tout champ texte non réservé devient automatiquement filtrable dès l'indexation, sans configuration.<br><strong>La virgule est un ET, le tuyau est un OU.</strong> <code class="docs-inline-code">marque:Makita|Bosch</code> rend l'une <em>ou</em> l'autre ; <code class="docs-inline-code">marque:Makita,couleur:bleu</code> exige les deux. Deux paires du même champ restent cumulatives — <code class="docs-inline-code">tags:promo,tags:destockage</code> ne rend que les produits portant les <em>deux</em> étiquettes, ce qui a un sens sur un champ à valeurs multiples.</td></tr>
           <tr><td><code class="docs-inline-code">facets</code></td><td>string</td><td><code class="docs-inline-code">"champ,champ2"</code> — renvoie un décompte par valeur pour chaque champ demandé, disjonctif (filtrer sur une valeur d'un champ ne fait pas disparaître les autres valeurs de ce même champ du décompte, comme côté recherche).</td></tr>
           <tr><td><code class="docs-inline-code">limit</code> / <code class="docs-inline-code">offset</code></td><td>int</td><td>Pagination, comme pour la recherche.</td></tr>
