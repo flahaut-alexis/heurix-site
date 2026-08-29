@@ -387,7 +387,7 @@
       </table></div>
 
       <h3>Contraintes de prix en langage naturel</h3>
-      <p>Une contrainte de prix formulée en français est reconnue dans la requête et convertie en filtre — « vis inox <strong>moins de 5 €</strong> » filtre sur le prix au lieu de chercher les mots « moins » et « euros » dans votre catalogue.</p>
+      <p>Une contrainte de prix formulée en langage naturel est reconnue dans la requête et convertie en filtre — « vis inox <strong>moins de 5 €</strong> » filtre sur le prix au lieu de chercher les mots « moins » et « euros » dans votre catalogue. Le français, l'anglais, l'italien, l'espagnol, l'allemand et le portugais sont reconnus.</p>
       <pre class="docs-code"><code>{"query": "vis inox", "total": 3, "hits": [...],
  "price_filter": {"min": null, "max": 5.0}}</code></pre>
       <p>La requête renvoyée est <strong>débarrassée du fragment consommé</strong> (« vis inox », et non « vis inox moins de 5 € ») : les mots de la contrainte ne pèsent pas sur le score de pertinence. Le champ <code class="docs-inline-code">price_filter</code> n'apparaît que si une contrainte a été détectée — utile pour l'afficher à l'acheteur et lui permettre de la retirer.</p>
@@ -398,7 +398,8 @@
         <tr><td>Prix minimum</td><td><code class="docs-inline-code">plus de X</code>, <code class="docs-inline-code">supérieur à X</code>, <code class="docs-inline-code">au-dessus de X</code>, <code class="docs-inline-code">à partir de X €</code>, <code class="docs-inline-code">min X €</code></td></tr>
         <tr><td>Intervalle</td><td><code class="docs-inline-code">entre X et Y €</code></td></tr>
       </table></div>
-      <p>Le symbole <code class="docs-inline-code">€</code> et le mot « euros » sont optionnels sur la plupart des tournures. La virgule décimale française est acceptée (<code class="docs-inline-code">3,50</code> comme <code class="docs-inline-code">3.50</code>).</p>
+      <p>Le marqueur de monnaie est optionnel sur la plupart des tournures, et il peut se placer des deux côtés du nombre : <code class="docs-inline-code">moins de 5 €</code>, <code class="docs-inline-code">moins de €5</code> et <code class="docs-inline-code">moins de 5</code> se lisent de la même façon, et <code class="docs-inline-code">$</code> comme <code class="docs-inline-code">£</code> valent <code class="docs-inline-code">€</code>. Quatre tournures en exigent un — <code class="docs-inline-code">sous X</code>, <code class="docs-inline-code">jusqu'à X</code>, <code class="docs-inline-code">max X</code> et <code class="docs-inline-code">min X</code> — parce que « sous 5 » pourrait tout aussi bien désigner 5&nbsp;mm. La virgule décimale française est acceptée (<code class="docs-inline-code">3,50</code> comme <code class="docs-inline-code">3.50</code>).</p>
+      <p>Le moteur lit un nombre, jamais une monnaie : il ne convertit pas. <code class="docs-inline-code">moins de $5</code> sur un catalogue en euros filtre sur 5, pas sur un montant converti.</p>
       <p><strong>Un produit sans champ <code class="docs-inline-code">price</code> est exclu</strong> dès qu'une contrainte est active : on ne peut pas affirmer qu'il la respecte, et le faire remonter serait trompeur. Il reste trouvable par une recherche sans contrainte de prix.</p>
 
       <h3>Recherche en train d'être tapée</h3>

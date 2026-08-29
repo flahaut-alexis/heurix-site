@@ -374,18 +374,19 @@
       </table></div>
 
       <h3>Natural-language price constraints</h3>
-      <p>A price constraint phrased in French is recognized in the query and converted into a filter — "vis inox <strong>moins de 5 €</strong>" (stainless screw under €5) filters on price instead of searching for the words "moins" and "euros" in your catalog.</p>
-      <pre class="docs-code"><code>{"query": "vis inox", "total": 3, "hits": [...],
- "price_filter": {"min": null, "max": 5.0}}</code></pre>
-      <p>The returned query is <strong>stripped of the consumed fragment</strong> ("vis inox", not "vis inox moins de 5 €"): the constraint's words don't weigh on the relevance score. The <code class="docs-inline-code">price_filter</code> field only appears if a constraint was detected — useful for displaying it to the buyer and letting them remove it.</p>
+      <p>A price constraint phrased in plain language is recognized in the query and converted into a filter — "stainless screws <strong>under €2</strong>" filters on price instead of searching for the words "under" and "euros" in your catalog. English, French, Italian, Spanish, German and Portuguese phrasings are recognized.</p>
+      <pre class="docs-code"><code>{"query": "stainless screws", "total": 3, "hits": [...],
+ "price_filter": {"min": null, "max": 2.0}}</code></pre>
+      <p>The returned query is <strong>stripped of the consumed fragment</strong> ("stainless screws", not "stainless screws under €2"): the constraint's words don't weigh on the relevance score. The <code class="docs-inline-code">price_filter</code> field only appears if a constraint was detected — useful for displaying it to the buyer and letting them remove it.</p>
       <p><strong>Recognized phrasings</strong> — a deliberately short, documented list rather than an exhaustive one:</p>
       <div class="table-scroll"><table class="docs-params">
         <tr><th>Effect</th><th>Phrasings</th></tr>
-        <tr><td>Maximum price</td><td><code class="docs-inline-code">moins de X</code>, <code class="docs-inline-code">inférieur à X</code>, <code class="docs-inline-code">sous X €</code>, <code class="docs-inline-code">en dessous de X</code>, <code class="docs-inline-code">jusqu'à X €</code>, <code class="docs-inline-code">max X €</code></td></tr>
-        <tr><td>Minimum price</td><td><code class="docs-inline-code">plus de X</code>, <code class="docs-inline-code">supérieur à X</code>, <code class="docs-inline-code">au-dessus de X</code>, <code class="docs-inline-code">à partir de X €</code>, <code class="docs-inline-code">min X €</code></td></tr>
-        <tr><td>Range</td><td><code class="docs-inline-code">entre X et Y €</code></td></tr>
+        <tr><td>Maximum price</td><td><code class="docs-inline-code">under X</code>, <code class="docs-inline-code">less than X</code>, <code class="docs-inline-code">below X</code>, <code class="docs-inline-code">up to X</code></td></tr>
+        <tr><td>Minimum price</td><td><code class="docs-inline-code">over X</code>, <code class="docs-inline-code">more than X</code>, <code class="docs-inline-code">above X</code>, <code class="docs-inline-code">from X</code></td></tr>
+        <tr><td>Range</td><td><code class="docs-inline-code">between X and Y</code></td></tr>
       </table></div>
-      <p>The <code class="docs-inline-code">€</code> symbol and the word "euros" are optional on most phrasings. The French decimal comma is accepted (<code class="docs-inline-code">3,50</code> just like <code class="docs-inline-code">3.50</code>).</p>
+      <p>The currency marker is optional on every phrasing above, and it may sit on either side of the number: <code class="docs-inline-code">under €2</code>, <code class="docs-inline-code">under 2 euros</code> and <code class="docs-inline-code">under 2</code> are read the same way, and <code class="docs-inline-code">$</code> and <code class="docs-inline-code">£</code> work like <code class="docs-inline-code">€</code>. Only <code class="docs-inline-code">max X</code> and <code class="docs-inline-code">min X</code> require a currency, because "max 20" could just as easily mean 20&nbsp;mm. The decimal comma is accepted (<code class="docs-inline-code">3,50</code> just like <code class="docs-inline-code">3.50</code>).</p>
+      <p>The engine reads a number, never a currency: it does not convert. <code class="docs-inline-code">under $2</code> on a catalog priced in euros filters on 2, not on a converted amount.</p>
       <p><strong>A product with no <code class="docs-inline-code">price</code> field is excluded</strong> as soon as a constraint is active: there's no way to confirm it satisfies it, and surfacing it anyway would be misleading. It stays findable through a search with no price constraint.</p>
 
       <h3>Query still being typed</h3>

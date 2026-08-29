@@ -647,7 +647,7 @@
   // ne démontrerait rien : chaque secteur a son vocabulaire, et c'est
   // précisément ce que le sélecteur illustre.
   var EXEMPLES = LANG_EN ? {
-    outillage: ["M8x20 stainless", "stainless screws under $2", "DIN 933", "wahser"],
+    outillage: ["M8x20 stainless", "stainless screws under €2", "DIN 933", "wahser"],
     mode: ["red wool sweater size L", "slim jeans W32", "striped shirt"],
   } : {
     outillage: ["M8x20 inox", "vis inox moins de 2 euros", "DIN 933", "rondele"],
