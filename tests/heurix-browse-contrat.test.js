@@ -95,11 +95,21 @@ describe("Heurix.browse — surface exposee", () => {
     expect(typeof win.Heurix.browse).toBe("function");
   });
 
-  it("n'expose RIEN d'autre que browse", () => {
+  it("expose EXACTEMENT browse et browsePanel, rien de plus", () => {
     // Verrouille la surface : ajouter une fonction publique a ce fichier
     // doit etre un geste conscient, pas un effet de bord.
+    //
+    // MIS A JOUR LE 29 AOUT 2026, et c'est le test qui a impose de le
+    // faire. Il disait `["browse"]` et il est tombe -- seul des 35 -- a
+    // l'ajout de browsePanel. C'est exactement le geste conscient qu'il
+    // exigeait : la ligne change ICI, en sachant ce qu'on ajoute, plutot
+    // qu'une fonction publique n'apparaisse sans que rien ne le signale.
+    //
+    // Les 34 autres tests ont continue de passer sans une modification,
+    // y compris le bloc entier « ce qui n'est PAS ecrit » : c'est la
+    // preuve que le chemin Heurix.browse n'a pas bouge.
     const { win } = charger();
-    expect(Object.keys(win.Heurix)).toEqual(["browse"]);
+    expect(Object.keys(win.Heurix).sort()).toEqual(["browse", "browsePanel"]);
   });
 });
 
