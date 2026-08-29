@@ -79,6 +79,15 @@
     return s.replace(/\B(?=(\d{3})+(?!\d))/g, sep);
   }
 
+  // Les valeurs de facette viennent du catalogue du marchand : « 3/8" BSP »
+  // et « L'Oreal » sont des valeurs plausibles, et toutes deux cassent un
+  // selecteur d'attribut. CSS.escape n'existe pas partout ou ce fichier
+  // tourne ; on echappe donc le guillemet double et l'antislash, les deux
+  // seuls caracteres qui peuvent terminer [value="..."].
+  function echapperSelecteur(v) {
+    return String(v).replace(/["\\]/g, "\\$&");
+  }
+
   var TEXTES = {
     fr: {
       vide: "<p>Aucun produit dans cette catégorie.</p>",
@@ -95,6 +104,11 @@
       pageSur: "Page {0} sur {1}",
       allerPage: "Aller à la page ",
       sautPages: "Pages omises",
+      filtres: "Filtres",
+      vider: "Effacer les filtres",
+      sans: "{0} sans {1}",
+      choixAria: "{0}, {1} produits",
+      choixAriaUn: "{0}, 1 produit",
     },
     en: {
       vide: "<p>No products in this category.</p>",
@@ -111,6 +125,11 @@
       pageSur: "Page {0} of {1}",
       allerPage: "Go to page ",
       sautPages: "Skipped pages",
+      filtres: "Filters",
+      vider: "Clear filters",
+      sans: "{0} without {1}",
+      choixAria: "{0}, {1} products",
+      choixAriaUn: "{0}, 1 product",
     },
   };
 
@@ -295,6 +314,42 @@
       // Meme gris que l'etat desactive, meme raison : aria-hidden retire le
       // saut aux lecteurs d'ecran, pas aux yeux.
       ".hx-rayon-saut{min-width:20px;text-align:center;color:#6E7183;font-size:13.5px;align-self:center;}",
+      // Rail de facettes. En colonne a gauche au-dessus de 720 px, empile
+      // au-dessus de la grille en dessous -- pas de rail lateral de 240 px
+      // sur un telephone de 390.
+      ".hx-rayon-corps{display:block;}",
+      "@media (min-width:721px){.hx-rayon-corps{display:grid;grid-template-columns:220px 1fr;gap:22px;align-items:start;}}",
+      ".hx-rayon-rail{margin:0 0 18px;}",
+      // Le rail se replie SOUS 721 px. Dix-huit cases empilees au-dessus de
+      // la grille, c'est 700 px de filtres avant le premier produit sur un
+      // telephone : le rayon n'y montre plus de marchandise. <details> le
+      // fait nativement -- Tab l'atteint, Entree et Espace l'ouvrent, et un
+      // lecteur d'ecran annonce l'etat plie/deplie sans une ligne de JS.
+      ".hx-rayon-repli{border:0;}",
+      ".hx-rayon-repli > summary{list-style:none;cursor:pointer;display:inline-flex;align-items:center;gap:7px;font-size:13.5px;font-weight:600;color:#3A3D52;padding:8px 14px;border:1px solid #D6D9E4;border-radius:100px;margin-bottom:12px;}",
+      ".hx-rayon-repli > summary::-webkit-details-marker{display:none;}",
+      ".hx-rayon-repli > summary::after{content:'▾';font-size:11px;}",
+      ".hx-rayon-repli[open] > summary::after{content:'▴';}",
+      ".hx-rayon-repli > summary:focus-visible{outline:3px solid var(--hx-accent);outline-offset:2px;}",
+      // Au-dessus de 720 px le rail est toujours deplie : le resume ne sert
+      // plus a rien et disparait.
+      "@media (min-width:721px){.hx-rayon-repli > summary{display:none;}}",
+      "@media (min-width:721px){.hx-rayon-rail{margin:0;}}",
+      ".hx-rayon-groupe{border:0;padding:0;margin:0 0 16px;}",
+      ".hx-rayon-groupe legend{padding:0;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#4A4D63;margin-bottom:7px;}",
+      ".hx-rayon-choix{display:flex;align-items:baseline;gap:8px;padding:3px 0;font-size:13.5px;color:#3A3D52;cursor:pointer;}",
+      ".hx-rayon-choix input{margin:0;flex-shrink:0;accent-color:var(--hx-accent);cursor:pointer;}",
+      // Le focus se dessine sur le LABEL, pas sur la case : la case native
+      // fait 13 px et son contour est difficile a voir. :focus-within
+      // deplace l'indicateur sur toute la ligne, qui porte le texte.
+      ".hx-rayon-choix:focus-within{outline:3px solid var(--hx-accent);outline-offset:2px;border-radius:4px;}",
+      ".hx-rayon-choix-n{color:#6E7183;font-size:12.5px;}",
+      // « 239 sans norme » : derive, jamais cliquable, et visiblement
+      // distinct des choix qui, eux, se cochent.
+      ".hx-rayon-sans{margin:5px 0 0;font-size:12.5px;color:#6E7183;font-style:italic;}",
+      ".hx-rayon-vider{margin:0 0 14px;font:inherit;font-size:13px;padding:6px 12px;border:1px solid #D6D9E4;border-radius:100px;background:#fff;color:#3A3D52;cursor:pointer;}",
+      ".hx-rayon-vider:hover{border-color:var(--hx-accent);}",
+      ".hx-rayon-vider:focus-visible{outline:3px solid var(--hx-accent);outline-offset:2px;}",
       "@media (max-width:420px){.hx-rayon-grille{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;}}",
     ].join("\n");
     var el = document.createElement("style");
@@ -352,6 +407,15 @@
     var totalPages = 1;
     var requeteEnCours = 0;
     var detruit = false;
+    var champsFacettes = config.facets || [];
+    var filtresActifs = {};   // { champ: [valeur, ...] }
+    var ouSupporte = true;    // jusqu'a preuve du contraire -- voir detecterOuAbsent
+    var focusARendre = null;  // selecteur de l'element a refocaliser apres redessin
+    // Deplie d'emblee sur grand ecran, replie sur telephone. matchMedia
+    // n'est lu QU'UNE FOIS, a la construction : ensuite c'est le visiteur
+    // qui decide, et un changement d'orientation ne doit pas defaire son
+    // choix.
+    var railDeplie = !(window.matchMedia && window.matchMedia("(max-width:720px)").matches);
 
     rayonInjecterStyles(config.accentColor);
 
@@ -363,12 +427,36 @@
     conteneur.innerHTML =
       '<p class="hx-rayon-compte" id="' + esc(idb) + '-compte" tabindex="-1" role="status" aria-live="polite">' +
         esc(T.chargement) + "</p>" +
-      '<div class="hx-rayon-grille" id="' + esc(idb) + '-grille"></div>' +
-      '<nav class="hx-rayon-pagination" id="' + esc(idb) + '-pagination" aria-label="' + esc(T.pagination) + '" hidden></nav>';
+      '<div class="hx-rayon-corps">' +
+        '<div class="hx-rayon-rail" id="' + esc(idb) + '-rail"></div>' +
+        '<div>' +
+          '<div class="hx-rayon-grille" id="' + esc(idb) + '-grille"></div>' +
+          '<nav class="hx-rayon-pagination" id="' + esc(idb) + '-pagination" aria-label="' + esc(T.pagination) + '" hidden></nav>' +
+        "</div>" +
+      "</div>";
 
     var elCompte = conteneur.querySelector(".hx-rayon-compte");
+    var elRail = conteneur.querySelector(".hx-rayon-rail");
     var elGrille = conteneur.querySelector(".hx-rayon-grille");
     var elPagination = conteneur.querySelector(".hx-rayon-pagination");
+
+    /* Serialise les filtres actifs.
+     *
+     * OU dans un champ (tuyau), ET entre les champs (virgule) -- la
+     * grammaire du moteur depuis le 29 aout 2026.
+     *
+     * TANT QUE LE TUYAU N'EST PAS DEPLOYE, `ouSupporte` est faux et on
+     * n'envoie qu'UNE valeur par champ : c'est le repli, decrit plus bas.
+     */
+    function serialiserFiltres() {
+      var paires = [];
+      champsFacettes.forEach(function (champ) {
+        var vals = filtresActifs[champ];
+        if (!vals || !vals.length) return;
+        paires.push(champ + ":" + (ouSupporte ? vals.join("|") : vals[0]));
+      });
+      return paires.join(",");
+    }
 
     function urlPage(n) {
       var u = base + "/v1/browse/" + encodeURIComponent(config.catalog) +
@@ -376,6 +464,9 @@
       var p = ["limit=" + parPage, "offset=" + (n - 1) * parPage];
       if (config.sort) p.push("sort=" + encodeURIComponent(config.sort));
       if (config.inStockOnly) p.push("in_stock_only=true");
+      if (champsFacettes.length) p.push("facets=" + encodeURIComponent(champsFacettes.join(",")));
+      var f = serialiserFiltres();
+      if (f) p.push("filters=" + encodeURIComponent(f));
       return u + "?" + p.join("&");
     }
 
@@ -431,6 +522,169 @@
       }
     }
 
+    /* LE RAIL DE FACETTES.
+     *
+     * IL NE CONNAIT AUCUNE LISTE. Il dessine `data.facets` et rien d'autre :
+     * si l'API rend trois familles pour la visserie -- ce qu'elle fait, le
+     * rayon ne contenant que Vis, Ecrou et Rondelle sur les huit du
+     * catalogue -- le rail montre trois cases. Cinq cases mortes venues
+     * d'un referentiel seraient indiscernables d'un defaut de decompte,
+     * et personne ne saurait laquelle croire.
+     *
+     * D'ou l'absence deliberee de toute constante de valeurs dans ce
+     * fichier, et un test qui la verifie (heurix-rayon-facettes.test.js,
+     * premier bloc, ecrit AVANT ce code).
+     */
+    function rendreRail(data) {
+      if (!champsFacettes.length) return;
+      var facettes = data.facets || {};
+      var h = "";
+      var actifs = 0;
+      champsFacettes.forEach(function (champ) {
+        var valeurs = facettes[champ];
+        if (!valeurs) return;                   // l'API ne connait pas ce champ
+        var noms = Object.keys(valeurs);
+        if (!noms.length) return;
+        var choisies = filtresActifs[champ] || [];
+        actifs += choisies.length;
+        h += '<fieldset class="hx-rayon-groupe"><legend>' + esc(etiquetteChamp(champ)) + "</legend>";
+        noms.forEach(function (v) {
+          var n = valeurs[v];
+          var coche = choisies.indexOf(v) !== -1;
+          // Le decompte est DANS le libelle accessible, pas seulement a
+          // cote : « inox A4, 479 produits » se lit d'un bloc, la ou un
+          // nombre orphelin apres la case s'annonce detache de ce qu'il
+          // compte.
+          var aria = (n === 1 ? T.choixAriaUn.replace("{0}", v)
+                              : T.choixAria.replace("{0}", v).replace("{1}", n));
+          h += '<label class="hx-rayon-choix">' +
+            '<input type="checkbox" data-champ="' + esc(champ) + '" value="' + esc(v) + '"' +
+            (coche ? " checked" : "") + ' aria-label="' + esc(aria) + '">' +
+            "<span>" + esc(v) + ' <span class="hx-rayon-choix-n">(' + n + ")</span></span>" +
+            "</label>";
+        });
+        h += sansValeurHtml(champ, valeurs, data);
+        h += "</fieldset>";
+      });
+      if (actifs) {
+        h = '<button type="button" class="hx-rayon-vider">' + esc(T.vider) + "</button>" + h;
+      }
+      if (!h) { elRail.innerHTML = ""; return; }
+      // `railDeplie` porte l'etat CHOISI par le visiteur et survit au
+      // redessin : sans lui, cocher une case replierait le rail sous le
+      // doigt de qui vient de l'ouvrir -- meme classe de defaut que le
+      // focus perdu, une intention detruite par un rendu.
+      elRail.innerHTML = '<details class="hx-rayon-repli"' + (railDeplie ? " open" : "") + ">" +
+        "<summary>" + esc(T.filtres) + (actifs ? " (" + actifs + ")" : "") + "</summary>" +
+        h + "</details>";
+    }
+
+    // Le nom du champ vient du catalogue du marchand (« famille »,
+    // « matiere ») : on ne le TRADUIT pas -- inventer « material » pour un
+    // champ nomme « matiere » ferait diverger l'ecran de l'API. On se
+    // contente de la majuscule initiale, qui est de la typographie. Le
+    // marchand qui veut un libelle a lui passe `facetLabels`.
+    function etiquetteChamp(champ) {
+      var perso = config.facetLabels && config.facetLabels[champ];
+      if (perso) return perso;
+      return champ.charAt(0).toUpperCase() + champ.slice(1);
+    }
+
+    /* « 239 sans norme » — DERIVE A L'AFFICHAGE, JAMAIS STOCKE.
+     *
+     * Le nombre se recalcule a chaque rendu depuis les deux valeurs de LA
+     * REPONSE COURANTE : si l'API change ses decomptes, la soustraction
+     * suit sans qu'on ait a l'invalider.
+     *
+     * IL N'EST VALIDE QUE SI AUCUN FILTRE N'EST ACTIF SUR CE CHAMP, et ce
+     * n'est pas une precaution : c'est une identite, mesuree sur l'API le
+     * 29 aout 2026. Les decomptes d'un champ sont calcules en IGNORANT les
+     * filtres de ce champ (exclude_field, cote moteur) mais en appliquant
+     * ceux des autres. Donc :
+     *
+     *   sans filtre               total=1987  somme=1748  ->  239   juste
+     *   filtre sur un AUTRE champ total= 338  somme= 298  ->    40   juste
+     *   filtre sur norme          total= 220  somme=1748  -> -1528   absurde
+     *
+     * Dans le troisieme cas `total` est reduit par le filtre de norme que
+     * la somme ignore : les deux nombres ne portent plus sur le meme
+     * ensemble. On ne l'affiche donc pas -- et la question n'a d'ailleurs
+     * plus de sens une fois qu'on a choisi des normes.
+     *
+     * Jamais cliquable : l'API n'a aucun filtre « champ absent », et une
+     * case qui promettrait un filtre inexistant serait pire que rien.
+     *
+     * LES DEUX GARDES CI-DESSOUS SONT REDONDANTS, et il faut le savoir
+     * plutot que de croire chacun indispensable -- verifie par mutation le
+     * 29 aout : retirer le premier ne fait tomber aucun test.
+     *
+     * Demonstration : quand F est filtre, tout produit satisfaisant TOUS
+     * les filtres porte necessairement une valeur de F, donc l'ensemble du
+     * total est inclus dans celui que la somme compte, donc total <= somme
+     * et `manquants <= 0` attrape deja le cas.
+     *
+     * Le premier est neanmoins conserve : il enonce la PRECONDITION reelle
+     * (« ce nombre n'a de sens que si le champ n'est pas filtre »), quand
+     * le second n'en est qu'une consequence arithmetique. Si le moteur
+     * changeait sa facon de compter, c'est le premier qui resterait juste.
+     */
+    function sansValeurHtml(champ, valeurs, data) {
+      if ((filtresActifs[champ] || []).length) return "";
+      var somme = 0;
+      for (var v in valeurs) somme += valeurs[v];
+      var total = data.total || 0;
+      // somme > total arrive sur un champ a VALEURS MULTIPLES (un produit
+      // compte dans deux valeurs) : la soustraction n'y veut rien dire.
+      var manquants = total - somme;
+      if (manquants <= 0) return "";
+      return '<p class="hx-rayon-sans">' +
+        esc(T.sans.replace("{0}", fmtNombre(manquants, lang)).replace("{1}", etiquetteChamp(champ).toLowerCase())) +
+        "</p>";
+    }
+
+    /* DETECTION DU MOTEUR SANS TUYAU, PAR CONTRADICTION.
+     *
+     * POURQUOI CE N'EST PAS UNE HEURISTIQUE. Sur un moteur qui comprend le
+     * tuyau, cette situation est STRUCTURELLEMENT IMPOSSIBLE, pas
+     * seulement improbable :
+     *
+     *   Le decompte d'une valeur v du champ F est calcule sur l'ensemble
+     *   des produits de la categorie qui satisfont tous les filtres SAUF
+     *   ceux de F (exclude_field). Le total, lui, est calcule avec TOUS les
+     *   filtres, dont celui de F qui est un OU sur les valeurs cochees.
+     *   L'ensemble compte par `compte(v)` est donc INCLUS dans celui du
+     *   total des que v est cochee. D'ou total >= compte(v) pour toute
+     *   valeur cochee -- et total == 0 force compte(v) == 0 pour toutes.
+     *
+     *   Voir un compte strictement positif sur une valeur cochee ALORS QUE
+     *   le total est nul demontre donc que le serveur n'a pas applique le
+     *   OU. Il a lu « A|B » comme une valeur litterale, qui ne correspond a
+     *   aucun produit.
+     *
+     * MESURE, sur les deux moteurs, 50 combinaisons chacun (2 et 3 valeurs
+     * sur famille/matiere/norme, plus un cas multi-champs) :
+     *   moteur avec le tuyau  : declenchee   0 / 50
+     *   moteur sans le tuyau  : declenchee  50 / 50
+     *
+     * Le repli coute UNE requete, une seule fois par instance, et
+     * uniquement sur un moteur ancien : tant qu'une seule valeur est cochee
+     * par champ, les deux moteurs repondent a l'identique et rien ne se
+     * declenche.
+     */
+    function detecterOuAbsent(data) {
+      if (!ouSupporte) return false;
+      if (data.total !== 0) return false;              // la contradiction exige un total nul
+      var facettes = data.facets || {};
+      var trouve = false;
+      champsFacettes.forEach(function (champ) {
+        var choisies = filtresActifs[champ] || [];
+        if (choisies.length < 2) return;               // un seul choix : aucun tuyau envoye
+        var comptes = facettes[champ] || {};
+        choisies.forEach(function (v) { if ((comptes[v] || 0) > 0) trouve = true; });
+      });
+      return trouve;
+    }
+
     function rendre(data, focusApres) {
       var hits = data.hits || [];
       var total = data.total || 0;
@@ -439,6 +693,11 @@
       if (!hits.length) {
         elCompte.textContent = "0" + (estPluriel(0, lang) ? T.references : T.reference);
         etat(T.rayonVide);
+        // Le rail reste dessine sur un resultat vide : sans lui, un
+        // visiteur qui a trop filtre n'a plus aucun moyen de DEFAIRE son
+        // filtre -- l'ecran vide emporterait les cases avec les resultats.
+        rendreRail(data);
+        rendreFocus();
         return;
       }
       // Le compte annonce le TOTAL de la categorie, pas la taille de la page :
@@ -450,7 +709,31 @@
       elGrille.innerHTML = hits.map(function (h, i) {
         return rendreFiche(h, i, lang);
       }).join("");
+      rendreRail(data);
       rendrePagination(focusApres);
+      rendreFocus();
+    }
+
+    /* LE FOCUS APRES UN REDESSIN DU RAIL.
+     *
+     * Cocher une case redessine le rail entier -- les decomptes des AUTRES
+     * champs changent, il n'y a pas de mise a jour partielle possible. La
+     * case qu'on vient de cocher est donc detruite, et le focus retombe sur
+     * <body> : au clavier, on repart du haut du document apres chaque
+     * filtre. C'est le meme defaut que celui corrige sur la pagination a
+     * l'etape 1, sous une autre forme.
+     *
+     * On retient donc quoi refocaliser AVANT la requete, et on le rend
+     * apres redessin. Si la case a disparu -- le filtre l'a fait tomber a
+     * zero, l'API ne la renvoie plus -- on se replie sur le compte, qui
+     * porte tabindex="-1" et qui est justement ce qu'il faut faire lire.
+     */
+    function rendreFocus() {
+      if (!focusARendre) return;
+      var sel = focusARendre;
+      focusARendre = null;
+      var cible = conteneur.querySelector(sel);
+      if (cible) cible.focus(); else elCompte.focus();
     }
 
     function charger(n, focusApres) {
@@ -473,6 +756,19 @@
         })
         .then(function (data) {
           if (detruit || id !== requeteEnCours) return; // une page plus recente est partie
+          if (detecterOuAbsent(data)) {
+            // Le serveur n'applique pas le OU. On bascule en choix unique
+            // par champ, DEFINITIVEMENT pour cette instance -- inutile de
+            // repayer une requete a chaque coche -- et on relance avec la
+            // derniere valeur cochee de chaque champ.
+            ouSupporte = false;
+            champsFacettes.forEach(function (champ) {
+              var v = filtresActifs[champ];
+              if (v && v.length > 1) filtresActifs[champ] = [v[v.length - 1]];
+            });
+            charger(1, focusApres);
+            return;
+          }
           rendre(data, focusApres);
         })
         .catch(function (e) {
@@ -492,6 +788,46 @@
       charger(n, { nav: b.getAttribute("data-nav") });
     });
 
+    elRail.addEventListener("change", function (e) {
+      var c = e.target;
+      if (!c || c.type !== "checkbox") return;
+      var champ = c.getAttribute("data-champ");
+      var val = c.value;
+      var liste = filtresActifs[champ] || (filtresActifs[champ] = []);
+      var i = liste.indexOf(val);
+      if (c.checked) {
+        if (i === -1) {
+          // CHOIX UNIQUE tant que le moteur ne sait pas lire le tuyau :
+          // envoyer deux valeurs rendrait zero resultat pendant que les
+          // decomptes affichent des positifs. On remplace plutot que
+          // d'ajouter, et l'ecran reste coherent avec lui-meme.
+          if (!ouSupporte) liste.length = 0;
+          liste.push(val);
+        }
+      } else if (i !== -1) {
+        liste.splice(i, 1);
+      }
+      // Filtrer change l'ensemble : la page 3 d'avant n'a aucun sens apres,
+      // on repart de la premiere.
+      focusARendre = 'input[data-champ="' + echapperSelecteur(champ) +
+                     '"][value="' + echapperSelecteur(val) + '"]';
+      charger(1);
+    });
+
+    elRail.addEventListener("toggle", function (e) {
+      if (e.target && e.target.classList.contains("hx-rayon-repli")) railDeplie = e.target.open;
+    }, true);   // `toggle` ne remonte pas : on ecoute a la capture
+
+    elRail.addEventListener("click", function (e) {
+      var b = e.target.closest ? e.target.closest(".hx-rayon-vider") : null;
+      if (!b) return;
+      filtresActifs = {};
+      // Le bouton lui-meme disparait avec le dernier filtre : le focus irait
+      // sur <body>. On le rend au compte, qui annonce le nouveau total.
+      focusARendre = ".hx-rayon-compte";
+      charger(1);
+    });
+
     charger(1);
 
     return {
@@ -499,7 +835,12 @@
       // cote marchand (?page=3) sans que le widget impose sa propre
       // convention de parametre.
       goToPage: function (n) { return charger(Math.min(Math.max(1, n | 0), totalPages)); },
-      getState: function () { return { page: page, totalPages: totalPages, perPage: parPage }; },
+      getState: function () {
+        var f = {};
+        for (var k in filtresActifs) if (filtresActifs[k].length) f[k] = filtresActifs[k].slice();
+        return { page: page, totalPages: totalPages, perPage: parPage,
+                 filters: f, multiSelect: ouSupporte };
+      },
       destroy: function () {
         detruit = true;
         conteneur.innerHTML = "";

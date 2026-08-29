@@ -150,7 +150,9 @@ describe("browsePanel — la pagination", () => {
     const { win } = charger();
     const p = win.Heurix.browsePanel(BASE);
     await souffle();
-    expect(p.getState()).toEqual({ page: 1, totalPages: 83, perPage: 24 });
+    // getState s'est enrichi a l'etape 2 (filters, multiSelect) : on
+    // verifie les champs de pagination, pas la forme entiere de l'objet.
+    expect(p.getState()).toMatchObject({ page: 1, totalPages: 83, perPage: 24 });
   });
 
   it("plafonne limit au maximum du moteur (100)", async () => {
