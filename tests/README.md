@@ -78,3 +78,34 @@ candidat, mais il présente moins de risque immédiat : c'est votre
 interface, pas du code distribué chez des clients — un bug s'y voit
 tout de suite, alors qu'un widget cassé chez un client peut passer
 inaperçu longtemps.
+
+## Une lenteur qui frôle le délai d'expiration (relevé du 29 août 2026)
+
+`index-recherche.test.js` porte quatre sous-tests qui lancent chacun le
+vérificateur d'index dans un sous-processus Python. Mesurés **au repos** :
+
+```
+sort 0 quand l'index correspond aux pages          2 846 ms
+tourne SANS le moteur ni sa wheel                  2 766 ms
+NOMME la page fautive plutôt que de sortir 1       2 771 ms
+détecte une page AJOUTÉE                           2 772 ms
+```
+
+Le délai d'expiration de vitest est celui par défaut, **5 000 ms** : ce dépôt
+n'a pas de `vitest.config`. La marge est donc d'environ 2,2 s.
+
+**Sous charge, ces mêmes sous-tests ont été mesurés entre 3,2 et 4,2 s** —
+machine occupée par deux serveurs `uvicorn` et deux serveurs HTTP statiques.
+La marge tombe alors sous la seconde.
+
+Le même après-midi, **un échec unique est apparu deux fois** pendant cette
+période chargée, puis **treize passes consécutives vertes** une fois la
+machine calme, dont trois immédiatement après régénération de l'index. Le nom
+du test en échec n'a pas été capturé, et le défaut n'a jamais été reproduit.
+
+**Ce relevé ne conclut pas.** La corrélation entre charge et durée est
+mesurée ; le lien avec les deux échecs est une hypothèse, pas un fait. Il est
+écrit ici pour que la prochaine personne qui voit rougir cette suite sans
+raison apparente commence par regarder la durée des sous-tests plutôt que
+leur logique — et, si l'hypothèse se confirme, sache que le remède tient en
+un `testTimeout` explicite.

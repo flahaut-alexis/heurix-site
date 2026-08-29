@@ -694,6 +694,41 @@ s'ouvrir**, pas sur celle qu'on avait sous les yeux. Les deux familles de ce
 site se listent en une commande, déjà écrite plus haut — et ce sont les onze
 qu'il faut ouvrir, parce que ce sont celles auxquelles personne ne pense.
 
+#### Un correctif appliqué aux fichiers CLIENTS et pas à notre propre vitrine
+
+Le 27 août 2026, `heurix-browse-widget.js` écrivait `p.name` et `p.id` bruts
+dans `innerHTML` : du XSS stocké, dans un fichier installé chez le client. Le
+commit qui l'a fermé porte le raisonnement complet — `esc()` sur le texte,
+attributs passés en double quote parce que `esc()` ne traite pas l'apostrophe.
+
+**`demo-boutique.js` faisait exactement la même chose, et est resté ouvert
+deux jours de plus.** Trouvé le 29 août en le réécrivant pour brancher le
+widget, pas en cherchant.
+
+La raison est structurelle, et c'est elle qu'il faut retenir : la recherche
+qui a mené au correctif portait sur **ce qu'on livre**. `downloads/` est la
+surface qu'on pense à auditer — elle part chez des tiers, elle a des tests,
+elle est nommée dans la documentation. La boutique de démonstration est du
+code que *nous* écrivons pour *notre* site, et le réflexe la range du côté
+« notre code », pas du côté « code exposé ».
+
+Elle consomme pourtant la même API, affiche le même catalogue, et sert des
+visiteurs réels — des prospects, précisément. **Le seul site qui a porté ce
+XSS pendant deux jours de plus est le nôtre.**
+
+Corollaire, et il vaut pour tout correctif de cette famille : **quand un
+défaut est trouvé dans un fichier de `downloads/`, la question suivante est
+« qui d'autre écrit ce motif ? », pas « le fichier est-il corrigé ? »**. Ici
+la réponse tenait en une commande :
+
+```bash
+grep -rn 'innerHTML' --include=*.js . | grep -v downloads/ | grep -v node_modules
+```
+
+Les fichiers de démonstration, les scripts de console et les harnais de test
+consomment les mêmes données que les widgets livrés. Ils ne sont pas moins
+exposés ; ils sont seulement moins regardés.
+
 #### Le fond qu'on croit avoir trouvé, et qui n'est pas celui qui peint
 
 **Troisième fois, le 29 août 2026, que c'est un fond non composé qui fausse un
