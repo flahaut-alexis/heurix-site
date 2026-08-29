@@ -1890,6 +1890,57 @@ Le coût réel : ces lignes ont été écrites, commitées, poussées, et lues c
 un fait — au point qu'on m'a demandé de traiter ce défaut en priorité, avant
 les schémas. Un rapport faux mobilise le temps de quelqu'un d'autre.
 
+#### Un cas suffit à montrer qu'une chose échoue, jamais à dire pourquoi
+
+Le 29 août 2026, un audit externe rapporte : « le prix en langage naturel ne
+fonctionne qu'en français ». Le constat était juste, la preuve était réelle, et
+le diagnostic était faux.
+
+La preuve tenait à **un seul essai** — l'exemple de la page anglaise,
+`stainless screws under $2`, qui rendait 958 résultats sans filtre pendant que
+`vis inox moins de 2 euros` en rendait 688 correctement filtrés. Deux requêtes,
+deux résultats opposés, une conclusion qui se présente toute seule : c'est la
+langue.
+
+**Deux paramètres changeaient en même temps** — la langue *et* la notation du
+montant. Le second essai, celui qui varie un seul paramètre, tranche :
+
+```
+stainless screws under 2 euros   ->  max=2.0     comparateur anglais, notation française
+stainless screws under $2        ->  AUCUN       comparateur anglais, notation anglaise
+vis inox moins de 2 €            ->  max=2.0     comparateur français, notation française
+vis inox moins de €2             ->  AUCUN       comparateur français, notation anglaise
+```
+
+L'anglais marchait depuis cinq semaines. Ce qui échouait était le **symbole
+placé devant le nombre**, et il échouait dans les six langues du parseur. La
+version française avait exactement le même trou ; personne ne l'avait vu parce
+que personne n'écrit « moins de €2 » en français.
+
+**LE DIAGNOSTIC FAUX COÛTAIT PLUS CHER QUE LE DÉFAUT.** « Ajouter les
+formulations anglaises » aurait fait écrire une dizaine de motifs qui
+existaient déjà, sans corriger le seul qui manquait — et le résultat aurait été
+testé sur `under 2 euros`, qui passait avant comme après. Le lot serait parti
+vert en laissant l'exemple de la page toujours cassé.
+
+> **Un cas suffit à établir qu'une chose échoue. Il n'établit jamais
+> pourquoi — pour ça, il faut faire varier un paramètre à la fois.**
+
+C'est la famille des instruments qui ratent leur cible, déplacée d'un cran :
+là, l'outil mesurait autre chose que ce qu'on croyait ; ici, la mesure est
+juste et c'est l'**explication** qu'on y accroche qui l'est trop. Une
+observation vraie ne porte pas sa cause avec elle.
+
+Le geste, et il coûte trois requêtes : **avant d'expliquer un écart, produire
+la variante qui isole chaque paramètre.** Ici, garder le comparateur anglais et
+changer la notation ; puis garder la notation et changer le comparateur. La
+seconde ligne du tableau ci-dessus a répondu en dix secondes.
+
+Corollaire pour qui *reçoit* le diagnostic : c'est le pendant exact de « quand
+vous reprenez la mesure d'un autre, demandez ce qu'elle a exclu ». Un rapport
+arrive avec sa cause, jamais avec le nombre d'essais qui l'ont établie. Ici il
+y en avait un, et la conclusion en demandait quatre.
+
 ### Trois commandes dont la portée vient de l'arbre, et non d'une liste
 
 Trois formes en deux jours, même racine, dégâts différents :
