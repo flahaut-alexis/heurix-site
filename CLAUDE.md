@@ -2157,19 +2157,38 @@ politesse envers les autres sessions : c'est le seul moment où les deux
 règle qui porte sa propre raison — « un `git add -A` emporterait 115 fichiers »
 — reste vraie quoi qu'il arrive à la section citée.
 
-### Trois commandes dont la portée vient de l'arbre, et non d'une liste
+### Quatre commandes dont la portée vient de l'arbre, et non d'une liste
 
-Trois formes en deux jours, même racine, dégâts différents :
+Quatre formes en trois jours, même racine, dégâts différents :
 
 | geste | ce qu'il emporte |
 |---|---|
 | `git add -A` | **inclut trop** — 1 770 lignes du travail d'une autre session, dans deux commits |
 | `git checkout <fichier>` | **restaure à HEAD** et efface un correctif non commité |
 | `git checkout -- .` | **annule en bloc** tout le non-commité d'un arbre partagé |
+| `git checkout <commit> -- <fichier>` | **restaure depuis un COMMIT** et efface le correctif non commité de son propre auteur |
 
-Les trois demandent à Git « ce qui a changé » au lieu de lui donner « ce que
-j'ai changé ». Dans un arbre où quatre sessions écrivent, la réponse à la
-première question contient le travail des autres.
+Les trois premières demandent à Git « ce qui a changé » au lieu de lui donner
+« ce que j'ai changé ». Dans un arbre où quatre sessions écrivent, la réponse
+à la première question contient le travail des autres.
+
+**La quatrième est différente, et c'est ce qui la rend instructive.** Le
+29 août 2026, en testant si un état antérieur expliquait un écart de mesure,
+j'ai restauré quatre fichiers depuis un commit du matin — dont celui que je
+venais de corriger sans l'avoir commité. La correction a disparu sans un mot.
+
+J'étais **seul dans un worktree dédié**. Aucune des raisons habituelles ne
+s'appliquait : pas de session voisine, pas d'arbre partagé, pas de `-A`. Le
+worktree protège du travail des autres ; il ne protège de rien quand la
+commande vient de soi.
+
+> **Une portée dérivée de l'arbre n'a pas besoin d'un voisin pour emporter
+> quelque chose. Le premier candidat est toujours son propre travail non
+> commité.**
+
+Coût réel : deux minutes, parce que le fichier venait d'être écrit et que
+son contenu était encore sous les yeux. Le même geste sur un correctif d'il y
+a une heure aurait coûté l'heure.
 
 **Le remède n'est pas de se méfier, c'est de nommer.** Un `git stash` avant
 une manœuvre risquée protège par précaution générale ; il ne cible rien. Ce
