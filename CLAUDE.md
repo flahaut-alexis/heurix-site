@@ -101,6 +101,26 @@ fichier), et c'est le seul des cinq blocs qui en dépend. Il lance aussi
 
 Quand le lot est fini : `git worktree remove <chemin>` depuis l'arbre principal.
 
+**`.scratch/` NE SUIT PAS DANS UN WORKTREE.** Il est dans `.gitignore`, donc git
+ne le recopie pas : un worktree neuf a un `.scratch/` vide pendant que l'arbre
+partagé en porte vingt et un dossiers. **Les fiches vivent dans l'arbre partagé
+— on y écrit et on y lit, depuis n'importe quel worktree**, par son chemin
+absolu.
+
+Ce que ça coûte si on l'ignore, et pourquoi c'est écrit ici plutôt qu'ailleurs :
+une session qui rédige une fiche depuis son worktree **la perd au
+`worktree remove`, sans que rien ne le dise**. Mesuré le 29 août 2026 : une
+fiche déposée sous `.scratch/` d'un worktree, `git worktree remove` **sans**
+`--force` sort en **0**, n'affiche rien, et le fichier n'existe plus. La
+commande refuse pourtant de partir sur un fichier suivi modifié — c'est le
+statut « ignoré » qui la rend muette, exactement là où on range ce qu'on veut
+garder. C'est exactement la famille qu'on documente dans ces
+fiches : un défaut silencieux, dont le seul signal serait de savoir d'avance
+qu'il existe. D'où ces lignes, au moment où quelqu'un crée son worktree.
+
+Et les fiches ne risquent rien dans l'arbre partagé : étant ignorées, aucun
+commit d'aucune session ne peut les emporter.
+
 #### Le crochet suit tout seul
 
 `core.hooksPath` vit dans le `.git/config` **commun**, donc il est hérité ; et
