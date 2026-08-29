@@ -105,7 +105,7 @@
     <div class="badge">Intégrations</div>
     <h1>Brancher Heurix sur votre plateforme.</h1>
     <p class="lede">Des guides techniques avec du vrai code, pas des promesses en l'air. Chaque intégration couvre deux choses : afficher les résultats Heurix à la place de la recherche native, et garder votre catalogue synchronisé.</p>
-    <p class="docs-hero-note">Honnêteté d'abord : ce sont des guides d'intégration destinés à un développeur, pas des applications "installer en un clic" depuis les stores Shopify/PrestaShop/etc. — ça viendra si la demande le justifie, mais on n'a pas voulu vous le faire croire avant que ce soit vrai.</p>
+    <p class="docs-hero-note">Honnêteté d'abord, et la réponse n'est pas la même selon la plateforme. <strong>PrestaShop</strong> et <strong>WooCommerce</strong> ont chacun un module en bêta, fourni sur demande avec accompagnement pendant l'intégration — voir <a href="prestashop.html">leur</a> <a href="woocommerce.html">page</a>. <strong>Shopify</strong> a une extension de thème ; l'application installable en un clic depuis l'App Store attend sa validation par Shopify et n'est pas publiée. <strong>Magento</strong> n'a que le guide ci-dessous. Aucun des quatre ne s'installe depuis le store officiel de sa plateforme aujourd'hui, et le code qui suit reste la voie si vous préférez brancher la recherche vous-même.</p>
 
     <div class="kicker">Sans développement</div>
     <h2>Import CSV depuis la console</h2>
@@ -285,6 +285,15 @@ private function pushToHeurix($item)
     <div class="integ-notice">
       <strong>Avantage WooCommerce.</strong> Comme PrestaShop, WordPress/WooCommerce tourne en PHP côté serveur — appel direct à l'API depuis un plugin, clé jamais exposée au navigateur. On utilise <code class="docs-inline-code">wp_remote_post()</code>, la fonction HTTP native de WordPress, plutôt que du cURL brut.
     </div>
+        <div class="integ-notice">
+          <strong>Une extension existe déjà pour WooCommerce.</strong> Elle remplace la
+          recherche produit native par Heurix sans toucher à vos gabarits, et
+          <strong>contrairement au module PrestaShop, elle alimente aussi le
+          catalogue</strong> : indexation initiale par lots, puis resynchronisation à
+          chaque sauvegarde de fiche. L'étape 2 ci-dessous reste utile si vous
+          préférez piloter la synchronisation vous-même. Elle est en bêta : écrivez-nous
+          par le <a href="contact.html">formulaire</a> si vous la voulez.
+        </div>
 
     <h2>1. Brancher la recherche</h2>
     <pre class="docs-code"><code>&lt;?php

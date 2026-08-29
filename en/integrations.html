@@ -109,7 +109,7 @@
     <div class="badge">Integrations</div>
     <h1>Connect Heurix to your platform.</h1>
     <p class="lede">Technical guides with real code, not empty promises. Each integration covers two things: showing Heurix results instead of native search, and keeping your catalog in sync.</p>
-    <p class="docs-hero-note">Honesty first: these are integration guides meant for a developer, not "one-click install" apps from the Shopify/PrestaShop/etc. stores — that may come if demand justifies it, but we didn't want to claim it before it's true.</p>
+    <p class="docs-hero-note">Honesty first, and the answer differs by platform. <strong>PrestaShop</strong> and <strong>WooCommerce</strong> each have a module in beta, provided on request with support during integration — see <a href="prestashop.html">their</a> <a href="woocommerce.html">pages</a>. <strong>Shopify</strong> has a theme extension; the one-click App Store application is awaiting Shopify's review and is not published. <strong>Magento</strong> has the guide below only. None of the four installs from its platform's official store today, and the code that follows remains the route if you would rather wire search up yourself.</p>
 
     <div class="kicker">No development required</div>
     <h2>CSV import from the console</h2>
@@ -289,6 +289,15 @@ private function pushToHeurix($item)
     <div class="integ-notice">
       <strong>WooCommerce advantage.</strong> Like PrestaShop, WordPress/WooCommerce runs server-side PHP — direct API call from a plugin, key never exposed to the browser. We use <code class="docs-inline-code">wp_remote_post()</code>, WordPress's native HTTP function, rather than raw cURL.
     </div>
+        <div class="integ-notice">
+          <strong>An extension already exists for WooCommerce.</strong> It replaces
+          native product search with Heurix without touching your templates, and
+          <strong>unlike the PrestaShop module, it also feeds the catalog</strong>:
+          initial batch indexing, then resynchronisation each time a product is saved.
+          Step 2 below is still useful if you would rather drive synchronisation
+          yourself. It is in beta: write to us through the
+          <a href="contact.html">contact form</a> if you want it.
+        </div>
 
     <h2>1. Wiring up search</h2>
     <pre class="docs-code"><code>&lt;?php
@@ -453,7 +462,22 @@ class SyncProduct implements ObserverInterface
   </div>
 </footer>
 
-<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+<script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // PORTE DEPUIS integrations.html (29 aout 2026). Il n'avait jamais ete
+    // traduit : sans lui, seul l'onglet Shopify s'ouvrait, et les panneaux
+    // PrestaShop, WooCommerce et Magento etaient inatteignables en anglais.
+    const tabs = document.querySelectorAll('.integ-tab');
+    const panels = document.querySelectorAll('.integ-panel');
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const target = tab.getAttribute('data-platform');
+        tabs.forEach(t => { t.classList.toggle('active', t === tab); t.setAttribute('aria-selected', t === tab ? 'true' : 'false'); });
+        panels.forEach(p => { p.hidden = p.getAttribute('data-panel') !== target; });
+      });
+    });
+  </script>
 <script src="../search-engine.js?v=1787864705"></script>
 <script src="../nav-dropdown.js?v=1787906653"></script>
 <script src="../mobile-nav.js?v=1787610626"></script>
