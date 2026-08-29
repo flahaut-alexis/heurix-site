@@ -358,7 +358,16 @@ describe("renvoi vers les synonymes depuis Sans resultat", () => {
     expect(bloc).toContain("zr-vers-synonymes");
     // Le terme recherche doit voyager jusqu'au bouton, pas seulement
     // apparaitre dans la phrase.
-    expect(bloc).toContain("esc(terme)");
+    //
+    // escAttr ET NON esc DEPUIS LE 29 AOUT 2026. `data-prefill` est un
+    // attribut entre guillemets SIMPLES : `esc()` n'echappe pas
+    // l'apostrophe, donc un terme comme « L'Ecrou » y etait tronque et
+    // posait un attribut parasite -- verifie dans un vrai navigateur, et
+    // une charge « x' onmouseover='... » y posait un gestionnaire qui
+    // s'executait. Le nom de la fonction est verrouille ici parce que
+    // c'est lui qui porte la propriete : revenir a `esc()` reintroduirait
+    // le defaut sans qu'aucun autre test ne le voie.
+    expect(bloc).toContain("escAttr(terme)");
   });
 
   it("le gestionnaire data-goto-pane sait pre-remplir le champ synonyme", () => {

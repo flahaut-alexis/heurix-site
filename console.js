@@ -494,7 +494,7 @@
         renderTable("public-keys-table", "public-keys-empty", data.keys, function (k) {
           return "<td class='mono' style='word-break:break-all;'>" + esc(k.key) + "</td>" +
             "<td>" + (k.allowed_origins ? esc(k.allowed_origins) : "<span style='color:var(--ink-muted);'>" + T("tous") + "</span>") + "</td>" +
-            "<td><button type='button' class='catalog-rule-remove' data-revoke-key='" + esc(k.key) + "' aria-label='" + T("Révoquer") + "'>&times;</button></td>";
+            "<td><button type='button' class='catalog-rule-remove' data-revoke-key='" + escAttr(k.key) + "' aria-label='" + escAttr(T("Révoquer")) + "'>&times;</button></td>";
         });
       })
       .catch(function () {});
@@ -699,7 +699,7 @@
     function peupler(data) {
       var noms = (data.catalogs || []).map(function (c) { return c.catalog; });
       select.innerHTML = noms.map(function (n) {
-        return "<option value='" + esc(n) + "'>" + esc(n) + "</option>";
+        return "<option value='" + escAttr(n) + "'>" + esc(n) + "</option>";
       }).join("");
       if (noms.length) cvCharger(key);
     }
@@ -753,8 +753,8 @@
         resultsBox.innerHTML = "<div class='rp-search-list'>" + hits.map(function (h) {
           var p = h.product;
           var prix = p.price != null ? p.price : "";
-          return "<button type='button' class='rp-search-result' data-rp-pid='" + esc(p.id) +
-            "' data-rp-name='" + esc(p.name || "") + "' data-rp-price='" + prix + "'>" +
+          return "<button type='button' class='rp-search-result' data-rp-pid='" + escAttr(p.id) +
+            "' data-rp-name='" + escAttr(p.name || "") + "' data-rp-price='" + prix + "'>" +
             produitCell(p.id, p.name, p.price) + "</button>";
         }).join("") + "</div>";
       })
@@ -1091,7 +1091,7 @@
     bulle.innerHTML =
       "<strong>" + T("Vous travaillez sur ce catalogue") + "</strong><br>" +
       T("Ce choix s'applique partout : tableau de bord, analytique et personnalisation. Changez-le ici pour basculer d'un catalogue à l'autre.") +
-      "<button type='button' class='console-env-tip-close' aria-label='" + T("Compris") + "'>&times;</button>";
+      "<button type='button' class='console-env-tip-close' aria-label='" + escAttr(T("Compris")) + "'>&times;</button>";
     var enveloppe = select.closest(".console-env-wrap") || select.parentElement;
     enveloppe.appendChild(bulle);
     bulle.querySelector(".console-env-tip-close").addEventListener("click", function () { bulle.remove(); });
@@ -1142,7 +1142,7 @@
       var optionTous = session.catalogueListe.length > 1
         ? "<option value='" + CATALOGUE_TOUS + "'>" + T("Tous les catalogues") + "</option>" : "";
       select.innerHTML = optionTous + session.catalogueListe.map(function (n) {
-        return "<option value='" + esc(n) + "'>" + esc(n) +
+        return "<option value='" + escAttr(n) + "'>" + esc(n) +
           (session.catalogueSandbox[n] ? " — " + T("bac à sable") : "") + "</option>";
       }).join("");
 
@@ -1343,7 +1343,7 @@
       "</div>" +
       "<div class='quota-barre quota-" + niveau + "' role='progressbar' " +
         "aria-valuenow='" + pct + "' aria-valuemin='0' aria-valuemax='100' " +
-        "aria-label='" + T("{0} : {1} pour cent utilisés", libelle, pct) + "'>" +
+        "aria-label='" + escAttr(T("{0} : {1} pour cent utilisés", libelle, pct)) + "'>" +
         "<span style='width:" + pct + "%;'></span>" +
       "</div>";
   }
@@ -2333,14 +2333,14 @@
     var rang = pin && o.position
       ? "<span class='cell-rank'>" + o.position + "</span>"
       : "<span style='color:var(--ink-muted);'>–</span>";
-    return "<td><span class='cell-trigger' title='" + esc(o.query) + "'>" + esc(o.query) + "</span></td>" +
+    return "<td><span class='cell-trigger' title='" + escAttr(o.query) + "'>" + esc(o.query) + "</span></td>" +
       "<td>" + produitCell(o.product_id, o.product_name) + "</td>" +
       "<td>" + actionLabel + "</td>" +
       "<td>" + rang + "</td>" +
       "<td class='cell-actions'>" +
-        "<button type='button' class='catalog-rule-remove' data-so-edit='1' data-query='" + esc(o.query) + "' data-product-id='" + esc(o.product_id) + "' data-action='" + esc(o.action) + "' data-position='" + (o.position || "") + "' aria-label='" + T("Modifier") + "' title='" + T("Modifier") + "'>&#9998;</button>" +
-        "<button type='button' class='catalog-rule-remove' data-so-duplicate='1' data-query='" + esc(o.query) + "' data-product-id='" + esc(o.product_id) + "' data-action='" + esc(o.action) + "' data-position='" + (o.position || "") + "' aria-label='" + T("Dupliquer") + "' title='" + T("Dupliquer comme nouvelle règle") + "'>&#10697;</button>" +
-        "<button type='button' class='catalog-rule-remove' data-so-delete='1' data-query='" + esc(o.query) + "' data-product-id='" + esc(o.product_id) + "' aria-label='" + T("Supprimer") + "'>&times;</button>" +
+        "<button type='button' class='catalog-rule-remove' data-so-edit='1' data-query='" + escAttr(o.query) + "' data-product-id='" + escAttr(o.product_id) + "' data-action='" + escAttr(o.action) + "' data-position='" + (o.position || "") + "' aria-label='" + escAttr(T("Modifier")) + "' title='" + escAttr(T("Modifier")) + "'>&#9998;</button>" +
+        "<button type='button' class='catalog-rule-remove' data-so-duplicate='1' data-query='" + escAttr(o.query) + "' data-product-id='" + escAttr(o.product_id) + "' data-action='" + escAttr(o.action) + "' data-position='" + (o.position || "") + "' aria-label='" + escAttr(T("Dupliquer")) + "' title='" + escAttr(T("Dupliquer comme nouvelle règle")) + "'>&#10697;</button>" +
+        "<button type='button' class='catalog-rule-remove' data-so-delete='1' data-query='" + escAttr(o.query) + "' data-product-id='" + escAttr(o.product_id) + "' aria-label='" + escAttr(T("Supprimer")) + "'>&times;</button>" +
       "</td>";
   }
 
@@ -2417,7 +2417,7 @@
       ? "<span class='cell-action cell-action-pin'>" + ICONES_FICHE.pinPlein + " " + (o.position ? T("Épinglé pos. {0}", o.position) : T("Épinglé")) + "</span>"
       : "<span class='cell-action cell-action-bury'>&#8595; " + T("Relégué") + "</span>";
     if (enConflit) {
-      actionLabel += "<button type='button' class='so-conflit-badge' data-so-conflit-info='1' data-query='" + esc(o.query) + "' data-position='" + o.position + "' aria-label='" + T("Conflit de position — cliquer pour en savoir plus") + "' title='" + T("Une autre règle vise déjà la position {0} sur cette recherche.", o.position) + "'>&#9888;</button>";
+      actionLabel += "<button type='button' class='so-conflit-badge' data-so-conflit-info='1' data-query='" + escAttr(o.query) + "' data-position='" + o.position + "' aria-label='" + escAttr(T("Conflit de position — cliquer pour en savoir plus")) + "' title='" + escAttr(T("Une autre règle vise déjà la position {0} sur cette recherche.", o.position)) + "'>&#9888;</button>";
     }
     // Correctif (19 aout 2026, brief §3.5) : "Brouillon" (frontend, pas
     // encore publie) prend le pas sur le vrai statut backend quand
@@ -2430,7 +2430,7 @@
     };
     var statutReel = enBrouillon ? "brouillon" : (o.statut || "active");
     var statutLabel = "<span class='cell-statut cell-statut-" + statutReel + "'>" + (STATUTS_LABELS[statutReel] || statutReel) + "</span>";
-    var attrsLigne = "data-so-aller-apercu='1' data-query='" + esc(o.query) + "'";
+    var attrsLigne = "data-so-aller-apercu='1' data-query='" + escAttr(o.query) + "'";
     // Correctif (19 aout 2026, brief §3.5, priorite avec vrai effet
     // backend depuis ce matin). Affichage compact plutot que deux
     // nouvelles colonnes pleines -- le tableau porte deja sept colonnes,
@@ -2440,18 +2440,18 @@
     // de concatenation -- un vrai bug de syntaxe repere par node -c au
     // premier essai, corrige avant de continuer.
     var indicateurs = "";
-    if (o.priorite && o.priorite !== 100) indicateurs += "<span class='so-regle-indicateur' title='" + T("Priorité") + " " + o.priorite + "'>#" + o.priorite + "</span>";
-    if (o.diffusion && (o.diffusion.debut || o.diffusion.fin)) indicateurs += "<span class='so-regle-indicateur' title='" + T("Période de diffusion définie") + "'>" + ICONES_FICHE.calendrier + "</span>";
-    return "<td class='so-cell-select'><input type='checkbox' class='so-row-check' data-so-select='1' data-query='" + esc(o.query) + "' data-product-id='" + esc(o.product_id) + "' aria-label='" + T("Sélectionner cette règle") + "'></td>" +
+    if (o.priorite && o.priorite !== 100) indicateurs += "<span class='so-regle-indicateur' title='" + escAttr(T("Priorité")) + " " + o.priorite + "'>#" + o.priorite + "</span>";
+    if (o.diffusion && (o.diffusion.debut || o.diffusion.fin)) indicateurs += "<span class='so-regle-indicateur' title='" + escAttr(T("Période de diffusion définie")) + "'>" + ICONES_FICHE.calendrier + "</span>";
+    return "<td class='so-cell-select'><input type='checkbox' class='so-row-check' data-so-select='1' data-query='" + escAttr(o.query) + "' data-product-id='" + escAttr(o.product_id) + "' aria-label='" + escAttr(T("Sélectionner cette règle")) + "'></td>" +
       "<td " + attrsLigne + " class='so-cell-cliquable'>" + produitCell(o.product_id, o.product_name) + "</td>" +
-      "<td " + attrsLigne + " class='so-cell-cliquable'><span class='cell-trigger' title='" + esc(o.query) + "'>" + esc(o.query) + "</span></td>" +
+      "<td " + attrsLigne + " class='so-cell-cliquable'><span class='cell-trigger' title='" + escAttr(o.query) + "'>" + esc(o.query) + "</span></td>" +
       "<td " + attrsLigne + " class='so-cell-cliquable'>" + soLibelleRegle(o) + indicateurs + "</td>" +
       "<td " + attrsLigne + " class='so-cell-cliquable'>" + actionLabel + "</td>" +
       "<td " + attrsLigne + " class='so-cell-cliquable'>" + statutLabel + "</td>" +
       "<td class='cell-actions'>" +
-        "<button type='button' class='catalog-rule-remove' data-so-edit='1' data-query='" + esc(o.query) + "' data-product-id='" + esc(o.product_id) + "' data-action='" + esc(o.action) + "' data-position='" + (o.position || "") + "' data-nom='" + escAttr(o.nom || "") + "' data-statut='" + escAttr(o.statut || "active") + "' data-priorite='" + (o.priorite || "") + "' data-diffusion-debut='" + escAttr((o.diffusion && o.diffusion.debut) || "") + "' data-diffusion-fin='" + escAttr((o.diffusion && o.diffusion.fin) || "") + "' aria-label='" + T("Modifier") + "' title='" + T("Modifier") + "'>&#9998;</button>" +
-        "<button type='button' class='catalog-rule-remove' data-so-duplicate='1' data-query='" + esc(o.query) + "' data-product-id='" + esc(o.product_id) + "' data-action='" + esc(o.action) + "' data-position='" + (o.position || "") + "' data-nom='" + escAttr(o.nom || "") + "' data-statut='" + escAttr(o.statut || "active") + "' data-priorite='" + (o.priorite || "") + "' data-diffusion-debut='" + escAttr((o.diffusion && o.diffusion.debut) || "") + "' data-diffusion-fin='" + escAttr((o.diffusion && o.diffusion.fin) || "") + "' aria-label='" + T("Dupliquer") + "' title='" + T("Dupliquer comme nouvelle règle") + "'>&#10697;</button>" +
-        "<button type='button' class='catalog-rule-remove' data-so-delete='1' data-query='" + esc(o.query) + "' data-product-id='" + esc(o.product_id) + "' aria-label='" + T("Supprimer") + "'>&times;</button>" +
+        "<button type='button' class='catalog-rule-remove' data-so-edit='1' data-query='" + escAttr(o.query) + "' data-product-id='" + escAttr(o.product_id) + "' data-action='" + escAttr(o.action) + "' data-position='" + (o.position || "") + "' data-nom='" + escAttr(o.nom || "") + "' data-statut='" + escAttr(o.statut || "active") + "' data-priorite='" + (o.priorite || "") + "' data-diffusion-debut='" + escAttr((o.diffusion && o.diffusion.debut) || "") + "' data-diffusion-fin='" + escAttr((o.diffusion && o.diffusion.fin) || "") + "' aria-label='" + escAttr(T("Modifier")) + "' title='" + escAttr(T("Modifier")) + "'>&#9998;</button>" +
+        "<button type='button' class='catalog-rule-remove' data-so-duplicate='1' data-query='" + escAttr(o.query) + "' data-product-id='" + escAttr(o.product_id) + "' data-action='" + escAttr(o.action) + "' data-position='" + (o.position || "") + "' data-nom='" + escAttr(o.nom || "") + "' data-statut='" + escAttr(o.statut || "active") + "' data-priorite='" + (o.priorite || "") + "' data-diffusion-debut='" + escAttr((o.diffusion && o.diffusion.debut) || "") + "' data-diffusion-fin='" + escAttr((o.diffusion && o.diffusion.fin) || "") + "' aria-label='" + escAttr(T("Dupliquer")) + "' title='" + escAttr(T("Dupliquer comme nouvelle règle")) + "'>&#10697;</button>" +
+        "<button type='button' class='catalog-rule-remove' data-so-delete='1' data-query='" + escAttr(o.query) + "' data-product-id='" + escAttr(o.product_id) + "' aria-label='" + escAttr(T("Supprimer")) + "'>&times;</button>" +
       "</td>";
   }
 
@@ -2749,9 +2749,9 @@
       groupsEl.innerHTML = ordreGroupes.map(function (cle) {
         return "<p class='recap-modal-group-title'>" + esc(groupLabel(cle)) + "</p>" +
           groupes[cle].map(function (r, idx) {
-            return "<div class='recap-modal-row' data-recap-key='" + esc(cle) + "::" + idx + "'>" +
+            return "<div class='recap-modal-row' data-recap-key='" + escAttr(cle) + "::" + idx + "'>" +
               "<span class='recap-modal-row-text'>" + ligneTexte(r) + "</span>" +
-              "<button type='button' class='recap-modal-row-remove' data-recap-remove='" + esc(r.product_id) + "' data-recap-query='" + esc(r.query || "") + "' aria-label='" + T("Supprimer cette règle") + "'>&times;</button>" +
+              "<button type='button' class='recap-modal-row-remove' data-recap-remove='" + escAttr(r.product_id) + "' data-recap-query='" + escAttr(r.query || "") + "' aria-label='" + escAttr(T("Supprimer cette règle")) + "'>&times;</button>" +
             "</div>";
           }).join("");
       }).join("");
@@ -2815,7 +2815,7 @@
           var jeton = g + ":" + v;
           var actif = soFiltres.indexOf(jeton) !== -1;
           return "<button type='button' class='so-facet-chip" + (actif ? " on" : "") +
-            "' data-facet='" + esc(jeton) + "'>" + esc(v) + " (" + valeurs[v] + ")</button>";
+            "' data-facet='" + escAttr(jeton) + "'>" + esc(v) + " (" + valeurs[v] + ")</button>";
         }).join("");
     }).join("");
 
@@ -2882,7 +2882,7 @@
         "<div class='so-amorce-chips'>" +
           chips.map(function (c) {
             return "<button type='button' class='so-amorce-chip" + (c.vide ? " so-amorce-chip-vide" : "") + "'" +
-              " data-so-amorce-query='" + esc(c.query) + "'" +
+              " data-so-amorce-query='" + escAttr(c.query) + "'" +
               (c.vide ? " title='" + escAttr(T("Cette recherche ne renvoie aucun résultat")) + "'" : "") + ">" +
               esc(c.query) +
             "</button>";
@@ -3126,7 +3126,7 @@
               "<div id='so-empty-synonym-form' hidden style='background:var(--surface-2); border:0.5px solid var(--line); border-radius:var(--radius); padding:14px; text-align:left; margin:0 auto 12px; max-width:320px;'>" +
                 "<p style='font-size:13px; margin:0 0 8px;'>" + T("Rapprocher <strong>{0}</strong> de :", esc(q)) + "</p>" +
                 "<div style='display:flex; gap:8px;'>" +
-                  "<input type='text' id='so-empty-synonym-input' placeholder='" + T("ex. plaque de plâtre") + "' style='flex:1; font-size:13px;'>" +
+                  "<input type='text' id='so-empty-synonym-input' placeholder='" + escAttr(T("ex. plaque de plâtre")) + "' style='flex:1; font-size:13px;'>" +
                   "<button type='button' id='so-empty-synonym-submit' style='flex-shrink:0; font-size:13px;'>" + T("Créer") + "</button>" +
                 "</div>" +
                 "<p id='so-empty-synonym-status' style='font-size:12px; margin:6px 0 0;'></p>" +
@@ -3225,13 +3225,13 @@
           // vrai nom du produit ("Pince a sertir les cosses"), pas
           // seulement son identifiant -- session.soDraft ne stockait
           // jusqu'ici que product_id, jamais le nom.
-          var nomAttr = " data-name='" + esc(p.name || "") + "'";
-          actions += "<button type='button'" + bloque + nomAttr + " data-so-act='up' data-pid='" + pid + "' title='" + escAttr(T("Monter d'une place")) + "' aria-label='" + T("Monter {0}", esc(p.name || p.id)) + "'>" + ICONE.up + "</button>" +
-                     "<button type='button'" + bloque + nomAttr + " data-so-act='down' data-pid='" + pid + "' title='" + escAttr(T("Descendre d'une place")) + "' aria-label='" + T("Descendre {0}", esc(p.name || p.id)) + "'>" + ICONE.down + "</button>";
+          var nomAttr = " data-name='" + escAttr(p.name || "") + "'";
+          actions += "<button type='button'" + bloque + nomAttr + " data-so-act='up' data-pid='" + pid + "' title='" + escAttr(T("Monter d'une place")) + "' aria-label='" + escAttr(T("Monter {0}", esc(p.name || p.id))) + "'>" + ICONE.up + "</button>" +
+                     "<button type='button'" + bloque + nomAttr + " data-so-act='down' data-pid='" + pid + "' title='" + escAttr(T("Descendre d'une place")) + "' aria-label='" + escAttr(T("Descendre {0}", esc(p.name || p.id))) + "'>" + ICONE.down + "</button>";
           if (h.pinned) {
-            actions += "<button type='button' data-so-act='retirer'" + nomAttr + " data-pid='" + pid + "' title='" + escAttr(T("Retirer l'épingle")) + "' aria-label='" + T("Retirer l'épingle de {0}", esc(p.name || p.id)) + "'>" + ICONE.off + "</button>";
+            actions += "<button type='button' data-so-act='retirer'" + nomAttr + " data-pid='" + pid + "' title='" + escAttr(T("Retirer l'épingle")) + "' aria-label='" + escAttr(T("Retirer l'épingle de {0}", esc(p.name || p.id))) + "'>" + ICONE.off + "</button>";
           } else {
-            actions += "<button type='button' data-so-act='pin'" + nomAttr + " data-pid='" + pid + "' title='" + T("Mettre en tête") + "' aria-label='" + T("Mettre {0} en tête", esc(p.name || p.id)) + "'>" + ICONE.pin + "</button>";
+            actions += "<button type='button' data-so-act='pin'" + nomAttr + " data-pid='" + pid + "' title='" + escAttr(T("Mettre en tête")) + "' aria-label='" + escAttr(T("Mettre {0} en tête", esc(p.name || p.id))) + "'>" + ICONE.pin + "</button>";
           }
           actions += "</div>";
 
@@ -3245,8 +3245,8 @@
           // meme si le reglage est actif.
           var imgSrc = p.image || p.image_url || "";
           var visuel = (afficherVisuels && imgSrc)
-            ? "<img class='so-card-visuel' src='" + esc(imgSrc) + "' alt='' loading='lazy'>" : "";
-          return "<div class='" + classes + "'" + " draggable='true' data-pid='" + pid + "' data-name='" + esc(p.name || "") + "'" + ">" +
+            ? "<img class='so-card-visuel' src='" + escAttr(imgSrc) + "' alt='' loading='lazy'>" : "";
+          return "<div class='" + classes + "'" + " draggable='true' data-pid='" + pid + "' data-name='" + escAttr(p.name || "") + "'" + ">" +
             (q ? "<span class='so-card-rank" + (h.pinned ? " so-card-rank-impose" : "") + "'" +
               (h.pinned ? " title='" + escAttr(T("Position imposée par une règle")) + "'" : "") + ">" +
               (h.pinned ? ICONES_FICHE.pinPlein + " " : "") + (i + 1) + "</span>" : "") +
@@ -3460,12 +3460,12 @@
           // le bouton rejoint la ligne, pousse a droite par le nom en
           // flex:1.
           "<div class='so-liste-actions'>" +
-            "<button type='button' class='catalog-rule-remove' data-so-edit='1' data-query='" + esc(o.query) + "' data-product-id='" + esc(o.product_id) + "' data-action='" + esc(o.action) + "' data-position='" + (o.position || "") + "' aria-label='" + T("Modifier") + "' title='" + T("Modifier") + "'>&#9998;</button>" +
+            "<button type='button' class='catalog-rule-remove' data-so-edit='1' data-query='" + escAttr(o.query) + "' data-product-id='" + escAttr(o.product_id) + "' data-action='" + escAttr(o.action) + "' data-position='" + (o.position || "") + "' aria-label='" + escAttr(T("Modifier")) + "' title='" + escAttr(T("Modifier")) + "'>&#9998;</button>" +
           "</div>" +
         "</div>";
       }).join("<hr class='so-liste-sep'>");
       return "<div class='so-liste-item'>" +
-        "<div class='so-liste-trigger' title='" + esc(query) + "'>" + esc(query) + "</div>" +
+        "<div class='so-liste-trigger' title='" + escAttr(query) + "'>" + esc(query) + "</div>" +
         lignes +
       "</div>";
     }).join("");
@@ -3614,12 +3614,12 @@
           if (!candidats.length) {
             zone.innerHTML = "<em>" + T("Aucun mot proche dans votre catalogue.") + "</em> " +
               "<button type='button' class='zr-vers-synonymes' data-goto-pane='pane-search-overrides' " +
-              "data-prefill='" + esc(terme) + "'>" + T("S'il s'agit d'un autre mot pour un produit que vous vendez, ajoutez-le comme synonyme &rarr;") + "</button>";
+              "data-prefill='" + escAttr(terme) + "'>" + T("S'il s'agit d'un autre mot pour un produit que vous vendez, ajoutez-le comme synonyme &rarr;") + "</button>";
             return;
           }
           zone.innerHTML = "&rarr; " + candidats.map(function (cand) {
             return "<button type='button' class='zr-choix' data-de='" +
-                   esc(cand.jeton) + "' data-vers='" + esc(cand.terme) + "'>" +
+                   escAttr(cand.jeton) + "' data-vers='" + escAttr(cand.terme) + "'>" +
                    esc(cand.terme) + " <i>(" + T("{0} produits", cand.produits) + ")</i></button>";
           }).join(" ");
         })
@@ -3781,7 +3781,7 @@
         // inline "produit en rupture" (§4.5 du brief), declenchee au
         // moment de la selection -- reutilise ce qui est deja calcule
         // ici, pas de second appel reseau.
-        return "<button type='button' class='so-autocomplete-item' data-id='" + esc(p.id) + "' data-name='" + esc(p.name || p.id) + "' data-in-stock='" + (h.in_stock === false ? "0" : "1") + "'>" +
+        return "<button type='button' class='so-autocomplete-item' data-id='" + escAttr(p.id) + "' data-name='" + escAttr(p.name || p.id) + "' data-in-stock='" + (h.in_stock === false ? "0" : "1") + "'>" +
           "<span class='so-autocomplete-name'>" + esc(p.name || p.id) + "</span>" +
           "<span class='so-autocomplete-meta'>" + esc(p.ref || p.id) + (prix ? " · " + prix : "") + " · " + stock + "</span>" +
         "</button>";
@@ -5013,7 +5013,7 @@
         return;
       }
       panneau.innerHTML = liste.map(function (a) {
-        return "<button type='button' class='so-autocomplete-item' data-field='" + esc(a.field) + "'>" +
+        return "<button type='button' class='so-autocomplete-item' data-field='" + escAttr(a.field) + "'>" +
           "<span class='so-autocomplete-name'>" + esc(a.field) + "</span>" +
           "<span class='so-autocomplete-meta'>" + T("{0} valeurs", (a.values || []).length) + "</span>" +
         "</button>";
@@ -5056,7 +5056,7 @@
     var field = document.getElementById("browse-attribute-field").value.trim();
     var entry = browseAttributesCache.filter(function (a) { return a.field === field; })[0];
     document.getElementById("browse-known-values").innerHTML = entry
-      ? entry.values.map(function (v) { return "<option value='" + esc(v.value) + "'>"; }).join("")
+      ? entry.values.map(function (v) { return "<option value='" + escAttr(v.value) + "'>"; }).join("")
       : "";
   }
 
@@ -5085,7 +5085,7 @@
         return;
       }
       panneau.innerHTML = liste.map(function (c) {
-        return "<button type='button' class='so-autocomplete-item' data-categorie='" + esc(c.category) + "'>" +
+        return "<button type='button' class='so-autocomplete-item' data-categorie='" + escAttr(c.category) + "'>" +
           "<span class='so-autocomplete-name'>" + esc(c.category) + "</span>" +
           "<span class='so-autocomplete-meta'>" + T("{0} produits", c.products) + "</span>" +
         "</button>";
@@ -5199,20 +5199,20 @@
 
       // Correctif Lot 2 : data-name (boutons et carte), meme raison que
       // Search Overrides -- le recapitulatif (§4.4) a besoin du nom.
-      var nomAttrBr = " data-name='" + esc(p.name || "") + "'";
+      var nomAttrBr = " data-name='" + escAttr(p.name || "") + "'";
       var actions = "<div class='so-card-actions'>" +
-        "<button type='button'" + nomAttrBr + " data-br-act='up' data-pid='" + pid + "' title='" + escAttr(T("Monter d'une place")) + "' aria-label='" + T("Monter {0}", esc(p.name || p.id)) + "'>" + ICONES_FICHE.up + "</button>" +
-        "<button type='button'" + nomAttrBr + " data-br-act='down' data-pid='" + pid + "' title='" + escAttr(T("Descendre d'une place")) + "' aria-label='" + T("Descendre {0}", esc(p.name || p.id)) + "'>" + ICONES_FICHE.down + "</button>" +
+        "<button type='button'" + nomAttrBr + " data-br-act='up' data-pid='" + pid + "' title='" + escAttr(T("Monter d'une place")) + "' aria-label='" + escAttr(T("Monter {0}", esc(p.name || p.id))) + "'>" + ICONES_FICHE.up + "</button>" +
+        "<button type='button'" + nomAttrBr + " data-br-act='down' data-pid='" + pid + "' title='" + escAttr(T("Descendre d'une place")) + "' aria-label='" + escAttr(T("Descendre {0}", esc(p.name || p.id))) + "'>" + ICONES_FICHE.down + "</button>" +
         (h.pinned
-          ? "<button type='button'" + nomAttrBr + " data-br-act='retirer' data-pid='" + pid + "' title='" + escAttr(T("Retirer l'épingle")) + "' aria-label='" + T("Retirer l'épingle") + "'>" + ICONES_FICHE.off + "</button>"
-          : "<button type='button'" + nomAttrBr + " data-br-act='pin' data-pid='" + pid + "' title='" + T("Mettre en tête") + "' aria-label='" + T("Mettre en tête") + "'>" + ICONES_FICHE.pin + "</button>") +
+          ? "<button type='button'" + nomAttrBr + " data-br-act='retirer' data-pid='" + pid + "' title='" + escAttr(T("Retirer l'épingle")) + "' aria-label='" + escAttr(T("Retirer l'épingle")) + "'>" + ICONES_FICHE.off + "</button>"
+          : "<button type='button'" + nomAttrBr + " data-br-act='pin' data-pid='" + pid + "' title='" + escAttr(T("Mettre en tête")) + "' aria-label='" + escAttr(T("Mettre en tête")) + "'>" + ICONES_FICHE.pin + "</button>") +
         "</div>";
 
       // Deux noms de champ reconnus a l'indexation (image, image_url).
       // Produit sans visuel : rien plutot qu'un cadre vide.
       var brImgSrc = p.image || p.image_url || "";
       var brVisuel = (brAfficherVisuels && brImgSrc)
-        ? "<img class='so-card-visuel' src='" + esc(brImgSrc) + "' alt='' loading='lazy'>" : "";
+        ? "<img class='so-card-visuel' src='" + escAttr(brImgSrc) + "' alt='' loading='lazy'>" : "";
 
       return "<div class='" + classes + "'" + " draggable='true' data-pid='" + pid + "'" + nomAttrBr + ">" +
         "<span class='so-card-rank" + (h.pinned ? " so-card-rank-impose" : "") + "'" +
@@ -5562,9 +5562,9 @@
         (o.product_name ? "" : " <span class='br-regle-orpheline' title='" + escAttr(T("Ce produit n'est plus dans le catalogue : la règle ne s'applique pas.")) + "'>&#9888;</span>") +
         "</td><td>" + T(o.action === "pin" ? "Épingler" : "Reléguer") +
         "</td><td>" + (o.position || "–") + "</td><td style='white-space:nowrap;'>" +
-        "<button type='button' class='catalog-rule-remove' data-edit-override='1' data-product-id='" + esc(o.product_id) + "' data-product-name='" + escAttr(o.product_name || "") + "' data-action='" + esc(o.action) + "' data-position='" + (o.position || "") + "' aria-label='" + T("Modifier") + "' title='" + T("Modifier") + "' style='margin-right:6px;'>&#9998;</button>" +
-        "<button type='button' class='catalog-rule-remove' data-duplicate-override='1' data-product-id='" + esc(o.product_id) + "' data-product-name='" + escAttr(o.product_name || "") + "' data-action='" + esc(o.action) + "' data-position='" + (o.position || "") + "' aria-label='" + T("Dupliquer") + "' title='" + T("Dupliquer") + "' style='margin-right:6px;'>&#10697;</button>" +
-        "<button type='button' class='catalog-rule-remove' data-remove-override='" + esc(o.product_id) + "' aria-label='" + T("Retirer") + "'>&times;</button></td>";
+        "<button type='button' class='catalog-rule-remove' data-edit-override='1' data-product-id='" + escAttr(o.product_id) + "' data-product-name='" + escAttr(o.product_name || "") + "' data-action='" + escAttr(o.action) + "' data-position='" + (o.position || "") + "' aria-label='" + escAttr(T("Modifier")) + "' title='" + escAttr(T("Modifier")) + "' style='margin-right:6px;'>&#9998;</button>" +
+        "<button type='button' class='catalog-rule-remove' data-duplicate-override='1' data-product-id='" + escAttr(o.product_id) + "' data-product-name='" + escAttr(o.product_name || "") + "' data-action='" + escAttr(o.action) + "' data-position='" + (o.position || "") + "' aria-label='" + escAttr(T("Dupliquer")) + "' title='" + escAttr(T("Dupliquer")) + "' style='margin-right:6px;'>&#10697;</button>" +
+        "<button type='button' class='catalog-rule-remove' data-remove-override='" + escAttr(o.product_id) + "' aria-label='" + escAttr(T("Retirer")) + "'>&times;</button></td>";
     });
     var panneau = document.getElementById("bo-rules-panel");
     if (panneau) panneau.classList.toggle("so-rules-draft", !!enBrouillon);
@@ -5590,10 +5590,10 @@
           (r.action === "boost" && r.intensite && r.intensite !== "moyen"
             ? " <span class='so-regle-indicateur'>" + esc(T(r.intensite)) + "</span>" : "") +
           "</td><td style='white-space:nowrap;'>" +
-          "<button type='button' class='catalog-rule-remove' data-edit-attribute='1' data-field='" + esc(r.field) + "' data-value='" + esc(r.value) + "' data-action='" + esc(r.action) + "' data-intensite='" + esc(r.intensite || "moyen") + "' aria-label='" + T("Modifier") + "' title='" + T("Modifier") + "' style='margin-right:6px;'>&#9998;</button>" +
-          "<button type='button' class='catalog-rule-remove' data-duplicate-attribute='1' data-field='" + esc(r.field) + "' data-value='" + esc(r.value) + "' data-action='" + esc(r.action) + "' data-intensite='" + esc(r.intensite || "moyen") + "' aria-label='" + T("Dupliquer") + "' title='" + T("Dupliquer") + "' style='margin-right:6px;'>&#10697;</button>" +
+          "<button type='button' class='catalog-rule-remove' data-edit-attribute='1' data-field='" + escAttr(r.field) + "' data-value='" + escAttr(r.value) + "' data-action='" + escAttr(r.action) + "' data-intensite='" + escAttr(r.intensite || "moyen") + "' aria-label='" + escAttr(T("Modifier")) + "' title='" + escAttr(T("Modifier")) + "' style='margin-right:6px;'>&#9998;</button>" +
+          "<button type='button' class='catalog-rule-remove' data-duplicate-attribute='1' data-field='" + escAttr(r.field) + "' data-value='" + escAttr(r.value) + "' data-action='" + escAttr(r.action) + "' data-intensite='" + escAttr(r.intensite || "moyen") + "' aria-label='" + escAttr(T("Dupliquer")) + "' title='" + escAttr(T("Dupliquer")) + "' style='margin-right:6px;'>&#10697;</button>" +
           "<button type='button' class='catalog-rule-remove' " +
-          "data-remove-attribute-field='" + esc(r.field) + "' data-remove-attribute-value='" + esc(r.value) + "' aria-label='" + T("Retirer") + "'>&times;</button></td>";
+          "data-remove-attribute-field='" + escAttr(r.field) + "' data-remove-attribute-value='" + escAttr(r.value) + "' aria-label='" + escAttr(T("Retirer")) + "'>&times;</button></td>";
       });
       // Le compteur couvre les deux volets : il se recalcule apres
       // CHAQUE rendu, sinon il decrirait un etat partiel.
@@ -6050,19 +6050,19 @@
         // d'action ajoutee au tableau (il n'en avait aucune).
         return "<td>" + esc(q.query) + "</td><td class='num'>" + q.count + "</td><td>" + q.avg_results + "</td>" +
                "<td><button type='button' class='zr-vers-regle' data-goto-pane='pane-search-overrides' " +
-               "data-prefill-query='" + esc(q.query) + "'>" + T("Mettre en avant") + "</button></td>";
+               "data-prefill-query='" + escAttr(q.query) + "'>" + T("Mettre en avant") + "</button></td>";
       });
       renderTable("zero-results-table", "zero-results-empty", zeroResults, function (q) {
         return "<td>" + esc(q.query) + "</td><td class='num'>" + q.count +
                "</td><td class='zr-action-cell'>" +
                "<button type='button' class='zr-suggerer' data-terme='" +
-               esc(q.query) + "'>" + T("Corriger") + "</button>" +
+               escAttr(q.query) + "'>" + T("Corriger") + "</button>" +
                // Brief §4.5 : le passage de l'observation a l'action.
                // Complementaire de "Corriger", qui propose un synonyme :
                // ici on va poser une regle de mise en avant sur cette
                // requete precise, sans avoir a la retaper.
                "<button type='button' class='zr-vers-regle' data-goto-pane='pane-search-overrides' " +
-               "data-prefill-query='" + esc(q.query) + "'>" + T("Mettre en avant") + "</button>" +
+               "data-prefill-query='" + escAttr(q.query) + "'>" + T("Mettre en avant") + "</button>" +
                "<span class='zr-suggestions' hidden></span></td>";
       });
       _dernieresErreurs = errors || [];
@@ -6475,7 +6475,7 @@
           "<p class='pack-suggestion-detail'>" + T("Sur {0} produits : <strong>{1}</strong> annotés avec « {2} », contre <strong>{3}</strong> avec « {4} ».",
             d.echantillon, meilleur.produits_annotes, esc(d.recommande), actuel.produits_annotes, esc(d.pack_actuel || T("aucun"))) + "</p>" +
           "<button type='button' class='pack-suggestion-appliquer' data-pack='" +
-            esc(d.recommande) + "'>" + T("Présélectionner le pack {0}", esc(d.recommande)) + "</button>" +
+            escAttr(d.recommande) + "'>" + T("Présélectionner le pack {0}", esc(d.recommande)) + "</button>" +
           // Correctif (20 aout 2026, audit passe 3 §3) : le bouton
           // annoncait "Selectionner le pack" en style primaire, mais ne
           // fait que preselectionner dans la liste -- il fallait ensuite
