@@ -74,9 +74,11 @@
     // regarde, et pas un visiteur.
     catalogueKo:  "Catalogue temporarily unavailable. Search still works — " +
                   "try a reference above.",
-    rayonVide:    "No products in this category.",
+    // `references` et `rayonVide` ont ete retires le 29 aout 2026 : le
+    // compte et l'etat vide du rayon appartiennent maintenant au widget,
+    // qui les rend dans les deux langues. Les garder ici aurait laisse
+    // croire qu'ils servaient encore.
     rayonKo:      "This category is unavailable right now.",
-    references:   function (n) { return n + " references"; },
     placeholder:  "Reference, dimension, standard\u2026 (e.g. M8x20, DIN 933)",
     rayons: { visserie: "Screws", boulonnerie: "Bolts", fixation: "Fixings",
               maconnerie: "Masonry", accessoires: "Accessories" }
@@ -91,9 +93,7 @@
     aucunProduit: "Aucun produit.",
     catalogueKo:  "Catalogue momentanément indisponible. La recherche fonctionne " +
                   "toujours — essayez une référence ci-dessus.",
-    rayonVide:    "Aucun produit dans ce rayon.",
     rayonKo:      "Rayon indisponible pour le moment.",
-    references:   function (n) { return n + " références"; },
     placeholder:  "Référence, dimension, norme… (ex. M8x20, DIN 933)",
     rayons: { visserie: "Visserie", boulonnerie: "Boulonnerie", fixation: "Fixation",
               maconnerie: "Maçonnerie", accessoires: "Accessoires" }
@@ -109,6 +109,17 @@
     return EN ? "\u20AC" + v : v.replace(".", ",") + " \u20AC";
   }
 
+  // Le catalogue est de la donnee : quiconque peut y deposer un produit
+  // pouvait executer du script chez les visiteurs de cette page. Meme
+  // fonction que celle des widgets livres (heurix-search.js,
+  // heurix-browse-widget.js), recopiee ici pour la meme raison qu'eux : ce
+  // fichier tient seul. Elle n'echappe PAS l'apostrophe, donc tout attribut
+  // portant une donnee se double-quote -- voir data-produit ci-dessous.
+  function esc(v) {
+    return String(v == null ? "" : v)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+
   function ficheProduit(p) {
     var stock = p.stock || 0;
     var etatStock = stock === 0
@@ -117,12 +128,17 @@
         ? "<span class='stock-faible'>" + T.stockFaible(stock) + "</span>"
         : "<span class='en-stock'>" + T.enStock(stock) + "</span>");
 
-    return "<div class='fiche'>" +
-        "<div class='fiche-ref'>" + (p.ref || p.id) + "</div>" +
-        "<div class='fiche-nom'>" + p.name + "</div>" +
-        "<div class='fiche-prix'>" + euros(p.price) + " <small>" + T.horsTaxes + "</small></div>" +
-        "<div class='fiche-stock'>" + etatStock + "</div>" +
-        "<button type='button' data-produit='" + p.id + "'" +
+    // `price` peut manquer depuis le chantier « un prix par cle publique »
+    // (29 aout) : une cle reglee price_visible:false recoit des produits
+    // dont le champ a disparu. euros(undefined) rendrait « NaN € ».
+    var prix = p.price != null
+      ? '<div class="fiche-prix">' + euros(p.price) + " <small>" + T.horsTaxes + "</small></div>"
+      : "";
+    return '<div class="fiche">' +
+        '<div class="fiche-ref">' + esc(p.ref || p.id) + "</div>" +
+        '<div class="fiche-nom">' + esc(p.name) + "</div>" + prix +
+        '<div class="fiche-stock">' + etatStock + "</div>" +
+        '<button type="button" data-produit="' + esc(p.id) + '"' +
           (stock === 0 ? " disabled" : "") + ">" +
           (stock === 0 ? T.indisponible : T.ajouter) + "</button>" +
       "</div>";
@@ -151,7 +167,15 @@
 
   function chargerPopulaires() {
     // Browse trie par popularité : c'est l'option Ranking en action.
-    appeler("/v1/browse/" + CATALOGUE + "/visserie?sort=popularity&limit=8")
+    //
+    // `popular`, PAS `popularity` (corrigé le 29 août 2026). Le moteur
+    // n'accepte que stock/recent/alphabetical/price_asc/price_desc/margin/
+    // popular, et retombe SILENCIEUSEMENT sur `stock` pour tout le reste
+    // (browse.py : `if sort not in SORT_STRATEGIES`). Ce bloc affichait donc
+    // les produits les mieux stockés sous un commentaire qui promettait la
+    // popularité -- vérifié en lisant `sort` dans la réponse, qui renvoyait
+    // « stock ».
+    appeler("/v1/browse/" + CATALOGUE + "/visserie?sort=popular&limit=8")
       .then(function (d) {
         afficher("populaires", (d.hits || []).map(function (h) { return h.product; }));
       })
@@ -165,22 +189,21 @@
       });
   }
 
-  function chargerCategorie(categorie) {
-    var params = new URLSearchParams(location.search);
-    var tri = params.get("tri") || "stock";
-    appeler("/v1/browse/" + CATALOGUE + "/" + encodeURIComponent(categorie) +
-            "?sort=" + tri + "&limit=24")
-      .then(function (d) {
-        afficher("produits-categorie", (d.hits || []).map(function (h) { return h.product; }),
-                 T.rayonVide);
-        var compteur = document.getElementById("compteur");
-        if (compteur) compteur.textContent = T.references(d.total || 0);
-      })
-      .catch(function () {
-        afficher("produits-categorie", [], T.rayonKo);
-      });
-  }
-
+  /* LA PAGE DE RAYON EST DESORMAIS LE WIDGET LIVRE (29 aout 2026).
+   *
+   * Ce qu'il y avait ici : un fetch, un `.map`, un compteur pose a la main,
+   * un `catch`. Vingt-quatre produits sur 1 987, sans pagination et sans un
+   * seul filtre -- alors que l'API sait faire les deux depuis le debut.
+   *
+   * Ce qui reste du marchand : `ficheProduit`, sa carte, sa charte. C'est
+   * exactement la frontiere que `renderItem` trace -- le widget s'occupe de
+   * l'appel, de la pagination, des facettes, du tri et de l'accessibilite ;
+   * le marchand garde le HTML de sa fiche.
+   *
+   * `tri` en parametre d'URL n'est plus lu : le visiteur choisit lui-meme
+   * dans la barre de tri. Le marchand ne perd rien -- `sort` reste le tri
+   * PAR DEFAUT, et c'est la console Heurix qui decide du classement de fond.
+   */
   // -------------------------------------------------------------- panier
 
   var panier = [];
@@ -231,7 +254,25 @@
       document.querySelectorAll("nav.rayons a").forEach(function (a) {
         if (a.getAttribute("href").indexOf("c=" + c) !== -1) a.classList.add("actif");
       });
-      chargerCategorie(c);
+      if (window.Heurix && window.Heurix.browsePanel) {
+        window.Heurix.browsePanel({
+          apiKey: CLE_PUBLIQUE,
+          catalog: CATALOGUE,
+          category: c,
+          containerId: "produits-categorie",
+          // Les quatre champs que porte ce catalogue. Le widget n'en
+          // connait aucun d'avance : il n'affiche que ce que l'API renvoie
+          // pour le rayon consulte -- la visserie ne rend que trois
+          // familles sur les huit du catalogue.
+          facets: ["famille", "matiere", "diametre", "norme"],
+          limit: 24,
+          renderItem: function (hit) { return ficheProduit(hit.product); },
+        });
+      } else {
+        // Le widget n'a pas ete charge : on le DIT, plutot que de laisser un
+        // rayon vide sans explication.
+        zone.innerHTML = "<p class='chargement'>" + T.rayonKo + "</p>";
+      }
     }
   }
 

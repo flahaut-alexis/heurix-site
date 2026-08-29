@@ -42,10 +42,12 @@
 
 <div class="section conteneur">
   <h2 id="titre-categorie">Category</h2>
-  <p class="intro"><span id="compteur">…</span> — sorted by availability.
-     Ranking is driven from the Heurix console: pinning, margin, stock or
-     popularity.</p>
-  <div id="produits-categorie" class="grille"><p class="chargement">Loading…</p></div>
+  <!-- The count now belongs to the widget (29 August 2026): it renders it
+       itself, in an aria-live region, updated on every filter and page. -->
+  <p class="intro">Baseline ranking is driven from the Heurix console —
+     pinning, margin, stock or popularity — and visitors refine it with the
+     filters and sorting below.</p>
+  <div id="produits-categorie"></div>
 </div>
 
 <footer>
@@ -57,6 +59,7 @@
   </div>
 </footer>
 <script src="../../downloads/heurix-search.js?v=1787784710"></script>
+<script src="../../downloads/heurix-browse-widget.js?v=1787996400"></script>
 <script src="../../demo-boutique.js?v=1787780604"></script>
 </body>
 </html>

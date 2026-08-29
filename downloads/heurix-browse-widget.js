@@ -109,6 +109,17 @@
       sans: "{0} sans {1}",
       choixAria: "{0}, {1} produits",
       choixAriaUn: "{0}, 1 produit",
+      trier: "Trier par",
+      tris: {
+        stock: "Disponibilité", recent: "Nouveautés", alphabetical: "Nom (A-Z)",
+        price_asc: "Prix croissant", price_desc: "Prix décroissant",
+        margin: "Marge", popular: "Popularité",
+      },
+      epingle: "Mis en avant",
+      relegue: "En fin de rayon",
+      epingleAria: "Mis en avant par le marchand",
+      relegueAria: "Placé en fin de rayon par le marchand",
+      ordreForce: "Certains produits sont placés par le marchand, indépendamment du tri.",
     },
     en: {
       vide: "<p>No products in this category.</p>",
@@ -130,6 +141,17 @@
       sans: "{0} without {1}",
       choixAria: "{0}, {1} products",
       choixAriaUn: "{0}, 1 product",
+      trier: "Sort by",
+      tris: {
+        stock: "Availability", recent: "New arrivals", alphabetical: "Name (A-Z)",
+        price_asc: "Price, low to high", price_desc: "Price, high to low",
+        margin: "Margin", popular: "Popularity",
+      },
+      epingle: "Featured",
+      relegue: "End of aisle",
+      epingleAria: "Featured by the merchant",
+      relegueAria: "Placed at the end of the aisle by the merchant",
+      ordreForce: "Some products are placed by the merchant, regardless of sorting.",
     },
   };
 
@@ -350,6 +372,19 @@
       ".hx-rayon-vider{margin:0 0 14px;font:inherit;font-size:13px;padding:6px 12px;border:1px solid #D6D9E4;border-radius:100px;background:#fff;color:#3A3D52;cursor:pointer;}",
       ".hx-rayon-vider:hover{border-color:var(--hx-accent);}",
       ".hx-rayon-vider:focus-visible{outline:3px solid var(--hx-accent);outline-offset:2px;}",
+      // Barre de tri
+      ".hx-rayon-barre{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 14px;}",
+      ".hx-rayon-barre label{font-size:13px;color:#4A4D63;}",
+      ".hx-rayon-tri{font:inherit;font-size:13.5px;padding:7px 10px;border:1px solid #D6D9E4;border-radius:8px;background:#fff;color:#3A3D52;cursor:pointer;}",
+      ".hx-rayon-tri:focus-visible{outline:3px solid var(--hx-accent);outline-offset:2px;}",
+      // Merchandising rendu VISIBLE. Un produit epingle garde sa place quel
+      // que soit le tri (mesure : le plus cher reste premier en « prix
+      // croissant ») : sans etiquette, la liste se lit comme un tri casse.
+      ".hx-rayon .heurix-product{position:relative;}",
+      ".hx-rayon-marque{align-self:flex-start;font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;border-radius:100px;padding:2px 8px;}",
+      ".hx-rayon-marque-epingle{background:var(--hx-accent);color:#fff;}",
+      ".hx-rayon-marque-relegue{background:#EEF0F6;color:#4A4D63;}",
+      ".hx-rayon-note{margin:10px 0 0;font-size:12.5px;color:#6E7183;}",
       "@media (max-width:420px){.hx-rayon-grille{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;}}",
     ].join("\n");
     var el = document.createElement("style");
@@ -408,6 +443,17 @@
     var requeteEnCours = 0;
     var detruit = false;
     var champsFacettes = config.facets || [];
+    /* LES TRIS OFFERTS AU VISITEUR.
+     *
+     * `margin` est ABSENT DE LA LISTE PAR DEFAUT, et ce n'est pas un oubli :
+     * le moteur le sait trier, mais « classer la boutique par ma marge » est
+     * une strategie de marchand, pas un choix d'acheteur. Il reste
+     * utilisable en tri PAR DEFAUT (config.sort) et le marchand peut
+     * l'offrir explicitement via config.sorts.
+     */
+    var TRIS_PAR_DEFAUT = ["stock", "price_asc", "price_desc", "alphabetical", "recent", "popular"];
+    var trisOfferts = config.sorts || TRIS_PAR_DEFAUT;
+    var triActif = config.sort || "stock";
     var filtresActifs = {};   // { champ: [valeur, ...] }
     var ouSupporte = true;    // jusqu'a preuve du contraire -- voir detecterOuAbsent
     var focusARendre = null;  // selecteur de l'element a refocaliser apres redessin
@@ -427,6 +473,7 @@
     conteneur.innerHTML =
       '<p class="hx-rayon-compte" id="' + esc(idb) + '-compte" tabindex="-1" role="status" aria-live="polite">' +
         esc(T.chargement) + "</p>" +
+      '<div class="hx-rayon-barre" id="' + esc(idb) + '-barre"></div>' +
       '<div class="hx-rayon-corps">' +
         '<div class="hx-rayon-rail" id="' + esc(idb) + '-rail"></div>' +
         '<div>' +
@@ -436,6 +483,7 @@
       "</div>";
 
     var elCompte = conteneur.querySelector(".hx-rayon-compte");
+    var elBarre = conteneur.querySelector(".hx-rayon-barre");
     var elRail = conteneur.querySelector(".hx-rayon-rail");
     var elGrille = conteneur.querySelector(".hx-rayon-grille");
     var elPagination = conteneur.querySelector(".hx-rayon-pagination");
@@ -462,7 +510,7 @@
       var u = base + "/v1/browse/" + encodeURIComponent(config.catalog) +
               "/" + encodeURIComponent(config.category);
       var p = ["limit=" + parPage, "offset=" + (n - 1) * parPage];
-      if (config.sort) p.push("sort=" + encodeURIComponent(config.sort));
+      p.push("sort=" + encodeURIComponent(triActif));
       if (config.inStockOnly) p.push("in_stock_only=true");
       if (champsFacettes.length) p.push("facets=" + encodeURIComponent(champsFacettes.join(",")));
       var f = serialiserFiltres();
@@ -520,6 +568,69 @@
         if (!cible) cible = elPagination.querySelector('[aria-current="page"]');
         if (cible) cible.focus(); else elCompte.focus();
       }
+    }
+
+    /* LA BARRE DE TRI.
+     *
+     * UN <select> NATIF, pas une liste deroulante maison : Tab l'atteint,
+     * les fleches et la frappe au clavier le parcourent, et un lecteur
+     * d'ecran annonce « liste, N sur M » sans une ligne de notre part.
+     *
+     * LES TRIS DE PRIX SONT RETIRES QUAND AUCUN PRIX N'EST SERVI, et c'est
+     * une consequence mesuree du chantier « un prix par cle publique »
+     * (29 aout 2026) : une cle reglee `price_visible: false` recoit des
+     * produits DONT LE CHAMP price A DISPARU -- pendant que le moteur, lui,
+     * continue de trier dessus. « Prix croissant » y reordonnerait la liste
+     * sans que rien a l'ecran ne l'explique.
+     *
+     * On ne le devine pas depuis la configuration : on le LIT dans la
+     * reponse. Aucun hit ne porte de prix -> pas d'option de prix.
+     */
+    function rendreBarre(data) {
+      var hits = data.hits || [];
+      var prixServi = hits.some(function (h) { return h.product && h.product.price != null; });
+      var options = trisOfferts.filter(function (t) {
+        if (!T.tris[t]) return false;                       // tri inconnu : ignore
+        if (!prixServi && (t === "price_asc" || t === "price_desc")) return false;
+        return true;
+      });
+      // Un seul choix possible n'est pas un choix : on ne dessine rien.
+      if (options.length < 2) { elBarre.innerHTML = ""; return; }
+      elBarre.innerHTML =
+        '<label for="' + esc(idb) + '-tri">' + esc(T.trier) + "</label>" +
+        '<select class="hx-rayon-tri" id="' + esc(idb) + '-tri">' +
+        options.map(function (t) {
+          return '<option value="' + esc(t) + '"' + (t === triActif ? " selected" : "") + ">" +
+                 esc(T.tris[t]) + "</option>";
+        }).join("") + "</select>";
+    }
+
+    /* LE MERCHANDISING, RENDU VISIBLE.
+     *
+     * MESURE DU 29 AOUT, et c'est elle qui impose l'etiquette : L'EPINGLAGE
+     * GAGNE TOUJOURS SUR LE TRI. Un produit epingle en position 1 y reste
+     * sous chaque strategie -- verifie sur quatre produits, le plus cher
+     * epingle restait premier en « prix croissant », et le moins cher
+     * relegue tombait en dernier :
+     *
+     *   sans epinglage,  prix croissant   p3(2) p1(8) p0(10) p2(12)
+     *   p2 epingle,      prix croissant   p2(12) p3(2) p1(8) p0(10)
+     *
+     * Une liste intitulee « prix croissant » qui commence a 12,00 EUR se lit
+     * comme un tri casse. L'API donne `pinned` et `buried` sur chaque hit :
+     * les taire, c'est faire porter au visiteur une decision du marchand
+     * sans la nommer.
+     */
+    function marqueHtml(hit) {
+      if (hit.pinned) {
+        return '<span class="hx-rayon-marque hx-rayon-marque-epingle" title="' +
+          esc(T.epingleAria) + '">' + esc(T.epingle) + "</span>";
+      }
+      if (hit.buried) {
+        return '<span class="hx-rayon-marque hx-rayon-marque-relegue" title="' +
+          esc(T.relegueAria) + '">' + esc(T.relegue) + "</span>";
+      }
+      return "";
     }
 
     /* LE RAIL DE FACETTES.
@@ -707,8 +818,22 @@
         (estPluriel(total, lang) ? T.references : T.reference) +
         (totalPages > 1 ? " — " + T.pageSur.replace("{0}", page).replace("{1}", totalPages) : "");
       elGrille.innerHTML = hits.map(function (h, i) {
-        return rendreFiche(h, i, lang);
+        return marqueHtml(h) + rendreFiche(h, i, lang);
       }).join("");
+      // La note n'apparait QUE si un produit de la page est effectivement
+      // place a la main : elle explique ce qu'on voit, elle n'avertit pas
+      // d'une possibilite.
+      var force = hits.some(function (h) { return h.pinned || h.buried; });
+      var note = elGrille.parentNode.querySelector(".hx-rayon-note");
+      if (force && !note) {
+        note = document.createElement("p");
+        note.className = "hx-rayon-note";
+        note.textContent = T.ordreForce;
+        elGrille.parentNode.insertBefore(note, elPagination);
+      } else if (!force && note) {
+        note.parentNode.removeChild(note);
+      }
+      rendreBarre(data);
       rendreRail(data);
       rendrePagination(focusApres);
       rendreFocus();
@@ -814,6 +939,19 @@
       charger(1);
     });
 
+    elBarre.addEventListener("change", function (e) {
+      var sel = e.target;
+      if (!sel || sel.tagName !== "SELECT") return;
+      triActif = sel.value;
+      // Changer de tri redessine la liste ET la barre : le <select> qu'on
+      // vient d'actionner est detruit. Sans reprise, le focus retombe sur
+      // <body> -- troisieme forme du meme defaut, apres la pagination et
+      // les facettes.
+      focusARendre = ".hx-rayon-tri";
+      // Un nouvel ordre n'a pas de « page 3 » : on repart du debut.
+      charger(1);
+    });
+
     elRail.addEventListener("toggle", function (e) {
       if (e.target && e.target.classList.contains("hx-rayon-repli")) railDeplie = e.target.open;
     }, true);   // `toggle` ne remonte pas : on ecoute a la capture
@@ -839,7 +977,7 @@
         var f = {};
         for (var k in filtresActifs) if (filtresActifs[k].length) f[k] = filtresActifs[k].slice();
         return { page: page, totalPages: totalPages, perPage: parPage,
-                 filters: f, multiSelect: ouSupporte };
+                 filters: f, multiSelect: ouSupporte, sort: triActif };
       },
       destroy: function () {
         detruit = true;
