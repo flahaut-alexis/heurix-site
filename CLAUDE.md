@@ -2157,6 +2157,57 @@ politesse envers les autres sessions : c'est le seul moment où les deux
 règle qui porte sa propre raison — « un `git add -A` emporterait 115 fichiers »
 — reste vraie quoi qu'il arrive à la section citée.
 
+### Un test qui peut échouer sans que le code change ne mesure pas le code
+
+Deux tests fragiles, deux dépôts, la même semaine, et la même forme sous deux
+symptômes différents.
+
+**`heurix-site`, mesuré le 29 août.** `scripts/index-recherche.py --verifier`
+met **2 832 ms**, et `tests/index-recherche.test.js` l'appelle **cinq fois**,
+contre le plafond par défaut de vitest — **5 000 ms par test**. Chaque appel
+consomme donc 57 % du budget avant même la charge des autres fichiers, qui
+tournent en parallèle. Résultat mesuré, deux exécutions consécutives du même
+fichier, sans une ligne de changement entre les deux :
+
+```
+npx vitest run tests/index-recherche.test.js   ->  1 failed | 22 passed
+npx vitest run tests/index-recherche.test.js   ->  23 passed
+```
+
+Et le dépassement ne se contente pas d'échouer : ce test **mute `docs.html`**
+et restaure dans un `finally`. Quand vitest le tue au délai, le `finally` ne
+tourne pas, et le marqueur reste dans l'arbre suivi — bloquant le crochet
+`pre-push` de **toutes** les sessions. Un test fragile est devenu un blocage
+de dépôt.
+
+**`heurix-engine`, même semaine.** Le test le plus lent est
+`test_recherche_pendant_reindexations`, **5,99 s** — une épreuve de
+concurrence. pytest n'a pas de délai par défaut, donc il ne peut pas échouer
+par dépassement ; il ne peut échouer que par course.
+
+> **Les deux ont le même défaut : leur verdict dépend d'autre chose que du
+> code qu'ils vérifient.** L'un dépend de l'horloge et de la charge, l'autre
+> de l'entrelacement de deux fils. Un test qui peut passer puis échouer sur le
+> même code ne mesure pas ce code — il mesure la machine.
+
+Ce qui rend la famille coûteuse n'est pas l'échec, c'est ce qu'on en fait :
+un test qui échoue une fois sur deux finit par être lu comme du bruit, et le
+jour où il attrape un vrai défaut, personne ne le croit. C'est le symétrique
+exact du garde qui certifie l'absence d'un défaut : là un vert faux
+décourageait la vérification, ici un rouge intermittent décourage la lecture.
+
+Deux conséquences pratiques :
+
+**Un test dont la durée s'approche de son plafond est déjà cassé**, même
+quand il passe. 2 832 ms contre 5 000 n'est pas une marge, c'est un compte à
+rebours : le site grossit, la mesure grossit avec lui.
+
+**Et un test qui mute un fichier suivi doit pouvoir être tué sans laisser de
+trace.** Restaurer par l'opération inverse plutôt que par un instantané, et
+refuser de tourner si la mutation est déjà là — c'est ce qui a été fait le
+28 août sur ces deux assertions, et ça reste vrai quand le processus meurt
+entre les deux.
+
 ### Quatre commandes dont la portée vient de l'arbre, et non d'une liste
 
 Quatre formes en trois jours, même racine, dégâts différents :
