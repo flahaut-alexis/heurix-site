@@ -1,0 +1,485 @@
+<!doctype html>
+<html lang="fr" data-mode="before">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Heurix — correctif menu / widget</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink:#12142B; --ink-muted:#5B5E76; --line:#E7E9F2; --bg:#FFFFFF; --bg-soft:#F7F8FC;
+    --blue:#5468FF; --blue-deep:#3F52E8; --blue-deeper:#2A3CD1; --blue-tint:#EEF1FF;
+    --radius:10px;
+    --toolbar-h: 108px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin:0; padding:0; }
+  body {
+    font-family:"Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+    color: var(--ink);
+    background:#0b1130;
+    padding-top: var(--toolbar-h);
+  }
+  a { text-decoration:none; color:inherit; }
+  button { font-family:inherit; }
+
+  /* ---------- lab toolbar (mockup UI, not part of the site) ---------- */
+  .lab-toolbar {
+    position:fixed; top:0; left:0; right:0; z-index:200;
+    background:#0c0e22; color:#EDEFFF;
+    border-bottom:1px solid rgba(255,255,255,.1);
+    padding:12px 20px;
+  }
+  .lab-row { display:flex; align-items:center; gap:14px; flex-wrap:wrap; max-width:1360px; margin:0 auto; }
+  .lab-title { font-weight:800; font-size:14px; white-space:nowrap; }
+  .lab-modes { display:flex; gap:6px; flex-wrap:wrap; }
+  .lab-modes button {
+    border:1px solid rgba(255,255,255,.18); background:transparent; color:#CDD2F0;
+    padding:7px 12px; border-radius:100px; font-size:12.5px; font-weight:700; cursor:pointer;
+    transition:.15s;
+  }
+  .lab-modes button:hover { border-color:rgba(255,255,255,.4); color:#fff; }
+  .lab-modes button.active { background:var(--blue); border-color:var(--blue); color:#fff; }
+  .lab-badge {
+    margin-left:auto; display:flex; align-items:center; gap:8px;
+    font-size:12.5px; font-weight:700; padding:6px 12px; border-radius:100px;
+    background:rgba(255,255,255,.08);
+  }
+  .lab-badge .dot { width:8px; height:8px; border-radius:50%; background:#6b7094; }
+  .lab-badge.bad .dot { background:#ef6a5a; }
+  .lab-badge.ok .dot { background:#2fbf82; }
+  .lab-caption { max-width:1360px; margin:8px auto 0; font-size:12.5px; color:#A9B2E0; line-height:1.5; }
+  .lab-caption b { color:#EDEFFF; }
+
+  /* ---------- mocked site header ---------- */
+  header.site-header {
+    position: sticky; top: var(--toolbar-h); z-index:71;
+    background: rgba(255,255,255,.92);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--line);
+  }
+  .header-inner {
+    display:flex; align-items:center; gap:26px;
+    padding:14px 28px; max-width:1360px; margin:0 auto;
+  }
+  .logo { font-weight:800; font-size:19px; letter-spacing:-.01em; display:flex; align-items:center; gap:8px; }
+  .logo svg { width:22px; height:22px; }
+  .nav-links { display:flex; align-items:center; gap:22px; font-size:14.5px; font-weight:600; margin-right:auto; }
+  .nav-links > a { color:var(--ink); }
+  .nav-drop { position:relative; }
+  .nav-drop:has(> .nav-panel-groupes) { position:static; }
+  .nav-drop-btn {
+    font:inherit; font-weight:600; font-size:14.5px; color:var(--ink);
+    background:none; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:5px; padding:0;
+  }
+  .nav-drop-btn .car { font-size:10px; transition:transform .15s; color:var(--ink-muted); }
+  .nav-drop.open .nav-drop-btn { color: var(--blue-deep); }
+  .nav-drop.open .nav-drop-btn .car { transform:rotate(180deg); color:var(--blue-deep); }
+
+  .search-trigger {
+    display:flex; align-items:center; gap:8px; border:1px solid var(--line); background:var(--bg);
+    border-radius:100px; padding:9px 14px; font-size:13.5px; color:var(--ink-muted); min-width:220px;
+  }
+  .search-trigger kbd {
+    margin-left:auto; font:600 11px/1 "Plus Jakarta Sans", sans-serif; color:var(--ink-muted);
+    background:var(--bg-soft); border:1px solid var(--line); border-radius:5px; padding:3px 6px;
+  }
+  .header-utility { display:flex; align-items:center; gap:16px; font-size:13.5px; font-weight:600; color:var(--ink); white-space:nowrap; }
+  .header-utility a { display:flex; align-items:center; gap:6px; }
+  .btn-cta {
+    background:var(--blue-deep); color:#fff; font-weight:700; font-size:13.5px;
+    padding:10px 18px; border-radius:8px; white-space:nowrap;
+  }
+
+  /* ---------- dropdown panels ---------- */
+  .nav-drop-panel {
+    display:none;
+    position:absolute;
+    top:calc(100% + 10px);
+    left:-14px;
+    z-index:80;
+    min-width:238px;
+    background:#fff;
+    color:var(--ink);
+    border:1px solid var(--line);
+    border-radius:10px;
+    box-shadow:0 12px 30px rgba(18,20,43,.13);
+    padding:6px;
+  }
+  .nav-drop-panel.open { display:block; }
+
+  /* Produit / Developers: 4-column "groupes" mega-panel. This override must
+     stay after ".nav-drop-panel.open" above — same specificity (two classes
+     each), so source order breaks the tie. Losing that order is exactly how
+     the first draft of this mockup ended up with the four columns stacked
+     into one block column instead of sitting side by side; worth double-
+     checking the real stylesheet doesn't have the rules in the other order. */
+  .nav-panel-groupes {
+    gap:13px; padding:20px 22px; flex-wrap:wrap;
+    left:0; right:0; width:min(1008px, 100vw - 56px); margin:0 auto;
+  }
+  .nav-panel-groupes.open { display:flex; }
+  .panel-col { min-width:200px; flex:1 1 200px; }
+  .panel-col.feature { flex:0 0 268px; background:linear-gradient(160deg,#3F52E8,#2A3CD1); border-radius:8px; padding:18px; color:#fff; }
+  .panel-col h4 { margin:0 0 12px; font-size:11.5px; font-weight:800; letter-spacing:.06em; color:var(--ink-muted); text-transform:uppercase; }
+  .panel-col.feature h4 { color:rgba(255,255,255,.75); }
+  .panel-code { background:rgba(0,0,0,.22); border-radius:6px; padding:9px 10px; font:12px/1.5 ui-monospace, monospace; margin-bottom:14px; }
+  .panel-code div:first-child { color:#9fd3ff; }
+  .panel-col.feature strong { display:block; font-size:15px; margin-bottom:4px; }
+  .panel-col.feature p { margin:0 0 12px; font-size:12.5px; line-height:1.5; color:rgba(255,255,255,.85); }
+  .panel-col.feature a { font-size:13px; font-weight:700; }
+  .panel-item { display:flex; gap:10px; padding:9px 6px; border-radius:8px; }
+  .panel-item:hover { background:var(--blue-tint); }
+  .panel-ico {
+    flex:none; width:28px; height:28px; border-radius:7px; background:var(--blue-tint);
+    display:flex; align-items:center; justify-content:center; font-size:12.5px; font-weight:800; color:var(--blue-deep);
+  }
+  .panel-item strong { display:block; font-size:13.5px; font-weight:700; }
+  .panel-item p { margin:2px 0 0; font-size:12px; line-height:1.45; color:var(--ink-muted); }
+
+  /* Solutions: simple two-column link grid */
+  .nav-panel-secteurs { width:460px; padding:14px; }
+  .secteurs-all { display:block; padding:8px 10px 12px; margin-bottom:6px; border-bottom:1px solid var(--line); font-size:13.5px; font-weight:700; color:var(--blue-deep); }
+  .secteurs-grid { display:grid; grid-template-columns:1fr 1fr; gap:2px 10px; }
+  .secteurs-grid a { display:flex; align-items:center; gap:10px; padding:8px 8px; border-radius:8px; font-size:13.5px; font-weight:500; }
+  .secteurs-grid a:hover { background:var(--blue-tint); }
+  .sec-ico { flex:none; width:24px; height:24px; border-radius:6px; background:var(--blue-tint); display:flex; align-items:center; justify-content:center; font-size:12px; }
+
+  /* ---------- LE VOILE (30 aout 2026 — valeurs revues) ----------------------
+     CE FICHIER A SUIVI L'IMPLEMENTATION, il ne la precede plus. Ce qu'il
+     montrait — rgba(255,255,255,.72) + blur(6px) — reste accessible sous
+     « Valeur du rapport », parce que c'est en le VOYANT qu'on comprend
+     pourquoi il a ete ecarte, pas en lisant qu'il l'a ete.
+
+     LE DEFAUT EST UNE COLLISION BLANC SUR BLANC : le panneau est un aplat
+     #fff, la carte du widget aussi. Mesure sur le site, a 1440 :
+         blanc du panneau contre blanc du widget    1,00:1
+         bordure --line #E7E9F2 contre ce blanc     1,21:1
+         le meme panneau contre le degrade          6,79:1 a 16,33:1
+     Contre le degrade, le panneau se lisait deja. Un voile BLANC a .72 rend
+     rgb(255,255,255) sur la carte du widget — il n'y deplace rien, a zero
+     pres — et efface le degrade, c'est-a-dire le seul endroit qui allait.
+
+     Le voile est donc SOMBRE, a l'encre --ink #12142B : celle de
+     `.nav-mobile-fond`, le voile que le MEME menu porte deja en mobile. */
+  .nav-scrim {
+    position:fixed; inset: calc(var(--toolbar-h) + 73px) 0 0 0;
+    background:rgba(18,20,43,.20);
+    -webkit-backdrop-filter:blur(2px);
+    backdrop-filter:blur(2px);
+    opacity:0; pointer-events:none;
+    transition:opacity .15s ease;
+    z-index:65;
+  }
+  html[data-mode="rapport"] .nav-scrim {
+    background:rgba(255,255,255,.72);
+    -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);
+  }
+  html[data-mode="a"] .nav-scrim {
+    background:rgba(18,20,43,.14);
+    -webkit-backdrop-filter:none; backdrop-filter:none;
+  }
+  html[data-mode="c"] .nav-scrim { background:rgba(18,20,43,.28); }
+  html[data-mode="rapport"] header.site-header:has(.nav-drop-panel.open) + .nav-scrim,
+  html[data-mode="a"] header.site-header:has(.nav-drop-panel.open) + .nav-scrim,
+  html[data-mode="b"] header.site-header:has(.nav-drop-panel.open) + .nav-scrim,
+  html[data-mode="c"] header.site-header:has(.nav-drop-panel.open) + .nav-scrim {
+    opacity:1; pointer-events:auto;
+  }
+
+  /* ---------- LE GARDE-FOU DE HAUTEUR, A LA FORMULE REELLE ------------------
+     Le .md proposait min(420px, 100vh - 96px). Le terme fixe est retire : les
+     panneaux ne font pas la meme hauteur selon la largeur, parce que les
+     colonnes se replient. Mesure des trois, FR et EN, sur la plage bureau :
+         1081 px      Produit 375   Solutions 346   Developers 575  <- pire cas
+         1104 a 1920  Produit 268   Solutions 346   Developers 356
+     420 px tronquerait donc le menu AUJOURD'HUI. `calc(100vh - 96px)` seul ne
+     mord a aucune hauteur qui permette d'afficher le panneau, et n'engage
+     qu'a partir du moment ou il ne tiendrait de toute facon plus a l'ecran. */
+  .nav-drop-panel { max-height:calc(100vh - var(--toolbar-h) - 96px); overflow-y:auto; }
+
+  /* ---------- LA BORDURE PORTE LE 3:1, PAS LE VOILE ------------------------
+     Et les deux leviers se COMBATTENT : plus le voile fonce, plus le widget
+     voile se rapproche de la bordure. --blue-deep contre le widget voile :
+         voile .20  3,81:1     voile .28  3,14:1     voile .36  2,54:1  ECHEC
+     Entre .32 et .40 aucune opacite de #3F52E8 ne tient 3:1. D'ou le voile
+     leger et la bordure franche — sortir par le BAS, pas par le haut.
+     rgba(63,82,232,.18) du rapport, compose sur le blanc du panneau (le fond
+     passe sous la bordure), donne rgb(220,224,251) : 1,30:1. */
+  html[data-mode="rapport"] .nav-drop-panel {
+    border-color:rgba(63,82,232,.18);
+    box-shadow:0 16px 40px rgba(18,20,43,.16), 0 0 0 1px rgba(63,82,232,.05);
+  }
+  html[data-mode="a"] .nav-drop-panel,
+  html[data-mode="b"] .nav-drop-panel,
+  html[data-mode="c"] .nav-drop-panel {
+    border-color:var(--blue-deep);
+    box-shadow:0 16px 40px rgba(18,20,43,.16);
+  }
+
+  /* ---------- hero + widget (below the nav, this is what gets overlapped) ---------- */
+  .hero {
+    /* LE DEGRADE DU SITE, RELEVE SUR index.html LE 30 AOUT 2026, et non une
+       approximation plus sombre. Il decide de tout le debat : c'est LUI que le
+       voile blanc du rapport effacait. La version precedente de ce fichier
+       partait de #26327a/#0b1130, nettement plus sombres, ce qui rendait le
+       voile blanc bien moins destructeur ici qu'a l'ecran. */
+    background:
+      radial-gradient(1400px 900px at 50% 0%, #4C3FE0 0%, #3648A8 45%, #101B4D 100%);
+    padding:36px 28px 60px;
+  }
+  .wrap { max-width:1044px; margin:0 auto; position:relative; z-index:1; }
+  .hero h1 { color:#fff; font-size:40px; line-height:1.15; max-width:640px; margin:0 0 14px; }
+  .hero .sub { color:#C7CCF2; font-size:15px; max-width:560px; margin:0 0 26px; line-height:1.6; }
+
+  .demo-widget { background:#fff; border-radius:16px; padding:20px; box-shadow:0 20px 50px rgba(3,6,30,.35); }
+  .toggle-pair { display:inline-flex; gap:4px; margin-bottom:14px; padding:4px; background:var(--bg-soft); border:1px solid var(--line); border-radius:100px; }
+  .toggle-pair button { border:none; background:transparent; font-size:13.5px; font-weight:700; color:var(--ink-muted); padding:9px 18px; border-radius:100px; cursor:pointer; }
+  .toggle-pair button.on { background:#fff; color:var(--blue-deep); box-shadow:0 1px 3px rgba(18,20,43,.12); }
+  .demo-search { display:flex; align-items:center; gap:10px; border:1.5px solid var(--blue); border-radius:100px; padding:14px 18px; color:var(--ink-muted); font-size:14px; margin-bottom:14px; }
+  .demo-tags { display:flex; gap:8px; flex-wrap:wrap; }
+  .demo-tags span { background:var(--blue-tint); color:var(--blue-deep); font:12px ui-monospace, monospace; padding:6px 10px; border-radius:100px; }
+
+  .lab-overlay-note {
+    position:relative;
+  }
+  .lab-overlay-note::after {
+    content: attr(data-note);
+    position:absolute; top:-2px; right:0;
+    font-size:11px; font-weight:700; color:#8493D2;
+  }
+</style>
+</head>
+<body>
+
+  <div class="lab-toolbar">
+    <div class="lab-row">
+      <div class="lab-title">Atelier — chevauchement menu / widget</div>
+      <div class="lab-modes">
+        <button data-mode="before" class="active">Avant (bug)</button>
+        <button data-mode="rapport">Valeur du rapport — blanc .72 / 6px</button>
+        <button data-mode="a">a — encre .14 / 0px</button>
+        <button data-mode="b">b — encre .20 / 2px (retenu)</button>
+        <button data-mode="c">c — encre .28 / 2px</button>
+      </div>
+      <div class="lab-badge" id="overlapBadge"><span class="dot"></span><span id="overlapText">—</span></div>
+    </div>
+    <div class="lab-caption" id="modeCaption"></div>
+  </div>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="logo" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#3F52E8" stroke-width="2.4"><circle cx="10.5" cy="10.5" r="6.5"/><line x1="20" y1="20" x2="15.5" y2="15.5"/></svg>
+        Heurix
+      </a>
+      <div class="nav-links">
+        <div class="nav-drop" id="drop-produit">
+          <button class="nav-drop-btn" data-drop="produit">Produit <span class="car">▾</span></button>
+          <div class="nav-drop-panel nav-panel-groupes">
+            <div class="panel-col feature">
+              <strong>DÉMO EN DIRECT</strong>
+              <div class="panel-code">
+                <div>vis inox m8x20</div>
+                <div>DIN 933&nbsp;&nbsp;rondelle</div>
+              </div>
+              <strong>Voir Heurix en action</strong>
+              <p>Une boutique réelle, servie par le moteur.</p>
+              <a href="#">Lancer la démo →</a>
+            </div>
+            <div class="panel-col">
+              <h4>Comprendre</h4>
+              <div class="panel-item"><div class="panel-ico">!</div><div><strong>Le problème</strong><p>Le point de conversion le moins surveillé d'un site.</p></div></div>
+              <div class="panel-item"><div class="panel-ico">◎</div><div><strong>Notre mission</strong><p>Faire de la recherche un levier, pas un fardeau.</p></div></div>
+            </div>
+            <div class="panel-col">
+              <h4>Le produit</h4>
+              <div class="panel-item"><div class="panel-ico">⚙</div><div><strong>Le moteur</strong><p>Notre propre moteur, développé en France.</p></div></div>
+              <div class="panel-item"><div class="panel-ico">▦</div><div><strong>Fonctionnalités</strong><p>Cascade d'annotations, fautes tolérées, synonymes métier.</p></div></div>
+            </div>
+            <div class="panel-col">
+              <h4>Passer à l'action</h4>
+              <div class="panel-item"><div class="panel-ico">📊</div><div><strong>Simulateur ROI</strong><p>10 à 20&nbsp;% du trafic, 30 à 50&nbsp;% du chiffre.</p></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="nav-drop" id="drop-solutions">
+          <button class="nav-drop-btn" data-drop="solutions">Solutions <span class="car">▾</span></button>
+          <div class="nav-drop-panel nav-panel-secteurs">
+            <a class="secteurs-all" href="#">Tous les secteurs →</a>
+            <div class="secteurs-grid">
+              <a href="#"><span class="sec-ico">🔧</span>Quincaillerie &amp; outillage</a>
+              <a href="#"><span class="sec-ico">⚙</span>Électronique &amp; high-tech</a>
+              <a href="#"><span class="sec-ico">🔩</span>Pièces détachées &amp; industrie</a>
+              <a href="#"><span class="sec-ico">📖</span>Librairie &amp; édition</a>
+              <a href="#"><span class="sec-ico">🚚</span>Automobile</a>
+              <a href="#"><span class="sec-ico">🍷</span>Vins &amp; spiritueux</a>
+              <a href="#"><span class="sec-ico">⚡</span>Électricité &amp; installation</a>
+              <a href="#"><span class="sec-ico">🏔</span>Sport &amp; glisse</a>
+              <a href="#"><span class="sec-ico">🚿</span>Plomberie &amp; sanitaire</a>
+              <a href="#"><span class="sec-ico">📈</span>Finance &amp; comptabilité</a>
+              <a href="#"><span class="sec-ico">👕</span>Mode &amp; retail</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="nav-drop" id="drop-developers">
+          <button class="nav-drop-btn" data-drop="developers">Developers <span class="car">▾</span></button>
+          <div class="nav-drop-panel nav-panel-groupes">
+            <div class="panel-col feature">
+              <strong>DÉMARRAGE</strong>
+              <div class="panel-code">
+                <div>POST /v1/index/{catalog}/search</div>
+                <div>{ "q": "vis inox m8x20" }</div>
+              </div>
+              <strong>Démarrer en 5 minutes</strong>
+              <p>De la clé API au premier résultat pertinent.</p>
+              <a href="#">Guide de mise en route →</a>
+            </div>
+            <div class="panel-col">
+              <h4>Démarrer</h4>
+              <div class="panel-item"><div class="panel-ico">▤</div><div><strong>Guide de mise en route</strong><p>Trois étapes pour une recherche qui fonctionne.</p></div></div>
+              <div class="panel-item"><div class="panel-ico">▥</div><div><strong>Documentation</strong><p>Indexer un catalogue, lancer une recherche en minutes.</p></div></div>
+            </div>
+            <div class="panel-col">
+              <h4>Concepts</h4>
+              <div class="panel-item"><div class="panel-ico">▦</div><div><strong>La cascade d'annotations</strong><p>Le cœur du moteur : des règles organisées en niveaux.</p></div></div>
+              <div class="panel-item"><div class="panel-ico">◈</div><div><strong>Structure des produits</strong><p>Un objet JSON libre, dont quatre champs ont un rôle.</p></div></div>
+            </div>
+            <div class="panel-col">
+              <h4>Intégrations</h4>
+              <div class="panel-item"><div class="panel-ico">🔗</div><div><strong>Intégrations</strong><p>Des guides techniques avec du vrai code.</p></div></div>
+              <div class="panel-item"><div class="panel-ico">P</div><div><strong>PrestaShop</strong><p>Module natif, via ProductSearchProviderInterface.</p></div></div>
+              <div class="panel-item"><div class="panel-ico">W</div><div><strong>WooCommerce</strong><p>Extension WordPress, via le hook pre_get_posts.</p></div></div>
+              <div class="panel-item"><div class="panel-ico">S</div><div><strong>Shopify</strong><p>Rendu par votre thème, via la Section Rendering API.</p></div></div>
+            </div>
+          </div>
+        </div>
+
+        <a href="#">Blog</a>
+      </div>
+      <div class="search-trigger">🔍 Chercher sur le site <kbd>Ctrl K</kbd></div>
+      <div class="header-utility">
+        <a href="#">👤 Mon compte</a>
+        <a href="#">EN</a>
+        <a class="btn-cta" href="#">Démarrer l'essai gratuit</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="nav-scrim" aria-hidden="true"></div>
+
+  <section class="hero">
+    <div class="wrap">
+      <h1>Un moteur de recherche qui connaît déjà votre catalogue</h1>
+      <p class="sub">Votre client cherche une référence exacte. Vous avez le produit, mais votre moteur ne l'a pas. Heurix comprend la structure de vos références.</p>
+
+      <div class="demo-widget lab-overlay-note" data-note="↑ widget de démo (.demo.play)">
+        <div class="toggle-pair">
+          <button class="on">🔧 Bricolage &amp; Outillage</button>
+          <button>👕 Mode &amp; Prêt-à-porter</button>
+        </div>
+        <div class="demo-search">🔍 Cherchez dans le catalogue de démo…</div>
+        <div class="demo-tags">
+          <span>M8x20 inox</span><span>vis inox moins de 2 euros</span><span>DIN 933</span><span>rondelle</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+<script>
+  const modeButtons = document.querySelectorAll('.lab-modes button');
+  const captions = {
+    before: "État actuel : <b>aucune limite de hauteur</b>, bordure --line à 1,21:1 contre le blanc du widget. Remesuré le 30 août 2026, après l'encart éditorial de Produit et Developers : à 1440, Developers (356px) dépasse de 99px, Solutions (346px) de 67px, Produit (268px) de 11px. <b>À 1081px — la largeur bureau la plus étroite — Developers monte à 575px et dépasse de 317px</b>, parce que les colonnes se replient. Le rapport mesurait à 1171, du bon côté de cette bascule.",
+    rapport: "La valeur du rapport : <b>rgba(255,255,255,.72) + blur(6px)</b>. Elle vise la mauvaise surface. Sur la carte BLANCHE du widget — la seule que le panneau percute — un blanc à .72 rend rgb(255,255,255) : écart nul. Ce qu'elle efface, c'est le dégradé, qui se lisait déjà à 6,79:1. Regardez le bord bas-gauche du panneau : il se confond avec la carte du widget plus qu'avant.",
+    a: "a — <b>encre .14, aucun flou</b>. Le plus discret des trois. Le bord du panneau se détache, mais le texte du widget reste net dessous : la superposition se lit comme une page un peu assombrie, pas comme un plan volontairement mis en retrait.",
+    b: "b — <b>encre .20 + blur(2px)</b>, retenu. Sous la modale de recherche (.60 / 3px) et sous <code>.nav-mobile-fond</code> (.40 / 0) sur les deux axes. L'opacité sépare les deux blancs, le flou brouille le texte du widget — deux rôles distincts. La bordure --blue-deep y tient 3,81:1 contre le widget voilé, pour un seuil de 3:1.",
+    c: "c — <b>encre .28 + blur(2px)</b>. Toujours sous la modale, mais la marge de la bordure tombe à 3,14:1. Au-delà, entre .32 et .40, <b>aucune</b> opacité de #3F52E8 ne tient 3:1 : le widget voilé traverse la luminance de la bordure. Assombrir davantage dégrade la frontière au lieu de l'améliorer."
+  };
+
+  function setMode(mode) {
+    document.documentElement.setAttribute('data-mode', mode);
+    modeButtons.forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
+    document.getElementById('modeCaption').innerHTML = captions[mode];
+    requestAnimationFrame(measure);
+  }
+  modeButtons.forEach(b => b.addEventListener('click', () => setMode(b.dataset.mode)));
+
+  // --- open/close dropdowns, same interaction as the live site: click toggles,
+  //     clicking outside the header closes whatever is open ---
+  const drops = document.querySelectorAll('.nav-drop');
+  function closeAll() {
+    drops.forEach(d => {
+      d.classList.remove('open');
+      d.querySelector('.nav-drop-panel').classList.remove('open');
+    });
+  }
+  drops.forEach(drop => {
+    const btn = drop.querySelector('.nav-drop-btn');
+    const panel = drop.querySelector('.nav-drop-panel');
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const willOpen = !drop.classList.contains('open');
+      closeAll();
+      if (willOpen) { drop.classList.add('open'); panel.classList.add('open'); }
+      requestAnimationFrame(measure);
+    });
+  });
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('.lab-toolbar')) return; // mode switcher isn't part of the site mock
+    if ([...drops].some(d => d.classList.contains('open'))) {
+      closeAll();
+      requestAnimationFrame(measure);
+    }
+  });
+
+  // --- live overlap badge: measure the open panel against the demo widget ---
+  const badge = document.getElementById('overlapBadge');
+  const badgeText = document.getElementById('overlapText');
+  function measure() {
+    const panel = document.querySelector('.nav-drop.open .nav-drop-panel');
+    const widget = document.querySelector('.demo-widget');
+    if (!panel || !widget) {
+      badge.className = 'lab-badge';
+      badgeText.textContent = 'Aucun menu ouvert';
+      return;
+    }
+    const pr = panel.getBoundingClientRect();
+    const wr = widget.getBoundingClientRect();
+    const overlap = Math.round(pr.bottom - wr.top);
+    if (overlap <= 0) {
+      badge.className = 'lab-badge ok';
+      badgeText.textContent = 'Chevauchement géométrique : 0px';
+    } else {
+      const mode = document.documentElement.getAttribute('data-mode');
+      // « masqué » = un voile est posé. Le chevauchement GEOMETRIQUE ne bouge
+      // dans aucun mode : c'est le propos de l'option B, et le badge doit le
+      // dire plutôt que d'afficher 0.
+      const masked = mode === 'rapport' || mode === 'a' || mode === 'b' || mode === 'c';
+      badge.className = 'lab-badge ' + (masked ? 'ok' : 'bad');
+      badgeText.textContent = 'Chevauchement géométrique : ' + overlap + 'px' + (masked ? ' (masqué par le flou)' : '');
+    }
+  }
+
+  // demo widget tab toggle (cosmetic only)
+  document.querySelectorAll('.toggle-pair button').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      btn.parentElement.querySelectorAll('button').forEach(b => b.classList.remove('on'));
+      btn.classList.add('on');
+    });
+  });
+
+  // init: open Developers (worst case) so the bug is visible immediately
+  setMode('before');
+  const devDrop = document.getElementById('drop-developers');
+  devDrop.classList.add('open');
+  devDrop.querySelector('.nav-drop-panel').classList.add('open');
+  measure();
+  window.addEventListener('resize', measure);
+</script>
+</body>
+</html>

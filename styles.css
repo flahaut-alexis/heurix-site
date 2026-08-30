@@ -4217,6 +4217,163 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
   margin:0 0 4px; padding:0 12px; font-size:11.5px; font-weight:700;
   letter-spacing:.06em; text-transform:uppercase; color:var(--ink-muted);
 }
+/* ========== LE VOILE DERRIERE LE MENU OUVERT (30 aout 2026) ==============
+
+   LE DEFAUT EST UNE COLLISION BLANC SUR BLANC, et c'est la mesure qui le dit.
+   Le panneau est un aplat #fff ; le widget de demo qu'il chevauche est une
+   carte #fff. Mesure sur index.html a 1440 :
+
+       blanc du panneau contre blanc du widget          1,00:1
+       bordure --line #E7E9F2 contre ce meme blanc      1,21:1
+       le meme panneau contre le degrade de la hero     6,79:1 a 16,33:1
+
+   Contre le degrade le panneau se lit deja. Il n'y a JAMAIS eu de probleme de
+   ce cote. Tout le defaut tient dans la carte blanche, et le seuil qu'il faut
+   y ramener est celui de WCAG 1.4.11 pour une frontiere : 3:1.
+
+   LE VOILE BLANC DU RAPPORT VISAIT LA MAUVAISE SURFACE. rgba(255,255,255,.72)
+   sur la carte du widget donne rgb(255,255,255) -- il ne deplace RIEN, a zero
+   pres, parce qu'il repeint du blanc en blanc. Il efface en revanche le
+   degrade (#4C3FE0 -> rgb(205,201,246)), c'est-a-dire le seul endroit qui se
+   lisait. Ce n'est pas seulement trop fort : c'est a l'envers.
+
+   LE VOILE EST DONC SOMBRE, comme les deux voiles que le site porte deja --
+   la modale de recherche rgba(7,10,26,.6) et `.nav-mobile-fond`
+   rgba(18,20,43,.4). On reprend l'encre du second, `--ink` #12142B : aucun ton
+   invente, et c'est deja le voile du MEME composant en mobile.
+
+   .20 ET blur(2px), SOUS LA MODALE SUR LES DEUX AXES, et le plafond n'est pas
+   un gout : la modale est plein ecran, capture le clavier et remplace la page.
+   Un menu deroulant ne peut pas peser plus qu'elle.
+
+       modale de recherche   .60 / blur 3px     l'interruption majeure
+       .nav-mobile-fond      .40 / blur 0       le meme menu, en mobile
+       ce voile              .20 / blur 2px     <- sous les deux
+
+   POURQUOI PAS PLUS SOMBRE : LES DEUX LEVIERS SE COMBATTENT. Le 3:1 n'est pas
+   porte par le voile, il est porte par la BORDURE du panneau (voir plus bas).
+   Or plus le voile fonce, plus le widget voile se rapproche de la bordure et
+   moins elle se detache. Mesure de la bordure --blue-deep contre le widget
+   voile :
+
+       voile .20   3,81:1      voile .28   3,14:1      voile .36   2,54:1  ECHEC
+
+   Entre .32 et .40, AUCUNE opacite de #3F52E8 ne tient 3:1 : le widget voile
+   traverse la luminance de la bordure. C'est la meme impasse que la modale a
+   documentee (« une bordure intermediaire satisfait l'un en manquant
+   l'autre ») ; elle en sortait par le haut avec une bordure presque blanche,
+   ce qui exige un voile lourd. Un menu ne peut pas se le permettre, donc on
+   sort par le BAS : voile leger, bordure franche.
+
+   LE RAYON NE PEUT RIEN POUR LE CHEVAUCHEMENT, ET C'EST MESURABLE. Un flou est
+   une moyenne des pixels voisins ; sur un aplat, la moyenne est l'aplat. Sur
+   les 282 px de carte blanche du widget, blur(2px) et blur(6px) rendent tous
+   deux rgb(255,255,255) -- ecart nul. styles.css le dit deja pour la modale :
+   « il ne deplace pas la couleur moyenne ». Le flou ne sert donc pas le
+   contraste, il brouille le TEXTE du widget sous le voile, ce qui est ce qui
+   fait lire la superposition comme voulue. Deux roles distincts, deux valeurs
+   choisies separement.
+
+   PAS DE NOEUD AJOUTE, ET C'EST CE QUI DECIDE DE LA FORME. Le rapport voulait
+   un <div class="nav-scrim"> apres </header> : 128 en-tetes a rouvrir. Un
+   `::before` sur <header> ne peut pas le remplacer -- MESURE, pas suppose : le
+   `backdrop-filter:blur(8px)` de l'en-tete en fait le BLOC CONTENEUR de ses
+   descendants `position:fixed`. Un temoin `inset:73px 0 0 0` pose dedans rend
+   [0, 73, 1440, 0] -- une boite de hauteur NULLE, resolue contre les 73 px de
+   l'en-tete au lieu du viewport. Le `::before` va donc sur <body>, qui ne
+   porte ni filtre ni transformation : le meme temoin y rend [0, 73, 1440, 827],
+   soit exactement le viewport sous l'en-tete.
+
+   IL S'ARRETE SOUS L'EN-TETE, IL NE LE TRAVERSE PAS. Le traverser ferait
+   flouter deux fois la meme bande -- 1440 x 73 = 105 120 px^2 par cadre, sous
+   le blur(8px) que l'en-tete applique deja. Ce que ca achete est nul : la
+   couleur composee de l'en-tete bouge de 6/255 au pire, et son contraste passe
+   de 16,04:1 a 15,72:1. Surtout, l'en-tete cesserait d'etre independant de sa
+   page -- ce que la regle `header` plus haut pose explicitement (« il ne doit
+   rien a l'heritage de body ») -- et changerait de teinte a chaque ouverture
+   de menu. Arrete a 73 px, les deux surfaces floutees sont DISJOINTES : aucun
+   pixel n'est paye deux fois.
+
+   AU-DESSUS DE 1080 px SEULEMENT. En dessous, `.nav-links` passe en
+   `display:none` derriere le bouton hamburger et les panneaux passent en
+   `position:static` : ils ne survolent plus rien, donc il n'y a plus de
+   chevauchement a rendre lisible. Et `.nav-mobile-fond` y pose deja son propre
+   voile. Sans cette borne, les deux se cumuleraient sur le meme menu.
+
+   AUCUN `display` N'EST POSE ICI, sur aucun `.nav-panel-*` : c'est ce que
+   tests/panneaux-fermes.test.js refuse. Le voile s'allume a l'OPACITE, et son
+   `:has()` lit `.nav-drop-panel.open`, donc rien ne peut le montrer a l'etat
+   ferme. Verifie a l'ecran, page chargee sans aucun clic : opacite 0, et les
+   trois panneaux en display:none.
+
+   LE VOILE NE MANGE AUCUNE FERMETURE, verifie a l'ecran avec le temoin
+   `document.hasFocus()` vrai a chaque passe -- sans lui, un focus qui n'existe
+   pas fait echouer les trois controles pour rien :
+
+       Echap depuis un lien DU panneau   ferme + focus rendu au bouton
+       focusout vers la recherche        ferme
+       clic exterieur A TRAVERS le voile ferme, cible <body>, et le lien
+                                         qui se trouvait dessous n'est PAS suivi
+       temoins : autre touche, focus interne, clic dans le panneau -> reste ouvert
+   ------------------------------------------------------------------------- */
+@media (min-width:1081px){
+  body::before{
+    content:""; position:fixed; inset:73px 0 0 0; z-index:65;
+    background:rgba(18,20,43,.20);
+    -webkit-backdrop-filter:blur(2px); backdrop-filter:blur(2px);
+    opacity:0; pointer-events:none;
+    transition:opacity .15s ease;
+  }
+  /* `pointer-events:auto` seulement quand il est visible : le voile absorbe le
+     clic exterieur (cible <body>, donc `fermerTout`) sans activer le lien qui
+     se trouve dessous. Ferme, il ne doit intercepter absolument rien. */
+  body:has(.nav-drop-panel.open)::before{ opacity:1; pointer-events:auto; }
+
+  /* LA BORDURE PORTE LE 3:1, PAS LE VOILE. --line #E7E9F2 rendait 1,21:1
+     contre le blanc du widget : la ou le panneau le croise, il n'y avait
+     litteralement aucune frontiere. --blue-deep en aplat rend 5,86:1 contre le
+     blanc du panneau (cote interieur) et 3,81:1 contre le widget voile a .20
+     (cote exterieur) -- les deux cotes au-dessus du seuil, mesures sur la
+     couleur COMPOSEE et non sur le token declare.
+     Le rapport proposait rgba(63,82,232,.18) : compose sur le blanc du panneau
+     (background-clip:border-box par defaut, le fond passe SOUS la bordure) il
+     donne rgb(220,224,251), soit 1,30:1 -- moins que rien. */
+  .nav-drop-panel{ border-color:var(--blue-deep); }
+
+  /* GARDE-FOU DE HAUTEUR (option A), DIMENSIONNE POUR NE JAMAIS MORDRE
+     AUJOURD'HUI. Le rapport proposait min(420px, 100vh - 96px). 420 px
+     TRONQUERAIT le menu aujourd'hui meme : les panneaux ne font pas la meme
+     hauteur selon la largeur, parce que les colonnes se replient. Mesure des
+     trois panneaux, FR et EN, sur toute la plage bureau :
+
+         largeur      Produit   Solutions   Developers
+         1081 (FR)      375        346         575   <- le pire cas
+         1081 (EN)      375        346         572
+         1104 a 1920    268        346         356
+
+     La bascule est nette a 1104 px, la ou `width:min(1008px, 100vw - 96px)`
+     cesse d'etre contraint par le viewport. Le maximum reel est donc 575 px,
+     et non les 355 px du rapport -- releves a 1171 px, du bon cote de la
+     bascule, avant que Produit et Developers ne gagnent leur encart.
+
+     Le terme fixe est retire : `calc(100vh - 96px)` seul ne mord a aucune
+     hauteur qui permette d'afficher le panneau (804 px de budget sur un
+     viewport de 900), et n'engage qu'a partir du moment ou le panneau ne
+     tiendrait de toute facon plus a l'ecran -- ce qui est exactement le role
+     d'un garde-fou. */
+  .nav-drop-panel{ max-height:calc(100vh - 96px); overflow-y:auto; }
+}
+
+/* Le prefixe doit tomber avec la propriete standard, sinon Safari garde le
+   flou que ce bloc croit avoir retire -- meme piege que `.search-backdrop`.
+   L'opacite, elle, reste : c'est elle qui porte la lisibilite, et la retirer
+   rendrait le chevauchement illisible a qui demande moins d'animation.
+   La transition, elle, est deja neutralisee par le `*{transition-duration}`
+   du bloc prefers-reduced-motion plus haut. */
+@media (prefers-reduced-motion: reduce){
+  body::before{ -webkit-backdrop-filter:none; backdrop-filter:none; }
+}
+
 /* Sur mobile, la barre laterale existante prend le relais : les sous-menus
    s empilent au lieu de flotter, sinon ils sortiraient de l ecran. */
 @media (max-width:900px){

@@ -199,15 +199,57 @@ describe("structure de l'en-tete — une seule reference", () => {
   // l'en-tete du site. Le jour ou une maquette la reproduirait -- pour la
   // montrer en contexte, par exemple -- elle sortirait du perimetre en
   // silence. Cette assertion l'empeche.
+  /**
+   * Le cas que l'assertion ci-dessous anticipait est arrive (30 aout 2026) :
+   * une maquette REPRODUIT l'en-tete pour montrer le defaut en contexte.
+   *
+   * On ne la traite pas comme une page, et c'est mesure plutot que suppose :
+   * son en-tete est `<header class="site-header">`, celui de production est un
+   * `<header>` NU. Les deux squelettes different donc des le premier noeud.
+   * La faire entrer dans le balayage la ferait diverger a chaque relevé sans
+   * qu'aucune page reelle soit en cause -- le test signalerait un defaut qui
+   * n'existe pas, ce qui est le seul defaut qu'un garde ne doit jamais avoir.
+   *
+   * Comme EXCEPTIONS plus haut : chaque entree porte sa raison, et une entree
+   * qui ne reproduit plus l'en-tete fait echouer le test, pour qu'une liste
+   * qu'on ne nettoie pas ne finisse pas par couvrir un vrai defaut.
+   */
+  const MAQUETTES_QUI_REPRODUISENT = new Map([
+    ["maquette-nav-chevauchement.html",
+     "Banc de comparaison du chevauchement menu/widget : il lui faut les vrais " +
+     "`.nav-drop-panel` et le vrai widget de demo cote a cote, avec un selecteur " +
+     "pour basculer entre l'etat bugue et les correctifs. Son en-tete est une " +
+     "reproduction locale (`header.site-header`, CSS embarque), pas l'include " +
+     "du site : squelette() ne peut pas la confondre avec une page."],
+  ]);
+
   it("la raison d'exclure docs/maquettes tient toujours", () => {
-    const fautives = maquettes().filter((p) => {
+    const reproduit = (p) => {
       const html = fs.readFileSync(p, "utf8");
       return html.includes("nav-drop") || html.includes("header-top-inner");
-    });
+    };
+    const fautives = maquettes()
+      .filter(reproduit)
+      .filter((p) => !MAQUETTES_QUI_REPRODUISENT.has(path.basename(p)));
     expect(
       fautives.map((p) => path.relative(RACINE, p)),
       "ces maquettes portent desormais l'en-tete du site : l'exclusion de " +
-      "docs/maquettes n'est plus justifiee, retire-la ou traite-les comme des pages"
+      "docs/maquettes n'est plus justifiee, retire-la, traite-les comme des " +
+      "pages, ou inscris-les dans MAQUETTES_QUI_REPRODUISENT AVEC LEUR RAISON"
+    ).toEqual([]);
+  });
+
+  it("aucune maquette inscrite ne reproduit plus l'en-tete pour rien", () => {
+    const presentes = new Set(maquettes().map((p) => path.basename(p)));
+    const perimees = [...MAQUETTES_QUI_REPRODUISENT.keys()].filter((f) => {
+      if (!presentes.has(f)) return true;               // le fichier a disparu
+      const html = fs.readFileSync(path.join(RACINE, "docs", "maquettes", f), "utf8");
+      return !(html.includes("nav-drop") || html.includes("header-top-inner"));
+    });
+    expect(
+      perimees,
+      "ces maquettes sont dispensees alors qu'elles ne reproduisent plus " +
+      "l'en-tete (ou n'existent plus). Retire-les de MAQUETTES_QUI_REPRODUISENT."
     ).toEqual([]);
   });
 
