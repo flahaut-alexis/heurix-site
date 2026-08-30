@@ -2367,6 +2367,7 @@ body.docs-dark .regex-copy > p{ color:var(--ink-muted-on-dark); }
    qu'elle est juste. Le regard reste necessaire -- voir CLAUDE.md.
 
    @fond-clair
+     .nav-drop-groupe
      #csv-catalogue::placeholder
      .addon-card
      .addon-card-desc
@@ -4012,6 +4013,83 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 .nav-drop-panel.open{ display:block; }
 .nav-drop-panel a{ display:block; padding:9px 12px; border-radius:8px; font-size:13.5px; font-weight:500; color:var(--ink); white-space:nowrap; }
 .nav-drop-panel a:hover{ background:var(--blue-tint); color:var(--blue-deep); }
+
+/* PICTOGRAMMES DU PANNEAU SOLUTIONS (30 aout 2026).
+
+   Les onze traces ne sont pas dessines : ils sont EXTRAITS du DOM de
+   secteurs.html, ou le meme composant `.vertical-card .icn` sert les memes
+   onze secteurs depuis toujours. Le menu prolonge un vocabulaire existant au
+   lieu d'en inventer un -- c'est la raison pour laquelle Produit et
+   Developers n'en recoivent pas : aucune page correspondante n'en porte.
+
+   28 px ET NON 34. La pastille de secteurs.html fait 34 px sur une grille de
+   cartes ; une ligne de menu fait 39 px de haut. Mesure du contraste refaite
+   sur la taille reelle, pas heritee : #3F52E8 sur #EEF1FF donne 7,26:1, et le
+   trait de 2 px a 18 px de cote reste identique -- seule la pastille retrecit.
+
+   SPRITE EXTERNE ECARTE, ET MESURE. Un <symbol> reference par <use href=
+   "sprite.svg#id"> aurait coute 1 760 octets par page au lieu de 4 072. Il se
+   RESOUT -- boite a la bonne taille, aucune erreur -- et rend l'icone NOIRE ET
+   PLEINE : `currentColor` et les attributs de trait ne traversent pas la
+   frontiere du document externe. Un controle structurel serait passe au vert. */
+/* DEUX COLONNES, ET « Tous les secteurs » EN TETE SUR TOUTE LA LARGEUR.
+   Onze liens en une colonne descendaient sur 11 lignes -- plus haut que le
+   hero, donc le panneau recouvrait la page au lieu de s'y poser. La grille
+   n'exige aucun balisage supplementaire : les onze <a> sont deja freres. */
+/* PAS DE `display` SUR LA REGLE DE BASE. Elle ecraserait
+   `.nav-drop-panel{display:none}`, qui est ce qui tient le panneau ferme --
+   le panneau resterait ouvert en permanence, `aria-expanded="false"` et
+   tout. Les proprietes de grille ci-dessous sont inertes tant que
+   `display:none` tient ; seul `.open` allume la grille. */
+.nav-panel-secteurs{
+  /* `max-content`, PAS `minmax(190px, 1fr)`. Mesure du 30 aout 2026 sur
+     index.html a 1440 : avec `1fr`, cinq libelles sur onze debordaient leur
+     cellule -- « Pieces detachees & industrie » demande 237 px pour 190
+     disponibles. `white-space:nowrap` (regle `.nav-drop-panel a`) les
+     empechait de se replier, et `overflow:visible` les faisait peindre
+     par-dessus la colonne voisine au lieu de les couper : le defaut se voit
+     a l'ecran et ne produit aucun debordement de boite mesurable.
+     `max-content` porte le panneau de 412 a 505 px et rend 0 tronque. */
+  grid-template-columns:repeat(2, max-content);
+  /* SIX RANGEES, REMPLIES PAR COLONNE. L'ordre de lecture est celui de la
+     maquette et de secteurs.html : 1 a 6 a gauche, 7 a 11 a droite. En
+     remplissage par rangee -- le defaut de la grille -- on lirait outillage,
+     industrie, automobile... en zigzag, ce qui n'est l'ordre de rien. */
+  grid-template-rows:auto repeat(6, auto); grid-auto-flow:column; gap:2px 18px;
+}
+.nav-panel-secteurs.open{ display:grid; }
+.nav-panel-secteurs .nav-drop-tous{
+  grid-column:1 / -1; color:var(--blue-deep); font-weight:600;
+  border-bottom:1px solid var(--line); border-radius:0; margin-bottom:4px;
+}
+.nav-panel-secteurs a{ display:flex; align-items:center; gap:10px; }
+.nav-panel-secteurs .nav-icn{
+  flex:0 0 28px; width:28px; height:28px; border-radius:8px;
+  display:inline-flex; align-items:center; justify-content:center;
+  background:var(--blue-tint); color:var(--blue-deep);
+}
+/* Le survol repeint le texte ; la pastille garde sa propre couleur, sinon le
+   trace disparaitrait dans son fond au moment ou on le designe. */
+.nav-panel-secteurs a:hover .nav-icn{ background:#fff; }
+
+/* PRODUIT ET DEVELOPERS EN DEUX GROUPES (30 aout 2026).
+
+   PAS DE PICTOGRAMMES ICI, et c'est mesure plutot que suppose : aucune des
+   pages visees -- produit.html, fonctionnalites.html, roi.html, docs.html,
+   integrations.html, les trois plateformes -- ne porte de pictogramme. En
+   ajouter inventerait un vocabulaire au lieu d'en prolonger un, alors que
+   Solutions ne fait que reprendre celui de secteurs.html.
+
+   Le repere y est le LIBELLE DE GROUPE. Cinq et huit liens en deux colonnes
+   nommees se parcourent sans icone ; onze liens d'un seul tenant, non. */
+/* Idem : aucun `display` ici, voir la note sur .nav-panel-secteurs. */
+.nav-panel-groupes{ gap:26px; }
+.nav-panel-groupes.open{ display:flex; }
+.nav-drop-col{ display:flex; flex-direction:column; min-width:150px; }
+.nav-drop-groupe{
+  margin:0 0 4px; padding:0 12px; font-size:11.5px; font-weight:700;
+  letter-spacing:.06em; text-transform:uppercase; color:var(--ink-muted);
+}
 /* Sur mobile, la barre laterale existante prend le relais : les sous-menus
    s empilent au lieu de flotter, sinon ils sortiraient de l ecran. */
 @media (max-width:900px){
@@ -4064,6 +4142,31 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
   .nav-drop{ border-bottom:1px solid var(--line); }
   .nav-drop-btn{ width:100%; justify-content:space-between; padding:11px 0; font-size:15px; }
   .nav-drop-panel{ position:static; box-shadow:none; border:none; padding:0 0 10px 14px; min-width:0; }
+  /* CIBLE TACTILE (30 aout 2026). Mesure avant : line-height 20,925 px plus
+     9 px de padding de chaque cote = 38,9 px, sous les 44 px recommandes.
+     C'etait deja vrai texte seul, avant les pictogrammes. 12 px porte la
+     ligne a 44,9 px. */
+  .nav-drop-panel a{ padding-top:12px; padding-bottom:12px; }
+  /* PICTOGRAMME NU EN MOBILE, sans pastille : onze lignes empilees, chacune
+     poussee par une pastille de 28 px, allongeraient le panneau sans rien
+     ajouter a la lecture. Le trace, lui, garde son role de repere. */
+  /* UNE COLONNE EXIGE DE DEFAIRE LES DEUX AUTRES DECLARATIONS, pas seulement
+     `grid-template-columns`. Avec `grid-auto-flow:column` et sept rangees
+     encore declarees, la grille recree des colonnes IMPLICITES : mesure a
+     390 px, le panneau ressortait a deux colonnes malgre `1fr`. */
+  .nav-panel-secteurs{
+    grid-template-columns:1fr; grid-template-rows:none; grid-auto-flow:row; gap:0;
+  }
+  /* Les deux groupes s'empilent aussi : cote a cote sur 390 px, chaque colonne
+     ferait 170 px et les libelles se replieraient. Les intitules restent --
+     ils portent une information reelle, contrairement au support de colonne
+     de Solutions, qui n'existe que pour la largeur du bureau. */
+  .nav-panel-groupes{ flex-direction:column; gap:10px; }
+  .nav-drop-groupe{ padding-left:0; }
+  .nav-panel-secteurs .nav-icn{
+    flex:0 0 auto; width:auto; height:auto; background:none; border-radius:0;
+  }
+  .nav-panel-secteurs a:hover .nav-icn{ background:none; }
 }
 
 /* Centrage du menu entre le logo et la recherche, et alignement vertical.

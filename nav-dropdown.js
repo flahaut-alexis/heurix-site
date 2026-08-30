@@ -27,10 +27,40 @@
     });
   });
 
+  // ECHAP REND LE FOCUS AU BOUTON (30 aout 2026). Il refermait sans le rendre :
+  // le focus restait sur le lien du panneau disparu, donc sur un element qui
+  // n'est plus visible, et la tabulation suivante repartait d'un endroit que
+  // l'utilisateur ne voit pas.
+  //
+  // MESURE HONNETE, ET C'EST LA LECON. Un premier controle avait conclu « le
+  // focus est rendu » -- il posait le focus sur le bouton AVANT d'envoyer
+  // Echap, puis verifiait qu'il y etait. Il ne testait que sa propre mise en
+  // scene. Le controle juste part d'un lien DANS le panneau.
   document.addEventListener("keydown", function (e) {
-    if (e.key === "Escape") fermerTout(null);
+    if (e.key !== "Escape") return;
+    var ouvert = boutons.filter(function (b) {
+      return b.getAttribute("aria-expanded") === "true";
+    })[0];
+    fermerTout(null);
+    if (ouvert) ouvert.focus();
   });
   document.addEventListener("click", function (e) {
     if (!e.target.closest(".nav-drop")) fermerTout(null);
+  });
+
+  // FERMETURE QUAND LE FOCUS SORT DE LA NAVIGATION -- l'ajout assume du
+  // rapport. L'existant laissait le panneau ouvert dans ce cas : on tabulait
+  // jusqu'a la recherche et le menu restait deploye derriere.
+  //
+  // `focusout` monte, contrairement a `blur`. Le `setTimeout(0)` laisse le
+  // navigateur poser le nouveau focus avant qu'on le lise : dans le
+  // gestionnaire, `document.activeElement` vaut encore <body>.
+  document.addEventListener("focusout", function (e) {
+    var depart = e.target.closest(".nav-drop");
+    if (!depart) return;
+    setTimeout(function () {
+      var a = document.activeElement;
+      if (!a || !a.closest || !a.closest(".nav-drop")) fermerTout(null);
+    }, 0);
   });
 })();

@@ -2050,6 +2050,67 @@ Le coût réel : ces lignes ont été écrites, commitées, poussées, et lues c
 un fait — au point qu'on m'a demandé de traiter ce défaut en priorité, avant
 les schémas. Un rapport faux mobilise le temps de quelqu'un d'autre.
 
+#### Le degré au-dessus : la mesure ne teste pas l'hypothèse, elle la met en scène
+
+La section ci-dessus décrit une mesure trop étroite — juste, mais qui ne
+pouvait rencontrer que la réponse attendue. Le 29 et le 30 août 2026, la même
+famille est apparue **trois fois**, d'un cran plus haut : ce n'était plus le
+périmètre qui était étroit, c'était le **montage qui produisait lui-même l'état
+observé**. L'assertion n'avait aucun chemin vers le rouge.
+
+| | ce que le montage installait | ce que la mesure prétendait établir |
+|---|---|---|
+| test clavier n°1 | le focus **sur le bouton**, puis Échap | qu'Échap **rend** le focus au bouton |
+| test clavier n°2 | le focus **hors** du panneau | que `focusout` ferme le panneau |
+| **la capture d'écran** | **un clic qui OUVRE le menu** | **que le menu s'affiche correctement** |
+
+Les trois étaient verts. Les trois le seraient restés sur du code retiré.
+
+**LA TROISIÈME EST LA PLUS COÛTEUSE, ET ELLE A ÉTÉ SERVIE.** J'ai montré une
+capture de Solutions ouvert comme preuve que le menu marchait. Elle le montrait
+bien — mais je venais de cliquer dessus. Or le défaut réel était que
+`.nav-panel-secteurs{ display:grid }`, posé sans condition, écrasait
+`.nav-drop-panel{ display:none }` : **les trois panneaux étaient ouverts en
+permanence sur 126 pages**, `aria-expanded="false"` et tout. Le DOM disait
+fermé, le compositeur peignait ouvert.
+
+Aucune photographie de l'état ouvert ne pouvait le montrer, parce que l'état
+ouvert était exactement ce qui allait bien.
+
+**ET LA RÈGLE DU SITE A ÉTÉ SUIVIE.** « Toute modification visuelle se vérifie
+à l'écran » est respectée à la lettre : la page a été ouverte, regardée,
+capturée. Le défaut est passé quand même. C'est ce qui distingue cette famille
+de toutes celles écrites plus haut — là un garde manquait, ou mentait, ou
+n'était pas lu ; ici le garde est la règle de ce fichier, elle a été appliquée,
+et elle ne pouvait pas voir.
+
+> **Une mesure d'état ne vaut que si le montage peut produire l'autre état.**
+> Si l'on ne sait pas décrire l'entrée qui la ferait échouer, elle est verte
+> par construction, pas par constat.
+
+Le geste, et il coûte dix secondes : **regarder aussi l'état qu'on n'a pas
+provoqué.** Le panneau fermé, le formulaire vide, la liste sans résultat. Ici,
+une capture avant le clic aurait montré les trois panneaux ouverts en même
+temps — ce qui est exactement ce qu'a montré la première capture prise sans
+avoir cliqué, et ce qui a ouvert l'enquête.
+
+Pour un test, la question équivalente se pose avant de l'écrire : **quelle
+ligne dois-je supprimer du code pour le rendre rouge ?** Si la réponse est
+« aucune », le test met en scène sa réponse. C'est la règle déjà écrite plus
+haut — « il se vérifie en le faisant échouer, pas en le voyant passer » — et
+les deux tests clavier montrent qu'on peut l'énoncer, la relire, et l'oublier
+au moment d'écrire un test qui *vise juste*. Ce n'est pas un instrument qui
+rate sa cible : il vise exactement le bon défaut, et il l'observe dans un décor
+où ce défaut ne peut pas se produire.
+
+**Ce qui a fermé la famille ici**, plutôt que cette note :
+`tests/panneaux-fermes.test.js` refuse tout sélecteur `.nav-panel-*` qui pose
+`display` hors de `.open`. Périmètre dérivé — les variantes sont extraites du
+fichier, pas énumérées — donc un quatrième menu serait couvert sans qu'on y
+pense. Vérifié dans les deux sens le jour même : le défaut réinjecté le fait
+échouer en nommant `nav-panel-groupes`, et la restauration se fait par
+l'opération inverse, pas par un instantané.
+
 #### Un cas suffit à montrer qu'une chose échoue, jamais à dire pourquoi
 
 Le 29 août 2026, un audit externe rapporte : « le prix en langage naturel ne
