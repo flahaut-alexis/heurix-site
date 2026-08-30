@@ -133,8 +133,24 @@ describe("index derive — le verificateur", () => {
   // appelle `derniers_articles()` -> `date_ajout()` -> `git -C RACINE log`, et
   // un repertoire sans `.git` le fait echouer sur « clone superficiel ».
   //
-  // Si le processus meurt pendant la copie, c'est la copie qui reste sale.
-  // `git worktree prune` la nettoie, et surtout AUCUN fichier suivi n'a bouge.
+  // Si le processus meurt pendant la copie, c'est la copie qui reste sale, et
+  // surtout AUCUN fichier suivi n'a bouge. EPROUVE le 30 aout 2026 : huit
+  // SIGKILL a 3,0 / 3,5 / 4,0 / 4,5 / 5,0 / 6,0 / 7,0 / 8,0 s, a cheval sur
+  // les deux tests saboteurs. Huit fois sur huit, `docs.html` et
+  // `search-index-fr.json` intacts, marqueur absent, `git status` propre.
+  //
+  // LE NETTOYAGE, EN REVANCHE, N'EST PAS CELUI QU'ON ANNONCAIT ICI. La ligne
+  // precedente disait « `git worktree prune` la nettoie » : c'est FAUX, et
+  // mesure. `prune` ne retire que les enregistrements dont le REPERTOIRE a
+  // disparu ; ici il est toujours la. Deux des huit kills ont laisse une copie
+  // enregistree de 19 Mo dans `tmpdir`, et `prune` a laisse les deux en place.
+  // Le geste qui nettoie :
+  //
+  //     git worktree list --porcelain | grep '^worktree .*heurix-verif' \
+  //       | cut -d' ' -f2 | xargs -r -n1 git worktree remove --force
+  //
+  // Ce residu est borne et il ne bloque rien : il coute du disque et une
+  // ligne dans `git worktree list`, jamais un fichier suivi.
   let nCopie = 0;
   const dansUneCopie = (fn) => {
     const copie = path.join(os.tmpdir(),
