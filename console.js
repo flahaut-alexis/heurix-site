@@ -5568,7 +5568,17 @@
     var conflitsHtml = hits.filter(function (h) { return "favorisation_ignoree_par" in h; }).map(function (h) {
       var nom = h.product.name || h.product.id;
       var regle = h.favorisation_ignoree_par;
-      var texteRegle = regle ? T("« {0} = {1} »", regle.field, regle.value) : T("une règle de relégation");
+      // esc() SUR LES DEUX (30 aout 2026). `field` et `value` viennent de la
+      // regle d'attribut du marchand, renvoyee telle quelle par le moteur
+      // (browse.py, favorisation_ignoree_par) -- ce sont des `str` libres,
+      // sans pattern ni filtre cote API. T() n'echappe RIEN : il substitue
+      // {0} par la valeur brute, verifie en l'exercant. Le resultat part
+      // ensuite dans conteneur.innerHTML plus bas.
+      //
+      // `esc(nom)` etait deja echappe sur la ligne suivante : le meme bloc
+      // protegeait un argument sur trois. Position TEXTE, donc esc() suffit
+      // -- escAttr() ne servirait qu'entre guillemets simples.
+      var texteRegle = regle ? T("« {0} = {1} »", esc(regle.field), esc(regle.value)) : T("une règle de relégation");
       return "<p class='so-validation-warn' style='margin-top:6px;'>" +
         T("« {0} » est relégué par {1}. La favorisation n'aura aucun effet.", esc(nom), texteRegle) + "</p>";
     }).join("");
