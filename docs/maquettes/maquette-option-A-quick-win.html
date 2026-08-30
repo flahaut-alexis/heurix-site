@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Heurix — Maquette Option A (Quick win)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#171A33;
+    --slate:#5B5E76;
+    --slate-soft:#8A8DA6;
+    --primary:#3F52E8;
+    --primary-dark:#2F3FC4;
+    --primary-bg:#EEF1FF;
+    --sky:#5AB8E8;
+    --border:#E7E9F2;
+    --surface:#FFFFFF;
+    --page:#F1F2F7;
+    --shadow-panel: 0 12px 30px rgba(18,20,43,.13);
+    --radius-panel: 10px;
+    --font: 'Plus Jakarta Sans', -apple-system, 'Segoe UI', sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:var(--font);
+    background:var(--page);
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+    padding:32px 20px 64px;
+  }
+  [hidden]{ display:none !important; }
+
+  /* ---------- Page chrome (this deliverable's own UI, not Heurix's site) ---------- */
+  .wrap{ max-width:1240px; margin:0 auto; }
+  .doc-header{ max-width:760px; margin:0 auto 28px; text-align:center; }
+  .eyebrow{
+    display:inline-block; font-size:12px; font-weight:700; letter-spacing:.08em;
+    color:var(--primary); background:var(--primary-bg); padding:5px 12px; border-radius:999px;
+    margin-bottom:14px;
+  }
+  h1.doc-title{ font-size:28px; font-weight:800; letter-spacing:-.02em; margin:0 0 10px; }
+  .doc-desc{ font-size:15px; line-height:1.6; color:var(--slate); margin:0 0 22px; }
+
+  .toggle{
+    display:inline-flex; align-items:center; gap:2px; background:var(--surface);
+    border:1px solid var(--border); border-radius:999px; padding:4px; box-shadow:0 1px 2px rgba(18,20,43,.06);
+  }
+  .toggle button{
+    font-family:var(--font); font-size:13.5px; font-weight:700; color:var(--slate-soft);
+    background:transparent; border:none; padding:9px 20px; border-radius:999px; cursor:pointer;
+    transition:background .15s ease, color .15s ease;
+  }
+  .toggle button.active{ background:var(--primary); color:#fff; }
+  .toggle button:not(.active):hover{ color:var(--ink); }
+
+  .frame{
+    background:var(--surface); border-radius:18px; border:1px solid var(--border);
+    box-shadow:0 20px 50px rgba(18,20,43,.10);
+    overflow:visible; position:relative;
+  }
+
+  /* ---------- Heurix nav recreation ---------- */
+  .hx-nav{
+    position:relative; z-index:40;
+    display:flex; align-items:center; gap:8px;
+    padding:14px 28px; border-bottom:1px solid var(--border);
+    border-radius:18px 18px 0 0;
+    background:rgba(255,255,255,.92);
+  }
+  .hx-logo{ display:flex; align-items:center; gap:8px; font-weight:800; font-size:18px; color:var(--ink); margin-right:18px; white-space:nowrap; }
+  .hx-logo svg{ color:var(--primary); }
+  .hx-links{ display:flex; align-items:center; gap:4px; }
+  .hx-item{ position:relative; }
+  .hx-btn{
+    font-family:var(--font); font-size:14px; font-weight:600; color:var(--slate);
+    background:transparent; border:none; display:flex; align-items:center; gap:5px;
+    padding:10px 12px; border-radius:8px; cursor:pointer; white-space:nowrap;
+  }
+  .hx-btn:hover{ color:var(--ink); background:#F5F6FB; }
+  .hx-btn.is-open{ color:var(--primary); }
+  .hx-btn .chev{ transition:transform .15s ease; color:var(--slate-soft); }
+  .hx-btn.is-open .chev{ transform:rotate(180deg); color:var(--primary); }
+  .hx-plain{ font-size:14px; font-weight:600; color:var(--slate); text-decoration:none; padding:10px 12px; border-radius:8px; }
+  .hx-plain:hover{ color:var(--ink); background:#F5F6FB; }
+
+  .hx-right{ margin-left:auto; display:flex; align-items:center; gap:10px; }
+  .hx-search{
+    display:flex; align-items:center; gap:8px; color:var(--slate-soft); font-size:13.5px;
+    background:#F5F6FB; border:1px solid var(--border); border-radius:8px; padding:8px 12px; min-width:190px;
+  }
+  .hx-search kbd{ margin-left:auto; font-family:var(--font); font-size:11px; font-weight:700; color:var(--slate-soft); background:#fff; border:1px solid var(--border); border-radius:5px; padding:1px 6px; }
+  .hx-account{ display:flex; align-items:center; gap:6px; font-size:13.5px; font-weight:600; color:var(--slate); white-space:nowrap; }
+  .hx-lang{ font-size:13.5px; font-weight:700; color:var(--slate); }
+  .hx-cta{
+    font-family:var(--font); font-size:13.5px; font-weight:700; color:#fff; background:var(--primary);
+    border:none; border-radius:8px; padding:11px 18px; white-space:nowrap; cursor:pointer;
+  }
+  .hx-cta:hover{ background:var(--primary-dark); }
+
+  @media (max-width:1080px){
+    .hx-search, .hx-account, .hx-lang{ display:none; }
+  }
+
+  /* ---------- hero snippet (context only) ---------- */
+  .hx-hero{
+    position:relative; padding:54px 28px 0; border-radius:0 0 18px 18px; overflow:hidden;
+    background:radial-gradient(120% 160% at 15% 0%, #2b3480 0%, #171a4d 45%, #10122f 100%);
+    height:190px;
+  }
+  .hx-hero h2{ color:#F5F6FF; font-size:30px; font-weight:800; letter-spacing:-.02em; max-width:520px; margin:0; line-height:1.25; }
+  .hx-hero h2 span{ color:var(--sky); }
+  .hx-hero-fade{
+    position:absolute; left:0; right:0; bottom:0; height:70px;
+    background:linear-gradient(180deg, rgba(23,26,77,0) 0%, rgba(241,242,247,1) 100%);
+  }
+
+  /* ---------- dropdown panels ---------- */
+  .dropdown{
+    position:absolute; top:calc(100% + 8px); left:0;
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-panel);
+    box-shadow:var(--shadow-panel); padding:6px; z-index:50;
+    min-width:300px;
+  }
+  .dd-cols{ display:flex; }
+  .dd-col{ padding:14px 22px; min-width:190px; }
+  .v-apres .dd-col{ padding:14px 20px; width:272px; }
+  .dd-col + .dd-col{ border-left:1px solid var(--border); }
+  .dd-label{ font-size:11px; font-weight:800; letter-spacing:.08em; color:var(--slate-soft); margin:0 0 10px; }
+  .dd-link{ display:block; font-size:14px; font-weight:600; color:var(--ink); text-decoration:none; padding:8px 0; }
+  .dd-link:hover{ color:var(--primary); }
+
+  /* Après (Option A): enriched rows with icon + description */
+  .dd-row{ display:flex; gap:12px; align-items:flex-start; text-decoration:none; padding:9px 8px; margin:0 -8px; border-radius:8px; }
+  .dd-row:hover{ background:#F7F8FF; }
+  .dd-icn{
+    flex:none; width:28px; height:28px; border-radius:8px; background:var(--primary-bg); color:var(--primary);
+    display:flex; align-items:center; justify-content:center; margin-top:1px;
+  }
+  .dd-icn svg{ width:16px; height:16px; }
+  .dd-icn.brand{ font-family:var(--font); font-weight:800; font-size:12px; }
+  .dd-body{ min-width:0; flex:1 1 auto; }
+  .dd-body strong{ display:block; font-size:14px; font-weight:700; color:var(--ink); }
+  .dd-body p{ margin:2px 0 0; font-size:12.5px; line-height:1.45; color:var(--slate); }
+  .badge-new{
+    display:inline-block; margin-left:7px; font-size:9.5px; font-weight:800; letter-spacing:.04em;
+    color:#B4187A; background:#FCE4F1; border-radius:5px; padding:2px 6px; vertical-align:middle; transform:translateY(-1px);
+  }
+
+  /* ---------- notes strip ---------- */
+  .notes{ margin-top:26px; background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:20px 24px; }
+  .notes h3{ margin:0 0 8px; font-size:13px; font-weight:800; letter-spacing:.04em; color:var(--slate-soft); text-transform:uppercase; }
+  .notes p{ margin:0; font-size:14.5px; line-height:1.65; color:var(--ink); }
+  .notes p + p{ margin-top:10px; }
+  .foot{ text-align:center; margin-top:22px; font-size:13px; color:var(--slate-soft); }
+  .foot code{ background:#fff; border:1px solid var(--border); border-radius:5px; padding:1px 6px; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <g id="i-search"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.6" y2="16.6"/></g>
+    <g id="i-chev"><polyline points="6 9 12 15 18 9"/></g>
+    <g id="i-alert"><polygon points="12,3 22,20 2,20"/><line x1="12" y1="9.5" x2="12" y2="13.5"/><circle cx="12" cy="16.6" r="0.6" fill="currentColor" stroke="none"/></g>
+    <g id="i-compass"><circle cx="12" cy="12" r="9.5"/><polygon points="15.5,8.5 13.2,13.2 8.5,15.5 10.8,10.8"/></g>
+    <g id="i-cpu"><rect x="7" y="7" width="10" height="10" rx="1.6"/><rect x="10" y="10" width="4" height="4" rx="0.6"/><line x1="12" y1="1.5" x2="12" y2="4.5"/><line x1="12" y1="19.5" x2="12" y2="22.5"/><line x1="1.5" y1="12" x2="4.5" y2="12"/><line x1="19.5" y1="12" x2="22.5" y2="12"/></g>
+    <g id="i-grid"><rect x="3" y="3" width="7.5" height="7.5" rx="1.4"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.4"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.4"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.4"/></g>
+    <g id="i-bars"><line x1="6" y1="20" x2="6" y2="12"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="18" y1="20" x2="18" y2="14.5"/></g>
+    <g id="i-file"><path d="M6.5 2.5h7l5 5v13a1 1 0 0 1-1 1h-11a1 1 0 0 1-1-1v-17a1 1 0 0 1 1-1z"/><polyline points="13.5 2.5 13.5 7.5 18.5 7.5"/><line x1="8.5" y1="13" x2="15.5" y2="13"/><line x1="8.5" y1="16.5" x2="15.5" y2="16.5"/></g>
+    <g id="i-layers"><polygon points="12,2.5 21,7.5 12,12.5 3,7.5"/><polyline points="3,12.5 12,17.5 21,12.5"/><polyline points="3,17 12,22 21,17"/></g>
+    <g id="i-sitemap"><rect x="9" y="2" width="6" height="5" rx="1"/><rect x="2" y="16.5" width="6" height="5" rx="1"/><rect x="16" y="16.5" width="6" height="5" rx="1"/><path d="M12 7v4.5M5 16.5v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3M12 11.5v0"/></g>
+    <g id="i-rocket"><path d="M12 2.5c3.2 2.1 5.2 6 5.2 10 0 2.1-1 4-2.2 5.2l-3 2.8-3-2.8c-1.2-1.2-2.2-3.1-2.2-5.2 0-4 2-7.9 5.2-10z"/><circle cx="12" cy="10.3" r="1.7"/><path d="M9 18.5l-2.5 3M15 18.5l2.5 3"/></g>
+    <g id="i-plug"><rect x="8.7" y="1.5" width="1.8" height="6"/><rect x="13.5" y="1.5" width="1.8" height="6"/><rect x="6.5" y="7.5" width="11" height="6.5" rx="2"/><path d="M12 14v4.5a3.5 3.5 0 0 1-3.5 3.5H6"/></g>
+    <g id="i-arrow"><line x1="4" y1="12" x2="19" y2="12"/><polyline points="12.5,5.5 19,12 12.5,18.5"/></g>
+    <g id="i-user"><circle cx="12" cy="8" r="3.6"/><path d="M4.5 20c1.2-4 4-6 7.5-6s6.3 2 7.5 6"/></g>
+  </defs>
+</svg>
+
+<div class="wrap">
+  <div class="doc-header">
+    <span class="eyebrow">MAQUETTE · OPTION A</span>
+    <h1 class="doc-title">Quick win — icônes &amp; descriptions</h1>
+    <p class="doc-desc">Même arborescence, mêmes intitulés qu'aujourd'hui. On ajoute uniquement une pastille d'icône (réutilisée du menu Solutions) et une ligne de description sous chaque lien. Cliquez sur <strong>Produit</strong> ou <strong>Developers</strong> ci-dessous, et basculez Avant / Après.</p>
+    <div class="toggle" role="group" aria-label="Basculer Avant / Après">
+      <button type="button" data-mode="avant">Avant</button>
+      <button type="button" data-mode="apres" class="active">Après</button>
+    </div>
+  </div>
+
+  <div class="frame">
+    <nav class="hx-nav" id="hxNav">
+      <div class="hx-logo">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><use href="#i-search"/></svg>
+        Heurix
+      </div>
+      <div class="hx-links">
+        <div class="hx-item">
+          <button class="hx-btn" data-menu="produit" aria-expanded="false">
+            Produit
+            <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><use href="#i-chev"/></svg>
+          </button>
+
+          <!-- AVANT -->
+          <div class="dropdown v-avant" data-panel="produit" hidden>
+            <div class="dd-cols">
+              <div class="dd-col">
+                <p class="dd-label">LE PRODUIT</p>
+                <a class="dd-link" href="#">Le problème</a>
+                <a class="dd-link" href="#">Notre mission</a>
+                <a class="dd-link" href="#">Le moteur</a>
+              </div>
+              <div class="dd-col">
+                <p class="dd-label">ALLER PLUS LOIN</p>
+                <a class="dd-link" href="#">Fonctionnalités</a>
+                <a class="dd-link" href="#">Simulateur ROI</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- APRES : Option A -->
+          <div class="dropdown v-apres" data-panel="produit" hidden>
+            <div class="dd-cols">
+              <div class="dd-col">
+                <p class="dd-label">LE PRODUIT</p>
+                <a class="dd-row" href="#">
+                  <span class="dd-icn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><use href="#i-alert"/></svg></span>
+                  <span class="dd-body"><strong>Le problème</strong><p>Pourquoi la recherche e-commerce échoue en silence.</p></span>
+                </a>
+                <a class="dd-row" href="#">
+                  <span class="dd-icn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><use href="#i-compass"/></svg></span>
+                  <span class="dd-body"><strong>Notre mission</strong><p>Un moteur pensé pour connaître votre métier.</p></span>
+                </a>
+                <a class="dd-row" href="#">
+                  <span class="dd-icn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><use href="#i-cpu"/></svg></span>
+                  <span class="dd-body"><strong>Le moteur</strong><p>Comment fonctionne la recherche sous le capot.</p></span>
+                </a>
+              </div>
+              <div class="dd-col">
+                <p class="dd-label">ALLER PLUS LOIN</p>
+                <a class="dd-row" href="#">
+                  <span class="dd-icn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><use href="#i-grid"/></svg></span>
+                  <span class="dd-body"><strong>Fonctionnalités</strong><p>Tout ce que le moteur sait faire, en détail.</p></span>
+                </a>
+                <a class="dd-row" href="#">
+                  <span class="dd-icn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><use href="#i-bars"/></svg></span>
+                  <span class="dd-body"><strong>Simulateur ROI</strong><span class="badge-new">NOUVEAU</span><p>Estimez l'impact d'une recherche qui convertit mieux.</p></span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <a class="hx-plain" href="#">Solutions</a>
+
+        <div class="hx-item">
+          <button class="hx-btn" data-menu="dev" aria-expanded="false">
+            Developers
+            <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><use href="#i-chev"/></svg>
+          </button>
+
+          <!-- AVANT -->
+          <div class="dropdown v-avant" data-panel="dev" hidden>
+            <div class="dd-cols">
+              <div class="dd-col">
+                <p class="dd-label">DOCUMENTATION</p>
+                <a class="dd-link" href="#">Documentation</a>
+                <a class="dd-link" href="#">La cascade d'annotations</a>
+                <a class="dd-link" href="#">Structure des produits</a>
+                <a class="dd-link" href="#">Guide de mise en route</a>
+              </div>
+              <div class="dd-col">
+                <p class="dd-label">PLATEFORMES</p>
+                <a class="dd-link" href="#">Intégrations</a>
+                <a class="dd-link" href="#">PrestaShop</a>
+                <a class="dd-link" href="#">WooCommerce</a>
+                <a class="dd-link" href="#">Shopify</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- APRES : Option A -->
+          <div class="dropdown v-apres" data-panel="dev" hidden>
+            <div class="dd-cols">
+              <div class="dd-col">
+                <p class="dd-label">DOCUMENTATION</p>
+                <a class="dd-row" href="#">
+                  <span class="dd-icn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><use href="#i-file"/></svg></span>
+                  <span class="dd-body"><strong>Documentation</strong><p>Toutes les routes de l'API, avec exemples.</p></span>
+                </a>
+                <a class="dd-row" href="#">
+                  <span class="dd-icn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><use href="#i-layers"/></svg></span>
+                  <span class="dd-body"><strong>La cascade d'annotations</strong><p>Comment le moteur corrige et complète vos données.</p></span>
+                </a>
+                <a class="dd-row" href="#">
+                  <span class="dd-icn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><use href="#i-sitemap"/></svg></span>
+                  <span class="dd-body"><strong>Structure des produits</strong><p>Le schéma attendu pour vos fiches produits.</p></span>
+                </a>
+                <a class="dd-row" href="#">
+                  <span class="dd-icn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><use href="#i-rocket"/></svg></span>
+                  <span class="dd-body"><strong>Guide de mise en route</strong><p>De la clé API au premier résultat, pas à pas.</p></span>
+                </a>
+              </div>
+              <div class="dd-col">
+                <p class="dd-label">PLATEFORMES</p>
+                <a class="dd-row" href="#">
+                  <span class="dd-icn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><use href="#i-plug"/></svg></span>
+                  <span class="dd-body"><strong>Intégrations</strong><p>Toutes les connexions disponibles en un coup d'œil.</p></span>
+                </a>
+                <a class="dd-row" href="#">
+                  <span class="dd-icn brand" style="background:rgba(223,0,103,.12); color:#DF0067;">P</span>
+                  <span class="dd-body"><strong>PrestaShop</strong><p>Module officiel pour PrestaShop 1.6 et 8.</p></span>
+                </a>
+                <a class="dd-row" href="#">
+                  <span class="dd-icn brand" style="background:rgba(127,84,179,.12); color:#7F54B3;">W</span>
+                  <span class="dd-body"><strong>WooCommerce</strong><p>Plugin WordPress prêt à l'emploi.</p></span>
+                </a>
+                <a class="dd-row" href="#">
+                  <span class="dd-icn brand" style="background:rgba(94,142,62,.14); color:#5E8E3E;">S</span>
+                  <span class="dd-body"><strong>Shopify</strong><p>Intégration via l'App Store Shopify.</p></span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <a class="hx-plain" href="#">Blog</a>
+      </div>
+
+      <div class="hx-right">
+        <div class="hx-search">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><use href="#i-search"/></svg>
+          Chercher sur le site
+          <kbd>Ctrl K</kbd>
+        </div>
+        <div class="hx-account">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><use href="#i-user"/></svg>
+          Mon compte
+        </div>
+        <div class="hx-lang">EN</div>
+        <button class="hx-cta">Démarrer l'essai gratuit</button>
+      </div>
+    </nav>
+
+    <div class="hx-hero">
+      <h2>Un moteur de recherche qui connaît déjà votre <span>métier</span>.</h2>
+      <div class="hx-hero-fade"></div>
+    </div>
+  </div>
+
+  <div class="notes">
+    <h3>Ce qui change dans cette option</h3>
+    <p><strong>Produit :</strong> les cinq liens gardent leurs deux colonnes et leurs intitulés actuels ; chacun reçoit une pastille d'icône en indigo clair et une phrase d'une ligne qui explique le bénéfice sans avoir à cliquer.</p>
+    <p><strong>Developers :</strong> même logique, avec un traitement différencié pour les trois plateformes d'intégration (pastille de couleur + initiale), en attendant les logos officiels de la Priorité 1.</p>
+  </div>
+  <p class="foot">Détail complet des recommandations dans <code>rapport-navbar-heurix.md</code> — voir aussi <code>maquette-option-B-mega-menu-editorial.html</code> pour la version plus structurante.</p>
+</div>
+
+<script>
+  (function(){
+    var nav = document.getElementById('hxNav');
+    var menuBtns = nav.querySelectorAll('.hx-btn[data-menu]');
+    var mode = 'apres';
+
+    function closeAll(){
+      menuBtns.forEach(function(b){ b.classList.remove('is-open'); b.setAttribute('aria-expanded','false'); });
+    }
+    function openMenu(name){
+      var wasOpen = nav.querySelector('.hx-btn[data-menu="'+name+'"]').classList.contains('is-open');
+      closeAll();
+      if(wasOpen) return;
+      var btn = nav.querySelector('.hx-btn[data-menu="'+name+'"]');
+      btn.classList.add('is-open'); btn.setAttribute('aria-expanded','true');
+    }
+    menuBtns.forEach(function(btn){
+      btn.addEventListener('click', function(e){
+        e.stopPropagation();
+        openMenu(btn.getAttribute('data-menu'));
+      });
+    });
+    document.addEventListener('click', closeAll);
+    document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeAll(); });
+    nav.addEventListener('click', function(e){ e.stopPropagation(); });
+
+    // show/hide the right dropdown panel under each open button, matching mode
+    var panels = nav.querySelectorAll('.dropdown');
+    function syncVisibility(){
+      panels.forEach(function(p){
+        var btn = p.closest('.hx-item').querySelector('.hx-btn');
+        var isOpenMenu = btn.classList.contains('is-open');
+        var isCurrentMode = (mode === 'avant' && p.classList.contains('v-avant')) || (mode === 'apres' && p.classList.contains('v-apres'));
+        p.hidden = !(isOpenMenu && isCurrentMode);
+      });
+    }
+    var mo = new MutationObserver(syncVisibility);
+    menuBtns.forEach(function(b){ mo.observe(b, {attributes:true, attributeFilter:['class']}); });
+    syncVisibility();
+
+    // toggle Avant / Après
+    var toggleBtns = document.querySelectorAll('.toggle button');
+    toggleBtns.forEach(function(b){
+      b.addEventListener('click', function(e){
+        e.stopPropagation();
+        toggleBtns.forEach(function(x){ x.classList.remove('active'); });
+        b.classList.add('active');
+        mode = b.getAttribute('data-mode');
+        syncVisibility();
+      });
+    });
+  })();
+</script>
+</body>
+</html>

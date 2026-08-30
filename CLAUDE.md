@@ -2191,6 +2191,56 @@ Et celle du tutoriel n'était pas un compte à corriger : **une énumération
 exhaustive, juste quand il y avait trois packs.** Elle a été remplacée par un
 renvoi vers `secteurs.html`, qui ne se périmera pas au douzième pack.
 
+#### La cinquième forme : un chiffre vrai, documenté comme artefact, et repris sans sa borne
+
+Les quatre motifs de la semaine sont des **affirmations devenues fausses** —
+une valeur juste le jour où on l'écrit, périmée ensuite. Le 30 août 2026, une
+cinquième s'est présentée, et elle n'a jamais été fausse à sa source.
+
+`rapport-menu-navigation.md`, en décrivant une capture du menu Solutions
+empilé en mobile, écrit :
+
+> « Le cadre d'aperçu de la maquette coupe la liste à « Librairie & édition » :
+> **huit visibles sur onze**. La coupe vient du cadre, pas du panneau — mais la
+> capture ne permet pas de le distinguer, donc elle ne prouve rien sur ce
+> point. »
+
+Trois précautions dans une phrase : le nombre, son total, et l'avertissement
+explicite que le huit est un artefact de cadrage.
+
+Un rapport écrit deux heures plus tard reprend : « une grille à deux colonnes
+de **huit secteurs** ». Le total a disparu, l'avertissement aussi, et le
+chiffre a changé de population — d'une **pile mobile recadrée** vers la
+**grille desktop**, qui n'a jamais montré autre chose que onze.
+
+**LA SOURCE DISAIT ELLE-MÊME DE NE PAS LA LIRE AINSI.** C'est ce qui distingue
+cette forme des quatre autres :
+
+| | ce qui rend le chiffre faux |
+|---|---|
+| les quatre motifs de la semaine | le monde a changé après l'écriture |
+| **celui-ci** | **le chiffre a changé de document, et perdu ce qui le bornait** |
+
+Aucune relecture de la source ne l'attrape : la source est juste, complète, et
+prudente. Aucune mesure ne le dément non plus, puisque « huit » est vrai de la
+capture. Il n'est faux que de la population à laquelle on l'applique.
+
+> **Quand on reprend un chiffre d'un autre document, on reprend aussi ce qui
+> le borne.** Un nombre sans son périmètre est un nombre sur une autre
+> population.
+
+C'est la règle déjà écrite plus haut — « quand vous reprenez la mesure d'un
+autre, demandez ce qu'elle a exclu » — d'un cran plus loin : là il fallait
+*demander* le périmètre, ici il était **écrit dans la phrase d'à côté**, et
+c'est la recopie qui l'a laissé derrière. Le geste n'est donc pas de
+questionner la source mais de **transporter la phrase entière**, avertissement
+compris, ou de ne pas transporter le nombre.
+
+Vérifié après coup, et c'est ce qui a tranché : le menu porte onze liens dans
+**tous** les commits depuis au moins le 29 août 13:02. Il n'existe aucun état
+du site où il en aurait eu huit — donc pas « un rapport qui a regardé un état
+antérieur », mais un chiffre sur une autre population.
+
 #### Le garde a été chiffré, et refusé sur sa mesure
 
 Il n'est pas écrit. La mesure est ici pour qui le reproposera.

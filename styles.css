@@ -2388,6 +2388,8 @@ body.docs-dark .regex-copy > p{ color:var(--ink-muted-on-dark); }
 
    @fond-clair
      .nav-drop-groupe
+     .nav-row-d
+     .nav-row-t
      #csv-catalogue::placeholder
      .addon-card
      .addon-card-desc
@@ -4104,7 +4106,103 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
    nommees se parcourent sans icone ; onze liens d'un seul tenant, non. */
 /* Idem : aucun `display` ici, voir la note sur .nav-panel-secteurs. */
 /* 13 px de chaque cote du filet, qui recompose la gouttiere de 26 px. */
-.nav-panel-groupes{ gap:13px; }
+.nav-panel-groupes{ gap:13px; padding:20px 22px; flex-wrap:wrap; }
+
+/* ====== PANNEAU ELARGI, TROIS GROUPES PAR INTENTION (30 aout 2026) ========
+   Produit et Developers gagnent un pictogramme et une ligne de description
+   par lien, et un encart editorial a gauche.
+
+   ON ETEND `.nav-panel-groupes`, ON N'EN POSE PAS UN SECOND. Le filet entre
+   colonnes, la regle `.open` et la surcouche mobile existent deja dessus :
+   un `.nav-panel-large` parallele aurait laisse les trois a reecrire, et la
+   moitie du CSS de ce matin morte dans le fichier.
+
+   ET TOUJOURS AUCUN `display` HORS DE `.open` : c'est ce que
+   tests/panneaux-fermes.test.js refuse, et le defaut qu'il ferme -- une
+   variante qui en pose un ecrase `.nav-drop-panel{display:none}` et laisse
+   le panneau ouvert en permanence sur les 126 pages.
+
+   PAS DE PLEINE LARGEUR. La maquette pose `left:0;right:0` sur un panneau
+   enfant de la BARRE ; en production il est enfant de `.nav-drop`, donc
+   l'etendre demanderait de deplacer un noeud dans 126 en-tetes -- ce que
+   `entete-structure.test.js` signalerait, et qui deborde le lot. */
+/* ANCRAGE SUR L'EN-TETE, PAS SUR LE BOUTON -- et c'est une mesure, pas un
+   gout. Ancre sous « Developers », le panneau demande 1 008 px pour 979
+   disponibles a 1440 : il debordait de 14 px et coupait « ...ProviderInterfa ».
+   A 1200 l'ecart aurait ete de 250 px.
+
+   `<header>` est `position:sticky`, donc deja un ancetre positionne : il
+   suffit de rendre `.nav-drop` statique pour ces deux panneaux-la. Aucun noeud
+   deplace dans les 126 en-tetes, ce que `entete-structure.test.js` aurait
+   signale. `:has()` est deja employe 7 fois dans ce fichier.
+
+   `width:min(1008px, 100vw - 96px)` + `margin:0 auto` : le panneau se centre
+   et ne peut pas deborder, a n'importe quelle largeur au-dessus de 900. Les
+   96 px reprennent les 48 px de gouttiere de `.header-top-inner`, de chaque
+   cote, pour qu'il reste dans la boite de contenu de la barre. */
+.nav-drop:has(> .nav-panel-groupes){ position:static; }
+.nav-panel-groupes{
+  left:0; right:0; width:min(1008px, calc(100vw - 96px)); margin:0 auto;
+}
+/* 216 px ET NON 236 : a 236 les trois colonnes plus l'encart demandent
+   1 042 px pour 1 008, et `flex-wrap` faisait passer INTEGRATIONS a la ligne.
+   Le calcul : 1008 - 44 (padding) - 238 (encart) - 13 (gouttiere) - 28 (les
+   deux filets et leur retrait) - 26 (gouttieres entre colonnes) = 659 pour
+   trois, soit 219 chacune. */
+.nav-panel-groupes .nav-drop-col{ min-width:196px; max-width:216px; }
+
+/* `.nav-drop-panel a` pose `white-space:nowrap` et un padding de liste : une
+   description doit se replier, et la ligne devient une rangee a deux blocs. */
+.nav-panel-groupes a.nav-row{
+  display:flex; gap:11px; align-items:flex-start; white-space:normal;
+  padding:8px; margin:0 -8px; border-radius:8px;
+}
+.nav-panel-groupes a.nav-row:hover{ background:var(--blue-tint); }
+.nav-row-icn{
+  flex:0 0 28px; width:28px; height:28px; border-radius:8px;
+  background:var(--blue-tint); color:var(--blue-deep);
+  display:inline-flex; align-items:center; justify-content:center; margin-top:1px;
+}
+.nav-panel-groupes a.nav-row:hover .nav-row-icn{ background:#fff; }
+.nav-row-t{ display:block; font-size:13.5px; font-weight:600; color:var(--ink); }
+.nav-row-d{ display:block; margin-top:2px; font-size:12px; line-height:1.42; color:var(--ink-muted); }
+/* Les trois pastilles de plateforme portent une lettre, pas un trace : les
+   logos officiels sont une question de droits, tranchee a part. */
+.nav-row-icn.marque{ font-size:12px; font-weight:800; }
+
+/* L'ENCART EDITORIAL. Fond indigo plein : la SEULE surface sombre du panneau,
+   et ce fichier documente plus bas que `var(--blue-deep)` n'y a pas le
+   contraste. Rien ici ne l'emploie -- blanc ou blanc voile, mesure sur le
+   degrade compose. */
+.nav-promo{
+  flex:0 0 206px; border-radius:12px; padding:16px; color:#fff;
+  /* BORNE CLAIRE A 100 %, ET PAS A 130 %. Un stop hors de la boite n'est
+     jamais peint : le mesurer serait mesurer une couleur absente, et le
+     manquer laisse un fond plus clair que prevu sous les glyphes. Ici la
+     borne claire EST le pixel le plus clair de la carte, donc le pire cas
+     est connu et borne. Mesure du 30 aout 2026, blanc sur #3E72C4 : 5,29:1,
+     et 5,18:1 pour le plus defavorable des six textes sur son fond local.
+     La valeur d'origine de la maquette (#5AB8E8 a 130 %) donnait 4,47:1 sur
+     « Une boutique reelle » -- sous le seuil, et invisible tant qu'on
+     mesurait les bornes declarees au lieu des pixels peints. */
+  background:linear-gradient(160deg, #2B3480 0%, #3552CE 60%, #3E72C4 100%);
+}
+.nav-promo-sur{ margin:0 0 9px; font-size:10.5px; font-weight:800; letter-spacing:.08em; color:#fff; }
+.nav-promo-vis{ background:rgba(11,17,58,.14); border:1px solid rgba(255,255,255,.26); border-radius:9px; padding:9px; margin-bottom:13px; }
+.nav-promo-q{ display:flex; align-items:center; gap:6px; background:rgba(255,255,255,.95); border-radius:6px; padding:6px 8px; font-size:11px; color:#3A3D63; font-weight:600; }
+.nav-promo-chip{ display:inline-block; font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:9.5px; background:rgba(11,17,58,.18); border-radius:5px; padding:3px 6px; margin:6px 3px 0 0; }
+.nav-promo-code{ font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:10px; line-height:1.7; color:#E3EBFF; white-space:pre; overflow-x:auto; }
+/* #D8F1FF ET NON #A6E0FF : le cyan de la maquette rend 4,07:1 sur le pixel le
+   plus clair de la carte. Mesure sur les deux bornes du degrade, pas sur une
+   seule -- 4,96:1 au clair, 10,23:1 au sombre. */
+.nav-promo-code b{ color:#D8F1FF; font-weight:400; }
+.nav-promo-t{ margin:0 0 5px; font-size:15px; font-weight:800; letter-spacing:-.01em; }
+.nav-promo-d{ margin:0 0 13px; font-size:12px; line-height:1.5; color:#fff; }
+.nav-panel-groupes a.nav-promo-cta{
+  display:inline-block; padding:0; font-size:12.5px; font-weight:700;
+  color:#fff; white-space:nowrap; border-radius:0;
+}
+.nav-panel-groupes a.nav-promo-cta:hover{ background:none; text-decoration:underline; }
 .nav-panel-groupes.open{ display:flex; }
 .nav-drop-col{ display:flex; flex-direction:column; min-width:150px; }
 /* LE FILET NE VA QUE SUR CES DEUX MENUS-CI, et le selecteur le garantit sans
@@ -4191,6 +4289,19 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
      ils portent une information reelle, contrairement au support de colonne
      de Solutions, qui n'existe que pour la largeur du bureau. */
   .nav-panel-groupes{ flex-direction:column; gap:10px; }
+  /* L'ENCART EDITORIAL DISPARAIT SOUS 900 px, et c'est mesure. Il occupe au
+     bureau la place laissee libre a gauche du panneau ; a 390 il n'y a pas de
+     place libre, et il devient un interstitiel entre le doigt et les liens.
+     Mesure du 30 aout 2026 sur un viewport de 844 px de haut :
+
+       avec l'encart   panneau 696 px   premier lien a 257 px sous le bouton
+       sans            panneau 460 px   premier lien a  22 px
+
+     235 px, soit plus d'un quart de l'ecran, avant d'atteindre le menu qu'on
+     vient d'ouvrir. Rien n'est perdu : la demo n'etait pas dans le menu avant
+     ce lot, et reste liee depuis les 22 pages solutions/, la documentation et
+     les trois pages plateformes. */
+  .nav-promo{ display:none; }
   /* Colonnes empilees : un `border-left` tracerait un trait vertical le long
      du second groupe au lieu de separer deux colonnes cote a cote. */
   .nav-panel-groupes .nav-drop-col + .nav-drop-col{ border-left:none; padding-left:0; }
