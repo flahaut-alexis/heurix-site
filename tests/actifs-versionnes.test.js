@@ -61,13 +61,15 @@ for (const p of PAGES) {
 // de fin les font sortir des qu'elles cessent d'etre justifiees.
 const SANS_CLEF_ASSUMES = new Map([
   ["favicon-32.png",
-   "Icone d'onglet, referencee par 128 pages. Les navigateurs la rechargent sur " +
-   "leur propre cycle et ignorent largement les parametres de requete dessus ; " +
-   "une clef y coute 128 lignes de diff a chaque changement pour un effet nul."],
+   "Icone d'onglet, referencee par toutes les pages du site. Les navigateurs " +
+   "la rechargent sur leur propre cycle et ignorent largement les parametres " +
+   "de requete dessus ; une clef y coute un diff dans chaque page -- 128 " +
+   "lignes au 30 aout 2026 -- a chaque changement pour un effet nul."],
   ["apple-touch-icon.png",
    "Icone systeme lue par iOS au moment ou l'utilisateur ajoute le site a son " +
    "ecran d'accueil, une fois, hors du cycle de cache des assets de page. Un " +
-   "parametre de requete n'y change rien et couterait 128 lignes de diff."],
+   "parametre de requete n'y change rien et couterait un diff dans chaque " +
+   "page -- 128 lignes au 30 aout 2026."],
 ]);
 
 describe("actifs versionnes", () => {

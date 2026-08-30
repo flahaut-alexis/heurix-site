@@ -380,8 +380,8 @@ header{
    La modale ne depend pas de sa page (voir plus bas), mais le voile, lui, est
    pose sur ce que la page peint. Mesure sur 404.html : le hero s'arrete au
    milieu du panneau et la bordure BASSE longe du blanc pur. Le voile est donc
-   la seule chose qui rapproche les deux familles -- les 122 pages a degrade et
-   les onze sans -- assez pour qu'UNE bordure convienne aux deux. A .45, le
+   la seule chose qui rapproche les deux familles -- celles a degrade et
+   celles sans -- assez pour qu'UNE bordure convienne aux deux. A .45, le
    blanc voile reste a rgb(148,149,160) et aucune bordure ne tient 3:1 des deux
    cotes a la fois. A .60 il tombe a rgb(106,108,118), ce qui laisse passer les
    bordures tres claires.
@@ -407,7 +407,7 @@ header{
    aucune regle .search-* sous body.docs-dark, aucune des variables employees
    redefinie hors de :root, et valeurs calculees identiques sur index.html
    (docs-dark) et 404.html (aucune classe). UN SEUL JEU DE REGLES SUFFIT —
-   le panneau est sombre partout, y compris sur les onze pages claires. */
+   le panneau est sombre partout, y compris sur les pages claires. */
 .search-panel{
   position:relative; z-index:1;
   width:min(920px, 94vw); max-height:72vh;
@@ -739,7 +739,7 @@ header{
 .badge-emoji::before{ content:none; }
 /* Badge EN uniquement, sur fond désormais sombre -- resterait illisible
    (fond bleu clair + texte bleu foncé sur un hero indigo) sans cette
-   surcharge. Scopé à .hero pour ne pas toucher aux 15 autres pages qui
+   surcharge. Scopé à .hero pour ne pas toucher aux autres pages qui
    utilisent .badge sur fond clair. */
 .hero .badge{ background:rgba(255,255,255,0.14); color:#fff; }
 .hero .badge::before{ color:#6EE7B7; }
@@ -753,7 +753,8 @@ h1{
   color:var(--ink);
 }
 /* Élargi UNIQUEMENT dans .hero (page d'accueil + 404) -- h1 est un
-   sélecteur d'élément brut qui touche 37 pages ; une valeur globale ici
+   sélecteur d'élément brut, qui touche toute page en portant un ; une
+   valeur globale ici
    aurait changé la mise en page du titre sur des pages qui n'ont ni ce
    texte ni ce problème de 3 lignes. Seuil de repli sur 2 lignes mesuré
    séparément par langue (le FR et l'EN n'ont pas le même texte, donc pas
@@ -815,8 +816,8 @@ h1 span{ color:var(--blue); }
    cette section). */
 .hero-cta{ display:flex; gap:14px; flex-wrap:wrap; margin-top:28px; }
 /* Boutons du hero, scopés à .hero-cta -- .btn et .btn-ghost sont
-   partagés respectivement par 36 et 22 autres pages sur fond clair,
-   une règle globale ici les aurait changées partout. */
+   partagés par beaucoup d'autres pages sur fond clair, une règle globale
+   ici les aurait changées partout. */
 .hero-cta .btn{ background:#fff; color:#2E3192; }
 .hero-cta .btn:hover{ background:#F5F5FF; transform:translateY(-1px); }
 .hero-cta .btn-ghost{ background:transparent; color:#fff; border-color:rgba(255,255,255,0.45); }
@@ -1935,7 +1936,7 @@ a.vertical-card:hover h4{ color:var(--blue-deep); }
    720 px n'est pas un nombre nouveau : c'est déjà celui de
    `.docs-section p`, quelques lignes plus bas.
 
-   SANS EFFET SUR LES 56 ARTICLES DE BLOG, qui gardent `post-wrap` : leur
+   SANS EFFET SUR LES ARTICLES DE BLOG, qui gardent `post-wrap` : leur
    conteneur ne fait que 644 px utiles, donc ce plafond ne les atteint
    jamais. Vérifié plutôt que supposé. */
 .post-body p{ max-width:720px; }
@@ -1966,7 +1967,7 @@ a.vertical-card:hover h4{ color:var(--blue-deep); }
    Etant un <p> dans .post-footer-cta, elle est visee par les deux regles qui
    existent deja : `.post-footer-cta p` lui donne --ink-muted sur fond clair,
    et `body.docs-dark .post-footer-cta p` (l.6918) lui donne
-   --ink-muted-on-dark sur les 122 pages a fond sombre. Mesure a l'ecran sur
+   --ink-muted-on-dark sur les pages a fond sombre. Mesure a l'ecran sur
    solutions/outillage.html : rgb(205,210,240), identique au paragraphe qui la
    precede.
 
@@ -4120,11 +4121,11 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
    ET TOUJOURS AUCUN `display` HORS DE `.open` : c'est ce que
    tests/panneaux-fermes.test.js refuse, et le defaut qu'il ferme -- une
    variante qui en pose un ecrase `.nav-drop-panel{display:none}` et laisse
-   le panneau ouvert en permanence sur les 126 pages.
+   le panneau ouvert en permanence sur tout le site.
 
    PAS DE PLEINE LARGEUR. La maquette pose `left:0;right:0` sur un panneau
    enfant de la BARRE ; en production il est enfant de `.nav-drop`, donc
-   l'etendre demanderait de deplacer un noeud dans 126 en-tetes -- ce que
+   l'etendre demanderait de deplacer un noeud dans chaque en-tete -- ce que
    `entete-structure.test.js` signalerait, et qui deborde le lot. */
 /* ANCRAGE SUR L'EN-TETE, PAS SUR LE BOUTON -- et c'est une mesure, pas un
    gout. Ancre sous « Developers », le panneau demande 1 008 px pour 979
@@ -4133,7 +4134,7 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 
    `<header>` est `position:sticky`, donc deja un ancetre positionne : il
    suffit de rendre `.nav-drop` statique pour ces deux panneaux-la. Aucun noeud
-   deplace dans les 126 en-tetes, ce que `entete-structure.test.js` aurait
+   deplace dans les en-tetes, ce que `entete-structure.test.js` aurait
    signale. `:has()` est deja employe 7 fois dans ce fichier.
 
    `width:min(1008px, 100vw - 96px)` + `margin:0 auto` : le panneau se centre
@@ -4275,7 +4276,8 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
    choisies separement.
 
    PAS DE NOEUD AJOUTE, ET C'EST CE QUI DECIDE DE LA FORME. Le rapport voulait
-   un <div class="nav-scrim"> apres </header> : 128 en-tetes a rouvrir. Un
+   un <div class="nav-scrim"> apres </header> : un noeud a rouvrir dans chaque
+   en-tete. Un
    `::before` sur <header> ne peut pas le remplacer -- MESURE, pas suppose : le
    `backdrop-filter:blur(8px)` de l'en-tete en fait le BLOC CONTENEUR de ses
    descendants `position:fixed`. Un temoin `inset:73px 0 0 0` pose dedans rend
@@ -4456,8 +4458,8 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 
      235 px, soit plus d'un quart de l'ecran, avant d'atteindre le menu qu'on
      vient d'ouvrir. Rien n'est perdu : la demo n'etait pas dans le menu avant
-     ce lot, et reste liee depuis les 22 pages solutions/, la documentation et
-     les trois pages plateformes. */
+     ce lot, et reste liee depuis toutes les pages solutions/, la
+     documentation et les pages plateformes. */
   .nav-promo{ display:none; }
   /* Colonnes empilees : un `border-left` tracerait un trait vertical le long
      du second groupe au lieu de separer deux colonnes cote a cote. */
@@ -7444,7 +7446,7 @@ body.docs-dark .integ-panel p{ color:var(--ink-muted-on-dark); }
 }
 .solution-intro .post-lede{ margin-bottom:0; }
 
-/* Les 16 pages solutions portent `docs-dark`. `var(--line)` y vaut
+/* Les pages solutions portent toutes `docs-dark`. `var(--line)` y vaut
    #E7E9F2 -- un trait quasi blanc sur un fond sombre, mesure a l'ecran :
    le cadre se voyait plus que l'image. Meme valeur que .solutions-hub-card,
    qui borde deja des cartes sur ces memes pages. */
@@ -7505,7 +7507,7 @@ body.docs-dark .docs-params strong{ color:var(--ink-on-dark); }
    defaut, correct hors contexte sombre (texte courant). Decouvert sur
    trois contextes distincts au fil du chantier (guide-quiz, docs-params,
    un simple paragraphe) -- plutot que de continuer a corriger chaque
-   nouveau contexte au cas par cas sur les 24 articles restants, une
+   nouveau contexte au cas par cas sur les articles restants, une
    seule regle globale couvre tout ce qui vit dans .post-body (le quiz et
    docs-params y sont deja inclus, leurs regles specifiques ci-dessus
    restent neanmoins necessaires pour docs.html, qui n'utilise jamais

@@ -373,7 +373,7 @@ describe("index derive — la recherche lit vraiment les termes", () => {
   });
 
   // Le classement doit tenir : un titre bat un terme de corps, sinon la page
-  // Tarifs se noie dans les 55 pages qui mentionnent le mot.
+  // Tarifs se noie dans toutes les pages qui mentionnent le mot.
   it("un titre passe devant un terme de corps", async () => {
     const w = await moteurAvecIndexReel();
     const premier = chercher(w, "tarifs")[0].querySelector(".search-result-title").textContent;

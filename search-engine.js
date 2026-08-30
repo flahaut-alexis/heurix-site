@@ -25,8 +25,8 @@
   //
   // L'index derive pese 40,9 ko une fois compresse -- GitHub Pages sert du
   // gzip, pas du brotli, verifie sur l'origine. Le charger dans chaque page
-  // le ferait payer aux 118 pages du site, par tous les visiteurs, alors que
-  // la grande majorite ne cherche jamais.
+  // le ferait payer a toutes les pages du site, par tous les visiteurs,
+  // alors que la grande majorite ne cherche jamais.
   //
   // Il est donc recupere au PREMIER USAGE. Cout mesure, connexion deja
   // chaude (meme origine, page chargee, donc RTT + transfert) :
@@ -590,8 +590,9 @@
 
         var meta = el("div", "search-result-meta");
         if (item.s) meta.appendChild(pastille(item.s));
-        // AUCUNE CATEGORIE INVENTEE. Verifie sur les 56 pages : og:type ne
-        // rend que « article » ou « website », et le schema decrit
+        // AUCUNE CATEGORIE INVENTEE. Verifie le 30 aout 2026 sur les 123
+        // pages portant og:type : il ne rend que « article » (45) ou
+        // « website » (78), et le schema decrit
         // l'organisation. La seule seconde information derivable est la page
         // PARENTE d'une ancre, et c'est celle qui situe reellement.
         if (item.ancre && item.e) meta.appendChild(el("span", "search-result-parent", item.e));

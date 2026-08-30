@@ -11,7 +11,7 @@ const SOURCE = fs.readFileSync(path.join(RACINE, "search-engine.js"), "utf8");
 //
 // L'index derive pese 40,9 ko compresse -- GitHub Pages sert du gzip, pas du
 // brotli, verifie sur l'origine. Le charger dans chaque page le ferait payer
-// aux 118 pages, par tous les visiteurs, alors que la plupart ne cherchent
+// a toutes, par tous les visiteurs, alors que la plupart ne cherchent
 // jamais. Il est donc recupere au PREMIER USAGE, et PRECHARGE SUR INTENTION
 // parce qu'attendre la frappe couterait plus que l'API qu'on a ecartee :
 //

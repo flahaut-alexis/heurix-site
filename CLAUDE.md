@@ -683,8 +683,8 @@ valeur est mesurée, et sur un seul.
 
 Corollaire : **une valeur de contraste n'est validée que sur les fonds où on
 l'a composée.** Le nombre est juste, il est simplement plus étroit que la règle
-CSS qui le porte — une règle sans `body.docs-dark` s'applique aux 133 pages,
-la mesure qui la justifie n'en couvrait qu'une. C'est « un chiffre porte son
+CSS qui le porte — une règle sans `body.docs-dark` s'applique à toutes les
+pages, la mesure qui la justifie n'en couvrait qu'une. C'est « un chiffre porte son
 périmètre » appliqué à un rapport de contraste : le périmètre d'une mesure de
 couleur, ce sont les **fonds** composés, et il ne voyage pas avec le chiffre.
 
@@ -925,7 +925,8 @@ toucher.
 
 **Le menu principal est écrit en dur dans chaque page** — `nav-dropdown.js`
 n'anime que le déroulant, il ne construit rien. Y ajouter une entrée est donc
-une modification de **128 pages**, exactement la forme qui a produit trois
+une modification de **toutes les pages**, exactement la forme qui a produit
+trois
 incidents en une semaine : `index.html#tarifs` mort sur 116 pages, le lien
 mobile absent de 77, PrestaShop/WooCommerce/Shopify absents du menu Developers
 de 77.
@@ -933,18 +934,21 @@ de 77.
 **Mais cette famille-là a désormais son garde, et c'est le seul point qui
 compte.** `tests/entete-structure.test.js` compare la structure d'en-tête de
 toutes les pages entre elles et échoue dès qu'une diverge sans figurer dans
-une liste d'exceptions justifiées. Une modification appliquée à 127 pages sur
-128 serait donc **nommée**, pas servie en silence — ce qui manquait aux trois
+une liste d'exceptions justifiées. Une modification appliquée à toutes les
+pages sauf une serait donc **nommée**, pas servie en silence — ce qui manquait
+aux trois
 incidents ci-dessus.
 
 Le fait est écrit ici parce qu'il est contre-intuitif dans le bon sens : la
-lecture spontanée de « 128 pages à modifier » est « trop risqué », et elle
+lecture spontanée de « toutes les pages à modifier » est « trop risqué », et
+elle
 était juste avant ce test. Elle ne l'est plus. Le coût réel est la surface, pas
 le risque.
 
 **Décision du 28 août 2026 : le lien vers la démo n'entre PAS au menu.** Il
-existe déjà sur les 22 pages `solutions/`, la documentation et les trois pages
-plateformes ; le gain marginal ne valait pas 128 pages. Le refus porte sur le
+existe déjà sur toutes les pages `solutions/`, la documentation et les pages
+plateformes ; le gain marginal ne valait pas une modification de tout le
+site. Le refus porte sur le
 rapport, pas sur le danger.
 
 ### Vérifier une liste prouve la liste, pas la page
@@ -1596,9 +1600,10 @@ distincte, à une profondeur distincte, avec ses propres liens.
 **Et elle descend jusqu'au pied de page.** Le premier écran est celui qu'on
 regarde et celui où les défauts se rangent le moins.
 
-**Ce qu'un œil ne peut pas couvrir, un contrôle dérivé le doit.** 126 pages ×
-deux langues ne se cliquent pas. `tests/liens-relatifs.test.js` résout chaque
-lien depuis le dossier de sa page et demande au disque si le fichier existe —
+**Ce qu'un œil ne peut pas couvrir, un contrôle dérivé le doit.** Les pages du
+site, dans les deux langues, ne se cliquent pas.
+`tests/liens-relatifs.test.js` résout chaque lien depuis le dossier de sa page
+et demande au disque si le fichier existe —
 périmètre dérivé, aucune liste de pages. Il aurait attrapé les 22.
 
 ### Une capacité documentée qui n'existe pas est pire qu'une limite documentée
@@ -2071,8 +2076,9 @@ capture de Solutions ouvert comme preuve que le menu marchait. Elle le montrait
 bien — mais je venais de cliquer dessus. Or le défaut réel était que
 `.nav-panel-secteurs{ display:grid }`, posé sans condition, écrasait
 `.nav-drop-panel{ display:none }` : **les trois panneaux étaient ouverts en
-permanence sur 126 pages**, `aria-expanded="false"` et tout. Le DOM disait
-fermé, le compositeur peignait ouvert.
+permanence sur les 128 pages qui portent le menu** (mesuré le 30 août 2026),
+`aria-expanded="false"` et tout. Le DOM disait fermé, le compositeur peignait
+ouvert.
 
 Aucune photographie de l'état ouvert ne pouvait le montrer, parce que l'état
 ouvert était exactement ce qui allait bien.
@@ -2240,6 +2246,199 @@ Vérifié après coup, et c'est ce qui a tranché : le menu porte onze liens dan
 **tous** les commits depuis au moins le 29 août 13:02. Il n'existe aucun état
 du site où il en aurait eu huit — donc pas « un rapport qui a regardé un état
 antérieur », mais un chiffre sur une autre population.
+
+#### Deuxième occurrence de la cinquième forme : « 126 pages », sept fois
+
+Le 30 août 2026, sept commentaires du dépôt annonçaient « 126 pages » là où le
+dépôt en compte 128. Le diagnostic porté avec la demande était : *un chiffre
+qui a vieilli sur place — juste quand il a été écrit, des pages sont apparues
+depuis, et rien ne relit un commentaire.*
+
+**L'archéologie dit l'inverse, et c'est elle qui décide du remède.** Le nombre
+d'en-têtes, commit par commit :
+
+```
+122   jusqu'au 27 août (a016429d)
+124   50433947  27 août
+128   4c32bd84  27 août  « Les onze packs ont tous leur page… »
+```
+
+Il saute 124 → 128 sans passer par 126. **Il n'a jamais valu 126.** En
+revanche, le *total de pages du dépôt* valait exactement 126 le 27 août. D'où
+la partition des sept :
+
+| écrit le | où | ce qu'il compte | à l'écriture |
+|---|---|---|---|
+| 27 août | `canonical.test.js:19`, `CLAUDE.md` (contrôle dérivé) | **toutes** les pages | **exact** |
+| 30 août | `styles.css` ×3, `panneaux-fermes.test.js`, `CLAUDE.md` (panneaux) | des **en-têtes** | **faux le jour même** |
+
+Ce n'est donc pas un chiffre qui vieillit. **C'est la cinquième forme, pas une
+sixième** : le 126 du 27 août portait sur « toutes les pages » ; recopié trois
+jours plus tard dans des phrases sur « les en-têtes », il s'est mis à décrire
+une autre population, où la réponse était 128 et l'était depuis trois jours.
+La phrase d'à côté portait sa borne, la recopie l'a laissée derrière.
+
+##### Et le chiffre qui corrige les sept a besoin de sa commande
+
+**Le défaut, appliqué à sa propre correction.** « 128 en-têtes » ne se
+reproduit pas tel quel : la commande qui l'établit doit exclure les
+répertoires en point, et l'écart n'est pas cosmétique. Mesuré le 30 août 2026,
+même dépôt, deux emplacements :
+
+```
+find . -name '*.html' -not -path './node_modules/*' -not -path './docs/maquettes/*'
+    depuis un worktree de ~/wt/      134
+    depuis l'arbre partagé           554     <- trois worktrees sous .claude/,
+                                                une copie complète du site chacun
+git ls-files '*.html' | grep -v '^docs/maquettes/'
+    depuis les deux                  134
+```
+
+`find` répond sur le disque, et le disque contient les copies de travail des
+autres sessions. **`git ls-files` répond sur l'index**, donc sur le dépôt, et
+rend le même nombre où qu'on se tienne. C'est la même leçon que le périmètre
+dérivé, d'un cran plus bas : le périmètre d'un `find` est l'endroit d'où on le
+lance, et rien dans sa sortie ne le dit.
+
+`canonical.test.js` et `entete-structure.test.js` sont immunisés par
+construction — leur marche d'arbre saute `e.name.startsWith(".")`. Un balayage
+écrit à la main dans un shell ne l'est pas.
+
+**Et ce n'est pas l'accident d'un outil : le même jour, `vitest`.** Son
+exclusion par défaut ne contient pas `.claude` non plus, et un seul worktree
+vivant dessous doublait la suite entière pour toutes les sessions — 91
+fichiers collectés au lieu de 46, 1 137 tests au lieu de 570. Le commit
+`0e403875` porte la mesure complète en tête de `vitest.config.js`. Deux outils
+sans rapport, la même cause : **un dénombrement qui répond sur le disque
+alors que la question porte sur le dépôt.** La CI n'en voyait rien, partant
+d'un checkout neuf — donc, comme toujours ici, le défaut ne se voyait que
+depuis la machine où il coûtait.
+
+**Ce qui l'a révélé reste vrai, et c'est le seul signal qui existait :**
+`scripts/bust-cache.sh styles.css` affiche « propagé dans 128 fichier(s) »
+juste à côté de commentaires qui disent 126. Un outil qui produit le même
+nombre à côté du nombre écrit. Sans lui, rien — un commentaire ne s'exécute
+pas, et deux commentaires ne se confrontent jamais.
+
+##### Le remède est la suppression, pas la mise à jour
+
+Le balayage complet du dépôt (`*.css`, `*.js`, `*.md`, `*.py`, `tests/`) a
+trouvé **17 comptes de pages périmés**. Le fait qui tranche :
+
+> **Au moins 4 des 17 étaient faux le jour où ils ont été écrits.**
+
+`styles.css` annonçait « `h1` touche 37 pages » le 1ᵉʳ août, quand 141 pages
+portaient un `<h1>` ; « `.btn-ghost` sur 22 autres pages » le 2 août, quand
+53 pages le portaient, soit 51 autres — et ce même « 22 » est *juste
+aujourd'hui* (26 pages, 22 autres), par coïncidence. Un
+chiffre écrit à la main n'est donc pas « juste puis périmé » : il est juste
+*si* quelqu'un l'a mesuré, et **rien, après coup, ne dit lequel des deux**.
+
+Le fichier se contredit d'ailleurs à lui seul : `styles.css` disait 126
+en-têtes et, 150 lignes plus bas, 128 — écrits à un commit d'intervalle, dans
+le même chantier sur le menu.
+
+D'où trois règles, appliquées à ce lot :
+
+- **Ne pas écrire le nombre quand la phrase n'en a pas besoin.** « déplacer un
+  nœud dans 126 en-têtes » et « dans chaque en-tête » disent la même chose ;
+  seule la première peut mentir. C'est le corollaire des secteurs — « ne pas
+  écrire le nombre » — appliqué aux commentaires.
+- **Dater seulement quand le nombre porte l'argument.** Sur les six sites de
+  ce lot, **un seul** : le récit du défaut des panneaux, où l'ampleur *est* le
+  propos. Il porte désormais 128 et sa date.
+- **Un relevé daté ne se rafraîchit pas.** `canonical.test.js:19` dit « le
+  balayage des 126 pages » : c'est un état du 27 août, il était exact, et le
+  corriger effacerait la mesure au lieu de la rafraîchir. Non touché — comme
+  les ~30 autres relevés datés du dépôt.
+
+##### Le discriminant n'est pas l'écart au réel. Il est triple, et ordonné.
+
+C'est la partie qui a coûté le plus cher : deux sessions ont mal classé sept
+lignes en une soirée, **toutes les deux en comparant le nombre écrit au nombre
+réel**. Ce critère ne discrimine rien — il dit qu'un chiffre est faux, pas ce
+qu'il faut en faire. Les trois questions, dans cet ordre :
+
+**1. À quel temps est le verbe ?** Le passé signe une MESURE. « Figer `--ink`
+ici *rendait* le nom du produit invisible sur 118 pages » décrit l'état d'avant
+un correctif : le chiffre est la taille du défaut au moment où il a été
+mesuré. Il ne se touche pas. Cinq lignes ont failli disparaître sur ce seul
+oubli, et les supprimer aurait rendu le récit faux — le défaut portait sur les
+118 pages d'alors, pas sur les 133 d'aujourd'hui.
+
+**2. Le nombre pèse-t-il dans une comparaison ?** Un nombre-argument se met des
+DEUX côtés d'une balance. « 128 lignes de diff contre un effet nul » se
+compare, et l'arbitrage disparaît si on le retire : il se date, avec sa
+population. « Le ferait payer aux 118 pages » ne se compare à rien — c'est le
+mot « partout », en plus fragile : il se supprime. **Le présent ne suffit donc
+pas à faire un argument**, et deux lignes du même fichier peuvent différer sans
+qu'aucune soit ce qu'on croit : `search-engine.js:18` est une mesure, `:28` une
+ampleur, aucune des deux un argument. Le geste, plus court que la définition :
+retirer le nombre, et regarder si l'argument tient encore.
+
+**3. La mesure a-t-elle seulement eu lieu ?** Un nombre ne se date QUE SI
+quelqu'un a regardé. Sinon la date certifie une vérification inexistante, et
+**un mensonge daté est pire qu'un mensonge nu** : il est plus crédible.
+
+> **Pour une revendication de vérification périmée, la satisfaire c'est refaire
+> la mesure, jamais dater l'ancienne.**
+
+Cette règle a rattrapé son auteur dans l'heure. J'avais daté
+`search-engine.js:593` — « Vérifié sur les 56 pages » — au motif que
+l'étendue d'une vérification se date. Vérifié après coup : au commit qui l'écrit,
+**122 pages portaient `og:type`, et aucune population du dépôt ne valait 56**.
+L'original était donc le même défaut que `styles.css:1938`, qui dit « Vérifié
+plutôt que supposé » en portant un nombre supposé. Ma correction ne tient que
+parce que j'avais **refait la mesure** ce jour-là (45 « article », 78
+« website ») : la date certifie ma mesure, pas celle qui manquait. Accoler une
+date au « 56 » aurait écrit le mensonge daté.
+
+**Corollaire de fouille : « vérifié » est un endroit à creuser, pas une
+garantie.** Sur les deux revendications de ce dépôt qui portaient un nombre de
+pages, **les deux** étaient fausses le jour de leur écriture.
+
+```bash
+grep -rnE "[Vv][ée]rifi[ée]s?[^.]{0,40}[0-9]{2,}" --include='*.js' --include='*.css' --include='*.py' .
+```
+
+**Et ce balayage n'en trouve QU'UNE des deux — dit ici parce qu'il ne le dira
+pas lui-même.** Il attrape `search-engine.js:593`, où le nombre suit
+« Verifie » sur la même ligne. Il rate `styles.css:1938`, dont le « 56 » est
+**trois lignes au-dessus** du mot « Vérifié » : un `grep` raisonne par ligne,
+la phrase raisonne par phrase. Sa première version ratait même les deux — elle
+ancrait `[Vv]érifi` sur l'accent, quand les commentaires de ce dépôt écrivent
+« Verifie » sans accent. Elle a été lancée avant d'être écrite ici, et c'est ce
+qui l'a montré : **la commande publiée pour documenter le défaut le
+reproduisait**, troisième fois de la semaine que le correctif refait ce qu'il
+corrige.
+
+##### Et le garde a été chiffré, puis refusé
+
+Comme celui des secteurs. La mesure est ici pour qui le reproposera.
+
+Un garde de cohérence interne — *aucun commentaire du dépôt ne contredit un
+autre commentaire sur la même population* — tourne en **0,2 s** et n'a besoin
+d'aucune liste. Il attrape mal :
+
+```
+motif strict  (nombre colle au mot)   rate « 15 autres pages », « 126 en-tetes »
+motif lache   (fenetre de 30 car.)    208 lignes, dont l'ecrasante majorite
+                                      est l'article « une page », « un fichier »
+```
+
+Et il ne sait pas lire une population : dans « `.btn` et `.btn-ghost` sont
+partagés respectivement par 36 et 22 autres pages », les deux nombres portent
+sur deux sélecteurs, l'un faux et l'autre juste, dans la même phrase. Il
+naîtrait donc avec sa liste d'exceptions — **c'est le garde refusé pour les
+secteurs, sous une autre forme**, et un vert sur des commentaires faux est le
+pire des états.
+
+Ce qui ferme vraiment la famille est ailleurs, et existe déjà :
+`entete-structure.test.js`, `canonical.test.js` et `panneaux-fermes.test.js`
+**dérivent tous leur périmètre** — marche de l'arbre, extraction du CSS,
+référence prise comme la structure majoritaire. Aucun ne code un nombre. Le
+seul élément périmé des trois était le chiffre écrit dans leur commentaire
+d'en-tête.
 
 #### Le garde a été chiffré, et refusé sur sa mesure
 

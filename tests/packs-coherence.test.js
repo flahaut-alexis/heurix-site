@@ -123,18 +123,26 @@ const AFFIRMATION = new RegExp(
 // une exception ecrite vaut mieux qu'un motif resserre, parce qu'elle se
 // relit et se conteste, la ou un motif etroit rate en silence.
 //
-// Les cinq comptent des PAGES SECTORIELLES, pas des packs. C'est un autre
-// inventaire, et il ne bouge pas quand un pack arrive : verifie le 27 aout
-// -- index.html ne contient aucune occurrence de « sport », donc la grille
-// n'affiche pas le onzieme pack et « Sept de ces secteurs » reste juste.
-const EXCEPTIONS = [
-  { motif: /sept de ces secteurs/i,
-    raison: "compte les cartes sectorielles affichees sur la page, pas les packs" },
-  { motif: /sept vocabulaires de reference|sept vocabulaires de référence/i,
-    raison: "pages solutions : compte les sept pages sectorielles" },
-  { motif: /seven reference vocabularies/i,
-    raison: "idem, version anglaise" },
-];
+// LA LISTE ETAIT VIDE DE SENS ET LE TEST PASSAIT (30 aout 2026). Elle a
+// porte trois exceptions, toutes justes le 27 aout, toutes MORTES trois
+// jours plus tard : les pages sectorielles sont passees de sept a onze, et
+// « Sept de ces secteurs », « sept vocabulaires de reference » et « seven
+// reference vocabularies » ont disparu du site avec ce lot. Les trois
+// motifs ne filtraient plus rien -- verifie, 34 affirmations balayees,
+// 0 exclue -- et rien ne le disait : une exception qui ne mord plus est
+// invisible, elle se contente de ne rien faire.
+//
+// Une quatrieme affirmation, dans ce meme commentaire, avait pourri de la
+// meme facon : « index.html ne contient aucune occurrence de sport ». Elle
+// etait vraie le 27 aout ; le menu de navigation du 30 aout y a pose un
+// lien vers `solutions/sport.html`.
+//
+// D'ou les deux assertions de fin, reprises telles quelles de
+// `entete-structure.test.js` : une exception qui ne filtre plus rien doit
+// sortir, et une exception sans raison lisible sera reconduite sans etre
+// relue. Sans elles, cette liste ne se relit jamais -- c'est ce que
+// CLAUDE.md appelle une liste d'exceptions devenue une liste de dettes.
+const EXCEPTIONS = [];
 
 // DEUX MISES EN PAGE COEXISTENT, ET LE MOTIF N'EN CONNAISSAIT QU'UNE
 // (27 aout 2026).
@@ -233,9 +241,14 @@ function nomsDeLEnumeration(brut) {
 
 const affirmations = [];
 const enumerations = [];
+// Les affirmations AVANT filtrage. C'est le seul etat depuis lequel on peut
+// dire si une exception filtre encore quelque chose : apres filtrage, une
+// exception morte et une exception qui a fait son travail se ressemblent.
+const affirmationsBrutes = [];
 for (const p of pages) {
   const t = texte(p);
   for (const m of t.matchAll(AFFIRMATION)) {
+    affirmationsBrutes.push({ page: p, texte: m[0] });
     const exception = EXCEPTIONS.find((e) => e.motif.test(m[0]));
     if (exception) continue;
     affirmations.push({ page: p, mot: m[1].toLowerCase(), valeur: NOMBRES[m[1].toLowerCase()] });
@@ -248,7 +261,7 @@ for (const p of pages) {
   }
 }
 
-describe("packs — les trente et une affirmations du site s'accordent", () => {
+describe("packs — les affirmations du site s'accordent", () => {
   it("toutes les affirmations chiffrees annoncent le meme nombre", () => {
     const valeurs = [...new Set(affirmations.map((a) => a.valeur))];
     const detail = valeurs.length > 1
@@ -426,5 +439,42 @@ describe("packs — les trente et une affirmations du site s'accordent", () => {
     for (const e of enumerations) parForme[e.forme].push(e.page);
     expect(parForme.A, "forme A (liste entre parentheses) ne matche plus rien").not.toEqual([]);
     expect(parForme.B, "forme B (liste en prose, parentheses par nom) ne matche plus rien").not.toEqual([]);
+  });
+
+  // ---------------------------------------------------------------------
+  // LA LISTE D'EXCEPTIONS SE POLICE ELLE-MEME.
+  //
+  // Reprises telles quelles de `entete-structure.test.js`, qui les porte
+  // depuis le 26 aout et dont les deux ont mordu le jour de leur ecriture.
+  // Elles manquaient ici, et la difference s'est vue : trois exceptions
+  // mortes ont survecu a la disparition de ce qu'elles excluaient, dans un
+  // fichier vert a 9/9.
+  //
+  // La premiere est la plus importante. Une exception qui ne filtre plus
+  // rien ne fait echouer aucun test -- elle se contente d'exister, et la
+  // seule facon de la trouver est de venir la chercher.
+  // ---------------------------------------------------------------------
+  it("aucune exception n'est perimee : chacune filtre encore quelque chose", () => {
+    const mortes = EXCEPTIONS
+      .filter((e) => !affirmationsBrutes.some((a) => e.motif.test(a.texte)))
+      .map((e) => String(e.motif));
+    expect(
+      mortes,
+      "Ces exceptions ne filtrent plus aucune affirmation du site. Retire-les :\n" +
+        "une exception qu'on ne nettoie pas finit par couvrir un vrai defaut,\n" +
+        `et rien d'autre ne la signalera. ${affirmationsBrutes.length} affirmations balayees.`
+    ).toEqual([]);
+  });
+
+  it("chaque exception porte une raison lisible", () => {
+    const muettes = EXCEPTIONS
+      .filter((e) => !e.raison || e.raison.trim().length < 20 || /^\s*idem\b/i.test(e.raison))
+      .map((e) => String(e.motif));
+    expect(
+      muettes,
+      "Exception sans raison, ou dont la raison est un renvoi : elle sera\n" +
+        "reconduite sans etre relue. Un renvoi (« idem l'autre ») n'est pas une\n" +
+        "raison -- il faut relire deux entrees pour en juger une."
+    ).toEqual([]);
   });
 });

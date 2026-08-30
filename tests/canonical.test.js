@@ -190,7 +190,7 @@ describe("sitemap — il declare exactement les pages indexables", () => {
 
   it("aucune page indexable n'est absente du sitemap", () => {
     // index.html est declaree par son chemin de fichier dans ce sitemap, pas
-    // par la racine -- verifie, et coherent avec les 110 autres entrees.
+    // par la racine -- verifie, et coherent avec toutes les autres entrees.
     const oubliees = pages.filter((p) => estIndexable(p) && !ensemble.has(p));
     expect(oubliees).toEqual([]);
   });

@@ -53,7 +53,7 @@ describe("icones derivees de logo.svg", () => {
 
   // Un PNG de la bonne taille mais du mauvais dessin passe ici ; ce n'est pas
   // ce que cette assertion couvre. Elle attrape le cas ou l'on regenere a la
-  // mauvaise taille -- 180 est une convention iOS, 32 est ce que les 128 pages
+  // mauvaise taille -- 180 est une convention iOS, 32 est ce que les pages
   // declarent, et ni l'un ni l'autre n'est visible dans un diff.
   it("chaque icone a la taille que le manifeste declare", () => {
     for (const i of MANIFESTE.icones) {

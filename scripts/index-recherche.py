@@ -202,7 +202,7 @@ def termes(texte: str) -> set[str]:
 # Extraction
 # ---------------------------------------------------------------------------
 
-# Retires avant extraction : ils sont identiques sur les 111 pages et
+# Retires avant extraction : ils sont identiques d'une page a l'autre et
 # n'apprennent rien qui distingue une page d'une autre.
 _HORS_CONTENU = re.compile(r"<(script|style|nav|footer|svg)\b[\s\S]*?</\1>", re.I)
 _BALISES = re.compile(r"<[^>]+>")

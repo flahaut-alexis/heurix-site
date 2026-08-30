@@ -10,7 +10,7 @@ const CSS = readFileSync(join(RACINE, "styles.css"), "utf8");
  * `.nav-drop-panel{ display:none }` est la SEULE chose qui tient un menu
  * ferme -- ni `hidden`, ni `aria-expanded`, qui ne font que le declarer.
  * Une variante qui pose son propre `display` hors de `.open` l'ecrase, et
- * les trois panneaux restent ouverts sur les 126 pages.
+ * les trois panneaux restent ouverts sur tout le site.
  *
  * Mesure du 30 aout 2026, avant correctif : les trois panneaux rendaient
  * `display:grid` / `display:flex` avec `aria-expanded="false"`. Le DOM

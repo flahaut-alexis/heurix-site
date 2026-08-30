@@ -17,8 +17,8 @@ const RACINE = path.resolve(__dirname, "..");
 // affirme ce que la page ne montre pas est pire qu'un balisage absent.
 //
 // L'APRES-MIDI : en corrigeant, j'ai derive les FAQPage du visible -- donc
-// le texte existe desormais EN DOUBLE sur six pages, une fois dans le corps
-// et une fois dans le JSON-LD. Le cout est acceptable, mais il cree
+// le texte existe desormais EN DOUBLE sur chaque page qui porte un FAQPage,
+// une fois dans le corps et une fois dans le JSON-LD. Le cout est acceptable, mais il cree
 // exactement le defaut d'en face : quelqu'un qui edite une page corrige ce
 // qu'il VOIT et laisse le JSON. Et on edite toujours ce qu'on voit.
 //
