@@ -4880,10 +4880,55 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
    l'ancrage a droite le faisait deborder hors de la carte (capture
    Alexis). Sur la page soeur le bouton est a droite, d'ou l'ancrage
    inverse -- deux contextes, deux reglages. */
-/* Cote recherche, le bouton est en fin de ligne : le panneau doit
-   s'ouvrir vers l'interieur, donc s'ancrer a droite. Cote categorie il
-   est en debut de ligne et garde l'ancrage par defaut. */
-.so-apercu-cols .so-apercu-reglages-panel{ left:auto; right:0; }
+
+/* ANCRER NE SUFFISAIT PAS : LE PANNEAU EST PLUS LARGE QUE SA CARTE
+   (31 aout 2026).
+
+   L'etat corrige : `right:0` ancrait le panneau de 260px sur un conteneur
+   de 197px -- la largeur du BOUTON, pas celle de la carte. Il partait donc
+   63px a gauche du bouton, et `overflow-x:clip` de `.console-panel` en
+   coupait 35. A l'ecran : « s reglages ne changent que cet [ecr]an » et
+   « ODUITS AFFICHES ».
+
+   MAIS LE DEFAUT N'EST PAS SEULEMENT UN ANCRAGE, et c'est ce que la mesure
+   a montre. La carte retrecit avec la fenetre ; le panneau, non. Largeur
+   du contenu de la carte, mesuree :
+
+       viewport 1440   carte 282px   >= 260  le panneau tient
+       viewport 1199   carte 202px   <  260  il ne tient PAS
+       viewport 1054   carte 202px   <  260  il ne tient PAS
+
+   Sous ~1200px, AUCUN ancrage ne peut le faire tenir : re-ancrer a gauche
+   deplace simplement le rognage de 30px vers la droite. C'est pourquoi
+   la regle porte AUSSI `max-width`.
+
+   TROIS CHOSES, ET CHACUNE REPOND A UNE MESURE :
+
+   1. `display:block; width:100%` sur le wrap -- l'ancrage se fait sur la
+      CARTE et non plus sur le bouton. Le bouton ne bouge pas : il est
+      `inline-flex`, donc il ne s'etire pas dans un parent `block`
+      (mesure : 197px avant comme apres, aux cinq largeurs testees). Le
+      commentaire de `.br-reglages-wrap` quelques lignes plus haut le dit
+      deja depuis le 21 aout : « display:block sur le conteneur ne suffit
+      pas, c'est le BOUTON qui devait s'etirer ».
+
+   2. `left:0` plutot que `right:0` -- le panneau reste SOUS son bouton.
+      Ancre a droite d'un wrap devenu pleine largeur, il s'en detachait :
+      526px d'ecart mesures a 900px de viewport, et 147px hors ecran a
+      390px.
+
+   3. `max-width:100%` -- le panneau ne peut plus depasser la carte, quelle
+      que soit la largeur. C'est le seul des trois qui corrige le cas
+      < 1200px.
+
+   PORTEE CADREE A `.so-apercu-cols`, ET C'EST MESURE. La meme classe
+   `.so-apercu-reglages-wrap` porte le popover de la page Categorie, qui
+   est AUSSI `.br-reglages-wrap` et vaut 589px. Une regle non cadree la
+   ferait passer a 1074px a 1440, et son bouton avec (il porte
+   `width:100%`). `.br-reglages-wrap` n'est pas dans `.so-apercu-cols` --
+   verifie -- donc le cadrage suffit a l'epargner. */
+.so-apercu-cols .so-apercu-reglages-wrap{ display:block; width:100%; }
+.so-apercu-cols .so-apercu-reglages-panel{ left:0; right:auto; max-width:100%; }
 
 .br-regles-panneau{
   border:1px solid var(--line); border-radius:14px; padding:16px 18px;
