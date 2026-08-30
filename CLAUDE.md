@@ -2440,6 +2440,37 @@ référence prise comme la structure majoritaire. Aucun ne code un nombre. Le
 seul élément périmé des trois était le chiffre écrit dans leur commentaire
 d'en-tête.
 
+##### La colonne « juste » n'était pas sûre. Elle était non examinée.
+
+Le premier tableau de ce lot triait les comptes en *juste* et *périmé*. Il a
+servi à décider quoi corriger, et la colonne « juste » n'a plus jamais été
+rouverte — jusqu'à ce qu'une **autre session** signale une ligne qui s'y
+trouvait. Sous le bon axe, elle en contenait **douze** du même genre : exactes
+ce jour-là, condamnées par la même règle, et en train de devenir la série
+suivante.
+
+La cause n'est pas la négligence, elle est structurelle : **la colonne
+répondait « ce chiffre est-il vrai ? » quand la question était « ce chiffre
+devrait-il exister ? »**. Les deux réponses ont la même forme — un verdict par
+ligne — et rien ne distingue un tri fait sous le mauvais axe d'un tri correct.
+
+> **Une catégorie qu'on a soi-même déclarée close est celle qu'on ne rouvre
+> pas.** Ce n'est pas un défaut d'attention : la déclarer close *est* la
+> décision de ne plus la regarder, et cette décision survit au changement de
+> question qui l'invalide.
+
+D'où le seul remède observé qui marche, et il n'est pas une discipline :
+**quelqu'un d'autre.** Les trois quarts du périmètre final viennent d'une
+session voisine — la ligne hors liste, les douze qu'elle a fait rouvrir, les
+trois derniers de sa relecture du tableau. Aucune des deux sessions ne
+l'aurait produit seule, et celle qui tenait le tableau était précisément celle
+qui ne pouvait pas le voir.
+
+Corollaire pour qui reçoit une relecture : **la partie utile n'est pas ce
+qu'elle corrige, c'est ce qu'elle rouvre.** Les cinq classements que la session
+voisine avait faux ont coûté dix minutes à démentir ; la question qu'elle a
+posée sur une ligne « juste » a doublé le lot.
+
 #### Le garde a été chiffré, et refusé sur sa mesure
 
 Il n'est pas écrit. La mesure est ici pour qui le reproposera.
@@ -2627,7 +2658,7 @@ sont cinq ou six — les scripts, les tests, les données. C'est là que se
 cachent les fichiers d'autrui, et un coup d'œil suffit à voir celui qu'on ne
 reconnaît pas.
 
-### Trois fois dans la journée, le correctif a refait ce qu'il corrigeait
+### Le correctif refait ce qu'il corrige, et c'est la règle plutôt que l'exception
 
 Le 28 août 2026, trois occurrences de la même forme, sur trois sujets sans
 rapport. Ce n'est pas une distraction : c'est que **la zone la plus exposée à
@@ -2674,6 +2705,56 @@ import xml.dom.minidom as m, sys
 try: m.parse('$f')
 except Exception as e: print('INVALIDE $f :', e)"; done
 ```
+
+#### Quatre le 30 août, dont deux en vérifiant le lot qui documente la famille
+
+Le titre de cette section disait « trois fois dans la journée ». Deux jours
+plus tard il en fallait quatre de plus, et **deux d'entre elles ont été
+commises pendant la vérification du lot qui documente exactement ce défaut** :
+
+| | le défaut | où il a été refait |
+|---|---|---|
+| 4 | un compte de pages en commentaire | « 128 en-têtes à rouvrir », écrit dans l'heure qui suit la rédaction de la règle qui l'interdit |
+| 5 | un motif ancré sur une graphie | la commande `grep '[Vv]érifi'` publiée pour trouver les revendications de vérification, aveugle aux « Verifie » sans accent — donc aux deux cas qu'elle documente |
+| 6 | `for` non quoté sous zsh | en rejouant le contrôle de clefs de cache du lot, à l'endroit où `CLAUDE.md` le documente depuis le 29 août |
+| 7 | un chronomètre reproché le matin | posé l'après-midi |
+
+Le titre est corrigé en conséquence : **compter les occurrences dans un titre
+était le défaut de la section elle-même.** « Trois fois dans la journée » se
+périme au quatrième, et il est arrivé.
+
+##### LE GESTE QUI A ATTRAPÉ LA SIXIÈME : un contrôle de boucle porte un cas qui ne doit PAS passer
+
+C'est le seul des quatre qui ait été attrapé par un garde plutôt que par
+chance, et le garde tient en trois lignes.
+
+Le rejeu du contrôle de clefs, lancé dans le shell de session — **zsh** — n'a
+pas découpé `$MODIFIES` : une seule itération sur les deux noms collés, et un
+`OK` qui ne contrôlait rien. La sortie ressemblait exactement à un succès.
+
+```
+      OK  search-engine.js
+      styles.css : 1788106112 -> 1788116162     <- UNE itération, deux noms
+```
+
+Ce qui l'a démasqué n'est pas la relecture — la boucle est une copie fidèle de
+celle de la CI — mais **deux actifs NON modifiés passés dans la même boucle,
+qui devaient en sortir inchangés.** Sous zsh ils ne sortaient pas du tout.
+
+> **Un contrôle qui itère porte un cas qui ne doit pas passer.** Sans lui,
+> « la boucle a tourné » et « la boucle a tourné une fois sur du vide » ont la
+> même sortie, et c'est celle qu'on attendait.
+
+C'est la règle du témoin déjà écrite plus haut — « un instrument n'a le droit
+de répondre sur l'inconnu qu'après avoir répondu juste sur le connu » —
+spécialisée à la seule structure qui peut échouer *silencieusement en
+quantité* : une boucle qui ne tourne pas rend le même « aucun échec » qu'une
+boucle qui tourne et ne trouve rien. Le témoin négatif est ce qui les sépare,
+et il coûte deux lignes.
+
+Rappel du remède de fond, inchangé depuis le 28 août : **un fragment de script
+de CI se rejoue sous `bash -c`, jamais dans le shell interactif.** Le témoin
+est ce qui reste quand on oublie de le faire.
 
 ### Les onze pages sans balise sociale sont les bonnes onze
 
