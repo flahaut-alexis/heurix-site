@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Solutions — avant / après pictogrammes</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FFFFFF; --bg-page:#F7F8FC;
+    --ink:#12142B; --ink-muted:#5B5E76;
+    --blue:#5468FF; --blue-deep:#3F52E8; --blue-tint:#EEF1FF;
+    --dark-bg:#101B4D; --ink-on-dark:#F5F6FF; --ink-muted-on-dark:#CDD2F0; --accent-dark:#5AB8E8;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; padding:32px 20px 60px; background:var(--bg-page);
+    font-family:'Plus Jakarta Sans', -apple-system, 'Segoe UI', sans-serif;
+    color:var(--ink);
+    display:flex; flex-direction:column; align-items:center; gap:28px;
+  }
+  .wrap{ width:100%; max-width:640px; }
+  h1{ font-size:18px; font-weight:700; margin:0 0 4px; }
+  .caption{ font-size:13px; color:var(--ink-muted); margin:0 0 24px; line-height:1.5; }
+  .caption code{ background:#ECEDF5; padding:1px 5px; border-radius:4px; font-size:12px; }
+  .label{
+    font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase;
+    color:var(--ink-muted); margin:0 0 10px;
+  }
+  .panel{
+    background:var(--bg); border-radius:12px; padding:18px 20px;
+    box-shadow:0 1px 2px rgba(18,20,43,.06), 0 8px 24px rgba(18,20,43,.06);
+    margin-bottom:28px;
+  }
+  .panel.dark{ background:var(--dark-bg); box-shadow:none; }
+  .row{
+    display:flex; align-items:center; gap:12px;
+    padding:10px 4px; font-size:14.5px; font-weight:500;
+    border-bottom:1px solid #F0F1F7;
+  }
+  .panel.dark .row{ border-bottom:1px solid rgba(255,255,255,.08); }
+  .row:last-child{ border-bottom:none; }
+  .row span.txt{ color:var(--ink); }
+  .panel.dark .row span.txt{ color:var(--ink-on-dark); }
+  .icn{
+    flex:0 0 auto; width:28px; height:28px; border-radius:8px;
+    background:var(--blue-tint); color:var(--blue-deep);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .icn svg{ width:16px; height:16px; }
+  .icn.plain{
+    width:20px; height:20px; border-radius:0; background:none; color:var(--accent-dark);
+  }
+  .icn.plain svg{ width:18px; height:18px; }
+  .tag{
+    display:inline-block; font-size:11px; font-weight:700; padding:2px 8px;
+    border-radius:20px; margin-left:8px; vertical-align:middle;
+  }
+  .tag.warn{ background:#FFF3D6; color:#8A6100; }
+  footer{ font-size:12px; color:var(--ink-muted); max-width:640px; text-align:center; line-height:1.6; }
+</style>
+</head>
+<body>
+
+  <div class="wrap">
+    <h1>Solutions — avant / après (illustration)</h1>
+    <p class="caption">
+      À l'échelle des valeurs réelles de <code>styles.css</code> et des tracés Feather Icons déjà
+      utilisés sur <code>secteurs.html</code>. Ne remplace pas <code>menu-navigation.html</code> —
+      sert à voir le principe sur 3 des 11 lignes avant de brancher les 8 restantes.
+    </p>
+
+    <p class="label">Avant — thème clair</p>
+    <div class="panel">
+      <div class="row"><span class="txt">Quincaillerie &amp; outillage</span></div>
+      <div class="row"><span class="txt">Pièces détachées &amp; industrie</span></div>
+      <div class="row"><span class="txt">Automobile</span></div>
+    </div>
+
+    <p class="label">Après — thème clair (pastille #EEF1FF / tracé #3F52E8)</p>
+    <div class="panel">
+      <div class="row">
+        <span class="icn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"></path></svg></span>
+        <span class="txt">Quincaillerie &amp; outillage</span>
+      </div>
+      <div class="row">
+        <span class="icn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"></path></svg></span>
+        <span class="txt">Pièces détachées &amp; industrie</span>
+      </div>
+      <div class="row">
+        <span class="icn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg></span>
+        <span class="txt">Automobile</span>
+      </div>
+    </div>
+
+    <p class="label">Après — thème sombre, sur l'aplat #101B4D<span class="tag warn">couleur à confirmer</span></p>
+    <div class="panel dark">
+      <div class="row">
+        <span class="icn plain"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"></path></svg></span>
+        <span class="txt">Quincaillerie &amp; outillage</span>
+      </div>
+      <div class="row">
+        <span class="icn plain"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"></path></svg></span>
+        <span class="txt">Pièces détachées &amp; industrie</span>
+      </div>
+      <div class="row">
+        <span class="icn plain"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg></span>
+        <span class="txt">Automobile</span>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    Pastille claire : <code>#EEF1FF</code> / <code>#3F52E8</code> (tokens <code>--blue-tint</code> / <code>--blue-deep</code> de <code>styles.css</code>).
+    Version sombre : tracé seul en <code>#5AB8E8</code>, sans pastille — à valider avec <code>contrast.py</code> avant de figer la couleur.
+  </footer>
+
+</body>
+</html>

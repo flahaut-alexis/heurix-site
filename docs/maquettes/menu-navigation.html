@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Maquette — Menus Produit / Solutions / Developers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ===================================================================
+   MAQUETTE — pas servie, cf. README.md de ce dossier.
+   Portée : les trois panneaux de .nav-links (Produit / Solutions /
+   Developers) uniquement. Tout le reste du header est un décor non
+   modifié, reproduit ici pour donner le contexte visuel réel.
+   Tokens copiés de /styles.css le 29 août 2026 (voir rapport.md).
+   =================================================================== */
+
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  font-family: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+  background: #EEF0F6;
+  color: #12142B;
+}
+
+/* -------------------------------------------------------------------
+   Tokens — copie fidèle de :root et de la famille "sur fond sombre"
+   dans /styles.css. Rien n'est inventé ici : cf. rapport.md pour la
+   provenance de chaque valeur.
+------------------------------------------------------------------- */
+:root{
+  --bg:#FFFFFF; --bg-soft:#F7F8FC; --ink:#12142B; --ink-muted:#5B5E76;
+  --line:#E7E9F2; --blue:#5468FF; --blue-deep:#3F52E8; --blue-tint:#EEF1FF;
+  --radius:10px;
+  /* famille sombre */
+  --panel-dark:#101B4D;
+  --ink-on-dark:#F5F6FF; --ink-muted-on-dark:#CDD2F0;
+  --link-on-dark:#5AB8E8;
+  --hover-on-dark: rgba(255,255,255,0.10);
+  --border-on-dark: rgba(255,255,255,0.14);
+}
+
+/* =====================================================================
+   BARRE D'OUTILS DE LA MAQUETTE — n'existe pas sur le site, sert
+   uniquement à comparer clair/sombre et bureau/mobile côte à côte.
+===================================================================== */
+.maquette-toolbar{
+  position:sticky; top:0; z-index:200;
+  display:flex; flex-wrap:wrap; align-items:center; gap:20px;
+  background:#1B1E2E; color:#fff; padding:12px 20px; font-size:13.5px;
+  border-bottom:3px solid #FFB020;
+}
+.maquette-toolbar b{ font-weight:700; }
+.maquette-toolbar .grp{ display:flex; align-items:center; gap:8px; }
+.maquette-toolbar button{
+  font:inherit; font-size:13px; font-weight:600; cursor:pointer;
+  background:rgba(255,255,255,0.08); color:#fff; border:1px solid rgba(255,255,255,0.25);
+  border-radius:100px; padding:7px 14px; transition:background .15s ease;
+}
+.maquette-toolbar button:hover{ background:rgba(255,255,255,0.18); }
+.maquette-toolbar button[aria-pressed="true"]{ background:#FFB020; color:#1B1E2E; border-color:#FFB020; }
+.maquette-toolbar .sep{ width:1px; align-self:stretch; background:rgba(255,255,255,0.2); }
+.maquette-toolbar .note{ color:rgba(255,255,255,0.6); font-size:12.5px; }
+
+/* =====================================================================
+   CADRE DE PRÉVISUALISATION — un seul wrapper porte container-type,
+   ce qui permet au bouton "Aperçu mobile" de déclencher la VRAIE
+   media query à 768px sans avoir à redimensionner la fenêtre :
+   @container réagit à la largeur du cadre, exactement comme @media
+   réagirait à la largeur de la fenêtre. Sur le vrai site, ce serait
+   une media query normale (une seule fenêtre, pas de cadre imbriqué).
+===================================================================== */
+.preview-shell{
+  padding:28px 20px 60px; display:flex; justify-content:center;
+}
+.preview-frame{
+  container-type: inline-size;
+  container-name: heurix-shell;
+  width:100%; max-width:1360px;
+  background:#fff;
+  box-shadow:0 30px 60px rgba(18,20,43,0.18);
+  transition:max-width .2s ease;
+  overflow:hidden;
+}
+.preview-frame[data-viewport="mobile"]{ max-width:390px; margin:0 auto; }
+.preview-frame[data-viewport="mobile"] .frame-label::after{ content:"390px"; }
+.preview-frame[data-viewport="desktop"] .frame-label::after{ content:"1440px (fluide, plafonné à 1360px comme le site)"; }
+.frame-label{
+  font-size:11.5px; color:#8A8FA8; text-align:center; padding:6px 0 2px;
+  border-bottom:1px dashed #E2E4EE;
+}
+
+/* =====================================================================
+   HEADER — décor reproduit à l'identique (non modifié par la maquette).
+===================================================================== */
+.header{
+  position:relative; /* sticky retiré : n'a pas de sens dans un cadre */
+  background:rgba(255,255,255,0.92); border-bottom:1px solid var(--line);
+  color:var(--ink);
+}
+.mq-header-inner{
+  display:flex; align-items:center; gap:20px;
+  padding:14px 28px; margin:0 auto;
+}
+.logo{ display:inline-flex; align-items:center; gap:8px; font-weight:700; font-size:17px; color:var(--ink); text-decoration:none; white-space:nowrap; }
+.logo-mark{ width:26px; height:26px; border-radius:7px; background:var(--blue-deep); display:inline-block; }
+
+.nav-links{ display:flex; align-items:center; gap:16px; font-size:13.5px; color:var(--ink-muted); font-weight:600; white-space:nowrap; margin-left:auto; margin-right:auto; }
+.nav-links > a{ color:var(--ink-muted); text-decoration:none; padding:6px 2px; }
+.nav-links > a:hover{ color:var(--blue-deep); }
+
+.header-search{ display:flex; align-items:center; gap:8px; border:1px solid var(--line); border-radius:100px; padding:8px 14px; color:var(--ink-muted); font-size:13px; white-space:nowrap; }
+.header-search kbd{ font:600 11px/1 ui-monospace, monospace; background:var(--bg-soft); border:1px solid var(--line); border-radius:5px; padding:2px 5px; }
+.header-utility{ display:flex; align-items:center; gap:14px; font-size:13.5px; font-weight:600; color:var(--ink-muted); white-space:nowrap; }
+.header-utility a{ color:inherit; text-decoration:none; }
+.btn{ display:inline-flex; align-items:center; gap:8px; background:var(--blue-deep); color:#fff; font-weight:600; font-size:14px; padding:9px 18px; border-radius:8px; text-decoration:none; white-space:nowrap; }
+
+/* =====================================================================
+   .mq-drop — MODIFIÉ. Reprend l'existant (ouverture au clic, un seul
+   panneau ouvert à la fois, fermeture Échap + clic extérieur) et
+   n'ajoute que la largeur et le groupement par sous-parties.
+===================================================================== */
+.mq-drop{ position:relative; }
+.mq-drop-btn{
+  font-family:inherit; font-size:14px; font-weight:600; color:var(--ink-muted);
+  background:none; border:none; cursor:pointer; padding:6px 2px;
+  display:inline-flex; align-items:center; gap:5px;
+}
+.mq-drop-btn::after{
+  content:""; width:5px; height:5px; border-right:1.5px solid currentColor; border-bottom:1.5px solid currentColor;
+  transform:rotate(45deg) translateY(-1px); transition:transform .15s ease;
+}
+.mq-drop-btn[aria-expanded="true"]::after{ transform:rotate(225deg) translateY(-2px); }
+.mq-drop-btn:hover, .mq-drop-btn[aria-expanded="true"]{ color:var(--blue-deep); }
+.mq-drop-btn:focus-visible, .nav-links > a:focus-visible, .btn:focus-visible, .header-utility a:focus-visible{
+  outline:2px solid var(--blue); outline-offset:2px; border-radius:4px;
+}
+
+.nav-mega{
+  display:none; position:absolute; top:calc(100% + 12px); left:0; z-index:80;
+  background:var(--bg); color:var(--ink);
+  border:1px solid var(--line); border-radius:var(--radius);
+  box-shadow:0 20px 45px rgba(18,20,43,0.16);
+  padding:22px;
+}
+.nav-mega.open{ display:flex; gap:36px; }
+.nav-mega[data-menu="produit"]{ min-width:460px; }
+.nav-mega[data-menu="solutions"]{ min-width:560px; }
+.nav-mega[data-menu="developers"]{ min-width:480px; }
+
+.nav-mega-col{ display:flex; flex-direction:column; gap:14px; min-width:190px; }
+.nav-mega-group-label{
+  font-size:11.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase;
+  color:var(--ink-muted); margin:0 0 2px;
+}
+.nav-mega-group-label--spacer{ visibility:hidden; } /* alignement bureau seul, cf. règle mobile plus bas */
+.nav-mega-links{ display:flex; flex-direction:column; gap:1px; }
+.nav-mega-links a{
+  display:block; padding:8px 10px; margin:0 -10px; border-radius:8px;
+  font-size:13.5px; font-weight:500; color:var(--ink); text-decoration:none;
+}
+.nav-mega-links a:hover, .nav-mega-links a:focus-visible{ background:var(--blue-tint); color:var(--blue-deep); }
+.nav-mega-seeall{
+  display:inline-flex; align-items:center; gap:6px;
+  font-size:13px; font-weight:700; color:var(--blue-deep); text-decoration:none;
+  padding:2px 0 10px; margin-bottom:8px; border-bottom:1px solid var(--line);
+}
+.nav-mega-seeall:hover{ text-decoration:underline; }
+
+/* Pas de fond assombri sur le panneau bureau : l'existant n'en a pas non
+   plus (.nav-mobile-fond n'existe que pour l'état plein écran mobile,
+   cf. styles.css @media max-width:1080px). Un panneau flottant + son
+   ombre portée suffisent, comme aujourd'hui. */
+
+/* =====================================================================
+   THÈME SOMBRE — même structure, jetons "sur fond sombre" mesurés.
+   Choix : APLAT #101B4D (précédent de la modale de recherche, 28 août),
+   pas le traitement translucide de .pb-carte. Raison chiffrée : voir
+   rapport.md §3.
+===================================================================== */
+/* Le header LUI-MÊME ne change pas entre les deux options : consigne
+   explicite ("ne changez rien d'autre que les trois menus"). Il reste
+   le bandeau clair translucide actuel dans les deux cas -- recherche,
+   sélecteur de langue et boutons d'action inclus. Seul .nav-mega (le
+   panneau qui s'ouvre) porte les jetons sombres ci-dessous. */
+.preview-frame[data-theme="dark"] .nav-mega{
+  background:var(--panel-dark); color:var(--ink-on-dark);
+  border-color:var(--border-on-dark); box-shadow:0 20px 50px rgba(0,0,0,0.45);
+}
+.preview-frame[data-theme="dark"] .nav-mega-group-label{ color:var(--ink-muted-on-dark); }
+.preview-frame[data-theme="dark"] .nav-mega-links a{ color:var(--ink-on-dark); }
+.preview-frame[data-theme="dark"] .nav-mega-links a:hover,
+.preview-frame[data-theme="dark"] .nav-mega-links a:focus-visible{ background:var(--hover-on-dark); color:#fff; }
+.preview-frame[data-theme="dark"] .nav-mega-seeall{ color:var(--link-on-dark); border-bottom-color:var(--border-on-dark); }
+/* .btn (CTA) volontairement absent ici : il ne change pas non plus. */
+
+/* page derrière le header, pour un contexte de lecture honnête */
+.page-sample{ padding:64px 28px 90px; }
+.preview-frame[data-theme="light"] .page-sample{ background:var(--bg); color:var(--ink); }
+.preview-frame[data-theme="light"] .page-sample p{ color:var(--ink-muted); max-width:520px; }
+.preview-frame[data-theme="dark"] .page-sample{
+  color:var(--ink-on-dark);
+  background: radial-gradient(ellipse 1400px 900px at 50% 0%, #4C3FE0 0%, #3648A8 45%, #101B4D 100%);
+}
+.preview-frame[data-theme="dark"] .page-sample p{ color:var(--ink-muted-on-dark); max-width:520px; }
+.page-sample h1{ font-size:32px; margin:0 0 14px; }
+.measure-flag{
+  display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:700;
+  padding:5px 10px; border-radius:100px; margin-top:22px;
+}
+.preview-frame[data-theme="light"] .measure-flag{ background:var(--blue-tint); color:var(--blue-deep); }
+.preview-frame[data-theme="dark"] .measure-flag{ background:rgba(255,255,255,0.10); color:var(--link-on-dark); }
+
+/* =====================================================================
+   MOBILE (<768px) — @container reproduit fidèlement l'@media existant :
+   .nav-links devient un panneau plein écran, chaque .mq-drop occupe
+   toute la largeur, son panneau devient statique (empilé, plus de
+   flottement) et les groupes/colonnes du bureau se réduisent à une
+   seule colonne empilée dans l'ORDRE DE LECTURE d'origine.
+===================================================================== */
+.mobile-toggle{
+  display:none; width:38px; height:38px; border:1px solid var(--line); border-radius:8px;
+  background:#fff; margin-left:auto; flex-direction:column; justify-content:center; gap:4px; cursor:pointer;
+}
+.mobile-toggle span{ display:block; width:16px; height:2px; background:var(--ink); margin:0 auto; border-radius:2px; }
+/* Le bouton hamburger vit dans le header (inchangé) : il garde son style
+   clair dans les deux thèmes, comme la recherche et le logo. */
+
+@container heurix-shell (max-width: 768px){
+  .mq-header-inner{ flex-wrap:wrap; padding:12px 16px; }
+  .header-search{ order:3; width:38px; height:38px; padding:0; justify-content:center; border-radius:8px; }
+  .header-search span, .header-search kbd{ display:none; }
+  .mobile-toggle{ display:flex; order:4; }
+  .nav-links{
+    display:none; position:absolute; top:100%; left:0; right:0; z-index:90;
+    flex-direction:column; align-items:stretch; gap:0; margin:0;
+    background:var(--bg); border-top:1px solid var(--line);
+    box-shadow:0 16px 30px rgba(18,20,43,0.14); padding:8px 16px 18px; max-height:70vh; overflow-y:auto;
+  }
+  .preview-frame[data-theme="dark"] .nav-links{ background:var(--panel-dark); border-top-color:var(--border-on-dark); }
+  .nav-links.mobile-open{ display:flex; }
+  .nav-links > a{ padding:13px 4px; border-bottom:1px solid var(--line); }
+  .preview-frame[data-theme="dark"] .nav-links > a{ border-bottom-color:var(--border-on-dark); }
+  .header-utility{ display:none; } /* repris dans .nav-links sur le vrai site ; hors périmètre ici */
+
+  .mq-drop{ width:100%; border-bottom:1px solid var(--line); }
+  .preview-frame[data-theme="dark"] .mq-drop{ border-bottom-color:var(--border-on-dark); }
+  .mq-drop-btn{ width:100%; justify-content:space-between; padding:13px 4px; font-size:15px; }
+  .nav-mega{
+    position:static; display:none; box-shadow:none; border:none; padding:0 0 14px; min-width:0;
+    background:none;
+  }
+  .nav-mega.open{ display:flex; flex-direction:column; gap:18px; } /* colonnes -> empilées, même ordre */
+  .nav-mega-col{ min-width:0; gap:8px; }
+  .nav-mega-links a{ padding:10px 4px; margin:0; }
+  .nav-mega-seeall{ padding:2px 0 8px; }
+  .nav-mega-group-label--spacer{ display:none; } /* n'existe que pour aligner les 2 colonnes du bureau */
+  .nav-mega-col--continuation{ margin-top:-18px; } /* Solutions : 2 colonnes du bureau = 1 seul groupe
+    "Secteurs" scindé pour la largeur, pas 2 catégories -- pas d'espacement de groupe entre les deux
+    en pile mobile, contrairement à Produit/Developers qui sont de vrais groupes distincts. */
+  .frame-label::after{ content:"≤768px — @container heurix-shell" !important; }
+}
+</style>
+</head>
+<body>
+
+<div class="maquette-toolbar">
+  <b>Maquette — menus Produit / Solutions / Developers</b>
+  <div class="sep"></div>
+  <div class="grp">
+    <span>Thème</span>
+    <button type="button" data-theme-btn="light" aria-pressed="true">Clair</button>
+    <button type="button" data-theme-btn="dark" aria-pressed="false">Sombre</button>
+  </div>
+  <div class="sep"></div>
+  <div class="grp">
+    <span>Aperçu</span>
+    <button type="button" data-viewport-btn="desktop" aria-pressed="true">Bureau (1440)</button>
+    <button type="button" data-viewport-btn="mobile" aria-pressed="false">Mobile (390)</button>
+  </div>
+  <div class="sep"></div>
+  <span class="note">Cf. rapport.md pour les ratios de contraste et la recommandation.</span>
+</div>
+
+<div class="preview-shell">
+  <div class="preview-frame" id="previewFrame" data-theme="light" data-viewport="desktop">
+    <div class="frame-label"></div>
+    <header class="header">
+      <nav class="mq-header-inner" aria-label="Navigation principale">
+        <a class="logo" href="https://heurix.fr/index.html"><span class="logo-mark" aria-hidden="true"></span>Heurix</a>
+
+        <div class="nav-links" id="navLinks">
+
+          <!-- ============================================================
+               PRODUIT — 2 groupes, 5 liens réels (produit.html#…,
+               fonctionnalites.html, roi.html). ~13 lignes de balisage
+               par page : cf. rapport.md §5 pour le calcul complet.
+          ============================================================= -->
+          <div class="mq-drop">
+            <button type="button" id="produit-btn" class="mq-drop-btn" aria-expanded="false" aria-controls="mega-produit">Produit</button>
+            <div class="nav-mega" id="mega-produit" data-menu="produit" aria-labelledby="produit-btn">
+              <div class="nav-mega-col">
+                <p class="nav-mega-group-label">Le produit</p>
+                <div class="nav-mega-links">
+                  <a href="https://heurix.fr/produit.html#probleme">Le problème</a>
+                  <a href="https://heurix.fr/produit.html#mission">Notre mission</a>
+                  <a href="https://heurix.fr/produit.html#moteur">Le moteur</a>
+                </div>
+              </div>
+              <div class="nav-mega-col">
+                <p class="nav-mega-group-label">Aller plus loin</p>
+                <div class="nav-mega-links">
+                  <a href="https://heurix.fr/fonctionnalites.html">Fonctionnalités</a>
+                  <a href="https://heurix.fr/roi.html">Simulateur ROI</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ============================================================
+               SOLUTIONS — 11 secteurs réels, en 2 colonnes (6 + 5) au
+               lieu d'une liste de 11 lignes, + le lien vers secteurs.html
+               (aujourd'hui hors du menu alors que la page existe).
+          ============================================================= -->
+          <div class="mq-drop">
+            <button type="button" id="solutions-btn" class="mq-drop-btn" aria-expanded="false" aria-controls="mega-solutions">Solutions</button>
+            <div class="nav-mega" id="mega-solutions" data-menu="solutions" aria-labelledby="solutions-btn">
+              <div class="nav-mega-col">
+                <a class="nav-mega-seeall" href="https://heurix.fr/secteurs.html">Tous les secteurs →</a>
+                <div class="nav-mega-links">
+                  <a href="https://heurix.fr/solutions/outillage.html">Quincaillerie &amp; outillage</a>
+                  <a href="https://heurix.fr/solutions/industrie.html">Pièces détachées &amp; industrie</a>
+                  <a href="https://heurix.fr/solutions/automobile.html">Automobile</a>
+                  <a href="https://heurix.fr/solutions/electricite.html">Électricité &amp; installation</a>
+                  <a href="https://heurix.fr/solutions/plomberie.html">Plomberie &amp; sanitaire</a>
+                  <a href="https://heurix.fr/solutions/mode.html">Mode &amp; retail</a>
+                </div>
+              </div>
+              <div class="nav-mega-col nav-mega-col--continuation">
+                <p class="nav-mega-group-label nav-mega-group-label--spacer" aria-hidden="true">Secteurs (suite)</p>
+                <div class="nav-mega-links">
+                  <a href="https://heurix.fr/solutions/electronique.html">Électronique &amp; high-tech</a>
+                  <a href="https://heurix.fr/solutions/livres.html">Librairie &amp; édition</a>
+                  <a href="https://heurix.fr/solutions/vins.html">Vins &amp; spiritueux</a>
+                  <a href="https://heurix.fr/solutions/sport.html">Sport &amp; glisse</a>
+                  <a href="https://heurix.fr/solutions/finance.html">Finance &amp; comptabilité</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ============================================================
+               DEVELOPERS — 2 groupes : Documentation (page + 2 ancres
+               déjà mises en avant ailleurs sur le site + le guide de
+               démarrage) et Plateformes (4 pages réelles).
+          ============================================================= -->
+          <div class="mq-drop">
+            <button type="button" id="developers-btn" class="mq-drop-btn" aria-expanded="false" aria-controls="mega-developers">Developers</button>
+            <div class="nav-mega" id="mega-developers" data-menu="developers" aria-labelledby="developers-btn">
+              <div class="nav-mega-col">
+                <p class="nav-mega-group-label">Documentation</p>
+                <div class="nav-mega-links">
+                  <a href="https://heurix.fr/docs.html">Documentation</a>
+                  <a href="https://heurix.fr/docs.html#cascade">Comment ça marche</a>
+                  <a href="https://heurix.fr/docs.html#produits">Structure des produits</a>
+                  <a href="https://heurix.fr/blog/guide-mise-en-route.html">Guide de mise en route</a>
+                </div>
+              </div>
+              <div class="nav-mega-col">
+                <p class="nav-mega-group-label">Plateformes</p>
+                <div class="nav-mega-links">
+                  <a href="https://heurix.fr/integrations.html">Intégrations</a>
+                  <a href="https://heurix.fr/prestashop.html">PrestaShop</a>
+                  <a href="https://heurix.fr/woocommerce.html">WooCommerce</a>
+                  <a href="https://heurix.fr/shopify.html">Shopify</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <a href="https://heurix.fr/blog.html">Blog</a>
+        </div>
+
+        <div class="header-search">
+          <svg width="15" height="15" viewBox="0 0 20 20" fill="none" aria-hidden="true" style="flex:none"><circle cx="9" cy="9" r="6.5" stroke="currentColor" stroke-width="1.6"/><line x1="13.6" y1="14" x2="18" y2="18.4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          <span>Chercher sur le site</span><kbd>Ctrl K</kbd>
+        </div>
+        <div class="header-utility"><a href="https://heurix.fr/console.html">Mon compte</a><a href="https://heurix.fr/en/index.html">EN</a></div>
+        <a class="btn" href="https://heurix.fr/pricing.html">Démarrer l'essai gratuit</a>
+        <button type="button" class="mobile-toggle" aria-label="Ouvrir le menu" aria-expanded="false"><span></span><span></span><span></span></button>
+      </nav>
+    </header>
+
+    <div class="page-sample">
+      <h1>Contenu de page (contexte)</h1>
+      <p>Ce bloc simule le haut d'une page réelle pour juger le panneau dans son environnement — fond blanc en thème clair, dégradé du hero en thème sombre (mêmes trois arrêts que <code>.hero</code> dans styles.css).</p>
+      <span class="measure-flag">● thème actif : <span data-theme-name>clair</span></span>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var frame = document.getElementById('previewFrame');
+  var navLinks = document.getElementById('navLinks');
+  var themeNameEl = frame.querySelector('[data-theme-name]');
+
+  // --- bascule thème / aperçu (contrôles de la maquette uniquement) ---
+  document.querySelectorAll('[data-theme-btn]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var theme = btn.getAttribute('data-theme-btn');
+      frame.setAttribute('data-theme', theme);
+      themeNameEl.textContent = theme === 'dark' ? 'sombre' : 'clair';
+      document.querySelectorAll('[data-theme-btn]').forEach(function(b){ b.setAttribute('aria-pressed', String(b === btn)); });
+    });
+  });
+  document.querySelectorAll('[data-viewport-btn]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      frame.setAttribute('data-viewport', btn.getAttribute('data-viewport-btn'));
+      document.querySelectorAll('[data-viewport-btn]').forEach(function(b){ b.setAttribute('aria-pressed', String(b === btn)); });
+      closeAllMegas(); navLinks.classList.remove('mobile-open');
+    });
+  });
+
+  // --- hamburger mobile (reproduit .mobile-nav-toggle existant) ---
+  var mobileToggle = frame.querySelector('.mobile-toggle');
+  mobileToggle.addEventListener('click', function(){
+    var open = navLinks.classList.toggle('mobile-open');
+    mobileToggle.setAttribute('aria-expanded', String(open));
+  });
+
+  // --- .mq-drop : clic pour ouvrir (jamais survol), un seul panneau
+  //     ouvert à la fois, Échap referme et rend le focus au bouton,
+  //     un clic ou un focus en dehors referme aussi. ---
+  var drops = Array.prototype.slice.call(frame.querySelectorAll('.mq-drop'));
+
+  function closeAllMegas(except){
+    drops.forEach(function(d){
+      if (d === except) return;
+      var btn = d.querySelector('.mq-drop-btn');
+      var mega = d.querySelector('.nav-mega');
+      btn.setAttribute('aria-expanded','false');
+      mega.classList.remove('open');
+    });
+  }
+
+  drops.forEach(function(drop){
+    var btn = drop.querySelector('.mq-drop-btn');
+    var mega = drop.querySelector('.nav-mega');
+    btn.addEventListener('click', function(){
+      var willOpen = btn.getAttribute('aria-expanded') !== 'true';
+      closeAllMegas();
+      btn.setAttribute('aria-expanded', String(willOpen));
+      mega.classList.toggle('open', willOpen);
+    });
+  });
+
+  frame.addEventListener('keydown', function(e){
+    if (e.key === 'Escape'){
+      var openBtn = frame.querySelector('.mq-drop-btn[aria-expanded="true"]');
+      closeAllMegas();
+      if (openBtn) openBtn.focus();
+    }
+  });
+
+  // ferme si le focus quitte entièrement la zone nav (amélioration :
+  // l'existant laisse aujourd'hui le panneau ouvert après un Tab qui
+  // sort par la fin — cf. rapport.md §4).
+  navLinks.addEventListener('focusout', function(){
+    requestAnimationFrame(function(){
+      if (!navLinks.contains(document.activeElement)) closeAllMegas();
+    });
+  });
+
+  document.addEventListener('click', function(e){
+    if (!frame.contains(e.target)) return;
+    if (!e.target.closest('.mq-drop')) closeAllMegas();
+  });
+})();
+</script>
+</body>
+</html>
