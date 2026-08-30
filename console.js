@@ -2697,6 +2697,53 @@
     undoTimer = setTimeout(function () { toast.hidden = true; }, 10000);
   }
 
+  // LE CONTRAT DE SIMULATION, ET POURQUOI C'EST UNE LISTE BLANCHE
+  // (30 aout 2026). Ecran « Mise en avant sur recherche » casse deux jours
+  // en production : 422 extra_forbidden des qu'une regle existait deja.
+  //
+  // Un brouillon porte DEUX sortes de champs. Ceux que le moteur accepte en
+  // simulation -- il ne fait que classer des produits -- et ceux dont NOS
+  // tables ont besoin pour s'afficher : nom, statut, priorite, diffusion,
+  // product_name. Les seconds n'ont aucun sens pour une simulation, et
+  // c'est nous qui les avons ajoutes au brouillon, pas le moteur.
+  //
+  // Jusqu'au 27 aout ils etaient ignores en silence cote serveur, et
+  // l'aller-retour marchait PAR ACCIDENT. Le durcissement `extra="forbid"`
+  // (32 modeles d'un coup) a rendu l'accident visible. Le moteur a raison de
+  // refuser : c'est la console qui envoyait un objet d'affichage la ou un
+  // contrat de quatre champs etait attendu.
+  //
+  // LISTE BLANCHE, PAS LISTE NOIRE, et c'est tout l'interet du correctif :
+  // le GET emet 15 champs pour un contrat de 4, et le 16e arrivera un jour.
+  // Une liste noire le laisserait passer et recasserait l'ecran ; ici il est
+  // ignore par construction, sans que personne ait a y penser.
+  //
+  // PROJETE A L'ENVOI, PAS DANS LE BROUILLON : les tables de regles lisent
+  // les memes objets pour afficher un nom et un statut. Appauvrir le
+  // brouillon corrigerait l'appel et viderait l'affichage.
+  var SIMU_CHAMPS = {
+    // POST /v1/index/{c}/search  ->  SimulatedOverride
+    so: ["query", "product_id", "action", "position"],
+    // POST /v1/browse/{c}/{cat}/simulate  ->  BrowseOverrideBody
+    // PAS de `query` : il n'y a pas de requete sur une page de categorie.
+    // Les deux contrats different, ils ne se factorisent pas.
+    br: ["product_id", "action", "position"],
+  };
+
+  function simuProjeter(regles, contrat) {
+    var champs = SIMU_CHAMPS[contrat];
+    return (regles || []).map(function (regle) {
+      var sortie = {};
+      for (var i = 0; i < champs.length; i++) {
+        var v = regle[champs[i]];
+        // `null`/`undefined` retires plutot qu'envoyes : `position` est
+        // absente d'un bury, et le modele la veut absente ou entiere.
+        if (v !== undefined && v !== null) sortie[champs[i]] = v;
+      }
+      return sortie;
+    });
+  }
+
   // Correctif Lot 2 (audit UX console, 17 aout 2026) : recapitulatif
   // avant publication (§4.4 -- "corrige le defaut le plus grave (B3) :
   // aujourd'hui, on publie sans pouvoir relire"). Fonction generique,
@@ -3065,7 +3112,10 @@
     var grouper = document.getElementById("so-grouper");
     var enFamilles = !!(grouper && grouper.checked);
     if (enFamilles) corpsRequete.group_by = "auto";
-    if (session.soDraft) corpsRequete.simulate_overrides = session.soDraft;
+    // Projete sur le contrat : le brouillon porte aussi nom/statut/priorite/
+    // diffusion, qui font vivre la table des regles et que la simulation
+    // refuse. Voir SIMU_CHAMPS.
+    if (session.soDraft) corpsRequete.simulate_overrides = simuProjeter(session.soDraft, "so");
     // Correctif (18 aout 2026, brief §"Reglages d'apercu") : meme
     // pattern que so-grouper -- lu directement depuis le DOM au moment
     // du rendu, pas d'etat separe.
@@ -5319,7 +5369,11 @@
     var url = "/v1/browse/" + encodeURIComponent(session.browseCurrentCatalog) + "/" +
               encodeURIComponent(session.browseCurrentCategory) + "/simulate";
     apiFetch(url, key, { method: "POST", body: {
-      overrides: session.brDraft || [], sort: sort, limit: lim, offset: 0, filters: "", facets: "",
+      // Meme projection que cote Search, contrat different (pas de `query`) :
+      // le brouillon Browse porte `product_name`, ajoute par nos soins pour la
+      // table des regles, et refuse par la simulation. Voir SIMU_CHAMPS.
+      overrides: simuProjeter(session.brDraft, "br"),
+      sort: sort, limit: lim, offset: 0, filters: "", facets: "",
       // L'apercu simule doit montrer EXACTEMENT ce que verra le visiteur,
       // filtre de stock compris -- sinon il previsualise autre chose.
       in_stock_only: !!(document.getElementById("browse-in-stock") || {}).checked,
