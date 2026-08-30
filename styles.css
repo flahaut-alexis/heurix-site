@@ -1674,6 +1674,26 @@ h2{ font-size:clamp(26px,3.4vw,34px); font-weight:800; margin:0 0 18px; max-widt
   background:var(--blue-tint); border-radius:100px; padding:3px 10px; margin-top:10px;
 }
 
+/* CARTES DE SECTEUR CLIQUABLES (30 aout 2026).
+
+   `secteurs.html` affichait quatorze cartes dont AUCUNE n'etait un lien, alors
+   que `.vertical-card:hover` les leve deja de 3 px avec une ombre : elles se
+   comportaient comme des liens et ne menaient nulle part. Onze ont desormais
+   leur page ; les deux qui n'en ont pas perdent le survol, pour que
+   l'affordance dise la verite -- ce qui se leve est cliquable.
+
+   La carte reste `display:block` : `<a>` porte la classe, pas un enfant, donc
+   toute la surface clique. */
+a.vertical-card{ display:block; text-decoration:none; color:var(--ink); }
+a.vertical-card:hover h4{ color:var(--blue-deep); }
+.vertical-card-go{
+  margin-top:12px; font-size:12.5px; font-weight:600; color:var(--blue-deep);
+}
+/* Ni levee, ni ombre, ni bordure teintee : rien qui promette un clic. */
+.vertical-card-inerte:hover{
+  transform:none; box-shadow:none; border-color:var(--line);
+}
+
 /* COPILOT SECTORIEL */
 .copilot{ margin-bottom:36px; }
 .copilot-label{
@@ -7357,6 +7377,15 @@ body.docs-dark .verticals h3{ color:var(--ink-on-dark); }
 body.docs-dark .vertical-card-cta h4{ color:var(--ink-on-dark); }
 body.docs-dark .vertical-card-cta p{ color:var(--ink-muted-on-dark); }
 body.docs-dark .vertical-card-cta a{ color:#AEB9FF; }
+
+/* MEME CAS, ET LE COMMENTAIRE CI-DESSUS L'AVAIT DEJA DIAGNOSTIQUE : le lien
+   « Decouvrir » des cartes de secteur, ecrit le 30 aout 2026, prenait
+   `var(--blue-deep)` -- exactement le bleu dont ces lignes disent qu'il n'a
+   pas le contraste sur une carte translucide. Meme valeur de sortie, donc.
+   Et `a.vertical-card` recoit son encre sombre pour la meme raison que
+   `.vertical-card` : la carte est claire hors docs-dark, translucide dedans. */
+body.docs-dark a.vertical-card{ color:var(--ink-on-dark); }
+body.docs-dark .vertical-card-go{ color:#AEB9FF; }
 
 /* Meme oubli que vertical-card-cta juste au-dessus : le fond de
    .how-step et .feature-card avait deja ete assombri, mais leur vrai

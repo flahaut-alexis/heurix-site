@@ -2162,6 +2162,65 @@ vous reprenez la mesure d'un autre, demandez ce qu'elle a exclu ». Un rapport
 arrive avec sa cause, jamais avec le nombre d'essais qui l'ont établie. Ici il
 y en avait un, et la conclusion en demandait quatre.
 
+### Un garde chiffré puis refusé : le nombre de secteurs
+
+Le 30 août 2026, troisième page en une semaine à annoncer un nombre de
+secteurs faux — après `index.html` (« les huit secteurs couverts ») et
+`secteurs.html` (« sept de ces secteurs »), toutes deux corrigées le 29.
+Deux fois c'est un lot, trois fois ça vaut d'examiner la source.
+
+Le balayage complet en a trouvé **dix, sur six pages**, dont trois déjà
+publiques :
+
+| page | ce qui était écrit | réel |
+|---|---|---|
+| `solutions/index.html` | « Sept secteurs » ×4 (h1 + 3 meta) | onze |
+| `en/solutions/index.html` | « Seven industries » ×3 | eleven |
+| `index.html`, `produit.html`, `en/produit.html` | « **Sept de ces** secteurs ont déjà un pack » | onze |
+| `blog/tutoriel-…-5-minutes` (2 langues) | « ou `mode`, `industrie` pour les **deux autres** packs fournis » | dix autres |
+
+**Le démonstratif est ce qui a fait pourrir la phrase différemment sur chaque
+page.** « Sept de **ces** secteurs » introduit une grille de cartes — et cette
+grille fait **3 cartes sur `index.html`, 9 sur `produit.html`, 13 sur
+`secteurs.html`**. La phrase a été recopiée d'une page à l'autre en gardant son
+nombre et en changeant de référent. Corrigée en « Onze secteurs ont déjà un
+pack », sans démonstratif : l'énoncé devient global, donc vrai quelle que soit
+la grille sous laquelle il atterrit.
+
+Et celle du tutoriel n'était pas un compte à corriger : **une énumération
+exhaustive, juste quand il y avait trois packs.** Elle a été remplacée par un
+renvoi vers `secteurs.html`, qui ne se périmera pas au douzième pack.
+
+#### Le garde a été chiffré, et refusé sur sa mesure
+
+Il n'est pas écrit. La mesure est ici pour qui le reproposera.
+
+**Il ne peut pas lire `rulepacks/`** — ce dossier vit dans `heurix-engine`. La
+seule source dérivable depuis ce dépôt est `solutions/*.html` moins
+`index.html`, soit onze. Les deux valent 11 aujourd'hui et peuvent diverger.
+
+```
+adjacence STRICTE   0,16 s / 137 pages   34 affirmations, 10 nommees, 1 faux positif
+                    -> rate « Seven OF THESE industries » et « les DEUX AUTRES packs »
+balayage LACHE      208 affirmations, dont l'ecrasante majorite est l'article « un pack »
+```
+
+Le faux positif de la version stricte : `produit.html`, « la même mécanique,
+appliquée à **deux secteurs** différents » — deux schémas de démonstration.
+
+**La précision se paie en rappel, et le seuil qui donne 9 sur 10 rate
+exactement les deux cas les plus anciens.** Un garde qui manque la moitié de
+la famille et qui naît avec une liste d'exceptions ne vaut pas sa seconde de
+CI : il donnerait un vert sur des pages fausses, ce qui est le pire des
+états — celui du contrôle qui certifie l'absence d'un défaut présent, déjà
+documenté plus haut.
+
+Ce qui aurait vraiment fermé la famille est ailleurs, et n'est pas un test :
+**ne pas écrire le nombre.** « Onze secteurs » se périme ; « les secteurs
+couverts » ne se périme pas, et `secteurs.html` porte la liste. Les six
+corrections de ce lot gardent le chiffre parce que le retirer était une
+réécriture, pas un correctif — mais c'est la question à poser au quatrième.
+
 ### Ce fichier grandit par réunions automatiques que personne ne relit
 
 Le 29 août 2026, un rebase sur quatre commits d'autres sessions a produit deux
