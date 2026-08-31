@@ -2398,6 +2398,66 @@ juste à côté de commentaires qui disent 126. Un outil qui produit le même
 nombre à côté du nombre écrit. Sans lui, rien — un commentaire ne s'exécute
 pas, et deux commentaires ne se confrontent jamais.
 
+##### Un balayage qui répond à côté, avec un compte crédible
+
+Le 31 août 2026, en balayant le dépôt pour une phrase fausse, `git grep -i -E
+"ind[ée]finiment"` a rendu **cinq lignes, et aucune accentuée** — dont zéro
+dans `CLAUDE.md`, où le même balayage corrigé en trouve **cinq à lui seul**,
+écrites une heure plus tôt par moi.
+
+**C'est une forme neuve, et c'est la pire des trois.** Les deux balayages
+ratés ci-dessus se trahissaient par leur sortie : `find` à 554 et `vitest` à
+1 137 débordaient, et un compte qui déborde se remarque. Celui-ci répond **à
+côté** — cinq lignes, dans le bon ordre de grandeur, réparties dans des
+fichiers plausibles. Rien dans sa sortie ne le distingue d'un balayage
+complet.
+
+**Ce qui l'a révélé, et c'est le seul geste qui pouvait le faire :** demander
+à l'instrument de retrouver une occurrence dont je savais déjà qu'elle
+existait — `CLAUDE.md:440`, que j'avais écrite une heure plus tôt. Zéro ligne.
+
+> **Un balayage porte un positif connu qu'il doit retrouver.** Sans lui,
+> « rien trouvé » et « rien vu » ont exactement la même forme, et c'est la
+> forme rassurante qui s'impose.
+
+La cause, isolée le 31 août 2026. Le motif est figé sur un commit pour que le
+compte reste reproductible — `CLAUDE.md` à `2edce005` porte trois occurrences
+accentuées en minuscules (cinq avec `-i`), et aucune non accentuée :
+
+```
+LC_ALL=C            git grep -cE "ind[ée]finiment"  2edce005 -- CLAUDE.md  ->  0
+LC_ALL=C            git grep -cE "ind(é|e)finiment" 2edce005 -- CLAUDE.md  ->  3
+LC_ALL=C            git grep -c  "indéfiniment"     2edce005 -- CLAUDE.md  ->  3
+LC_ALL=en_US.UTF-8  git grep -cE "ind[ée]finiment"  2edce005 -- CLAUDE.md  ->  3
+```
+
+**C'est la classe de caractères qui décroche, et elle seule.** L'alternance
+`(é|e)` et la recherche littérale passent sous la même locale. Et le défaut
+est propre à `git grep` (2.50.1), qui porte son propre moteur : le `grep` de
+macOS rend le même compte dans les deux locales, sur le même motif.
+
+**La locale est une propriété de la machine, pas du dépôt.** Ici `LANG` et
+`LC_ALL` sont vides, donc `LC_CTYPE="C"`. Rien dans le dépôt ne le corrige,
+rien ne le signale, et aucun test ne peut l'attraper puisque la CI part d'un
+environnement différent — encore une fois, le défaut ne se voit que depuis la
+machine où il coûte. **Un dépôt en français est le pire endroit où le
+porter** : `périmé`, `clef`, `déployé`, `référence`, `en-tête`. Tout motif
+écrit avec une classe *pour tolérer* un accent ne voit que la moitié ASCII de
+sa propre classe — c'est-à-dire exactement le contraire de son intention.
+
+Deux gestes, dans cet ordre :
+
+- **Le positif connu d'abord**, avant de lire le moindre résultat. Il ne coûte
+  qu'une ligne et il est le seul témoin possible.
+- **Puis `LC_ALL=en_US.UTF-8` en tête du balayage**, ou une alternance à la
+  place de la classe. Le correctif seul ne suffit pas : sans le témoin, rien
+  ne dit qu'on a appliqué le bon.
+
+**Ce que ça a coûté sur ce lot :** le compte vrai était de **trois occurrences
+en deux fichiers**, pas d'une. `scripts/bust-cache.sh` portait la phrase deux
+fois, lignes 9 et 138, toutes deux accentuées. Le balayage naïf les a laissées
+dehors, et son compte n'avait pas l'air faux.
+
 ##### Le remède est la suppression, pas la mise à jour
 
 Le balayage complet du dépôt (`*.css`, `*.js`, `*.md`, `*.py`, `tests/`) a
