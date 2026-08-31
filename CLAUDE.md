@@ -436,9 +436,11 @@ le `<p>` disparu et le portrait entier.
 
 **LE CAS EST CELUI QUE LE GARDE DU JOUR VENAIT DE RENDRE VISIBLE**, appliqué à
 son auteur pendant qu'il l'écrivait : un fichier sans clef sert sa version en
-cache indéfiniment. `tests/actifs-versionnes.test.js` ferme ce trou pour les
-assets ; il ne peut rien pour les documents, qui n'en portent pas et n'en
-porteront pas.
+cache **jusqu'à 600 s après son remplacement** — mesuré le 31 août 2026, voir
+la sous-section suivante ; « indéfiniment », écrit ici jusqu'à cette date,
+était faux. `tests/actifs-versionnes.test.js` ferme ce trou pour les assets ;
+il ne peut rien pour les documents, qui n'en portent pas et n'en porteront
+pas.
 
 Trois conséquences pratiques :
 
@@ -455,6 +457,79 @@ capture prise avant le rechargement est un instrument qui mesure autre chose
 que ce qu'on croit — la famille documentée plus bas, sous une forme que la
 vigilance ne ferme pas, parce qu'aucun signal ne distingue une page fraîche
 d'une page servie du cache.
+
+#### « Indéfiniment » était faux, et le `?v=` est bon pour une autre raison
+
+Ce fichier justifie le cache-busting depuis le 26 août 2026 (`d1bb74c3`, puis
+`bca6d4ff` le 28) par une phrase qu'aucune mesure ne portait : « un fichier
+sans clef sert sa version en cache indéfiniment ». **Mesuré le 31 août 2026
+sur l'origine de production, ce n'est pas ce que GitHub Pages envoie.**
+
+| famille | population mesurée le 31 août 2026 | `cache-control` | validateur |
+|---|---|---|---|
+| documents | `/`, `pricing.html` | `max-age=600` | `etag` + `last-modified` |
+| actifs versionnés | `styles.css?v=1788164124`, `nav-dropdown.js?v=1788086140` | `max-age=600` | idem |
+| actifs sans clef | les **deux** de `SANS_CLEF_ASSUMES` — `favicon-32.png` et `apple-touch-icon.png`, sur 128 pages | `max-age=600` | idem |
+
+Une seule durée de vie pour les trois, et **le paramètre de requête ne change
+rien à l'en-tête** : `styles.css` et `styles.css?v=1788164124` rendent le même
+`etag`, le même `max-age`. Aucune famille n'est servie « pour toujours ».
+
+**La borne, mesurée de bout en bout : 600 s.** Le CDN de GitHub (Fastly)
+respecte le `max-age` — échantillonné toutes les 30 s pendant douze minutes,
+l'`age` de `styles.css` monte 365 → 583 puis retombe à 0, et le maximum
+observé sur les quatre URL sondées est 598 — et il **propage** cet `age`, que
+le navigateur retranche de sa propre fraîcheur. Les deux étages ne s'additionnent
+pas. Un visiteur en ligne, navigant normalement, sert donc l'ancien fichier
+**moins de 600 s après son remplacement**.
+
+**LE `?v=` RESTE NÉCESSAIRE, ET PAS POUR LA RAISON ÉCRITE ICI.** Banc local
+rejouant les en-têtes ci-dessus (même forme d'ETag `"<mtime>-<taille>"`,
+`max-age=600`), navigateur réel, un remplacement des fichiers entre deux
+navigations :
+
+| page ouverte après le remplacement | document servi | actif servi | requête réseau pour l'actif |
+|---|---|---|---|
+| jamais visitée, actif **sans clef** | v2 | **v1** | **aucune** — `transferSize` 0 |
+| jamais visitée, actif **avec clef neuve** | v2 | v2 | `GET` inconditionnel |
+| après les 600 s, actif **sans clef** | v2 | v2 | `GET` conditionnel `If-None-Match` → `200` |
+
+**La deuxième ligne n'est pas l'argument. C'est la première.** Un visiteur qui
+ouvre une page qu'il n'a jamais vue reçoit le **document neuf** et l'**actif
+ancien** : le document n'est dans aucun cache, l'actif y est encore frais. Et
+le navigateur **n'émet aucune requête** pour cet actif — rien à observer, rien
+à journaliser, aucun garde ne peut le voir. Le document et son script ont deux
+horloges indépendantes ; le `?v=` est ce qui les raccorde. **Il fait de la
+fraîcheur de l'actif une propriété du document qui le nomme, au lieu d'une
+propriété du temps.**
+
+C'est exactement la fenêtre où un correctif de sécurité ne s'applique pas.
+Deux XSS ont été fermés dans `console.js` en une semaine (`fad8802c` le 29
+août, `8446e9ab` le 30 août). Sans clef, un marchand rouvrant sa console après
+le déploiement aurait reçu la console corrigée **et** le script vulnérable,
+jusqu'à dix minutes durant, sans qu'une seule requête ne le signale.
+
+**CE QUI N'EST PAS L'ARGUMENT NON PLUS**, et qu'il faut cesser d'invoquer :
+« le `?v=` couvre les caches que l'origine ne contrôle pas ». Le CDN de GitHub
+**n'inclut pas la chaîne de requête dans sa clef de cache**. Une URL jamais
+demandée y répond `HIT`, avec l'`age` de l'URL nue — trois requêtes dans la
+même seconde, le 31 août 2026 à 17:12:55 :
+
+```
+styles.css                         etag:"6a958e61-61b43"  age:368  x-cache:HIT
+styles.css?v=1788164124            etag:"6a958e61-61b43"  age:369  x-cache:HIT
+styles.css?jamais-demandee-7391=1  etag:"6a958e61-61b43"  age:369  x-cache:HIT
+```
+
+À cet étage, le `?v=` ne gagne rien. Il gagne dans le cache du navigateur —
+mesuré — et dans tout cache dont la clef porte l'URL entière : non mesuré
+ailleurs, donc à ne pas avancer comme un fait.
+
+**La forme du défaut, pour la famille :** l'argument était faux et la
+conclusion juste. « Indéfiniment » exagérait dans le sens qui arrange, et
+personne ne relit une justification qui conclut ce qu'on veut déjà. Le remède
+n'est pas de retirer le mécanisme, c'est de lui rendre sa vraie raison — plus
+étroite, mesurable, et suffisante.
 
 ### Une page peut répondre 200 et ne rien montrer
 
@@ -990,9 +1065,11 @@ périmètre réel était plus étroit que la phrase.
 niveau de remontée**. Vrai quand `en/` était le seul sous-dossier, faux dès la
 création de `en/blog/` et `en/solutions/`, qui écrivent `../../styles.css`.
 Ces 38 pages n'ont donc reçu **aucun** bump depuis leur création : un visiteur
-déjà venu y servait sa feuille de style en cache indéfiniment, sans jamais
-recevoir un seul correctif visuel. Le script annonçait « propagé dans 80
-fichier(s) » — sans jamais nommer les 38 qui lui échappaient.
+déjà venu y servait sa feuille de style périmée à chaque navigation ouverte
+dans les 600 s suivant son dernier chargement, et sans qu'aucune requête ne
+soit émise pour elle — pas « indéfiniment », la mesure du 31 août 2026 borne
+la fenêtre à 600 s. Le script annonçait « propagé dans 80 fichier(s) » — sans
+jamais nommer les 38 qui lui échappaient.
 
 Il lisait aussi `git ls-files`, donc les seuls fichiers **suivis**. Une page
 tout juste créée n'en fait pas partie : c'est précisément celle qui doit
@@ -1994,8 +2071,9 @@ Mesuré le 28 août 2026 : **11 actifs référencés sans clef**, dont
 Et un cas mixte, qui est le défaut vivant : `docs-copy.js` était référencé sur
 **quatre** pages, **une seule** avec clef. Un bump atteignait `docs.html` et
 laissait `en/docs.html` et les deux guides servir leur version en cache
-indéfiniment — pendant que le contrôle de cohérence voyait une clef unique et
-concluait « cohérent ». C'est la forme exacte du défaut des 38 pages, un cran
+pendant les 600 s de fraîcheur restantes, sans une requête — pendant que le
+contrôle de cohérence voyait une clef unique et concluait « cohérent ». C'est
+la forme exacte du défaut des 38 pages, un cran
 plus haut : là le motif ne voyait pas certaines références ; ici il ne voit pas
 qu'il en manque.
 
