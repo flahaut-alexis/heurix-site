@@ -531,6 +531,68 @@ personne ne relit une justification qui conclut ce qu'on veut déjà. Le remède
 n'est pas de retirer le mécanisme, c'est de lui rendre sa vraie raison — plus
 étroite, mesurable, et suffisante.
 
+##### Vérifié en production, sur un vrai déploiement (1er septembre 2026)
+
+Le banc du 31 août rejouait les en-têtes de production. Celle-ci est la
+production : une page ouverte avant le déploiement, le déploiement, et ce que
+le navigateur charge ensuite. Le lot déployé bumpait `styles.css` **et**
+changeait 22 documents, donc deux horloges observables au lieu d'une.
+
+```
+00:30:28  amorçage    vins.html + styles.css depuis le RESEAU, etat ancien
+00:35:41  push
+    <= 00:36:48  T0   encart visible a l'origine, styles.css?v=1788213996
+00:37:45  releve 1    vins.html  CACHE 0 octet   0 encart   ?v=1788164124
+00:38:53  controle    plomberie  RESEAU 9135 o   1 encart   ?v=1788213996
+00:40:24  releve 2    vins.html  CACHE 0 octet   0 encart   ?v=1788164124
+00:42:10  releve 3    vins.html  RESEAU 7877 o   1 encart   ?v=1788213996
+```
+
+> **Un visiteur a servi la page d'avant le déploiement, entièrement, pendant
+> au moins 216 s après T0, sans émettre une seule requête.**
+
+**LE TÉMOIN EST LE CONTENU, PAS LA CLEF, et c'est ce qui rend la mesure
+irréfutable.** À 00:40:24 la page rendue portait zéro encart **et la ligne
+`post-footer-cta-alt` que ce lot venait de supprimer** — un fragment que
+l'origine ne servait plus depuis plus de trois minutes. Une clef `?v=` aurait
+pu s'expliquer par un cache d'actif ; un paragraphe supprimé, non. Et
+`transferSize` valait 0 sur le document comme sur la feuille : ces trois
+minutes n'existent dans aucun journal, ni côté origine ni côté CDN.
+
+Les trois relevés sont des navigations réelles — `PerformanceNavigationTiming`
+`.type === "navigate"`, jamais `"reload"` — obtenues en arrivant depuis une
+autre page, pour qu'aucune ne soit un rechargement déguisé qui aurait forcé la
+revalidation.
+
+**LA BORNE SUR T0, ET ELLE VA DANS LE BON SENS.** Le premier sondage, à
+00:36:48, a **déjà** trouvé l'encart : il n'existe donc qu'un majorant de T0,
+quelque part entre le push et cette seconde-là. Tous les « T0 + N » ci-dessus
+sont des **minorants** de l'écart réel. Une mesure dont l'incertitude ne peut
+que renforcer la conclusion se rapporte en le disant, pas en la taisant.
+
+**La durée de vie observée : entre 596 s et 600 s**, bornée en haut par le
+`max-age`. Elle confirme les deux moitiés du modèle du 31 août — le navigateur
+applique 600 s, et il en retranche l'`Age` propagé par le CDN.
+
+**Et la borne n'est pas le déploiement, c'est le dernier chargement du
+visiteur.** Celui-ci avait chargé 380 s avant T0, d'où ses ~220 s de page
+périmée. Un visiteur qui aurait chargé une seconde avant le push l'aurait
+servie **599 s**.
+
+**Le contrôle, avec ce qu'il ne teste pas.** `solutions/plomberie.html`,
+jamais visitée sur ce profil, ouverte 125 s après T0 : document depuis le
+réseau, encart présent, `?v=1788213996`. Mais la feuille de style, elle, est
+venue du **cache** — un passage par l'accueil l'avait chargée 68 s plus tôt.
+Le contrôle porte donc sur le document, pas sur le premier chargement de la
+feuille, et il faut le dire plutôt que de laisser croire à un test complet.
+
+**LE RÉSULTAT NÉGATIF, ANNONCÉ AVANT LA MESURE.** La production ne pouvait pas
+reproduire le défaut d'appariement du banc, et ça a été écrit avant de lancer
+la mesure. C'est structurel : chaque actif de ces pages porte une clef, donc un
+document neuf ne peut pas nommer un actif ancien. La seule chose sans clef est
+le document lui-même — et c'est exactement la fenêtre de 220 s mesurée
+ci-dessus.
+
 ### Une page peut répondre 200 et ne rien montrer
 
 Le 26 août 2026, trois liens « Voir le moteur en action » ont été pointés vers
@@ -2558,6 +2620,73 @@ ne serait-ce que pour savoir si l'on ouvre un lot ou une ligne.
 
 C'est le critère à appliquer aux prochaines règles écrites ici : demander où
 elle s'accroche, et si la réponse est « à la vigilance », elle ne partira pas.
+
+###### Quatrième forme : deux appels au même nom d'hôte, deux machines
+
+Le 1er septembre 2026 encore, pendant la mesure de production du cache. Pour
+savoir combien de fraîcheur mon navigateur détenait, j'ai relevé l'`Age` du
+CDN par `curl` juste après son chargement : 69 s à 00:30:53. J'en ai déduit
+une expiration à **00:39:40**.
+
+Elle était à **00:40:28**. L'`Age` réellement reçu par le navigateur valait
+moins de 4 s, pas 45. Établi après coup, par la durée de vie observée : la
+copie était encore fraîche à 00:40:24 et périmée à 00:42:10, donc une durée de
+vie entre 596 et 600 s, donc un `Age` de départ presque nul.
+
+**La cause n'est pas une erreur de calcul, c'est que les deux requêtes ne sont
+pas allées à la même machine.** `heurix.fr` répond depuis un POP Fastly de
+plusieurs nœuds, chacun portant sa propre copie avec son propre `Age`. Mesuré
+le 1er septembre 2026, **huit appels successifs à la même URL, huit nœuds
+distincts** :
+
+```
+cache-par-lfpg1960085  age=0     cache-par-lfpg1960059  age=3
+cache-par-lfpg1960062  age=1     cache-par-lfpg1960049  age=4
+cache-par-lfpg1960032  age=2     cache-par-lfpg1960073  age=4
+cache-par-lfpg1960025  age=3     cache-par-lfpg1960069  age=5
+```
+
+Le nom du nœud est dans `x-served-by`, donc lisible — mais **rien ne dit quel
+nœud le navigateur a atteint**, et c'est la seule information qui aurait
+compté. Sonder l'un pour conclure sur l'autre revient à mesurer une machine
+qu'on n'interroge pas.
+
+> **Un `Age` relevé par `curl` ne borne pas ce que le navigateur détient.** Il
+> faut le lire dans le navigateur, ou accepter une incertitude de la taille du
+> `max-age` entier.
+
+**ET L'ERREUR EST ALLÉE DANS LE BON SENS, CE QUI EST UN ACCIDENT.** J'avais
+plus de fenêtre que prévu, donc trois relevés au lieu d'un. Dans l'autre sens
+— un `Age` sous-estimé — j'aurais conclu « fenêtre expirée, mesure ratée » sur
+une page encore fraîche, et j'aurais réamorcé pour rien. **Une incertitude
+qu'on n'a pas nommée ne choisit pas son sens** ; celle-ci a été gentille.
+
+C'est la quatrième forme de la même famille : l'instrument répond, son chiffre
+est plausible, et il porte sur autre chose que ce qu'on croit. Après la classe
+de caractères en locale C, le filtre aveugle à `en/`, le chemin relatif lu
+sans être résolu — un nom d'hôte qui n'est pas une machine.
+
+###### Le geste qui distingue une confirmation d'une découverte
+
+Le protocole de cette mesure a fait une chose que les trois cas ci-dessus
+n'avaient pas faite : **annoncer le résultat attendu AVANT de lancer la
+mesure.** Il était écrit, avant le déploiement, que la production ne pourrait
+pas reproduire le défaut d'appariement du banc, et pourquoi. La mesure l'a
+confirmé.
+
+> **Une mesure qui découvre ce qu'elle prédisait n'a rien découvert. Une
+> mesure qui contredit sa prédiction annoncée a trouvé quelque chose.**
+
+C'est ce qui manquait aux trois faux défauts : aucun n'avait de prédiction
+écrite avant le lancement, donc aucun résultat ne pouvait la contredire.
+« 0 entrée anglaise » n'a rien contredit — il n'y avait rien à contredire, et
+un chiffre qui ne dément rien se lit comme une confirmation de ce qu'on
+pensait déjà.
+
+Le geste est bon marché : une phrase avant de lancer, et elle vaut pour
+n'importe quelle mesure — « je m'attends à X, pour telle raison ». Elle
+s'accroche elle aussi à un geste déjà fait, puisqu'on a toujours une attente ;
+elle demande seulement de l'écrire pendant qu'elle est encore réfutable.
 
 ##### Le remède est la suppression, pas la mise à jour
 
