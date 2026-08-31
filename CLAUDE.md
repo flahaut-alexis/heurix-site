@@ -1683,6 +1683,51 @@ site, dans les deux langues, ne se cliquent pas.
 et demande au disque si le fichier existe —
 périmètre dérivé, aucune liste de pages. Il aurait attrapé les 22.
 
+#### Une asymétrie FR/EN qui n'est PAS un défaut, et il faut le dire aussi
+
+Le 1er septembre 2026, en posant l'encart de démonstration sur les 22 pages
+`solutions/`. **Le sélecteur de l'accueil porte trois verticales, pas deux**,
+et la troisième n'existe que pour l'anglais :
+
+| pastille | verticale API | produits (1er sept. 2026) | noms des produits |
+|---|---|---|---|
+| Bricolage & Outillage / Hardware & Tools | `outillage` | 2 821 | **français**, dans les deux langues |
+| Mode & Prêt-à-porter | `mode` | 1 500 | français |
+| Fashion & Apparel | `mode-en` | 1 500 | anglais |
+
+La mode a sa version anglaise, l'outillage non. Un lecteur anglophone qui
+clique depuis `en/solutions/outillage.html` obtient donc « Boulon TF M8X30
+inox A2 ».
+
+**CE N'EST PAS UN MENSONGE, ET LA DISTINCTION EST LE POINT.** La clause de
+cette page promet « 2,821 hardware and fastener references » — un compte, pas
+une langue. Elle est exacte. Ce qui est démenti, c'est une **impression**, pas
+une phrase, et les deux ne se corrigent pas au même endroit : une phrase fausse
+se réécrit, une impression démentie demande un catalogue.
+
+**Ce qui la rend acceptable, et c'est mesurable :** ce que l'encart promet est
+la mécanique d'annotation, et un nom de produit français ne l'empêche pas de se
+voir. Le tableau de décomposition reste lisible — `M8x20 inox` rend 1 007
+résultats sur cette verticale, le premier étant `Vis fraisée M8*20 inox A4`,
+rapproché malgré le `*`. La démonstration porte sur la référence, qui n'a pas
+de langue.
+
+**Écrit ici parce que le fait se perd, pas parce qu'il se corrige.** Un
+`outillage-en` le fermerait, comme `mode-en` a fermé l'autre. Ce n'est pas le
+travail d'aujourd'hui, et sans cette note la prochaine session le
+redécouvrirait à l'écran en croyant à un défaut.
+
+**ET C'EST LE PIÈGE DE CETTE SECTION, RETOURNÉ CONTRE ELLE.** Tout ce qui
+précède documente des pages anglaises réellement cassées — 19 liens morts, un
+sommaire faux. La conséquence est qu'un soupçon sur `en/` part gagnant, et le
+1er septembre il a produit **deux faux défauts en une heure** : un index EN
+prétendument vide, et un lien vers un guide prétendument français. Les deux
+étaient des erreurs d'instrument, détaillées plus bas.
+
+> **Une section qui documente une faiblesse réelle rend crédible tout faux
+> défaut de la même famille.** Elle abaisse le seuil de preuve exactement là
+> où l'historique le justifie — et c'est là que le seuil doit rester haut.
+
 ### Une capacité documentée qui n'existe pas est pire qu'une limite documentée
 
 Les deux sont des commentaires faux. Ils ne coûtent pas la même chose.
@@ -2501,6 +2546,18 @@ si c'est onze, c'est un lot ». Compter a résolu les chemins, et résoudre les
 chemins a détruit le défaut. **Chiffrer un défaut avant de le traiter est donc
 aussi un test de son existence**, et c'est la seule chose qui ait fonctionné
 sur ces trois cas.
+
+**ET C'EST POURQUOI CELLE-CI TIENDRA LÀ OÙ L'AUTRE A CÉDÉ.** Le positif connu
+demande un geste de plus, qu'il faut penser à faire au moment précis où l'on
+est le moins disposé à le faire — quand le résultat plaît. Le chiffrage, lui,
+n'ajoute rien : on compte **de toute façon** avant de décider d'un périmètre,
+ne serait-ce que pour savoir si l'on ouvre un lot ou une ligne.
+
+> **Une règle qui demande un geste supplémentaire ne part pas. Une règle qui
+> s'accroche à un geste déjà fait, si.**
+
+C'est le critère à appliquer aux prochaines règles écrites ici : demander où
+elle s'accroche, et si la réponse est « à la vigilance », elle ne partira pas.
 
 ##### Le remède est la suppression, pas la mise à jour
 
