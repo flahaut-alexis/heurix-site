@@ -2458,6 +2458,50 @@ en deux fichiers**, pas d'une. `scripts/bust-cache.sh` portait la phrase deux
 fois, lignes 9 et 138, toutes deux accentuées. Le balayage naïf les a laissées
 dehors, et son compte n'avait pas l'air faux.
 
+###### Récidive le lendemain, puis une troisième dans l'heure
+
+**La règle ci-dessus était écrite, et elle n'a rien empêché.** Le 1er
+septembre 2026, deux fois de plus, le même défaut :
+
+| | l'instrument | ce qu'il a rendu | le vrai |
+|---|---|---|---|
+| 31 août | `git grep -iE "ind[ée]finiment"` | 5 lignes, aucune accentuée | 3 occurrences en 2 fichiers de plus |
+| 1er sept. | filtre `p.startswith('solutions/')` sur les deux index | **0** entrée anglaise | 23 côté FR, **23 côté EN**, préfixées `en/solutions/` |
+| 1er sept. | ma lecture de `href="../blog/guide-mise-en-route.html"` depuis `en/solutions/` | « pointe vers le guide français » | résout en `en/blog/…`, **anglais, 12 pages sur 12** |
+
+Les trois ont rendu un résultat plausible. Les trois ressemblaient à un défaut
+du **site**, jamais à un défaut de l'instrument. Et les trois auraient été
+fermés par le geste déjà écrit ici — demander un positif connu.
+
+**CE QUI MANQUE N'EST PAS LA RÈGLE, C'EST SON DÉCLENCHEUR.** Écrire la règle
+n'a pas suffi, et il faut dire pourquoi plutôt que la réécrire plus fort :
+
+> **Un instrument qui vous donne tort déclenche la vérification. Un
+> instrument qui vous donne raison ne la déclenche pas.**
+
+Les deux cas du 1er septembre confirmaient tous les deux un soupçon déjà
+formé — que les pages anglaises sont traitées en seconde classe. Un zéro qui
+confirme ce qu'on pensait ne se lit pas comme un zéro suspect : il se lit
+comme une confirmation. Le doute, lui, n'arrive que quand le chiffre dérange.
+
+D'où la forme opérationnelle, qui ne demande pas de vigilance mais un ordre :
+
+- **Le positif connu se pose AVANT de lire le résultat**, pas après l'avoir
+  trouvé surprenant. Après, il est trop tard : on ne le pose plus.
+- **Un résultat qui confirme un soupçon est le cas où il faut le poser**, pas
+  celui où l'on peut s'en passer. C'est l'inverse de l'intuition, et c'est
+  précisément pour ça qu'il faut l'écrire.
+- **Deux populations comparées veulent deux positifs connus**, un par
+  population. Le filtre du 1er septembre était juste sur `solutions/` et faux
+  sur `en/solutions/` : un seul témoin, posé côté FR, l'aurait laissé passer.
+
+Le troisième cas n'a été trouvé que parce qu'on m'a demandé d'en **mesurer le
+périmètre** avant de l'appeler un lot — « si c'est une page, c'est une ligne ;
+si c'est onze, c'est un lot ». Compter a résolu les chemins, et résoudre les
+chemins a détruit le défaut. **Chiffrer un défaut avant de le traiter est donc
+aussi un test de son existence**, et c'est la seule chose qui ait fonctionné
+sur ces trois cas.
+
 ##### Le remède est la suppression, pas la mise à jour
 
 Le balayage complet du dépôt (`*.css`, `*.js`, `*.md`, `*.py`, `tests/`) a

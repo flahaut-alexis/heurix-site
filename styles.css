@@ -2344,6 +2344,19 @@ body.docs-dark .regex-copy > p{ color:var(--ink-muted-on-dark); }
 .regex-reassure a:not(.btn){
   color:var(--blue-deeper) !important; text-decoration-color:var(--blue);
 }
+/* MEME RAISON QUE LA REGLE CI-DESSUS, POUR <strong> (31 aout 2026). Le
+   `color !important` du conteneur ne protege que le conteneur : un enfant
+   qui declare sa propre couleur gagne sur l'heritage. Sur une page
+   d'article, `.post-body strong{ color:var(--ink) }` rend le gras en
+   rgb(245,246,255) sur le fond rgb(238,241,255) de l'encart -- CONTRASTE
+   MESURE 1,05, texte invisible. Vu sur les pixels peints, pas sur les
+   bornes declarees, en posant le premier encart de ce type dans un
+   article.
+   PORTEE VERIFIEE le 31 aout 2026 : aucun autre `.regex-reassure` du depot
+   ne vit dans `.post-body`, et les <strong> deja presents (index.html,
+   produit.html, en/*) mesurent tous 5,21 avant comme apres. La regle est
+   donc sans effet ailleurs. */
+.regex-reassure strong{ color:var(--blue-deep) !important; }
 
 
 /* ==========================================================================
@@ -3714,6 +3727,17 @@ body.docs-dark .why-card p{ color:var(--ink-muted-on-dark); }
   font-size:13.5px; color:var(--blue-deep); background:var(--blue-tint);
   border-radius:10px; padding:12px 16px; margin-top:14px !important;
 }
+/* ENCART DE DEMONSTRATION DES PAGES SOLUTIONS (31 aout 2026).
+   `.regex-reassure` porte ici DEUX enfants -- l'icone et ce conteneur --
+   au lieu de l'icone et d'un <p>. Le conteneur est ce qui respecte la
+   contrainte documentee juste au-dessus : en flex, un texte enrichi devenu
+   item flex s'eclate en colonnes. Il garde donc le flex a deux items, et la
+   phrase et le bouton s'empilent normalement a l'interieur.
+   Aucune couleur ici : le fond, le texte et le lien restent ceux de
+   `.regex-reassure`, dont le contraste est deja tenu. */
+.regex-reassure-bloc > p{ margin:0 0 12px; }
+.regex-reassure-bloc > .btn{ display:inline-block; }
+
 /* Icone de telechargement (25 aout 2026) : remplace un emoji 🚀 qui tenait
    lieu d'icone sur ces trois encarts. flex:none pour qu'elle ne s'ecrase
    pas quand le texte est long, et 1px de decalage pour aligner son trait
