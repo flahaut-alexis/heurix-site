@@ -287,7 +287,7 @@
         <button type="button" class="btn btn-ghost checkout-btn" data-plan="scale">Start free trial</button>
       </div>
 
-      <div class="price-tier-card">
+      <div class="price-tier-card" id="enterprise">
         <div class="price-tier-name">Enterprise / Custom</div>
         <div class="price-tier-amount">Custom quote</div>
         <p class="price-tier-desc">Beyond 50,000 products, or custom volumes.</p>
@@ -370,6 +370,15 @@
       <div class="calc-inputs">
         <div class="roi-field roi-slider">
           <div class="roi-slider-head">
+            <label for="calc-products">Products in your catalog</label>
+            <span id="calc-products-val" class="roi-slider-badge mono">5,000</span>
+          </div>
+          <input type="range" id="calc-products" min="1000" max="100000" step="1000" value="5000">
+          <div class="roi-range-hint"><span>1,000</span><span class="roi-range-mid">Active references, variants included</span><span>100,000</span></div>
+        </div>
+
+        <div class="roi-field roi-slider">
+          <div class="roi-slider-head">
             <label for="calc-visitors">Monthly visitors on your site</label>
             <span id="calc-visitors-val" class="roi-slider-badge mono">20,000</span>
           </div>
@@ -423,6 +432,7 @@
           <span class="calc-recommend-label">Recommended Search tier</span>
           <span class="calc-recommend-plan" id="calc-out-plan">Growth — €49/month</span>
         </div>
+        <p class="calc-results-note" id="calc-out-enterprise" hidden>Beyond 50,000 products the quote is custom: see the <a href="#enterprise">Enterprise / Custom</a> card above, or write to <a href="mailto:contact@heurix.fr?subject=Enterprise%20request">contact@heurix.fr</a>.</p>
         <div class="calc-recommend" id="calc-out-browse-recommend" style="margin-top:10px;">
           <span class="calc-recommend-label">+ <span id="calc-out-browse-requests">0</span> Browse requests / month</span>
           <span class="calc-recommend-plan" id="calc-out-browse-plan">Recommended Browse tier</span>
@@ -598,10 +608,14 @@
   }
 
   // Request-volume calculator
+  // `limit` carries REQUESTS per month, `products` the CATALOG ceiling. Both
+  // appear on the cards above and neither follows from the other: a merchant
+  // with 60,000 products and light traffic used to land on Starter, a plan
+  // capped at 8,000 products (31 August 2026).
   const TIERS = [
-    { name: 'Starter', price: 19, limit: 15000 },
-    { name: 'Growth', price: 49, limit: 30000 },
-    { name: 'Scale', price: 139, limit: 150000 },
+    { name: 'Starter', price: 19, limit: 15000, products: 8000 },
+    { name: 'Growth', price: 49, limit: 30000, products: 25000 },
+    { name: 'Scale', price: 139, limit: 150000, products: 50000 },
   ];
   const BROWSE_TIERS = [
     { name: 'Browse Starter', priceStandalone: 39, priceAddon: 29, limit: 50000 },
@@ -611,7 +625,9 @@
     const visitors = parseInt(document.getElementById('calc-visitors').value, 10);
     const rate = parseInt(document.getElementById('calc-rate').value, 10);
     const perUser = parseInt(document.getElementById('calc-per-user').value, 10);
+    const products = parseInt(document.getElementById('calc-products').value, 10);
 
+    document.getElementById('calc-products-val').textContent = products.toLocaleString('en-US');
     document.getElementById('calc-visitors-val').textContent = visitors.toLocaleString('en-US');
     document.getElementById('calc-rate-val').textContent = rate + '%';
     document.getElementById('calc-per-user-val').textContent = perUser;
@@ -619,13 +635,27 @@
     const requests = Math.round(visitors * (rate / 100) * perUser);
     document.getElementById('calc-out-requests').textContent = requests.toLocaleString('en-US');
 
-    let recommended = TIERS[TIERS.length - 1];
+    // THE FIRST TIER THAT SATISFIES BOTH, which amounts to taking the more
+    // demanding of the two needs. Recommending on requests alone quoted a
+    // WRONG price -- this simulator shows an amount, not just a plan name.
+    const dernier = TIERS[TIERS.length - 1];
+    let recommended = null;
     for (const tier of TIERS) {
-      if (requests <= tier.limit) { recommended = tier; break; }
+      if (requests <= tier.limit && products <= tier.products) { recommended = tier; break; }
     }
-    const beyond = requests > TIERS[TIERS.length - 1].limit;
-    document.getElementById('calc-out-plan').textContent =
-      (beyond ? 'Scale + overage billed' : recommended.name + ' — €' + recommended.price + '/month');
+    // Past the last tier's PRODUCT ceiling it is Enterprise -- what the card has
+    // announced since 30 August, and what this calculation ignored.
+    const horsCatalogue = products > dernier.products;
+    const planEl = document.getElementById('calc-out-plan');
+    const entEl = document.getElementById('calc-out-enterprise');
+    if (horsCatalogue) {
+      planEl.textContent = 'Enterprise — custom quote';
+    } else if (!recommended) {
+      planEl.textContent = 'Scale + overage billed';
+    } else {
+      planEl.textContent = recommended.name + ' — €' + recommended.price + '/month';
+    }
+    if (entEl) entEl.hidden = !horsCatalogue;
 
     const browseRateEl = document.getElementById('calc-browse-rate');
     const browsePagesEl = document.getElementById('calc-browse-pages');

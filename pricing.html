@@ -299,7 +299,7 @@
         <button type="button" class="btn btn-ghost checkout-btn" data-plan="scale">Démarrer l'essai gratuit</button>
       </div>
 
-      <div class="price-tier-card">
+      <div class="price-tier-card" id="enterprise">
         <div class="price-tier-name">Enterprise / Custom</div>
         <div class="price-tier-amount">Sur devis</div>
         <p class="price-tier-desc">Au-delà de 50 000 produits, ou volumes sur mesure.</p>
@@ -382,6 +382,15 @@
       <div class="calc-inputs">
         <div class="roi-field roi-slider">
           <div class="roi-slider-head">
+            <label for="calc-products">Nombre de produits au catalogue</label>
+            <span id="calc-products-val" class="roi-slider-badge mono">5 000</span>
+          </div>
+          <input type="range" id="calc-products" min="1000" max="100000" step="1000" value="5000">
+          <div class="roi-range-hint"><span>1 000</span><span class="roi-range-mid">Références actives, variantes comprises</span><span>100 000</span></div>
+        </div>
+
+        <div class="roi-field roi-slider">
+          <div class="roi-slider-head">
             <label for="calc-visitors">Visiteurs mensuels sur votre site</label>
             <span id="calc-visitors-val" class="roi-slider-badge mono">20 000</span>
           </div>
@@ -435,6 +444,7 @@
           <span class="calc-recommend-label">Palier Search recommandé</span>
           <span class="calc-recommend-plan" id="calc-out-plan">Growth — 49 €/mois</span>
         </div>
+        <p class="calc-results-note" id="calc-out-enterprise" hidden>Au-delà de 50 000 produits, le devis est sur mesure : voir la carte <a href="#enterprise">Enterprise / Custom</a> ci-dessus, ou écrire à <a href="mailto:contact@heurix.fr?subject=Demande%20Enterprise">contact@heurix.fr</a>.</p>
         <div class="calc-recommend" id="calc-out-browse-recommend" style="margin-top:10px;">
           <span class="calc-recommend-label">+ <span id="calc-out-browse-requests">0</span> requêtes Browse / mois</span>
           <span class="calc-recommend-plan" id="calc-out-browse-plan">Palier Browse recommandé</span>
@@ -610,10 +620,14 @@
   }
 
   // Calculatrice de volume de requêtes
+  // `limit` porte les REQUETES par mois, `products` le plafond de CATALOGUE.
+  // Les deux figurent sur les cartes ci-dessus et ne se deduisent pas l'un de
+  // l'autre : un marchand de 60 000 produits a faible trafic tombait dans
+  // Starter, un plan plafonne a 8 000 produits (31 aout 2026).
   const TIERS = [
-    { name: 'Starter', price: 19, limit: 15000 },
-    { name: 'Growth', price: 49, limit: 30000 },
-    { name: 'Scale', price: 139, limit: 150000 },
+    { name: 'Starter', price: 19, limit: 15000, products: 8000 },
+    { name: 'Growth', price: 49, limit: 30000, products: 25000 },
+    { name: 'Scale', price: 139, limit: 150000, products: 50000 },
   ];
   const BROWSE_TIERS = [
     { name: 'Browse Starter', priceStandalone: 39, priceAddon: 29, limit: 50000 },
@@ -623,7 +637,9 @@
     const visitors = parseInt(document.getElementById('calc-visitors').value, 10);
     const rate = parseInt(document.getElementById('calc-rate').value, 10);
     const perUser = parseInt(document.getElementById('calc-per-user').value, 10);
+    const products = parseInt(document.getElementById('calc-products').value, 10);
 
+    document.getElementById('calc-products-val').textContent = products.toLocaleString('fr-FR');
     document.getElementById('calc-visitors-val').textContent = visitors.toLocaleString('fr-FR');
     document.getElementById('calc-rate-val').textContent = rate + '%';
     document.getElementById('calc-per-user-val').textContent = perUser;
@@ -631,13 +647,28 @@
     const requests = Math.round(visitors * (rate / 100) * perUser);
     document.getElementById('calc-out-requests').textContent = requests.toLocaleString('fr-FR');
 
-    let recommended = TIERS[TIERS.length - 1];
+    // LE PREMIER PALIER QUI SATISFAIT LES DEUX, ce qui revient a prendre le
+    // plus exigeant des deux besoins. Ne recommander que sur les requetes
+    // chiffrait un devis FAUX -- le simulateur affiche un montant, pas
+    // seulement un nom de plan.
+    const dernier = TIERS[TIERS.length - 1];
+    let recommended = null;
     for (const tier of TIERS) {
-      if (requests <= tier.limit) { recommended = tier; break; }
+      if (requests <= tier.limit && products <= tier.products) { recommended = tier; break; }
     }
-    const beyond = requests > TIERS[TIERS.length - 1].limit;
-    document.getElementById('calc-out-plan').textContent =
-      (beyond ? 'Scale + dépassement facturé' : recommended.name + ' — ' + recommended.price + ' €/mois');
+    // Au-dela du plafond PRODUITS du dernier palier, c'est Enterprise -- ce que
+    // la carte annonce depuis le 30 aout, et que ce calcul ignorait.
+    const horsCatalogue = products > dernier.products;
+    const planEl = document.getElementById('calc-out-plan');
+    const entEl = document.getElementById('calc-out-enterprise');
+    if (horsCatalogue) {
+      planEl.textContent = 'Enterprise — sur devis';
+    } else if (!recommended) {
+      planEl.textContent = 'Scale + dépassement facturé';
+    } else {
+      planEl.textContent = recommended.name + ' — ' + recommended.price + ' €/mois';
+    }
+    if (entEl) entEl.hidden = !horsCatalogue;
 
     // Trafic Browse : distinct du trafic de recherche (chantier Browse &
     // Discovery, restructuration tarifaire du 24 juillet) — un visiteur
