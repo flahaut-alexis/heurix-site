@@ -17,9 +17,42 @@ const RACINE = path.resolve(__dirname, "..");
 //
 // LE CAS QUI A REVELE LA FAMILLE : `docs-copy.js` etait reference sur QUATRE
 // pages, une seule avec clef. Un bump atteignait `docs.html` et laissait
-// `en/docs.html` et les deux guides servir leur version en cache
-// indefiniment. Le controle de coherence voyait UNE clef et concluait
-// « coherent » -- exactement la forme du defaut des 38 pages d'aout.
+// `en/docs.html` et les deux guides servir leur version en cache pendant les
+// 600 s de fraicheur restantes. Le controle de coherence voyait UNE clef et
+// concluait « coherent » -- exactement la forme du defaut des 38 pages d'aout.
+//
+// POURQUOI CE TEST EXISTE -- ET LA RAISON ECRITE ICI JUSQU'AU 31 AOUT 2026
+// N'ETAIT PAS LA BONNE. Cet en-tete disait « sert sa version en cache
+// indefiniment ». Mesure du 31 aout 2026 sur l'origine de production :
+// GitHub Pages envoie `max-age=600` + ETag aux TROIS familles -- documents,
+// actifs versionnes, et les deux actifs sans clef (`favicon-32.png`,
+// `apple-touch-icon.png`, 128 pages chacun) -- et le parametre de requete ne
+// change rien a l'en-tete. Le CDN respecte le max-age et PROPAGE son `age`,
+// que le navigateur retranche de sa propre fraicheur : la borne de bout en
+// bout est 600 s, pas l'eternite. Le test reste juste, son argument non.
+//
+// LA VRAIE RAISON, mesuree au banc (memes en-tetes, navigateur reel, un
+// remplacement des fichiers entre deux navigations) : un visiteur qui ouvre
+// une page JAMAIS VISITEE apres un deploiement recoit le document NEUF et
+// l'actif ANCIEN -- le document n'est dans aucun cache, l'actif y est encore
+// frais -- et le navigateur n'emet AUCUNE requete pour cet actif
+// (`transferSize` 0). Le document et son script ont deux horloges
+// independantes ; le `?v=` est ce qui les raccorde.
+//
+// C'EST CE QUI REND CE TEST NECESSAIRE : un defaut qui ne produit aucune
+// requete ne produit aucun journal. Il n'existe aucune trace, cote origine
+// comme cote CDN, ou l'on pourrait le voir apres coup. Ce test le voit avant,
+// ou personne ne le voit.
+//
+// A NE PAS REPRENDRE : « le ?v= couvre les caches intermediaires ». C'est
+// faux au moins au premier etage -- le CDN de GitHub n'inclut pas la chaine
+// de requete dans sa clef de cache, une URL jamais demandee y repond
+// `x-cache: HIT` avec l'`age` de l'URL nue (mesure du 31 aout 2026). Ce qui
+// est mesure, c'est le cache du NAVIGATEUR. Les caches clefes sur l'URL
+// entiere n'ont pas ete mesures et ne doivent pas etre avances comme un fait.
+//
+// Detail : `CLAUDE.md`, section « Indefiniment etait faux, et le ?v= est bon
+// pour une autre raison ».
 //
 // PERIMETRE DERIVE : on lit les references des pages et on retient celles qui
 // designent un fichier existant. Aucune liste d'actifs, aucune liste

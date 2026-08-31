@@ -6,8 +6,12 @@
 # CE QUE CE SCRIPT CORRIGE. CLAUDE.md documentait une procédure manuelle :
 # "à chaque modification, régénérer un timestamp et le propager dans
 # tous les .html qui le référencent" -- correcte en intention, fragile en
-# pratique (un site oublié à la propagation sert une version en cache
-# indéfiniment, sans qu'aucune erreur ne le signale).
+# pratique (un fichier oublié à la propagation sert une version en cache
+# pendant les 600 s de fraîcheur restantes -- et il la sert SANS AUCUNE
+# REQUÊTE RÉSEAU, donc sans qu'aucune erreur ni aucun journal ne le signale.
+# Mesuré le 31 août 2026 ; « indéfiniment », écrit ici jusque-là, était faux
+# et la conclusion tenait quand même. Détail dans CLAUDE.md, section
+# « Indéfiniment était faux, et le ?v= est bon pour une autre raison »).
 #
 # GARDE-FOU : ancre chaque motif sur le guillemet ouvrant ('"' + nom du
 # fichier), jamais le nom seul -- un motif non ancré ferait fuiter le bump
@@ -135,8 +139,10 @@ for FICHIER in "$@"; do
   # niveau : vrai pour en/, faux dès que en/blog/ et en/solutions/ ont
   # existé, qui écrivent "../../styles.css". Ces 38 pages n'ont donc reçu
   # AUCUN bump depuis leur création -- un visiteur déjà venu y servait sa
-  # feuille de style en cache indéfiniment. Le script annonçait "propagé
-  # dans N fichier(s)" sans jamais dire lesquels lui échappaient.
+  # feuille de style périmée sans qu'aucune requête ne soit émise pour elle
+  # (borne mesurée le 31 août 2026 : 600 s, pas « indéfiniment »). Le script
+  # annonçait "propagé dans N fichier(s)" sans jamais dire lesquels lui
+  # échappaient.
   # Le groupe est EXTERNE : avec ((\.\./)*), \1 rend le préfixe entier ;
   # avec (\.\./)*, il ne rendrait que la dernière répétition et
   # transformerait "../../" en "../".
