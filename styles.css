@@ -5035,9 +5035,26 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 
 /* Correctif Lot 3 (audit UX console, 17-18 aout 2026) : autocompletion
    produit (C3). */
+/* LA BORDURE PORTE LE 3:1 SUR LES SURFACES FLOTTANTES DE LA CONSOLE
+   (31 aout 2026). Meme defaut, meme remede que `.nav-drop-panel` : --line
+   #E7E9F2 sur un panneau blanc pose sur une carte blanche rend 1,21:1 pour
+   un seuil de 3:1 (WCAG 1.4.11) -- il n'y a litteralement aucune frontiere.
+   Le texte, lui, passait deja largement : 6,35:1 et 18,09:1.
+
+   --blue-deep EN APLAT, ET SURTOUT PAS A FAIBLE OPACITE. La valeur est
+   reprise de `.nav-drop-panel` (voir le bloc @media 1081px), ou elle a ete
+   mesuree sur la couleur COMPOSEE : 5,86:1 cote interieur, 3,81:1 cote
+   exterieur. Le rapport d'origine y proposait rgba(63,82,232,.18), qui
+   compose sur le blanc du panneau donne rgb(220,224,251), soit 1,30:1 --
+   moins que rien. Cette refutation a circule a l'envers une fois : la
+   proposition a ete retransmise sans le commentaire qui la dement. Elle est
+   donc repetee ici plutot que citee par renvoi.
+
+   DEUX REGLES POUR SIX PANNEAUX : `.so-apercu-reglages-panel` en porte deux
+   (apercu et reglages du rayon), `.so-autocomplete-panel` quatre. */
 .so-autocomplete-panel{
   position:absolute; top:calc(100% + 4px); left:0; right:0; z-index:30;
-  background:#fff; color:var(--ink); border:1px solid var(--line); border-radius:var(--radius);
+  background:#fff; color:var(--ink); border:1px solid var(--blue-deep); border-radius:var(--radius);
   box-shadow:0 8px 20px rgba(20,22,45,0.12);
   max-height:280px; overflow-y:auto;
 }
@@ -5250,7 +5267,7 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
      defaut, et bascule a droite seulement quand il n'y a plus la place :
      l'ancrage suit l'espace disponible au lieu d'etre fixe. */
   position:absolute; top:calc(100% + 6px); left:0; z-index:15; width:260px;
-  background:#fff; color:var(--ink); border:1px solid var(--line); border-radius:12px;
+  background:#fff; color:var(--ink); border:1px solid var(--blue-deep); border-radius:12px;
   padding:14px 16px; box-shadow:0 8px 24px -8px rgba(18,20,43,0.18);
 }
 /* La ligne teintee de l apercu prend la meme teinte ambre quand elle vient

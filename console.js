@@ -83,12 +83,50 @@
   // ---------------------------------------------------------------------
   var panneauxFermables = [];
 
-  function fermerAuClicExterieur(champ, panneau, fermer) {
+  // ---------------------------------------------------------------------
+  // ECHAP, focusout ET RETOUR DE FOCUS (31 aout 2026).
+  //
+  // Le registre n'ecoutait que `click`. Un panneau ouvert au clavier ne
+  // pouvait donc se fermer qu'a la souris, et le focus restait dans un
+  // panneau invisible apres fermeture. Le menu de navigation du site a recu
+  // ces trois traitements le 30 aout (`nav-dropdown.js`) ; la console, plus
+  // ancienne, ne les avait pas -- le rattrapage va a l'envers de l'ordre
+  // d'ecriture, parce que personne ne revient sur ce qui marche.
+  //
+  // ECHAP NE FAIT RIEN QUAND AUCUN PANNEAU N'EST OUVERT, et ce n'est pas une
+  // precaution de style : la console porte DEJA deux ecouteurs `keydown` au
+  // niveau document -- `console-select.js` (ferme les .csel-panel ouverts) et
+  // `nav-dropdown.js`, charge ici aussi. Un troisieme qui fermerait
+  // inconditionnellement ferait de chaque Echap une fermeture collective.
+  // La garde est exacte parce que les six panneaux se ferment tous par
+  // `hidden = true` : `estOuvert` les couvre sans liste de noms.
+  //
+  // LE CAS DE LA MODALE EST COUVERT PAR LE REGISTRE LUI-MEME, pas par la
+  // garde. `confirmer()` pose son propre Echap le temps de sa vie ; si un
+  // popover restait ouvert derriere elle, Echap fermerait les deux. Il ne
+  // peut pas rester ouvert : ouvrir la modale demande d'activer un bouton
+  // qui vit HORS des six panneaux (verifie -- les quatre autocompletions
+  // sont des <div> vides dans le HTML, remplies en JS par des items), et
+  // cette activation emet un `click` que l'ecouteur ci-dessus voit comme
+  // exterieur, y compris au clavier. Le popover est donc deja ferme quand la
+  // modale existe.
+  //
+  // FOCUSOUT SEULEMENT SUR LES DEUX PANNEAUX DE REGLAGES -- et ce n'est PAS
+  // une harmonisation oubliee. Les quatre autocompletions ont leur champ de
+  // saisie HORS du panneau : tabuler du champ vers la liste emet un
+  // `focusout` du champ, et fermer la sur ce signal supprimerait la liste au
+  // moment precis ou l'utilisateur y va. Les deux panneaux de reglages n'ont
+  // pas de champ exterieur, donc le cas du menu s'y applique tel quel.
+  // Uniformiser les six casserait l'autocompletion au clavier.
+  // ---------------------------------------------------------------------
+  function estOuvert(p) { return !p.panneau.hidden; }
+
+  function fermerAuClicExterieur(champ, panneau, fermer, options) {
     // Deja enregistre : rien a faire (voir la note ci-dessus).
     for (var i = 0; i < panneauxFermables.length; i++) {
       if (panneauxFermables[i].panneau === panneau) return;
     }
-    // L'unique ecouteur est pose PARESSEUSEMENT, au premier enregistrement :
+    // Les ecouteurs sont poses PARESSEUSEMENT, au premier enregistrement :
     // une console qui n'ouvre aucun panneau n'ecoute rien.
     if (!panneauxFermables.length) {
       document.addEventListener("click", function (e) {
@@ -97,8 +135,32 @@
           if (!p.champ.contains(e.target) && !p.panneau.contains(e.target)) p.fermer();
         }
       });
+      document.addEventListener("keydown", function (e) {
+        if (e.key !== "Escape") return;
+        var ouverts = panneauxFermables.filter(estOuvert);
+        if (!ouverts.length) return;   // laisse Echap aux autres ecouteurs
+        ouverts.forEach(function (p) { p.fermer(); });
+        // Retour du focus a ce qui a ouvert le panneau -- sans quoi la
+        // navigation au clavier repart du haut de la page.
+        var cible = ouverts[0].champ;
+        if (cible && cible.focus) cible.focus();
+      });
+      document.addEventListener("focusout", function (e) {
+        // `relatedTarget` est ce qui RECOIT le focus. Null (clic dans le
+        // vide, fenetre qui perd le focus) ne ferme rien : seul un
+        // deplacement vers un element identifiable compte.
+        var vers = e.relatedTarget;
+        if (!vers) return;
+        panneauxFermables.forEach(function (p) {
+          if (!p.focusout || !estOuvert(p)) return;
+          if (!p.champ.contains(vers) && !p.panneau.contains(vers)) p.fermer();
+        });
+      });
     }
-    panneauxFermables.push({ champ: champ, panneau: panneau, fermer: fermer });
+    panneauxFermables.push({
+      champ: champ, panneau: panneau, fermer: fermer,
+      focusout: !!(options && options.focusout),
+    });
   }
 
   // Chantier highlighting (16 aout 2026). Fusionne des empans qui se
@@ -2593,11 +2655,13 @@
     // LA GARDE `hidden` RESTE, deplacee dans la fermeture : le registre
     // appelle `fermer` a chaque clic exterieur, y compris quand le panneau
     // est deja ferme. Sans elle, on reecrirait aria-expanded pour rien.
+    // focusout : ce panneau n'a pas de champ de saisie exterieur, donc le cas
+    // du menu s'y applique tel quel. Voir la note du registre.
     fermerAuClicExterieur(btn, panneau, function () {
       if (panneau.hidden) return;
       panneau.hidden = true;
       btn.setAttribute("aria-expanded", "false");
-    });
+    }, { focusout: true });
   }
 
   function brCablerOngletsRegles() {
@@ -4727,12 +4791,14 @@
     // Le registre teste `contains`, qui couvre le bouton ET ses enfants :
     // l'engrenage ouvre desormais le panneau, comme le texte.
     if (soReglagesBtn && soReglagesPanel) {
+      // focusout : idem, pas de champ de saisie exterieur. Les quatre
+      // autocompletions ne l'ont PAS -- voir la note du registre.
       fermerAuClicExterieur(soReglagesBtn, soReglagesPanel, function () {
         if (soReglagesPanel.hidden) return;
         soReglagesPanel.hidden = true;
         soReglagesBtn.setAttribute("aria-expanded", "false");
         refreshSoPreview(key);
-      });
+      }, { focusout: true });
     }
 
     // Correctif (18 aout 2026, brief §"Etat initial, aucune recherche
