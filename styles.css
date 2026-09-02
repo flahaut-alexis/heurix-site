@@ -3307,6 +3307,25 @@ body.docs-dark .why-card p{ color:var(--ink-muted-on-dark); }
 
 @media (max-width:900px){
   .console-layout{ flex-direction:column; gap:20px; }
+  /* Correctif (2 septembre 2026) : debordement horizontal du Dashboard a
+     390 px -- scrollWidth 566 contre clientWidth 390, mesure sur
+     #pane-overview avant toute interaction.
+     .console-layout porte align-items:flex-start. En colonne, l'axe
+     transversal est la LARGEUR : flex-start dimensionne donc chaque enfant
+     en fit-content au lieu de l'etirer, et fit-content ne descend jamais
+     sous le min-content. Le min-content de .console-main valait 538 px
+     (mesure via width:min-content) a cause du min-width:480px pose sur
+     .table-scroll table sous 600 px -- un scroll container garde son
+     min-content, il ne le remet pas a zero. .console-main depassait donc
+     son parent de 204 px, et toute la chaine de panneaux avec lui.
+     width:100% remplace le fit-content par la largeur disponible ; le
+     min-width:0 deja pose sur .console-main autorise la descente sous le
+     min-content, et .table-scroll{overflow-x:auto} reprend enfin son role
+     (mesure apres correctif : clientWidth 276, scrollWidth 480 -- le
+     tableau defile au lieu de pousser la page).
+     .console-sidebar, juste en dessous, avait deja son width:100% ; c'est
+     .console-main qui ne l'avait jamais eu. */
+  .console-main{ width:100%; }
   .console-sidebar{ position:static; flex:1 1 auto; width:100%; flex-direction:row; flex-wrap:wrap; gap:8px; }
   .console-sidebar-group{ border-bottom:none; padding-bottom:0; flex:1 1 auto; min-width:140px; }
   .console-sidebar-items{ padding-left:4px; }
@@ -6039,6 +6058,16 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
      largeur de son conteneur ; le contenu trop long enveloppe sur
      plusieurs lignes plutot que d'elargir le tableau -- le scroll
      horizontal de .table-scroll reste en filet de secours si besoin. */
+  /* MISE A JOUR DU 2 SEPTEMBRE 2026 : le debordement de 726 px etait
+     toujours la, et table-layout:fixed n'y pouvait rien. « fixed force le
+     tableau a respecter la largeur de son conteneur » est vrai ; ce qui
+     manquait, c'est que le conteneur, lui, ne respectait pas la sienne.
+     .console-main etait dimensionne en fit-content par align-items:flex-start
+     sur .console-layout passe en colonne sous 900 px, donc jamais sous son
+     min-content -- et ce min-content portait le min-width:480px de
+     .table-scroll table. Correctif reel : .console-main{ width:100% } dans
+     ce meme @media (max-width:900px). table-layout:fixed est garde : il
+     reste juste et utile, il n'etait simplement pas suffisant. */
   table-layout:fixed;
 }
 .console-table thead th{
