@@ -8,7 +8,7 @@
 <meta name="robots" content="noindex">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css?v=1788382683">
+<link rel="stylesheet" href="styles.css?v=1788383314">
 <link rel="canonical" href="https://heurix.fr/console.html">
 </head>
 <body class="console-page">
@@ -547,7 +547,7 @@
                 <div class="so-apercu-reglages-wrap">
                   <button type="button" class="btn btn-ghost so-apercu-reglages-btn" id="so-apercu-reglages-btn" aria-expanded="false" aria-controls="so-apercu-reglages-panel"><svg width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' aria-hidden='true' style='vertical-align:-2px'><circle cx='12' cy='12' r='3'/><path d='M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z'/></svg> Affichage de l'aperçu</button>
                   <div class="so-apercu-reglages-panel" id="so-apercu-reglages-panel" hidden>
-                    <p class="console-panel-note" style="margin:0 0 10px;">Ces réglages ne changent que cet écran. Ils n'affectent pas ce que voient vos visiteurs.</p>
+                    <p class="console-panel-note" style="margin:0 0 10px;">Ces réglages ne changent que cet écran : rien n'est enregistré, vos visiteurs ne voient aucune différence. Deux d'entre eux — masquer les ruptures, filtrer par rayon — partent avec la requête de test, comme le ferait votre site.</p>
                     <div class="console-field" style="max-width:170px;">
                       <label for="so-preview-limit">Produits affichés</label>
                       <select id="so-preview-limit">
@@ -569,6 +569,40 @@
                       <input type="checkbox" id="so-visuels" checked>
                       <span>Afficher les visuels</span>
                     </label>
+                    <!-- RAYON GEOGRAPHIQUE (2 septembre 2026). Quatrieme
+                         interrupteur, meme forme que les trois voisins.
+                         ETEINT PAR DEFAUT ET SANS EFFET : refreshSoPreview
+                         ne construit alors aucun des trois parametres, le
+                         corps de requete est celui d'avant ce chantier, a
+                         l'octet pres. Un marchand qui ne vend pas de
+                         services locaux ne voit rien de nouveau.
+                         Allume, il revele le sous-bloc. Les trois valeurs
+                         partent ENSEMBLE OU PAS DU TOUT : le moteur repond
+                         422 sur un rayon partiel (heurix-engine,
+                         models.py `_exiger_rayon_complet`), l'interface ne
+                         doit donc jamais pouvoir en former un. -->
+                    <label class="br-stock-toggle" for="so-rayon">
+                      <input type="checkbox" id="so-rayon">
+                      <span>Filtrer par rayon</span>
+                    </label>
+                    <div class="so-rayon-bloc" id="so-rayon-bloc" hidden>
+                      <button type="button" class="btn btn-ghost so-rayon-geoloc" id="so-rayon-geoloc"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" style="vertical-align:-2px"><path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg> Utiliser ma position</button>
+                      <div class="so-rayon-champs">
+                        <div class="console-field">
+                          <label for="so-rayon-lat">Latitude</label>
+                          <input type="number" id="so-rayon-lat" step="any" min="-90" max="90" placeholder="44.8378">
+                        </div>
+                        <div class="console-field">
+                          <label for="so-rayon-lon">Longitude</label>
+                          <input type="number" id="so-rayon-lon" step="any" min="-180" max="180" placeholder="-0.5792">
+                        </div>
+                        <div class="console-field">
+                          <label for="so-rayon-km">Rayon en km</label>
+                          <input type="number" id="so-rayon-km" step="any" min="0" max="200" placeholder="25">
+                        </div>
+                      </div>
+                      <p class="so-rayon-etat" id="so-rayon-etat" role="status" aria-live="polite" hidden></p>
+                    </div>
                   </div>
                 </div>
                 <div class="so-tuto" id="so-tuto" hidden>
@@ -640,6 +674,14 @@
                 </div>
                 <div class="so-facets" id="so-facets" hidden></div>
                 <p class="so-facet-warn" id="so-facet-warn" hidden>Filtre actif : les flèches sont désactivées. Elles figent les positions de la liste <strong>affichée</strong> — sur une liste filtrée, les règles produites n'auraient plus de sens une fois le filtre retiré. L'épinglage, lui, reste possible.</p>
+                <!-- RAYON : le catalogue ne porte aucune coordonnee. Un
+                     rayon rend alors zero SANS RIEN DIRE -- indiscernable
+                     d'un rayon trop petit. Le moteur pose
+                     `radius_no_positions: true` a la racine de la reponse
+                     (heurix-engine, search.py), absente sinon : on la
+                     lit, on ne la deduit pas d'un total nul. Meme teinte
+                     ambre que l'avertissement voisin, meme registre. -->
+                <p class="so-facet-warn" id="so-rayon-warn" hidden><strong>Aucun produit de ce catalogue ne porte de coordonnées.</strong> Le rayon ne peut donc rien trouver, et ce zéro vient de vos données — pas de la distance demandée. Ajoutez <code>lat</code> et <code>lon</code> à vos produits au prochain envoi : aucune réindexation n'est nécessaire.</p>
                 <!-- Correctif (18 aout 2026, brief §"Etat initial, aucune
                      recherche saisie -- ecran d'amorce") : remplace la
                      vue alphabetique du catalogue complet des que
@@ -1695,8 +1737,8 @@
 <script src="console-select.js?v=1787610626"></script>
 <script src="visite-editeur.js?v=1787610626"></script>
 <script type="module" src="csv-console.js?v=1788005020"></script>
-<script src="console-i18n.js?v=1787673131"></script>
-<script src="console.js?v=1788164124"></script>
+<script src="console-i18n.js?v=1788383314"></script>
+<script src="console.js?v=1788383314"></script>
 <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 
 <script src="nav-dropdown.js?v=1788086140"></script>

@@ -848,6 +848,27 @@
     "Active": "Active",
     "Épinglé pos. {0}": "Pinned pos. {0}",
     "pos. {0}": "pos. {0}",
+
+    // ------------------------------------------- rayon geographique (2 sept.)
+    // Les libelles STATIQUES du sous-bloc vivent deja en anglais dans
+    // en/console.html ; ceux-ci sont les chaines DYNAMIQUES, construites par
+    // console.js et invisibles au TreeWalker tant qu'elles ne sont pas
+    // rendues.
+    "la latitude": "the latitude",
+    "la longitude": "the longitude",
+    "le rayon": "the radius",
+    "Un rayon demande les trois valeurs ensemble. Il manque {0}.": "A radius needs all three values together. Missing: {0}.",
+    "Valeur hors bornes : {0}. Latitude de −90 à 90, longitude de −180 à 180, rayon de plus de 0 et jusqu'à {1} km.": "Value out of range: {0}. Latitude from −90 to 90, longitude from −180 to 180, radius above 0 and up to {1} km.",
+    "Ce navigateur ne donne pas de position ici. Saisissez les coordonn\u00e9es \u00e0 la main.": "This browser gives no location here. Enter the coordinates by hand.",
+    "Position en cours\u2026": "Locating\u2026",
+    "Position refus\u00e9e. Saisissez les coordonn\u00e9es \u00e0 la main.": "Location denied. Enter the coordinates by hand.",
+    "Position indisponible. Saisissez les coordonn\u00e9es \u00e0 la main.": "Location unavailable. Enter the coordinates by hand.",
+    "\u00e0 {0} km": "{0} km away",
+    // Libelles statiques doubles ici comme leurs voisins du popover : le
+    // TreeWalker les couvre si en/console.html venait a servir du francais.
+    "Filtrer par rayon": "Filter by radius",
+    "Utiliser ma position": "Use my location",
+    "Rayon en km": "Radius in km",
   };
 
   // Attributs porteurs de texte visible ou annoncé aux lecteurs d'écran.

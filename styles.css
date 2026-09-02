@@ -2725,6 +2725,7 @@ body.docs-dark .regex-copy > p{ color:var(--ink-muted-on-dark); }
      .so-caption-warn
      .so-card
      .so-card-actions button
+     .so-card-distance
      .so-card-detail-ligne
      .so-card-detail-ligne span:first-child
      .so-card-detail-resultat
@@ -2752,6 +2753,8 @@ body.docs-dark .regex-copy > p{ color:var(--ink-muted-on-dark); }
      .so-pipeline-detail
      .so-pipeline-etape strong
      .so-pipeline-panel
+     .so-rayon-champs input
+     .so-rayon-etat
      .so-regle-auto
      .so-regle-indicateur
      .so-searchbar
@@ -5432,6 +5435,18 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 .so-card-price{ font-size:15px; font-weight:800; color:var(--blue-deep); white-space:nowrap; }
 .so-card-stock{ font-size:11.5px; color:var(--ink-muted); white-space:nowrap; }
 .so-card-stock.rupture{ color:#C0392B; font-weight:700; }
+/* RAYON : distance au point demande. Sa PROPRE ligne, sous la reference, et
+   non dans `.so-card-foot` -- le pied porte le prix et le stock, qui sont
+   des proprietes du produit. La distance est une propriete de la REQUETE,
+   la meme raison qui la fait poser sur le hit et non dans `product` cote
+   moteur.
+   ENCRE ATTENUEE, ET C'EST UNE CORRECTION VUE A L'ECRAN. Ecrite d'abord en
+   `--blue-deep` (5,86:1, largement suffisant), elle se retrouvait EMPILEE
+   sous le prix, lui aussi en `--blue-deep` : deux bleus l'un sur l'autre,
+   que seule la taille separait. `--ink-muted` la range avec `.so-card-stock`
+   -- l'autre metadonnee de la carte -- et rend le prix a son role d'unique
+   ancre bleue. */
+.so-card-distance{ font-size:12px; font-weight:600; color:var(--ink-muted); margin-top:2px; }
 /* Une fiche affectee par une regle se distingue franchement : c est
    l information que l ecran existe pour montrer. */
 .so-card-ruled{ border-color:var(--blue); box-shadow:0 0 0 3px color-mix(in srgb, var(--blue) 12%, transparent); }
@@ -5572,6 +5587,37 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
   font-size:13px; color:var(--ink); margin-bottom:14px;
 }
 .br-stock-toggle input{ width:16px; height:16px; accent-color:var(--blue); cursor:pointer; }
+
+/* RAYON GEOGRAPHIQUE (2 septembre 2026). Sous-bloc revele par « Filtrer par
+   rayon », dans un popover de 260px -- 228px utiles apres les 16px de
+   padding lateral. Latitude et longitude cote a cote parce qu'elles forment
+   un couple (l'une sans l'autre ne veut rien dire, cote moteur comme ici) ;
+   le rayon prend toute la largeur, il n'appartient pas a ce couple.
+   Encart repris de `.catalog-rule-add` -- meme fond, meme filet, meme role :
+   distinguer une zone de saisie du pave qui la contient. */
+.so-rayon-bloc{
+  display:block; margin:-4px 0 14px; padding:12px;
+  background:var(--bg-soft); border:1px solid var(--line); border-radius:10px;
+}
+/* Obligatoire des lors que la classe fixe elle-meme `display` : sans cette
+   ligne l'attribut `hidden` est ignore en silence, et le sous-bloc serait
+   visible interrupteur eteint -- exactement ce que le defaut par defaut doit
+   empecher. */
+.so-rayon-bloc[hidden]{ display:none; }
+.so-rayon-geoloc{ width:100%; justify-content:center; font-size:12.5px; margin-bottom:10px; }
+.so-rayon-champs{ display:grid; grid-template-columns:1fr 1fr; gap:8px 8px; }
+.so-rayon-champs .console-field{ margin-bottom:0; max-width:none; gap:4px; }
+.so-rayon-champs .console-field:last-child{ grid-column:1 / -1; }
+.so-rayon-champs input{
+  width:100%; min-width:0; font-size:13px; font-weight:500;
+  background-color:#fff; color:var(--ink);
+  border:1px solid var(--line); border-radius:8px; padding:7px 9px;
+}
+/* Ni rouge ni vert : ce message dit aussi bien « position en cours » que
+   « il manque le rayon ». `var(--ink)` sur `--bg-soft` mesure 16,4:1 -- une
+   couleur d'etat aurait demande une machine a etats pour ne pas peindre en
+   rouge une attente qui n'est pas une erreur. */
+.so-rayon-etat{ margin:10px 0 0; font-size:12px; line-height:1.45; font-weight:600; color:var(--ink); }
 
 /* Barre « Requete a tester » : elle doit AVOIR L AIR d une barre de
    recherche visiteur, pas d un champ de formulaire -- c est ce qu on y

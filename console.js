@@ -3139,6 +3139,87 @@
     }).join("");
   }
 
+  // ------------------------- RAYON GEOGRAPHIQUE (2 septembre 2026) -------
+  //
+  // LES TROIS ENSEMBLE OU AUCUN. Le moteur refuse un rayon partiel par un
+  // 422 -- ce n'est pas une requete a interpreter mais une erreur
+  // d'integration, et le refus est explicite cote moteur
+  // (heurix-engine, models.py `_exiger_rayon_complet`). L'interface ne doit
+  // donc jamais pouvoir en former un : cette lecture rend les TROIS valeurs
+  // ou AUCUNE, jamais un sous-ensemble.
+  //
+  // LES BORNES SONT RECOPIEES DU MOTEUR, PAS DEVINEES -- models.py,
+  // SearchBody : lat [-90, 90], lon [-180, 180], radius_km ]0, 200]. Le
+  // plafond de 200 km porte sa raison la-bas (au-dela, « autour de moi » ne
+  // decrit plus un rayon mais une region, et une region se filtre par un
+  // champ). Les attributs min/max des <input type=number> ne valident rien
+  // hors soumission de formulaire : la validation qui compte est celle-ci.
+  var RAYON_MAX_KM = 200;
+
+  function soLireRayon() {
+    var actif = document.getElementById("so-rayon");
+    if (!actif || !actif.checked) return { actif: false };
+
+    var champs = [
+      ["so-rayon-lat", "lat", -90, 90, T("la latitude")],
+      ["so-rayon-lon", "lon", -180, 180, T("la longitude")],
+      ["so-rayon-km", "radius_km", 0, RAYON_MAX_KM, T("le rayon")],
+    ];
+    var valeurs = {};
+    var manquants = [];
+    var hors = [];
+    champs.forEach(function (c) {
+      var el = document.getElementById(c[0]);
+      var brut = el ? String(el.value).trim() : "";
+      // LA CHAINE VIDE SE TESTE AVANT LA CONVERSION, et ce n'est pas un
+      // detail de style : Number("") vaut 0, et 0 est une latitude
+      // parfaitement valide (au large du Ghana). Un champ laisse vide
+      // partirait donc comme une position reelle, sans que rien ne le dise.
+      if (brut === "") { manquants.push(c[4]); return; }
+      var v = Number(brut);
+      var borneBasseExclue = c[1] === "radius_km";
+      if (!isFinite(v) || v > c[3] || (borneBasseExclue ? v <= c[2] : v < c[2])) {
+        hors.push(c[4]);
+        return;
+      }
+      valeurs[c[1]] = v;
+    });
+
+    if (hors.length) {
+      return { actif: true, erreur: T("Valeur hors bornes : {0}. Latitude de −90 à 90, longitude de −180 à 180, rayon de plus de 0 et jusqu'à {1} km.", hors.join(", "), RAYON_MAX_KM) };
+    }
+    if (manquants.length) {
+      return { actif: true, erreur: T("Un rayon demande les trois valeurs ensemble. Il manque {0}.", manquants.join(", ")) };
+    }
+    return { actif: true, valeurs: valeurs };
+  }
+
+  // textContent et non innerHTML : ces messages nomment des champs, et rien
+  // n'a besoin d'y etre balise.
+  function soAfficherEtatRayon(lecture) {
+    var etat = document.getElementById("so-rayon-etat");
+    if (!etat) return;
+    if (!lecture.actif || !lecture.erreur) {
+      etat.textContent = "";
+      etat.hidden = true;
+      return;
+    }
+    etat.textContent = lecture.erreur;
+    etat.hidden = false;
+  }
+
+  // `radius_no_positions` est ABSENTE quand elle n'a rien a dire -- meme
+  // discipline que `filters_unknown` cote moteur. On teste donc la clef, on
+  // ne la deduit pas d'un total nul : un rayon simplement trop petit rend
+  // zero lui aussi, et c'est exactement les deux cas que le marchand ne peut
+  // pas distinguer sans elle. Texte deja dans le balisage (FR et EN), ici on
+  // ne fait qu'ouvrir et fermer -- aucun innerHTML.
+  function soRafraichirAvertRayon(data) {
+    var avert = document.getElementById("so-rayon-warn");
+    if (!avert) return;
+    avert.hidden = !(data && data.radius_no_positions === true);
+  }
+
   function refreshSoPreview(key) {
     var champ = document.getElementById("so-preview-query");
     var vide = document.getElementById("so-preview-empty");
@@ -3147,11 +3228,19 @@
     var amorce = document.getElementById("so-preview-amorce");
     if (!champ || !session.soCurrentCatalog) return;
 
+    // RAYON : lu ICI, avant les sorties anticipees. Le message d'etat suit
+    // les champs meme quand aucune requete n'est saisie -- sinon un rayon
+    // incomplet resterait signale (ou non signale) selon ce qui se trouve
+    // dans la barre de recherche, ce qui n'a aucun rapport.
+    var rayon = soLireRayon();
+    soAfficherEtatRayon(rayon);
+
     var q = champ.value.trim();
     if (!q) {
       if (grille) grille.innerHTML = "";
       if (legende) legende.textContent = "";
       if (vide) vide.hidden = true;
+      soRafraichirAvertRayon(null);
       soRafraichirAmorce(key);
       return;
     }
@@ -3180,6 +3269,16 @@
     // diffusion, qui font vivre la table des regles et que la simulation
     // refuse. Voir SIMU_CHAMPS.
     if (session.soDraft) corpsRequete.simulate_overrides = simuProjeter(session.soDraft, "so");
+    // RAYON : LES TROIS OU AUCUN. `rayon.valeurs` n'existe que si les trois
+    // champs sont remplis ET dans les bornes du moteur (voir soLireRayon) --
+    // une case cochee sur un formulaire a moitie rempli ne produit donc
+    // aucun parametre, et la recherche part telle qu'elle serait sans rayon.
+    // Case decochee : les trois clefs sont ABSENTES du corps, pas a null.
+    if (rayon.valeurs) {
+      corpsRequete.lat = rayon.valeurs.lat;
+      corpsRequete.lon = rayon.valeurs.lon;
+      corpsRequete.radius_km = rayon.valeurs.radius_km;
+    }
     // Correctif (18 aout 2026, brief §"Reglages d'apercu") : meme
     // pattern que so-grouper -- lu directement depuis le DOM au moment
     // du rendu, pas d'etat separe.
@@ -3189,6 +3288,11 @@
     apiFetch("/v1/index/" + encodeURIComponent(session.soCurrentCatalog) + "/search", key,
              { method: "POST", body: corpsRequete })
       .then(function (data) {
+        // RAYON : traite AVANT la bifurcation groupee/plate, parce que la
+        // clef est a la racine de la reponse dans les deux formes -- et
+        // parce que le cas ou elle compte le plus est justement celui ou il
+        // n'y a rien a afficher en dessous.
+        soRafraichirAvertRayon(data);
         // La réponse groupée a une FORME DIFFÉRENTE : « groupes » au lieu de
         // « hits ». On la traite à part plutôt que de bricoler une
         // conversion, qui masquerait ce que le moteur renvoie vraiment.
@@ -3349,6 +3453,16 @@
           }
           actions += "</div>";
 
+          // RAYON : `distance_km` est posee SUR LE HIT, jamais dans
+          // `product` -- c'est une propriete de la requete, pas du produit
+          // (heurix-engine, search.py). Elle n'existe que si un rayon a ete
+          // demande, d'ou le test de TYPE et non de verite : `h.distance_km
+          // || ""` traiterait 0 comme une absence, alors que 0 km est le cas
+          // exact du produit situe sur le point demande.
+          var distance = typeof h.distance_km === "number"
+            ? "<div class='so-card-distance'>" + esc(T("à {0} km", h.distance_km.toLocaleString(LOCALE))) + "</div>"
+            : "";
+
           // Correctif Lot 2 : data-name aussi sur la carte, lue par le
           // glisser-depose (wireSoDragDrop) qui n'a pas de bouton
           // individuel a interroger.
@@ -3367,6 +3481,7 @@
             badge + visuel +
             "<div class='so-card-name'>" + surlignerTexte(p.name || p.id, h.highlights && h.highlights.name) + "</div>" +
             "<div class='so-card-ref'>" + surlignerTexte(p.ref || p.id, h.highlights && h.highlights.ref) + "</div>" +
+            distance +
             "<div class='so-card-foot'>" + prix + stock + "</div>" +
             pourquoi + actions +
             "</div>";
@@ -3380,6 +3495,7 @@
         grille.innerHTML = "";
         legende.textContent = "";
         vide.hidden = false;
+        soRafraichirAvertRayon(null);
       });
   }
 
@@ -3960,6 +4076,62 @@
     if (visuels) visuels.addEventListener("change", function () { refreshSoPreview(key); });
     var limite = document.getElementById("so-preview-limit");
     if (limite) limite.addEventListener("change", function () { refreshSoPreview(key); });
+
+    // RAYON. Le cablage n'est pas decoratif : « Afficher les visuels » a
+    // vecu avec sa case, sa lecture et son rendu -- et sans ecouteur, donc
+    // sans effet avant la recherche SUIVANTE (voir la note ci-dessus). La
+    // case revele en plus le sous-bloc.
+    var rayonCase = document.getElementById("so-rayon");
+    var rayonBloc = document.getElementById("so-rayon-bloc");
+    if (rayonCase) rayonCase.addEventListener("change", function () {
+      if (rayonBloc) rayonBloc.hidden = !rayonCase.checked;
+      refreshSoPreview(key);
+    });
+    // `change` et non `input` : une latitude se tape caractere par
+    // caractere, et « 4 » est une valeur valide sur le chemin de
+    // « 44.8378 ». Sur `input`, chaque frappe partirait comme une vraie
+    // requete au moteur -- sept appels reseau pour une coordonnee, dont six
+    // sur des positions ou le marchand n'a jamais voulu chercher.
+    ["so-rayon-lat", "so-rayon-lon", "so-rayon-km"].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) el.addEventListener("change", function () { refreshSoPreview(key); });
+    });
+    var geoBtn = document.getElementById("so-rayon-geoloc");
+    if (geoBtn) geoBtn.addEventListener("click", function () {
+      var etat = document.getElementById("so-rayon-etat");
+      function dire(texte) {
+        if (!etat) return;
+        etat.textContent = texte;
+        etat.hidden = false;
+      }
+      // navigator.geolocation est absent hors contexte securise (http://
+      // autre que localhost). Un bouton qui ne repond rien serait pris pour
+      // une panne : il dit ce qui manque et renvoie vers la saisie.
+      if (!navigator.geolocation) {
+        dire(T("Ce navigateur ne donne pas de position ici. Saisissez les coordonnées à la main."));
+        return;
+      }
+      dire(T("Position en cours…"));
+      navigator.geolocation.getCurrentPosition(function (pos) {
+        var lat = document.getElementById("so-rayon-lat");
+        var lon = document.getElementById("so-rayon-lon");
+        // Quatre decimales : environ 11 m, largement sous la maille d'un
+        // rayon exprime en kilometres. Le bouton REMPLIT LES CHAMPS, il ne
+        // les remplace pas : ils restent la source de verite, et une autre
+        // ville se teste en les corrigeant.
+        if (lat) lat.value = pos.coords.latitude.toFixed(4);
+        if (lon) lon.value = pos.coords.longitude.toFixed(4);
+        // Le rayon n'est PAS pre-rempli : c'est la seule des trois valeurs
+        // que le navigateur ne connait pas. refreshSoPreview le dira, et
+        // dira lequel manque.
+        refreshSoPreview(key);
+      }, function (err) {
+        dire(err && err.code === 1
+          ? T("Position refusée. Saisissez les coordonnées à la main.")
+          : T("Position indisponible. Saisissez les coordonnées à la main."));
+      }, { timeout: 10000 });
+    });
+
     var champ = document.getElementById("so-preview-query");
     if (!champ) return;
     champ.addEventListener("input", function () {
