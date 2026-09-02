@@ -38,6 +38,16 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://heurix.fr/en/contact.html"/>
   </url>
   <url>
+    <loc>https://heurix.fr/mesure.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://heurix.fr/mesure.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://heurix.fr/en/mesure.html"/>
+  </url>
+  <url>
+    <loc>https://heurix.fr/en/mesure.html</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://heurix.fr/mesure.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://heurix.fr/en/mesure.html"/>
+  </url>
+  <url>
     <loc>https://heurix.fr/roi.html</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://heurix.fr/roi.html"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://heurix.fr/en/roi.html"/>

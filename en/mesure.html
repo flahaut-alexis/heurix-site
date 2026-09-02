@@ -3,38 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Contact us — Heurix</title>
-<meta name="description" content="A question about the Heurix engine, an unusual catalog? Write to us. The free 14-day trial is enough to get started without writing.">
-<link rel="alternate" hreflang="fr" href="https://heurix.fr/contact.html">
-<link rel="alternate" hreflang="en" href="https://heurix.fr/en/contact.html">
+<title>What Heurix recovers on a 2,821-product catalog — Heurix</title>
+<meta name="description" content="We don't have a customer yet. Here's a repeatable measurement: 300 queries derived from a 2,821-product catalog, Heurix against BM25, and the three places where we add nothing.">
+<link rel="alternate" hreflang="fr" href="https://heurix.fr/mesure.html">
+<link rel="alternate" hreflang="en" href="https://heurix.fr/en/mesure.html">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Contact us — Heurix">
-<meta property="og:description" content="A question about the Heurix engine, an unusual catalog? Write to us. The free 14-day trial is enough to get started without writing.">
+<meta property="og:title" content="What Heurix recovers on a 2,821-product catalog">
+<meta property="og:description" content="No testimonial, no logo, no unsourced &quot;+15% conversion&quot;. A measurement you can run yourself.">
 <meta property="og:image" content="https://heurix.fr/og-image.png">
-<meta property="og:url" content="https://heurix.fr/en/contact.html">
-<meta property="og:locale" content="en_US">
+<meta property="og:url" content="https://heurix.fr/en/mesure.html">
+<meta property="og:locale" content="en_GB">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Contact us — Heurix">
+<meta name="twitter:title" content="What Heurix recovers on a 2,821-product catalog">
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="../favicon-32.png">
 <link rel="apple-touch-icon" href="../apple-touch-icon.png">
 <link rel="stylesheet" href="../styles.css?v=1788213996">
-<link rel="canonical" href="https://heurix.fr/en/contact.html">
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  "name": "Heurix",
-  "url": "https://heurix.fr",
-  "logo": "https://heurix.fr/logo.svg?v=1787610626",
-  "image": "https://heurix.fr/og-image.png",
-  "description": "Regex-powered search and discovery engine for e-commerce sites, designed in France.",
-  "email": "contact@heurix.fr",
-  "sameAs": ["https://www.linkedin.com/company/heurix-search/"],
-  "founder": {"@type": "Person", "name": "Alexis Flahaut"},
-  "areaServed": "FR"
-}
-</script>
+<link rel="canonical" href="https://heurix.fr/en/mesure.html">
 </head>
 <body class="docs-dark">
 <header>
@@ -132,46 +117,117 @@
           <span></span><span></span><span></span>
         </button>
         <a href="console.html" class="header-signin"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0116 0v1"/></svg>My account</a>
-        <a href="../contact.html" class="lang-switch">FR</a>
+        <a href="../faq.html" class="lang-switch">FR</a>
         <a href="pricing.html" class="btn">Start free trial</a>
       </div>
     </nav>
   </div>
 </header>
-
-
-<section class="cta-section" id="contact">
+<section class="soft">
   <div class="wrap">
-    <div class="kicker">Contact us</div>
-    <h2>A question, an unusual catalog?</h2>
-    <p class="section-lede">The 14-day free trial is enough to get started without writing to us. If you have a question before diving in, or your references are specific enough to warrant a custom rule pack (Scale plans), describe your catalog in a couple of lines — reply within 48 business hours.</p>
-
-    <form class="cta-form" id="heurix-form">
-      <label for="name">Name</label>
-      <input id="name" name="name" type="text" required>
-      <label for="company">Company</label>
-      <input id="company" name="company" type="text" required>
-      <label for="email">Business email</label>
-      <input id="email" name="email" type="email" required>
-      <label for="site">E-commerce site (URL)</label>
-      <input id="site" name="site" type="url" placeholder="https://">
-      <label for="catalog-size">Approximate catalog size</label>
-      <select id="catalog-size" name="catalog_size">
-        <option value="">Select…</option>
-        <option value="< 10,000 refs">Under 10,000 references</option>
-        <option value="10,000 - 50,000 refs">10,000 to 50,000 references</option>
-        <option value="> 50,000 refs">Over 50,000 references</option>
-        <option value="Not sure">Not sure</option>
-      </select>
-      <label for="msg">Your need</label>
-      <textarea id="msg" name="message" rows="4" placeholder="E.g.: catalog of 30,000 very specific references, wondering if a custom rule pack would help before moving to the Scale plan."></textarea>
-      <button type="submit" class="btn" id="submit-btn">Send message</button>
-      <div id="form-feedback"></div>
-    </form>
-    <p class="contact-direct">Prefer to write directly? <a href="mailto:contact@heurix.fr">contact@heurix.fr</a></p>
+    <h1>What Heurix recovers on a 2,821-product catalog</h1>
+    <p class="lede"><strong>We don’t have a customer yet. Here’s what we can prove anyway.</strong></p>
+    <p>No testimonial, no logo, no unsourced “+15% conversion”. Instead: a measurement you can run yourself.</p>
   </div>
 </section>
 
+<section>
+  <div class="wrap">
+    <h2>The corpus</h2>
+    <p><code>public-demo</code> — 2,821 hardware and power-tool products, with their real part numbers, their four ways of writing the same dimension, and their supplier descriptions. 14,124 indexed terms.</p>
+    <p><strong>This is a demonstration catalog, not a customer.</strong> Nobody buys here. What we measure on it is true and repeatable; what we don’t measure on it is a sale.</p>
+    <p class="form-note">Measured 2 September 2026, across all 2,821 products of the <code>public-demo</code> catalog.</p>
+  </div>
+</section>
+
+<section class="soft">
+  <div class="wrap">
+    <h2>The method</h2>
+    <p>We compare Heurix against <strong>BM25</strong> — the default ranking of Lucene, Elasticsearch, PostgreSQL and SQLite. Standard parameters. Not a named competitor: it’s what any platform does without special tuning.</p>
+    <p>The baseline gets the same catalog, split into lowercase words. We remove only what Heurix adds: typographic folding, typo tolerance, the annotation cascade.</p>
+    <p><strong>No query is written by hand.</strong> For every product carrying a metric dimension, we rewrite <em>its own</em> dimension in a spelling other than its own — <code>M8x20</code> becomes <code>M8 x 20</code>, <code>M8*20</code>, <code>M8-20</code> — and ask both engines to find the product again. 300 queries, 271 products.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>The result</h2>
+    <div class="why-cards reveal">
+      <div class="why-card">
+        <div class="why-num">69%</div>
+        <h3>BM25</h3>
+        <p>207 products out of 300 found in the top ten results.</p>
+      </div>
+      <div class="why-card why-card-highlight">
+        <div class="why-num">97%</div>
+        <h3>Heurix</h3>
+        <p>292 products out of 300 found in the top ten results.</p>
+      </div>
+    </div>
+    <p style="margin-top:28px;"><strong>+28 points of recall.</strong> 88 queries where Heurix finds and BM25 doesn’t.</p>
+    <h3>Two things this measurement says against us</h3>
+    <ul>
+      <li><strong>BM25 finds it 3 times where Heurix fails.</strong> The advantage isn’t total.</li>
+      <li><strong>When BM25 does find it, it ranks slightly better</strong> — median rank 3 against 4. The advantage is recall, not precision.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="soft">
+  <div class="wrap">
+    <h2>Where we add nothing</h2>
+    <p>Three things we won’t sell, because the measurement doesn’t support them.</p>
+    <p><strong>Typo tolerance.</strong> On <code>vsi inox</code>, <code>boulno M8</code>, <code>rondele plate</code>: not one top result BM25 wouldn’t reach. When one word is mistyped, the other carries the query. Measured twice, on two corpora, by two methods.</p>
+    <p><strong>Accents.</strong> The catalog writes them, the buyer writes them. No gap.</p>
+    <p><strong>Standards.</strong> <code>ISO 4014</code>, <code>NF E 25-112</code>, <code>DIN 933</code>: even.</p>
+    <p><strong>And even dimensions, in the simple case.</strong> <code>M8x20</code>, <code>M8 x 20</code>, <code>M8*20</code>, <code>M8-20</code>: all four spellings put the right screw first — in Heurix <em>and</em> in BM25. Only one query separates them: <code>8x20 inox</code>, when the buyer drops the <code>M</code>. Heurix ranks it first; BM25 doesn’t find it at all.</p>
+    <p>The 28-point gap isn’t one spectacular case. It’s the accumulation, across 300 queries, of small recoveries like that one.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>What the merchant keeps</h2>
+    <p>Ranking isn’t the engine’s business alone. On this demonstration, three pins push three products to the top of the query <code>vis</code> — placed on 2 September 2026 for this page, each with its reason:</p>
+    <ul>
+      <li><strong>Box of 200 FISCHER Power-Fast wood screws — Ø and length of your choice</strong> — the best-selling pack size on this query, and the only listing that covers the whole range rather than one diameter.</li>
+      <li><strong>NEO TOOLS 31-piece screwdriver bit set</strong> — the complementary accessory: whoever searches for screws needs bits.</li>
+      <li><strong>Box of 1,000 DEWALT collated screws, 3.5 × 35&nbsp;mm</strong> — the bulk pack, for average basket value. The catalog carries two; this is the €19.90 one, not its 3.5 × 25 twin.</li>
+    </ul>
+    <p><strong>With pins</strong>: <strong>846 results</strong>. The three promoted products, in the order the merchant chose, then the engine’s ranking.</p>
+    <p><strong>Without pins</strong>: <strong>845 results</strong>, of which <strong>41 tie on score</strong> at the top — 25.76 each. The engine has no reason to prefer any one of them; the order among them is a tie-break, not a ranking.</p>
+
+    <h3>The bit set scores zero</h3>
+    <p>Of the three pinned products, the screwdriver bit set comes out at <strong>0.00</strong>. Neither its name nor its description contains the standalone word “vis”: the engine gives it <em>no</em> reason to be there.</p>
+    <p>It is first because a human decided so, and the score says it. That’s the clearest demonstration of the separation: what comes from the engine carries a score, what comes from a hand-placed rule carries zero.</p>
+
+    <h3>A pin doesn’t only reorder</h3>
+    <p>845 results become 846. The difference is the bit set: <strong>pinning brings in a product the query didn’t reach</strong>. A pin isn’t only a reordering — it adds.</p>
+
+    <h3>On which surface</h3>
+    <p>Merchandising applies on the authenticated API (<code>/v1/index/&lt;catalog&gt;/search</code>), the one your site would call. <strong>The demo widget on our home page queries a different endpoint</strong>, public and key-less, which doesn’t apply overrides: there you’ll see the 845 results and the 41-way tie, never the pins.</p>
+    <p>We say so plainly so you don’t try to reproduce there what this page describes. The engine/merchandising separation itself is verifiable on your own catalog from the trial onwards.</p>
+    <p>Neither state is “the right one”. The first is what the merchant decided, the second what the engine proposes when it has no reason to choose. In a fastener catalog, the word “vis” discriminates nothing: it is for the merchant to say what to show.</p>
+    <p class="form-note">Measured 2 September 2026 on <code>public-demo</code>, query “vis”: 846 results with the three pins, 845 without, 41 products at the top score (25.76), pinned bit set at 0.00.</p>
+  </section>
+
+<section class="soft">
+  <div class="wrap">
+    <h2>What it’s worth</h2>
+    <p>We stop here. <code>+28 points of recall</code> is a fact; “therefore £X of revenue” would be a chain we hold one link of.</p>
+    <p>What can be said about the next link, with its source: in a Harris Poll survey commissioned by Google Cloud (November–December 2022, around 13,500 adults across 14 countries, all of whom had used a retail site’s search function in the previous six months), <strong>53% of U.S. consumers surveyed say they typically abandon their carts and go elsewhere if there’s at least one item they can’t find on a website.</strong></p>
+    <p>That’s self-reported, not observed behaviour, and it says nothing about <em>your</em> catalog.</p>
+    <p>The links after that — how many of your searches fail, how much of your traffic goes through search, your conversion rate — are yours. The <a href="roi.html">ROI simulator</a> takes them as sliders and shows its assumptions.</p>
+    <p class="form-note">Source: <a href="https://cloud.google.com/blog/topics/retail/new-research-on-search-abandonment-in-retail" rel="nofollow noopener" target="_blank">Google Cloud — New research on search abandonment in retail</a>, Harris Poll survey, November–December 2022.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Run it yourself</h2>
+    <p>The catalog, the 300 queries and the BM25 baseline are reproducible. <a href="contact.html">Ask for them</a>, or try your own queries on the <a href="demo/">demo</a>.</p>
+  </div>
+</section>
 <footer>
   <div class="wrap foot-grid">
     <a href="index.html" class="logo" style="font-size:15px;"><img src="../logo.svg?v=1787610626" alt="Heurix" style="height:22px;width:22px;"> <span class="wordmark">Heurix</span></a>
@@ -204,59 +260,8 @@
 </footer>
 
 <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
-<script>
-(function(){
-  // Contact form — FormSubmit (free, no signup required), same mechanism
-  // as the French page, sending to contact@heurix.fr.
-  const FORMSUBMIT_ENDPOINT = "https://formsubmit.co/ajax/contact@heurix.fr";
-
-  const form = document.getElementById('heurix-form');
-  const feedback = document.getElementById('form-feedback');
-  const submitBtn = document.getElementById('submit-btn');
-
-  form.addEventListener('submit', async function(e){
-    e.preventDefault();
-
-    submitBtn.disabled = true;
-    submitBtn.textContent = "Sending…";
-
-    try {
-      const formData = new FormData(form);
-      const payload = Object.fromEntries(formData.entries());
-
-      const res = await fetch(FORMSUBMIT_ENDPOINT, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json"
-        },
-        body: JSON.stringify(payload)
-      });
-
-      feedback.style.display = 'block';
-      if (res.ok) {
-        feedback.style.color = 'var(--green)';
-        feedback.textContent = "Thanks, your request has been sent.";
-        form.reset();
-        if (window.dataLayer) window.dataLayer.push({ event: "contact_form_submit" });
-      } else {
-        feedback.style.color = 'var(--red-muted)';
-        feedback.textContent = "Something went wrong — please try again or email us directly at contact@heurix.fr.";
-      }
-    } catch (err) {
-      feedback.style.display = 'block';
-      feedback.style.color = 'var(--red-muted)';
-      feedback.textContent = "Something went wrong — please try again or email us directly at contact@heurix.fr.";
-    } finally {
-      submitBtn.disabled = false;
-      submitBtn.textContent = "Send request";
-    }
-  });
-})();
-</script>
+<script src="../reveal.js?v=1787729347"></script>
 <script src="../search-engine.js?v=1788116162"></script>
-<script src="../heurix-pictos.js?v=1787610626"></script>
-<script src="../demo-search-live.js?v=1787993885"></script>
 <script src="../nav-dropdown.js?v=1788086140"></script>
 <script src="../mobile-nav.js?v=1787610626"></script>
 <div id="pricing-nudge" class="pricing-nudge">

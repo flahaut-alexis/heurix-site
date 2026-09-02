@@ -3,15 +3,25 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Page introuvable — Heurix</title>
-<meta name="robots" content="noindex">
-<link rel="alternate" hreflang="fr" href="https://heurix.fr/404.html">
-<link rel="alternate" hreflang="en" href="https://heurix.fr/en/404.html">
+<title>Ce que Heurix rattrape sur un catalogue de 2 821 références — Heurix</title>
+<meta name="description" content="Nous n'avons pas encore de client. Voici une mesure reproductible : 300 requêtes dérivées d'un catalogue de 2 821 références, Heurix contre BM25, et les trois endroits où nous n'apportons rien.">
+<link rel="alternate" hreflang="fr" href="https://heurix.fr/mesure.html">
+<link rel="alternate" hreflang="en" href="https://heurix.fr/en/mesure.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Ce que Heurix rattrape sur un catalogue de 2 821 références">
+<meta property="og:description" content="Pas de témoignage, pas de logo, pas de « +15 % de conversion » sans source. Une mesure que vous pouvez refaire.">
+<meta property="og:image" content="https://heurix.fr/og-image.png">
+<meta property="og:url" content="https://heurix.fr/mesure.html">
+<meta property="og:locale" content="fr_FR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Ce que Heurix rattrape sur un catalogue de 2 821 références">
+<meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="stylesheet" href="styles.css?v=1788213996">
+<link rel="canonical" href="https://heurix.fr/mesure.html">
 </head>
-<body>
+<body class="docs-dark">
 <header>
   <div class="header-top">
     <nav class="header-top-inner">
@@ -91,6 +101,9 @@
           </div>
         </div>
         <a href="blog.html">Blog</a>
+        <!-- Correctif "Sign in manquant sur mobile" porte depuis
+             index.html (3 aout) -- .header-signin masque sous 640px
+             sans alternative jusque-la. -->
         <a href="console.html" class="nav-link-mobile-seul">Mon compte</a>
       </div>
       <div class="header-search">
@@ -105,27 +118,117 @@
         <span></span><span></span><span></span>
       </button>
       <a href="console.html" class="header-signin"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0116 0v1"/></svg>Mon compte</a>
-      <a href="en/404.html" class="lang-switch">EN</a>
+      <a href="en/faq.html" class="lang-switch">EN</a>
       <a href="pricing.html" class="btn">Démarrer l'essai gratuit</a>
       </div>
     </nav>
   </div>
 </header>
-
-
-
-<section class="hero" style="padding:120px 0;">
-  <div class="wrap" style="text-align:center;">
-    <div class="badge" style="margin-left:auto; margin-right:auto;">Erreur 404</div>
-    <h1 style="max-width:none;">Cette page n'a renvoyé aucun résultat pertinent.</h1>
-    <p class="lede" style="margin-left:auto; margin-right:auto;">Un comble sur un site qui parle de recherche, on sait. La page que vous cherchez n'existe pas ou a changé d'adresse.</p>
-    <div class="hero-cta" style="justify-content:center;">
-      <a href="index.html" class="btn">Retour à l'accueil</a>
-      <a href="blog.html" class="btn btn-ghost">Voir le blog</a>
-    </div>
+<section class="soft">
+  <div class="wrap">
+    <h1>Ce que Heurix rattrape sur un catalogue de 2&nbsp;821 références</h1>
+    <p class="lede"><strong>Nous n’avons pas encore de client. Voici ce que nous pouvons prouver quand même.</strong></p>
+    <p>Pas de témoignage, pas de logo, pas de «&nbsp;+15&nbsp;% de conversion&nbsp;» sans source. À la place&nbsp;: une mesure que vous pouvez refaire.</p>
   </div>
 </section>
 
+<section>
+  <div class="wrap">
+    <h2>Le corpus</h2>
+    <p><code>public-demo</code> — 2&nbsp;821 fiches de quincaillerie et d’outillage électroportatif, avec leurs références réelles, leurs quatre façons d’écrire une même dimension et leurs descriptions de fournisseur. 14&nbsp;124 termes indexés.</p>
+    <p><strong>C’est un catalogue de démonstration, pas un client.</strong> Personne n’y achète. Ce qu’on y mesure est vrai et reproductible&nbsp;; ce qu’on n’y mesure pas, c’est une vente.</p>
+    <p class="form-note">Mesure du 2 septembre 2026, sur les 2&nbsp;821 fiches du catalogue <code>public-demo</code>.</p>
+  </div>
+</section>
+
+<section class="soft">
+  <div class="wrap">
+    <h2>La méthode</h2>
+    <p>On compare Heurix à <strong>BM25</strong> — le classement par défaut de Lucene, Elasticsearch, PostgreSQL et SQLite. Paramètres standards. Ce n’est pas un concurrent nommé&nbsp;: c’est ce que fait toute plateforme sans réglage particulier.</p>
+    <p>La base reçoit le même catalogue, découpé en mots minuscules. On lui retire seulement ce que Heurix ajoute&nbsp;: le repli typographique, la tolérance aux fautes, la cascade d’annotations.</p>
+    <p><strong>Aucune requête n’est écrite à la main.</strong> Pour chaque fiche portant une dimension métrique, on réécrit <em>sa propre</em> dimension dans une autre graphie que la sienne — <code>M8x20</code> devient <code>M8 x 20</code>, <code>M8*20</code>, <code>M8-20</code> — et on demande aux deux moteurs de retrouver la fiche. 300 requêtes, 271 fiches.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Le résultat</h2>
+    <div class="why-cards reveal">
+      <div class="why-card">
+        <div class="why-num">69&nbsp;%</div>
+        <h3>BM25</h3>
+        <p>207 fiches sur 300 retrouvées dans les dix premiers résultats.</p>
+      </div>
+      <div class="why-card why-card-highlight">
+        <div class="why-num">97&nbsp;%</div>
+        <h3>Heurix</h3>
+        <p>292 fiches sur 300 retrouvées dans les dix premiers résultats.</p>
+      </div>
+    </div>
+    <p style="margin-top:28px;"><strong>+28 points de rappel.</strong> 88 requêtes où Heurix trouve et BM25 non.</p>
+    <h3>Deux choses que cette mesure dit contre nous</h3>
+    <ul>
+      <li><strong>BM25 trouve 3 fois là où Heurix échoue.</strong> L’avantage n’est pas total.</li>
+      <li><strong>Quand BM25 trouve, il classe un peu mieux</strong> — rang médian 3 contre 4. L’avantage est sur le rappel, pas sur la précision.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="soft">
+  <div class="wrap">
+    <h2>Là où nous n’apportons rien</h2>
+    <p>Trois choses que nous ne vendrons pas, parce que la mesure ne les soutient pas.</p>
+    <p><strong>La tolérance aux fautes.</strong> Sur <code>vsi inox</code>, <code>boulno M8</code>, <code>rondele plate</code>&nbsp;: aucun résultat de tête que BM25 n’atteindrait pas. Quand un mot est mal tapé, l’autre suffit. Mesuré deux fois, sur deux corpus, par deux méthodes.</p>
+    <p><strong>Les accents.</strong> Le catalogue les écrit, l’acheteur les écrit. Pas d’écart.</p>
+    <p><strong>Les normes.</strong> <code>ISO 4014</code>, <code>NF E 25-112</code>, <code>DIN 933</code>&nbsp;: jeu égal.</p>
+    <p><strong>Et même la dimension, dans le cas simple.</strong> <code>M8x20</code>, <code>M8 x 20</code>, <code>M8*20</code>, <code>M8-20</code>&nbsp;: les quatre écritures mettent la bonne vis au premier rang — chez Heurix <em>et</em> chez BM25. Une seule requête discrimine&nbsp;: <code>8x20 inox</code>, quand l’acheteur oublie le <code>M</code>. Heurix la trouve au premier rang, BM25 ne la trouve pas du tout.</p>
+    <p>L’écart des 28 points ne vient pas d’un tour de force sur un cas d’école. Il vient de l’accumulation, sur 300 requêtes, de petits rattrapages de ce genre.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Ce que le marchand garde en main</h2>
+    <p>Le classement n’est pas seulement affaire de moteur. Sur cette démonstration, trois épingles placent trois produits en tête de la requête <code>vis</code> — posées le 2 septembre 2026 pour cette page, chacune avec sa raison&nbsp;:</p>
+    <ul>
+      <li><strong>Boîte de 200 vis à bois FISCHER Power-Fast — Ø et longueur au choix</strong> — le conditionnement le plus vendu sur cette requête, et la seule fiche qui couvre toute la gamme plutôt qu’un diamètre.</li>
+      <li><strong>Coffret 31 embouts de vissage NEO TOOLS</strong> — l’accessoire complémentaire&nbsp;: qui cherche des vis a besoin d’embouts.</li>
+      <li><strong>Boîte de 1&nbsp;000 vis en bande DEWALT 3,5 × 35&nbsp;mm</strong> — le gros conditionnement, pour le panier moyen. Le catalogue en porte deux&nbsp;; c’est celle à 19,90&nbsp;€, pas sa jumelle en 3,5 × 25.</li>
+    </ul>
+    <p><strong>Avec les épingles</strong>&nbsp;: <strong>846 résultats</strong>. Les trois produits mis en avant, dans l’ordre choisi par le marchand, puis le classement du moteur.</p>
+    <p><strong>Sans les épingles</strong>&nbsp;: <strong>845 résultats</strong>, dont <strong>41 à égalité de score</strong> en tête — 25,76 pour chacune. Le moteur n’a aucune raison d’en préférer une&nbsp;; l’ordre entre elles est un départage, pas un classement.</p>
+
+    <h3>Le score du coffret est zéro</h3>
+    <p>Des trois produits épinglés, le coffret d’embouts sort à <strong>0,00</strong>. Ni son nom ni sa description ne contiennent le mot «&nbsp;vis&nbsp;» isolé&nbsp;: le moteur ne lui donne <em>aucune</em> raison d’être là.</p>
+    <p>Il est premier parce qu’un humain l’a décidé, et le score le dit. C’est la démonstration la plus nette de la séparation&nbsp;: ce qui vient du moteur porte un score, ce qui vient d’une règle posée à la main porte zéro.</p>
+
+    <h3>Une épingle ne réordonne pas seulement</h3>
+    <p>845 résultats deviennent 846. La différence est le coffret&nbsp;: <strong>l’épinglage fait entrer un produit que la requête n’atteignait pas</strong>. Une épingle n’est donc pas seulement un réordonnancement — elle ajoute.</p>
+
+    <h3>Sur quelle surface</h3>
+    <p>Le merchandising s’applique sur l’API authentifiée (<code>/v1/index/&lt;catalogue&gt;/search</code>), celle que votre site appellerait. <strong>Le widget de démonstration de notre accueil interroge un autre point d’entrée</strong>, public et sans clé, qui n’applique pas les surcharges&nbsp;: vous y verrez les 845 résultats et les 41 à égalité, jamais les épingles.</p>
+    <p>Nous le disons pour que vous ne cherchiez pas à reproduire là-bas ce que cette page décrit. La séparation moteur/merchandising, elle, se vérifie sur votre propre catalogue dès l’essai.</p>
+    <p>Aucun des deux états n’est «&nbsp;le bon&nbsp;». Le premier est ce que le marchand a décidé, le second ce que le moteur propose quand il n’a pas de raison de choisir. Dans un catalogue de visserie, le mot «&nbsp;vis&nbsp;» ne discrimine rien&nbsp;: c’est au marchand de dire ce qu’il veut montrer.</p>
+    <p class="form-note">Mesure du 2 septembre 2026 sur <code>public-demo</code>, requête «&nbsp;vis&nbsp;»&nbsp;: 846 résultats avec les trois épingles, 845 sans, 41 fiches au score de tête (25,76), coffret épinglé à 0,00.</p>
+  </section>
+
+<section class="soft">
+  <div class="wrap">
+    <h2>Ce que ça vaut</h2>
+    <p>Nous nous arrêtons ici. <code>+28 points de rappel</code> est un fait&nbsp;; «&nbsp;donc X euros de chiffre d’affaires&nbsp;» serait une chaîne dont nous ne tenons qu’un maillon.</p>
+    <p>Ce qu’on peut dire du maillon suivant, avec sa source&nbsp;: dans une enquête Harris Poll commandée par Google Cloud (novembre–décembre 2022, environ 13&nbsp;500 adultes dans 14 pays, tous utilisateurs de la recherche d’un site marchand dans les six mois précédents), <strong>53&nbsp;% des consommateurs américains interrogés déclarent abandonner habituellement leur panier et acheter ailleurs s’il y a au moins un article qu’ils ne trouvent pas sur le site.</strong></p>
+    <p>C’est du déclaratif, pas du comportement observé, et ça ne dit rien de <em>votre</em> catalogue.</p>
+    <p>Les maillons d’après — la part de vos recherches qui échouent, la part de votre trafic qui passe par la recherche, votre taux de conversion — sont les vôtres. Le <a href="roi.html">simulateur ROI</a> les prend en curseurs et affiche ses hypothèses.</p>
+    <p class="form-note">Source&nbsp;: <a href="https://cloud.google.com/blog/topics/retail/new-research-on-search-abandonment-in-retail" rel="nofollow noopener" target="_blank">Google Cloud — New research on search abandonment in retail</a>, enquête Harris Poll, novembre–décembre 2022.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Refaites la mesure</h2>
+    <p>Le catalogue, les 300 requêtes et la base BM25 sont reproductibles. <a href="contact.html">Demandez-les</a>, ou testez vos propres requêtes sur la <a href="demo/">démonstration</a>.</p>
+  </div>
+</section>
 <footer>
   <div class="wrap foot-grid">
     <a href="index.html" class="logo" style="font-size:15px;"><img src="logo.svg?v=1787610626" alt="Heurix" style="height:22px;width:22px;"> <span class="wordmark">Heurix</span></a>
@@ -134,8 +237,9 @@
       <a href="docs.html">Documentation API</a>
       <a href="integrations.html">Intégrations</a>
       <a href="partners.html">Programme partenaires</a>
+      <a href="console.html">Console</a>
       <a href="about.html">À propos</a>
-      <a href="faq.html">FAQ</a>
+      <a href="index.html#faq">FAQ</a>
       <a href="cgv.html">CGV</a>
       <a href="mentions-legales.html">Mentions légales</a>
           <a href="#" data-rouvrir-consentement>Gérer les cookies</a>
@@ -155,8 +259,27 @@
   </div>
 </footer>
 
-<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+<script src="reveal.js?v=1787729347"></script>
 <script src="search-engine.js?v=1788116162"></script>
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  const revealEls = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    revealEls.forEach(el => io.observe(el));
+  } else {
+    revealEls.forEach(el => el.classList.add('in'));
+  }
+</script>
+
 <script src="nav-dropdown.js?v=1788086140"></script>
 <script src="mobile-nav.js?v=1787610626"></script>
 <div id="pricing-nudge" class="pricing-nudge">
