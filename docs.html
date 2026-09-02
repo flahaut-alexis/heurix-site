@@ -1300,6 +1300,7 @@ VIS_M8X20  ────────── correspondance ──────  VIS
         <tr><td><code class="docs-inline-code">422</code></td><td>Corps de requête invalide</td><td>Le détail de l'erreur indique le champ en cause (ex : produit sans <code class="docs-inline-code">id</code>)</td></tr>
         <tr><td><code class="docs-inline-code">5xx</code></td><td>Erreur côté serveur</td><td>Réessayez ; si l'erreur persiste, écrivez à <a href="mailto:contact@heurix.fr">contact@heurix.fr</a></td></tr>
       </table></div>
+      <p class="docs-hero-note" style="margin-top:18px;"><strong>Les messages d'erreur sont en français.</strong> Le code HTTP et la structure de la réponse sont le contrat stable et documenté — branchez-vous dessus, pas sur le texte de <code class="docs-inline-code">detail</code>, qui est une phrase écrite pour la personne qui lit la réponse brute et peut être reformulée. Sur un <code class="docs-inline-code">422</code>, <code class="docs-inline-code">detail</code> est la liste des erreurs de validation : <code class="docs-inline-code">loc</code> nomme le champ en cause et <code class="docs-inline-code">msg</code> porte le message du validateur, en anglais pour tout ce que le schéma lui-même refuse.</p>
     </section>
 
     <section id="limites" class="docs-section">

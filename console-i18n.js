@@ -39,6 +39,120 @@
   var EN = (document.documentElement.lang || "fr").slice(0, 2).toLowerCase() === "en";
 
   var DICT = {
+    // ------------------------------------ MESSAGES RENVOYES PAR L'API (2 sept.)
+    //
+    // Ces douze chaines ne viennent pas de console.js : elles arrivent dans
+    // le `detail` d'une reponse d'erreur du moteur, et console.js les affiche
+    // verbatim (`erreurDeReponse`, plus haut dans ce fichier cote console :
+    // `if (typeof detail === "string") return detail;`). Elles ne passent donc
+    // par aucun `T(...)`, et la console ANGLAISE les montrait en francais.
+    //
+    // C'est le chemin 1 qui les rattrape, sans qu'il ait ete concu pour :
+    // `console.js` pose le message dans un noeud texte, le MutationObserver
+    // voit le noeud ajoute, `traduire()` fait un trim() puis une egalite
+    // exacte. Aucune ligne de moteur n'est touchee, aucun octet de reponse ne
+    // change -- l'API reste en francais, c'est la decision, et en/docs.html
+    // l'annonce.
+    //
+    // LE PERIMETRE, ET IL EST PLUS ETROIT QUE « LES MESSAGES DE L'API ».
+    //
+    // Ces douze couvrent /v1/auth/* et /v1/feedback -- les routes de COMPTE
+    // ET DE SESSION, rien d'autre. Sur ces routes, VINGT messages francais du
+    // moteur peuvent atteindre la console. Recompte ligne a ligne sur le
+    // console.js du 7 septembre 2026 :
+    //
+    //   17  RENDUS a l'utilisateur
+    //        16  ont une clef : ces douze, plus quatre posees par le lot
+    //            « ecritures muettes » du 4 septembre, une centaine de
+    //            lignes plus bas dans ce fichier
+    //         1  n'en aura pas -- voir LE NOMBRE, ci-dessous
+    //    1  REMPLACE : « Email ou mot de passe incorrect ». console.js:7485
+    //       echange tout 401 de connexion contre `loginErrorInvalid`, et
+    //       c'est delibere : l'API rend le meme texte pour un email inconnu
+    //       et un mauvais mot de passe, pour ne pas dire quels emails ont un
+    //       compte.
+    //    2  INATTEIGNABLES : les deux 409 qui parlent de soi-meme (« vous
+    //       etes le seul administrateur », « impossible de vous retirer
+    //       vous-meme »). renderTeam ne pose ses boutons que
+    //       `if (isAdmin && t.email !== myEmail)`, console.js:1028 :
+    //       personne n'a de bouton sur sa propre ligne.
+    //
+    // 17 + 1 + 2 = 20. Le compte ferme.
+    //
+    // IL Y A UNE SECONDE FAMILLE, ET CE LOT NE LA TRAITE PAS. Sur les routes
+    // de catalogue, de configuration et de facturation, VINGT-QUATRE autres
+    // messages francais du moteur peuvent atteindre la console -- « Cle API
+    // invalide » (deps.py:281), « Catalogue « X » introuvable »
+    // (routers/index.py:104), « Plafond de requetes du plan '...' depasse »
+    // (usage.py:1025), et vingt et un autres. VINGT-DEUX SONT RENDUS, ET
+    // AUCUN N'A DE CLEF : la console anglaise les montre en francais
+    // aujourd'hui. C'est un lot a part, plus gros que celui-ci. Ecrit ici
+    // pour que ce bloc ne se lise pas comme une couverture de « l'API » : il
+    // en couvre une famille sur deux.
+    //
+    // LE NOMBRE, ET POURQUOI IL N'AURA PAS DE CLEF. « Trop de tentatives.
+    // Reessayez dans N seconde(s). » (routers/auth.py:118) EST rendu --
+    // console.js:7485 ne detourne que le 401, et ce message arrive en 429,
+    // donc par la branche `err.message`. Mais il porte un nombre : pas de
+    // clef exacte possible. L'extraire par une expression reguliere
+    // recreerait la fragilite de TRADUCTIONS_ERREUR ; la voie propre est
+    // l'en-tete Retry-After, que routers/auth.py pose deja, et qui demande de
+    // le faire remonter depuis apiFetch et apiPost jusqu'a erreurDeReponse.
+    // C'est un lot de console.js, pas de dictionnaire.
+    //
+    // ------ CE QUE CE BLOC A DIT DE FAUX, ET COMMENT LES DEUX FAUTES
+    // ------ DIFFERENT, PARCE QU'ELLES NE SE CORRIGENT PAS PAREIL.
+    //
+    // 1. UN COMPTE FAUX A L'ECRITURE, ET IL FAUT LE REFAIRE. Le bloc
+    //    annoncait « douze sont rendus, les huit autres non » et n'en nommait
+    //    que sept. L'ecart n'etait pas une faute de frappe : le huitieme
+    //    etait « Trop de tentatives », compte ici comme non rendu et discute
+    //    vingt lignes plus bas comme « le treizieme qui attend ». Deux
+    //    grandeurs sous un seul mot -- « rendu » et « traduisible par clef
+    //    exacte » -- et le meme message range des deux cotes. Le total de
+    //    vingt etait juste ; c'est la repartition qui etait fausse. Fermer
+    //    l'ecart en declarant le total gonfle aurait corrige l'instrument en
+    //    arrondissant sa sortie.
+    //
+    // 2. DES AFFIRMATIONS DEVENUES PERIMEES, ET ELLES SE DATENT. Le bloc
+    //    donnait six chaines pour avalees. Le lot du 4 septembre a change
+    //    console.js, et QUATRE ont change de statut :
+    //      « Invitation invalide ou expiree » etait derriere un `fetch` brut
+    //        sans controle de `r.ok` ; console.js:7682 fait desormais
+    //        `if (!r.ok) { throw erreurDeReponse(data, r.status); }`.
+    //      trois messages d'equipe etaient derriere
+    //        `.catch(function () { btn.disabled = false; })` ; console.js:2365
+    //        et :2386 appellent desormais `signalerEchec`.
+    //    Leurs quatre clefs sont dans main, posees par ce lot-la.
+    //
+    //    LES DEUX AUTRES NE SONT PAS TOMBEES : ce sont les deux 409 qui
+    //    parlent de soi-meme, et aucun clic ne les a JAMAIS declenchees.
+    //    « Tombee le 4 septembre » et « n'a jamais ete atteignable »
+    //    demandent deux phrases differentes ; les confondre reconstruit le
+    //    defaut n°1 sous une autre forme, en rangeant deux causes sous un mot.
+    //
+    // CE QUI TIENT ICI EST LE POURQUOI, PAS L'INVENTAIRE. Une chaine ne
+    // merite une entree que si un chemin l'affiche, et ce chemin se verifie
+    // en lisant console.js au moment ou l'on ecrit la ligne. Un commentaire
+    // qui decrit le fichier VOISIN se perime quand ce fichier bouge, sans
+    // qu'une ligne bouge ici et sans qu'aucun test ne l'annonce : c'est
+    // arrive en quarante-huit heures. Les comptes ci-dessus portent donc
+    // leur date, et la population sur laquelle ils portent.
+    "Adresse email invalide": "Invalid email address",
+    "Un compte existe déjà avec cet email": "An account already exists with this email",
+    "Cette adresse a déjà un compte Heurix": "This address already has a Heurix account",
+    "Invitation invalide, expirée, ou déjà utilisée": "Invitation invalid, expired, or already used",
+    "Lien de réinitialisation invalide ou expiré": "Password reset link invalid or expired",
+    "Compte sans entreprise associée — impossible d'envoyer la demande.":
+      "No company is linked to this account — the request cannot be sent.",
+    "Ce compte n'est rattaché à aucune entreprise": "This account is not linked to any company",
+    "Session invalide ou expirée": "Session invalid or expired",
+    "Seul un administrateur peut inviter un collègue": "Only an administrator can invite a colleague",
+    "Seul un administrateur peut modifier les informations de l'entreprise":
+      "Only an administrator can change the company details",
+    "Le mot de passe doit faire au moins 10 caractères.": "The password must be at least 10 characters.",
+    "Mot de passe trop long.": "Password too long.",
+
     // -------- BILAN D'UNE SUPPRESSION EN LOT, LOT DU 5 SEPTEMBRE --------
     //
     // Cinq gabarits, tous du CHEMIN 2 : ils sont ecrits dans console.js et
@@ -77,8 +191,8 @@
     //   console.js et n'apparaissent que quand `err.message` est absent --
     //   une coupure reseau, ou l'API n'a jamais repondu.
     //
-    // POURQUOI ELLES MANQUAIENT. Le lot `messages-api-anglais` (2 sept.,
-    // toujours pas sur origin) avait deja traduit douze messages du moteur
+    // POURQUOI ELLES MANQUAIENT. Le lot `messages-api-anglais` (2 sept.)
+    // avait deja traduit douze messages du moteur
     // et NOMME ces six-ci comme intraduisibles en l'etat : « cinq messages
     // d'administration d'equipe -> avales par .catch(function () {
     // btn.disabled = false; }) » et « Invitation invalide ou expiree ->
@@ -120,7 +234,6 @@
     "Échec de l'ajout.": "Could not add.",
     "Impossible de charger les informations de votre compte.":
       "Your account details could not be loaded.",
-
     // --------------------------------------------- seconde passe (couverture)
     "Boost et relégation par attribut": "Boost and bury by attribute",
     "CA réellement attribué": "Revenue actually attributed",

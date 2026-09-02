@@ -1285,6 +1285,7 @@ VIS_M8X20  ──────────── match ────────�
         <tr><td><code class="docs-inline-code">422</code></td><td>Invalid request body</td><td>The error detail names the field at fault (e.g. product missing an <code class="docs-inline-code">id</code>)</td></tr>
         <tr><td><code class="docs-inline-code">5xx</code></td><td>Server-side error</td><td>Retry; if it persists, write to <a href="mailto:contact@heurix.fr">contact@heurix.fr</a></td></tr>
       </table></div>
+      <p class="docs-hero-note" style="margin-top:18px;"><strong>Error messages are in French.</strong> The status code and the response shape are the stable, documented contract — branch on those, not on the text of <code class="docs-inline-code">detail</code>, which is a sentence written for a human reading the raw response and may be reworded. On a <code class="docs-inline-code">422</code>, <code class="docs-inline-code">detail</code> is the list of validation errors: <code class="docs-inline-code">loc</code> names the field at fault and <code class="docs-inline-code">msg</code> carries the validator's message, in English for everything the schema itself rejects.</p>
     </section>
 
     <section id="limites" class="docs-section">
