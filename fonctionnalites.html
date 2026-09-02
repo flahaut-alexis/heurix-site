@@ -255,6 +255,15 @@
         <a href="docs.html#ep-federated">Endpoint recherche fédérée →</a>
       </div>
 
+      <div class="feat-card">
+        <h3>Recherche par rayon</h3>
+        <p>« Une école de surf à moins de 15 km. » Donnez un point et une distance : le moteur ne rend que ce qui est dedans, et chaque résultat porte sa distance en kilomètres — de quoi trier ou afficher sans recalculer quoi que ce soit. Vos produits portent <code class="docs-inline-code">lat</code> et <code class="docs-inline-code">lon</code> comme n'importe quel autre champ, sans réindexation.</p>
+        <p><strong>Le rayon filtre, il n'entre pas dans le score.</strong> Un lieu à 3 km ne passe pas devant un lieu à 14 km s'il correspond moins bien à ce qui est cherché. C'est une décision, pas une limite : mêler la distance à la pertinence ferait remonter le mauvais résultat parce qu'il est proche, et on ne saurait plus lequel des deux critères a décidé.</p>
+        <pre class="docs-code"><code>POST /v1/index/agences/search
+{"q": "ecole de surf", "lat": 45.00, "lon": -1.20, "radius_km": 15}</code></pre>
+        <a href="docs.html#ep-search">Paramètres du rayon →</a>
+      </div>
+
     </div>
   </section>
 

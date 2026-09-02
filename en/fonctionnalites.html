@@ -253,6 +253,15 @@
         <a href="docs.html#ep-federated">Federated search endpoint →</a>
       </div>
 
+      <div class="feat-card">
+        <h3>Radius search</h3>
+        <p>"A surf school within 15 km." Give a point and a distance: the engine returns only what falls inside, and every result carries its distance in kilometres — enough to sort or display without recomputing anything. Your products carry <code class="docs-inline-code">lat</code> and <code class="docs-inline-code">lon</code> like any other field, with no reindexing.</p>
+        <p><strong>The radius filters; it does not enter the score.</strong> A place 3 km away does not outrank one 14 km away if it matches the query less well. That is a decision, not a limitation: blending distance into relevance would surface the wrong result because it happens to be near, and you would no longer know which of the two criteria decided.</p>
+        <pre class="docs-code"><code>POST /v1/index/branches/search
+{"q": "surf school", "lat": 45.00, "lon": -1.20, "radius_km": 15}</code></pre>
+        <a href="docs.html#ep-search">Radius parameters →</a>
+      </div>
+
     </div>
   </section>
 
