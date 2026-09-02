@@ -79,7 +79,10 @@ describe("compteurs", () => {
     taper(w, "din 933");
     const total = ["blog", "secteurs", "produit", "documentation", "plateformes"]
       .reduce((s, c) => s + Number(compteDe(w, c)), 0);
-    expect(total).toBe(8);            // sept pages, dont une avec son ancre
+    // NEUF DEPUIS LE 2 SEPTEMBRE 2026 : « mesure.html » cite « DIN 933 »
+    // dans sa liste des cas ou Heurix n'apporte rien. Huit pages, dont une
+    // avec son ancre.
+    expect(total).toBe(9);
     expect(Number(compteDe(w, "blog"))).toBeGreaterThan(0);
   });
 
@@ -125,7 +128,7 @@ describe("filtrer", () => {
     const w = await ouvrir();
     taper(w, "din 933");
     const haut = () => w.document.querySelector(".search-count").textContent;
-    expect(haut()).toBe("8 résultats");
+    expect(haut()).toBe("9 résultats");   // 9 depuis mesure.html, 2 sept. 2026
     cocher(w, "blog");
     expect(haut()).toBe(`${compteDe(w, "blog")} résultats`);
   });

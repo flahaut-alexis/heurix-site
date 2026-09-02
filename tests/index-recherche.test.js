@@ -338,7 +338,13 @@ describe("index derive — la recherche lit vraiment les termes", () => {
     "blog/recherche-reference-sku-b2b.html",
     "blog/recherche-vectorielle-catalogues-techniques.html",
     "index.html",
-    "prestashop.html",
+    // mesure.html EST ENTREE ET prestashop.html EST SORTIE (2 septembre 2026).
+    // La page de mesure cite « DIN 933 » dans sa liste des cas ou Heurix
+    // n'apporte rien, et elle passe devant la page PrestaShop, qui ne le
+    // mentionnait qu'en passant. Sept pages avant, sept pages apres : c'est
+    // un DEPLACEMENT, pas un ajout, et il est note ici pour qu'on sache que
+    // la page PrestaShop ne remonte plus sur cette requete.
+    "mesure.html",
     "solutions/outillage.html",
   ];
 

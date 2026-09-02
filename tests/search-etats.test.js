@@ -284,7 +284,11 @@ describe("taper avant que l'index soit la", () => {
     expect(w.document.querySelector(".search-count").textContent).toMatch(/^\d+ résultats$/);
     const pages = new Set([...w.document.querySelectorAll(".search-result")]
       .map((a) => a.getAttribute("href").split("#")[0].replace(/^(\.\.\/)+/, "")));
-    expect(pages.has("prestashop.html")).toBe(true);       // un resultat de « din 933 »
+    // CANARI CHANGE LE 2 SEPTEMBRE 2026 : « prestashop.html » sortait du
+    // haut de « din 933 » des qu'une page citant la norme s'ajoutait. Le
+    // canari ne doit pas dependre du classement -- « index.html » cite la
+    // norme dans son bloc moteur et n'a pas bouge depuis la creation du test.
+    expect(pages.has("index.html")).toBe(true);            // un resultat de « din 933 »
   });
 
   it("un champ vide a l'arrivee de l'index donne bien les suggestions", async () => {
