@@ -3341,7 +3341,7 @@
               "<p style='font-size:13px; color:var(--ink-muted); margin:0 0 20px;'>" +
                 T("Cette recherche est un cul-de-sac pour vos visiteurs.") +
               "</p>" +
-              "<div id='so-empty-synonym-form' hidden style='background:var(--surface-2); border:0.5px solid var(--line); border-radius:var(--radius); padding:14px; text-align:left; margin:0 auto 12px; max-width:320px;'>" +
+              "<div id='so-empty-synonym-form' hidden style='background:var(--bg-soft); border:0.5px solid var(--line); border-radius:var(--radius); padding:14px; text-align:left; margin:0 auto 12px; max-width:320px;'>" +
                 "<p style='font-size:13px; margin:0 0 8px;'>" + T("Rapprocher <strong>{0}</strong> de :", esc(q)) + "</p>" +
                 "<div style='display:flex; gap:8px;'>" +
                   "<input type='text' id='so-empty-synonym-input' placeholder='" + escAttr(T("ex. plaque de plâtre")) + "' style='flex:1; font-size:13px;'>" +
