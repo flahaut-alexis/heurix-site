@@ -18,7 +18,7 @@
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="../favicon-32.png">
 <link rel="apple-touch-icon" href="../apple-touch-icon.png">
-<link rel="stylesheet" href="../styles.css?v=1788381436">
+<link rel="stylesheet" href="../styles.css?v=1788382683">
 <link rel="canonical" href="https://heurix.fr/en/mesure.html">
 </head>
 <body class="docs-dark">
@@ -117,7 +117,7 @@
           <span></span><span></span><span></span>
         </button>
         <a href="console.html" class="header-signin"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0116 0v1"/></svg>My account</a>
-        <a href="../faq.html" class="lang-switch">FR</a>
+        <a href="../mesure.html" class="lang-switch">FR</a>
         <a href="pricing.html" class="btn">Start free trial</a>
       </div>
     </nav>
@@ -152,7 +152,7 @@
 <section>
   <div class="wrap">
     <h2>The result</h2>
-    <div class="why-cards reveal">
+    <div class="why-cards why-cards-duo reveal">
       <div class="why-card">
         <div class="why-num">69%</div>
         <h3>BM25</h3>
@@ -164,6 +164,7 @@
         <p>292 products out of 300 found in the top ten results.</p>
       </div>
     </div>
+    <p class="form-note">Measured on 2 September 2026: 300 queries derived from 271 products, across the 2,821 products of the <code>public-demo</code> catalog.</p>
     <p style="margin-top:28px;"><strong>+28 points of recall.</strong> 88 queries where Heurix finds and BM25 doesn’t.</p>
     <h3>Two things this measurement says against us</h3>
     <ul>
@@ -189,27 +190,33 @@
   <div class="wrap">
     <h2>What the merchant keeps</h2>
     <p>Ranking isn’t the engine’s business alone. On this demonstration, three pins push three products to the top of the query <code>vis</code> — placed on 2 September 2026 for this page, each with its reason:</p>
+    <p><strong>Two catalogs, and the difference matters.</strong> The BM25 comparison above was run on <code>public-demo</code>, the French catalog. This section was measured on <code>public-demo-en</code> — the catalog you would query. The numbers below are not the French ones; they are the ones you can reproduce.</p>
     <ul>
       <li><strong>Box of 200 FISCHER Power-Fast wood screws — Ø and length of your choice</strong> — the best-selling pack size on this query, and the only listing that covers the whole range rather than one diameter.</li>
       <li><strong>NEO TOOLS 31-piece screwdriver bit set</strong> — the complementary accessory: whoever searches for screws needs bits.</li>
       <li><strong>Box of 1,000 DEWALT collated screws, 3.5 × 35&nbsp;mm</strong> — the bulk pack, for average basket value. The catalog carries two; this is the €19.90 one, not its 3.5 × 25 twin.</li>
     </ul>
-    <p><strong>With pins</strong>: <strong>846 results</strong>. The three promoted products, in the order the merchant chose, then the engine’s ranking.</p>
-    <p><strong>Without pins</strong>: <strong>845 results</strong>, of which <strong>41 tie on score</strong> at the top — 25.76 each. The engine has no reason to prefer any one of them; the order among them is a tie-break, not a ranking.</p>
+    <p><strong>With pins</strong>: <strong>574 results</strong>. The three promoted products, in the order the merchant chose, then the engine’s ranking.</p>
+    <p><strong>Without pins</strong>: <strong>571 results</strong>, of which <strong>41 tie on score</strong> at the top — 19.76 each. The engine has no reason to prefer any one of them; the order among them is a tie-break, not a ranking.</p>
 
-    <h3>The bit set scores zero</h3>
-    <p>Of the three pinned products, the screwdriver bit set comes out at <strong>0.00</strong>. Neither its name nor its description contains the standalone word “vis”: the engine gives it <em>no</em> reason to be there.</p>
-    <p>It is first because a human decided so, and the score says it. That’s the clearest demonstration of the separation: what comes from the engine carries a score, what comes from a hand-placed rule carries zero.</p>
+    <h3>Why the query is <code>vis</code></h3>
+    <p>Not one product name in this catalog contains the word “vis”. They say <em>screws</em>, <em>wood screws</em>, <em>collated screws</em>. The query returns <strong>574 results</strong> all the same — reached through the <code>VIS-…</code> references and the <code>#FAM_VIS</code> annotation, never through a name.</p>
+    <p>That is this page’s argument in a single query: <strong>the engine does not only read names.</strong> It decomposes a reference and it carries an annotation, so a word absent from every title still finds the 574 products that answer to it.</p>
+
+    <h3>All three pinned products score zero</h3>
+    <p>The three come out at <strong>0.00</strong>, not one of them. No English name or description carries the standalone word “vis”, so the engine gives none of them <em>any</em> reason to be there.</p>
+    <p>They are first because a human decided so, and the score says it. That’s the clearest demonstration of the separation: what comes from the engine carries a score, what comes from a hand-placed rule carries zero. On the French catalog only the bit set scored zero — the other two carry “vis” in their names there. In English the demonstration is cleaner: three products, three zeros.</p>
 
     <h3>A pin doesn’t only reorder</h3>
-    <p>845 results become 846. The difference is the bit set: <strong>pinning brings in a product the query didn’t reach</strong>. A pin isn’t only a reordering — it adds.</p>
+    <p>571 results become 574. The three pinned products are the difference: <strong>pinning brings in products the query didn’t reach</strong>. A pin isn’t only a reordering — it adds.</p>
 
     <h3>On which surface</h3>
-    <p>Merchandising applies on the authenticated API (<code>/v1/index/&lt;catalog&gt;/search</code>), the one your site would call. <strong>The demo widget on our home page queries a different endpoint</strong>, public and key-less, which doesn’t apply overrides: there you’ll see the 845 results and the 41-way tie, never the pins.</p>
+    <p>Merchandising applies on the authenticated API (<code>/v1/index/&lt;catalog&gt;/search</code>), the one your site would call. <strong>The demo widget on our home page queries a different endpoint</strong>, public and key-less, which doesn’t apply overrides: there you’ll see the 571 results and the 41-way tie, never the pins.</p>
     <p>We say so plainly so you don’t try to reproduce there what this page describes. The engine/merchandising separation itself is verifiable on your own catalog from the trial onwards.</p>
     <p>Neither state is “the right one”. The first is what the merchant decided, the second what the engine proposes when it has no reason to choose. In a fastener catalog, the word “vis” discriminates nothing: it is for the merchant to say what to show.</p>
-    <p class="form-note">Measured 2 September 2026 on <code>public-demo</code>, query “vis”: 846 results with the three pins, 845 without, 41 products at the top score (25.76), pinned bit set at 0.00.</p>
-  </section>
+    <p class="form-note">Measured 2 September 2026 on <code>public-demo-en</code>, query “vis”: 574 results with the three pins, 571 without, 41 products at the top score (19.76), all three pinned products at 0.00. The 571 was read before the pins were placed; it is corroborated by 574 minus three pinned products whose match list is empty. The BM25 comparison higher up the page was measured on <code>public-demo</code>, the French catalog.</p>
+  </div>
+</section>
 
 <section class="soft">
   <div class="wrap">

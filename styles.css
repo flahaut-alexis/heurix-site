@@ -8003,3 +8003,39 @@ body.docs-dark .addon-net{ color:var(--ink-on-dark); }
   font-size:14px; line-height:1.6; color:var(--ink-muted);
 }
 .demo-why-resultat strong{ color:var(--ink); }
+
+/* ------------------------------------------------------------------ */
+/* mesure.html — le duo BM25/Heurix (2 septembre 2026)                 */
+/*                                                                      */
+/* AUCUNE COULEUR DE TEXTE N'EST DECLAREE ICI, VOLONTAIREMENT : le      */
+/* composant .why-card et ses surcouches body.docs-dark gardent les     */
+/* leurs, deja classees. Ces regles ne touchent qu'a la grille et au    */
+/* contour -- rien que tests/classement-fond.test.js ait a classer.     */
+
+/* .why-cards passe a UNE colonne sous 800px (ligne 2881). C'est juste  */
+/* pour trois cartes qui s'enumerent, faux pour deux qui se comparent : */
+/* lues l'une SOUS l'autre, 69 % et 97 % ne se rapprochent plus.        */
+/* MESURE SUR LA PAGE SERVIE, PAS SUPPOSEE : a 390px, la version en     */
+/* ligne rendait `grid-template-columns: 334px` -- une seule colonne.   */
+/* Le duo garde donc ses deux colonnes a toutes les largeurs : 159px    */
+/* chacune a 390, sans debordement (scrollWidth == clientWidth == 390). */
+/* Pas de !important : la regle est plus bas dans le fichier, a         */
+/* specificite egale (0,1,0), elle l'emporte deja.                      */
+.why-cards-duo{ grid-template-columns:repeat(2,1fr); }
+
+/* .why-card-highlight ETAIT INERTE. La classe est dans le markup de    */
+/* mesure.html depuis sa creation, sur la carte Heurix ; AUCUNE regle   */
+/* du depot ne la definissait. Mesure du 2 septembre 2026 sur les       */
+/* styles calcules des deux cartes : background, border-color,          */
+/* border-width et box-shadow identiques au pixel. La carte qui devait  */
+/* ressortir ne ressortait pas.                                         */
+/*                                                                      */
+/* Le contour reprend var(--blue), deja le contour de survol de         */
+/* .why-card -- pas une couleur neuve. La surcouche sombre est          */
+/* OBLIGATOIRE et non redondante : `body.docs-dark .why-card` (0,2,1)   */
+/* l'emporterait sinon sur `.why-card-highlight` (0,1,0), quelle que    */
+/* soit sa position dans le fichier. mesure.html EST une page docs-dark.*/
+/* POUR REVENIR EN ARRIERE : supprimer ces deux regles suffit, le       */
+/* markup n'a pas bouge.                                                */
+.why-card-highlight{ border-color:var(--blue); }
+body.docs-dark .why-card-highlight{ border-color:var(--blue); }
