@@ -172,8 +172,16 @@ describe("canonical — chaque page se declare canonique d'elle-meme", () => {
 
 describe("sitemap — il declare exactement les pages indexables", () => {
   const sitemap = fs.readFileSync(path.join(RACINE, "sitemap.xml"), "utf8");
+  // UNE URL EST NORMALISEE VERS SON FICHIER AVANT TOUTE COMPARAISON
+  // (3 septembre 2026). « https://heurix.fr/ » et « .../index.html » designent
+  // le meme fichier ; ce test comparait des CHAINES et imposait donc en
+  // silence l'une des deux formes -- celle que la page d'accueil contredisait,
+  // puisque son canonical declare la racine. Un garde qui derive du disque
+  // n'a pas a trancher la forme de l'URL : il la normalise, comme le fait
+  // deja `pages_du_sitemap()` dans scripts/index-recherche.py.
+  const versFichier = (u) => (u === "" || u.endsWith("/") ? u + "index.html" : u);
   const declarees = [...sitemap.matchAll(/<loc>https:\/\/heurix\.fr\/([^<]*)<\/loc>/g)]
-    .map((m) => m[1]);
+    .map((m) => versFichier(m[1]));
   const ensemble = new Set(declarees);
 
   const estIndexable = (p) => {
@@ -189,16 +197,17 @@ describe("sitemap — il declare exactement les pages indexables", () => {
   });
 
   it("aucune page indexable n'est absente du sitemap", () => {
-    // index.html est declaree par son chemin de fichier dans ce sitemap, pas
-    // par la racine -- verifie, et coherent avec toutes les autres entrees.
+    // index.html est declaree par la RACINE dans ce sitemap, et les autres
+    // entrees par leur chemin de fichier. `versFichier` ramene les deux au
+    // meme, donc cette assertion ne depend plus de la forme choisie.
     const oubliees = pages.filter((p) => estIndexable(p) && !ensemble.has(p));
     expect(oubliees).toEqual([]);
   });
 
   it("chaque URL declaree correspond a un fichier qui existe", () => {
-    const fantomes = declarees.filter(
-      (u) => u && !fs.existsSync(path.join(RACINE, u))
-    );
+    // Le `u &&` d'avant sautait l'URL racine, seule entree a normaliser :
+    // la seule qui avait besoin d'etre verifiee etait la seule exemptee.
+    const fantomes = declarees.filter((u) => !fs.existsSync(path.join(RACINE, u)));
     expect(fantomes).toEqual([]);
   });
 
