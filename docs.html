@@ -287,7 +287,7 @@
       <p>Une clé publique appelant un endpoint hors de sa portée reçoit un <code class="docs-inline-code">403</code> explicite. Elle partage le quota de la clé serveur qui l'a générée — en créer plusieurs n'augmente donc pas vos plafonds.</p>
 
       <h3>Générer une clé publique</h3>
-      <p>Depuis <a href="console.html">votre console</a> (Mes infos → Ma clé API), ou par API avec votre clé serveur :</p>
+      <p>Depuis <a href="console.html">votre console</a> (Mon compte → Clé API), ou par API avec votre clé serveur :</p>
       <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/keys/public \
   -H "Authorization: Bearer VOTRE_CLE_SERVEUR" \
   -H "Content-Type: application/json" \
@@ -1041,7 +1041,7 @@ curl -X POST https://api.heurix.fr/v1/events \
       <ul>
         <li><a href="downloads/heurix-tracker.js?v=1787784017" download>Heurix Tracker</a> (recommandé) — un identifiant visiteur persistant, pour relier un clic à un achat ultérieur du même visiteur plutôt qu'une simple corrélation agrégée. Un seul script à poser site-wide, expose les mêmes fonctions que le snippet ci-dessous.</li>
         <li><a href="downloads/heurix-conversion-events.tpl?v=1787784017" download>Modèle de balise Google Tag Manager</a> (fichier <code class="docs-inline-code">.tpl</code>, à importer dans Modèles → Modèles de balises → Importer) — compatible avec le tracker via un champ « Identifiant visiteur » optionnel</li>
-        <li><a href="downloads/heurix-conversion-snippet.html?v=1787784017" download>Snippet JavaScript simple</a>, sans identifiant persistant — pour une intégration minimale sans GTM ni tracker</li>
+        <li><a href="downloads/heurix-conversion-snippet.html?v=1788455858" download>Snippet JavaScript simple</a>, sans identifiant persistant — pour une intégration minimale sans GTM ni tracker</li>
       </ul>
       <p><strong>Ne consomme pas votre quota de requêtes</strong> — ce n'est pas un appel moteur, c'est une remontée de données.</p>
       <div class="callout callout-warning" role="note">

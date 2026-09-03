@@ -273,7 +273,7 @@
       <p>A public key calling an endpoint outside its scope gets an explicit <code class="docs-inline-code">403</code>. It shares the quota of the server key that generated it — creating several therefore doesn't raise your limits.</p>
 
       <h3>Generating a public key</h3>
-      <p>From <a href="console.html">your console</a> (My info → My API key), or via the API with your server key:</p>
+      <p>From <a href="console.html">your console</a> (My account → API key), or via the API with your server key:</p>
       <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/keys/public \
   -H "Authorization: Bearer YOUR_SERVER_KEY" \
   -H "Content-Type: application/json" \
@@ -1027,7 +1027,7 @@ curl -X POST https://api.heurix.fr/v1/events \
       <ul>
         <li><a href="../downloads/heurix-tracker.js?v=1787784017" download>Heurix Tracker</a> (recommended) — a persistent visitor identifier, to link a click to a later purchase from the same visitor rather than a simple aggregate correlation. One single script to drop site-wide, exposes the same functions as the snippet below.</li>
         <li><a href="../downloads/heurix-conversion-events.tpl?v=1787784017" download>Google Tag Manager tag template</a> (<code class="docs-inline-code">.tpl</code> file, import under Templates → Tag Templates → Import) — compatible with the tracker via an optional "Visitor ID" field</li>
-        <li><a href="../downloads/heurix-conversion-snippet.html?v=1787784017" download>Simple JavaScript snippet</a>, no persistent identifier — for a minimal integration with no GTM or tracker</li>
+        <li><a href="../downloads/heurix-conversion-snippet.html?v=1788455858" download>Simple JavaScript snippet</a>, no persistent identifier — for a minimal integration with no GTM or tracker</li>
       </ul>
       <p><strong>Doesn't consume your request quota</strong> — it's not an engine call, it's a data report.</p>
       <div class="callout callout-warning" role="note">
