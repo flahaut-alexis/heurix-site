@@ -353,8 +353,27 @@ nécessaire aux appels de tracking depuis les sites clients.
   douce (`ALTER TABLE ... ADD COLUMN` protégé par vérification
   `PRAGMA table_info`), jamais de migration destructive.
 - Nouvel article de blog = 3 emplacements à mettre à jour :
-  `blog.html` (liste), `search.js` (index de recherche du site),
-  `sitemap.xml`.
+  `blog.html` (liste), `sitemap.xml`, et l'index de recherche — qui ne
+  s'édite pas, il se **régénère** :
+
+  ```bash
+  HEURIX_ENGINE=../heurix-engine <python-du-moteur> scripts/index-recherche.py
+  ```
+
+  Il écrit `search-index-fr.json` et `search-index-en.json`. La génération
+  exige `heurix.normalize`, donc le venv du moteur ; `--verifier` s'en passe
+  et dit si l'index est périmé. La CI lance ce `--verifier` : un index en
+  retard fait échouer le job « Index de recherche a jour ».
+
+  **CETTE LIGNE A DÉSIGNÉ `search.js` JUSQU'AU 3 SEPTEMBRE 2026**, soit une
+  semaine après que ce fichier a été supprimé (`50980d21`, 27 août, « 120
+  pages cessent de payer un index mort » — il avait auparavant fusionné dans
+  `search-engine.js`, `2a573cb6`). L'instruction n'était donc pas seulement
+  périmée sur un nom : elle envoyait éditer à la main un fichier absent, là
+  où le geste réel est de lancer un script. Un fichier qui n'existe plus ne
+  produit aucune erreur tant que personne ne le cherche, et la consigne qui
+  le nomme survit à sa suppression — c'est la famille documentée plus bas,
+  appliquée aux conventions de ce fichier-ci.
 
 ## Pièges déjà rencontrés (pour ne pas les reproduire)
 
