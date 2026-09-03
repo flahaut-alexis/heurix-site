@@ -180,8 +180,15 @@ describe("schema des articles — il s'accorde avec ce que la page montre", () =
       const m = texte(k[1]).match(/(\p{L}+)\s+(20\d\d)/u);
       if (!m) { ecarts.push(`${a} : kicker sans mois « ${texte(k[1])} »`); continue; }
       const attendu = `${m[2]}-${String(MOIS[m[1].toLowerCase()]).padStart(2, "0")}`;
-      if (o.datePublished !== attendu)
-        ecarts.push(`${a} : datePublished ${o.datePublished} != kicker ${attendu}`);
+      // L'INVARIANT EST LE MOIS, PAS LA PRECISION. datePublished porte
+      // desormais le jour et le fuseau -- Google refuse « 2026-07 » nu, deux
+      // avertissements sur trois le disaient. On compare donc le prefixe
+      // AAAA-MM, et on exige separement la forme complete pour qu'un retour
+      // silencieux a la date nue ne passe pas.
+      if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+-]\d{2}:\d{2}$/.test(o.datePublished))
+        ecarts.push(`${a} : datePublished « ${o.datePublished} » n'est pas un ISO 8601 complet avec fuseau`);
+      else if (o.datePublished.slice(0, 7) !== attendu)
+        ecarts.push(`${a} : datePublished ${o.datePublished} hors du mois du kicker ${attendu}`);
     }
     expect(ecarts).toEqual([]);
     expect(examines).toBe(articles.length);
