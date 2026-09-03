@@ -78,6 +78,7 @@ USAGE :
     scripts/index-recherche.py --verifier   # n'ecrit pas, sort 1 si perime
 """
 import hashlib
+import html
 import json
 import os
 import re
@@ -284,8 +285,15 @@ def extraire(chemin: str) -> dict:
     perime alors que rien d'indexable n'a bouge.
     """
     src = open(os.path.join(RACINE, chemin), encoding="utf8").read()
-    titre = (re.search(r"<title>([^<]*)</title>", src) or [None, ""])[1].strip()
-    desc = (re.search(r'<meta name="description" content="([^"]*)"', src) or [None, ""])[1].strip()
+    # LE TITRE ET LA DESCRIPTION SONT DESESCAPES (3 septembre 2026). Ils sont
+    # lus dans du HTML, donc ils portent des entites -- mais search-engine.js
+    # les rend par `textContent` (jamais innerHTML, voir son commentaire ligne
+    # 204), et `textContent` affiche « Vins &amp; spiritueux » tel quel. Le
+    # corps, lui, ne passe pas par ici : `_ENTITES` l'a deja nettoye.
+    titre = html.unescape(
+        (re.search(r"<title>([^<]*)</title>", src) or [None, ""])[1]).strip()
+    desc = html.unescape(
+        (re.search(r'<meta name="description" content="([^"]*)"', src) or [None, ""])[1]).strip()
     corps = _ESPACES.sub(" ", _ENTITES.sub(" ", _BALISES.sub(" ", _HORS_CONTENU.sub("", src)))).strip()
     return {"p": chemin, "t": titre, "e": desc[:180], "corps": corps}
 
@@ -322,7 +330,8 @@ _TITRE_ANCRE = re.compile(r'<(h2|h3)[^>]*\bid="([^"]+)"[^>]*>([\s\S]*?)</\1>', r
 def ancres(chemin: str, src: str) -> list[dict]:
     sortie = []
     for _, ident, brut_titre in _TITRE_ANCRE.findall(src):
-        titre = _ESPACES.sub(" ", _BALISES.sub(" ", brut_titre)).strip()
+        titre = html.unescape(
+            _ESPACES.sub(" ", _BALISES.sub(" ", brut_titre))).strip()
         if titre:
             sortie.append({"p": "%s#%s" % (chemin, ident), "t": titre})
     return sortie
