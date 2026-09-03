@@ -33,7 +33,7 @@ ___TEMPLATE_PARAMETERS___
     "name": "apiKey",
     "displayName": "Clé API Heurix",
     "simpleValueType": true,
-    "help": "Visible dans votre console Heurix, onglet Mes infos > Clés API. Commence par hxp_ (clé PUBLIQUE) — jamais une clé serveur (hx_), lisible par tous vos visiteurs une fois posée côté navigateur.",
+    "help": "Visible dans votre console Heurix, menu Mon compte > Clé API. Commence par hxp_ (clé PUBLIQUE) — jamais une clé serveur (hx_), lisible par tous vos visiteurs une fois posée côté navigateur.",
     "valueValidators": [
       {
         "type": "NON_EMPTY"
@@ -165,7 +165,7 @@ if (data.apiKey && data.apiKey.indexOf('hxp_') !== 0) {
   logToConsole('Heurix - ATTENTION : la cle fournie ne commence pas par hxp_. ' +
     'Une cle serveur (hx_) ne doit jamais etre posee cote navigateur -- ' +
     'elle est lisible par tous vos visiteurs et donne acces a votre facturation. ' +
-    'Generez une cle PUBLIQUE depuis Mes infos > Cles API dans votre console Heurix.');
+    'Generez une cle PUBLIQUE depuis Mon compte > Cle API dans votre console Heurix.');
   data.gtmOnFailure();
   return;
 }
