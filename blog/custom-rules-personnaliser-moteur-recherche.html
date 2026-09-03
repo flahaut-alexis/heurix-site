@@ -160,6 +160,11 @@
       <p>Prenons un produit indexé sous le nom « Fixation placo autoperceuse ». Sans règle personnalisée, un client qui cherche « cheville » n'obtient aucun résultat — le mot n'apparaît nulle part dans la fiche produit. Après avoir créé une règle Mot-clé avec les termes <code class="docs-inline-code">placo, cheville, molly, plaquo</code>, la même recherche retrouve le produit immédiatement. La réponse de l'API l'explique d'ailleurs noir sur blanc dans le détail des résultats : le produit remonte via le terme « placo », reconnu comme synonyme de « cheville ».</p>
       <p>Rien à publier séparément. Dès la création de la règle, tous les produits déjà indexés sont ré-analysés et le changement est actif en production.</p>
 
+      <figure class="demo-video" style="margin:0 0 22px;">
+        <img src="../img/capture-6-vocabulaire-termes-metier.png?v=1788436555" alt="Console Heurix, onglet « Termes métier » du Vocabulaire du moteur : la reconnaissance « plako » est listée avec sa règle (si le texte contient « placo » → CUSTOM_PLAKO), au-dessus d'un formulaire pour en ajouter une autre" loading="lazy" style="display:block; width:100%; height:auto;">
+        <figcaption class="demo-video-caption">Ajoutez le vocabulaire propre à votre catalogue depuis la console, sans écrire une ligne de regex.</figcaption>
+      </figure>
+
       <h2>Ça marche pour n'importe quel secteur</h2>
       <p>Les deux formats ne sont pas spécifiques à la quincaillerie. Un site de cosmétique peut regrouper « bio », « biologique », « AB », « organic » sous une même notion. Un site de mobilier peut reconnaître un code de teinte au format lettre + nombre. Un site de mode peut unifier « stretch », « élasthanne », « spandex » et « lycra ». La logique reste identique — seul le vocabulaire change.</p>
 
