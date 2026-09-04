@@ -646,9 +646,24 @@
   // EXEMPLES PAR SECTEUR. Une suggestion « M8x20 » sur la verticale Mode
   // ne démontrerait rien : chaque secteur a son vocabulaire, et c'est
   // précisément ce que le sélecteur illustre.
+  //
+  // LES CLES SONT DES NOMS DE VERTICALE, ET LA BARRE ANGLAISE EN ENVOIE
+  // DEUX QUI N'Y ETAIENT PAS (4 septembre 2026). `EXEMPLES[verticale] ||
+  // EXEMPLES.outillage` retombait silencieusement sur l'outillage : mesure
+  // sur la page servie, cliquer « Fashion & Apparel » (qui envoie
+  // `mode-en`) affichait « M8x20 stainless », « DIN 933 », « wahser » et
+  // les categories « Drills & drivers », « Sanders » -- des suggestions de
+  // visserie sur un catalogue de vetements.
+  //
+  // Les entrees `-en` sont donc EXPLICITES, pas laissees au repli. Le repli
+  // aurait suffi a faire marcher `outillage-en`, corrige dans le meme lot,
+  // et c'est precisement le probleme : il aurait donne le bon resultat par
+  // la mauvaise regle, sans que rien ne signale que `mode-en` etait casse.
   var EXEMPLES = LANG_EN ? {
     outillage: ["M8x20 stainless", "stainless screws under €2", "DIN 933", "wahser"],
+    "outillage-en": ["M8x20 stainless", "stainless screws under €2", "DIN 933", "wahser"],
     mode: ["red wool sweater size L", "slim jeans W32", "striped shirt"],
+    "mode-en": ["red wool sweater size L", "slim jeans W32", "striped shirt"],
   } : {
     outillage: ["M8x20 inox", "vis inox moins de 2 euros", "DIN 933", "rondele"],
     mode: ["pull laine rouge taille L", "jean slim W32", "chemise rayée"],
@@ -660,9 +675,13 @@
   // "Perceuses" existe tel quel côté outillage (vu sur le vrai catalogue
   // Racetools), les intitulés mode reprennent les catégories du jeu de
   // données traduit le 1er août (T-Shirt, Dress, Jacket...).
+  // Memes clefs `-en` explicites que EXEMPLES ci-dessus, et pour la meme
+  // raison mesuree.
   var CATEGORIES = LANG_EN ? {
     outillage: ["Drills & drivers", "Sanders", "Measuring & marking", "Safety gear"],
+    "outillage-en": ["Drills & drivers", "Sanders", "Measuring & marking", "Safety gear"],
     mode: ["T-shirts", "Dresses", "Jackets", "Sweaters"],
+    "mode-en": ["T-shirts", "Dresses", "Jackets", "Sweaters"],
   } : {
     outillage: ["Perceuses & visseuses", "Ponceuses", "Mesure & traçage", "Protection & sécurité"],
     mode: ["T-shirts", "Robes", "Vestes", "Pulls"],

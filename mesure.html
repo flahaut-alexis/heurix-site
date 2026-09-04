@@ -209,7 +209,7 @@
 
     <h3>Sur quelle surface, et comment le refaire vous-même</h3>
     <p>Le merchandising s’applique sur les <strong>deux</strong> surfaces&nbsp;: l’API authentifiée (<code>/v1/index/&lt;catalogue&gt;/search</code>), celle que votre site appellerait, <em>et</em> le point d’entrée public et sans clé (<code>/v1/public-demo/search</code>) qu’interroge le widget de démonstration de notre accueil.</p>
-    <p><strong>Alors refaites la requête.</strong> Tapez <code>vis</code> dans la démonstration de notre page d’accueil&nbsp;: mêmes trois produits, même ordre, même total de 846. Sans nous écrire, sans clé et sans compte.</p>
+    <p><strong>Alors refaites la requête.</strong> Tapez <code>vis</code> dans la démonstration de notre page d’accueil&nbsp;: mêmes trois produits en tête de liste, même ordre, même total de 846. Sans nous écrire, sans clé et sans compte. La tuile «&nbsp;Pack recommandé&nbsp;» affichée au-dessus est une zone distincte, pas le premier résultat.</p>
     <p>Et si vous voulez les scores, que le widget n’affiche pas, la même réponse en une ligne&nbsp;:</p>
     <pre class="docs-code"><code>curl -X POST 'https://api.heurix.fr/v1/public-demo/search?vertical=outillage' \
   -H 'Content-Type: application/json' -d '{"q":"vis","limit":20}'</code></pre>
