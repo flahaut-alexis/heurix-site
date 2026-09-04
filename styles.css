@@ -8023,6 +8023,17 @@ body.docs-dark .addon-net{ color:var(--ink-on-dark); }
   border:1px solid var(--line); border-radius:16px; padding:26px 28px;
   background:#fff; color:var(--ink); box-shadow:0 2px 12px -6px rgba(18,20,43,0.06);
 }
+/* LE TITRE DES DEUX DEMONSTRATIONS (4 septembre 2026). Elles etaient des
+   <section class="feat-group"> a part, donc leur titre etait un <h2
+   class="feat-group-title">, style. Redescendues dans le groupe qu'elles
+   demontrent, leur titre devient un <h3> sans classe -- et la feuille ne porte
+   aucune regle `h3` nue : il retombait sur les valeurs par defaut du
+   navigateur, 18,72 px et 18,72 px de marge verticale, contre 16 px et
+   0 0 10px pour les titres de carte a cote. Memes declarations que
+   `.feat-card h3`, et aucune variante sombre : ces deux cartes gardent leur
+   fond blanc sur la page sombre, leur encre est deja var(--ink). */
+.demo-pin h3,
+.demo-why h3{ font-size:16px; margin:0 0 10px; font-weight:700; }
 .demo-pin-intro{ margin:0 0 20px; font-size:15px; line-height:1.6; color:var(--ink-muted); max-width:62ch; }
 .demo-pin-intro strong{ color:var(--ink); }
 .demo-pin-requete{

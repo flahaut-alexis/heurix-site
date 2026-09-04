@@ -19,7 +19,7 @@
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="styles.css?v=1788526362">
+<link rel="stylesheet" href="styles.css?v=1788526629">
 <link rel="canonical" href="https://heurix.fr/fonctionnalites.html">
 <script type="application/ld+json">
 {
@@ -228,11 +228,6 @@
         <a href="docs.html#ep-synonym-suggestions">Endpoint suggestions →</a>
       </div>
 
-      <div class="feat-card">
-        <h3 id="multi-catalogues">Multi-catalogues</h3>
-        <p>Un compte, autant de catalogues que nécessaire : par langue, par marque, par site. Chaque catalogue a son propre pack de règles, ses propres synonymes, son propre index.</p>
-        <a href="docs.html#ep-items">Endpoint indexation →</a>
-      </div>
 
       <div class="feat-card feat-card-highlight">
         <h3 id="recherche-a-facettes">Recherche à facettes</h3>
@@ -269,6 +264,12 @@
         <pre class="docs-code"><code>POST /v1/index/agences/search
 {"q": "ecole de surf", "lat": 45.00, "lon": -1.20, "radius_km": 15}</code></pre>
         <a href="docs.html#ep-search">Paramètres du rayon →</a>
+      </div>
+
+      <div class="feat-card">
+        <h3 id="multi-catalogues">Multi-catalogues</h3>
+        <p>Un compte, autant de catalogues que nécessaire : par langue, par marque, par site. Chaque catalogue a son propre pack de règles, ses propres synonymes, son propre index.</p>
+        <a href="docs.html#ep-items">Endpoint indexation →</a>
       </div>
 
     </div>
@@ -323,7 +324,30 @@
       <img src="img/capture-7-classement-categorie-fixation-changements-non-publies.png?v=1788430170" alt="Console Heurix, écran « Mise en avant sur catégorie » : la catégorie fixation est classée « Produits en stock d'abord », les trois premières fiches portent une épingle numérotée, un panneau Règles de tri liste les produits épinglés avec leur position, et un bandeau signale que les changements sont en brouillon tant qu'ils ne sont pas publiés" loading="lazy" style="display:block; width:100%; height:auto;">
       <figcaption class="demo-video-caption">Triez vos pages de catégorie par stock, prix ou popularité, et épinglez un produit en tête sans toucher au code.</figcaption>
     </figure>
-  </section>
+
+    <!-- Demonstration manipulable (21 aout 2026), REDESCENDUE ICI le
+         4 septembre 2026. Elle etait un <section class="feat-group"> a part,
+         donc un douzieme « groupe » au meme rang que les onze autres, alors
+         qu'elle demontre la carte « Merchandising manuel » qui vit au-dessus.
+         Le commentaire d'origine la disait « posee a la fin de Livrer les
+         bons resultats » : ce groupe-ci n'existait pas encore quand elle a
+         ete ecrite. Son <h2> devient un <h3> et GARDE SON id, donc son entree
+         dans l'index de recherche. -->
+    <div class="demo-pin reveal">
+      <h3 id="merchandising-manuel-vous-gardez-la-main">Merchandising manuel : vous gardez la main</h3>
+      <p class="demo-pin-intro">Un moteur qui décide seul ne suffit pas : vous savez des choses qu'il ignore : une promotion, un déstockage, une marge. <strong>Épinglez un produit, le classement suit.</strong></p>
+
+      <div class="demo-pin-scene">
+        <div class="demo-pin-requete">
+          <span aria-hidden="true">&#128269;</span>
+          <span>vis à bois</span>
+        </div>
+
+        <ol class="demo-pin-liste" id="demo-pin-liste"></ol>
+
+        <p class="demo-pin-etat" id="demo-pin-etat">Cliquez l'épingle d'un produit pour le placer en tête de liste.</p>
+      </div>
+    </div>  </section>
 
   <section class="feat-group">
     <h2 class="feat-group-title" id="livrer-les-bons-resultats">Livrer les bons résultats</h2>
@@ -362,41 +386,15 @@
       </div>
 
     </div>
-  </section>
 
-  <!-- Demonstration manipulable (21 aout 2026). Posee a la fin de
-       « Livrer les bons resultats » : c'est l'argument qu'elle prouve, et
-       le prospect y est deja en train de se demander s'il garde la main.
-       Interactif plutot qu'un GIF : on clique, le classement bouge, et le
-       visiteur constate au lieu de regarder. -->
-  <section class="feat-group">
-    <h2 class="feat-group-title" id="merchandising-manuel-vous-gardez-la-main">Merchandising manuel : vous gardez la main</h2>
-    <div class="demo-pin reveal">
-      <p class="demo-pin-intro">Un moteur qui décide seul ne suffit pas : vous savez des choses qu'il ignore : une promotion, un déstockage, une marge. <strong>Épinglez un produit, le classement suit.</strong></p>
-
-      <div class="demo-pin-scene">
-        <div class="demo-pin-requete">
-          <span aria-hidden="true">&#128269;</span>
-          <span>vis à bois</span>
-        </div>
-
-        <ol class="demo-pin-liste" id="demo-pin-liste"></ol>
-
-        <p class="demo-pin-etat" id="demo-pin-etat">Cliquez l'épingle d'un produit pour le placer en tête de liste.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- Seconde demonstration (21 aout 2026) : l'explication du
-       classement. Posee juste apres l'epinglage, elle repond a la
-       question que celui-ci fait naitre -- « mais comment il decide,
-       lui ? ».
-       Donnees relevees sur l'API de demonstration, pas inventees :
-       « boulen M8 inpx » rattrape reellement deux fautes et reconnait M8
-       comme un diametre. -->
-  <section class="feat-group">
-    <h2 class="feat-group-title" id="et-vous-savez-pourquoi">Et vous savez pourquoi</h2>
+    <!-- Seconde demonstration (21 aout 2026), REDESCENDUE ICI le 4 septembre
+         2026, meme raison : elle demontre la carte « Resultats explicables »
+         de ce groupe. Donnees relevees sur l'API de demonstration, pas
+         inventees : « boulen M8 inpx » rattrape reellement deux fautes et
+         reconnait M8 comme un diametre. Son <h2> devient un <h3> et garde son
+         id. -->
     <div class="demo-why reveal">
+      <h3 id="et-vous-savez-pourquoi">Et vous savez pourquoi</h3>
       <p class="demo-why-intro">Un moteur qui se trompe sans expliquer est impossible à corriger. Heurix montre son raisonnement, terme par terme. <strong>Voici une vraie requête, avec ses fautes.</strong></p>
 
       <div class="demo-why-requete">
@@ -426,8 +424,9 @@
       </div>
 
       <p class="demo-why-resultat"><strong>Boulon TF M8 x 50 inox A4</strong> arrive en tête, et vous savez exactement pourquoi.</p>
-    </div>
-  </section>
+    </div>  </section>
+
+
 
 
 
