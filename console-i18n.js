@@ -39,6 +39,67 @@
   var EN = (document.documentElement.lang || "fr").slice(0, 2).toLowerCase() === "en";
 
   var DICT = {
+    // ---------------- ECRITURES MUETTES, LOT DU 4 SEPTEMBRE ----------------
+    //
+    // Dix entrees pour un lot de console.js, pas pour un lot de langue.
+    // Elles se separent en deux moities qui n'arrivent pas par le meme
+    // chemin, et la distinction compte pour qui les relira :
+    //
+    //   QUATRE MESSAGES DU MOTEUR (chemin 1). Ils viennent du `detail` d'une
+    //   reponse d'erreur, console.js les pose verbatim dans un noeud texte,
+    //   le MutationObserver les rattrape sur egalite exacte. Aucun `T()`
+    //   n'est possible : la chaine n'existe pas dans le source du site.
+    //   Confirmes un par un contre heurix-engine `routers/auth.py`, pas
+    //   repris d'un releve. L'API reste en francais, c'est la decision.
+    //
+    //   SIX GABARITS DE REPLI (chemin 2). Ceux-la sont ecrits dans
+    //   console.js et n'apparaissent que quand `err.message` est absent --
+    //   une coupure reseau, ou l'API n'a jamais repondu.
+    //
+    // POURQUOI ELLES MANQUAIENT. Le lot `messages-api-anglais` (2 sept.,
+    // toujours pas sur origin) avait deja traduit douze messages du moteur
+    // et NOMME ces six-ci comme intraduisibles en l'etat : « cinq messages
+    // d'administration d'equipe -> avales par .catch(function () {
+    // btn.disabled = false; }) » et « Invitation invalide ou expiree ->
+    // fetch brut sans controle de r.ok ». Il avait raison de ne pas les
+    // ecrire : rien ne les rendait. C'est console.js qui vient de changer.
+    //
+    // LA CINQUIEME PHRASE DU MOTEUR N'EST PAS ICI, EXPRES. Les deux
+    // endpoints d'equipe peuvent aussi repondre 409 « Ce compte n'est
+    // rattaché à aucune entreprise » (routers/auth.py:42, garde commune).
+    // Elle manque a main, mais `messages-api-anglais` l'ajoute deja pour
+    // /invite et /company, ou elle est la SEULE des deux a etre vraiment
+    // atteignable. L'ecrire ici aussi poserait la meme clef dans les deux
+    // branches, donc un conflit sur une ligne identique, pour une phrase
+    // qu'aucun clic du volet Equipe ne declenche : l'entreprise existe
+    // forcement quand on lit son tableau d'equipe.
+    //
+    // LE PIEGE. « Invitation invalide, expirée, ou déjà utilisée » est DEJA
+    // dans ce dictionnaire (accept-invite, POST) et n'est PAS « Invitation
+    // invalide ou expirée » (invite/{token}, GET). Deux chaines voisines,
+    // deux chemins differents, deux entrees.
+    //
+    // CE QUI RESTE HORS DE PORTEE. Les deux 409 du moteur qui parlent de
+    // soi-meme -- « Impossible de vous retirer vous-même » et « vous êtes
+    // le seul administrateur » -- ne sont pas ici. renderTeam ne pose ses
+    // boutons que sur les lignes des AUTRES : ces deux phrases existent
+    // dans routers/auth.py et aucun chemin d'interface ne les declenche.
+    // Les traduire serait ecrire deux lignes que rien ne rend, exactement
+    // l'erreur que le lot du 2 septembre a evitee.
+    "Seul un administrateur peut changer le rôle d'un membre":
+      "Only an administrator can change a member's role",
+    "Seul un administrateur peut retirer un membre de l'équipe":
+      "Only an administrator can remove a team member",
+    "Utilisateur introuvable dans votre entreprise": "User not found in your company",
+    "Invitation invalide ou expirée": "Invitation invalid or expired",
+    "Échec du changement de rôle.": "Could not change the role.",
+    "Échec du retrait.": "Could not remove.",
+    "Échec de la suppression.": "Could not delete.",
+    "Échec de la révocation.": "Could not revoke.",
+    "Échec de l'ajout.": "Could not add.",
+    "Impossible de charger les informations de votre compte.":
+      "Your account details could not be loaded.",
+
     // --------------------------------------------- seconde passe (couverture)
     "Boost et relégation par attribut": "Boost and bury by attribute",
     "CA réellement attribué": "Revenue actually attributed",

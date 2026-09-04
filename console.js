@@ -313,6 +313,34 @@
     return err;
   }
 
+  // ECRITURES MUETTES (4 septembre 2026). Onze `.catch` d'ECRITURE ne
+  // disaient rien : le marchand demandait un changement d'etat, le serveur
+  // le refusait avec une raison, et l'interface lui rendait un bouton
+  // cliquable. Il ne pouvait pas distinguer « refuse » de « pas encore
+  // clique ». Les vingt et une LECTURES muettes restent muettes a dessein :
+  // un tableau vide est deja un signal, et une erreur rouge sur vingt et un
+  // panneaux au moindre 429 serait pire que le silence.
+  //
+  // `err.message` porte deja le detail de l'API, mis en phrase par
+  // `erreurDeReponse` juste au-dessus. On le pose VERBATIM, comme le font
+  // deja les vingt-quatre `.catch` qui parlent : aucun `T()` n'est possible
+  // sur une chaine qui vient du moteur et non du source. C'est le chemin 1
+  // de console-i18n.js qui la traduit -- `textContent =` remplace le noeud
+  // texte, le MutationObserver voit le noeud ajoute, `traduire()` fait une
+  // egalite exacte apres trim(). D'ou `textContent` et jamais `innerHTML` :
+  // rien a echapper, et le noeud reste traduisible.
+  //
+  // `classList` plutot que `className` : les deux familles de statut de la
+  // console -- `console-form-status` et `catalog-rule-status` -- gardent
+  // leur classe de base, que l'appelant n'a pas a repeter ni a connaitre.
+  function signalerEchec(el, err, repli) {
+    if (!el) return;
+    el.textContent = (err && err.message) || repli;
+    el.classList.remove("ok");
+    el.classList.add("err");
+    el.hidden = false;
+  }
+
   function apiFetch(path, token, options) {
     options = options || {};
     var headers = { Authorization: "Bearer " + token };
@@ -600,7 +628,13 @@
           btn.disabled = true;
           apiFetch("/v1/keys/public/" + encodeURIComponent(cleVisee), key, { method: "DELETE" })
             .then(function () { refreshPublicKeys(key); })
-            .catch(function () { btn.disabled = false; });
+            .catch(function (err) {
+              // `status` du formulaire de generation est declare DANS son
+              // propre gestionnaire, donc hors de portee ici : on relit
+              // l'element, c'est le meme panneau.
+              signalerEchec(document.getElementById("public-key-status"), err, T("Échec de la révocation."));
+              btn.disabled = false;
+            });
         }
       );
     });
@@ -995,7 +1029,20 @@
 
       // Les deux formulaires et le tableau d'equipe sont cables une fois
       // par cablerFormulairesCompte (C1, second lot).
-    }).catch(function () {});
+    }).catch(function (err) {
+      // LA PLUS NETTE DES VINGT ET UNE LECTURES MUETTES, et la seule de ce
+      // lot. Les vingt autres laissent un tableau vide, ce qui est deja un
+      // signal ; celle-ci laisse DEUX VOLETS ENTIERS -- Entreprise et
+      // Equipe -- sans une seule ligne et sans un mot, y compris la table
+      // d'equipe dont le contenu PRECEDENT reste affiche tel quel.
+      //
+      // Les deux volets sont mutuellement exclusifs (`.console-pane`
+      // masquee), donc poser le message dans les deux ne le montre jamais
+      // deux fois : il est la, quel que soit le volet ouvert.
+      var repli = T("Impossible de charger les informations de votre compte.");
+      signalerEchec(document.getElementById("company-status"), err, repli);
+      signalerEchec(document.getElementById("invite-status"), err, repli);
+    });
   }
 
   // Correctif (21 aout 2026, demande Alexis). Le tableau de bord
@@ -2216,11 +2263,32 @@
           if (!btn) return;
           var token = localStorage.getItem(SESSION_STORAGE_KEY);
           var userId = btn.getAttribute("data-id");
+          // CE QUI EST REELLEMENT ATTEIGNABLE ICI, C'EST UNE COURSE.
+          // renderTeam ne pose ces deux boutons que `if (isAdmin && t.email
+          // !== myEmail)` : personne n'a de bouton sur sa propre ligne. Les
+          // deux 409 du moteur qui parlent de soi-meme -- « Impossible de
+          // vous retirer vous-meme », « vous etes le seul administrateur »
+          // -- sont donc ECRITS ET INATTEIGNABLES depuis cet ecran.
+          //
+          // Ce qui arrive vraiment : un autre administrateur a retire la
+          // personne, ou m'a retrograde, pendant que ma page etait ouverte.
+          // Le moteur repond alors 404 « Utilisateur introuvable dans votre
+          // entreprise » ou 403 « Seul un administrateur peut... ». Ces deux
+          // phrases disent a l'utilisateur que SA PAGE EST PERIMEE, ce qu'un
+          // bouton redevenu cliquable ne dit pas.
+          //
+          // `#invite-status` vit dans le meme `#pane-team`, sous le tableau,
+          // et porte deja role="status" aria-live="polite" : aucun element a
+          // ajouter, et le lecteur d'ecran l'annonce sans changer de volet.
+          var statutEquipe = document.getElementById("invite-status");
           if (btn.getAttribute("data-action") === "role") {
             btn.disabled = true;
             apiFetch("/v1/auth/team/" + userId + "/role", token, { method: "PUT", body: { role: btn.getAttribute("data-role") } })
               .then(function () { loadAccountInfo(); })
-              .catch(function () { btn.disabled = false; });
+              .catch(function (err) {
+                signalerEchec(statutEquipe, err, T("Échec du changement de rôle."));
+                btn.disabled = false;
+              });
           } else if (btn.getAttribute("data-action") === "remove") {
             var email = btn.getAttribute("data-email");
             // TROISIEME suppression destructive, non signalee par l'audit :
@@ -2234,7 +2302,10 @@
                 btn.disabled = true;
                 apiFetch("/v1/auth/team/" + userId, token, { method: "DELETE" })
                   .then(function () { loadAccountInfo(); })
-                  .catch(function () { btn.disabled = false; });
+                  .catch(function (err) {
+                    signalerEchec(statutEquipe, err, T("Échec du retrait."));
+                    btn.disabled = false;
+                  });
               }
             );
           }
@@ -5058,7 +5129,10 @@
         soSupprimerSelectionBtn.disabled = false;
         soCatalogueMajBoutonSelection();
         refreshSoTable(key);
-      }).catch(function () { soSupprimerSelectionBtn.disabled = false; });
+      }).catch(function (err) {
+        signalerEchec(document.getElementById("so-status"), err, T("Échec de la suppression."));
+        soSupprimerSelectionBtn.disabled = false;
+      });
     });
 
     // Correctif Lot 3 (audit UX console, 18 aout 2026) : onglet "Regles
@@ -5210,7 +5284,10 @@
         var url = "/v1/index/" + encodeURIComponent(session.soCurrentCatalog) + "/search-overrides" +
           "?query=" + encodeURIComponent(delBtn.getAttribute("data-query")) +
           "&product_id=" + encodeURIComponent(delBtn.getAttribute("data-product-id"));
-        apiFetch(url, key, { method: "DELETE" }).then(function () { refreshSoTable(key); }).catch(function () { delBtn.disabled = false; });
+        apiFetch(url, key, { method: "DELETE" }).then(function () { refreshSoTable(key); }).catch(function (err) {
+          signalerEchec(document.getElementById("so-status"), err, T("Échec de la suppression."));
+          delBtn.disabled = false;
+        });
       }
     });
   }
@@ -5662,7 +5739,14 @@
         refreshBrowseOverrides(key);
         refreshBrowsePreview(key);
       })
-      .catch(function () {})
+      // Jumeau exact de soAppliquerBrouillon, qui affiche son echec depuis
+      // le 19 aout : la meme fonction cote Browse l'avalait. Une asymetrie
+      // entre deux volets qui font le meme travail, pas un cas nouveau.
+      // C'est le plus couteux des onze : la chaine enchaine des DELETE puis
+      // des POST, un echec au milieu laisse un etat PARTIELLEMENT publie.
+      .catch(function (err) {
+        signalerEchec(document.getElementById("browse-override-status"), err, T("Échec de l'enregistrement."));
+      })
       .then(function () { if (bouton) bouton.disabled = false; });
   }
 
@@ -6042,7 +6126,9 @@
       if (delBtn) {
         var pid = delBtn.getAttribute("data-remove-override");
         var url = "/v1/browse/" + encodeURIComponent(session.browseCurrentCatalog) + "/" + encodeURIComponent(session.browseCurrentCategory) + "/overrides/" + encodeURIComponent(pid);
-        apiFetch(url, key, { method: "DELETE" }).then(function () { refreshBrowseOverrides(key); refreshBrowsePreview(key); }).catch(function () {});
+        apiFetch(url, key, { method: "DELETE" }).then(function () { refreshBrowseOverrides(key); refreshBrowsePreview(key); }).catch(function (err) {
+          signalerEchec(document.getElementById("browse-override-status"), err, T("Échec de la suppression."));
+        });
       }
     });
 
@@ -6099,7 +6185,9 @@
         var field = delBtn.getAttribute("data-remove-attribute-field"), value = delBtn.getAttribute("data-remove-attribute-value");
         var url = "/v1/browse/" + encodeURIComponent(session.browseCurrentCatalog) + "/" + encodeURIComponent(session.browseCurrentCategory) +
           "/attribute-rules?field=" + encodeURIComponent(field) + "&value=" + encodeURIComponent(value);
-        apiFetch(url, key, { method: "DELETE" }).then(function () { refreshBrowseAttributeRules(key); refreshBrowsePreview(key); }).catch(function () {});
+        apiFetch(url, key, { method: "DELETE" }).then(function () { refreshBrowseAttributeRules(key); refreshBrowsePreview(key); }).catch(function (err) {
+          signalerEchec(document.getElementById("browse-attribute-rule-status"), err, T("Échec de la suppression."));
+        });
       }
     });
   }
@@ -6554,7 +6642,9 @@
             "Supprimer le groupe de synonymes <strong>« " + esc(groupe) + " »</strong> ?",
             btn,
             function () {
-              saveGroups(currentGroups.filter(function (_, i) { return i !== idx; })).catch(function () {});
+              saveGroups(currentGroups.filter(function (_, i) { return i !== idx; })).catch(function (err) {
+                signalerEchec(synStatus, err, T("Échec de la suppression."));
+              });
             }
           );
         });
@@ -6593,7 +6683,9 @@
             synStatus.textContent = T("Groupe ajouté.");
           }
         })
-        .catch(function () {})
+        // Le plus net des onze : le succes ecrivait « Groupe ajoute. »
+        // dans CE MEME element, l'echec ne le touchait pas.
+        .catch(function (err) { signalerEchec(synStatus, err, T("Échec de l'ajout.")); })
         .then(function () { addBtn.disabled = false; });
 
     });
@@ -6688,7 +6780,10 @@
                   return apiFetch("/v1/index/" + encodeURIComponent(catalogName) + "/stats", key);
                 })
                 .then(function (stats) { catalog.annotations = stats.annotations; updateCardMeta(cardEl, catalog); })
-                .catch(function () { btn.disabled = false; });
+                .catch(function (err) {
+                  signalerEchec(status, err, T("Échec de la suppression."));
+                  btn.disabled = false;
+                });
             });
           });
         })
@@ -7350,8 +7445,30 @@
     // Une invitation prime aussi — quelqu'un qui clique un lien d'équipe
     // ne doit jamais retomber sur un vieux formulaire de connexion.
     setAuthMode("accept-invite");
+    // CE CHEMIN NE SE TAISAIT PAS : IL MENTAIT. C'est un defaut d'une autre
+    // nature que les onze `.catch` d'ecriture de ce meme lot, et il se
+    // corrige autrement -- par un controle de `r.ok`, pas par un message
+    // dans un `catch`.
+    //
+    // `.then(function (r) { return r.json(); })` sans controle de `r.ok` :
+    // sur le 400 « Invitation invalide ou expirée » du moteur, la promesse
+    // RESOUT avec `{detail: "..."}`. Rien n'est leve. `data.raison_sociale`
+    // et `data.email` sont `undefined`, `T()` substitue une chaine vide sur
+    // un argument `undefined`, et l'ecran affichait litteralement :
+    //
+    //     « Invitation pour . »
+    //
+    // Le `.catch` en dessous testait `err.status` -- il etait MORT sur ce
+    // chemin, aucune erreur n'y parvenait jamais. Les deux seuls autres
+    // appels du fichier, `apiFetch` et `apiPost`, font ce controle depuis
+    // toujours ; c'est le seul `fetch` brut du fichier a ne pas le faire.
     fetch(API_BASE + "/v1/auth/invite/" + encodeURIComponent(inviteTokenFromUrl))
-      .then(function (r) { return r.json(); })
+      .then(function (r) {
+        return r.json().catch(function () { return {}; }).then(function (data) {
+          if (!r.ok) { throw erreurDeReponse(data, r.status); }
+          return data;
+        });
+      })
       .then(function (data) {
         acceptInviteIntro.textContent = data.raison_sociale
           ? T("Vous rejoignez l'équipe de {0} ({1}).", data.raison_sociale, data.email)
