@@ -263,7 +263,56 @@
         var nExcerpt = normalize(item.e || "");
         var score = -1;
         if (nTitle.indexOf(nQuery) !== -1) score = nTitle.indexOf(nQuery) === 0 ? 2 : 1;
-        else if (nExcerpt.indexOf(nQuery) !== -1) score = 0;
+        // `e` NE CLASSE PAS UNE ANCRE (4 septembre 2026). Le champ porte deux
+        // choses selon l'entree, et scripts/index-recherche.py les ecrit a
+        // douze lignes d'ecart : pour une PAGE c'est sa propre
+        // <meta name="description">, pour une ANCRE c'est le <title> de sa
+        // PAGE PARENTE. Le premier est du contenu, le second un repere.
+        //
+        // LE RENDU LE SAVAIT DEJA, plus bas dans ce fichier : il branche sur
+        // `item.ancre` pour sortir `e` de l'extrait surligne et le poser dans
+        // la ligne meta (« Cascade d'annotations · dans Fonctionnalites »).
+        // Le classement, lui, ne branchait pas -- une asymetrie entre deux
+        // lectures du meme champ, dans le meme fichier.
+        //
+        // CE QUE CA DONNAIT : les 40 ancres de fonctionnalites.html portent
+        // « merchandising » dans `e`, mot de leur <title> de page. Trois
+        // sections qui n'en parlent jamais tenaient les rangs 6, 7 et 8, et
+        // mesure.html sortait du top 8. Ces trois lignes n'affichaient AUCUN
+        // surlignage : le mot qui les avait retenues n'etait ecrit nulle part
+        // sur elles.
+        //
+        // MESURE AVANT D'ECRIRE, sur les deux index et deux populations de
+        // requetes (342 et 5 528 termes en FR, 296 et 5 226 en EN) :
+        //
+        //   FR, vocabulaire des titres   49 requetes changent sur 342
+        //   FR, corpus entier            98 requetes changent sur 5 528
+        //   EN, vocabulaire des titres   49 requetes changent sur 296
+        //   EN, corpus entier            95 requetes changent sur 5 226
+        //
+        //   regressions                                            0
+        //   ancres pertinentes retrogradees                        0
+        //   pages retrogradees                                     0
+        //   requetes passant a zero resultat                       0
+        //   pages parentes devenues injoignables                   0
+        //
+        // Zero par construction, et verifie : ce test ne peut retirer qu'une
+        // entree qui marquait 0, donc une ancre dont le titre NE CONTIENT PAS
+        // la requete. Verifie aussi qu'aucune des ancres retirees ne portait
+        // la requete dans ses propres termes (`k`) : elles remontaient sur du
+        // texte emprunte, et sur rien d'autre.
+        //
+        // CE QUE LES 49 PERDENT VRAIMENT : cinq d'entre elles (trois en EN)
+        // retirent une ancre proche par le sens mais pas par la chaine --
+        // « souscription » contre « Etape 1 -- Souscrivez », « diametres »
+        // contre « Diametre, pression et filetage separes ». Le moteur n'a pas
+        // de racinisation ; ces ancres n'etaient trouvables que par accident,
+        // et leur PAGE reste en tete dans les cinq cas.
+        //
+        // CE QUI N'EST PAS TOUCHE : les 2 784 appariements ou une PAGE remonte
+        // par sa description (897 requetes FR). Le defaut est propre aux
+        // ancres, pas au champ.
+        else if (!item.ancre && nExcerpt.indexOf(nQuery) !== -1) score = 0;
         // LES TERMES DE LA PAGE, en dernier recours et au score le plus bas.
         //
         // C'EST TOUTE LA RAISON D'ETRE DE L'INDEX DERIVE, et la premiere

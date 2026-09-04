@@ -427,13 +427,18 @@ describe("non-regression de l'index, etape (c)", () => {
     new Set([...w.document.querySelectorAll(".search-result")].map((a) =>
       a.getAttribute("href").split("#")[0].replace(/^(\.\.\/)+/, "")));
 
-  it.each(["2rs", "din 933"])("« %s » remonte sept pages", async (q) => {
+  it.each(["2rs", "din 933"])("« %s » remonte huit pages", async (q) => {
     const w = await ouvrir();
     taper(w, q);
     // PAS DE COMPTE FIGE ICI NON PLUS. « 2rs » est passe de 8 a 9 entrees dans
     // l'heure, par un commit d'une autre session ; les sept pages n'ont pas
     // bouge. C'est la lecon du garde reecrit ce matin, appliquee tout de suite.
-    expect(pages(w).size).toBe(7);
+    //
+    // HUIT DEPUIS LE 4 SEPTEMBRE 2026, et pour une fois le compte de pages
+    // BOUGE : `e` ne classe plus une ancre, donc la place que #annotations
+    // tenait dans les huit revient a une page distincte. Les pages attendues
+    // sont nommees dans tests/index-recherche.test.js.
+    expect(pages(w).size).toBe(8);
     expect(compte(w)).toMatch(/^\d+ résultats$/);
   });
 });

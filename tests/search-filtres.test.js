@@ -82,7 +82,11 @@ describe("compteurs", () => {
     // NEUF DEPUIS LE 2 SEPTEMBRE 2026 : « mesure.html » cite « DIN 933 »
     // dans sa liste des cas ou Heurix n'apporte rien. Huit pages, dont une
     // avec son ancre.
-    expect(total).toBe(9);
+    // HUIT DEPUIS LE 4 SEPTEMBRE 2026 : cette ancre-la ne compte plus. Elle
+    // remontait sur le <title> de sa page mere, pas sur son propre texte, et
+    // `e` ne classe plus une ancre (search-engine.js). Une entree de moins,
+    // aucune page de moins -- la page mere etait deja premiere.
+    expect(total).toBe(8);
     expect(Number(compteDe(w, "blog"))).toBeGreaterThan(0);
   });
 
@@ -128,7 +132,10 @@ describe("filtrer", () => {
     const w = await ouvrir();
     taper(w, "din 933");
     const haut = () => w.document.querySelector(".search-count").textContent;
-    expect(haut()).toBe("9 résultats");   // 9 depuis mesure.html, 2 sept. 2026
+    // 9 depuis mesure.html (2 sept. 2026), 8 depuis que `e` ne classe plus
+    // une ancre (4 sept. 2026) : l'ancre #annotations de solutions/outillage
+    // remontait sur le titre de sa page mere.
+    expect(haut()).toBe("8 résultats");
     cocher(w, "blog");
     expect(haut()).toBe(`${compteDe(w, "blog")} résultats`);
   });

@@ -317,6 +317,12 @@ describe("index derive — la recherche lit vraiment les termes", () => {
     new Set(elements.map((a) =>
       a.getAttribute("href").split("#")[0].replace(/^(\.\.\/)+/, "")));
 
+  // woocommerce.html EST ENTREE LE 4 SEPTEMBRE 2026, et rien de son cote n'a
+  // bouge. Les huit places etaient tenues par SEPT pages plus une ancre --
+  // solutions/industrie.html#annotations, qui remontait sur le titre de sa
+  // page mere, deja premiere de la liste. L'ancre ne desservait donc aucune
+  // page que la liste ne portait pas. La place liberee revient a la huitieme
+  // page qui parle vraiment de « 2rs ».
   const PAGES_2RS = [
     "blog/alternative-algolia-catalogue-technique.html",
     "blog/recherche-vectorielle-catalogues-techniques.html",
@@ -325,9 +331,10 @@ describe("index derive — la recherche lit vraiment les termes", () => {
     "index.html",
     "solutions/index.html",
     "solutions/industrie.html",
+    "woocommerce.html",
   ];
 
-  it("« 2rs » remonte les sept pages qui en parlent — celles que l'index ecrit a la main ne trouvait pas", async () => {
+  it("« 2rs » remonte les huit pages qui en parlent — celles que l'index ecrit a la main ne trouvait pas", async () => {
     const w = await moteurAvecIndexReel();
     expect([...pagesDe(chercher(w, "2rs"))].sort()).toEqual(PAGES_2RS);
   });
@@ -345,26 +352,36 @@ describe("index derive — la recherche lit vraiment les termes", () => {
     // un DEPLACEMENT, pas un ajout, et il est note ici pour qu'on sache que
     // la page PrestaShop ne remonte plus sur cette requete.
     "mesure.html",
+    // ET prestashop.html EST REVENUE LE 4 SEPTEMBRE 2026, sans avoir change
+    // d'un mot. Elle n'etait pas sortie devant mesure.html : les deux tenaient
+    // dans huit places, mais l'ancre #annotations en occupait une. Le
+    // « DEPLACEMENT » note le 2 septembre etait donc une EVICTION, et sa cause
+    // n'etait pas celle qu'on lui a prêtee.
+    "prestashop.html",
     "solutions/outillage.html",
   ];
 
-  // HUIT ENTREES POUR SEPT PAGES, DEPUIS LE 27 AOUT.
+  // HUIT ENTREES POUR HUIT PAGES DEPUIS LE 4 SEPTEMBRE 2026 -- ET LE BLOC QUI
+  // TENAIT ICI DECRIVAIT DEJA LE DEFAUT, HUIT JOURS PLUS TOT.
   //
-  // Le commit « Huit pages qui visaient huit requetes portaient le meme titre »
-  // a retitre solutions/outillage.html en « Recherche visserie : M8x20, DIN
-  // 933, inox A2 ». Une entree ANCREE porte le titre de sa page mere comme
-  // EXTRAIT : celui de #annotations contient donc la requete mot pour mot, et
-  // remonte au palier EXTRAIT de runSearch. Pas au palier des termes -- son
-  // champ `k` ne contient toujours ni « din » ni « 933 ».
+  // Il disait, le 27 aout : « Une entree ANCREE porte le titre de sa page mere
+  // comme EXTRAIT : celui de #annotations contient donc la requete mot pour
+  // mot, et remonte au palier EXTRAIT de runSearch. Pas au palier des termes
+  // -- son champ `k` ne contient toujours ni "din" ni "933". » Le mecanisme
+  // entier, exact, ecrit. Il concluait : « sa presence est un fait des titres
+  // du jour, pas une propriete de la recherche », et choisissait de compter
+  // les PAGES pour ne pas en dependre.
   //
-  // Aucune page n'est entree ni sortie ce jour-la, et c'est pour cela que ce
-  // garde nomme des pages : il n'a pas bouge, la ou un compte d'entrees serait
-  // passe de 7 a 8. Mesure : en defaisant la promotion dans l'index, le compte
-  // retombe a 7 et ce test reste vert.
+  // C'etait la bonne parade et la mauvaise lecture. Ce n'etait pas un fait des
+  // titres du jour : c'etait une ancre classee sur du texte emprunte, et le
+  // meme mecanisme evinçait prestashop.html de cette liste sans que personne
+  // n'en fasse le lien. Une observation juste peut se ranger sous « accident »
+  // et cesser d'etre cherchee.
   //
-  // On n'affirme donc PAS que l'ancre est la : sa presence est un fait des
-  // titres du jour, pas une propriete de la recherche.
-  it("« din 933 » remonte les sept pages qui en parlent, pas zero", async () => {
+  // Depuis que `e` ne classe plus une ancre (search-engine.js), la place
+  // qu'elle tenait revient a une huitieme page. Le garde nomme toujours des
+  // pages, pour la raison ecrite le 27 aout, qui reste juste.
+  it("« din 933 » remonte les huit pages qui en parlent, pas zero", async () => {
     const w = await moteurAvecIndexReel();
     expect([...pagesDe(chercher(w, "din 933"))].sort()).toEqual(PAGES_DIN_933);
   });

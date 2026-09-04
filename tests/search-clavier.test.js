@@ -168,8 +168,12 @@ describe("non-regression de l'index, a chaque etape", () => {
   // Ce garde comptait les entrees et il est tombe le 27 aout sans qu'une
   // ligne de recherche ne bouge : une autre session avait retitre une page,
   // ce qui a fait remonter une ancre par son extrait. Les sept pages, elles,
-  // n'avaient pas change. Chacune des deux requetes rend huit entrees pour
-  // sept pages -- une page y figure aussi par son ancre #annotations.
+  // n'avaient pas change.
+  //
+  // HUIT PAGES DEPUIS LE 4 SEPTEMBRE 2026. C'est la meme ancre, et cette fois
+  // c'est elle qu'on a corrigee plutot que de la contourner : `e` ne classe
+  // plus une ancre, la huitieme place cesse d'etre un doublon de la premiere
+  // et revient a une page distincte.
   //
   // Ici on verifie seulement que l'etape en cours n'a rien casse. Les pages
   // attendues sont NOMMEES une fois, dans tests/index-recherche.test.js, qui
@@ -178,9 +182,9 @@ describe("non-regression de l'index, a chaque etape", () => {
     new Set(options(w).map((a) =>
       a.getAttribute("href").split("#")[0].replace(/^(\.\.\/)+/, "")));
 
-  it.each(["2rs", "din 933"])("« %s » remonte sept pages", async (q) => {
+  it.each(["2rs", "din 933"])("« %s » remonte huit pages", async (q) => {
     const w = await ouvrir();
     taper(w, q);
-    expect(pages(w).size).toBe(7);
+    expect(pages(w).size).toBe(8);
   });
 });
