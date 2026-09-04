@@ -326,13 +326,21 @@
     </figure>
 
     <!-- Demonstration manipulable (21 aout 2026), REDESCENDUE ICI le
-         4 septembre 2026. Elle etait un <section class="feat-group"> a part,
-         donc un douzieme « groupe » au meme rang que les onze autres, alors
+         4 septembre 2026. Elle etait une section feat-group a part, donc un
+         douzieme « groupe » au meme rang que les onze autres, alors
          qu'elle demontre la carte « Merchandising manuel » qui vit au-dessus.
          Le commentaire d'origine la disait « posee a la fin de Livrer les
          bons resultats » : ce groupe-ci n'existait pas encore quand elle a
-         ete ecrite. Son <h2> devient un <h3> et GARDE SON id, donc son entree
-         dans l'index de recherche. -->
+         ete ecrite. Son titre passe de h2 a h3 et GARDE SON id, donc son
+         entree dans l'index de recherche.
+         AUCUN CHEVRON FERMANT DANS CE COMMENTAIRE, et c'est mesure : le
+         corps indexe se derive en retirant tout ce qui va d'un chevron
+         ouvrant au premier chevron fermant, ce qui avale un commentaire
+         ENTIER -- sauf s'il en contient un a l'interieur. Les deux
+         commentaires de ce fichier en portaient, et 21 mots de prose sur le
+         balisage etaient devenus des termes indexes de la page : les 21
+         seuls des 131 pages du sitemap. La regle vit dans
+         scripts/index-recherche.py, _BALISES. -->
     <div class="demo-pin reveal">
       <h3 id="merchandising-manuel-vous-gardez-la-main">Merchandising manuel : vous gardez la main</h3>
       <p class="demo-pin-intro">Un moteur qui décide seul ne suffit pas : vous savez des choses qu'il ignore : une promotion, un déstockage, une marge. <strong>Épinglez un produit, le classement suit.</strong></p>
@@ -391,8 +399,9 @@
          2026, meme raison : elle demontre la carte « Resultats explicables »
          de ce groupe. Donnees relevees sur l'API de demonstration, pas
          inventees : « boulen M8 inpx » rattrape reellement deux fautes et
-         reconnait M8 comme un diametre. Son <h2> devient un <h3> et garde son
-         id. -->
+         reconnait M8 comme un diametre. Son titre passe de h2 a h3 et garde
+         son id. Pas de chevron ici non plus : voir le commentaire du groupe
+         precedent. -->
     <div class="demo-why reveal">
       <h3 id="et-vous-savez-pourquoi">Et vous savez pourquoi</h3>
       <p class="demo-why-intro">Un moteur qui se trompe sans expliquer est impossible à corriger. Heurix montre son raisonnement, terme par terme. <strong>Voici une vraie requête, avec ses fautes.</strong></p>
