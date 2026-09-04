@@ -91,7 +91,45 @@
   --radius:10px;
 }
 *{box-sizing:border-box;}
-html{scroll-behavior:smooth;}
+
+/* L'EN-TETE EST STICKY, ET IL RECOUVRAIT TOUTE ANCRE (4 septembre 2026).
+   `header` est en position:sticky;top:0. Sans reserve en haut du conteneur de
+   defilement, un `#fragment` depose sa cible SOUS lui : le titre vise est
+   invisible, et rien ne le signale.
+
+   MESURE : sur les 174 cibles de fragments effectivement liees depuis le
+   site, 84 n'avaient AUCUN scroll-margin -- et sur les 65 ancres que la
+   modale de recherche propose (63 en anglais), ZERO. La seule regle qui
+   existait, `.docs-section{ scroll-margin-top:84px }`, ne couvrait que le
+   conteneur de section des pages docs, jamais les h2/h3 qui portent les id.
+
+   POURQUOI scroll-padding-top SUR html PLUTOT QUE scroll-margin-top PARTOUT :
+   la reserve vit sur le conteneur de defilement, donc elle vaut pour toute
+   cible de toute page, y compris celles qui n'existent pas encore. Les 84 px
+   de `.docs-section` sont retires dans le meme geste : les deux s'AJOUTENT,
+   et docs aurait recu 168 px.
+
+   LA HAUTEUR DE L'EN-TETE N'EST PAS UNE CONSTANTE, elle est mesuree par
+   bande. Relevee sur fonctionnalites.html, largeur de mise en page contre
+   hauteur de `header` :
+
+       1280  800  760  700  641  640  620  600  560   ->   73 px
+        540  521  500  481  470  440  410  400  390   ->  133-137 px
+                                        385  ->  133 px
+                                   375  320  ->  197 px
+
+   Les 11 px ajoutes sont l'ecart que portait deja le 84 de `.docs-section`
+   sur un en-tete de 73, et que reprend `.docs-sidebar nav{ top:84px }`.
+
+   RESERVE ECRITE PLUTOT QUE TUE : sous 385 px, la page deborde deja
+   horizontalement (scrollWidth 592 pour un viewport de 375). Le 197 est donc
+   mesure sur une mise en page qui a son propre defaut, dans un autre lot. La
+   valeur couvre le cas aujourd'hui ; elle est a remesurer quand ce
+   debordement sera corrige. */
+:root{ --hauteur-entete:73px; }
+@media (max-width:559px){ :root{ --hauteur-entete:137px; } }
+@media (max-width:379px){ :root{ --hauteur-entete:197px; } }
+html{ scroll-behavior:smooth; scroll-padding-top:calc(var(--hauteur-entete) + 11px); }
 body{
   margin:0;
   background:var(--bg);
@@ -2147,7 +2185,10 @@ a.vertical-card:hover h4{ color:var(--blue-deep); }
    jamais été paginée (voir docs-toc.js, qui ne garde que le scrollspy de
    cette même sidebar). Bloc CSS retiré avec lui : plus jamais généré. */
 
-.docs-section{ padding:26px 0 30px; border-bottom:1px solid var(--line); scroll-margin-top:84px; }
+/* `scroll-margin-top:84px` RETIRE ICI le 4 septembre 2026 : `html` porte
+   desormais `scroll-padding-top` pour toutes les cibles du site (voir le bloc
+   en tete de fichier). Les deux s'ajoutent, cette section aurait recu 168 px. */
+.docs-section{ padding:26px 0 30px; border-bottom:1px solid var(--line); }
 .docs-section:first-child{ padding-top:0; }
 .docs-section:last-child{ border-bottom:none; }
 .docs-section h2{ font-size:23px; margin:0 0 14px; }
