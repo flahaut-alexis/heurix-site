@@ -36,11 +36,24 @@ Règle `core.hooksPath` sur `scripts/hooks/`, d'où un crochet `pre-push` qui
 rejoue les contrôles de `.github/workflows/CI.yml` **avant** que le push parte
 — 19,4 s mesurées, contre 36 s pour la CI distante.
 
-Il existe parce que **sur ce dépôt le push EST le déploiement** : Pages par
-branche se déclenche sur le push, ne peut pas dépendre de la CI, et la CI n'est
-donc qu'un signal *a posteriori*. Mesuré du 21 au 28 août 2026 : **onze CI
-rouges, onze déploiements réussis**, dont quatre avec une suite de tests
-rouge.
+Il existe pour **deux faits distincts**, qui tenaient jusqu'au 4 septembre 2026
+dans un seul énoncé et se lisaient de travers :
+
+1. **Un push sur `main` est le déploiement.** Pages est en mode « branche »
+   (`build_type: legacy`), source `{branch: main, path: /}` : le contenu part
+   en ligne sans étape intermédiaire. **Pousser une autre branche ne déploie
+   rien** — vérifié sur l'API, les six derniers `pages-build-deployment`
+   portent les six derniers SHA de main.
+2. **La CI ne retient pas ce déploiement.** Deux workflows séparés, et celui du
+   déploiement n'est pas dans ce dépôt. Mesuré du 21 au 28 août 2026 : **onze
+   CI rouges, onze déploiements réussis**, dont quatre avec une suite de tests
+   rouge.
+
+L'ancien énoncé — « Pages par branche se déclenche sur le push » — était vrai :
+« par branche » y nomme le **mode** de construction, celui qu'on oppose plus bas
+à un workflow Actions. Mais il ne nommait pas `main`, et « par branche » se lit
+d'abord comme « depuis n'importe quelle branche ». Une session l'a lu ainsi et a
+cru mettre en ligne une branche de travail.
 
 **Vous n'avez normalement pas à le lancer :** `npm install` et `npm ci` le
 font tout seuls, via le script `prepare` de `package.json`. C'est ce qui
@@ -1240,8 +1253,8 @@ success  0a9de34c  pages-build-deployment
 ```
 
 **Ce sont deux workflows séparés, et le déploiement ne dépend pas de la CI.**
-Il ne peut pas en dépendre : le déploiement Pages par branche se déclenche sur
-le push, pas sur un résultat. Le défaut est donc parti en production avec son
+Il ne peut pas en dépendre : le déploiement se déclenche sur le push sur `main`,
+pas sur un résultat. Le défaut est donc parti en production avec son
 alarme rouge allumée à côté, et la session qui l'avait produit s'est terminée
 sans la lire.
 
@@ -1402,7 +1415,8 @@ le meilleur des trois.
 **Le site ne peut pas le reprendre, et pas par manque d'outillage.** Pour le
 moteur, déployer est un acte séparé et postérieur : quand le script s'exécute,
 la CI a déjà tourné sur ce commit, il y a quelque chose à interroger. **Pour le
-site, le push EST le déploiement.** Au moment où le contrôle s'exécuterait, la
+site, le push sur `main` EST le déploiement.** Au moment où le contrôle
+s'exécuterait, la
 CI de ce commit n'a pas tourné et ne peut pas avoir tourné. Il n'y a rien à
 interroger.
 

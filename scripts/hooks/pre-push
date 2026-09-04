@@ -3,13 +3,39 @@
 # Crochet pre-push : rejoue les contrôles de .github/workflows/CI.yml AVANT
 # que le push parte.
 #
-# POURQUOI IL EXISTE. Sur ce dépôt, LE PUSH EST LE DÉPLOIEMENT. GitHub Pages
-# par branche se déclenche sur le push et ne peut pas dépendre de la CI : ce
-# sont deux workflows séparés, et le workflow de déploiement est généré, pas
-# écrit. La CI est donc un signal *a posteriori*.
+# POURQUOI IL EXISTE. DEUX FAITS, ET ILS SONT SÉPARÉS.
 #
-# Mesuré du 21 au 28 août 2026, sur 121 SHA : ONZE CI ROUGES, ONZE
-# DÉPLOIEMENTS RÉUSSIS. Aucune exception. Et pas une classe unique de défaut --
+#   1. LE PUSH SUR `main` EST LE DÉPLOIEMENT. Pages est en mode « branche »
+#      (build_type: legacy) et sa source est `{branch: main, path: /}` : un
+#      push sur main met le contenu en ligne, sans étape intermédiaire.
+#      Pousser une AUTRE branche ne déploie rien.
+#
+#   2. LA CI NE RETIENT PAS CE DÉPLOIEMENT. Ce sont deux workflows séparés,
+#      et celui du déploiement n'est pas dans ce dépôt -- Pages legacy le
+#      fournit, `.github/workflows/` ne contient que CI.yml. La CI est donc
+#      un signal *a posteriori*.
+#
+# CES DEUX FAITS TENAIENT DANS UN SEUL ÉNONCÉ, ET IL SE LISAIT DE TRAVERS
+# (4 septembre 2026). La phrase était : « GitHub Pages par branche se
+# déclenche sur le push et ne peut pas dépendre de la CI. » Elle est vraie :
+# « par branche » y nomme le MODE de construction, celui qu'on oppose à un
+# workflow Actions (CLAUDE.md, « Le coût de fermer la porte »). Mais rien
+# n'y nommait `main`, et « par branche » se lit d'abord comme « depuis
+# n'importe quelle branche » : une session l'a lu ainsi, a poussé une
+# branche de travail en croyant la mettre en ligne, et l'a écrit à son tour.
+# Vérifié depuis, sur l'API : les six derniers `pages-build-deployment`
+# portent les six derniers SHA de main, aucun d'une branche.
+#
+# Le défaut n'était donc pas dans la mesure -- elle est juste, et elle est
+# ci-dessous. Il était dans ce qu'un seul énoncé faisait porter à deux faits
+# distincts : « le push déploie » et « la CI n'y peut rien ». Séparés, aucun
+# des deux ne se prête à la lecture fautive.
+#
+# CE QUE LA MESURE ÉTABLIT, ET CE QU'ELLE N'ÉTABLIT PAS. Du 21 au 28 août
+# 2026, sur 121 SHA : ONZE CI ROUGES, ONZE DÉPLOIEMENTS RÉUSSIS. Aucune
+# exception. Elle porte sur le fait n°2 -- la CI ne retient rien -- et sur
+# des SHA de main. Elle ne dit RIEN du push d'une branche, qui ne déploie
+# pas ; la lire comme si elle le couvrait était l'autre moitié de l'erreur. Et pas une classe unique de défaut --
 # « Clefs de cache » 7 fois, « SUITE DE TESTS » 4 fois, « Index de recherche »
 # 2 fois. Une suite de tests rouge est partie en production quatre fois en une
 # semaine.
@@ -147,7 +173,7 @@ MSG
   exit 2
 fi
 
-echo "pre-push : contrôles de CI.yml (le push EST le déploiement sur ce dépôt)"
+echo "pre-push : contrôles de CI.yml (sur ce dépôt, un push sur main déploie)"
 
 export BLOCS
 python3 - <<'PY'
@@ -189,8 +215,10 @@ if [ "$CODE" -ne 0 ]; then
 
 pre-push : PUSH REFUSÉ -- un contrôle de la CI échoue en local.
 
-  Sur ce dépôt le push déclenche le déploiement : pousser maintenant mettrait
-  ce défaut en production, et la CI ne le dirait qu'après coup.
+  Sur ce dépôt, un push sur main met le contenu EN LIGNE tel quel, et la CI
+  ne le retient pas -- elle ne parle qu'après coup. Sur une branche de
+  travail rien n'est déployé, mais le défaut voyagera jusqu'à main avec elle,
+  et personne ne le contrôlera à la fusion.
 
   Corrigez, ou forcez en connaissance de cause :  git push --no-verify
 MSG
