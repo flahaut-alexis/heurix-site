@@ -2954,9 +2954,20 @@ body.docs-dark .why-card p{ color:var(--ink-muted-on-dark); }
 /* PAGE FONCTIONNALITÉS */
 .feat-page{ padding:56px 0 20px; }
 .feat-group{ margin-bottom:52px; }
+/* `max-width:none` EST LE PRIX DU PASSAGE EN <h2> (4 septembre 2026). Ces
+   intitules etaient des <div> : ils ne heritaient d'aucune regle de titre.
+   Devenus des <h2>, ils prennent `h2{ max-width:640px }` (ligne 1440), que
+   cette classe ne surchargeait pas -- le filet du `border-bottom` serait
+   passe de 1100 px a 640 px sur les onze. Mesure a 1280 px de viewport.
+   C'est la SEULE valeur que la regle h2 imposait : font-size, font-weight,
+   letter-spacing et margin-bottom sont deja fixes ici et gagnent en
+   specificite, et `h2{ margin:0 0 18px }` donne le meme margin-top 0 que le
+   <div> avait. Meme geste que `.post-body h2` (ligne 1949), pour la meme
+   raison. */
 .feat-group-title{
   font-size:12px; font-weight:700; color:var(--blue-deep); text-transform:uppercase;
   letter-spacing:0.06em; margin-bottom:16px; padding-bottom:10px; border-bottom:1px solid var(--line);
+  max-width:none;
 }
 .feat-grid-2{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
 @media (max-width:800px){ .feat-grid-2{ grid-template-columns:1fr; } }
