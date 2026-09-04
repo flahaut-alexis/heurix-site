@@ -3067,7 +3067,59 @@ body.docs-dark .why-card p{ color:var(--ink-muted-on-dark); }
    degrade de body.docs-dark -- 4,55 / 5,31 / 10,94:1 -- donc quelle que soit
    la position du bloc sur ce degrade. Le jour ou il se deplace, la mesure
    tient encore. */
-.feat-sommaire{ margin:0 0 36px; padding:0 0 20px; border-bottom:1px solid var(--line); }
+/* LE SOMMAIRE SE LIT COMME UN OUTIL (4 septembre 2026). Pose la veille sans
+   surface, il faisait son travail sans se voir : meme graisse, meme encre et
+   meme fond que la prose, donc trois colonnes de liens se lisaient comme trois
+   blocs de contenu. Ce qui manquait n'etait pas une couleur, c'etait une
+   SURFACE et une REPONSE AU SURVOL -- les deux choses que `.docs-sidebar`
+   porte et que je n'avais pas reprises en lui empruntant son encre.
+
+   LES VALEURS NE SONT PAS NOUVELLES : `rgba(255,255,255,0.06)` sur
+   `rgba(255,255,255,0.14)` est la surface du site sur fond sombre, celle de
+   `.pb-carte` (index, produit) et celle des DIX-NEUF `.feat-card` de cette page
+   meme -- verifie au navigateur, valeurs calculees identiques. Ce bloc devient
+   la vingtieme, il n'introduit rien.
+
+   CE QUE CETTE SURFACE MESURE, ET POURQUOI ELLE RESTE. Bordure contre fond :
+   1,34 / 1,42 / 1,52:1 sur les trois arrets du degrade ; remplissage :
+   1,13 / 1,16 / 1,17. C'est SOUS le seuil de 3:1 des elements non textuels --
+   exactement le chiffre pour lequel le filet de 2 px a ete retire de ce meme
+   bloc la veille. La difference n'est pas dans le nombre, elle est dans ce
+   qu'on compare : ce filet etait un element NEUF, seul de son espece, qu'on
+   pouvait retirer sans rien perdre ; cette surface est celle que les
+   19 cartes voisines portent deja au meme contraste. La refuser ici et la
+   garder a cote serait incoherent, et la changer ici seul ferait du sommaire
+   le seul bloc de la page a ne pas suivre la convention. Le lot qui releverait
+   ces 1,34 les releverait TOUS, et c'est un lot de systeme, pas de composant.
+
+   LE REMBOURRAGE EST BORNE PAR UNE MESURE, PAS PAR LE GOUT. A 375 px, la boite
+   d'un lien doit rester au-dessus de 337 px : en dessous, « Merchandising
+   e-commerce : classer sans recherche » passe sur deux lignes et le bloc saute
+   de 27 px d'un coup. Mesure des trois candidats a 375 px :
+
+       padding 14/18   lien 337 px   0 repli   +9 px    <- retenu
+       padding 18/20   lien 333 px   1 repli   +36 px
+       padding 24/24   lien 325 px   1 repli   +46 px   (.pb-carte tel quel)
+
+   Le rembourrage des LIENS est compense par une marge negative de meme
+   valeur : sans elle la boite tombe a 337 px et le repli revient (+28 px au
+   lieu de +9). La plaque de survol deborde donc dans le rembourrage de la
+   carte, ce qui est exactement ce qu'on veut voir.
+
+   COUT TOTAL : +9 px a 320, 375, 390 ET 1280. Le sommaire passe de 41 a 42 %
+   de l'ecran au mobile.
+
+   CE QUI N'EST TOUJOURS PAS PRIS, et les raisons sont plus haut dans ce
+   fichier avec leurs chiffres : le rail sticky (la colonne perd 325 px, chaque
+   carte 30 %, la page grandit de 1 600 px au mobile) et le scrollspy (il
+   demande du JavaScript et un defilement qu'on sache verifier). */
+.feat-sommaire{
+  margin:0 0 36px; padding:0 0 20px; border-bottom:1px solid var(--line);
+}
+body.docs-dark .feat-sommaire{
+  background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.14);
+  border-radius:12px; padding:14px 18px;
+}
 .feat-sommaire-titre{
   font-size:12px; font-weight:700; text-transform:uppercase;
   letter-spacing:0.06em; margin:0 0 10px; color:var(--blue-deep);
@@ -3079,13 +3131,14 @@ body.docs-dark .why-card p{ color:var(--ink-muted-on-dark); }
 @media (max-width:800px){ .feat-sommaire nav{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
 @media (max-width:520px){ .feat-sommaire nav{ grid-template-columns:minmax(0,1fr); } }
 .feat-sommaire a{
-  display:block; font-size:13.5px; line-height:1.45; padding:5px 0;
+  display:block; font-size:13.5px; line-height:1.45;
+  padding:5px 8px; margin:0 -8px; border-radius:6px;
   color:var(--ink-muted); text-decoration:none;
 }
-.feat-sommaire a:hover{ color:var(--blue-deep); text-decoration:underline; }
+.feat-sommaire a:hover{ color:var(--blue-deep); background:var(--bg-soft); }
 body.docs-dark .feat-sommaire-titre{ color:var(--ink-muted-on-dark); }
 body.docs-dark .feat-sommaire a{ color:var(--ink-muted-on-dark); }
-body.docs-dark .feat-sommaire a:hover{ color:var(--ink-on-dark); }
+body.docs-dark .feat-sommaire a:hover{ color:var(--ink-on-dark); background:rgba(255,255,255,0.08); }
 .feat-group{ margin-bottom:52px; }
 /* `max-width:none` EST LE PRIX DU PASSAGE EN <h2> (4 septembre 2026). Ces
    intitules etaient des <div> : ils ne heritaient d'aucune regle de titre.
