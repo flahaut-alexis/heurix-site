@@ -207,11 +207,16 @@
     <h3>Une épingle ne réordonne pas seulement</h3>
     <p>845 résultats deviennent 846. La différence est le coffret&nbsp;: <strong>l’épinglage fait entrer un produit que la requête n’atteignait pas</strong>. Une épingle n’est donc pas seulement un réordonnancement — elle ajoute.</p>
 
-    <h3>Sur quelle surface</h3>
-    <p>Le merchandising s’applique sur l’API authentifiée (<code>/v1/index/&lt;catalogue&gt;/search</code>), celle que votre site appellerait. <strong>Le widget de démonstration de notre accueil interroge un autre point d’entrée</strong>, public et sans clé, qui n’applique pas les surcharges&nbsp;: vous y verrez les 845 résultats et les 41 à égalité, jamais les épingles.</p>
-    <p>Nous le disons pour que vous ne cherchiez pas à reproduire là-bas ce que cette page décrit. La séparation moteur/merchandising, elle, se vérifie sur votre propre catalogue dès l’essai.</p>
+    <h3>Sur quelle surface, et comment le refaire vous-même</h3>
+    <p>Le merchandising s’applique sur les <strong>deux</strong> surfaces&nbsp;: l’API authentifiée (<code>/v1/index/&lt;catalogue&gt;/search</code>), celle que votre site appellerait, <em>et</em> le point d’entrée public et sans clé (<code>/v1/public-demo/search</code>) qu’interroge le widget de démonstration de notre accueil.</p>
+    <p><strong>Alors refaites la requête.</strong> Tapez <code>vis</code> dans la démonstration de notre page d’accueil&nbsp;: mêmes trois produits, même ordre, même total de 846. Sans nous écrire, sans clé et sans compte.</p>
+    <p>Et si vous voulez les scores, que le widget n’affiche pas, la même réponse en une ligne&nbsp;:</p>
+    <pre class="docs-code"><code>curl -X POST 'https://api.heurix.fr/v1/public-demo/search?vertical=outillage' \
+  -H 'Content-Type: application/json' -d '{"q":"vis","limit":20}'</code></pre>
+    <p>Les trois épinglés en tête portent <code>"pinned": true</code>, le coffret <code>"score": 0.0</code>, et les rangs 4 à 44 le même 25,76.</p>
+    <p>Une réserve, pour que l’invitation tienne ce qu’elle promet&nbsp;: l’état <em>sans</em> les épingles n’est plus reproductible nulle part. Les 845 résultats et les 41 à égalité ont été relevés avant que les règles soient posées. C’est la seule ligne de ce bloc que vous devez nous croire sur parole.</p>
     <p>Aucun des deux états n’est «&nbsp;le bon&nbsp;». Le premier est ce que le marchand a décidé, le second ce que le moteur propose quand il n’a pas de raison de choisir. Dans un catalogue de visserie, le mot «&nbsp;vis&nbsp;» ne discrimine rien&nbsp;: c’est au marchand de dire ce qu’il veut montrer.</p>
-    <p class="form-note">Mesure du 2 septembre 2026 sur <code>public-demo</code>, requête «&nbsp;vis&nbsp;»&nbsp;: 846 résultats avec les trois épingles, 845 sans, 41 fiches au score de tête (25,76), coffret épinglé à 0,00.</p>
+    <p class="form-note">Mesure du 2 septembre 2026 sur <code>public-demo</code>, requête «&nbsp;vis&nbsp;»&nbsp;: 846 résultats avec les trois épingles, 845 sans, 41 fiches au score de tête (25,76), coffret épinglé à 0,00. <strong>Chiffres revérifiés le 4 septembre 2026</strong> sur le point d’entrée public&nbsp;: 846, les trois épingles en tête, coffret à 0,00, puis 41 fiches à 25,76 des rangs 4 à 44 — inchangés. Le 845 a été relevé avant la pose des épingles&nbsp;; il se recoupe avec 846 moins le coffret, seul épinglé dont la liste de correspondances est vide. Jusqu’au 4 septembre, ce bloc annonçait que le point public n’appliquait pas les surcharges&nbsp;: c’était exact, un correctif du moteur l’a rendu faux le matin même.</p>
   </div>
 </section>
 
