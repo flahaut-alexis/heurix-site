@@ -121,11 +121,17 @@
    Les 11 px ajoutes sont l'ecart que portait deja le 84 de `.docs-section`
    sur un en-tete de 73, et que reprend `.docs-sidebar nav{ top:84px }`.
 
-   RESERVE ECRITE PLUTOT QUE TUE : sous 385 px, la page deborde deja
-   horizontalement (scrollWidth 592 pour un viewport de 375). Le 197 est donc
-   mesure sur une mise en page qui a son propre defaut, dans un autre lot. La
-   valeur couvre le cas aujourd'hui ; elle est a remesurer quand ce
-   debordement sera corrige. */
+   CES TROIS VALEURS SONT A REMESURER, ET LE DEBORDEMENT N'EST PAS LEUR SEULE
+   INCERTITUDE (4 septembre 2026). La note qui tenait ici disait que le 197 px
+   etait releve sur une page qui debordait horizontalement, et qu'il faudrait
+   le reprendre une fois ce debordement corrige. Le debordement EST corrige --
+   c'est le lot qui porte ce commentaire -- mais la reprise n'a pas tranche :
+   la meme page, a la meme largeur de 375 px, a rendu 197 px puis 111 px selon
+   la mesure, sans que j'aie su expliquer l'ecart. Les valeurs restent donc
+   celles du 4 septembre au matin, INCHANGEES, et la reserve reste ouverte --
+   elle porte maintenant sur la hauteur elle-meme, pas sur le debordement.
+   Tant qu'elle n'est pas levee, ne pas s'appuyer sur ces trois nombres pour
+   en deriver d'autres. */
 :root{ --hauteur-entete:73px; }
 @media (max-width:559px){ :root{ --hauteur-entete:137px; } }
 @media (max-width:379px){ :root{ --hauteur-entete:197px; } }
@@ -2136,6 +2142,15 @@ a.vertical-card:hover h4{ color:var(--blue-deep); }
 }
 
 .docs-layout{ display:grid; grid-template-columns:225px 1fr; gap:44px; padding-top:36px; padding-bottom:72px; align-items:start; }
+/* MEME MECANISME QUE `.feat-card`, autre composant et autre source. Les deux
+   enfants de cette grille gardent `min-width:auto`, donc la piste `1fr` ne
+   descend pas sous leur min-content : 720 px sur guide-mise-en-route (un
+   `pre.docs-code` plafonne a max-width:720px alors que son contenu en veut
+   891), 480 px sur guide-utilisation-console (un `min-width:480px` declare sur
+   `table.docs-params`, remonte a travers `.table-scroll` qui porte pourtant
+   `overflow-x:auto`). Les deux conteneurs faits pour defiler ne defilaient
+   jamais : la piste s'elargissait a leur place. */
+.docs-layout > *{ min-width:0; }
 @media (max-width:900px){ .docs-layout{ grid-template-columns:1fr; gap:8px; } }
 
 .docs-sidebar{
@@ -3012,9 +3027,23 @@ body.docs-dark .why-card p{ color:var(--ink-muted-on-dark); }
 }
 .feat-grid-2{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
 @media (max-width:800px){ .feat-grid-2{ grid-template-columns:1fr; } }
+/* `min-width:0` OUVRE LA PISTE (4 septembre 2026). Un element de grille garde
+   par defaut `min-width:auto` : sa taille minimale automatique est son
+   min-content, et une piste `1fr` ne peut donc pas descendre en dessous. Les
+   `pre.docs-code` de ces cartes ont un min-content de 471 a 539 px -- mesure
+   par clonage dans un conteneur `width:min-content` -- alors qu'ils portent
+   deja `overflow-x:auto` et savent defiler. La piste s'elargissait pour leur
+   eviter de defiler, et c'est la page entiere qui debordait.
+
+   ISOLE PAR RETRAIT, pas deduit. A 375 px de viewport, document a 592 px :
+     .feat-card{min-width:0}              -> 375   le defaut disparait
+     .feat-card .docs-code{min-width:0}   -> 592   sans effet
+     le pre masque                        -> 375   la cause est bien la
+   Le min-width sur le pre ne sert a rien : la contrainte est sur l'ELEMENT DE
+   GRILLE, pas sur son contenu. */
 .feat-card{
   background:var(--bg-soft); color:var(--ink); border:1px solid var(--line); border-radius:14px;
-  padding:24px 26px; display:flex; flex-direction:column;
+  padding:24px 26px; display:flex; flex-direction:column; min-width:0;
 }
 .feat-card-highlight{ background:var(--blue-tint); color:var(--ink); border-color:var(--blue); }
 .feat-card h3{ font-size:16px; margin:0 0 10px; font-weight:700; }
