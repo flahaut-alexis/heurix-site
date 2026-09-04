@@ -42,8 +42,22 @@
 #
 # Ce que ça change : `git push` rejoue d'abord les contrôles de
 # `.github/workflows/CI.yml` (19,4 s mesurées) et refuse de pousser s'ils
-# échouent. Sur ce dépôt le push déclenche le déploiement, donc pousser rouge
-# met le défaut en production -- onze fois entre le 21 et le 28 août 2026.
+# échouent.
+#
+# POURQUOI IL REFUSE, EN DEUX FAITS QU'IL FAUT GARDER SÉPARÉS. Un push sur
+# `main` met le contenu en ligne sans étape intermédiaire ; et la CI ne
+# retient pas ce déploiement, elle ne parle qu'après coup -- mesuré du 21 au
+# 28 août 2026, onze CI rouges, onze déploiements réussis, sur des SHA de
+# main. Pousser une AUTRE branche ne déploie rien : le défaut y attend la
+# fusion, où personne ne le contrôlera.
+#
+# CE FICHIER PORTAIT L'ÉNONCÉ UNIQUE, LUI AUSSI. « Sur ce dépôt le push
+# déclenche le déploiement, donc pousser rouge met le défaut en production » :
+# vrai de `main`, et lisible depuis n'importe quelle branche. C'est cette
+# lecture qui a fait pousser une branche de travail en croyant la mettre en
+# ligne, le 4 septembre 2026. Le raisonnement complet est en tête de
+# `scripts/hooks/pre-push` ; il est repris ici parce que ce fichier-ci est
+# celui qu'une session lit EN PREMIER, avant d'avoir jamais ouvert le crochet.
 #
 # Pour désinstaller :  git config --unset core.hooksPath
 #
