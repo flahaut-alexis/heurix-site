@@ -634,6 +634,12 @@
               // l'element, c'est le meme panneau.
               signalerEchec(document.getElementById("public-key-status"), err, T("Échec de la révocation."));
               btn.disabled = false;
+              // Le message DIT que la page est perimee ; cet appel la
+              // rafraichit. Le 404 du moteur (« Clé publique introuvable,
+              // ou non rattachée à votre compte ») veut dire que la cle a
+              // deja ete revoquee ailleurs : la ligne doit partir, sinon
+              // le marchand reclique indefiniment sur ce qui n'est plus.
+              refreshPublicKeys(key);
             });
         }
       );
@@ -2280,6 +2286,29 @@
           // `#invite-status` vit dans le meme `#pane-team`, sous le tableau,
           // et porte deja role="status" aria-live="polite" : aucun element a
           // ajouter, et le lecteur d'ecran l'annonce sans changer de volet.
+          //
+          // ---- CE QUI DECIDE DU RAFRAICHISSEMENT (5 septembre 2026) ----
+          //
+          // Le lot precedent a fait PARLER ces deux chemins ; il ne les
+          // rafraichissait pas. Le message disait « votre page est perimee »
+          // et la ligne restait affichee, recliquable indefiniment.
+          //
+          // CE N'EST PAS LE CODE DE REPONSE QUI DECIDE. La regle evidente --
+          // « 404 : la liste est fausse, on recharge ; 403 : vous n'avez pas
+          // le droit, la liste est juste » -- se casse ICI, et c'est le seul
+          // des sept ou elle se casse. renderTeam ne pose ces boutons que
+          // `if (isAdmin && ...)` : le bouton n'existe QUE parce que la page
+          // croit que je suis admin. Un 403 « Seul un administrateur peut
+          // retirer un membre » refuse exactement la permission qui
+          // conditionne l'affichage du controle -- il prouve donc que la
+          // page se trompe sur ce qu'elle montre, tout autant que le 404.
+          //
+          // Ce qui decide, c'est ce que L'EXISTENCE DU CONTROLE SUPPOSAIT.
+          // Ici elle supposait deux choses -- que la personne est dans mon
+          // entreprise, et que j'y suis admin -- et les deux codes en nient
+          // une. `loadAccountInfo()` les recharge toutes les deux : elle
+          // rend la table d'equipe ET repose `isAdmin`, donc le 403 fait
+          // disparaitre les boutons eux-memes, pas seulement la ligne.
           var statutEquipe = document.getElementById("invite-status");
           if (btn.getAttribute("data-action") === "role") {
             btn.disabled = true;
@@ -2288,6 +2317,10 @@
               .catch(function (err) {
                 signalerEchec(statutEquipe, err, T("Échec du changement de rôle."));
                 btn.disabled = false;
+                // Le message reste : loadAccountInfo LIT `invite-status` sur
+                // son chemin de succes mais ne l'ecrit jamais. Elle le
+                // COMPLETE, elle ne l'efface pas -- verifie, pas suppose.
+                loadAccountInfo();
               });
           } else if (btn.getAttribute("data-action") === "remove") {
             var email = btn.getAttribute("data-email");
@@ -2305,6 +2338,19 @@
                   .catch(function (err) {
                     signalerEchec(statutEquipe, err, T("Échec du retrait."));
                     btn.disabled = false;
+                    // LE CAS D'ORIGINE, celui du rapport : un autre
+                    // administrateur a retire la personne, le moteur rend
+                    // 404, et la ligne restait la.
+                    //
+                    // EXCEPTION GARDEE TELLE QUELLE : loadAccountInfo a son
+                    // PROPRE `.catch`, qui ecrit dans ce meme
+                    // `invite-status`. Si le retrait echoue PUIS le
+                    // rechargement aussi, le second message remplace le
+                    // premier. Ce n'est pas un effacement, c'est un second
+                    // echec reel -- un marchand dont la session a expire
+                    // doit l'apprendre, et « Utilisateur introuvable » ne le
+                    // lui dirait pas. Ne pas masquer.
+                    loadAccountInfo();
                   });
               }
             );
@@ -5287,6 +5333,11 @@
         apiFetch(url, key, { method: "DELETE" }).then(function () { refreshSoTable(key); }).catch(function (err) {
           signalerEchec(document.getElementById("so-status"), err, T("Échec de la suppression."));
           delBtn.disabled = false;
+          // 404 « Aucune priorité trouvée pour le produit … sur cette
+          // requête » : la regle est deja partie. Meme appel que sur le
+          // chemin de succes -- il annule `session.soDraft`, ce que le
+          // succes fait deja, donc rien de neuf n'est detruit ici.
+          refreshSoTable(key);
         });
       }
     });
@@ -5744,6 +5795,36 @@
       // entre deux volets qui font le meme travail, pas un cas nouveau.
       // C'est le plus couteux des onze : la chaine enchaine des DELETE puis
       // des POST, un echec au milieu laisse un etat PARTIELLEMENT publie.
+      //
+      // ---- CELUI-CI NE RAFRAICHIT PAS, ET C'EST VOULU (5 septembre 2026) ----
+      //
+      // Le lot du 5 septembre a ajoute un rechargement dans SEPT `.catch`
+      // d'ecriture, pour que le refus qui declare la page perimee la
+      // corrige. Celui-ci en est exclu. Ce n'est pas un oubli.
+      //
+      // POURQUOI. `refreshBrowsePreview` fait `session.brDraft = null`
+      // INCONDITIONNELLEMENT (voir sa definition), et `session.brDraft` est
+      // la SEULE COPIE de l'arrangement du marchand : construit au
+      // glisser-depose, aux fleches, et par le formulaire manuel, il n'est
+      // ecrit nulle part ailleurs. Le chemin de succes a le droit de
+      // l'annuler -- il vient de le publier. L'echec, non : c'est
+      // exactement le moment ou le brouillon est tout ce qui reste.
+      //
+      // Et sur un echec en MILIEU de chaine, l'etat serveur recharge est un
+      // melange partiel de l'ancien et du nouveau. Le rafraichir
+      // l'afficherait comme la verite. Recharger serait donc pire que ne
+      // rien faire : le marchand perdrait son travail ET verrait faux.
+      //
+      // LE CODE LE SAVAIT DEJA, deux fois :
+      //   - `soAppliquerBrouillon`, le jumeau Search, affiche son echec
+      //     depuis le 19 aout et ne rafraichit pas non plus ;
+      //   - le bouton « abandonner » (`br-simu-discard`) sauvegarde
+      //     `precedent` AVANT d'annuler, et le restaure sur le retour
+      //     arriere.
+      //
+      // Si vous etes venu ici pour « completer le lot » en ajoutant l'appel
+      // manquant : c'est ce commentaire qui manquait, pas l'appel.
+      // console-rafraichir-apres-refus.test.js le tient.
       .catch(function (err) {
         signalerEchec(document.getElementById("browse-override-status"), err, T("Échec de l'enregistrement."));
       })
@@ -6128,6 +6209,14 @@
         var url = "/v1/browse/" + encodeURIComponent(session.browseCurrentCatalog) + "/" + encodeURIComponent(session.browseCurrentCategory) + "/overrides/" + encodeURIComponent(pid);
         apiFetch(url, key, { method: "DELETE" }).then(function () { refreshBrowseOverrides(key); refreshBrowsePreview(key); }).catch(function (err) {
           signalerEchec(document.getElementById("browse-override-status"), err, T("Échec de la suppression."));
+          // 404 « Aucune priorité trouvée pour le produit … dans cette
+          // catégorie » : la regle est deja partie, la ligne doit partir.
+          //
+          // La TABLE seulement. Le chemin de succes appelle aussi
+          // refreshBrowsePreview, qui fait `session.brDraft = null` : le
+          // succes a le droit de jeter le brouillon puisqu'il vient de le
+          // publier, pas l'echec. Voir brAppliquerBrouillon.
+          refreshBrowseOverrides(key);
         });
       }
     });
@@ -6187,6 +6276,10 @@
           "/attribute-rules?field=" + encodeURIComponent(field) + "&value=" + encodeURIComponent(value);
         apiFetch(url, key, { method: "DELETE" }).then(function () { refreshBrowseAttributeRules(key); refreshBrowsePreview(key); }).catch(function (err) {
           signalerEchec(document.getElementById("browse-attribute-rule-status"), err, T("Échec de la suppression."));
+          // 404 « Aucune règle trouvée pour {field}={value} dans cette
+          // catégorie ». La table seulement, meme raison qu'au-dessus :
+          // refreshBrowsePreview annulerait `session.brDraft`.
+          refreshBrowseAttributeRules(key);
         });
       }
     });
@@ -6783,6 +6876,12 @@
                 .catch(function (err) {
                   signalerEchec(status, err, T("Échec de la suppression."));
                   btn.disabled = false;
+                  // 404 « Règle personnalisée introuvable pour ce catalogue ».
+                  // loadRules ne reecrit que `listEl` : le formulaire de
+                  // saisie (libelle, mots-cles, prefixe) n'est pas touche,
+                  // donc une reconnaissance en cours de redaction survit.
+                  // C'est `resetForm` qui vide, et elle n'est pas appelee ici.
+                  loadRules();
                 });
             });
           });
