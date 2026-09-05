@@ -341,6 +341,53 @@
     el.hidden = false;
   }
 
+  // BILAN D'UNE SUPPRESSION EN LOT (5 septembre 2026). `signalerEchec` pose
+  // UNE phrase, celle du moteur. Un lot de quinze n'a pas une issue, il en a
+  // trois a la fois, et « Échec » est FAUX quand douze ont reussi.
+  //
+  // POURQUOI DEUX NOEUDS ET PAS UNE CONCATENATION. console-i18n.js a deux
+  // chemins et ils ne se melangent pas : le chemin 2 cherche le GABARIT
+  // avant substitution (`T("{0} supprimée(s)…")`), le chemin 1 fait une
+  // EGALITE EXACTE sur un noeud texte pour les phrases venues du moteur.
+  // Coller les deux dans une seule chaine casse les deux : le gabarit n'est
+  // plus reconnu, la phrase du moteur non plus, et la console anglaise
+  // afficherait du francais sans que rien n'echoue. D'ou la phrase de
+  // comptes dans le noeud principal, et chaque raison distincte du moteur
+  // dans son PROPRE noeud enfant.
+  //
+  // `textContent` partout, jamais `innerHTML` : rien a echapper.
+  //
+  // LA CLASSE SUIT L'INTENTION, PAS LE CODE DE REPONSE. Un 404 sur une
+  // suppression veut dire « elle n'est deja plus la » : l'intention du
+  // marchand est ATTEINTE. Zero echec reel sort donc en `ok`, meme si la
+  // moitie des appels a rendu 404. C'est le seul endroit du fichier ou un
+  // chemin d'erreur rend une classe de succes, et c'est voulu.
+  function soAfficherBilanSuppression(el, supprimees, dejaParties, enEchec, raisons) {
+    if (!el) return;
+    var phrase;
+    if (enEchec === 0 && dejaParties === 0) {
+      phrase = T("{0} règle(s) supprimée(s).", supprimees);
+    } else if (enEchec === 0) {
+      phrase = T("{0} règle(s) supprimée(s). {1} avaient déjà été supprimée(s) ailleurs : votre liste était périmée, elle est à jour.", supprimees, dejaParties);
+    } else if (supprimees === 0 && dejaParties === 0) {
+      phrase = T("Aucune des {0} règles n'a pu être supprimée. Elles restent cochées.", enEchec);
+    } else {
+      phrase = T("{0} supprimée(s), {1} déjà disparue(s), {2} en échec. Les règles en échec restent cochées : vous pouvez réessayer.", supprimees, dejaParties, enEchec);
+    }
+    el.textContent = phrase;
+    // La raison du moteur, verbatim, dans un noeud a elle : c'est ce que le
+    // lot du 4 septembre a etabli et que ce lot ne doit pas defaire.
+    (raisons || []).forEach(function (r) {
+      var noeud = document.createElement("span");
+      noeud.className = "so-bilan-raison";
+      noeud.textContent = r;
+      el.appendChild(noeud);
+    });
+    el.classList.toggle("err", enEchec > 0);
+    el.classList.toggle("ok", enEchec === 0);
+    el.hidden = false;
+  }
+
   function apiFetch(path, token, options) {
     options = options || {};
     var headers = { Authorization: "Bearer " + token };
@@ -4379,6 +4426,19 @@
                             "&product_id=" + encodeURIComponent(o.product_id),
                             key, { method: "DELETE" });
           });
+        // DEFAUT CONNU, LAISSE POUR APRES (5 septembre 2026). Meme forme que
+        // la suppression en lot : un 404 sur l'une de ces suppressions
+        // avorte la chaine AVANT la phase POST, donc aucune creation ne se
+        // fait non plus. Or un 404 sur un DELETE veut dire « l'etat voulu
+        // est deja atteint pour cette clef » -- le compter comme un succes
+        // rendrait la publication correcte.
+        //
+        // MOINS URGENT QUE LE LOT EN SELECTION, et c'est mesure : cette
+        // chaine relit l'etat serveur en tete de CHAQUE tentative (le
+        // `apiFetch(base, key)` juste au-dessus), donc `suppressions` est
+        // recalcule a neuf et le clic suivant passe. Elle se repare seule.
+        // La suppression en lot, elle, rejouait une selection client jamais
+        // recalculee : elle restait bloquee. Jumeau : brAppliquerBrouillon.
         return Promise.all(suppressions).then(function () { return voulues; });
       })
       .then(function (voulues) {
@@ -5163,21 +5223,70 @@
       if (n === 0) return;
       if (!confirm(T("Supprimer {0} règle(s) ? Cette action est immédiate et ne passe pas par le brouillon.", n))) return;
       soSupprimerSelectionBtn.disabled = true;
-      var appels = Array.from(soCatalogueSelection).map(function (cle) {
+      var statutSelection = document.getElementById("so-status");
+      // LE SILENCE PENDANT L'OPERATION, plus ancien que ce lot. Le jumeau
+      // `soAppliquerBrouillon` ecrit « Enregistrement… » des le depart ;
+      // celui-ci n'ecrivait rien -- quinze DELETE en vol et un simple
+      // bouton grise. Et `allSettled` ci-dessous RALLONGE ce silence :
+      // `Promise.all` rejetait des la premiere erreur, `allSettled` attend
+      // les quinze. Sans cette ligne, le lot aggraverait ce qu'il corrige.
+      if (statutSelection) {
+        statutSelection.textContent = T("Suppression de {0} règle(s)…", n);
+        statutSelection.className = "catalog-rule-status";
+        statutSelection.hidden = false;
+      }
+      var clefs = Array.from(soCatalogueSelection);
+      var appels = clefs.map(function (cle) {
         var parts = cle.split("||");
         var url = "/v1/index/" + encodeURIComponent(session.soCurrentCatalog) + "/search-overrides" +
           "?query=" + encodeURIComponent(parts[0]) + "&product_id=" + encodeURIComponent(parts[1]);
         return apiFetch(url, key, { method: "DELETE" });
       });
-      Promise.all(appels).then(function () {
-        soCatalogueSelection.clear();
+
+      // POURQUOI `allSettled` ET NON `Promise.all` (5 septembre 2026).
+      //
+      // CE N'ETAIT PAS UN RAFRAICHISSEMENT MANQUANT, C'ETAIT UNE OPERATION
+      // BLOQUEE. `.map()` tire les quinze DELETE immediatement ; un rejet
+      // n'en annule aucun, les quinze atteignent le moteur. `Promise.all`
+      // rejette sur la PREMIERE erreur et jette tous les autres resultats,
+      // succes compris. Si trois des quinze passaient, la selection restait
+      // a quinze, les cases restaient cochees, et chaque nouveau clic
+      // rejouait les trois 404 (« Aucune priorité trouvée pour le produit
+      // … sur cette requête »). Le marchand ne pouvait PAS terminer, et
+      // rien a l'ecran ne lui disait lesquelles decocher.
+      //
+      // ET LE RAFRAICHISSEMENT AURAIT ETE FAUX, pas seulement inutile :
+      // sous `Promise.all` le `.catch` part a la premiere erreur pendant
+      // que quatorze DELETE sont encore EN VOL. Un GET lance la aurait pu
+      // afficher des regles sur le point de disparaitre. C'est `allSettled`
+      // -- qui attend tout le monde -- qui rend le rechargement correct.
+      //
+      // TROIS VERDICTS PAR CLEF, dans l'ordre de `clefs` :
+      //   tenue        -> supprimee par moi          -> purger la clef
+      //   rejetee 404  -> deja partie ailleurs       -> purger, ligne perimee
+      //   rejetee sinon-> la regle est toujours la   -> GARDER la case cochee
+      // `erreurDeReponse` attache deja `err.status`, c'est ce qui rend le
+      // troisieme verdict possible sans deviner.
+      Promise.allSettled(appels).then(function (resultats) {
+        var supprimees = 0, dejaParties = 0;
+        var raisons = [];
+        resultats.forEach(function (r, i) {
+          if (r.status === "fulfilled") { supprimees++; soCatalogueSelection.delete(clefs[i]); return; }
+          var err = r.reason || {};
+          if (err.status === 404) { dejaParties++; soCatalogueSelection.delete(clefs[i]); return; }
+          // Celle-ci reste cochee : elle existe encore, elle est reessayable.
+          var texte = err.message || T("Échec de la suppression.");
+          if (raisons.indexOf(texte) === -1) raisons.push(texte);
+        });
+        var enEchec = resultats.length - supprimees - dejaParties;
+
         if (soSelectTout) soSelectTout.checked = false;
         soSupprimerSelectionBtn.disabled = false;
         soCatalogueMajBoutonSelection();
+        // Apres la reconciliation seulement : la table peut maintenant etre
+        // relue sans course, plus aucun DELETE n'est en vol.
         refreshSoTable(key);
-      }).catch(function (err) {
-        signalerEchec(document.getElementById("so-status"), err, T("Échec de la suppression."));
-        soSupprimerSelectionBtn.disabled = false;
+        soAfficherBilanSuppression(statutSelection, supprimees, dejaParties, enEchec, raisons);
       });
     });
 
@@ -5774,6 +5883,12 @@
           .map(function (o) {
             return apiFetch(base + "/" + encodeURIComponent(o.product_id), key, { method: "DELETE" });
           });
+        // MEME DEFAUT CONNU, MEME REPORT que soAppliquerBrouillon : un 404
+        // ici avorte la publication avant les POST, alors qu'il veut dire
+        // « deja atteint ». Se repare seule au clic suivant pour la meme
+        // raison -- `existantes` vient du `apiFetch(base, key)` en tete,
+        // relu a chaque tentative. A traiter avec son jumeau Search, pas
+        // avec la suppression en lot, qui elle etait BLOQUEE.
         return Promise.all(suppressions);
       })
       .then(function () {

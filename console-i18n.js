@@ -39,6 +39,27 @@
   var EN = (document.documentElement.lang || "fr").slice(0, 2).toLowerCase() === "en";
 
   var DICT = {
+    // -------- BILAN D'UNE SUPPRESSION EN LOT, LOT DU 5 SEPTEMBRE --------
+    //
+    // Cinq gabarits, tous du CHEMIN 2 : ils sont ecrits dans console.js et
+    // passent par `T(...)`, qui cherche le gabarit AVANT substitution. Ils
+    // ne se melangent jamais avec les phrases du moteur (chemin 1), qui
+    // arrivent dans un noeud enfant separe -- `soAfficherBilanSuppression`
+    // explique pourquoi une concatenation casserait les deux chemins.
+    //
+    // LE TROISIEME N'EST PAS UN MESSAGE D'ERREUR. Un 404 sur une
+    // suppression veut dire « elle n'est deja plus la » : l'intention est
+    // atteinte, la phrase sort en classe `ok`. « Échec » serait faux quand
+    // douze des quinze ont reussi -- c'est le defaut que ce lot corrige.
+    "Suppression de {0} règle(s)…": "Deleting {0} rule(s)…",
+    "{0} règle(s) supprimée(s).": "{0} rule(s) deleted.",
+    "{0} règle(s) supprimée(s). {1} avaient déjà été supprimée(s) ailleurs : votre liste était périmée, elle est à jour.":
+      "{0} rule(s) deleted. {1} had already been deleted elsewhere: your list was out of date, it is now up to date.",
+    "{0} supprimée(s), {1} déjà disparue(s), {2} en échec. Les règles en échec restent cochées : vous pouvez réessayer.":
+      "{0} deleted, {1} already gone, {2} failed. The failed rules stay selected: you can try again.",
+    "Aucune des {0} règles n'a pu être supprimée. Elles restent cochées.":
+      "None of the {0} rules could be deleted. They stay selected.",
+
     // ---------------- ECRITURES MUETTES, LOT DU 4 SEPTEMBRE ----------------
     //
     // Dix entrees pour un lot de console.js, pas pour un lot de langue.

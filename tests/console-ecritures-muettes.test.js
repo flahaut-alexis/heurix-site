@@ -170,16 +170,91 @@ function ecrit(c, toutes) {
   return ecritDirectement(c) || ecritParDelegation(c, toutes);
 }
 
+/** Un maillon dit-il quelque chose a l'utilisateur ? */
+function maillonParle(m) {
+  return (
+    /signalerEchec\s*\(/.test(m.texte) ||
+    /soAfficherBilanSuppression\s*\(/.test(m.texte) ||
+    /\.textContent\s*=\s*\(?\s*(err|e)\b/.test(m.texte) ||
+    /window\.alert\s*\(/.test(m.texte) ||
+    /showLogin\s*\(/.test(m.texte)
+  );
+}
+
 /** Un `.catch` de PREMIER NIVEAU dit-il quelque chose a l'utilisateur ? */
 function parle(c) {
-  return c.maillons.some(
-    (m) =>
-      m.nom === "catch" &&
-      (/signalerEchec\s*\(/.test(m.texte) ||
-        /\.textContent\s*=\s*\(?\s*(err|e)\b/.test(m.texte) ||
-        /window\.alert\s*\(/.test(m.texte) ||
-        /showLogin\s*\(/.test(m.texte))
-  );
+  return c.maillons.some((m) => m.nom === "catch" && maillonParle(m));
+}
+
+/* ---- `Promise.allSettled` EST UNE TETE D'ECRITURE (5 septembre 2026) ----
+ *
+ * NE SIMPLIFIEZ PAS CE BLOC EN CROYANT NETTOYER. Il a l'air d'un doublon
+ * des fonctions ci-dessus ; il couvre exactement ce qu'elles ne peuvent
+ * plus voir.
+ *
+ * CE QUI A CHANGE. `attrape()` exempte les chaines SANS `.catch`, au motif
+ * -- ecrit dans sa propre docstring juste en dessous -- qu'« une chaine
+ * sans `.catch` propage a son appelant : c'est une delegation, et c'est
+ * l'appelant qui sera mesure ». Cette hypothese devient FAUSSE sous
+ * `allSettled`, qui NE REJETTE JAMAIS : il n'y a plus rien a propager,
+ * l'erreur devient une DONNEE (`{status, reason}`) lue dans le `.then`.
+ *
+ * Une suppression en lot dont le bilan disparaitrait laisserait donc les
+ * deux gardes verts :
+ *   - le filtre `attrape()` l'exempte, puisqu'elle n'a aucun `.catch` ;
+ *   - et sa tete `Promise.allSettled(appels)` ne porte aucun `method:`,
+ *     donc `ecritDirectement` ne la voit pas davantage.
+ *
+ * Un garde qui reste vert en couvrant un chemin de MOINS est exactement ce
+ * que ce depot a paye plusieurs fois. D'ou cette population separee : toute
+ * chaine `Promise.allSettled(...)` dont le tableau d'appels est fabrique
+ * par un `.map()` d'ECRITURE doit parler dans son `.then`.
+ *
+ * MESURE, prediction ecrite avant de lancer :
+ *   chaines allSettled d'ecriture     0 avant le lot     1 apres
+ *   d'entre elles muettes                     -             0
+ */
+const VERBE_SOURCE = /\b(apiFetch|apiPost|fetch)\s*\([^;]*method\s*:\s*"(POST|PUT|DELETE|PATCH)"/;
+
+function chainesAllSettled(src) {
+  const out = [];
+  const re = /Promise\.allSettled\s*\(/g;
+  let m;
+  while ((m = re.exec(src))) {
+    const d = decouper(src, m.index);
+    out.push({ nom: "allSettled", debut: m.index, ligne: ligneDe(src, m.index), ...d });
+  }
+  return out;
+}
+
+/** Le tableau passe a allSettled est-il fabrique par un `.map()` qui ECRIT ?
+ *
+ *  PREMIER JET, ET POURQUOI IL ETAIT FAUX. Il regardait les 1500 caracteres
+ *  qui precedent la tete. Le controle de population l'a rejete au premier
+ *  lancement -- zero chaine trouvee -- parce que le commentaire de trente
+ *  lignes pose entre le `.map()` et le `Promise.allSettled()` avait suffi a
+ *  repousser la declaration hors de la fenetre. Une distance en caracteres
+ *  mesure la mise en page, pas la structure : elle serait retombee en
+ *  panne au premier commentaire ajoute, et silencieusement.
+ *
+ *  ON RESOUT DONC LA VARIABLE, UNE FOIS, ET C'EST NOMME. `allSettled(x)` ->
+ *  on cherche la DERNIERE declaration `var x =` avant la tete, et on lit
+ *  son expression. Un seul niveau, une seule forme (`var|let|const`) : un
+ *  tableau construit autrement -- concatene, passe en argument, renvoye par
+ *  une fonction -- echappera. C'est la meme frontiere que NON_DERIVABLES et
+ *  elle est ici pour la meme raison : mieux vaut un garde dont on connait
+ *  le bord qu'un garde dont on croit qu'il voit tout. */
+function allSettledEcrit(c, src) {
+  if (VERBE_SOURCE.test(c.texte)) return true; // appels ecrits en clair dans la tete
+  const arg = /Promise\.allSettled\s*\(\s*([A-Za-z_$][\w$]*)\s*\)/.exec(c.tete);
+  if (!arg) return false;
+  const amont = src.slice(0, c.debut);
+  const decl = new RegExp("\\b(?:var|let|const)\\s+" + arg[1] + "\\s*=", "g");
+  let dernier = -1;
+  let m;
+  while ((m = decl.exec(amont))) dernier = m.index;
+  if (dernier === -1) return false;
+  return VERBE_SOURCE.test(src.slice(dernier, c.debut));
 }
 
 /** La chaine attrape-t-elle ses erreurs a son PROPRE niveau ? Une chaine
@@ -214,6 +289,32 @@ describe("console.js — aucune ecriture ne echoue en silence", () => {
         "l'interface ne lui rend qu'un bouton cliquable.\n" +
         "Posez le detail de l'API avec signalerEchec(element, err, repli).\n" +
         "Chemins concernes :\n  " + fautives.join("\n  ")
+    ).toEqual([]);
+  });
+
+  it("toute chaine `Promise.allSettled` qui ECRIT rend un bilan", () => {
+    const settled = chainesAllSettled(CONSOLE);
+    const ecrivent = settled.filter((c) => allSettledEcrit(c, CONSOLE));
+
+    // Controle de population AVANT l'assertion, comme au-dessus : le jour
+    // ou plus aucune chaine allSettled n'ecrit, ce test rendrait vert sans
+    // rien mesurer, et personne ne verrait la difference.
+    expect(
+      ecrivent.length,
+      "aucune chaine allSettled d'ecriture : ce test ne mesure plus rien"
+    ).toBeGreaterThan(0);
+
+    const muettes = ecrivent
+      .filter((c) => !c.maillons.some((m) => m.nom === "then" && maillonParle(m)))
+      .map((c) => `console.js:${c.ligne}`);
+
+    expect(
+      muettes,
+      "Une chaine `Promise.allSettled` d'ECRITURE sans bilan.\n" +
+        "allSettled NE REJETTE JAMAIS : il n'y a pas de `.catch` a inspecter,\n" +
+        "et l'exemption « pas de catch = delegation » ne s'applique pas ici.\n" +
+        "L'issue de chaque appel est une donnee du `.then` -- posez-la avec\n" +
+        "soAfficherBilanSuppression(element, x, y, z, raisons).\n  " + muettes.join("\n  ")
     ).toEqual([]);
   });
 

@@ -198,14 +198,17 @@ describe("console.js — le refus rafraichit l'ecran qu'il declare perime", () =
 /* LE CONTROLE DE POPULATION, ET LES CINQ QUI NE RAFRAICHISSENT PAS.
  *
  * Le test ci-dessus joue UN chemin en entier. Six autres recoivent le meme
- * appel sans etre joues, et cinq chaines le refusent -- pour cinq raisons
- * differentes. Sans cette table, « sept » n'est qu'un chiffre : on
+ * appel sans etre joues, et quatre chaines le refusent -- pour quatre
+ * raisons differentes. Sans cette table, « sept » n'est qu'un chiffre : on
  * pourrait en corriger six et rendre exactement le meme vert.
  *
- * Les CINQ REFUS sont le vrai risque de ce lot, et c'est pour eux que ce
- * bloc existe. Un lecteur qui compte douze `.catch` qui signalent et sept
- * qui rafraichissent conclura qu'il en manque cinq. Chacun porte donc sa
+ * Les QUATRE REFUS sont le vrai risque de ce lot, et c'est pour eux que ce
+ * bloc existe. Un lecteur qui compte onze `.catch` qui signalent et sept
+ * qui rafraichissent conclura qu'il en manque quatre. Chacun porte donc sa
  * raison ici, en plus du commentaire pose a cote du code.
+ *
+ * ILS ETAIENT CINQ. La suppression en lot est passee a `Promise.allSettled`
+ * le 5 septembre et n'a plus de `.catch` : voir l'entree retiree ci-dessous.
  */
 
 // Les six fonctions de chargement. Aucune n'a ete ecrite pour ce lot :
@@ -235,12 +238,14 @@ const CHEMINS = [
   // melange partiel : recharger serait pire que ne rien faire.
   ["publication du brouillon Ranking", ["browse-override-status", "Échec de l'enregistrement."], null],
 
-  // Lot separe : le remede n'est pas un appel. Rafraichir sans purger
-  // soCatalogueSelection laisse un compteur a N avec zero case cochee
-  // (les cases se rendent toujours sans `checked`), et un second clic
-  // retire des DELETE sur des regles disparues.
-  ["selection de surcharges Search", ["soSupprimerSelectionBtn.disabled = false"], null],
-
+  // LA SELECTION EN LOT A QUITTE CETTE POPULATION (5 septembre 2026). Elle
+  // etait le douzieme bloc, laisse sans rafraichissement parce que son
+  // remede n'etait pas un appel. Passee a `Promise.allSettled`, elle n'a
+  // plus de `.catch` du tout -- allSettled ne rejette jamais -- et son
+  // bilan vit dans le `.then`. Elle est desormais tenue par
+  // console-ecritures-muettes.test.js, qui a gagne une population
+  // « allSettled » pour ca. Ne pas la remettre ici : ce fichier ne mesure
+  // que des `.catch`, elle y serait invisible.
   // Les deux synonymes : le PUT remplace la liste ENTIERE. Ses seules
   // erreurs sont 404 « Catalogue introuvable » et des 422 de validation --
   // aucun code ne dit « perime ». Retirer un groupe qu'un autre admin a
@@ -274,15 +279,15 @@ function blocsCatch(source) {
   return blocs;
 }
 
-describe("console.js — les douze `.catch` qui signalent un echec", () => {
+describe("console.js — les onze `.catch` qui signalent un echec", () => {
   const signalants = blocsCatch(CONSOLE).filter((b) => b.includes("signalerEchec"));
 
-  it("compte douze blocs, et la table les couvre tous", () => {
+  it("compte onze blocs, et la table les couvre tous", () => {
     // Si ce compte bouge, la table ci-dessus est perimee. Ce n'est pas une
     // assertion de style : c'est ce qui empeche ce fichier de rendre vert
     // en ne mesurant plus rien.
-    expect(signalants.length, "le nombre de `.catch` qui signalent a change").toBe(12);
-    expect(CHEMINS.length).toBe(12);
+    expect(signalants.length, "le nombre de `.catch` qui signalent a change").toBe(11);
+    expect(CHEMINS.length).toBe(11);
     expect(CHEMINS.filter((c) => c[2] !== null).length, "les sept a rafraichir").toBe(7);
   });
 
