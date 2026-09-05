@@ -457,7 +457,7 @@
       <p><strong>Une clé non configurée se comporte exactement comme avant :</strong> le champ <code class="docs-inline-code">price</code>, servi, et aucune de ces deux clefs dans la réponse.</p>
       <div class="callout"><p><strong>La limite, et elle est nette : un jeu de prix par clé publique, pas un tarif par client.</strong> Un distributeur crée une clé par population — visiteurs anonymes, comptes pro, grands comptes — et sert la bonne depuis son back-office, seul endroit où l'identité du client existe. Heurix ne porte pas de tarification individuelle : un tarif négocié par client demande un moteur de règles tarifaires, qui n'est pas ce que Heurix fait.</p></div>
 
-      <h3>Contraintes de prix en langage naturel</h3>
+      <h3 id="contraintes-de-prix">Contraintes de prix en langage naturel</h3>
       <p>Une contrainte de prix formulée en langage naturel est reconnue dans la requête et convertie en filtre — « vis inox <strong>moins de 5 €</strong> » filtre sur le prix au lieu de chercher les mots « moins » et « euros » dans votre catalogue. Le français, l'anglais, l'italien, l'espagnol, l'allemand et le portugais sont reconnus.</p>
       <pre class="docs-code"><code>{"query": "vis inox", "total": 3, "hits": [...],
  "price_filter": {"min": null, "max": 5.0}}</code></pre>

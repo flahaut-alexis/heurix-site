@@ -197,6 +197,15 @@
         <p>« Écrou », « ecrou », « ECROU » : même requête normalisée, mêmes résultats. La normalisation s'applique identiquement aux documents indexés et aux requêtes, avant toute autre étape.</p>
       </div>
 
+
+      <div class="feat-card">
+        <h3 id="contrainte-de-prix-en-langage-naturel">Contrainte de prix en langage naturel</h3>
+        <p>« vis inox <strong>moins de 5 €</strong> » filtre sur le prix au lieu de chercher « moins » et « euros » dans votre catalogue. Sans cette lecture, ces mots comptent comme des termes et <strong>élargissent</strong> la recherche au lieu de la restreindre. Le fragment reconnu est retiré de la requête, donc il ne pèse pas sur la pertinence, et la contrainte revient dans la réponse pour que vous puissiez l'afficher et la laisser retirer.</p>
+        <pre class="docs-code"><code>« vis inox »           1 397 resultats
+« vis inox sous 5 »    1 425  les mots comptent
+« vis inox sous 5 € »  1 086  price_filter max 5.0</code></pre>
+        <a href="docs.html#contraintes-de-prix">Tournures reconnues →</a>
+      </div>
     </div>
 
     <!-- CETTE VIDEO EST FRANCAISE PAR CONSTRUCTION, PAS SEULEMENT PAR

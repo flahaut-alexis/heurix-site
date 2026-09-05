@@ -444,7 +444,7 @@
       <p><strong>An unconfigured key behaves exactly as before:</strong> the <code class="docs-inline-code">price</code> field, served, and neither of those two keys in the response.</p>
       <div class="callout"><p><strong>The limit, and it is a clear one: one set of prices per public key, not one price per customer.</strong> A distributor creates one key per population — anonymous visitors, trade accounts, key accounts — and serves the right one from their back office, the only place where the customer's identity exists. Heurix does not carry individual pricing: a price negotiated per customer calls for a pricing-rules engine, which is not what Heurix does.</p></div>
 
-      <h3>Natural-language price constraints</h3>
+      <h3 id="contraintes-de-prix">Natural-language price constraints</h3>
       <p>A price constraint phrased in plain language is recognized in the query and converted into a filter — "stainless screws <strong>under €2</strong>" filters on price instead of searching for the words "under" and "euros" in your catalog. English, French, Italian, Spanish, German and Portuguese phrasings are recognized.</p>
       <pre class="docs-code"><code>{"query": "stainless screws", "total": 3, "hits": [...],
  "price_filter": {"min": null, "max": 2.0}}</code></pre>

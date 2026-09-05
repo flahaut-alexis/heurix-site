@@ -195,6 +195,15 @@
         <p>"Screw", "SCREW", "screw": same normalized query, same results. Normalization applies identically to indexed documents and queries, before any other step.</p>
       </div>
 
+
+      <div class="feat-card">
+        <h3 id="natural-language-price-constraints">Natural-language price constraints</h3>
+        <p>"stainless screw <strong>max 20 EUR</strong>" filters on price instead of searching your catalog for the words "max" and "EUR". Without that reading, those words count as terms and <strong>widen</strong> the search instead of narrowing it. The recognized fragment is stripped from the query, so it never weighs on relevance, and the constraint comes back in the response so you can show it and let the shopper clear it.</p>
+        <pre class="docs-code"><code>"stainless screw"            1,656 results
+"stainless screw max 20"     2,095  the words count
+"stainless screw max 20 EUR" 1,363  price_filter max 20.0</code></pre>
+        <a href="docs.html#contraintes-de-prix">Recognized phrasings →</a>
+      </div>
     </div>
   </section>
 
