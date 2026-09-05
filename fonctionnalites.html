@@ -198,6 +198,50 @@
       </div>
 
     </div>
+
+    <!-- CETTE VIDEO EST FRANCAISE PAR CONSTRUCTION, PAS SEULEMENT PAR
+         INTERFACE, et c'est ce qui decide qu'elle reste cote FR.
+         La console filmee est en francais, mais surtout la demonstration
+         PORTE sur l'orthographe francaise : « visse » pour vis, « gougon »
+         pour goujon. Un visiteur anglophone verrait deux fautes qu'il ne
+         peut pas evaluer. Traduire l'interface ne suffirait pas -- il
+         faudrait reenregistrer avec des fautes anglaises sur un catalogue
+         anglais, et le catalogue filme est `public-demo`, verticale
+         outillage, dont il n'existe pas d'equivalent anglais. Sur `mode`,
+         ou `mode-en` existe, la question se reposerait autrement.
+         `en/fonctionnalites.html` reste donc SANS video, et c'est une
+         asymetrie assumee, pas un oubli : cette page anglaise ne porte deja
+         AUCUNE figure quand la francaise en porte trois. La video prolonge
+         cet etat, elle ne le cree pas.
+         PRECEDENT, ET C'EST POURQUOI LA DECISION EST ECRITE ICI PLUTOT QUE
+         DANS UN RAPPORT : `4a855ee8` (17 aout 2026) a retire
+         heurix-demo-outillage.mp4 d'index.html pour exactement ce motif --
+         « impossible a rendre bilingue sans reenregistrement ». Ce commit
+         NOTAIT deja que les fichiers restaient references ailleurs, « hors
+         perimetre de ce chantier » ; ils y sont restes 18 jours, jusqu'a
+         `88d1557a`. Une note en marge n'a protege personne. Celle-ci vit a
+         cote de la balise.
+         `data-src` ET NON `src` : `preload="none"` est ignore des
+         qu'`autoplay` est pose -- mesure au banc, voir `reveal.js`, qui
+         pose la source a l'approche du viewport. Sans cela, 908 ko a chaque
+         premier chargement pour une figure a 1 361 px sous la ligne de
+         flottaison.
+         `width`/`height` sont poses alors que les trois captures voisines
+         n'en ont pas : sans intrinseque, `height:auto` donne 0 px, et avec
+         un chargement differe la page sauterait a l'arrivee de la video.
+         AUCUN CHEVRON FERMANT DANS CE COMMENTAIRE : le corps indexe se
+         derive en retirant tout ce qui va d'un chevron ouvrant au premier
+         chevron fermant, donc un chevron interne ferait entrer cette prose
+         dans l'index de recherche. Voir scripts/index-recherche.py, _BALISES,
+         et le commentaire jumeau plus bas dans ce fichier. -->
+    <figure class="demo-video reveal" style="margin:16px 0 0;">
+      <video data-src="video/demo-tolerance-fautes.mp4?v=1788596431"
+             poster="video/demo-tolerance-fautes-poster.jpg?v=1788596431"
+             width="1920" height="1002"
+             autoplay loop muted playsinline preload="none"
+             aria-label="Console Heurix : la requête « visse inox » rend des vis inox, puis « gougon » rend des goujons d'ancrage, et « gougon moins de 20€ » ne laisse que des prix inférieurs à 20 €"></video>
+      <figcaption class="demo-video-caption">« visse inox », puis « gougon » : deux fautes de frappe, et les bons produits quand même. La dernière requête ajoute « moins de 20€ », et les prix au-dessus disparaissent.</figcaption>
+    </figure>
   </section>
 
   <section class="feat-group">
@@ -557,7 +601,7 @@
   </div>
 </footer>
 
-<script src="reveal.js?v=1787729347"></script>
+<script src="reveal.js?v=1788596576"></script>
 <script src="search-engine.js?v=1788523609"></script>
 <script>
   document.getElementById('year').textContent = new Date().getFullYear();

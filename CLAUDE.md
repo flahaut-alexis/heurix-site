@@ -435,6 +435,43 @@ arrière-plan, viewport à 0), **le dire** et demander une vérification humaine
 plutôt que de conclure depuis le DOM. Un DOM correct ne prouve pas un rendu
 correct.
 
+#### Une géométrie à zéro ne fait pas échouer la mesure : elle la fait mentir
+
+Trois fois entre le 31 août et le 5 septembre 2026, un `clientWidth` ou un
+`innerHeight` à zéro a produit un **verdict plausible sur une géométrie qui
+n'existait pas**. Aucune des trois n'a levé d'erreur.
+
+| | ce que la mesure a rendu | le vrai |
+|---|---|---|
+| débordement horizontal | « la page déborde » | `clientWidth` valait 0 |
+| lisibilité d'un bloc | un rapport calculé sur une largeur nulle | rien n'était peint |
+| **chargement différé d'une vidéo** | **« le différé est cassé »** | **`innerHeight` valait 0** |
+
+La troisième est la plus instructive parce que le code mesuré se comportait
+**exactement comme il devait**. Dans une fenêtre de hauteur nulle, `reveal.js`
+saute son test de rectangle (`if (h > 0)`), l'`IntersectionObserver` ne peut
+rien intersecter, le repli `scroll` sort immédiatement (`if (!hh) return`) — et
+le **filet de sécurité à 2 s révèle tout**, donc la vidéo se charge. Le
+mécanisme faisait son travail : il refuse de cacher du contenu quand il ne
+peut pas savoir. Vu depuis le journal du serveur, ça ressemblait à un différé
+inopérant.
+
+> **Une dimension à zéro ne se signale jamais comme une panne : elle se
+> propage comme une valeur.** Tout ce qui en dépend devient un nombre, et les
+> nombres se lisent comme des résultats.
+
+Le garde, et il tient en une ligne posée **avant** la mesure, pas après l'avoir
+trouvée surprenante :
+
+```js
+if (!innerWidth || !innerHeight) throw new Error('viewport a 0 -- ne rien conclure');
+```
+
+C'est la forme déjà écrite plus bas pour les instruments — refuser de répondre
+plutôt que répondre faux — appliquée à la seule grandeur dont **tout** le rendu
+dépend. Et c'est aussi un témoin négatif au sens de la section sur les
+balayages : le cas où la réponse doit être « je ne peux pas savoir ».
+
 ### Les pages HTML n'ont pas de clef de cache. Forcez le rechargement.
 
 Chaque asset porte son `?v=`. **Le document qui les référence n'en porte
@@ -2286,6 +2323,36 @@ placé devant le nombre**, et il échouait dans les six langues du parseur. La
 version française avait exactement le même trou ; personne ne l'avait vu parce
 que personne n'écrit « moins de €2 » en français.
 
+> **CE DÉFAUT EST CORRIGÉ. Mesuré en production le 5 septembre 2026 :**
+>
+> ```
+> moins de €5    586 résultats, filtre {min: None, max: 5.0}
+> moins de 5 €   586 résultats, filtre {min: None, max: 5.0}
+> ```
+>
+> Les deux notations sont désormais équivalentes, et `docs.html` a raison de
+> l'écrire. **Le récit ci-dessus reste un récit du 29 août 2026 ; il ne décrit
+> plus l'état du moteur.**
+
+**ET C'EST LA FORME DE LA SEMAINE, APPLIQUÉE À CE FICHIER-CI.** La note était
+vraie le jour où elle a été écrite. Rien dans sa rédaction ne dit qu'elle
+décrit un instant plutôt qu'un état, donc elle s'est mise à mentir au moment
+où le moteur a été réparé — sans qu'une ligne bouge ici, et sans qu'aucun
+signal existe. Elle a effectivement envoyé quelqu'un chercher un défaut
+disparu : le 5 septembre, en intégrant la vidéo, j'ai signalé `docs.html`
+comme suspecte **sur la foi de ce paragraphe**, alors que c'était le
+paragraphe qui était périmé.
+
+C'est exactement « une capacité documentée qui n'existe pas », retournée : ici
+c'est une **incapacité** documentée qui n'existe plus, et elle coûte la même
+chose — du temps passé à chercher, et un rapport faux remonté à quelqu'un.
+
+Corollaire d'écriture, et il ne coûte rien : **un récit de défaut nomme sa
+date dans le corps, pas seulement dans son titre**, et gagne une ligne d'état
+dès qu'il est corrigé. Le récit garde sa valeur — la leçon ci-dessous ne
+dépend pas de l'état du moteur — mais il cesse d'être lu comme un bulletin de
+santé.
+
 **LE DIAGNOSTIC FAUX COÛTAIT PLUS CHER QUE LE DÉFAUT.** « Ajouter les
 formulations anglaises » aurait fait écrire une dizaine de motifs qui
 existaient déjà, sans corriger le seul qui manquait — et le résultat aurait été
@@ -2577,6 +2644,70 @@ ne serait-ce que pour savoir si l'on ouvre un lot ou une ligne.
 
 C'est le critère à appliquer aux prochaines règles écrites ici : demander où
 elle s'accroche, et si la réponse est « à la vigilance », elle ne partira pas.
+
+###### Le positif connu ne suffit pas : il faut aussi un NÉGATIF connu
+
+Tout ce qui précède demande à un instrument de retrouver une chose dont on sait
+qu'elle existe. C'est nécessaire, et le 5 septembre 2026 il a été mesuré que ce
+n'est pas suffisant.
+
+Un balayage devait dire combien de temps `test-deploy@heurix.fr` est lisible
+dans une vidéo de 27,4 s. Il a rendu **99 %**. Son témoin positif passait — à
+l'image où l'adresse est visible, le détecteur la trouvait bien.
+
+**Il ne trouvait pas l'adresse. Il trouvait la barre latérale**, qui occupe la
+même bande verticale dès que la page défile. La vraie réponse est **19 %**, et
+il a fallu, pour l'obtenir, une image où l'adresse est *certainement absente*.
+
+> **Un témoin positif prouve qu'un détecteur trouve ce qu'il cherche. Il ne
+> prouve pas qu'il ne trouve que ça.**
+
+Les deux témoins mesurent deux propriétés distinctes, et aucune n'implique
+l'autre :
+
+| témoin | ce qu'il établit | ce qu'il laisse passer |
+|---|---|---|
+| **positif** | le détecteur n'est pas aveugle | qu'il réponde à tout |
+| **négatif** | il ne répond pas à autre chose | qu'il rate sa cible |
+
+**LE COMPTE DE LA SEMAINE TRANCHE.** Sept instruments faux entre le 31 août et
+le 5 septembre : tous posés avec un témoin positif ou aucun, **aucun avec un
+négatif**. Les deux qui ont menti le plus longtemps sont précisément ceux dont
+le positif passait — le balayage à 99 %, et le diff d'index porté sur `t`
+plutôt que sur `k`, où « aucun terme ajouté » était plausible et faux.
+
+**Le négatif est celui qu'on ne pense pas à poser**, parce qu'il demande de
+nommer un cas où la réponse doit être *rien* — et « rien » n'est pas ce qu'on
+cherche quand on écrit un détecteur. C'est aussi pour ça qu'il est le seul à
+attraper la famille entière des faux positifs silencieux.
+
+Deux cas fréquents où il est le seul garde possible :
+
+- **une zone d'image**, où deux contenus sans rapport partagent les mêmes
+  coordonnées selon l'état du défilement ;
+- **un motif de texte** assez lâche pour attraper un voisin — c'est la même
+  chose que le test d'appartenance par sous-chaîne documenté plus haut, qui
+  déclarait `console.html` au sitemap parce que la chaîne apparaissait dans
+  `guide-utilisation-console.html`.
+
+Et il s'accroche au geste déjà fait, ce qui est le critère du paragraphe
+ci-dessus : **on pose les deux témoins dans la même minute, avec les mêmes
+coordonnées.** Le négatif ne coûte qu'une seconde ligne — le coût est de
+*penser* à une image où la chose est absente, pas de la mesurer.
+
+La forme qui tient, et elle refuse de conclure plutôt que de répondre faux :
+
+```python
+assert detecteur(CAS_PRESENT) > seuil,  "aveugle -- ne rien conclure"
+assert detecteur(CAS_ABSENT) <= seuil,  "repond a autre chose -- ne rien conclure"
+```
+
+**Un troisième usage, découvert le même jour :** un témoin négatif qui échoue
+n'accuse pas toujours l'instrument. Sur une image censée être figée, le
+détecteur de mouvement rendait 17 au lieu de 0 — c'était le **curseur de saisie
+qui clignote**. L'instrument était juste et le seuil trop strict. Un témoin
+négatif qui tombe demande donc d'abord *pourquoi*, avant de corriger quoi que
+ce soit : il renseigne autant sur le contenu que sur l'outil.
 
 ##### Le remède est la suppression, pas la mise à jour
 

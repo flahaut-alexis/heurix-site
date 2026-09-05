@@ -20,7 +20,35 @@
   // du 26 aout -- voir le commentaire de .reveal dans styles.css.
   document.documentElement.classList.add('js-reveal');
   var liste = Array.prototype.slice.call(els);
-  function montrer(el) { el.classList.add('in'); }
+
+  // UNE VIDEO EN `data-src` RECOIT SA SOURCE ICI, ET NULLE PART AILLEURS
+  // (5 septembre 2026).
+  //
+  // POURQUOI PAS `preload="none"` : il est IGNORE des qu'`autoplay` est pose.
+  // Mesure du 4 septembre 2026, banc a trois cas lu dans le journal du
+  // serveur, les trois video a 2 000 px sous la ligne de flottaison :
+  //
+  //     autoplay + preload="none"   -> mp4 telecharge
+  //     sans autoplay, controls     -> non
+  //     data-src au lieu de src     -> non
+  //
+  // Sans ce branchement, la figure de fonctionnalites.html coutait 908 ko a
+  // CHAQUE premier chargement, pour une video a 1 361 px sous une fenetre de
+  // 900 -- et sur mobile, ou son texte fin tombe a 4,3 px CSS et ne montre
+  // donc rien de lisible, elle les coutait quand meme.
+  //
+  // POURQUOI ICI PLUTOT QUE DANS UN OBSERVATEUR A PART : les quatre chemins
+  // de ce fichier -- test de rectangle immediat, IntersectionObserver, repli
+  // `scroll`, filet de securite a 2 s -- convergent tous sur `montrer()`.
+  // Un seul point de couture, et le filet de securite couvre aussi la video :
+  // si le mecanisme casse, elle se charge au lieu de rester noire. C'est le
+  // bon sens de panne, et c'est le meme raisonnement que l'inversion du
+  // 26 aout ci-dessus -- du contenu plutot que des octets epargnes.
+  function montrer(el) {
+    el.classList.add('in');
+    var v = el.matches('video[data-src]') ? el : el.querySelector('video[data-src]');
+    if (v) { v.src = v.getAttribute('data-src'); v.removeAttribute('data-src'); }
+  }
 
   // 1. VERIFICATION IMMEDIATE PAR RECTANGLE, sans dependre d'aucun
   //    observateur. Un bloc deja dans la fenetre au chargement apparait tout
