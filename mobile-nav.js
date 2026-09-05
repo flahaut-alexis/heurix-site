@@ -54,3 +54,43 @@
     if (window.innerWidth > 1080) close();
   });
 })();
+
+
+// LA HAUTEUR DE L'EN-TETE, POSEE PLUTOT QUE SUPPOSEE (4 septembre 2026).
+//
+// `styles.css` reserve du defilement pour que les ancres n'atterrissent pas
+// sous l'en-tete sticky : `scroll-padding-top: calc(var(--hauteur-entete) +
+// 11px)`. Cette variable y valait 73, 137 ou 197 px selon deux requetes media
+// -- un profil cense suivre la hauteur reelle, et faux six fois sur treize.
+//
+// POURQUOI LE CSS NE POUVAIT PAS S'EN SORTIR SEUL, mesure : la hauteur bascule
+// de 131 a 73 px entre 540 et 550 px de large, ou AUCUNE requete media ne se
+// declenche -- c'est un ajustement de contenu. Et les deux langues divergent a
+// douze largeurs sur 57, l'en-tete anglais etant plus court. Aucune constante
+// ne peut suivre les deux.
+//
+// Le CSS garde donc le MAXIMUM mesure (169 px, soit 180 px de reserve une
+// fois les 11 px du calc ajoutes) et ces lignes posent la valeur juste. Mesure : l'ecart entre la reserve et l'en-tete tombe a 11 px sur les
+// treize largeurs testees et dans les deux langues, contre 17 a 97 px avant.
+//
+// SI CE BLOC NE TOURNE PAS -- pas de ResizeObserver, script bloque, erreur
+// plus haut -- la variable reste a 180, qui n'est jamais trop petit. Le mode
+// degrade est l'ancien comportement, en un peu plus large : la reserve vaut
+// alors 180 px partout, jamais moins que l'en-tete, et jusqu'a 106 px de trop
+// (anglais, la ou l'en-tete fait 63 px).
+//
+// IIFE SEPAREE, ET C'EST LA RAISON : le bloc au-dessus sort en `return` quand
+// la page n'a ni bouton hamburger ni menu (`if (!btn || !navRow) return;`).
+// Une page sans menu mobile a quand meme un en-tete et des ancres.
+(function () {
+  "use strict";
+  var entete = document.querySelector("header");
+  if (!entete) return;
+  function poser() {
+    document.documentElement.style.setProperty(
+      "--hauteur-entete", Math.round(entete.getBoundingClientRect().height) + "px");
+  }
+  poser();
+  if (window.ResizeObserver) new ResizeObserver(poser).observe(entete);
+  else window.addEventListener("resize", poser);
+})();
