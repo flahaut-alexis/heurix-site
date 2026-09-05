@@ -109,32 +109,53 @@
    de `.docs-section` sont retires dans le meme geste : les deux s'AJOUTENT,
    et docs aurait recu 168 px.
 
-   LA HAUTEUR DE L'EN-TETE N'EST PAS UNE CONSTANTE, elle est mesuree par
-   bande. Relevee sur fonctionnalites.html, largeur de mise en page contre
-   hauteur de `header` :
-
-       1280  800  760  700  641  640  620  600  560   ->   73 px
-        540  521  500  481  470  440  410  400  390   ->  133-137 px
-                                        385  ->  133 px
-                                   375  320  ->  197 px
-
-   Les 11 px ajoutes sont l'ecart que portait deja le 84 de `.docs-section`
+   LES 11 px AJOUTES sont l'ecart que portait deja le 84 de `.docs-section`
    sur un en-tete de 73, et que reprend `.docs-sidebar nav{ top:84px }`.
 
-   CES TROIS VALEURS SONT A REMESURER, ET LE DEBORDEMENT N'EST PAS LEUR SEULE
-   INCERTITUDE (4 septembre 2026). La note qui tenait ici disait que le 197 px
-   etait releve sur une page qui debordait horizontalement, et qu'il faudrait
-   le reprendre une fois ce debordement corrige. Le debordement EST corrige --
-   c'est le lot qui porte ce commentaire -- mais la reprise n'a pas tranche :
-   la meme page, a la meme largeur de 375 px, a rendu 197 px puis 111 px selon
-   la mesure, sans que j'aie su expliquer l'ecart. Les valeurs restent donc
-   celles du 4 septembre au matin, INCHANGEES, et la reserve reste ouverte --
-   elle porte maintenant sur la hauteur elle-meme, pas sur le debordement.
-   Tant qu'elle n'est pas levee, ne pas s'appuyer sur ces trois nombres pour
-   en deriver d'autres. */
-:root{ --hauteur-entete:73px; }
-@media (max-width:559px){ :root{ --hauteur-entete:137px; } }
-@media (max-width:379px){ :root{ --hauteur-entete:197px; } }
+   180 px EST UN PLANCHER, PAS UN PROFIL (4 septembre 2026). Ce bloc a porte
+   trois valeurs et deux requetes media -- 73 / 137 / 197 selon la largeur --
+   censees suivre la hauteur de l'en-tete. Elles sont retirees ici, et la
+   raison est mesuree :
+
+   1. LES BASCULES NE SONT PAS DES POINTS DE RUPTURE. Les requetes media de
+      cette feuille qui touchent l'en-tete sont 1200, 1080, 900, 760, 640 et
+      480. Or, DANS la bande 481-640 et sans qu'aucune ne se declenche, la
+      hauteur passe de 131 a 73 px entre 540 et 550. C'est un ajustement de
+      contenu, pas une regle : aucun alignement de seuils ne peut le suivre.
+      Les 379 et 559 qui tenaient ici venaient d'une bissection et ne
+      correspondaient a rien dans ce fichier.
+
+   2. LES DEUX LANGUES N'ONT PAS LE MEME PROFIL. Balaye de 320 a 1440 par pas
+      de 20, soit 57 largeurs : FR et EN divergent a DOUZE d'entre elles.
+      Maximum FR 169 px, maximum EN 121 px. A 430 px : FR 111, EN 63. Une
+      constante globale est donc fausse pour au moins une des deux langues
+      presque partout -- et c'est l'anglais qui etait le plus mal servi,
+      jusqu'a 97 px trop bas a 320.
+
+   CE QUE 169 GARANTIT, et c'est tout ce qu'il pretend. La variable porte une
+   HAUTEUR D'EN-TETE, pas une reserve : le `calc` ci-dessous ajoute les 11 px.
+   169 est le maximum mesure -- francais, a 320 px -- donc la reserve vaut
+   180 px sans JavaScript. Verifie sur les 57 largeurs et les deux langues :
+   elle n'est JAMAIS trop petite, donc une ancre n'est jamais cachee sous
+   l'en-tete. Elle est trop grande de 0 a 96 px en francais et de 48 a 106 px
+   en anglais, dont 96 px a 1280 -- 11 % d'un ecran de 900. C'est le mode
+   degrade, pas le mode normal.
+
+   (Une premiere version mettait 180 dans la variable : le `calc` y ajoutait
+   ses 11 px et la reserve valait 191. Mesure a l'ecran, corrigee ici.)
+
+   LA VALEUR NORMALE VIENT DU JAVASCRIPT. `mobile-nav.js` lit la hauteur reelle
+   de `header` et pose cette variable, au chargement et a chaque
+   redimensionnement. Mesure sur treize largeurs et les deux langues : l'ecart
+   tombe alors a 11 px PARTOUT, contre 17 a 97 px avec les trois anciennes
+   valeurs. Si le script ne tourne pas, il reste 180, qui est sur.
+
+   NE PAS BRANCHER AUTRE CHOSE SUR CETTE VARIABLE. Elle vaut la hauteur de
+   l'en-tete quand le script tourne, et son MAXIMUM sinon -- 169 la ou
+   l'en-tete en fait 73. `.docs-sidebar{ top:84px }` garde donc son litteral :
+   le brancher ici le descendrait de 96 px sans JavaScript. Cette variable ne
+   sert qu'a reserver du defilement, ou trop est benin. */
+:root{ --hauteur-entete:169px; }
 html{ scroll-behavior:smooth; scroll-padding-top:calc(var(--hauteur-entete) + 11px); }
 body{
   margin:0;
@@ -2154,6 +2175,15 @@ a.vertical-card:hover h4{ color:var(--blue-deep); }
 @media (max-width:900px){ .docs-layout{ grid-template-columns:1fr; gap:8px; } }
 
 .docs-sidebar{
+  /* DETTE ASSUMEE : ce 84 est la hauteur de l'en-tete ecrite une seconde fois,
+     en litteral, alors que `--hauteur-entete` existe vingt lignes plus haut.
+     NE PAS LES UNIFIER (4 septembre 2026). La variable vaut la hauteur reelle
+     quand mobile-nav.js tourne, et son MAXIMUM (169) sinon : y brancher ce
+     `top` descendrait la sidebar de 96 px chez qui n'execute pas le script.
+     Une variable pour RESERVER DU DEFILEMENT, ou trop est benin ; pas pour
+     POSITIONNER, ou trop est visible. Deux besoins qui se ressemblent et qui
+     ne tolerent pas la meme erreur. Unifier demanderait d'abord une seconde
+     variable, posee elle aussi par le script et sans valeur de repli sure. */
   position:sticky; top:84px;
   max-height:calc(100vh - 108px);
   display:flex; flex-direction:column;
