@@ -206,6 +206,22 @@ def termes(texte: str) -> set[str]:
 # Retires avant extraction : ils sont identiques d'une page a l'autre et
 # n'apprennent rien qui distingue une page d'une autre.
 _HORS_CONTENU = re.compile(r"<(script|style|nav|footer|svg)\b[\s\S]*?</\1>", re.I)
+
+# LA BANNIERE DE LANGUE, PAR SA CLASSE ET NON PAR SA BALISE.
+#
+# Meme critere que la ligne ci-dessus, applique a un cas qu'elle ne peut pas
+# attraper : ajouter `aside` a l'alternation retirerait aussi les encarts
+# editoriaux des billets de blog, qui sont du contenu et sont indexes
+# aujourd'hui (un `<aside>` sur 40 pages au 6 septembre 2026).
+#
+# CE QUI ARRIVE SANS CETTE LIGNE, mesure : la phrase « This page is available
+# in English. » entre dans l'index FRANCAIS sur les 63 pages francaises
+# appariees, a l'identique. Une recherche sur « english » les rendrait toutes
+# les 63, au meme score, sans qu'aucune ne parle d'anglais. C'est le defaut
+# que le critere ci-dessus enonce -- un texte qui ne distingue pas une page
+# d'une autre --, dans sa forme la plus pure : 63 pages, un seul texte.
+_BANNIERE_LANGUE = re.compile(
+    r'<aside class="langue-banniere"[\s\S]*?</aside>', re.I)
 _BALISES = re.compile(r"<[^>]+>")
 _ENTITES = re.compile(r"&[a-z]+;|&#\d+;")
 _ESPACES = re.compile(r"\s+")
@@ -294,7 +310,8 @@ def extraire(chemin: str) -> dict:
         (re.search(r"<title>([^<]*)</title>", src) or [None, ""])[1]).strip()
     desc = html.unescape(
         (re.search(r'<meta name="description" content="([^"]*)"', src) or [None, ""])[1]).strip()
-    corps = _ESPACES.sub(" ", _ENTITES.sub(" ", _BALISES.sub(" ", _HORS_CONTENU.sub("", src)))).strip()
+    sans_chrome = _HORS_CONTENU.sub("", _BANNIERE_LANGUE.sub("", src))
+    corps = _ESPACES.sub(" ", _ENTITES.sub(" ", _BALISES.sub(" ", sans_chrome))).strip()
     return {"p": chemin, "t": titre, "e": desc[:180], "corps": corps}
 
 
