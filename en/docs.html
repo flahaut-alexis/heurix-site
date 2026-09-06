@@ -1107,7 +1107,7 @@ curl -X POST https://api.heurix.fr/v1/events \
       <div class="docs-endpoint"><span class="docs-method docs-method-get">JS</span><code>heurix-search.js</code></div>
       <h2>Ready-to-use search bar</h2>
       <p>Don't want to code the <code class="docs-inline-code">fetch</code> call, result rendering, and facet handling yourself? A standalone JavaScript library (zero dependencies) renders a complete search bar — input, live results, clickable facets, keyboard navigation — connected to your catalog in a few lines.</p>
-      <div class="regex-reassure"><span class="regex-reassure-icone" aria-hidden="true">🚀</span><p><a href="../downloads/heurix-search.js?v=1788459301" download>Download heurix-search.js</a> — a single file, drop it wherever you want on your site.</p></div>
+      <div class="regex-reassure"><span class="regex-reassure-icone" aria-hidden="true">🚀</span><p><a href="../downloads/heurix-search.js?v=1788703415" download>Download heurix-search.js</a> — a single file, drop it wherever you want on your site.</p></div>
 
       <div class="callout callout-info" role="note">
         <svg class="callout-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="14.5" r="4.5"/><path d="M10.8 11.2 20 2"/><path d="M16.5 5.5 19 8"/><path d="M13.5 8.5 15.3 10.3"/></svg>
@@ -1139,6 +1139,8 @@ curl -X POST https://api.heurix.fr/v1/events \
         <tr><td><code class="docs-inline-code">renderItem</code></td><td>function(hit)</td><td>Customizes the HTML of each result. Receives a full hit (see <a href="#ep-search">the search reference</a>); shows name, reference, price, and out-of-stock status by default.</td></tr>
         <tr><td><code class="docs-inline-code">resultHref</code></td><td>function(hit) → string</td><td>If provided, each result becomes an <code class="docs-inline-code">&lt;a&gt;</code> link to the returned URL (e.g. the product page), rather than a plain clickable element.</td></tr>
         <tr><td><code class="docs-inline-code">onSelect</code></td><td>function(hit)</td><td>Called on click or keyboard confirmation (Enter) on a result — useful if you handle navigation yourself rather than via <code class="docs-inline-code">resultHref</code>.</td></tr>
+        <tr><td><code class="docs-inline-code">timeoutMs</code></td><td>number</td><td>How long to wait before giving up on a call, in milliseconds. Default: 3000. A shopper is waiting in front of the page: better to hand control back than to keep them hanging. <code class="docs-inline-code">0</code> disables the timeout.</td></tr>
+        <tr><td><code class="docs-inline-code">fallbackHref</code></td><td>function(query) → string</td><td>If Heurix does not answer, the panel offers the shopper to carry on at the URL you return — typically your own results page. Without this option the panel still shows a "Try again" button: it never stays a dead end.</td></tr>
         <tr><td><code class="docs-inline-code">baseUrl</code></td><td>string</td><td>Default: <code class="docs-inline-code">https://api.heurix.fr</code>. Only change this for a test environment.</td></tr>
       </table></div>
 

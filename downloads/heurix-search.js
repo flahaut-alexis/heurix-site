@@ -46,6 +46,22 @@
   var DEFAULT_LIMIT = 8;
   var STYLE_INJECTED = false;
 
+  // DELAI D'ATTENTE (6 septembre 2026). Meme valeur et meme raison que le
+  // module PrestaShop, dont le client la nomme en clair : « Ce n'est pas un
+  // appel d'arriere-plan : un visiteur attend devant sa page. Mieux vaut
+  // basculer sur le repli que de le laisser patienter dix secondes. »
+  //
+  // Mesure du 6 septembre 2026, 12 appels sur l'API de production contre un
+  // catalogue reel : min 0,223 s / mediane 0,502 s / max 0,814 s. Trois
+  // secondes laissent donc environ quatre fois la pire latence observee sur
+  // un reseau sain -- assez de marge pour un mobile lent, assez court pour
+  // qu'un visiteur ne renonce pas. Reglable par `timeoutMs`.
+  var DEFAULT_TIMEOUT_MS = 3000;
+
+  // PAUSE DU COUPE-CIRCUIT, alimentee UNIQUEMENT par les pannes transitoires
+  // -- voir creerCoupeCircuit, qui ne recoit jamais un code HTTP.
+  var PAUSE_COUPE_CIRCUIT_MS = 60000;
+
 
   // LANGUE (26 aout 2026) -- ce fichier etait integralement en francais,
   // y compris servi depuis une page anglaise : « 8 résultats trouvés »
@@ -92,6 +108,15 @@
       ariaChamp: "Rechercher un produit",
       chargement: "Recherche…",
       indispo: "Recherche indisponible pour le moment.",
+      // LE VISITEUR NE LIT JAMAIS LE DIAGNOSTIC DU MARCHAND. `indispo` reste
+      // le seul texte qu'il voit, quelle que soit la cause -- une clef
+      // rejetee ou un domaine non autorise ne sont pas de son ressort et
+      // nommer la panne ne lui donnerait aucun geste utile. Le detail part
+      // dans la console (voir journaliserPourLeMarchand), qui est l'analogue
+      // navigateur du PrestaShopLogger du module PrestaShop : deux publics,
+      // deux canaux.
+      reessayer: "Réessayer",
+      continuerSur: "Poursuivre la recherche sur le site",
       pack: "Pack recommandé",
       rupture: "Rupture",
       picks: "Nos incontournables",
@@ -121,6 +146,8 @@
       ariaChamp: "Search for a product",
       chargement: "Searching…",
       indispo: "Search is unavailable right now.",
+      reessayer: "Try again",
+      continuerSur: "Continue searching on the site",
       pack: "Recommended bundle",
       rupture: "Out of stock",
       picks: "Our picks",
@@ -201,6 +228,137 @@
       .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
   }
 
+  /* ------------------------------------------------------------------ *
+   * 1. L'EMETTEUR DE LA CLASSIFICATION.
+   *
+   * Portage de HeurixClient::rechercher() du module PrestaShop, qui separe
+   * les pannes en TRANSITOIRES et non transitoires selon une seule question :
+   * « est-ce que soixante secondes reparent ca ? »
+   *
+   * Fonction PURE et synchrone : aucun minuteur, aucun etat, aucun DOM. Elle
+   * est le seul endroit du fichier ou un code HTTP se lit, et elle rend un
+   * objet que l'armeur du coupe-circuit consomme sans jamais revoir le code.
+   * C'est ce qui empeche STRUCTURELLEMENT le 429 de redevenir une pause de
+   * 60 s -- le defaut que le chantier I1 a corrige le 5 aout 2026.
+   *
+   * UN CAS QUE LA TABLE PHP NE PEUT PAS CONTENIR, ET C'EST LE PLUS PROBABLE
+   * ICI. Une clef publique est liee a une liste de domaines. Mesure du
+   * 6 septembre 2026 contre l'API de production, depuis une origine non
+   * declaree :
+   *
+   *   HTTP 403  {"detail":"Origine 'boutique-exemple.fr' non autorisée pour
+   *              cette clé publique. Domaines autorisés : heurix.fr, ..."}
+   *
+   * HeurixClient ne peut pas connaitre ce cas : une clef SERVEUR n'envoie
+   * pas d'en-tete Origin. Recopier ses six cas aurait donc manque l'erreur
+   * de configuration la plus courante d'un widget navigateur -- un marchand
+   * qui pose le fichier sur son domaine sans l'autoriser en console. Le
+   * remede n'est pas celui d'une clef invalide, d'ou un cas distinct.
+   *
+   * Verifie le meme jour, et c'est ce qui rend tout ce bloc possible : les
+   * reponses d'erreur de l'API portent `access-control-allow-origin: *`, y
+   * compris le prevol OPTIONS. Sans cela le navigateur aurait masque le
+   * statut derriere un TypeError opaque et aucune classification n'aurait
+   * ete atteignable depuis une page.
+   *
+   * @param statut  code HTTP, ou 0 quand aucune reponse n'est parvenue
+   * @param erreur  exception de fetch, le cas echeant
+   * @param detail  champ `detail` du corps JSON d'erreur, ou null
+   */
+  function classerEchec(statut, erreur, detail) {
+    if (erreur && erreur.name === "HeurixReponseIllisible") {
+      // 200 mais illisible -> transitoire. Une reponse malformee signale un
+      // probleme cote Heurix, pas une mauvaise configuration cote marchand.
+      return { code: "illisible", transitoire: true,
+               marchand: "reponse illisible (HTTP 200 mais corps non-JSON)" };
+    }
+    if (erreur && erreur.name === "AbortError") {
+      return { code: "timeout", transitoire: true,
+               marchand: "delai depasse -- l'API n'a pas repondu a temps" };
+    }
+    if (erreur) {
+      // Panne reseau. Le navigateur ne distingue pas un DNS mort d'un refus
+      // CORS : les deux arrivent en TypeError sans statut. On ne pretend
+      // donc pas savoir laquelle, on dit ce qu'on a.
+      return { code: "reseau", transitoire: true,
+               marchand: "appel reseau echoue (" + (erreur.message || erreur) + ")" };
+    }
+    if (statut === 401) {
+      return { code: "cle-absente", transitoire: false,
+               marchand: "HTTP 401 -- en-tete Authorization absent ou malforme. " +
+                         "Verifiez la valeur passee a `apiKey`." };
+    }
+    if (statut === 403) {
+      // 403 recouvre DEUX causes de remedes opposes, et seul le corps les
+      // separe. On lit `detail` plutot que de deviner ; a defaut de corps
+      // lisible, on nomme les deux hypotheses au lieu d'en choisir une.
+      var origine = detail && /origine|origin/i.test(detail);
+      return {
+        code: origine ? "origine" : "cle-refusee",
+        transitoire: false,
+        marchand: origine
+          ? "HTTP 403 -- le domaine de cette page n'est pas autorise pour cette " +
+            "cle publique. Ajoutez-le dans votre console Heurix : " +
+            "Mon compte > Cle API. Reponse du serveur : " + detail
+          : "HTTP 403 -- cle publique rejetee." +
+            (detail ? " Reponse du serveur : " + detail : ""),
+      };
+    }
+    if (statut === 404) {
+      return { code: "catalogue", transitoire: false,
+               marchand: "HTTP 404 -- catalogue introuvable. Verifiez la valeur " +
+                         "passee a `catalog`." +
+                         (detail ? " Reponse du serveur : " + detail : "") };
+    }
+    if (statut === 429) {
+      // NON TRANSITOIRE, et c'est une revision assumee (chantier I1, 5 aout
+      // 2026, module PrestaShop puis plugin WooCommerce). Un quota epuise
+      // dure jusqu'a la fin de la periode de facturation : une pause de 60 s
+      // ne protege rien, et masque le signal que le marchand doit voir.
+      return { code: "quota", transitoire: false,
+               marchand: "HTTP 429 -- quota depasse. Verifiez votre plan." };
+    }
+    // Tout autre hors-2xx, 5xx en tete -> transitoire.
+    return { code: "http", transitoire: true,
+             marchand: "HTTP " + statut + " -- reponse inattendue de l'API." };
+  }
+
+  /* ------------------------------------------------------------------ *
+   * 2. L'ARMEUR DU COUPE-CIRCUIT.
+   *
+   * Il ne recoit QUE l'objet rendu par classerEchec, et ne lit que son champ
+   * `transitoire`. Il n'a acces a aucun code HTTP, donc il ne peut pas se
+   * remettre a mettre le 429 en pause meme si quelqu'un le voulait : le
+   * defaut est rendu inexprimable, pas interdit par convention.
+   *
+   * PORTEE : LA MEMOIRE DE LA PAGE, ET RIEN D'AUTRE. Decision du 6 septembre
+   * 2026. Les deux implementations serveur persistent leur etat parce
+   * qu'elles n'ont pas le choix -- chaque requete PHP est un process neuf,
+   * d'ou les transients WordPress et HEURIX_LAST_FAILURE en base. Ici
+   * l'inverse : une closure suffit tant que la page vit, et la pause meurt
+   * a la navigation. Le cout est borne a un delai d'attente par page ; le
+   * gain est que ce fichier continue de n'ecrire STRICTEMENT RIEN chez le
+   * visiteur -- ni sessionStorage, ni cookie. Aucune question de
+   * consentement, et aucun changement d'empreinte pour un script deja
+   * installe chez des marchands.
+   */
+  function creerCoupeCircuit(pauseMs) {
+    var ouvertJusqua = 0;
+    return {
+      armer: function (classification) {
+        if (classification && classification.transitoire) {
+          ouvertJusqua = Date.now() + pauseMs;
+        }
+      },
+      estOuvert: function () { return Date.now() < ouvertJusqua; },
+      // Un succes efface toute trace, comme signaler_succes() cote
+      // WooCommerce. « Reessayer » l'appelle aussi : un geste explicite du
+      // visiteur prime sur la pause, qui n'existe que pour lui epargner une
+      // attente qu'il vient de demander.
+      reinitialiser: function () { ouvertJusqua = 0; },
+    };
+  }
+
   function injectStyles(accentColor) {
     if (STYLE_INJECTED) return;
     STYLE_INJECTED = true;
@@ -249,6 +407,12 @@
       ".hx-search-hit-badge{position:absolute;top:6px;right:14px;font-size:9.5px;font-weight:800;letter-spacing:.03em;text-transform:uppercase;color:#fff;background:linear-gradient(135deg, var(--hx-accent), color-mix(in srgb, var(--hx-accent) 60%, #8B5CF6));border-radius:100px;padding:2px 8px;}",
       ".hx-search-state{padding:16px 14px;font-size:13.5px;color:#7B7E93;text-align:center;}",
       ".hx-search-clearfilter{font:inherit;font-size:13px;font-weight:600;cursor:pointer;background:var(--hx-accent);color:#fff;border:none;padding:8px 16px;border-radius:100px;}",
+      // Sortie de panne. Meme silhouette que .hx-search-clearfilter, qui est
+      // deja le bouton d'action du panneau -- un second style n'apprendrait
+      // rien au visiteur.
+      ".hx-search-actions{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center;margin-top:10px;}",
+      ".hx-search-retry{font:inherit;font-size:13px;font-weight:600;cursor:pointer;background:var(--hx-accent);color:#fff;border:none;padding:8px 16px;border-radius:100px;}",
+      ".hx-search-fallback-link{font-size:13px;font-weight:600;color:var(--hx-accent);text-decoration:underline;}",
       ".hx-search-fallback-label{padding:8px 14px 2px;font-size:11.5px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:#9B9EAF;}",
       // Pied "voir tous les resultats" (2 aout) -- informatif par defaut
       // (juste le compte), devient un lien cliquable seulement si le
@@ -395,6 +559,41 @@
     // valeur immediate sans configuration supplementaire a fournir.
     var seeAllHref = config.seeAllHref || null; // function(query, total) -> url
 
+    var timeoutMs = config.timeoutMs != null ? config.timeoutMs : DEFAULT_TIMEOUT_MS;
+
+    /* LE REPLI, ET CE QU'IL PEUT VOULOIR DIRE ICI (6 septembre 2026).
+     *
+     * Le module PrestaShop delegue au fournisseur natif du coeur : le
+     * visiteur obtient de vrais resultats sur la requete meme qui DECOUVRE
+     * la panne. Ce widget n'a aucun equivalent a qui rendre la main -- c'est
+     * un panneau autonome sur le site d'un marchand quelconque, il n'y a pas
+     * de « recherche native » dans son perimetre.
+     *
+     * Le repli est donc a DEUX ETAGES, et seul le premier est automatique :
+     *
+     *  - SANS AUCUNE CONFIGURATION, le panneau cesse d'etre un cul-de-sac :
+     *    un bouton « Reessayer » y apparait. C'est peu, mais c'est ce que
+     *    TOUS les marchands deja installes recoivent sans rien changer, et
+     *    ca remplace un message mort par un geste.
+     *
+     *  - `fallbackHref(query)` rend l'URL de la propre page de recherche du
+     *    marchand, vers laquelle le visiteur est invite a poursuivre. C'est
+     *    l'etage qui reproduit reellement l'apport de la v0.3.0 : de vrais
+     *    resultats, servis par le marchand lui-meme.
+     *
+     * POURQUOI UNE OPTION ET PAS UNE DEDUCTION. Ce fichier ne devine jamais
+     * une URL de site -- meme regle que resultHref, seeAllHref et groupHref,
+     * et meme forme de signature. Deduire l'adresse d'une page de recherche
+     * (un /search?q= supposé, un <form> ancetre) serait une supposition sur
+     * le site du marchand, pas une mesure : verifie le 6 septembre 2026,
+     * aucune page de heurix.fr n'instancie ce widget, donc rien dans ce
+     * depot ne permet d'etablir a quoi ressemble une integration reelle.
+     */
+    var fallbackHref = config.fallbackHref || null; // function(query) -> url
+
+    var coupeCircuit = creerCoupeCircuit(PAUSE_COUPE_CIRCUIT_MS);
+    var dernierEchec = null;   // derniere classification, pour le re-affichage
+
     // REGROUPEMENT PAR FAMILLE. Configure par le MARCHAND, pas par le
     // visiteur : une case « regrouper » dans une barre de recherche demande
     // un effort de comprehension qu'un acheteur presse n'a pas.
@@ -435,6 +634,7 @@
     var lastRequestId = 0;
     var activeIndex = -1;
     var currentHits = [];
+    var requeteEnVol = null;   // fonction d'abandon de la requete en cours
 
     function closePanel() {
       panel.hidden = true;
@@ -458,7 +658,71 @@
       annoncer(html);
     }
 
+    /* ---------------------------------------------------------------- *
+     * 3. LE LECTEUR.
+     *
+     * Il consomme une classification deja faite. Il ne regarde aucun code
+     * HTTP et n'arme rien : les deux autres responsabilites ont deja eu lieu
+     * quand il est appele.
+     *
+     * DEUX PUBLICS, DEUX CANAUX -- c'est la separation que le module
+     * PrestaShop obtient gratuitement (PrestaShopLogger d'un cote, la page
+     * de l'autre) et qu'il faut poser explicitement dans un navigateur, ou
+     * les deux publics regardent le meme ecran. Le visiteur lit un message
+     * generique et rien d'autre ; le detail actionnable part en console, la
+     * ou le marchand le trouvera.
+     */
+    function journaliserPourLeMarchand(classification) {
+      if (typeof console === "undefined") return;
+      var msg = "[Heurix] recherche indisponible -- " + classification.marchand;
+      // Panne = avertissement, configuration = erreur. Meme graduation que
+      // traiterPanne() cote PrestaShop : une erreur de configuration ne se
+      // repare pas toute seule, elle merite le niveau au-dessus.
+      if (classification.transitoire) {
+        if (console.warn) console.warn(msg);
+      } else if (console.error) {
+        console.error(msg);
+      }
+    }
+
+    function montrerEchec(classification, query) {
+      // Le visiteur ne voit jamais `classification.marchand`.
+      var html = '<div class="hx-search-state"><p style="margin:0;">' +
+        esc(TX.indispo) + "</p>" +
+        '<div class="hx-search-actions">' +
+        '<button type="button" class="hx-search-retry">' + esc(TX.reessayer) + "</button>";
+      var lien = fallbackHref ? fallbackHref(query) : null;
+      if (lien) {
+        html += '<a class="hx-search-fallback-link" href="' + esc(lien) + '">' +
+          esc(TX.continuerSur) + " →</a>";
+      }
+      panel.innerHTML = html + "</div></div>";
+      openPanel();
+      annoncer(TX.indispo);
+
+      // innerHTML detruit les ecouteurs avec les elements qu'il remplace :
+      // on recable apres, jamais avant.
+      var bouton = panel.querySelector(".hx-search-retry");
+      if (bouton) bouton.addEventListener("click", function () {
+        // Un geste explicite du visiteur prime sur la pause -- elle n'existe
+        // que pour lui epargner une attente, et il vient de la demander.
+        coupeCircuit.reinitialiser();
+        dernierEchec = null;
+        setState(TX.chargement);
+        runSearch(query);
+      });
+    }
+
     function runSearch(query) {
+      // COUPE-CIRCUIT LU AVANT TOUT APPEL. Pendant la pause, on ne paie meme
+      // pas le delai d'attente : le panneau reaffiche l'echec precedent sans
+      // toucher au reseau. C'est ce qui fait tomber les 10 appels mesures
+      // pour un mot tape a 1.
+      if (coupeCircuit.estOuvert() && dernierEchec) {
+        montrerEchec(dernierEchec, query);
+        return;
+      }
+
       var requestId = ++lastRequestId;
       var body = { q: query, limit: limit, filters: activeFilters };
       // Chantier "score d'intention" (7 aout 2026). Lu depuis
@@ -475,17 +739,58 @@
       var seuilActif = groupThreshold > 0;
       if (facetFields.length) body.facets = facetFields;
 
+      // DELAI D'ATTENTE. AbortController est garde plutot que suppose : s'il
+      // manque (navigateur ancien), `signal` reste undefined, fetch l'ignore,
+      // et le widget se comporte exactement comme avant ce chantier. Aucune
+      // installation existante ne peut casser sur son absence.
+      var controleur = typeof AbortController !== "undefined" ? new AbortController() : null;
+      var minuteur = controleur && timeoutMs > 0
+        ? setTimeout(function () { controleur.abort(); }, timeoutMs)
+        : null;
+      // Une frappe plus recente rend cette requete inutile : on coupe la
+      // precedente au lieu de la laisser occuper une connexion. Sa promesse
+      // rejettera en AbortError, mais avec un requestId perime -- le garde
+      // ci-dessous la fait sortir AVANT toute classification, donc un abandon
+      // volontaire ne peut jamais armer le coupe-circuit.
+      if (requeteEnVol) requeteEnVol();
+      requeteEnVol = controleur ? function () { controleur.abort(); } : null;
+
+      var reponseStatut = 0;
+
       fetch(baseUrl + "/v1/index/" + encodeURIComponent(config.catalog) + "/search", {
         method: "POST",
         headers: { Authorization: "Bearer " + config.apiKey, "Content-Type": "application/json" },
         body: JSON.stringify(body),
+        signal: controleur ? controleur.signal : undefined,
       })
         .then(function (res) {
-          if (!res.ok) throw new Error("HTTP " + res.status);
-          return res.json();
+          reponseStatut = res.status;
+          if (!res.ok) {
+            // On lit le corps AVANT de classer : c'est lui, et lui seul, qui
+            // separe un 403 « domaine non autorise » d'un 403 « clef
+            // rejetee ». Un corps illisible n'est pas une panne de plus, on
+            // classe alors sans detail.
+            return res.json().then(
+              function (corps) { throw { heurixDetail: corps ? corps.detail : null }; },
+              function () { throw { heurixDetail: null }; }
+            );
+          }
+          return res.json().then(null, function () {
+            var e = new Error("corps non-JSON");
+            e.name = "HeurixReponseIllisible";
+            throw e;
+          });
         })
         .then(function (data) {
           if (requestId !== lastRequestId) return; // une requete plus recente est deja partie, on ignore celle-ci
+          // LE MINUTEUR N'EST PAS DESARME ICI, et c'est voulu : l'appel
+          // groupe ci-dessous doit rester couvert par le meme budget de
+          // temps. Il l'est en fin de chaine et dans le .catch.
+          //
+          // Un succes efface toute trace d'echec anterieur -- meme regle que
+          // signaler_succes() cote WooCommerce.
+          coupeCircuit.reinitialiser();
+          dernierEchec = null;
 
           // SEUIL FRANCHI : on relance en mode groupe. Le second appel est
           // servi par le cache du moteur (89 % de gain mesure sur requete
@@ -495,12 +800,28 @@
             var corpsGroupe = { q: query, limit: limit, filters: activeFilters,
                                 group_by: groupBy };
             if (visitorId) corpsGroupe.visitor_id = visitorId;
+            // MEME SIGNAL QUE LE PREMIER APPEL, et ce n'est pas un detail :
+            // sans lui, une API qui pend sur le SECOND appel laisserait le
+            // panneau bloque exactement comme avant ce chantier -- le delai
+            // d'attente du premier appel est deja consomme a ce stade. Le
+            // minuteur n'est arme qu'une fois, donc les deux appels partagent
+            // le meme budget de temps, ce qui est la promesse faite au
+            // visiteur : trois secondes en tout, pas trois par appel.
             return fetch(baseUrl + "/v1/index/" + encodeURIComponent(config.catalog) + "/search", {
               method: "POST",
               headers: { Authorization: "Bearer " + config.apiKey, "Content-Type": "application/json" },
               body: JSON.stringify(corpsGroupe),
+              signal: controleur ? controleur.signal : undefined,
             })
               .then(function (r) { return r.ok ? r.json() : null; })
+              // CE CATCH EST LOCAL, ET IL EST NECESSAIRE. Sans lui, un
+              // abandon ou une panne sur le SECOND appel remonterait au catch
+              // global, qui afficherait l'ecran d'echec en jetant les
+              // resultats plats deja obtenus par le premier -- l'inverse
+              // exact de la regle enoncee juste en dessous. Le premier appel
+              // a reussi : la recherche n'est pas en panne, seul le confort
+              // du regroupement manque.
+              .catch(function () { return null; })
               .then(function (groupe) {
                 if (requestId !== lastRequestId) return;
                 // Si le regroupement echoue, on retombe sur l'affichage
@@ -511,9 +832,28 @@
           }
           renderResults(data);
         })
-        .catch(function () {
+        .then(function () {
+          clearTimeout(minuteur);
+        })
+        .catch(function (err) {
+          clearTimeout(minuteur);
+          // CE GARDE VIENT AVANT TOUTE CLASSIFICATION, et l'ordre est le
+          // point : une requete abandonnee parce qu'une frappe plus recente
+          // l'a remplacee rejette elle aussi en AbortError. La faire sortir
+          // ici est ce qui empeche un abandon volontaire d'armer le
+          // coupe-circuit et de faire passer une saisie rapide pour une panne.
           if (requestId !== lastRequestId) return;
-          setState(TX.indispo);
+
+          var classification = classerEchec(
+            reponseStatut,
+            err && err.heurixDetail !== undefined ? null : err,
+            err && err.heurixDetail !== undefined ? err.heurixDetail : null
+          );
+
+          journaliserPourLeMarchand(classification);   // le marchand
+          coupeCircuit.armer(classification);          // l'armeur -- transitoire seulement
+          dernierEchec = classification;
+          montrerEchec(classification, query);         // le visiteur
         });
     }
 
@@ -733,6 +1073,13 @@
       clearTimeout(debounceTimer);
       if (query.length < minChars) {
         closePanel();
+        return;
+      }
+      // Pendant la pause, afficher « Recherche… » serait mentir : aucune
+      // recherche ne partira. On montre directement l'etat d'echec, qui porte
+      // le bouton « Reessayer » -- le visiteur garde la main.
+      if (coupeCircuit.estOuvert() && dernierEchec) {
+        montrerEchec(dernierEchec, query);
         return;
       }
       setState(TX.chargement);
