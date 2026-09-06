@@ -341,6 +341,14 @@
       // sur un telephone de 390.
       ".hx-rayon-corps{display:block;}",
       "@media (min-width:721px){.hx-rayon-corps{display:grid;grid-template-columns:220px 1fr;gap:22px;align-items:start;}}",
+      // Rail vide : pas de colonne. Voir « LA COLONNE DE 220 px » plus bas.
+      // Le selecteur porte les deux classes pour ne pas dependre de l'ordre
+      // des regles -- l'annulation d'une grille par une seule classe de meme
+      // specificite tient au fichier, pas au CSS.
+      "@media (min-width:721px){.hx-rayon-corps.hx-rayon-corps-nu{display:block;}}",
+      // Sous 721 px le corps est deja en bloc : c'est la marge basse du rail
+      // qui reste, soit 18 px de vide avant le premier produit.
+      ".hx-rayon-corps-nu > .hx-rayon-rail{display:none;}",
       ".hx-rayon-rail{margin:0 0 18px;}",
       // Le rail se replie SOUS 721 px. Dix-huit cases empilees au-dessus de
       // la grille, c'est 700 px de filtres avant le premier produit sur un
@@ -484,9 +492,42 @@
 
     var elCompte = conteneur.querySelector(".hx-rayon-compte");
     var elBarre = conteneur.querySelector(".hx-rayon-barre");
+    var elCorps = conteneur.querySelector(".hx-rayon-corps");
     var elRail = conteneur.querySelector(".hx-rayon-rail");
     var elGrille = conteneur.querySelector(".hx-rayon-grille");
     var elPagination = conteneur.querySelector(".hx-rayon-pagination");
+
+    /* LA COLONNE DE 220 px NE SE RESERVE QUE SI LE RAIL LA REMPLIT.
+     *
+     * `config.facets` vaut [] par defaut, donc rendreRail() sort a sa
+     * premiere ligne et elRail reste vide en permanence. La grille perdait
+     * alors 242 px -- 220 de colonne, 22 de gouttiere -- sur les 1180 d'un
+     * rayon en 1280, soit 20 % de sa largeur, chez le marchand qui n'a rien
+     * configure. Mesure du 6 septembre 2026, navigateur reel : corps 1180,
+     * grille 938, `gridTemplateColumns` a « 220px 938px ».
+     *
+     * Le meme decalage indentait « Aucun produit dans ce rayon » et l'etat de
+     * panne, qui vivent dans la colonne de contenu : deux messages centres
+     * sur 938 px sous un rayon large de 1180, donc decentres de 121 px.
+     *
+     * L'ETAT SE DECIDE ICI PLUTOT QUE PAR `:has(.hx-rayon-rail:empty)`, et
+     * les deux raisons sont mesurables. Le rail est vide PENDANT LE
+     * CHARGEMENT meme quand les facettes sont configurees : la regle CSS
+     * ferait donc sauter la mise en page a l'arrivee de la reponse, sur
+     * precisement les rayons qui n'ont pas le defaut -- or ce fichier evite
+     * deja de vider la grille entre deux pages pour cette raison-la (voir
+     * charger()). Et `:has()` manque aux navigateurs d'avant 2023, ou le
+     * defaut resterait entier.
+     *
+     * L'appel se pose partout ou le remplissage du rail se decide : la
+     * configuration a la construction, les deux sorties de rendreRail, et la
+     * panne au premier chargement, qui n'appelle pas rendreRail du tout.
+     * Rien dans le chemin `Heurix.browse`, qui n'a ni corps ni rail.
+     */
+    function majColonneRail(vide) {
+      elCorps.classList.toggle("hx-rayon-corps-nu", vide);
+    }
+    majColonneRail(!champsFacettes.length);
 
     /* Serialise les filtres actifs.
      *
@@ -680,7 +721,9 @@
       if (actifs) {
         h = '<button type="button" class="hx-rayon-vider">' + esc(T.vider) + "</button>" + h;
       }
-      if (!h) { elRail.innerHTML = ""; return; }
+      // Facettes demandees, aucune valeur renvoyee : le rail ne se remplira
+      // pas non plus. La colonne se rend a la grille, une fois.
+      if (!h) { elRail.innerHTML = ""; majColonneRail(true); return; }
       // `railDeplie` porte l'etat CHOISI par le visiteur et survit au
       // redessin : sans lui, cocher une case replierait le rail sous le
       // doigt de qui vient de l'ouvrir -- meme classe de defaut que le
@@ -688,6 +731,7 @@
       elRail.innerHTML = '<details class="hx-rayon-repli"' + (railDeplie ? " open" : "") + ">" +
         "<summary>" + esc(T.filtres) + (actifs ? " (" + actifs + ")" : "") + "</summary>" +
         h + "</details>";
+      majColonneRail(false);
     }
 
     // Le nom du champ vient du catalogue du marchand (« famille »,
@@ -900,6 +944,11 @@
           if (detruit || id !== requeteEnCours) return;
           elCompte.textContent = T.indispo;
           etat(T.indispo);
+          // Panne au PREMIER chargement : le rail n'a jamais rien recu et ne
+          // recevra rien. Sans ceci, le message de panne et son bouton
+          // restent indentes de 242 px sous un rayon aligne a gauche. Une
+          // panne ulterieure laisse le rail garni, donc la colonne en place.
+          majColonneRail(!elRail.innerHTML);
           if (typeof console !== "undefined" && console.error) console.error("[Heurix] browsePanel:", e.message);
         });
     }
