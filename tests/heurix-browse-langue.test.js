@@ -21,7 +21,17 @@ function charger({ lang = null, hits = HITS } = {}) {
     { url: "http://localhost/" });
   global.window = dom.window;
   global.document = dom.window.document;
-  dom.window.fetch = async () => ({ json: async () => ({ category: "visserie", total: hits.length, hits }) });
+  // `ok` et `status` ont ete ajoutes le 6 septembre 2026, et le bouchon les
+  // portait deja partout ailleurs (contrat, echappement, rayon-*). Un vrai
+  // Response les a toujours ; celui-ci ne les avait pas, donc le diagnostic
+  // ajoute ce jour-la lisait `ok === undefined` et journalisait
+  // « HTTP undefined » sur des reponses saines. UN BOUCHON DOIT IMPLEMENTER
+  // LA PARTIE DU CONTRAT QUE LE CODE TESTE UTILISE : sans ces deux champs,
+  // le test mesure une propriete du bouchon et rend un verdict sur le widget.
+  dom.window.fetch = async () => ({
+    ok: true, status: 200,
+    json: async () => ({ category: "visserie", total: hits.length, hits }),
+  });
   global.fetch = dom.window.fetch;
   dom.window.eval(SOURCE);
   return dom.window;

@@ -88,12 +88,199 @@
     return String(v).replace(/["\\]/g, "\\$&");
   }
 
+  /* ==========================================================================
+   * LES QUATRE GARDES DE PANNE (6 septembre 2026).
+   *
+   * Portes depuis downloads/heurix-search.js du meme jour, lui-meme porte du
+   * module PrestaShop. Le corollaire de CLAUDE.md les a amenes ici : « quand
+   * un defaut est trouve dans un fichier de downloads/, la question suivante
+   * est qui d'autre ecrit ce motif ? ». Ce fichier ecrivait le meme : aucun
+   * delai d'attente, aucune lecture du code HTTP, aucun coupe-circuit, aucun
+   * repli.
+   *
+   * MESURE QUI A DECIDE LE CAS : demo/index.html servi depuis localhost. La
+   * cle publique de la boutique est restreinte a heurix.fr, donc l'API rend
+   * 403 « Origine non autorisee » -- et la console ne portait que
+   * « HTTP 403 », pendant que la barre de recherche corrigee nommait le
+   * domaine ET l'endroit ou l'autoriser.
+   *
+   * Les trois responsabilites restent SEPAREES, comme dans l'autre widget :
+   * un emetteur de classification (pur, seul a lire un code HTTP), un armeur
+   * de coupe-circuit (qui ne recoit jamais de code), un lecteur. C'est ce qui
+   * rend le 429-en-pause-de-60-s inexprimable plutot qu'interdit par
+   * convention -- defaut corrige au chantier I1, 5 aout 2026.
+   * ========================================================================== */
+
+  // DELAI D'ATTENTE, ET IL DIVERGE DE heurix-search.js : 5 s ici, 3 s la-bas.
+  // Verifie plutot que recopie, comme le rouge de rupture plus bas.
+  //
+  // MESURE DU 6 SEPTEMBRE 2026, 30 appels sur l'API de production, vrai
+  // catalogue, 24 produits et 4 facettes par appel : min 0,175 s /
+  // mediane 0,20 s / max 2,105 s, deux appels au-dela de 1,4 s. Chacun paie
+  // une poignee de main TLS neuve qu'un navigateur reutilise, donc ces
+  // chiffres majorent ce qu'un visiteur observe -- et c'est le bon sens
+  // d'erreur pour choisir une borne.
+  //
+  // Les 3 000 ms de la recherche (max mesure la-bas : 0,814 s sur 12 appels)
+  // ne laisseraient ici que 1,4 fois la pire latence observee. Et le prix
+  // d'un declenchement a tort n'est pas le meme : une recherche repart a la
+  // frappe suivante, un rayon coupe a tort perd toute sa marchandise ET arme
+  // une pause de 60 s. D'ou la marge plus large. Reglable par `timeoutMs`.
+  var RAYON_TIMEOUT_MS = 5000;
+
+  // PAUSE DU COUPE-CIRCUIT, alimentee UNIQUEMENT par les pannes transitoires
+  // -- voir creerCoupeCircuit, qui ne recoit jamais un code HTTP.
+  var RAYON_PAUSE_MS = 60000;
+
+  /* 1. L'EMETTEUR DE LA CLASSIFICATION.
+   *
+   * Fonction PURE et synchrone : aucun minuteur, aucun etat, aucun DOM. Elle
+   * est le seul endroit du fichier ou un code HTTP se lit, et elle rend un
+   * objet que l'armeur consomme sans jamais revoir le code. Une seule
+   * question la gouverne : « est-ce que soixante secondes reparent ca ? »
+   *
+   * RECOPIEE DE heurix-search.js PLUTOT QUE PARTAGEE, pour la raison qui vaut
+   * deja pour esc(), resoudreLangue() et estPluriel() : ces fichiers se
+   * telechargent un par un et s'hebergent chez le marchand, donc chacun tient
+   * seul. Les deux noms d'option qu'elle cite -- `apiKey` et `catalog` --
+   * sont les memes ici, donc les messages restent justes sans retouche.
+   *
+   * LE CAS QUE LA TABLE PHP NE PEUT PAS CONTENIR est aussi le plus probable
+   * ici : une clef publique est liee a une liste de domaines, et une clef
+   * SERVEUR n'envoie pas d'en-tete Origin. Mesure du 6 septembre 2026 contre
+   * l'API de production, sans Origin :
+   *
+   *   HTTP 403  {"detail":"Origine 'absente' non autorisée pour cette clé
+   *              publique. Domaines autorisés : heurix.fr, www.heurix.fr."}
+   *
+   * @param statut  code HTTP, ou 0 quand aucune reponse n'est parvenue
+   * @param erreur  exception de fetch, le cas echeant
+   * @param detail  champ `detail` du corps JSON d'erreur, ou null
+   */
+  function classerEchec(statut, erreur, detail) {
+    if (erreur && erreur.name === "HeurixReponseIllisible") {
+      // 200 mais illisible -> transitoire. Une reponse malformee signale un
+      // probleme cote Heurix, pas une mauvaise configuration cote marchand.
+      return { code: "illisible", transitoire: true,
+               marchand: "reponse illisible (HTTP 200 mais corps non-JSON)" };
+    }
+    if (erreur && erreur.name === "AbortError") {
+      return { code: "timeout", transitoire: true,
+               marchand: "delai depasse -- l'API n'a pas repondu a temps" };
+    }
+    if (erreur) {
+      // Panne reseau. Le navigateur ne distingue pas un DNS mort d'un refus
+      // CORS : les deux arrivent en TypeError sans statut. On ne pretend
+      // donc pas savoir laquelle, on dit ce qu'on a.
+      return { code: "reseau", transitoire: true,
+               marchand: "appel reseau echoue (" + (erreur.message || erreur) + ")" };
+    }
+    if (statut === 401) {
+      return { code: "cle-absente", transitoire: false,
+               marchand: "HTTP 401 -- en-tete Authorization absent ou malforme. " +
+                         "Verifiez la valeur passee a `apiKey`." };
+    }
+    if (statut === 403) {
+      // 403 recouvre DEUX causes de remedes opposes, et seul le corps les
+      // separe. On lit `detail` plutot que de deviner ; a defaut de corps
+      // lisible, on nomme les deux hypotheses au lieu d'en choisir une.
+      var origine = detail && /origine|origin/i.test(detail);
+      return {
+        code: origine ? "origine" : "cle-refusee",
+        transitoire: false,
+        marchand: origine
+          ? "HTTP 403 -- le domaine de cette page n'est pas autorise pour cette " +
+            "cle publique. Ajoutez-le dans votre console Heurix : " +
+            "Mon compte > Cle API. Reponse du serveur : " + detail
+          : "HTTP 403 -- cle publique rejetee." +
+            (detail ? " Reponse du serveur : " + detail : ""),
+      };
+    }
+    if (statut === 404) {
+      return { code: "catalogue", transitoire: false,
+               marchand: "HTTP 404 -- catalogue ou categorie introuvable. Verifiez " +
+                         "les valeurs passees a `catalog` et `category`." +
+                         (detail ? " Reponse du serveur : " + detail : "") };
+    }
+    if (statut === 429) {
+      // NON TRANSITOIRE, et c'est une revision assumee (chantier I1, 5 aout
+      // 2026, module PrestaShop puis plugin WooCommerce). Un quota epuise
+      // dure jusqu'a la fin de la periode de facturation : une pause de 60 s
+      // ne protege rien, et masque le signal que le marchand doit voir.
+      return { code: "quota", transitoire: false,
+               marchand: "HTTP 429 -- quota depasse. Verifiez votre plan." };
+    }
+    // Tout autre hors-2xx, 5xx en tete -> transitoire.
+    return { code: "http", transitoire: true,
+             marchand: "HTTP " + statut + " -- reponse inattendue de l'API." };
+  }
+
+  /* 2. L'ARMEUR DU COUPE-CIRCUIT.
+   *
+   * Il ne recoit QUE l'objet rendu par classerEchec, et ne lit que son champ
+   * `transitoire`. Il n'a acces a aucun code HTTP, donc il ne peut pas se
+   * remettre a mettre le 429 en pause meme si quelqu'un le voulait.
+   *
+   * PORTEE : LA MEMOIRE DE LA PAGE, ET RIEN D'AUTRE. Decision du 6 septembre
+   * 2026, reconduite ici. Une closure suffit tant que la page vit, et la
+   * pause meurt a la navigation. Le cout est borne a un delai d'attente par
+   * page ; le gain est que ce fichier continue de n'ecrire STRICTEMENT RIEN
+   * chez le visiteur -- ni sessionStorage, ni cookie. Aucune question de
+   * consentement, et aucun changement d'empreinte pour un script deja
+   * installe chez des marchands.
+   */
+  function creerCoupeCircuit(pauseMs) {
+    var ouvertJusqua = 0;
+    return {
+      armer: function (classification) {
+        if (classification && classification.transitoire) {
+          ouvertJusqua = Date.now() + pauseMs;
+        }
+      },
+      estOuvert: function () { return Date.now() < ouvertJusqua; },
+      // Un succes efface toute trace, comme signaler_succes() cote
+      // WooCommerce. « Reessayer » l'appelle aussi : un geste explicite du
+      // visiteur prime sur la pause, qui n'existe que pour lui epargner une
+      // attente qu'il vient de demander.
+      reinitialiser: function () { ouvertJusqua = 0; },
+    };
+  }
+
+  /* DEUX PUBLICS, DEUX CANAUX.
+   *
+   * C'est la separation que le module PrestaShop obtient gratuitement
+   * (PrestaShopLogger d'un cote, la page de l'autre) et qu'il faut poser
+   * explicitement dans un navigateur, ou les deux publics regardent le meme
+   * ecran. Le visiteur lit un message generique et rien d'autre ; le detail
+   * actionnable part en console, la ou le marchand le trouvera.
+   *
+   * Panne = avertissement, configuration = erreur. Une erreur de
+   * configuration ne se repare pas toute seule, elle merite le niveau
+   * au-dessus.
+   */
+  function journaliserPourLeMarchand(quoi, classification) {
+    if (typeof console === "undefined") return;
+    var msg = "[Heurix] " + quoi + " -- " + classification.marchand;
+    if (classification.transitoire) {
+      if (console.warn) console.warn(msg);
+    } else if (console.error) {
+      console.error(msg);
+    }
+  }
+
   var TEXTES = {
     fr: {
       vide: "<p>Aucun produit dans cette catégorie.</p>",
       rupture: "Rupture de stock",
       chargement: "Chargement…",
+      // LE VISITEUR NE LIT JAMAIS LE DIAGNOSTIC DU MARCHAND. `indispo` reste
+      // le seul texte qu'il voit, quelle que soit la cause -- une clef
+      // rejetee ou un domaine non autorise ne sont pas de son ressort, et
+      // nommer la panne ne lui donnerait aucun geste utile. Le detail part
+      // dans la console (voir journaliserPourLeMarchand).
       indispo: "Rayon indisponible pour le moment.",
+      reessayer: "Réessayer",
+      continuerSur: "Voir cette catégorie sur le site",
       rayonVide: "Aucun produit dans ce rayon.",
       reference: " référence",
       references: " références",
@@ -126,6 +313,8 @@
       rupture: "Out of stock",
       chargement: "Loading…",
       indispo: "This category is unavailable right now.",
+      reessayer: "Try again",
+      continuerSur: "View this category on the site",
       rayonVide: "No products in this category.",
       reference: " reference",
       references: " references",
@@ -228,10 +417,55 @@
     var lang = resoudreLangue(options.lang);
     var apiKey = options.apiKey || HEURIX_API_KEY;
     heurixWarnIfServerKey(apiKey);
-    return fetch(buildUrl(options), {
+    /* CE CHEMIN NE RECOIT QUE LE DIAGNOSTIC, ET C'EST UNE DECISION, PAS UN
+     * OUBLI (6 septembre 2026).
+     *
+     * `Heurix.browse` est verrouille par 35 tests de caracterisation
+     * (tests/heurix-browse-contrat.test.js), dont deux qui figent des DEFAUTS
+     * connus -- `res.ok` non verifie en tete. Ils sont figes « parce qu'un
+     * client peut en dependre », et ce fichier s'heberge chez le marchand
+     * sans jamais se mettre a jour.
+     *
+     * Ce qu'il gagne ici est donc strictement ADDITIF : la classification
+     * part en console, et rien d'autre ne bouge -- meme valeur resolue, meme
+     * DOM, meme nombre d'appels, meme rejet. Un 403 « origine » y nomme
+     * desormais le domaine et l'endroit ou l'autoriser, la ou la console ne
+     * portait rien du tout.
+     *
+     * CE QU'IL NE GAGNE PAS, ET POURQUOI. Pas de delai d'attente : une
+     * promesse qui pend deviendrait une promesse qui REJETTE, et un marchand
+     * qui a ecrit `.then(rendre)` sans `.catch` passerait d'une page qui ne
+     * se remplit pas a une erreur non rattrapee -- possiblement une alerte
+     * chez lui. Pas de coupe-circuit ni de repli non plus : ce chemin
+     * n'ecrit aucun etat d'erreur dans la page (le bloc « ce qui n'est PAS
+     * ecrit » du contrat), il n'a donc nulle part ou poser un geste.
+     *
+     * Le marchand qui veut les quatre gardes prend `Heurix.browsePanel`,
+     * dont c'est le role.
+     */
+    var appel = fetch(buildUrl(options), {
       headers: { "Authorization": "Bearer " + apiKey }
-    }).then(function (res) {
-      return res.json();
+    }).catch(function (e) {
+      journaliserPourLeMarchand("browse indisponible", classerEchec(0, e, null));
+      throw e;
+    });
+    return appel.then(function (res) {
+      // Le corps se lit UNE fois : `res.json()` consomme le flux, donc on ne
+      // peut pas le relire pour en tirer `detail` apres coup. On classe donc
+      // depuis la meme lecture que celle qu'on rend a l'appelant.
+      return res.json().then(function (data) {
+        if (!res.ok) {
+          journaliserPourLeMarchand("browse indisponible",
+            classerEchec(res.status, null, data ? data.detail : null));
+        }
+        return data;
+      }, function (e) {
+        if (!res.ok) {
+          journaliserPourLeMarchand("browse indisponible",
+            classerEchec(res.status, null, null));
+        }
+        throw e;   // un corps illisible rejetait deja avant ce chantier
+      });
     }).then(function (data) {
       if (options.containerId) {
         var container = document.getElementById(options.containerId);
@@ -309,7 +543,49 @@
       // (#C0392B) ne rend que 4,4:1 -- sous les 4,5 de AA pour du texte
       // normal. Verifie plutot que recopie.
       ".hx-rayon .heurix-out-of-stock{font-size:12.5px;font-weight:600;color:#B3261E;}",
-      ".hx-rayon-etat{padding:26px 14px;font-size:14px;color:#4A4D63;text-align:center;}",
+      // `grid-column:1/-1` : l'etat vit DANS la grille, donc il en etait une
+      // CELLULE -- 224 px sur une grille de 938, mesure le 6 septembre 2026.
+      // « Rayon indisponible pour le moment. » y passait a la ligne, et les
+      // deux actions s'empilaient au lieu de se ranger cote a cote. Le defaut
+      // est anterieur a ce chantier (« Chargement… » et « Aucun produit dans
+      // ce rayon » etaient logees a la meme enseigne) ; il ne se voyait pas
+      // sur une ligne de texte gris, et se voit des qu'un bouton s'y pose.
+      // Vu a l'ecran, pas par un test : la largeur d'une cellule ne fait
+      // echouer aucune assertion.
+      ".hx-rayon-etat{grid-column:1/-1;padding:26px 14px;font-size:14px;color:#4A4D63;text-align:center;}",
+      // SORTIE DE PANNE. Meme silhouette que le bouton de page courant, qui
+      // est deja l'action pleine de ce widget -- un troisieme style
+      // n'apprendrait rien au visiteur.
+      //
+      // CONTRASTES COMPOSES SUR BLANC, pas supposes : ce widget se pose chez
+      // le marchand, dont on ne connait pas la charte, et aucun fond n'est
+      // impose ici. L'accent par defaut #2952E3 rend 6,15:1 avec du blanc,
+      // au-dessus des 4,5 de AA -- et c'est la meme paire que
+      // .hx-rayon-pg[aria-current] emploie deja. Un marchand qui passe un
+      // `accentColor` clair casse les deux ensemble, pas seulement celui-ci.
+      ".hx-rayon-actions{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;align-items:center;margin-top:12px;}",
+      // L'ETAT DE PANNE EST LE SEUL A ETRE ALIGNE A GAUCHE, et c'est parce
+      // qu'il est le seul dont la PHRASE vit ailleurs -- dans le compte, qui
+      // porte l'aria-live et qui est aligne a gauche comme tout paragraphe.
+      // Centre et separe de 100 px, le bouton se lisait comme un element sans
+      // rapport avec le message au-dessus. Vu a l'ecran le 6 septembre 2026.
+      // Les deux autres etats (« Chargement… », « Aucun produit dans ce
+      // rayon ») restent centres : ils portent leur phrase avec eux.
+      //
+      // CETTE REGLE A ETE ECRITE AVANT `hx-rayon-corps-nu`, ET LA REUNION DES
+      // DEUX BRANCHES A CHANGE SA RAISON SANS CHANGER SON EFFET. Elle
+      // compensait alors un decalage : l'etat vivait dans la colonne de
+      // contenu, indentee de 242 px par un rail vide, et le centrage eloignait
+      // encore le bouton. La colonne rendue a la grille, le message et le
+      // bouton partagent maintenant le meme bord gauche -- l'alignement est
+      // devenu exact au lieu d'etre un moindre mal. Verifie a l'ecran APRES le
+      // rebase, parce que le crochet pre-push teste l'arbre d'avant et qu'un
+      // effet ne naissant que de la reunion lui est structurellement invisible.
+      ".hx-rayon-etat-panne{text-align:left;padding-top:0;padding-left:0;}",
+      ".hx-rayon-etat-panne .hx-rayon-actions{justify-content:flex-start;margin-top:0;}",
+      ".hx-rayon-reessayer{font:inherit;font-size:13.5px;font-weight:600;cursor:pointer;background:var(--hx-accent);color:#fff;border:none;padding:9px 18px;border-radius:100px;}",
+      ".hx-rayon-reessayer:focus-visible{outline:3px solid var(--hx-accent);outline-offset:2px;}",
+      ".hx-rayon-secours{font-size:13.5px;font-weight:600;color:var(--hx-accent);text-decoration:underline;}",
       // Pagination
       ".hx-rayon-pagination{margin-top:20px;display:flex;flex-wrap:wrap;align-items:center;gap:6px;justify-content:center;}",
       ".hx-rayon-pagination ol{display:flex;flex-wrap:wrap;gap:6px;list-style:none;margin:0;padding:0;}",
@@ -465,6 +741,28 @@
     var filtresActifs = {};   // { champ: [valeur, ...] }
     var ouSupporte = true;    // jusqu'a preuve du contraire -- voir detecterOuAbsent
     var focusARendre = null;  // selecteur de l'element a refocaliser apres redessin
+
+    var delaiMs = config.timeoutMs != null ? config.timeoutMs : RAYON_TIMEOUT_MS;
+    var coupeCircuit = creerCoupeCircuit(RAYON_PAUSE_MS);
+    var dernierEchec = null;  // derniere classification, pour le re-affichage
+    var abandonner = null;    // coupe la requete en vol, s'il y en a une
+
+    /* LE REPLI, A DEUX ETAGES, ET SEUL LE PREMIER EST AUTOMATIQUE.
+     *
+     *  - SANS AUCUNE CONFIGURATION, le rayon cesse d'etre un cul-de-sac : un
+     *    bouton « Reessayer » remplace le message mort. C'est peu, et c'est
+     *    ce que TOUS les marchands deja installes recoivent sans rien
+     *    changer.
+     *
+     *  - `fallbackHref(category)` rend l'URL de la propre page de categorie
+     *    du marchand, vers laquelle le visiteur est invite a poursuivre.
+     *
+     * POURQUOI UNE OPTION ET PAS UNE DEDUCTION. Ce fichier ne devine jamais
+     * une URL de site -- meme regle que renderItem et facetLabels. Deduire
+     * l'adresse d'une page de categorie (un /categorie/<slug> suppose) serait
+     * une supposition sur le site du marchand, pas une mesure.
+     */
+    var fallbackHref = config.fallbackHref || null; // function(category) -> url
     // Deplie d'emblee sur grand ecran, replie sur telephone. matchMedia
     // n'est lu QU'UNE FOIS, a la construction : ensuite c'est le visiteur
     // qui decide, et un changement d'orientation ne doit pas defaire son
@@ -905,26 +1203,119 @@
       if (cible) cible.focus(); else elCompte.focus();
     }
 
+    /* 3. LE LECTEUR.
+     *
+     * Il consomme une classification deja faite. Il ne regarde aucun code
+     * HTTP et n'arme rien : les deux autres responsabilites ont deja eu lieu
+     * quand il est appele. Le visiteur ne voit jamais `classification.marchand`.
+     */
+    function montrerEchec() {
+      // LA PHRASE EST ECRITE UNE FOIS, DANS LE COMPTE, ET LES ACTIONS DANS LA
+      // GRILLE. Le premier jet la posait aux deux endroits -- c'est ce que le
+      // code d'avant faisait deja (`elCompte.textContent = T.indispo` PUIS
+      // `etat(T.indispo)`), et ca ne se voyait pas tant que l'etat de panne
+      // etait une ligne de texte grise. Avec un bouton dessous, l'ecran
+      // affichait deux fois la meme phrase a 90 px d'intervalle. Vu a
+      // l'ecran le 6 septembre 2026, pas par un test : les deux textes sont
+      // justes separement, et aucune assertion ne compte les repetitions.
+      //
+      // Le compte est le bon porteur : il est role="status" aria-live, donc
+      // il ANNONCE le changement, et il n'a plus de total a montrer.
+      elCompte.textContent = T.indispo;
+      elPagination.hidden = true;
+      // Panne au PREMIER chargement : le rail n'a jamais rien recu et ne
+      // recevra rien, donc la colonne de 220 px se rend a la grille (voir
+      // « LA COLONNE DE 220 px »). Une panne ULTERIEURE laisse le rail garni,
+      // donc la colonne en place -- c'est ce que teste `!elRail.innerHTML`.
+      //
+      // L'APPEL EST ICI ET PAS DANS LE .catch, et c'est la reunion de deux
+      // branches qui l'a impose : `montrerEchec` est aussi le chemin du
+      // coupe-circuit ouvert, qui reaffiche la panne SANS repasser par le
+      // .catch. Pose la-bas, il aurait manque ce cas -- un defaut qu'aucune
+      // des deux branches ne portait, et que ni l'une ni l'autre n'aurait pu
+      // voir seule.
+      majColonneRail(!elRail.innerHTML);
+      var h = '<div class="hx-rayon-etat hx-rayon-etat-panne">' +
+        '<div class="hx-rayon-actions">' +
+        '<button type="button" class="hx-rayon-reessayer">' + esc(T.reessayer) + "</button>";
+      var lien = fallbackHref ? fallbackHref(config.category) : null;
+      if (lien) {
+        h += '<a class="hx-rayon-secours" href="' + esc(lien) + '">' +
+             esc(T.continuerSur) + " →</a>";
+      }
+      elGrille.innerHTML = h + "</div></div>";
+      // Le rail et la barre restent en place : un visiteur qui a filtre garde
+      // le moyen de DEFAIRE son filtre, ce qui est parfois le remede.
+    }
+
     function charger(n, focusApres) {
       if (detruit) return;
       page = n;
+      // COUPE-CIRCUIT LU AVANT TOUT APPEL. Pendant la pause on ne paie meme
+      // pas le delai d'attente : cocher trois facettes pendant une panne
+      // martelait l'API d'un appel par case, chacun attendant son delai.
+      if (coupeCircuit.estOuvert() && dernierEchec) {
+        montrerEchec();
+        rendreFocus();
+        return;
+      }
       var id = ++requeteEnCours;
       // Pas d'etat « chargement » qui vide la grille a chaque page : sur une
       // connexion normale la reponse arrive en moins de 200 ms, et vider la
       // grille ferait sauter la mise en page. Seul le compte l'annonce.
       if (elGrille.innerHTML === "") etat(T.chargement);
-      return fetch(urlPage(n), { headers: { Authorization: "Bearer " + config.apiKey } })
+
+      // DELAI D'ATTENTE. AbortController est garde plutot que suppose : s'il
+      // manque (navigateur ancien), `signal` reste undefined, fetch l'ignore,
+      // et le widget se comporte exactement comme avant ce chantier. Aucune
+      // installation existante ne peut casser sur son absence.
+      var controleur = typeof AbortController !== "undefined" ? new AbortController() : null;
+      var minuteur = controleur && delaiMs > 0
+        ? setTimeout(function () { controleur.abort(); }, delaiMs)
+        : null;
+      // Un changement de page, de tri ou de filtre rend la requete precedente
+      // inutile : on la coupe au lieu de la laisser occuper une connexion. Sa
+      // promesse rejettera en AbortError avec un `id` perime -- le garde des
+      // deux branches ci-dessous la fait sortir AVANT toute classification,
+      // donc un abandon volontaire ne peut jamais armer le coupe-circuit.
+      if (abandonner) abandonner();
+      abandonner = controleur ? function () { controleur.abort(); } : null;
+
+      var statut = 0;
+      return fetch(urlPage(n), {
+        headers: { Authorization: "Bearer " + config.apiKey },
+        signal: controleur ? controleur.signal : undefined,
+      })
         .then(function (r) {
           // CONTROLE DE res.ok, contrairement a Heurix.browse. Sans lui, une
           // 403 de cle invalide rend un corps JSON d'erreur, `hits` est
           // absent, et le visiteur lit « Aucun produit dans ce rayon » -- un
           // catalogue casse deguise en rayon vide. Le defaut est verrouille
           // tel quel sur l'ancien chemin ; il n'est pas reconduit ici.
-          if (!r.ok) throw new Error("HTTP " + r.status);
-          return r.json();
+          statut = r.status;
+          if (!r.ok) {
+            // On lit le corps AVANT de classer : c'est lui, et lui seul, qui
+            // separe un 403 « domaine non autorise » d'un 403 « clef
+            // rejetee ». Un corps illisible n'est pas une panne de plus, on
+            // classe alors sans detail.
+            return r.json().then(
+              function (corps) { throw { heurixDetail: corps ? corps.detail : null }; },
+              function () { throw { heurixDetail: null }; }
+            );
+          }
+          return r.json().then(null, function () {
+            var e = new Error("corps non-JSON");
+            e.name = "HeurixReponseIllisible";
+            throw e;
+          });
         })
         .then(function (data) {
+          clearTimeout(minuteur);
           if (detruit || id !== requeteEnCours) return; // une page plus recente est partie
+          // Un succes efface toute trace d'echec anterieur -- meme regle que
+          // signaler_succes() cote WooCommerce.
+          coupeCircuit.reinitialiser();
+          dernierEchec = null;
           if (detecterOuAbsent(data)) {
             // Le serveur n'applique pas le OU. On bascule en choix unique
             // par champ, DEFINITIVEMENT pour cette instance -- inutile de
@@ -941,17 +1332,50 @@
           rendre(data, focusApres);
         })
         .catch(function (e) {
+          clearTimeout(minuteur);
+          // CE GARDE VIENT AVANT TOUTE CLASSIFICATION, et l'ordre est le
+          // point : une requete abandonnee parce qu'un filtre plus recent l'a
+          // remplacee rejette elle aussi en AbortError. La faire sortir ici
+          // est ce qui empeche un abandon volontaire d'armer le coupe-circuit
+          // et de faire passer trois cases cochees vite pour une panne.
           if (detruit || id !== requeteEnCours) return;
-          elCompte.textContent = T.indispo;
-          etat(T.indispo);
-          // Panne au PREMIER chargement : le rail n'a jamais rien recu et ne
-          // recevra rien. Sans ceci, le message de panne et son bouton
-          // restent indentes de 242 px sous un rayon aligne a gauche. Une
-          // panne ulterieure laisse le rail garni, donc la colonne en place.
-          majColonneRail(!elRail.innerHTML);
-          if (typeof console !== "undefined" && console.error) console.error("[Heurix] browsePanel:", e.message);
+
+          var classification = classerEchec(
+            statut,
+            e && e.heurixDetail !== undefined ? null : e,
+            e && e.heurixDetail !== undefined ? e.heurixDetail : null
+          );
+
+          journaliserPourLeMarchand("rayon indisponible", classification);  // le marchand
+          coupeCircuit.armer(classification);          // l'armeur -- transitoire seulement
+          dernierEchec = classification;
+          montrerEchec();                              // le visiteur
+          rendreFocus();
         });
     }
+
+    /* LE BOUTON « REESSAYER » EST DELEGUE SUR LA GRILLE, PAS CABLE SUR LUI.
+     *
+     * `montrerEchec` reconstruit elGrille par innerHTML, qui detruit les
+     * ecouteurs avec les elements qu'il remplace. La grille, elle, survit a
+     * ses enfants -- c'est le conteneur stable, comme elPagination et elRail
+     * juste en dessous. Cabler le bouton apres chaque rendu marcherait aussi,
+     * et se reoublierait au premier rendu ajoute.
+     */
+    elGrille.addEventListener("click", function (e) {
+      var b = e.target.closest ? e.target.closest(".hx-rayon-reessayer") : null;
+      if (!b) return;
+      // Un geste explicite du visiteur prime sur la pause -- elle n'existe
+      // que pour lui epargner une attente, et il vient de la demander.
+      coupeCircuit.reinitialiser();
+      dernierEchec = null;
+      elGrille.innerHTML = "";     // force l'etat « Chargement… » ci-dessous
+      // Le focus revient au compte : le bouton qu'on vient d'actionner est
+      // detruit par le rendu, et le compte porte tabindex="-1" et l'aria-live
+      // qui annoncera le resultat -- meme reprise que la pagination.
+      focusARendre = ".hx-rayon-compte";
+      charger(page);
+    });
 
     elPagination.addEventListener("click", function (e) {
       var b = e.target.closest ? e.target.closest("[data-page]") : null;

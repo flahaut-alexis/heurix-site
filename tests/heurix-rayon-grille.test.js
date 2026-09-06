@@ -138,9 +138,19 @@ describe("browsePanel — la grille", () => {
     const { win, doc } = charger({ echec: 403 });
     win.Heurix.browsePanel(BASE);
     await souffle();
-    const t = doc.querySelector(".hx-rayon-etat").textContent;
+    // L'ASSERTION PORTE SUR CE QUE LE VISITEUR LIT, PAS SUR UN ELEMENT.
+    // Elle visait `.hx-rayon-etat` seul jusqu'au 6 septembre 2026, ou la
+    // phrase a demenage vers le compte -- qui porte l'aria-live, et ou elle
+    // n'est plus ecrite deux fois. L'intention du test n'a pas change ; le
+    // porteur, si. Nommer l'element aurait fait tomber un test juste sur un
+    // deplacement de texte, et l'aurait fait reecrire trop etroit.
+    const t = doc.querySelector(".hx-rayon-compte").textContent + " " +
+              doc.querySelector(".hx-rayon-etat").textContent;
     expect(t).toContain("indisponible");
     expect(t).not.toContain("Aucun produit");
+    // ET IL RESTE UN GESTE : c'est la difference avec l'etat d'avant, ou
+    // l'erreur etait un cul-de-sac.
+    expect(doc.querySelector(".hx-rayon-reessayer")).toBeTruthy();
   });
 });
 

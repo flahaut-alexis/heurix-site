@@ -72,8 +72,22 @@
     // une consigne de configuration, montree a un prospect. Le detail
     // technique reste, mais dans la console : c'est la qu'un developpeur
     // regarde, et pas un visiteur.
-    catalogueKo:  "Catalogue temporarily unavailable. Search still works — " +
-                  "try a reference above.",
+    //
+    // ET IL NE PROMET PLUS QUE LA RECHERCHE MARCHE (6 septembre 2026). Il
+    // disait « Search still works — try a reference above ». C'etait un
+    // CONSEIL, donc verifiable, et faux dans le cas ORDINAIRE : les deux
+    // widgets partagent la clef, l'origine, le catalogue, le quota et l'API,
+    // donc les cinq causes de panne les emportent ENSEMBLE. Mesure du meme
+    // jour sur demo/index.html servi depuis localhost -- la clef est
+    // restreinte a heurix.fr, l'API rend 403 aux deux, et cette phrase
+    // envoyait le visiteur vers une barre de recherche aussi morte que le
+    // rayon.
+    //
+    // Le message ne renvoie donc plus vers rien. Une phrase qui ne promet
+    // rien ne peut pas mentir ; celle-ci ne demandait pas a etre corrigee
+    // mais a etre RETIREE, faute d'un etat que cette page saurait lire pour
+    // la conditionner.
+    catalogueKo:  "Catalogue temporarily unavailable.",
     // `references` et `rayonVide` ont ete retires le 29 aout 2026 : le
     // compte et l'etat vide du rayon appartiennent maintenant au widget,
     // qui les rend dans les deux langues. Les garder ici aurait laisse
@@ -91,8 +105,7 @@
     ajouter:      "Ajouter au panier",
     ajoute:       "Ajouté \u2713",
     aucunProduit: "Aucun produit.",
-    catalogueKo:  "Catalogue momentanément indisponible. La recherche fonctionne " +
-                  "toujours — essayez une référence ci-dessus.",
+    catalogueKo:  "Catalogue momentanément indisponible.",
     rayonKo:      "Rayon indisponible pour le moment.",
     placeholder:  "Référence, dimension, norme… (ex. M8x20, DIN 933)",
     rayons: { visserie: "Visserie", boulonnerie: "Boulonnerie", fixation: "Fixation",
