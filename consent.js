@@ -51,6 +51,42 @@
   var LANGUE = (document.documentElement.lang || "fr").slice(0, 2).toLowerCase();
   var EN = LANGUE === "en";
 
+  /* RACINE DU SITE — LE MODULE SE SITUE LUI-MÊME (6 septembre 2026).
+   *
+   * Le lien de politique était construit avec `window.HEURIX_RACINE`, un global
+   * posé par chaque page. Deux défauts distincts en sont sortis, et le second
+   * est celui qui rend cette dérivation nécessaire :
+   *
+   *   - `lienPolitique` valait "privacy.html" côté EN, résolu depuis la racine
+   *     du SITE. La cible était donc /privacy.html, qui n'existe pas — le
+   *     fichier est en/privacy.html. 53 pages anglaises servaient ce 404 ;
+   *   - le global est SILENCIEUSEMENT FACULTATIF. 35 pages ne le déclarent pas.
+   *     Sur les 8 pages de en/solutions/ ça donnait en/solutions/privacy.html,
+   *     et sur 4 pages de en/ ça donnait la bonne cible PAR ACCIDENT, l'oubli
+   *     d'un global compensant l'erreur de l'autre.
+   *
+   * Corriger la seule constante aurait donc réparé 53 pages en cassant 4, ce
+   * qu'aucune relecture du diff n'aurait montré.
+   *
+   * consent.js vit à la racine du site : l'URL par laquelle il vient d'être
+   * chargé DONNE cette racine, quelle que soit la profondeur de la page. Le
+   * périmètre se dérive au lieu de se déclarer page par page — une page créée
+   * demain est couverte sans que personne y pense.
+   *
+   * `document.currentScript` se lit ICI, à l'évaluation du module : il vaut
+   * null dès qu'on le consulte depuis un rappel différé, et le lien n'est
+   * construit que plus tard, à l'affichage du bandeau.
+   *
+   * HEURIX_RACINE reste le repli, et n'a plus d'autre emploi dans le dépôt. Il
+   * ne sert que si `currentScript` est absent — ce qui n'arrive pour aucune des
+   * pages du site, toutes chargeant ce fichier par un <script src> classique.
+   */
+  var RACINE_SITE = (function () {
+    var moi = document.currentScript;
+    if (moi && moi.src) return new URL(".", moi.src).href;
+    return window.HEURIX_RACINE || "";
+  })();
+
   var T = EN ? {
     titre: "Your privacy preferences",
     intro: "We use trackers to measure site traffic and the effectiveness of " +
@@ -60,7 +96,10 @@
     enregistrer: "Save my choices",
     accepter: "Accept all",
     politique: "Privacy policy",
-    lienPolitique: "privacy.html",
+    // Relatif à RACINE_SITE, donc préfixé par la langue. La version anglaise
+    // de la politique vit sous en/, la française à la racine : ce n'est pas
+    // une symétrie, et l'écrire ici évite de la supposer ailleurs.
+    lienPolitique: "en/privacy.html",
     toujoursActif: "(always on)",
     categories: [
       { cle: "necessaire", titre: "Strictly necessary", obligatoire: true,
@@ -243,8 +282,8 @@
           : "<button type='button' class='consent-btn' data-action='personnaliser'>" + T.personnaliser + "</button>") +
         "<button type='button' class='consent-btn' data-action='accepter'>" + T.accepter + "</button>" +
       "</div>" +
-      "<p class='consent-lien'><a href='" + (window.HEURIX_RACINE || "") +
-        T.lienPolitique + "'>" + T.politique + "</a></p>" +
+      "<p class='consent-lien'><a href='" + RACINE_SITE + T.lienPolitique +
+        "'>" + T.politique + "</a></p>" +
       "</div>";
 
     fond.innerHTML = html;
