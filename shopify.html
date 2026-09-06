@@ -4,13 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Moteur de recherche pour Shopify — Heurix</title>
-<meta name="description" content="Améliorez la recherche Shopify sur les catalogues techniques : tolérance aux fautes, graphies de références, gros catalogues. Extension de thème disponible.">
+<meta name="description" content="Améliorez la recherche Shopify sur les catalogues techniques : tolérance aux fautes, graphies de références, gros catalogues. Intégration via l'API REST documentée.">
 <link rel="alternate" hreflang="fr" href="https://heurix.fr/shopify.html">
 <link rel="alternate" hreflang="en" href="https://heurix.fr/en/shopify.html">
 <link rel="alternate" hreflang="x-default" href="https://heurix.fr/shopify.html">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Moteur de recherche pour Shopify — Heurix">
-<meta property="og:description" content="Améliorez la recherche Shopify sur les catalogues techniques : tolérance aux fautes, graphies de références, gros catalogues. Extension de thème disponible.">
+<meta property="og:description" content="Améliorez la recherche Shopify sur les catalogues techniques : tolérance aux fautes, graphies de références, gros catalogues. Intégration via l'API REST documentée.">
 <meta property="og:image" content="https://heurix.fr/og-image.png">
 <meta property="og:url" content="https://heurix.fr/shopify.html">
 <meta property="og:locale" content="fr_FR">
@@ -116,7 +116,7 @@
               <a class="nav-row" href="integrations.html"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></span><span><span class="nav-row-t">Int&eacute;grations</span> <span class="nav-row-d">Des guides techniques avec du vrai code.</span></span></a>
               <a class="nav-row" href="prestashop.html"><span class="nav-row-icn marque" aria-hidden="true" style="background:rgba(223,0,103,.12); color:#CB005E;">P</span><span><span class="nav-row-t">PrestaShop</span> <span class="nav-row-d">Module natif, via ProductSearchProviderInterface.</span></span></a>
               <a class="nav-row" href="woocommerce.html"><span class="nav-row-icn marque" aria-hidden="true" style="background:rgba(127,84,179,.12); color:#7F54B3;">W</span><span><span class="nav-row-t">WooCommerce</span> <span class="nav-row-d">Extension WordPress, via le hook pre_get_posts.</span></span></a>
-              <a class="nav-row" href="shopify.html"><span class="nav-row-icn marque" aria-hidden="true" style="background:rgba(94,142,62,.14); color:#4E7533;">S</span><span><span class="nav-row-t">Shopify</span> <span class="nav-row-d">Rendu par votre th&egrave;me, via la Section Rendering API.</span></span></a>
+              <a class="nav-row" href="shopify.html"><span class="nav-row-icn marque" aria-hidden="true" style="background:rgba(94,142,62,.14); color:#4E7533;">S</span><span><span class="nav-row-t">Shopify</span> <span class="nav-row-d">Int&eacute;gration via l&rsquo;API REST document&eacute;e.</span></span></a>
             </div>
           </div>
         </div>
@@ -183,21 +183,21 @@
       <h2>Où en est l'intégration Shopify</h2>
       <div class="int-grid">
       <div class="int-card">
-        <h3>Une extension de thème existe</h3>
-        <p>Elle intercepte la recherche et interroge Heurix, avec une clé publique, jamais votre clé serveur, qui serait lisible par les visiteurs.</p>
+        <h3>Ce qui existe : l'API</h3>
+        <p>Heurix se branche sur Shopify par son API REST documentée. Il n'y a ni extension de thème, ni application Heurix sur l'App Store : l'intégration se fait avec le code du guide.</p>
       </div>
       <div class="int-card">
-        <h3>Le rendu par Shopify</h3>
-        <p>L'objectif est que Shopify dessine lui-même la grille avec votre thème, via sa Section Rendering API : vous ne refaites rien.</p>
+        <h3>Le relais qui garde votre clé</h3>
+        <p>Un thème Shopify ne peut pas détenir de clé secrète. Le guide passe par une fonction serverless qui la détient et sert de relais : votre clé n'est jamais lisible par les visiteurs.</p>
       </div>
       <div class="int-card">
-        <h3>Transparence</h3>
-        <p>L'application complète (installation en un clic depuis l'App Store) demande une validation par Shopify et n'est pas encore publiée. Si vous êtes sur Shopify avec un catalogue technique, parlons-en : votre cas concret est exactement ce qui décidera du calendrier.</p>
+        <h3>Non vérifié à ce jour</h3>
+        <p>Nous n'avons pas encore branché Heurix sur une boutique Shopify. Le guide décrit l'architecture ; il n'a pas été éprouvé en production. Écrivez-nous plutôt que de suivre une recette approximative.</p>
       </div>
       </div>
       <p class="section-lede" style="margin-top:22px; max-width:640px;">PrestaShop et WooCommerce sont plus avancés. Si vous avez le choix de la plateforme, l'intégration y est plus directe aujourd'hui.</p>
-      <p style="margin-top:8px;"><a class="btn" href="mailto:contact@heurix.fr?subject=Module%20shopify">Demander le module</a>
-      <a class="btn btn-ghost" href="faq.html">Questions fréquentes</a></p>
+      <p style="margin-top:8px;"><a class="btn" href="mailto:contact@heurix.fr?subject=Catalogue%20shopify">Parler de votre catalogue Shopify</a>
+      <a class="btn btn-ghost" href="integrations.html">Voir le guide Shopify</a></p>
     </div>
   </section>
 </main>

@@ -4,13 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Search engine for Shopify — Heurix</title>
-<meta name="description" content="Improve Shopify search on technical catalogs: typo tolerance, reference spellings, large catalogs. Theme extension available.">
+<meta name="description" content="Improve Shopify search on technical catalogs: typo tolerance, reference spellings, large catalogs. Integration via the documented REST API.">
 <link rel="alternate" hreflang="fr" href="https://heurix.fr/shopify.html">
 <link rel="alternate" hreflang="en" href="https://heurix.fr/en/shopify.html">
 <link rel="alternate" hreflang="x-default" href="https://heurix.fr/shopify.html">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Search engine for Shopify — Heurix">
-<meta property="og:description" content="Improve Shopify search on technical catalogs: typo tolerance, reference spellings, large catalogs. Theme extension available.">
+<meta property="og:description" content="Improve Shopify search on technical catalogs: typo tolerance, reference spellings, large catalogs. Integration via the documented REST API.">
 <meta property="og:image" content="https://heurix.fr/og-image.png">
 <meta property="og:url" content="https://heurix.fr/en/shopify.html">
 <meta property="og:locale" content="en_US">
@@ -121,7 +121,7 @@
               <a class="nav-row" href="integrations.html"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></span><span><span class="nav-row-t">Integrations</span> <span class="nav-row-d">Technical guides with real code.</span></span></a>
               <a class="nav-row" href="prestashop.html"><span class="nav-row-icn marque" aria-hidden="true" style="background:rgba(223,0,103,.12); color:#CB005E;">P</span><span><span class="nav-row-t">PrestaShop</span> <span class="nav-row-d">Native module, via ProductSearchProviderInterface.</span></span></a>
               <a class="nav-row" href="woocommerce.html"><span class="nav-row-icn marque" aria-hidden="true" style="background:rgba(127,84,179,.12); color:#7F54B3;">W</span><span><span class="nav-row-t">WooCommerce</span> <span class="nav-row-d">WordPress extension, via the pre_get_posts hook.</span></span></a>
-              <a class="nav-row" href="shopify.html"><span class="nav-row-icn marque" aria-hidden="true" style="background:rgba(94,142,62,.14); color:#4E7533;">S</span><span><span class="nav-row-t">Shopify</span> <span class="nav-row-d">Rendered by your theme, via the Section Rendering API.</span></span></a>
+              <a class="nav-row" href="shopify.html"><span class="nav-row-icn marque" aria-hidden="true" style="background:rgba(94,142,62,.14); color:#4E7533;">S</span><span><span class="nav-row-t">Shopify</span> <span class="nav-row-d">Integration via the documented REST API.</span></span></a>
             </div>
           </div>
         </div>
@@ -188,21 +188,21 @@
       <h2>Where the Shopify integration stands</h2>
       <div class="int-grid">
       <div class="int-card">
-        <h3>A theme extension exists</h3>
-        <p>It intercepts search and queries Heurix, using a public key, never your server key, which visitors could read.</p>
+        <h3>What exists: the API</h3>
+        <p>Heurix connects to Shopify through its documented REST API. There is no theme extension and no Heurix app on the App Store: you integrate with the code in the guide.</p>
       </div>
       <div class="int-card">
-        <h3>Rendering stays with Shopify</h3>
-        <p>The goal is for Shopify to draw the grid itself with your theme, via its Section Rendering API: you rebuild nothing.</p>
+        <h3>The relay that keeps your key</h3>
+        <p>A Shopify theme cannot hold a secret key. The guide goes through a serverless function that holds it and acts as a relay: your key is never readable by visitors.</p>
       </div>
       <div class="int-card">
-        <h3>Transparency</h3>
-        <p>The full app (one-click install from the App Store) requires Shopify's review and isn't published yet. If you're on Shopify with a technical catalog, let's talk: your specific case is exactly what will decide the timeline.</p>
+        <h3>Not verified to date</h3>
+        <p>We have not yet connected Heurix to a Shopify store. The guide describes the architecture; it has not been proven in production. Write to us rather than following an approximate recipe.</p>
       </div>
       </div>
       <p class="section-lede" style="margin-top:22px; max-width:640px;">PrestaShop and WooCommerce are further along. If you have a choice of platform, integration is more direct there today.</p>
-      <p style="margin-top:8px;"><a class="btn" href="mailto:contact@heurix.fr?subject=Module%20shopify">Request the module</a>
-      <a class="btn btn-ghost" href="faq.html">FAQ</a></p>
+      <p style="margin-top:8px;"><a class="btn" href="mailto:contact@heurix.fr?subject=Catalogue%20shopify">Talk about your Shopify catalog</a>
+      <a class="btn btn-ghost" href="integrations.html">See the Shopify guide</a></p>
     </div>
   </section>
 </main>
