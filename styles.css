@@ -2708,6 +2708,8 @@ body.docs-dark .regex-copy > p{ color:var(--ink-muted-on-dark); }
      .kpi-tendance-ref
      .kpi-tendance-stable
      .lang-switch
+     .langue-banniere
+     .langue-banniere-non
      .lede
      .mobile-nav-toggle
      .nav-drop-btn
@@ -8337,3 +8339,62 @@ body.docs-dark .addon-net{ color:var(--ink-on-dark); }
 /* markup n'a pas bouge.                                                */
 .why-card-highlight{ border-color:var(--blue); }
 body.docs-dark .why-card-highlight{ border-color:var(--blue); }
+
+/* ------------------------------------------------------------------ */
+/* Banniere qui propose l'autre langue                                  */
+/*                                                                      */
+/* ELLE PEINT SON PROPRE FOND, et ce n'est pas un choix esthetique.     */
+/* 124 des 126 pages appariees sont `body.docs-dark` (degrade radial    */
+/* #4C3FE0 -> #101B4D), les 2 autres -- 404.html et en/404.html -- sont */
+/* sur fond clair. Un fond transparent obligerait a mesurer le contraste*/
+/* contre trois arrets de degrade PLUS le blanc, et a le remesurer a    */
+/* chaque retouche du degrade. Un aplat opaque le fait mesurer une fois.*/
+/* C'est la meme decision que `header`, juste au-dessous, qui peint son */
+/* fond clair a 92 % sur les memes pages sombres.                       */
+/*                                                                      */
+/* Contrastes mesures sur #EEF1FF (var(--blue-tint)), seuil AA 4,5:1 :  */
+/*   texte   --ink        #12142B   16,08:1                             */
+/*   lien    --blue-deep  #3F52E8    5,21:1                             */
+/*   refus   --ink-muted  #5B5E76    5,64:1   <- le plancher            */
+/*                                                                      */
+/* PAS DE position:fixed, ET C'EST L'INVARIANT DU COMPOSANT. En flux,   */
+/* la banniere fait partie de la premiere mise en page (revelee par un  */
+/* extrait synchrone, voir langue-banniere.js) : zero decalage. En      */
+/* fixed, elle serait a zero decalage AUSSI -- mais elle recouvrirait   */
+/* l'en-tete collant, c'est-a-dire la couche qu'on refuse. Les deux     */
+/* satisfont le CLS ; une seule ne masque rien.                         */
+/* ------------------------------------------------------------------ */
+.langue-banniere{
+  background:var(--blue-tint);
+  border-bottom:1px solid #D8DEFF;
+  color:var(--ink);
+}
+.langue-banniere-corps{
+  display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+  max-width:1360px; margin:0 auto; padding:9px 48px;
+  font-size:13.5px; line-height:1.5;
+}
+.langue-banniere-lien{ color:var(--blue-deep); font-weight:700; text-decoration:underline; }
+/* `margin-left:auto` pousse le refus a l'oppose du lien. Il reste en un */
+/* clic et sans sous-menu -- meme exigence que le refus du bandeau de    */
+/* consentement, pour la meme raison.                                    */
+.langue-banniere-non{
+  margin-left:auto;
+  background:none; border:0; padding:0;
+  color:var(--ink-muted); font:inherit; text-decoration:underline; cursor:pointer;
+}
+@media (max-width:1200px){ .langue-banniere-corps{ padding:9px 28px; } }
+@media (max-width:640px){
+  /* Sous 640px l'en-tete passe deja en `flex-wrap`. Le refus perd son   */
+  /* `margin-left:auto` : colle a droite sur une ligne a lui, il serait  */
+  /* separe du texte qu'il refuse.                                       */
+  .langue-banniere-non{ margin-left:0; }
+}
+@media (max-width:480px){ .langue-banniere-corps{ padding:9px 16px; gap:10px; } }
+/* Cible tactile de 44px, comme `.lang-switch`, `.mobile-nav-toggle` et  */
+/* `.search-trigger` sous `pointer:coarse`.                              */
+@media (pointer:coarse){
+  .langue-banniere-lien, .langue-banniere-non{
+    min-height:44px; display:inline-flex; align-items:center;
+  }
+}

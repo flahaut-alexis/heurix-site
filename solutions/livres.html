@@ -20,7 +20,7 @@
 <meta name="twitter:image" content="https://heurix.fr/img/solutions/livres.jpg">
 <link rel="icon" type="image/png" href="../favicon-32.png">
 <link rel="apple-touch-icon" href="../apple-touch-icon.png">
-<link rel="stylesheet" href="../styles.css?v=1788598988">
+<link rel="stylesheet" href="../styles.css?v=1788685422">
 <link rel="canonical" href="https://heurix.fr/solutions/livres.html">
 <script type="application/ld+json">
 {
@@ -39,6 +39,15 @@
 </script>
 </head>
 <body class="docs-dark">
+<!-- Banniere de langue : regle de declenchement, cle et exemption CNIL dans langue-banniere.js. -->
+<aside class="langue-banniere" id="langue-banniere" lang="en" hidden>
+  <div class="langue-banniere-corps">
+    <span>This page is available in English.</span>
+    <a class="langue-banniere-lien" href="../en/solutions/livres.html">Read in English</a>
+    <button type="button" class="langue-banniere-non">No thanks</button>
+  </div>
+</aside>
+<script>(function(){var b=document.getElementById('langue-banniere');if(!b)return;var pageFr=(document.documentElement.lang||'fr').slice(0,2).toLowerCase()==='fr',l=navigator.languages||[navigator.language||''],litFr=false;for(var i=0;i<l.length;i++)if(String(l[i]).slice(0,2).toLowerCase()==='fr')litFr=true;if(litFr===pageFr)return;try{if(localStorage.getItem('heurix_langue'))return;}catch(e){}b.hidden=false;})();</script>
 <header>
   <div class="header-top">
     <nav class="header-top-inner">
@@ -258,5 +267,6 @@
 </div>
 <script src="../pricing-nudge.js?v=1787906653"></script>
 <script>window.HEURIX_RACINE='../';</script><script src="../consent.js?v=1788689121"></script>
+<script src="../langue-banniere.js?v=1788686174"></script>
 </body>
 </html>
