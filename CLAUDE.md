@@ -1520,16 +1520,24 @@ CI de ce commit n'a pas tourné et ne peut pas avoir tourné. Il n'y a rien à
 interroger.
 
 La quatrième voie n'est donc pas « vérifier l'état de la CI » mais **exécuter
-ses contrôles en local avant de pousser**. Mesuré, les quatre blocs `run:` de
-`CI.yml` rejoués sur cette machine :
+ses contrôles en local avant de pousser**. Mesuré, les **cinq** blocs `run:` de
+`CI.yml` — quatre rejoués sur cette machine, le cinquième sauté sciemment :
 
 | bloc | durée |
 |---|---|
 | `Index de recherche a jour` | 2,5 s |
-| `Suite de tests` | 15,6 s |
+| `Suite de tests` — `npm ci` | **sauté** (voir plus bas) |
+| `Suite de tests` — `npx vitest run` | 15,6 s |
 | `Clefs de cache` — clef bougée | 0,1 s |
 | `Clefs de cache` — clef unique | 1,0 s |
-| **total** | **19,4 s** |
+| **total des quatre exécutés** | **19,4 s** |
+
+**« Les quatre blocs » était faux, corrigé le 7 septembre 2026.** Il y en a
+cinq ; le tableau en listait quatre parce qu'il omettait le sauté au lieu de le
+déclarer. C'est le défaut que le crochet portait au même moment sur sa ligne
+`SAUTÉ` : dans les deux cas un contrôle volontairement non exécuté sortait de
+la population au lieu d'y figurer marqué. Un bloc omis se lit comme un bloc qui
+n'existe pas ; un bloc marqué se lit comme ce qu'il est.
 
 Tous verts. C'est **moins que les 36 s de la CI distante**, qui paie en plus son
 checkout et son installation.
