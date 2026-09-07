@@ -720,6 +720,27 @@
     "à": "at",
     "tous": "all",
     "Révoquer": "Revoke",
+    // ------------------------------------ CODE DE LIAISON (7 septembre 2026)
+    //
+    // LES SEPT PREMIERES SONT DES NOEUDS DE TEXTE DE console.html, prises par
+    // le chemin 1 (TreeWalker + MutationObserver, egalite exacte apres trim).
+    // D'ou l'absence de <strong> dans les deux paragraphes : une emphase les
+    // couperait en trois noeuds, donc en trois entrees a tenir a jour, dont
+    // chacune casserait en silence si la phrase bougeait d'une virgule.
+    "Rattacher une boutique": "Link a store",
+    "L'app Heurix installée dans l'administration de votre boutique vous demande un code de liaison. Engendrez-le ici, puis recopiez-le dans l'app : il prouve que ce compte est le vôtre, et rattache la boutique à la clé serveur ci-dessus.":
+      "The Heurix app installed in your store admin asks you for a linking code. Generate it here, then retype it in the app: it proves this account is yours, and links the store to the server key above.",
+    "Votre mot de passe Heurix ne vous sera jamais demandé dans l'app. C'est ce que ce code existe pour éviter.":
+      "Your Heurix password will never be asked for inside the app. That is exactly what this code exists to avoid.",
+    "Engendrer un code": "Generate a code",
+    "Copier le code": "Copy the code",
+    "Copié !": "Copied!",
+    "Le code précédent reste valable jusqu'à sa propre expiration : en engendrer un nouveau ne l'annule pas.":
+      "The previous code stays valid until it expires on its own: generating a new one does not cancel it.",
+    // Les trois suivantes viennent de console.js, par T() -- chemin 2.
+    "Ce code a expiré. Engendrez-en un nouveau.": "This code has expired. Generate a new one.",
+    "Valable jusqu'à {0} — encore {1} min {2} s.": "Valid until {0} — {1} min {2} s left.",
+    "Impossible d'engendrer un code de liaison.": "Could not generate a linking code.",
     "Génération…": "Generating…",
     "Clé publique générée.": "Public key generated.",
     "Échec de la génération.": "Generation failed.",

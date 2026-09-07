@@ -198,13 +198,17 @@ describe("console.js — le refus rafraichit l'ecran qu'il declare perime", () =
 /* LE CONTROLE DE POPULATION, ET LES CINQ QUI NE RAFRAICHISSENT PAS.
  *
  * Le test ci-dessus joue UN chemin en entier. Six autres recoivent le meme
- * appel sans etre joues, et quatre chaines le refusent -- pour quatre
+ * appel sans etre joues, et cinq chaines le refusent -- pour cinq
  * raisons differentes. Sans cette table, « sept » n'est qu'un chiffre : on
  * pourrait en corriger six et rendre exactement le meme vert.
  *
- * Les QUATRE REFUS sont le vrai risque de ce lot, et c'est pour eux que ce
- * bloc existe. Un lecteur qui compte onze `.catch` qui signalent et sept
- * qui rafraichissent conclura qu'il en manque quatre. Chacun porte donc sa
+ * LE CINQUIEME REFUS EST ARRIVE LE 7 SEPTEMBRE 2026 avec le code de
+ * liaison -- premier `.catch` signalant d'un panneau qui n'affiche AUCUNE
+ * liste. Voir son entree en fin de table.
+ *
+ * Les CINQ REFUS sont le vrai risque de ce lot, et c'est pour eux que ce
+ * bloc existe. Un lecteur qui compte douze `.catch` qui signalent et sept
+ * qui rafraichissent conclura qu'il en manque cinq. Chacun porte donc sa
  * raison ici, en plus du commentaire pose a cote du code.
  *
  * ILS ETAIENT CINQ. La suppression en lot est passee a `Promise.allSettled`
@@ -257,6 +261,21 @@ const CHEMINS = [
   // La LECTURE de loadAccountInfo, seule des vingt et une a parler.
   // Rafraichir dans le `.catch` d'un rafraichissement rate est une boucle.
   ["loadAccountInfo (lecture)", ["Impossible de charger les informations de votre compte."], null],
+
+  // LE DOUZIEME (7 septembre 2026). CE PANNEAU N'AFFICHE AUCUN ETAT
+  // SERVEUR, et c'est ce qui decide -- pas le code de reponse.
+  //
+  // La regle de ce fichier : un refus appelle un rechargement quand il
+  // PROUVE que la page montre autre chose que ce que le serveur porte. Les
+  // sept chemins qui rafraichissent affichent tous une LISTE -- des cles,
+  // des membres, des surcharges -- dont le refus revele une ligne perimee.
+  //
+  // Engendrer un code n'affiche rien de tel. Ses refus sont 409 « ce compte
+  // n'est rattache a aucune entreprise », 401 sur session expiree, et les
+  // pannes du moteur. Aucun ne dit qu'une ligne a l'ecran est fausse : il
+  // n'y a pas de ligne. Le code precedent, lui, reste valable cote moteur
+  // -- rien ne l'annule -- donc il n'y a rien a relire non plus.
+  ["code de liaison", ["Impossible d'engendrer un code de liaison."], null],
 ];
 
 // Decoupe les blocs `.catch(function (...) { ... })` en suivant les
@@ -279,15 +298,15 @@ function blocsCatch(source) {
   return blocs;
 }
 
-describe("console.js — les onze `.catch` qui signalent un echec", () => {
+describe("console.js — les douze `.catch` qui signalent un echec", () => {
   const signalants = blocsCatch(CONSOLE).filter((b) => b.includes("signalerEchec"));
 
-  it("compte onze blocs, et la table les couvre tous", () => {
+  it("compte douze blocs, et la table les couvre tous", () => {
     // Si ce compte bouge, la table ci-dessus est perimee. Ce n'est pas une
     // assertion de style : c'est ce qui empeche ce fichier de rendre vert
     // en ne mesurant plus rien.
-    expect(signalants.length, "le nombre de `.catch` qui signalent a change").toBe(11);
-    expect(CHEMINS.length).toBe(11);
+    expect(signalants.length, "le nombre de `.catch` qui signalent a change").toBe(12);
+    expect(CHEMINS.length).toBe(12);
     expect(CHEMINS.filter((c) => c[2] !== null).length, "les sept a rafraichir").toBe(7);
   });
 

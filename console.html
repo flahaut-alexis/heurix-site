@@ -1674,6 +1674,58 @@
                 <span class="catalog-rule-status" id="public-key-status" role="status" aria-live="polite"></span>
               </form>
             </div>
+
+            <!-- RATTACHER UNE BOUTIQUE (7 septembre 2026).
+                 ICI, ET PAS AILLEURS. Ce code s'echange, UNE FOIS, contre la
+                 cle serveur affichee vingt lignes plus haut : separer les deux
+                 mettrait la credential d'un cote et le moyen de l'obtenir de
+                 l'autre. C'est aussi le seul volet de la console qui parle
+                 deja de « qui d'autre accede a mon compte » -- cle serveur,
+                 cles publiques, et l'avertissement entre les deux.
+
+                 ET C'EST UN VOLET QU'ON N'OUVRE PAS TOUS LES JOURS : il vit
+                 derriere le menu « Mon compte », pas dans la barre laterale.
+                 Le geste est rare, il n'encombre donc pas l'ecran quotidien.
+
+                 LE CODE N'EST PAS AFFICHE AU CHARGEMENT. Il n'apparait
+                 qu'apres un clic, et disparait a son expiration : une
+                 credential vivante ne reste pas a l'ecran d'un poste
+                 partage. -->
+            <div class="console-panel" id="panneau-code-liaison">
+              <h2>Rattacher une boutique</h2>
+              <p class="console-panel-note">L'app Heurix installée dans l'administration de votre boutique vous demande un code de liaison. Engendrez-le ici, puis recopiez-le dans l'app : il prouve que ce compte est le vôtre, et rattache la boutique à la clé serveur ci-dessus.</p>
+              <p class="console-panel-note">Votre mot de passe Heurix ne vous sera jamais demandé dans l'app. C'est ce que ce code existe pour éviter.</p>
+              <form id="code-liaison-form" class="catalog-rule-add">
+                <button type="submit" class="catalog-rule-add-btn" id="code-liaison-btn">Engendrer un code</button>
+                <span class="catalog-rule-status" id="code-liaison-status" role="status" aria-live="polite"></span>
+              </form>
+              <div id="code-liaison-resultat" hidden style="margin-top:14px;">
+                <div class="console-key-display">
+                  <!-- LE STYLE EST EN LIGNE, ET C'EST UN ARBITRAGE, pas une
+                       negligence. Une regle dans styles.css ferait bouger la
+                       clef ?v= de la feuille servie par les 128 pages du site
+                       -- tout le monde retelecharge le CSS pour un panneau que
+                       presque personne n'ouvre. `.console-key-value` fournit
+                       deja la chasse fixe, le cadre et le fond ; il ne manque
+                       que la taille, que ce code doit avoir : il se recopie a
+                       l'oeil dans un autre onglet. -->
+                  <code id="code-liaison-valeur" class="console-key-value"
+                        style="font-size:24px; letter-spacing:.14em; text-align:center; flex:0 0 auto; word-break:normal;"></code>
+                  <button type="button" id="code-liaison-copier" class="console-key-btn" aria-label="Copier le code">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                  </button>
+                  <span id="code-liaison-copie" class="console-key-copied" hidden>Copié !</span>
+                </div>
+                <p class="console-panel-note" id="code-liaison-peremption" style="margin:10px 0 0;"></p>
+                <!-- CE QUE LA ROUTE NE FAIT PAS, DIT PLUTOT QUE SUPPOSE.
+                     Engendrer un code n'invalide PAS le precedent -- mesure
+                     du 7 septembre 2026 sur le moteur : `create_code_liaison`
+                     est un INSERT, rien d'autre. Taire cette phrase
+                     laisserait croire l'inverse, qui est ce que tout le monde
+                     suppose d'un bouton « engendrer ». -->
+                <p class="console-panel-note" id="code-liaison-precedent" hidden style="margin:6px 0 0;">Le code précédent reste valable jusqu'à sa propre expiration : en engendrer un nouveau ne l'annule pas.</p>
+              </div>
+            </div>
           </div>
 
           <div id="pane-feedback" class="console-pane" hidden>
@@ -1737,8 +1789,8 @@
 <script src="console-select.js?v=1787610626"></script>
 <script src="visite-editeur.js?v=1787610626"></script>
 <script type="module" src="csv-console.js?v=1788005020"></script>
-<script src="console-i18n.js?v=1788789986"></script>
-<script src="console.js?v=1788644786"></script>
+<script src="console-i18n.js?v=1788814766"></script>
+<script src="console.js?v=1788814776"></script>
 <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 
 <script src="nav-dropdown.js?v=1788086140"></script>

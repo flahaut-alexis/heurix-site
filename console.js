@@ -695,6 +695,112 @@
     refreshPublicKeys(key);
   }
 
+  // ---------------- Code de liaison (rattachement d'une boutique) ----------------
+  //
+  // CE QUE CE CODE EST. Une preuve courte, a usage unique, que le porteur
+  // detient ce compte. L'app embarquee dans l'administration de la boutique
+  // l'echange contre la cle serveur, aupres du moteur, sans jamais voir le
+  // mot de passe -- c'est toute la raison de cette forme.
+  //
+  // LE JETON DE SESSION, PAS LA CLE API. Cette route s'authentifie par
+  // `Authorization: Bearer sess_...` (`require_session` cote moteur), comme
+  // /v1/auth/invite et /v1/auth/company. `apiPost` ne conviendrait pas : il
+  // n'envoie AUCUN en-tete d'authentification -- il sert la connexion et
+  // l'inscription, qui n'en ont pas. Le motif reutilise est donc celui des
+  // trois appels voisins : apiFetch(chemin, localStorage.getItem(
+  // SESSION_STORAGE_KEY), { method: ... }).
+  //
+  // LE CODE NE VA PAS DANS localStorage. Il vaut la cle serveur du compte
+  // pendant dix minutes ; le seul endroit ou il vit est le DOM du panneau,
+  // et il en part a son expiration.
+  var minuterieCodeLiaison = null;
+  var finDuCodePrecedent = 0;
+
+  function arreterMinuterieCodeLiaison() {
+    if (minuterieCodeLiaison) { clearInterval(minuterieCodeLiaison); minuterieCodeLiaison = null; }
+  }
+
+  function effacerCodeLiaison() {
+    arreterMinuterieCodeLiaison();
+    var resultat = document.getElementById("code-liaison-resultat");
+    var valeur = document.getElementById("code-liaison-valeur");
+    if (valeur) valeur.textContent = "";
+    if (resultat) resultat.hidden = true;
+  }
+
+  function afficherPeremptionCodeLiaison(finMs) {
+    var peremption = document.getElementById("code-liaison-peremption");
+    if (!peremption) return;
+    var restant = Math.max(0, Math.round((finMs - Date.now()) / 1000));
+    if (restant <= 0) {
+      // LE CODE PART DE L'ECRAN AVEC SA VALIDITE. Le laisser affiche en
+      // annoncant « expire » invite a le recopier quand meme, et l'app
+      // rendrait un refus que le marchand ne rattacherait pas a cet ecran.
+      effacerCodeLiaison();
+      var statut = document.getElementById("code-liaison-status");
+      if (statut) {
+        statut.textContent = T("Ce code a expiré. Engendrez-en un nouveau.");
+        statut.className = "catalog-rule-status err";
+      }
+      return;
+    }
+    var heure = new Date(finMs).toLocaleTimeString(LOCALE, { hour: "2-digit", minute: "2-digit" });
+    peremption.textContent = T("Valable jusqu'à {0} — encore {1} min {2} s.",
+      heure, Math.floor(restant / 60), String(restant % 60).padStart(2, "0"));
+  }
+
+  function cablerCodeLiaison() {
+    var form = document.getElementById("code-liaison-form");
+    if (!form) return;
+    var bouton = document.getElementById("code-liaison-btn");
+    var statut = document.getElementById("code-liaison-status");
+    var resultat = document.getElementById("code-liaison-resultat");
+    var valeur = document.getElementById("code-liaison-valeur");
+    var precedent = document.getElementById("code-liaison-precedent");
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      bouton.disabled = true;
+      statut.textContent = T("Génération…");
+      statut.className = "catalog-rule-status";
+      // UN CODE ENCORE VIVANT AU MOMENT OU L'ON EN DEMANDE UN AUTRE : la
+      // phrase ne s'affiche que dans ce cas. La montrer toujours ferait du
+      // bruit sur le geste normal, qui est d'en engendrer un seul.
+      var avaitUnCodeVivant = finDuCodePrecedent > Date.now();
+      apiFetch("/v1/auth/code-liaison", localStorage.getItem(SESSION_STORAGE_KEY), { method: "POST" })
+        .then(function (data) {
+          arreterMinuterieCodeLiaison();
+          statut.textContent = "";
+          statut.className = "catalog-rule-status";
+          valeur.textContent = data.code;
+          resultat.hidden = false;
+          if (precedent) precedent.hidden = !avaitUnCodeVivant;
+          // `expire_dans` est en SECONDES (600). Le moteur ne rend pas de
+          // date : deux horloges qui derivent se compareraient mal, et une
+          // duree relative n'a pas ce probleme.
+          var fin = Date.now() + (Number(data.expire_dans) || 0) * 1000;
+          finDuCodePrecedent = fin;
+          afficherPeremptionCodeLiaison(fin);
+          minuterieCodeLiaison = setInterval(function () {
+            afficherPeremptionCodeLiaison(fin);
+          }, 1000);
+        })
+        .catch(function (err) {
+          signalerEchec(statut, err, T("Impossible d'engendrer un code de liaison."));
+        })
+        .then(function () { bouton.disabled = false; });
+    });
+
+    document.getElementById("code-liaison-copier").addEventListener("click", function () {
+      var copie = document.getElementById("code-liaison-copie");
+      navigator.clipboard.writeText(valeur.textContent).then(function () {
+        if (!copie) return;
+        copie.hidden = false;
+        setTimeout(function () { copie.hidden = true; }, 2000);
+      }).catch(function () {});
+    });
+  }
+
   // ---------------- Export CSV des tableaux Observer ----------------
   //
   // Lit directement le DOM du tableau deja rendu (pas un second appel API) :
@@ -6523,6 +6629,7 @@
     wireBrowseForms(key);
     wireSearchOverridesPane(key);
     wirePublicKeys(key);
+    cablerCodeLiaison();
     cablerVuesCategories(key);
     wireRelatedProducts(key);
     wireTutoEditeur(["so-tuto", "br-tuto"]);
@@ -7451,6 +7558,14 @@
     if (orgDrop) orgDrop.hidden = true;
     var orgBtn = document.getElementById("console-org-btn");
     if (orgBtn) orgBtn.textContent = T("Mon compte");
+
+    // UN CODE AFFICHE NE SURVIT PAS A LA DECONNEXION. Il reste valable
+    // cote moteur jusqu'a son expiration -- rien ne l'annule -- mais le
+    // laisser a l'ecran le remettrait a la personne suivante sur un poste
+    // partage, ce que la remise a zero de `session` ne couvre pas : il vit
+    // dans le DOM, pas dans l'etat.
+    effacerCodeLiaison();
+    finDuCodePrecedent = 0;
 
     var globalSelect = document.getElementById("global-catalog");
     if (globalSelect) { globalSelect.innerHTML = ""; globalSelect.disabled = true; }
