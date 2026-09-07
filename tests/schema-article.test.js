@@ -20,17 +20,34 @@
 //     revision, et la deriver du dernier commit ferait passer une correction
 //     de typographie pour une mise a jour editoriale.
 //
-//   image -- techniquement disponible, mais les 68 articles portent LA MEME
+//   image -- techniquement disponible, mais les 70 articles portent LA MEME
 //     og-image.png generique. Declarer une image de marque comme « l'image de
-//     cet article » est faiblement vrai, 68 fois. Le champ reviendra le jour
+//     cet article » est faiblement vrai, 70 fois. Le champ reviendra le jour
 //     ou les articles auront des illustrations propres, pas avant.
 //
-// LA DATE EST AU MOIS, ET C'EST LA PRECISION QUI EXISTE. Le kicker dit
-// « Juillet 2026 » ; aucun nom de fichier ne porte de date. L'historique git
-// en donne une au jour, et elle tombe dans le bon mois sur les 68 -- mais
-// c'est la date d'entree du fichier dans le depot, pas une decision
-// editoriale, et elle bouge au moindre rebase. « 2026-07 » est de l'ISO 8601
-// a precision reduite : exactement ce que la page affirme, ni plus.
+//     CE PARAGRAPHE DISAIT « 68 » JUSQU'AU 7 SEPTEMBRE 2026, et l'audit qui a
+//     lance ce chantier comptait 68 lui aussi. Mesure du jour : 40 sous
+//     `blog/`, 30 sous `en/blog/`, soit 70. Le chiffre etait vrai quand il a
+//     ete ecrit, et deux articles l'ont perime sans que rien ne le dise -- les
+//     assertions de ce fichier derivent le perimetre de l'arborescence et ne
+//     lisent aucun de ces nombres, donc aucune n'a bronche. Un compte fige
+//     dans une prose ne se corrige que si quelqu'un le recompte.
+//
+// LA DATE PORTE LE JOUR, ET L'INVARIANT RESTE LE MOIS. Le kicker dit
+// « Juillet 2026 » : c'est la precision EDITORIALE, et elle ne descend pas au
+// jour. Mais le test de resultats enrichis rendait deux avertissements sur le
+// seul « 2026-07 » -- « valeur de date et heure incorrecte » et « il manque le
+// fuseau horaire » -- donc un champ present que Google ne lisait pas. Depuis
+// 415ab1b8, datePublished porte la forme complete avec fuseau, le jour venant
+// de l'horodatage du commit d'ajout, et l'assertion plus bas verifie que son
+// MOIS est celui du kicker.
+//
+// CE PARAGRAPHE DISAIT L'INVERSE JUSQU'AU 4 SEPTEMBRE 2026 : il defendait
+// « 2026-07 » comme de l'ISO 8601 a precision reduite, « exactement ce que la
+// page affirme, ni plus ». C'etait juste, et 415ab1b8 l'a rendu faux en
+// changeant le code et le commentaire interne sans toucher a cet en-tete.
+// Une explication qui a cesse d'etre vraie se lit encore comme une decision --
+// et celle-ci argumentait contre la regle que le fichier fait respecter.
 // ---------------------------------------------------------------------------
 import { describe, it, expect } from "vitest";
 import fs from "node:fs";
