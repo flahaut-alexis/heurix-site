@@ -284,8 +284,9 @@
       </div>
 
       <div class="feat-card">
-        <h3 id="radius-search">Radius search</h3>
-        <p>"A surf school within 15 km." Give a point and a distance: the engine returns only what falls inside, and every result carries its distance in kilometres — enough to sort or display without recomputing anything. Your products carry <code class="docs-inline-code">lat</code> and <code class="docs-inline-code">lon</code> like any other field, with no reindexing.</p>
+        <h3 id="radius-search">Radius search and geolocation</h3>
+        <p><strong>You supply the point; the engine filters around it.</strong> Browser geolocation, address geocoding or a plain postcode are yours to handle: Heurix receives a <code class="docs-inline-code">lat</code>/<code class="docs-inline-code">lon</code> pair and a radius, and returns what falls inside. It determines no position and calls no mapping service.</p>
+        <p>"A surf school within 15 km." Give a point and a distance: the engine returns only what falls inside, and every result carries its distance in kilometres — enough to sort or display without recomputing anything. That is the brick behind a store locator or a branch network: list only the nearby ones, nearest first if you sort them yourself. Your products carry <code class="docs-inline-code">lat</code> and <code class="docs-inline-code">lon</code> like any other field, with no reindexing.</p>
         <p><strong>The radius filters; it does not enter the score.</strong> A place 3 km away does not outrank one 14 km away if it matches the query less well. That is a decision, not a limitation: blending distance into relevance would surface the wrong result because it happens to be near, and you would no longer know which of the two criteria decided.</p>
         <pre class="docs-code"><code>POST /v1/index/branches/search
 {"q": "surf school", "lat": 45.00, "lon": -1.20, "radius_km": 15}</code></pre>
