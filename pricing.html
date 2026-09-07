@@ -730,6 +730,35 @@
 
       const payload = { plan: plan };
       if (browsePlan) payload.browse_plan = browsePlan;
+      // RATTACHEMENT EXACT DU PAIEMENT AU COMPTE (7 septembre 2026).
+      //
+      // Sans ce champ, le moteur ne savait pas QUI paie : il retrouvait le
+      // compte par correspondance d'EMAIL, ce qui marche tant que l'acheteur
+      // saisit chez Stripe l'adresse de son compte Heurix, et rate
+      // silencieusement des qu'il en saisit une autre -- carte pro, comptable,
+      // adresse de facturation. Il repartait alors avec une cle neuve et un
+      // catalogue vide, apres avoir paye.
+      //
+      // LE JETON DE SESSION, PAS LA CLE API. Il est deja dans ce navigateur
+      // (la console l'y ecrit a la connexion, meme origine, partage entre
+      // onglets), il circule deja vers cette meme API a chaque appel de la
+      // console, et le moteur le resout en interne. Une cle `hx_` transiterait
+      // pour rien, et finirait stockee et affichee dans le tableau de bord
+      // Stripe, qui conserve `client_reference_id`.
+      //
+      // ET SURTOUT PAS DANS L'URL : `pricing.html?key=...` ferait entrer une
+      // credential dans l'historique, le `Referer` et les analytics.
+      //
+      // Absent = visiteur non connecte. C'est le cas NORMAL sur cette page,
+      // et le paiement doit fonctionner exactement comme avant.
+      try {
+        var jeton = window.localStorage.getItem("heurix_console_session");
+        if (jeton) payload.session_token = jeton;
+      } catch (e) {
+        // localStorage peut lever (navigation privee, stockage bloque par une
+        // extension). Un rattachement moins precis vaut mieux qu'un bouton de
+        // paiement mort : on laisse le repli par email faire son travail.
+      }
       // Periode posee par la reglette (billing-toggle.js?v=1787610626). Absente = mensuel,
       // ce qui est aussi le defaut cote moteur : un visiteur arrive avant le
       // chargement du script souscrit normalement.
