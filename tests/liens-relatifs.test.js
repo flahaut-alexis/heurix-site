@@ -103,7 +103,7 @@ const pages = [];
  */
 const lireBrut = (page) => fs.readFileSync(path.join(RACINE, page), "utf8");
 
-function liensDe(page) {
+function liensParFamille(page) {
   const brut = lireBrut(page);
   // Le code MONTRE au marchand part d'abord : les guides affichent un
   // `<script src="heurix-search.js">` a coller chez lui, qui ne designe aucun
@@ -111,23 +111,36 @@ function liensDe(page) {
   // d'un chargement reel -- la regle se derive, au lieu de nommer des
   // exceptions qu'il faudrait ensuite maintenir.
   const sansPre = brut.replace(/<pre\b[\s\S]*?<\/pre>/g, "");
-  const out = [];
+  const script = [];
   for (const m of sansPre.matchAll(/<script\b[^>]*\bsrc="([^"#][^"]*?)(?:\?[^"]*)?(?:#[^"]*)?"/g)) {
-    out.push(m[1]);
+    script.push(m[1]);
   }
   const s = sansPre.replace(/<script\b[^>]*>[\s\S]*?<\/script>/g, "");
-  for (const m of s.matchAll(/(?:href|src)="([^"#][^"]*?)(?:\?[^"]*)?(?:#[^"]*)?"/g)) out.push(m[1]);
-  return out;
+  const balisage = [];
+  for (const m of s.matchAll(/(?:href|src)="([^"#][^"]*?)(?:\?[^"]*)?(?:#[^"]*)?"/g)) balisage.push(m[1]);
+  return { script, balisage };
+}
+
+// LES DEUX FAMILLES NE SE MELANGENT QU'ICI, et jamais avant : le balayage de
+// liens morts les traite pareil, les PLANCHERS non. C'est toute la difference
+// que ce lot introduit -- voir « un plancher par population » plus bas.
+function liensDe(page) {
+  const { script, balisage } = liensParFamille(page);
+  return [...script, ...balisage];
 }
 
 const morts = [];
-let examines = 0;
+// UN COMPTEUR PAR FAMILLE, PAS UN TOTAL. Le total ne peut pas dire qu'une des
+// deux collectes est tombee a zero : l'autre le porte au-dessus du plancher.
+const examines = { script: 0, balisage: 0 };
 for (const page of pages) {
-  for (const lien of liensDe(page)) {
-    if (SCHEMA.test(lien)) continue;
-    examines++;
-    const cible = path.resolve(RACINE, path.dirname(page), lien);
-    if (!fs.existsSync(cible)) morts.push({ page, lien, cible: path.relative(RACINE, cible) });
+  for (const [famille, liens] of Object.entries(liensParFamille(page))) {
+    for (const lien of liens) {
+      if (SCHEMA.test(lien)) continue;
+      examines[famille]++;
+      const cible = path.resolve(RACINE, path.dirname(page), lien);
+      if (!fs.existsSync(cible)) morts.push({ page, lien, cible: path.relative(RACINE, cible) });
+    }
   }
 }
 
@@ -150,13 +163,36 @@ describe("liens relatifs — la cible existe, pas seulement la chaine", () => {
     }
   });
 
-  // Un balayage qui n'examine rien passe au vert en ne prouvant rien. Si une
-  // expression reguliere ci-dessus cesse de mordre, ce plancher le dit --
-  // c'est le garde-fou que le controle de cache n'avait pas le jour ou il a
-  // certifie « une seule clef sur tout le site » en n'en voyant que quatre.
+  // UN PLANCHER PAR POPULATION (7 septembre 2026).
+  //
+  // Un balayage qui n'examine rien passe au vert en ne prouvant rien. Le
+  // plancher existait deja pour le dire -- mais il portait sur le TOTAL, et un
+  // total ne peut pas signaler qu'une de ses deux composantes est tombee a
+  // zero. Mesure, en remettant l'ordre d'avant le 6 septembre (retrait des
+  // blocs <script> AVANT lecture de la balise ouvrante) :
+  //
+  //                        script   balisage   total   plancher unique > 5000
+  //     main               892      8 315      9 207   VERT
+  //     ordre d'avant        0      8 315      8 315   VERT   <-- il ne voit rien
+  //
+  // Le defaut que ce fichier documente en tete -- AUCUN chargement de script
+  // jamais verifie, sur aucune page, et le bandeau de traceurs absent de deux
+  // pages anglaises -- serait donc revenu sous un plancher vert. Le total etait
+  // un garde-fou pour le balisage seul, qui pese 90 % de la population et
+  // masque l'autre entierement.
+  //
+  // LES VALEURS SONT A ENVIRON LA MOITIE DU MESURE, et c'est deliberé : ce
+  // plancher garde contre un EFFONDREMENT -- une expression qui cesse de
+  // mordre rend zero, pas 60 %. Le calibrer au plus pres le ferait virer au
+  // rouge sur une suppression de page legitime, et un garde qui crie pour rien
+  // finit par etre relache.
   it("le balayage a reellement parcouru le site", () => {
     expect(pages.length).toBeGreaterThan(100);
-    expect(examines).toBeGreaterThan(5000);
+  });
+
+  it("chaque famille de liens est reellement collectee", () => {
+    expect(examines.script, "aucun <script src> collecte").toBeGreaterThan(400);
+    expect(examines.balisage, "aucun href/src collecte").toBeGreaterThan(4000);
   });
 
   // TEMOIN POSITIF du <script src>, et il est la raison d'etre de ce bloc.
