@@ -90,8 +90,18 @@ function sauts(suite) {
 describe("hierarchie des titres", () => {
   const pages = pagesDuSitemap();
 
-  it("le sitemap rend bien les 131 pages attendues", () => {
-    expect(pages.length).toBe(131);
+  // Ce compte est un TEMOIN : il dit que le sitemap a ete lu, pas qu'il est
+  // juste. Il valait `toBe(131)` et il est tombe le 7 septembre 2026 en
+  // retirant du sitemap les trois pages legales anglaises passees en
+  // `noindex` -- un changement voulu, signale comme une regression par un
+  // nombre qui ne mesurait pas le sujet du fichier (la hierarchie des titres).
+  //
+  // Le compte exact n'est pas perdu : canonical.test.js assert l'EGALITE des
+  // deux ensembles -- aucune page noindex declaree, aucune page indexable
+  // absente. Une borne y suffit donc ici, et c'est la forme que ce depot
+  // emploie deja pour les temoins de balayage.
+  it("le sitemap a reellement ete lu", () => {
+    expect(pages.length).toBeGreaterThan(100);
   });
 
   it("aucune page hors dette ne saute un niveau de titre", () => {

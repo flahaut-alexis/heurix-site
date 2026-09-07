@@ -220,3 +220,97 @@ describe("sitemap — il declare exactement les pages indexables", () => {
     expect(declarees.length).toBeGreaterThan(100);
   });
 });
+
+
+// ---------------------------------------------------------------------------
+// LES DEUX MEMBRES D'UNE PAIRE hreflang S'ACCORDENT SUR L'INDEXABILITE
+// (7 septembre 2026).
+//
+// Signale comme « contradiction avec le sitemap » : cgv.html et
+// mentions-legales.html seraient noindex ET declarees au sitemap. Remesure par
+// URL exacte, la contradiction n'existe pas -- `aucune page noindex n'est
+// declaree dans le sitemap` ci-dessus est vert, et il compte 0.
+//
+// Le releve d'origine testait l'appartenance PAR SOUS-CHAINE. « cgv.html »
+// apparait dans « en/cgv.html », « mentions-legales.html » dans
+// « en/mentions-legales.html », « console.html » dans
+// « blog/guide-utilisation-console.html ». Les trois pages dites « au sitemap »
+// sont les trois dont le nom est SUFFIXE d'une autre URL ; celles qui n'ont pas
+// de porteur -- confidentialite.html, en/console.html -- sont ressorties
+// « hors sitemap ». C'est exactement le faux positif deja mesure le 28 aout et
+// ecrit dans CLAUDE.md, reproduit a l'identique.
+//
+// LE DEFAUT REEL EST L'AUTRE : sur 63 paires hreflang fr/en, trois etaient en
+// desaccord sur `noindex` -- les trois paires legales. Le francais portait
+// `noindex`, l'anglais aucune balise, et c'est donc l'ANGLAIS qui etait indexe
+// et declare au sitemap. Meme contenu, deux traitements opposes.
+//
+// Pourquoi aucun garde ne l'a vu : le garde du sitemap lit chaque page SEULE et
+// ne compare rien. hreflang-reciproque.test.js compare bien les deux membres,
+// mais sur les liens de la grappe, pas sur ce qu'ils declarent aux moteurs. Un
+// desaccord fr/en n'avait aucun instrument.
+//
+// PERIMETRE DERIVE des grappes hreflang, aucune liste : la paire se lit dans
+// les pages. bienvenue et console sont noindex des DEUX cotes -- elles
+// s'accordent, et ce garde n'a rien a leur dire.
+// ---------------------------------------------------------------------------
+
+describe("robots — une paire hreflang ne se traite pas differemment selon la langue", () => {
+  const versFichierHreflang = (url) => url.replace("https://heurix.fr/", "") || "index.html";
+
+  const grappes = new Map();
+  for (const p of pages) {
+    const s = lire(p);
+    const hl = Object.fromEntries(
+      [...s.matchAll(/<link rel="alternate" hreflang="([^"]+)" href="([^"]+)">/g)]
+        .map((m) => [m[1], m[2]]));
+    if (hl.fr && hl.en) grappes.set(p, hl);
+  }
+
+  const directive = (p) => {
+    const m = lire(p).match(/<meta name="robots" content="([^"]*)"/i);
+    return m ? m[1] : null;
+  };
+  const estNoindex = (p) => /noindex/i.test(directive(p) || "");
+
+  const paires = [];
+  const vues = new Set();
+  for (const [p, hl] of grappes) {
+    const partenaire = versFichierHreflang(p.startsWith("en/") ? hl.fr : hl.en);
+    if (!grappes.has(partenaire)) continue; // deja couvert par hreflang-reciproque
+    const clef = [p, partenaire].sort().join(" <-> ");
+    if (vues.has(clef)) continue;
+    vues.add(clef);
+    paires.push([p, partenaire, clef]);
+  }
+
+  it("les deux membres s'accordent sur noindex", () => {
+    const desaccords = paires
+      .filter(([a, b]) => estNoindex(a) !== estNoindex(b))
+      .map(([a, b, clef]) =>
+        `${clef} : ${a}=${directive(a) ?? "aucune balise robots"} / ${b}=${directive(b) ?? "aucune balise robots"}`);
+    expect(desaccords).toEqual([]);
+  });
+
+  // Les six pages legales portaient TROIS formes pour une seule intention :
+  // `noindex, follow` (cgv.html, seule du site), `noindex` (confidentialite,
+  // mentions-legales) et rien du tout cote anglais. `follow` est la valeur par
+  // defaut : il ne disait rien que l'absence ne disait deja. Les trois formes
+  // n'etaient pas deliberees -- aucun commentaire nulle part ne les explique --
+  // et la forme retenue est celle que la famille portait deja majoritairement.
+  it("une paire noindex porte la MEME directive des deux cotes", () => {
+    const divergentes = paires
+      .filter(([a, b]) => estNoindex(a) && estNoindex(b))
+      .filter(([a, b]) => directive(a) !== directive(b))
+      .map(([a, b, clef]) => `${clef} : « ${directive(a)} » / « ${directive(b)} »`);
+    expect(divergentes).toEqual([]);
+  });
+
+  // Sans ce temoin, les deux assertions ci-dessus passent au vert sur une liste
+  // vide le jour ou la lecture des grappes casse.
+  it("le balayage a reellement apparie les deux langues", () => {
+    expect(paires.length).toBeGreaterThan(50);
+    expect(paires.filter(([a, b]) => estNoindex(a) && estNoindex(b)).length)
+      .toBeGreaterThan(0);
+  });
+});

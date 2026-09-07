@@ -285,9 +285,6 @@
     <loc>https://heurix.fr/blog/origine-du-nom-heurix.html</loc>
   </url>
   <url>
-    <loc>https://heurix.fr/en/privacy.html</loc>
-  </url>
-  <url>
     <loc>https://heurix.fr/produit.html</loc>
   </url>
   <url>
@@ -336,6 +333,4 @@
   <url><loc>https://heurix.fr/en/blog/guide-serveur-mcp-heurix.html</loc></url>
   <url><loc>https://heurix.fr/en/blog/guide-page-categorie-browse.html</loc></url>
   <url><loc>https://heurix.fr/en/blog/guide-utilisation-console.html</loc></url>
-  <url><loc>https://heurix.fr/en/cgv.html</loc></url>
-  <url><loc>https://heurix.fr/en/mentions-legales.html</loc></url>
 </urlset>
