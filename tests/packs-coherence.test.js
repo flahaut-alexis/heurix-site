@@ -5,7 +5,15 @@ import path from "node:path";
 const RACINE = path.resolve(__dirname, "..");
 
 // ---------------------------------------------------------------------------
-// LE NOMBRE DE PACKS EST ECRIT EN DUR A TRENTE ET UN ENDROITS (27 aout 2026).
+// LE NOMBRE DE PACKS EST ECRIT EN DUR A QUARANTE ENDROITS (7 septembre 2026).
+//
+// LE CHIFFRE DE L'EN-TETE EST DATE, ET SA POPULATION EST NOMMEE. Il disait
+// « trente et un » depuis le 27 aout, sans dire ce qu'il comptait -- et un
+// nombre sans sa population en admet plusieurs. Remesure d'aujourd'hui, sur
+// les 185 fichiers du perimetre : 35 affirmations en lettres (34 dans les
+// .html, 1 dans llms.txt), 4 lignes de specification `rulepacks` en
+// chiffres, 1 select de secteur. Quarante. Les enumerations nommees ne sont
+// pas comptees ici : elles portent des NOMS, pas le nombre.
 //
 // VINGT-TROIS ETAIT LE COMPTE DE CE QUE CE TEST VOYAIT, pas de ce que le
 // site affirme. Trois causes le rendaient aveugle a huit endroits de plus,
@@ -22,11 +30,18 @@ const RACINE = path.resolve(__dirname, "..");
 //
 // CE QUE CE TEST FAIT, ET CE QU'IL NE FAIT PAS.
 //
-// Il verifie que les vingt-trois endroits s'ACCORDENT ENTRE EUX. Il ne code
-// aucun nombre en dur, deliberement : le jour ou un onzieme pack arrive, il
-// ne doit pas falloir editer ce fichier, il doit falloir editer les pages.
-// Ce test echoue sur une mise a jour PARTIELLE -- trois pages corrigees sur
-// seize, ou quatre enumerations sur six.
+// Il verifie que ces endroits s'ACCORDENT ENTRE EUX. Il ne code aucun nombre
+// en dur, deliberement : le jour ou un douzieme pack arrive, il ne doit pas
+// falloir editer ce fichier, il doit falloir editer les pages. Ce test
+// echoue sur une mise a jour PARTIELLE -- trois pages corrigees sur seize,
+// ou quatre enumerations sur seize.
+//
+// L'ACCORD MUTUEL NE VOIT QUE CE QU'IL LIT, ET C'EST LA SEULE FACON DONT CE
+// TEST PEUT ECHOUER A ETRE FAUX (7 septembre 2026). `llms.txt` annoncait
+// dix packs et en listait dix : rien, dans ce fichier, ne s'y contredisait.
+// Il n'etait faux que RELATIVEMENT aux onze autres endroits -- et le
+// balayage ne le lisait pas. Un garde par accord mutuel n'a pas de defaut
+// interne a montrer : son unique surface de defaillance est son perimetre.
 //
 // Il ne peut PAS voir le moteur gagner un pack pendant que le site dort :
 // heurix-engine est un autre depot, prive. C'est
@@ -42,11 +57,56 @@ const NOMBRES = {
   ten: 10, eleven: 11, twelve: 12, nine: 9, eight: 8, seven: 7,
 };
 
-// LE PERIMETRE INCLUT LES .js (27 aout 2026). `search.js` et `search-en.js`
-// portent l'index de recherche du site : ils recopient l'extrait de la FAQ,
-// donc l'affirmation du nombre de packs. Le balayage ne lisait que les
-// .html et les ratait tous les deux -- deux affirmations vivantes,
-// invisibles au garde qui pretend les compter.
+// LE PERIMETRE INCLUT LES .txt (7 septembre 2026). `llms.txt` est servi a la
+// racine du domaine et s'adresse aux modeles de langage : c'est un fichier
+// PUBLIE, au meme titre qu'une page. Il annoncait « dix au total » et
+// enumerait dix packs quand les onze autres endroits du site en annoncaient
+// onze -- `sport` manquant des deux cotes, donc INTERNEMENT COHERENT, donc
+// invisible a toute relecture du seul fichier. Seul l'accord avec le reste du
+// site pouvait le montrer, et le balayage ne lisait pas les .txt.
+//
+// LE PERIMETRE INCLUT LES .js, ET CETTE MOITIE EST VIDE DEPUIS LE JOUR DE SON
+// ECRITURE (mesure du 7 septembre 2026). Elle avait ete ajoutee le 27 aout
+// pour `search.js` et `search-en.js`, qui recopiaient l'extrait de la FAQ.
+// Ces deux fichiers ont ete SUPPRIMES quatre heures plus tard le meme jour
+// (50980d21, 17h19 ; ce test date de 13h12) et remplaces par
+// `search-index-fr.json` / `search-index-en.json`. Mesure d'aujourd'hui :
+// 29 fichiers .js dans le perimetre, 34 affirmations dans les .html, 1 dans
+// les .txt, ZERO dans les .js.
+//
+// Les .js restent balayes -- un gabarit JS peut reprendre l'affirmation
+// demain, et le cout est nul -- mais l'assertion « au moins un .js dans le
+// perimetre » qui gardait cette moitie a ete retiree : 29 fichiers la
+// rendaient verte alors que la raison de leur presence etait morte. C'est
+// exactement le defaut que l'en-tete de ce fichier decrit, reproduit ici.
+//
+//   ┌───────────────────────────────────────────────────────────────────┐
+//   │ QUATRE HEURES. C'est le delai entre l'ecriture de ce garde et le  │
+//   │ moment ou il est devenu vide -- 27 aout, 13h12 puis 17h19, le     │
+//   │ meme apres-midi. Il est reste vert ONZE JOURS, jusqu'au           │
+//   │ 7 septembre 2026.                                                 │
+//   │                                                                   │
+//   │ Le plus ancien garde vide trouve cette semaine, et il n'a jamais  │
+//   │ eu de periode utile : il n'a pas POURRI, il est ne comme ca. Rien │
+//   │ ne pouvait le signaler, parce qu'il assertait une EXTENSION       │
+//   │ (« au moins un .js ») quand sa raison d'etre etait deux FICHIERS. │
+//   │ 29 autres .js le tenaient vert sur une population qui n'a jamais  │
+//   │ ete la sienne.                                                    │
+//   │                                                                   │
+//   │ La lecon porte au-dela d'ici : apres avoir elargi un perimetre,   │
+//   │ asserter ce qui a MOTIVE l'elargissement, pas sa forme. Les deux  │
+//   │ se ressemblent le jour de l'ecriture et divergent des que le      │
+//   │ porteur bouge. C'est ce que fait, plus bas, l'assertion qui nomme │
+//   │ `llms.txt`.                                                       │
+//   └───────────────────────────────────────────────────────────────────┘
+//
+// LES .json SONT DEHORS, ET C'EST MESURE. `search-index-fr.json` porte bien
+// l'extrait « onze vocabulaires de reference. Chaque pack », mais il porte
+// aussi ses listes de tokens : « neuf ou outillage ouvrage ouvrages ouvrir
+// pack » y matche le motif AFFIRMATION et vaudrait 9. Huit occurrences de ce
+// genre cote FR, une cote EN. C'est de plus un fichier DERIVE des .html deja
+// balayes, dont la fraicheur est gardee par
+// `python3 scripts/index-recherche.py --verifier`.
 //
 // `tests/` est exclu : les fixtures gelees de search-avant-s4 portent
 // volontairement d'anciennes valeurs, c'est leur role.
@@ -56,7 +116,7 @@ const pages = [];
     const rel = dir ? `${dir}/${e.name}` : e.name;
     if (e.name === "node_modules" || e.name.startsWith(".")) continue;
     if (e.isDirectory()) { if (rel !== "tests") parcourir(rel); }
-    else if (/\.(html|js)$/.test(e.name)) pages.push(rel);
+    else if (/\.(html|js|txt)$/.test(e.name)) pages.push(rel);
   }
 })("");
 
@@ -74,10 +134,13 @@ function brut(p) {
  * Le garde voyait la copie visible et pas celle-la -- quatre affirmations
  * qui partent aux moteurs de recherche, hors de sa portee.
  *
- * Un fichier .js est rendu tel quel : il n'a pas de balises a retirer. */
+ * Un fichier qui n'est pas du .html est rendu tel quel : il n'a pas de
+ * balises a retirer. La condition portait `.js` en dur ; elle porte
+ * maintenant sur l'absence de `.html`, sinon `llms.txt` passait par le
+ * retrait de balises et son texte traversait `<[^>]+>` sans raison. */
 function texte(p) {
   let s = fs.readFileSync(path.join(RACINE, p), "utf8");
-  if (p.endsWith(".js")) return s.replace(/\s+/g, " ");
+  if (!p.endsWith(".html")) return s.replace(/\s+/g, " ");
   s = s.replace(/<script\b(?![^>]*application\/ld\+json)[\s\S]*?<\/script>/gi, "");
   s = s.replace(/<style\b[\s\S]*?<\/style>/gi, "");
   return s.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ");
@@ -170,13 +233,31 @@ const EXCEPTIONS = [];
 // CE QUE CE GARDE RECONNAIT, EN UNE LECTURE.
 //
 // Si vous ajoutez une page qui enumere les packs, ECRIVEZ-LA DANS L'UNE DE
-// CES DEUX FORMES. Une troisieme forme ne sera pas signalee comme non
+// CES TROIS FORMES. Une quatrieme forme ne sera pas signalee comme non
 // couverte : elle sera simplement INVISIBLE, et votre page pourra annoncer
 // onze packs en en listant dix sans qu'aucun test ne tombe.
 //
+//   ┌───────────────────────────────────────────────────────────────────┐
+//   │ CET AVERTISSEMENT S'EST REALISE LE 7 SEPTEMBRE 2026, ONZE JOURS   │
+//   │ APRES AVOIR ETE ECRIT. Il disait « DEUX FORMES » et annoncait     │
+//   │ qu'une troisieme serait invisible. `llms.txt` en etait une, et    │
+//   │ elle est restee invisible exactement comme decrit.                │
+//   │                                                                   │
+//   │ RIEN NE L'A DECLENCHE. Aucun test n'est tombe, aucune alerte n'a  │
+//   │ pointe ici : la phrase a ete relue par hasard, en cherchant une   │
+//   │ autre cause. Un avertissement qui se verifie sans que rien ne     │
+//   │ l'ait declenche vaut d'etre DATE quand il se realise -- sinon il  │
+//   │ se relit comme une precaution de style, alors qu'il a le rang     │
+//   │ d'une prediction verifiee.                                        │
+//   │                                                                   │
+//   │ La ligne au-dessus dit maintenant « TROIS ». Elle se realisera de │
+//   │ nouveau. Datez-la ici plutot que de la reecrire.                  │
+//   └───────────────────────────────────────────────────────────────────┘
+//
 // C'est le defaut qui a ete corrige DEUX FOIS le 27 aout -- d'abord sur
-// AFFIRMATION qui exigeait le nombre colle au mot, puis ici. Un motif qui
-// decrit une mise en page plutot que la chose cherchee rate en silence.
+// AFFIRMATION qui exigeait le nombre colle au mot, puis ici -- et une
+// TROISIEME le 7 septembre. Un motif qui decrit une mise en page plutot que
+// la chose cherchee rate en silence.
 //
 // ┌─ FORME A ─ la liste tient dans UNE parenthese, ouverte par le premier
 // │            pack. Le reste de la phrase continue apres la fermante.
@@ -200,28 +281,88 @@ const EXCEPTIONS = [];
 // │   docs.html · fonctionnalites.html  (+ leurs equivalents anglais)
 // └─
 //
-// DEUX FORMES, PAS TROIS -- ET LE COMPTE A ETE MESURE, PAS ESTIME.
-// J'avais d'abord annonce trois mises en page, en comptant
-// fonctionnalites.html comme une troisieme par inattention : elle a
-// exactement la forme de docs.html. Verifie page par page avant d'ecrire ce
-// bloc, motif par motif :
+// ┌─ FORME C ─ la liste est NUE derriere un deux-points, sans parenthese
+// │            d'ouverture, et le total est entre parentheses A LA FIN.
+// │            (7 septembre 2026)
+// │
+// │   « Packs de regles fournis : outillage, mode, industrie, livres,
+// │     electronique, vins, automobile, electricite, plomberie, finance,
+// │     sport (onze au total). »
+// │
+// │   llms.txt
+// └─
 //
-//                              forme A   forme B
-//     faq · pricing · console     oui       -
-//     search.js · search-en.js    oui       -
-//     docs · fonctionnalites       -       oui
+// LA TROISIEME FORME EST ARRIVEE EXACTEMENT COMME ANNONCE. Le bloc
+// ci-dessus disait, le 27 aout : « une troisieme forme ne sera pas signalee
+// comme non couverte, elle sera simplement INVISIBLE ». `llms.txt` en etait
+// une, et sa ligne annoncait dix packs en en listant dix -- le comptage
+// n'aurait rien trouve meme si le fichier avait ete dans le perimetre. Ce
+// sont bien DEUX defauts superposes : le perimetre, et la forme. Corriger
+// le premier seul laissait le second, avec un symptome moindre : au
+// douzieme pack, un « douze » pose dans llms.txt sans douzieme nom aurait
+// passe l'accord des chiffres et echappe au comptage des noms.
 //
-// LA PARTITION EST NETTE : aucune page n'est attrapee par les deux motifs,
-// aucune des douze pages porteuses n'echappe aux deux. Si vous en ajoutez
-// une forme, remesurez ce tableau plutot que de l'estimer -- c'est deux
-// commandes, et une estimation fausse ici rend une page invisible.
+// LA SEPARATION N'EST PAS DEDUITE, ELLE EST CONSTRUITE. Un seul cas -- celui
+// d'aujourd'hui -- devient rouge des l'elargissement du perimetre, et aurait
+// laisse conclure que la forme C etait du zele. Les deux etats ont donc ete
+// FABRIQUES et le garde relance sur chacun :
+//
+//     etat de llms.txt                     perimetre   perimetre
+//                                            seul      + forme C
+//     « dix » + 10 noms   (aujourd'hui)      rouge       rouge
+//     « onze » + 10 noms  (12e pack,
+//                          maj partielle)    VERT        rouge
+//
+// La deuxieme ligne est la seule qui departage, et elle n'existe nulle part
+// dans le depot : il fallait l'ecrire. Conclure du seul cas observable
+// aurait rendu un verdict juste sur la moitie du defaut.
+//
+// LE COMPTE A ETE MESURE, PAS ESTIME -- une premiere version de ce bloc
+// annoncait trois formes en comptant fonctionnalites.html comme une
+// troisieme par inattention : elle a exactement la forme de docs.html.
+// Remesure du 7 septembre, motif par motif, sur le perimetre elargi :
+//
+//                              forme A   forme B   forme C
+//     faq · pricing · console     oui       -         -
+//     docs · fonctionnalites       -       oui        -
+//     llms.txt                     -        -        oui
+//
+// LA PARTITION EST NETTE : aucun fichier n'est attrape par deux motifs,
+// aucun des ONZE porteurs n'echappe aux trois. QUINZE enumerations relevees
+// (faq, pricing et leurs equivalents anglais en rendent deux chacun : le
+// texte visible et sa copie JSON-LD).
+//
+// CE COMPTE A ETE FAUX DANS CE BLOC MEME, LE JOUR DE SON ECRITURE. J'y ai
+// ecrit « treize porteurs, 16 enumerations » -- estime en ajoutant 1 a un
+// releve precedent au lieu de recompter apres l'elargissement. Le vrai
+// releve dit 11 et 15. Le paragraphe qui commence par « LE COMPTE A ETE
+// MESURE, PAS ESTIME » portait donc une estimation, deux lignes plus bas,
+// pour la deuxieme fois de son histoire. Recompte le 7 septembre 2026, par
+// la commande qui suit, sur l'arbre rebase :
+//
+//     node -e '<balayage des trois motifs>' | sort | uniq -c
+//
+// Si vous ajoutez une forme, remesurez ce tableau plutot que de l'estimer.
+//
+// La ligne `search.js · search-en.js` de ce tableau a disparu : ces deux
+// fichiers n'existent plus depuis le 27 aout au soir (voir le perimetre).
+//
+// LE DEUX-POINTS EST EXIGE, ET IL PORTE LE MOTIF. Sans lui, la forme C
+// matcherait AUSSI la liste des formes A et B -- « (outillage, automobile,
+// ... » commence par « outillage, » -- et courrait jusqu'au premier point,
+// bien au-dela de la parenthese fermante, rendant un faux comptage sur des
+// pages deja couvertes. Il est consomme par un lookbehind pour qu'il
+// n'entre pas dans le premier nom : capture, `identite()` rendait
+// « : outillage », et la comparaison des listes francaises echouait sur une
+// ponctuation.
 //
 // Une assertion plus bas verifie que CHAQUE forme trouve encore quelque
-// chose -- si l'une cessait de matcher, le garde deviendrait vert sur la
-// moitie du site sans rien dire.
+// chose -- si l'une cessait de matcher, le garde deviendrait vert sur une
+// part du site sans rien dire.
 // ---------------------------------------------------------------------
 const ENUM_PARENTHESE = /\((outillage|hardware)[^)]{40,}\)/gi;
 const ENUM_EN_PROSE = /\b(outillage|hardware)\b\s*\([^)]*\)[^.]{40,}?\./gi;
+const ENUM_NUE = /(?<=[:：]\s*)(outillage|hardware),\s[^.]{40,}?\./gi;
 
 /** Extrait les noms d'une enumeration, quelle que soit sa forme.
  *
@@ -253,7 +394,7 @@ for (const p of pages) {
     if (exception) continue;
     affirmations.push({ page: p, mot: m[1].toLowerCase(), valeur: NOMBRES[m[1].toLowerCase()] });
   }
-  for (const [forme, motif] of [["A", ENUM_PARENTHESE], ["B", ENUM_EN_PROSE]]) {
+  for (const [forme, motif] of [["A", ENUM_PARENTHESE], ["B", ENUM_EN_PROSE], ["C", ENUM_NUE]]) {
     for (const m of t.matchAll(motif)) {
       const noms = nomsDeLEnumeration(m[0]);
       if (noms.length >= 5) enumerations.push({ page: p, noms, forme });
@@ -303,7 +444,16 @@ describe("packs — les affirmations du site s'accordent", () => {
   //
   // C'est l'elargissement lui-meme qui a produit ce defaut, et c'est le
   // garde elargi qui l'a montre a sa premiere execution.
-  const estAnglais = (p) => p.startsWith("en/") || /-en\.js$/.test(p);
+  //
+  // LA BRANCHE `-en.js` A ETE RETIREE (7 septembre 2026). Elle ne visait que
+  // `search-en.js`, supprime le 27 aout au soir, quatre heures apres son
+  // ecriture. Verifie : aucun fichier du perimetre ne matche `-en\.js$`, et
+  // aucun .js ne produit d'affirmation ni d'enumeration. Une condition qui
+  // ne departage plus rien se relit comme un partage vivant.
+  //
+  // `llms.txt` est bilingue mais son enumeration de packs est en francais :
+  // il tombe du bon cote par le seul `en/`.
+  const estAnglais = (p) => p.startsWith("en/");
 
   const identite = (n) =>
     n.replace(/&amp;/g, "&").split(/[&(,]/)[0].trim().toLowerCase();
@@ -419,14 +569,38 @@ describe("packs — les affirmations du site s'accordent", () => {
   // garde n'en voyait que les .html sans JSON-LD, 30 depuis qu'il lit les
   // deux copies et les .js. Un plancher qui ne monte pas avec le perimetre
   // laisse un elargissement se defaire sans rien dire.
+  //
+  // UN PLANCHER GLOBAL NE PEUT PAS GARDER UN ELARGISSEMENT D'UN SEUL ITEM
+  // (7 septembre 2026). Les .txt apportent UNE affirmation et UNE
+  // enumeration ; retirer `.txt` du perimetre ferait passer 35 a 34 et 15 a
+  // 14, sous n'importe quel plancher qu'on accepterait d'ecrire. La
+  // couverture de llms.txt est donc assertee par son nom, juste en dessous.
+  //
+  // L'ASSERTION « au moins un .js » A ETE RETIREE. Elle gardait la moitie
+  // .js du perimetre et etait verte par construction : 29 fichiers .js
+  // existent, aucun ne porte d'affirmation depuis la suppression de
+  // search.js le 27 aout au soir. Un garde vert sur une population qui
+  // n'est plus celle qu'il visait.
   it("le balayage a reellement trouve les affirmations", () => {
-    expect(affirmations.length).toBeGreaterThanOrEqual(28);
-    expect(enumerations.length).toBeGreaterThanOrEqual(6);
-    expect(pages.filter((p) => p.endsWith(".js")).length,
-      "aucun .js dans le perimetre : l'index de recherche echappe au garde")
-      .toBeGreaterThan(0);
+    expect(affirmations.length).toBeGreaterThanOrEqual(33);
+    expect(enumerations.length).toBeGreaterThanOrEqual(13);
     expect(pages.some((p) => /<script[^>]*application\/ld\+json/.test(brut(p))),
       "aucun JSON-LD lu : les copies de balisage echappent au garde").toBe(true);
+  });
+
+  // llms.txt EST SERVI A LA RACINE DU DOMAINE ET S'ADRESSE AUX MODELES.
+  // C'est le seul porteur .txt, et le seul porteur de la forme C : les deux
+  // planchers globaux ci-dessus le perdraient sans bouger d'un cran. Il est
+  // donc nomme -- exception a la regle « viser une forme, pas un fichier »,
+  // assumee parce que la population vaut un.
+  it("llms.txt est lu, et son affirmation comme son enumeration sont vues", () => {
+    expect(pages, "llms.txt hors perimetre").toContain("llms.txt");
+    expect(affirmations.filter((a) => a.page === "llms.txt").length,
+      "llms.txt ne rend aucune affirmation chiffree : le motif ou le perimetre a casse")
+      .toBeGreaterThan(0);
+    expect(enumerations.filter((e) => e.page === "llms.txt").length,
+      "llms.txt ne rend aucune enumeration : sa liste de packs n'est plus comptee")
+      .toBeGreaterThan(0);
   });
 
   // Si une forme cessait de matcher -- une page reecrite, un motif casse par
@@ -434,11 +608,12 @@ describe("packs — les affirmations du site s'accordent", () => {
   // site sans rien dire. C'est exactement ce qui s'est passe pour la forme B
   // avant le 27 aout : elle n'existait pas, et docs.html annoncait onze
   // packs en en listant dix, sans aucun test rouge.
-  it("les deux formes d'enumeration trouvent encore chacune quelque chose", () => {
-    const parForme = { A: [], B: [] };
+  it("les trois formes d'enumeration trouvent encore chacune quelque chose", () => {
+    const parForme = { A: [], B: [], C: [] };
     for (const e of enumerations) parForme[e.forme].push(e.page);
     expect(parForme.A, "forme A (liste entre parentheses) ne matche plus rien").not.toEqual([]);
     expect(parForme.B, "forme B (liste en prose, parentheses par nom) ne matche plus rien").not.toEqual([]);
+    expect(parForme.C, "forme C (liste nue apres deux-points) ne matche plus rien").not.toEqual([]);
   });
 
   // ---------------------------------------------------------------------

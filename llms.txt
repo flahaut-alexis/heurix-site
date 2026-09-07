@@ -20,7 +20,7 @@ Heurix is a regex-powered search & discovery engine for e-commerce, designed in 
 
 - Cascade d'annotations : documents et requêtes traversent le même pipeline de règles regex par niveaux ; « m8x20 » et « M8 x 20 — A2 » produisent les mêmes annotations (DIAM_M8, LONG_20, VIS_M8X20) et se retrouvent.
 - Tolérance aux fautes : distance de Damerau-Levenshtein bornée (1 faute dès 4 caractères, 2 dès 8).
-- Packs de règles fournis : outillage, mode, industrie, livres, électronique, vins, automobile, électricité, plomberie, finance (dix au total). Packs sur mesure disponibles sur les plans Scale.
+- Packs de règles fournis : outillage, mode, industrie, livres, électronique, vins, automobile, électricité, plomberie, finance, sport (onze au total). Packs sur mesure disponibles sur les plans Scale.
 - Base URL de l'API : https://api.heurix.fr — authentification par clé (Authorization: Bearer).
 
 ## Contact
