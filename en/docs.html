@@ -303,10 +303,27 @@
         <tr><td>Search</td><td>1 <code class="docs-inline-code">search</code> call = 1 request</td></tr>
         <tr><td>Indexing</td><td>never counted against your request quota — update your catalog as often as needed, only the total number of indexed products is capped by plan</td></tr>
         <tr><td>Federated search</td><td>1 request per catalog queried</td></tr>
-        <tr><td>Management</td><td>Every other API call (synonyms, stats, deletion...) = 1 request</td></tr>
+        <tr><td>Management</td><td>Most management calls are not counted — keys, accounts, subscription, merchandising priorities, analytics. Nine endpoints are the exception, listed just below</td></tr>
+        <tr><td>Ranking</td><td>1 <code class="docs-inline-code">browse</code> call = 1 <em>Browse</em> request, on a separate counter from search</td></tr>
         <tr><td>Overage (Scale)</td><td>Extra usage is billed at the rate shown on the <a href="pricing.html">pricing page</a> — never a cutoff</td></tr>
         <tr><td>Overage (other plans)</td><td>A 10% grace margin absorbs a one-off spike; beyond that, the request is rejected with a clear <code class="docs-inline-code">429</code> code</td></tr>
       </table></div>
+
+      <h3 id="comptage-gestion">Management calls that are counted</h3>
+      <p>These nine endpoints each count as one request. No general rule separates them from the other management calls — neither the HTTP verb nor the nature of the operation: that is why they are listed one by one rather than summarised in a sentence.</p>
+      <div class="table-scroll"><table class="docs-params">
+        <tr><td><a href="#ep-stats"><code class="docs-inline-code">GET /v1/index/{catalog}/stats</code></a></td><td>Catalog statistics</td></tr>
+        <tr><td><a href="#ep-synonyms"><code class="docs-inline-code">GET /v1/index/{catalog}/synonyms</code></a></td><td>Read synonyms</td></tr>
+        <tr><td><a href="#ep-synonyms"><code class="docs-inline-code">PUT /v1/index/{catalog}/synonyms</code></a></td><td>Replace synonyms</td></tr>
+        <tr><td><a href="#ep-synonym-suggestions"><code class="docs-inline-code">GET /v1/index/{catalog}/synonym-suggestions</code></a></td><td>Synonym suggestions</td></tr>
+        <tr><td><a href="#ep-rulepacks"><code class="docs-inline-code">GET /v1/rulepacks</code></a></td><td>List of rule packs</td></tr>
+        <tr><td><code class="docs-inline-code">PUT /v1/index/{catalog}/config</code></td><td>Change the active pack</td></tr>
+        <tr><td><a href="#ep-custom-rules"><code class="docs-inline-code">POST /v1/index/{catalog}/custom-rules</code></a></td><td>Create a custom rule</td></tr>
+        <tr><td><a href="#ep-custom-rules"><code class="docs-inline-code">DELETE /v1/index/{catalog}/custom-rules/{id}</code></a></td><td>Delete a custom rule</td></tr>
+        <tr><td><a href="#ep-delete"><code class="docs-inline-code">DELETE /v1/index/{catalog}/items/{id}</code></a></td><td>Delete a product</td></tr>
+      </table></div>
+      <p>Worth knowing if you sync a catalog from a store: deletion applies to <strong>one</strong> product and counts as one request. Removing 300 products one by one therefore consumes 300 requests of your monthly quota.</p>
+
       <p>Your current usage is available anytime via <a href="#ep-usage"><code class="docs-inline-code">GET /v1/usage</code></a>.</p>
     </section>
 
@@ -572,7 +589,7 @@ curl "https://api.heurix.fr/v1/browse/mycatalog/drills-drivers?sort=price_asc" \
       <pre class="docs-code"><code>curl "https://api.heurix.fr/v1/browse/mycatalog/drills-drivers?filters=brand:Makita&facets=brand,color" \
   -H "Authorization: Bearer YOUR_API_KEY"</code></pre>
       <p>A product missing the requested field (no <code class="docs-inline-code">price</code> for a <code class="docs-inline-code">price_asc</code> sort, for example) is never excluded and never breaks the call — it simply lands at the end of the list, regardless of sort direction.</p>
-      <p>Consumes the request quota, same as a search call — it's an engine call just the same.</p>
+      <p>Consumes the <em>Browse</em> quota, on a separate counter from search — a category call never eats into your search volume.</p>
 
       <h3>Building a category page in the browser</h3>
       <p><code class="docs-inline-code">browse</code> accepts a <a href="#authentification">public key</a> (<code class="docs-inline-code">hxp_</code>), so you can build a category page entirely in JavaScript, with no server proxy. That is what the <a href="demo/index.html">demo shop</a> does — its code is readable in <code class="docs-inline-code">demo-boutique.js</code>.</p>
@@ -643,7 +660,7 @@ curl -X DELETE "https://api.heurix.fr/v1/browse/mycatalog/drills-drivers/attribu
       <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/federated-search \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -d '{"catalogs": ["store-fr", "store-en"], "q": "red sweater"}'</code></pre>
-      <p class="docs-hero-note">Counting: 1 request per catalog actually queried — federating across 3 catalogs counts as 3 requests, same principle as batch indexing.</p>
+      <p class="docs-hero-note">Counting: 1 request per catalog actually queried — federating across 3 catalogs counts as 3 requests.</p>
     </section>
 
     <section id="ep-items" class="docs-section">

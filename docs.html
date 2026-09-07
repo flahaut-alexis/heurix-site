@@ -317,10 +317,27 @@
         <tr><td>Recherche</td><td>1 appel <code class="docs-inline-code">search</code> = 1 requête</td></tr>
         <tr><td>Indexation</td><td>jamais décomptée du quota de requêtes — mettez à jour votre catalogue aussi souvent que nécessaire, seul le nombre total de produits indexés reste plafonné par plan</td></tr>
         <tr><td>Recherche fédérée</td><td>1 requête par catalogue interrogé</td></tr>
-        <tr><td>Gestion</td><td>Chaque autre appel API (synonymes, stats, suppression...) = 1 requête</td></tr>
+        <tr><td>Gestion</td><td>La plupart des appels de gestion ne sont pas décomptés — clés, comptes, abonnement, priorités de merchandising, analytics. Neuf points d'entrée font exception, listés juste en dessous</td></tr>
+        <tr><td>Ranking</td><td>1 appel <code class="docs-inline-code">browse</code> = 1 requête <em>Browse</em>, sur un compteur séparé de celui de la recherche</td></tr>
         <tr><td>Dépassement (Scale)</td><td>Le surplus est facturé au tarif indiqué sur la <a href="pricing.html">page tarifs</a> — jamais de coupure</td></tr>
         <tr><td>Dépassement (autres plans)</td><td>Une marge de tolérance de 10 % absorbe un pic ponctuel ; au-delà, la requête est refusée avec un code <code class="docs-inline-code">429</code> explicite</td></tr>
       </table></div>
+
+      <h3 id="comptage-gestion">Les appels de gestion qui décomptent</h3>
+      <p>Ces neuf points d'entrée comptent chacun pour une requête. Aucune règle générale ne les distingue des autres appels de gestion — ni le verbe HTTP, ni la nature de l'opération : c'est pourquoi ils sont listés un par un plutôt que résumés en une phrase.</p>
+      <div class="table-scroll"><table class="docs-params">
+        <tr><td><a href="#ep-stats"><code class="docs-inline-code">GET /v1/index/{catalog}/stats</code></a></td><td>Statistiques du catalogue</td></tr>
+        <tr><td><a href="#ep-synonyms"><code class="docs-inline-code">GET /v1/index/{catalog}/synonyms</code></a></td><td>Lecture des synonymes</td></tr>
+        <tr><td><a href="#ep-synonyms"><code class="docs-inline-code">PUT /v1/index/{catalog}/synonyms</code></a></td><td>Remplacement des synonymes</td></tr>
+        <tr><td><a href="#ep-synonym-suggestions"><code class="docs-inline-code">GET /v1/index/{catalog}/synonym-suggestions</code></a></td><td>Suggestions de synonymes</td></tr>
+        <tr><td><a href="#ep-rulepacks"><code class="docs-inline-code">GET /v1/rulepacks</code></a></td><td>Liste des packs de règles</td></tr>
+        <tr><td><code class="docs-inline-code">PUT /v1/index/{catalog}/config</code></td><td>Changement de pack actif</td></tr>
+        <tr><td><a href="#ep-custom-rules"><code class="docs-inline-code">POST /v1/index/{catalog}/custom-rules</code></a></td><td>Création d'une règle personnalisée</td></tr>
+        <tr><td><a href="#ep-custom-rules"><code class="docs-inline-code">DELETE /v1/index/{catalog}/custom-rules/{id}</code></a></td><td>Suppression d'une règle personnalisée</td></tr>
+        <tr><td><a href="#ep-delete"><code class="docs-inline-code">DELETE /v1/index/{catalog}/items/{id}</code></a></td><td>Suppression d'un produit</td></tr>
+      </table></div>
+      <p>À connaître si vous synchronisez un catalogue depuis une boutique : la suppression porte sur <strong>un</strong> produit et compte pour une requête. Retirer 300 produits un par un consomme donc 300 requêtes de votre quota mensuel.</p>
+
       <p>Votre consommation en cours est consultable à tout moment via <a href="#ep-usage"><code class="docs-inline-code">GET /v1/usage</code></a>.</p>
     </section>
 
@@ -585,7 +602,7 @@ curl "https://api.heurix.fr/v1/browse/moncatalogue/perceuses-visseuses?sort=pric
       <pre class="docs-code"><code>curl "https://api.heurix.fr/v1/browse/moncatalogue/perceuses-visseuses?filters=brand:Makita&facets=brand,color" \
   -H "Authorization: Bearer VOTRE_CLE_API"</code></pre>
       <p>Un produit sans le champ demandé (pas de <code class="docs-inline-code">price</code> pour un tri <code class="docs-inline-code">price_asc</code>, par exemple) n'est jamais exclu ni ne fait planter l'appel — il se retrouve simplement en fin de liste, quel que soit le sens du tri.</p>
-      <p>Consomme le quota de requêtes, comme un appel de recherche — c'est un appel moteur au même titre.</p>
+      <p>Consomme le quota <em>Browse</em>, sur un compteur séparé de celui de la recherche — un appel de rayon ne rogne jamais votre volume de recherche.</p>
 
       <h3>Construire une page de rayon côté navigateur</h3>
       <p><code class="docs-inline-code">browse</code> accepte une <a href="#authentification">clé publique</a> (<code class="docs-inline-code">hxp_</code>) : vous pouvez donc bâtir une page de catégorie entièrement en JavaScript, sans proxy serveur. C'est ce que fait la <a href="demo/index.html">boutique de démonstration</a>, dont le code est lisible dans <code class="docs-inline-code">demo-boutique.js</code>.</p>
@@ -656,7 +673,7 @@ curl -X DELETE "https://api.heurix.fr/v1/browse/moncatalogue/perceuses-visseuses
       <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/federated-search \
   -H "Authorization: Bearer VOTRE_CLE_API" \
   -d '{"catalogs": ["boutique-fr", "boutique-en"], "q": "pull rouge"}'</code></pre>
-      <p class="docs-hero-note">Comptage : 1 requête par catalogue effectivement interrogé — une fédération sur 3 catalogues compte pour 3 requêtes, à l'image de l'indexation par tranche.</p>
+      <p class="docs-hero-note">Comptage : 1 requête par catalogue effectivement interrogé — une fédération sur 3 catalogues compte pour 3 requêtes.</p>
     </section>
 
     <section id="ep-items" class="docs-section">

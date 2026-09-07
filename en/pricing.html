@@ -461,8 +461,8 @@
     <p class="section-lede">Simple by design: a request maps to a concrete engine action.</p>
     <table class="icp-table reveal">
       <tr><td>Search</td><td>Every search typed by a visitor counts as one request (the engine responds from the 3<sup>rd</sup> letter by default, like most modern engines)</td></tr>
-      <tr><td>Indexing</td><td>Indexing a batch of 1,000 products counts as 10 requests</td></tr>
-      <tr><td>API calls</td><td>Every call to the management or search API counts as one request</td></tr>
+      <tr><td>Indexing</td><td>Never counted. Update your catalog as often as you need; only the total number of indexed products is capped by your plan</td></tr>
+      <tr><td>API calls</td><td>Management calls are not counted: keys, accounts, subscription, merchandising priorities, analytics. A few endpoints are the exception and count as one request — each is listed in <a href="docs.html#comptage">the documentation</a></td></tr>
       <tr><td>Ranking</td><td>Every call to a category page counts as one Browse request — on a separate counter from search, only if you're subscribed to Browse</td></tr>
       <tr><td>Overage</td><td>Beyond the volume included in your plan, the surplus is billed at the rate shown on your plan — never an abrupt service cutoff</td></tr>
     </table>
