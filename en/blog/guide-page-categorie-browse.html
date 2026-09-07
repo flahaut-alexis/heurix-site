@@ -204,7 +204,7 @@
       <p>These same categories are also visible and manageable from <a href="../console.html">your console</a>, under Dashboard → Browse &amp; Discovery.</p>
 
       <h2>Step 3 — Render the page, with the provided snippet</h2>
-      <p>Download <a href="../../downloads/heurix-browse-widget.js?v=1788730650" download>heurix-browse-widget.js</a>, fill in your key and catalog at the top of the file, then include it on your category page:</p>
+      <p>Download <a href="../../downloads/heurix-browse-widget.js?v=1788782395" download>heurix-browse-widget.js</a>, fill in your key and catalog at the top of the file, then include it on your category page:</p>
       <pre class="docs-code"><code>&lt;div id="my-category-page"&gt;&lt;/div&gt;
 &lt;script src="heurix-browse-widget.js"&gt;&lt;/script&gt;
 &lt;script&gt;
@@ -237,6 +237,10 @@
   filters: { brand: "Makita" },
   containerId: "my-category-page"
 });</code></pre>
+      <h2>When the API does not answer</h2>
+      <p>Since September 2026, a call that drags on is given up after <strong>5 seconds</strong> — a shopper is waiting in front of the page, better to hand control back. Adjust it with <code class="docs-inline-code">timeoutMs</code>; <code class="docs-inline-code">0</code> disables the timeout.</p>
+      <p>An outage no longer shows up as an empty category: the message "No products in this category" is reserved for the case where the engine did answer and found nothing. The detailed diagnosis — rejected key, unauthorised domain, catalog not found, quota — goes to the browser console, where a developer looks, never in front of a shopper.</p>
+      <p>The promise returned by <code class="docs-inline-code">Heurix.browse()</code> still resolves exactly as before: a <code class="docs-inline-code">.then()</code> written without a <code class="docs-inline-code">.catch()</code> does not start throwing. On failure it resolves with <code class="docs-inline-code">{ total: 0, hits: [], heurixError: { code, transitoire } }</code> — <code class="docs-inline-code">hits</code> is always an array, which was not the case before.</p>
       <p>And to feature an entire brand or product line without editing product by product, an attribute boost rule is set once from the console (or the API). See <a href="../docs.html#ep-browse">the full documentation</a> for the pinning and boosting endpoint details.</p>
     </div>
 

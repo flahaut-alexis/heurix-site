@@ -351,6 +351,21 @@ describe("3. coupe-circuit -- alimente par les seules pannes transitoires", () =
 
 // ===========================================================================
 describe("4. repli -- deux etages, dont un sans aucune configuration", () => {
+  /* LE POINT 4 -- « une panne ne detruit pas ce qui est affiche » -- EST
+   * VERROUILLE DANS tests/heurix-browse-panne-restante.test.js, bloc 4, et
+   * PAS ICI. Deux tests l'y couvrent, dont un qui clique la vraie pagination
+   * plutot que d'appeler goToPage().
+   *
+   * J'en avais ecrit un doublon a cet endroit, apres avoir conclu que le cas
+   * n'etait couvert par personne. LA CONCLUSION VENAIT D'UN INSTRUMENT TROP
+   * ETROIT : j'avais reinjecte le defaut en ne lancant QUE ce fichier, alors
+   * que le test vivait dans l'autre. Zero rouge, et je l'ai lu comme « il
+   * n'y a rien ici ».
+   *
+   * Une reinjection se juge donc sur la SUITE COMPLETE, jamais sur le
+   * fichier qu'on est en train d'ecrire -- sinon « ce test est creux » et
+   * « ce test est ailleurs » rendent exactement la meme sortie.
+   */
   it("sans configuration, le rayon cesse d'etre un cul-de-sac", async () => {
     const ctx = monter(apiQuiRefuse(500, "boom"), { fallbackHref: undefined });
     await attendre(120);
@@ -501,13 +516,34 @@ describe("Heurix.browse -- le diagnostic est ADDITIF, le contrat ne bouge pas", 
     expect(msg).toMatch(/console Heurix/i);
   });
 
-  it("et le DEFAUT CONNU reste intact : la promesse resout, le DOM dit « aucun produit »", async () => {
+  it("LE DEFAUT CONNU EST CORRIGE : la promesse resout toujours, le DOM ne ment plus", async () => {
+    // CETTE ASSERTION ETAIT L'INVERSE, ET ELLE A FAIT SON TRAVAIL.
+    //
+    // Elle figeait le mensonge -- « la promesse resout, le DOM dit aucun
+    // produit » -- pour qu'il ne se corrige pas par accident. Elle est
+    // RETOURNEE et non supprimee : la ligne qui protegeait le defaut protege
+    // maintenant sa correction, comme celle de `res.ok` la veille.
+    //
+    // CE QUI NE BOUGE PAS EST AUSSI IMPORTANT QUE CE QUI BOUGE, et c'est
+    // pourquoi les trois autres assertions sont conservees mot pour mot :
+    // la promesse resout toujours, un seul appel part, et rien de plus. Le
+    // durcissement ne touche QUE ce que le visiteur lit -- c'est la voie
+    // moyenne, et c'est ce qui rend l'objection de non-regression
+    // satisfaite plutot que contournee.
     const ctx = chargerBrowse(() => ({
       ok: false, status: 403, json: async () => ({ detail: "Origine 'x' non autorisée" }),
     }));
-    await expect(ctx.api.browse(BASE)).resolves.toBeTruthy();
-    expect(ctx.dom.window.document.getElementById("c").textContent)
-      .toContain("Aucun produit dans cette catégorie");
+    const rendu = await ctx.api.browse(BASE);
+    expect(rendu, "la promesse resout, comme avant").toBeTruthy();
+    // Et elle resout MIEUX qu'avant : `hits` etait absent sur un corps
+    // d'erreur, donc `d.hits.map(...)` jetait un TypeError chez le marchand.
+    expect(Array.isArray(rendu.hits), "hits est un tableau, plus jamais absent").toBe(true);
+    expect(rendu.heurixError.code).toBe("origine");
+
+    const vu = ctx.dom.window.document.getElementById("c").textContent;
+    expect(vu, "une panne ne se deguise plus en categorie vide")
+      .not.toContain("Aucun produit dans cette catégorie");
+    expect(vu).toContain("indisponible");
     expect(ctx.appels(), "un appel entre, un appel sort").toBe(1);
   });
 

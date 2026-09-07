@@ -17,6 +17,16 @@
  * leur traduction en URL, ce que la promesse rend, et ce qui est ecrit
  * dans le DOM -- y compris, et surtout, CE QUI NE L'EST PAS.
  *
+ * UN TEST VERROUILLE ENCORE UN DEFAUT CONNU : `offset: 0` omis. Il est ici
+ * parce qu'un client peut en dependre, pas parce qu'il est juste.
+ *
+ * IL Y EN AVAIT DEUX. Le second -- `res.ok` non verifie -- a ete corrige le
+ * 7 septembre 2026, et son assertion RETOURNEE plutot que supprimee : la
+ * ligne qui protegeait le defaut protege desormais sa correction. Ce fichier
+ * a fonctionne exactement comme il l'annonce -- le correctif n'a pas pu se
+ * glisser, il a fait tomber un test qui disait pourquoi il existait.
+ *
+ * La phrase d'origine, gardee pour la memoire du choix :
  * DEUX TESTS VERROUILLENT DES DEFAUTS CONNUS (`offset: 0` omis, et
  * l'absence de controle de `res.ok`). Ils sont ici parce qu'un client
  * peut en dependre, pas parce qu'ils sont justes. Les corriger est une
@@ -233,11 +243,23 @@ describe("Heurix.browse — ce que rend la promesse", () => {
     await expect(api(win).browse({ ...BASE, containerId: "absent" })).resolves.toBeTruthy();
   });
 
-  it("DEFAUT CONNU : res.ok n'est pas verifie, une erreur HTTP resout normalement", async () => {
-    // Le fichier fait `.then(res => res.json())` sans controle. Une 500
-    // qui rend du JSON traverse donc comme un succes, et une 403 de cle
-    // invalide affiche « Aucun produit » plutot qu'une erreur. Verrouille
-    // pour que le corriger soit un choix, pas une surprise.
+  it("CORRIGE LE 7 SEPTEMBRE 2026 : la promesse resout toujours, mais le DOM ne ment plus", async () => {
+    // CETTE ASSERTION ETAIT L'INVERSE, ET C'EST ELLE QUI A DECIDE DE LA FORME
+    // DU CORRECTIF.
+    //
+    // Elle figeait le defaut en disant pourquoi : « verrouille pour que le
+    // corriger soit un choix, pas une surprise ». Le choix a ete fait, et il
+    // a ete fait contre elle A MOITIE SEULEMENT -- c'est le point.
+    //
+    // Ce qu'elle protegeait de precieux, c'est `resolves` : un marchand qui a
+    // ecrit `.then(rendre)` sans `.catch` ne doit pas passer a une erreur non
+    // rattrapee. Cette moitie est conservee mot pour mot. Ce qu'elle figeait
+    // de faux, c'est « Aucun produit » sur une panne.
+    //
+    // Le test est donc RETOURNE sur une moitie et INCHANGE sur l'autre. Une
+    // assertion qui verrouille un defaut merite qu'on distingue, au moment de
+    // la retourner, ce qu'elle protegeait de ce qu'elle figeait : les deux
+    // vivent dans la meme ligne et n'ont pas la meme valeur.
     const dom = new JSDOM('<!doctype html><html><body><div id="cible"></div></body></html>',
       { url: "http://localhost/" });
     const faux = async () => ({ ok: false, status: 500, json: async () => reponse([]) });
@@ -248,7 +270,7 @@ describe("Heurix.browse — ce que rend la promesse", () => {
     dom.window.eval(SOURCE);
     await expect(api(dom.window).browse({ ...BASE, containerId: "cible" })).resolves.toBeTruthy();
     expect(dom.window.document.getElementById("cible").textContent)
-      .toContain("Aucun produit dans cette catégorie");
+      .not.toContain("Aucun produit dans cette catégorie");
   });
 });
 

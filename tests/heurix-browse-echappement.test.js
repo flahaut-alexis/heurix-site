@@ -25,7 +25,21 @@ function rendre(hits) {
     { url: "http://localhost/" });
   global.window = dom.window;
   global.document = dom.window.document;
-  dom.window.fetch = async () => ({ json: async () => ({ category: "c", total: hits.length, hits }) });
+  // `ok` et `status` poses le 7 septembre 2026, et leur absence n'etait pas
+  // un oubli : le code ne les lisait pas quand ce bouchon a ete ecrit.
+  //
+  // TROISIEME OCCURRENCE DE LA MEME FAMILLE, et la plus instructive parce
+  // qu'elle etait DEJA CONNUE : heurix-browse-panne.test.js documente que le
+  // bouchon de heurix-browse-langue.test.js recevait « HTTP undefined » sur
+  // des reponses justes, et ce bouchon-ci avait exactement le meme trou. Il
+  // n'a pas ete corrige avec l'autre parce qu'il PASSAIT toujours -- le code
+  // se contentait alors de journaliser un faux diagnostic sans changer ce
+  // qu'il rendait.
+  //
+  // Un bouchon incomplet ne devient visible qu'au moment ou le code se met a
+  // DECIDER sur la part manquante. Jusque-la il ment en silence, et le vert
+  // du test le couvre.
+  dom.window.fetch = async () => ({ ok: true, status: 200, json: async () => ({ category: "c", total: hits.length, hits }) });
   global.fetch = dom.window.fetch;
   dom.window.eval(BROWSE);
   return (dom.window.Heurix ?? global.Heurix)

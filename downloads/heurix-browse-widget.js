@@ -412,6 +412,19 @@
   // réponse brute de l'API (utile même sans containerId, pour bâtir votre
   // propre affichage entièrement à la main).
   window.Heurix = window.Heurix || {};
+
+  /* UN COUPE-CIRCUIT POUR CE POINT D'ENTREE, partage par tous ses appels.
+   *
+   * Au niveau du module et non par appel, et c'est ce qui le rend utile :
+   * `Heurix.browse` est une FONCTION que le marchand rappelle a chaque
+   * changement de tri, de filtre ou de page -- l'usage montre par le guide
+   * publie. Une pause portee par un seul appel ne survivrait a aucun de ces
+   * gestes.
+   *
+   * Il ne voit aucun code HTTP : `armer` ne lit que `transitoire`.
+   */
+  var coupeCircuitBrowse = creerCoupeCircuit(RAYON_PAUSE_MS);
+
   window.Heurix.browse = function (options) {
     options = options || {};
     var lang = resoudreLangue(options.lang);
@@ -432,41 +445,133 @@
      * desormais le domaine et l'endroit ou l'autoriser, la ou la console ne
      * portait rien du tout.
      *
-     * CE QU'IL NE GAGNE PAS, ET POURQUOI. Pas de delai d'attente : une
-     * promesse qui pend deviendrait une promesse qui REJETTE, et un marchand
-     * qui a ecrit `.then(rendre)` sans `.catch` passerait d'une page qui ne
-     * se remplit pas a une erreur non rattrapee -- possiblement une alerte
-     * chez lui. Pas de coupe-circuit ni de repli non plus : ce chemin
-     * n'ecrit aucun etat d'erreur dans la page (le bloc « ce qui n'est PAS
-     * ecrit » du contrat), il n'a donc nulle part ou poser un geste.
+     * CE QU'IL GAGNE EN PLUS DEPUIS LE 7 SEPTEMBRE 2026, et pourquoi
+     * l'objection ci-dessus etait juste sans etre suffisante.
      *
-     * Le marchand qui veut les quatre gardes prend `Heurix.browsePanel`,
-     * dont c'est le role.
+     * Elle protegeait le CONTRAT -- la valeur rendue, le nombre d'appels, le
+     * rejet -- et elle avait raison de le faire. Elle ne disait rien de ce
+     * que le VISITEUR lit. Or sur un 403, `data.hits` est absent, donc ce
+     * chemin ecrivait `TEXTES[lang].vide` :
+     *
+     *     « Aucun produit dans cette catégorie. »
+     *
+     * Une panne de catalogue deguisee en rayon vide, sur le point d'entree
+     * que le guide publie enseigne, et SANS AUCUNE ERREUR -- donc invisible
+     * pour le marchand jusqu'a ce qu'un client le signale.
+     *
+     * LA VOIE MOYENNE : LA PROMESSE CONTINUE DE SE RESOUDRE, seul
+     * l'affichage change. Un `.then(rendre)` sans `.catch` ne devient pas
+     * une erreur non rattrapee -- l'objection reste satisfaite, mot pour
+     * mot -- et le mensonge disparait.
+     *
+     * Elle resout meme MIEUX qu'avant : sur un echec elle rend
+     * `{total: 0, hits: [], heurixError: {...}}`, la ou elle rendait le corps
+     * d'erreur brut. Un marchand qui ecrit `d.hits.map(...)` jetait un
+     * TypeError sur chaque 403 ; il obtient maintenant une liste vide.
+     *
+     * Le delai d'attente et le coupe-circuit suivent la meme regle : ils
+     * n'ajoutent aucun chemin de rejet, ils resolvent avec l'echec.
      */
+    var timeoutMs = options.timeoutMs != null ? options.timeoutMs : RAYON_TIMEOUT_MS;
+    var T = TEXTES[lang];
+
+    /* L'ECHEC EST UNE VALEUR, PAS UNE EXCEPTION -- c'est ce qui rend le
+     * durcissement non cassant. `hits` est un tableau vide et non absent :
+     * c'est la forme qu'un appelant sait deja traiter.
+     */
+    function resultatEnEchec(classification) {
+      return { category: options.category, total: 0, hits: [],
+               heurixError: { code: classification.code,
+                              transitoire: classification.transitoire } };
+    }
+
+    function montrerIndispo() {
+      if (!options.containerId) return;   // « ce qui n'est PAS ecrit » : rien sans conteneur
+      var c = document.getElementById(options.containerId);
+      // Aucun style impose, comme partout sur ce point d'entree : une classe
+      // que le marchand habille avec son CSS.
+      if (c) c.innerHTML = '<div class="heurix-indispo" role="status">' + esc(T.indispo) + "</div>";
+    }
+
+    function echouer(classification) {
+      journaliserPourLeMarchand("browse indisponible", classification);
+      coupeCircuitBrowse.armer(classification);   // transitoire seulement
+      montrerIndispo();
+      return resultatEnEchec(classification);
+    }
+
+    if (coupeCircuitBrowse.estOuvert()) {
+      // Panne transitoire connue depuis moins d'une minute : on ne repaie pas
+      // le delai d'attente a chaque geste du visiteur.
+      montrerIndispo();
+      return Promise.resolve(resultatEnEchec({ code: "pause", transitoire: true }));
+    }
+
+    var controleur = typeof AbortController !== "undefined" ? new AbortController() : null;
+    var minuteur = controleur && timeoutMs > 0
+      ? setTimeout(function () { controleur.abort(); }, timeoutMs)
+      : null;
+
     var appel = fetch(buildUrl(options), {
-      headers: { "Authorization": "Bearer " + apiKey }
-    }).catch(function (e) {
-      journaliserPourLeMarchand("browse indisponible", classerEchec(0, e, null));
+      headers: { "Authorization": "Bearer " + apiKey },
+      signal: controleur ? controleur.signal : undefined,
+    }).then(function (r) { clearTimeout(minuteur); return r; }, function (e) {
+      clearTimeout(minuteur);
       throw e;
     });
+
     return appel.then(function (res) {
       // Le corps se lit UNE fois : `res.json()` consomme le flux, donc on ne
       // peut pas le relire pour en tirer `detail` apres coup. On classe donc
       // depuis la meme lecture que celle qu'on rend a l'appelant.
       return res.json().then(function (data) {
         if (!res.ok) {
-          journaliserPourLeMarchand("browse indisponible",
-            classerEchec(res.status, null, data ? data.detail : null));
+          return echouer(classerEchec(res.status, null, data ? data.detail : null));
         }
+        coupeCircuitBrowse.reinitialiser();   // un succes efface toute trace
         return data;
       }, function (e) {
-        if (!res.ok) {
-          journaliserPourLeMarchand("browse indisponible",
-            classerEchec(res.status, null, null));
-        }
-        throw e;   // un corps illisible rejetait deja avant ce chantier
+        if (!res.ok) return echouer(classerEchec(res.status, null, null));
+        throw e;   // 200 au corps illisible : rejetait deja avant ce chantier
       });
+    }, function (e) {
+      /* CHAQUE CAS GARDE LE DENOUEMENT QU'IL AVAIT DEJA, et c'est plus fin
+       * que « la promesse resout ». Ma premiere version faisait resoudre
+       * TOUT ce chemin, y compris la panne reseau -- qui REJETAIT avant ce
+       * chantier. J'aurais transforme un rejet en resolution, cassant le
+       * `.catch(afficherErreur)` d'un marchand : exactement le genre de
+       * regression que l'objection de la session voisine cherchait a
+       * eviter, commis en croyant lui obeir.
+       *
+       * C'est leur test de caracterisation qui l'a dit, pas les miens.
+       *
+       *   erreur HTTP (403, 404, 5xx)  resolvait deja  ->  resout
+       *   panne reseau / CORS          rejetait deja   ->  rejette
+       *   delai d'attente              NOUVEAU CAS     ->  resout
+       *
+       * La troisieme ligne n'a pas d'anterieur a preserver : sans minuteur,
+       * une API qui pend ne denouait JAMAIS la promesse. Resoudre n'y casse
+       * donc aucun appelant, tandis que rejeter creerait un chemin de rejet
+       * la ou il n'en existait aucun.
+       */
+      var classification = classerEchec(0, e, null);
+      journaliserPourLeMarchand("browse indisponible", classification);
+      coupeCircuitBrowse.armer(classification);
+      if (classification.code === "timeout") {
+        montrerIndispo();
+        return resultatEnEchec(classification);
+      }
+      // Panne reseau : on n'ecrit rien dans la page, comme avant. Le
+      // mensonge qu'on corrige est « aucun produit » sur une erreur HTTP ;
+      // une panne reseau ne l'a jamais produit, et le marchand garde la main
+      // dans son `.catch`.
+      throw e;
     }).then(function (data) {
+      // UNE PANNE NE PASSE JAMAIS PAR LE RENDU. Le test `heurixError` est ce
+      // qui separe « le moteur a repondu, il n'y a rien » de « le moteur n'a
+      // pas repondu » -- deux etats que ce chemin confondait, et que le
+      // visiteur lisait pareil.
+      if (data && data.heurixError) return data;
       if (options.containerId) {
         var container = document.getElementById(options.containerId);
         if (container) {
@@ -474,7 +579,13 @@
           if (!data.hits || !data.hits.length) {
             // options.emptyMessage garde la main : c'est une option deja
             // publiee, et un marchand qui l'a posee a choisi son texte.
-            container.innerHTML = options.emptyMessage || TEXTES[lang].vide;
+            //
+            // ET ELLE NE COUVRE QUE LE VRAI VIDE. Avant ce chantier elle
+            // s'affichait aussi sur un 403 : le marchand qui avait ecrit
+            // « Rayon vide, revenez bientot » voyait SA PROPRE PHRASE servir
+            // de couverture a une panne. Il l'avait choisie pour un cas, elle
+            // en couvrait un autre, et c'est sa voix qui mentait.
+            container.innerHTML = options.emptyMessage || T.vide;
           } else {
             container.innerHTML = data.hits.map(function (h, i) {
               return renderItem(h, i, lang);
@@ -552,6 +663,15 @@
       // sur une ligne de texte gris, et se voit des qu'un bouton s'y pose.
       // Vu a l'ecran, pas par un test : la largeur d'une cellule ne fait
       // echouer aucune assertion.
+      // BANDEAU DE PANNE NON DESTRUCTIF. Il n'existe que quand la grille a
+      // quelque chose a perdre, et il porte ALORS la phrase et le geste
+      // ensemble -- vu a l'ecran le 7 septembre 2026, ou le bouton flottait
+      // seul, sans fond ni bordure, la phrase restee 83 px plus haut de
+      // l'autre cote de la barre de tri.
+      // #8A5300 sur #FFF8E6 = 5,3:1, compose et verifie, au-dessus des 4,5 de AA.
+      ".hx-rayon-panne-zone{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin:0 0 14px;padding:11px 14px;border:1px solid #E8D8A8;border-radius:8px;background:#FFF8E6;}",
+      ".hx-rayon-panne-texte{margin:0;font-size:13.5px;color:#8A5300;}",
+      ".hx-rayon-panne-zone .hx-rayon-etat{padding:0;text-align:left;}",
       ".hx-rayon-etat{grid-column:1/-1;padding:26px 14px;font-size:14px;color:#4A4D63;text-align:center;}",
       // SORTIE DE PANNE. Meme silhouette que le bouton de page courant, qui
       // est deja l'action pleine de ce widget -- un troisieme style
@@ -1139,6 +1259,13 @@
     }
 
     function rendre(data, focusApres) {
+      // Un succes retire le bandeau de panne s'il en restait un d'un
+      // chargement precedent. Il vit HORS de la grille, donc le redessin de
+      // la grille ne l'emporte pas : il faut le retirer explicitement,
+      // sinon il survit a la reussite qu'il contredit.
+      var zonePanne = conteneur.querySelector(".hx-rayon-panne-zone");
+      if (zonePanne) zonePanne.parentNode.removeChild(zonePanne);
+
       var hits = data.hits || [];
       var total = data.total || 0;
       totalPages = Math.max(1, Math.ceil(total / parPage));
@@ -1209,6 +1336,23 @@
      * HTTP et n'arme rien : les deux autres responsabilites ont deja eu lieu
      * quand il est appele. Le visiteur ne voit jamais `classification.marchand`.
      */
+    /* Le bloc d'actions, ecrit une fois et pose a deux endroits selon qu'il
+     * y a ou non quelque chose a preserver. `fallbackHref` est conserve tel
+     * quel : il est deja publie, et le retirer casserait un marchand qui
+     * l'aurait configure -- non cassant l'emporte sur elegant.
+     */
+    function actionsPanne() {
+      var h = '<div class="hx-rayon-etat hx-rayon-etat-panne">' +
+        '<div class="hx-rayon-actions">' +
+        '<button type="button" class="hx-rayon-reessayer">' + esc(T.reessayer) + "</button>";
+      var lien = fallbackHref ? fallbackHref(config.category) : null;
+      if (lien) {
+        h += '<a class="hx-rayon-secours" href="' + esc(lien) + '">' +
+             esc(T.continuerSur) + " →</a>";
+      }
+      return h + "</div></div>";
+    }
+
     function montrerEchec() {
       // LA PHRASE EST ECRITE UNE FOIS, DANS LE COMPTE, ET LES ACTIONS DANS LA
       // GRILLE. Le premier jet la posait aux deux endroits -- c'est ce que le
@@ -1221,6 +1365,51 @@
       //
       // Le compte est le bon porteur : il est role="status" aria-live, donc
       // il ANNONCE le changement, et il n'a plus de total a montrer.
+      /* NE RIEN DETRUIRE QUAND IL Y A QUELQUE CHOSE A PERDRE (7 septembre
+       * 2026). Ce bloc ecrasait la grille et masquait la pagination SANS
+       * CONDITION : une panne en page 4 effacait les produits affiches ET le
+       * moyen d'y revenir. Le visiteur perdait ce qu'il avait, pas seulement
+       * ce qu'il demandait -- et le geste offert juste en dessous
+       * (« Reessayer ») ne rendait que la page qui venait d'echouer.
+       *
+       * DEUX COMPORTEMENTS POUR UN SEUL ETAT, separes par ce qu'il y a a
+       * perdre, et c'est la mesure qui les separe -- pas une preference :
+       *
+       *   grille garnie  -> la panne s'ajoute, rien n'est touche
+       *   grille vide    -> la grille porte le message, il n'y a rien a perdre
+       *
+       * C'est le contraire de heurix-search.js, ou le panneau n'a jamais rien
+       * a preserver : il n'existe que le temps d'une frappe.
+       */
+      var aPerdre = !!elGrille.querySelector("[data-id]");
+      if (aPerdre) {
+        var zone = conteneur.querySelector(".hx-rayon-panne-zone");
+        if (!zone) {
+          zone = document.createElement("div");
+          zone.className = "hx-rayon-panne-zone";
+          zone.setAttribute("role", "status");
+          // AVANT la grille, jamais dedans : c'est ce qui lui permet
+          // d'apparaitre sans rien remplacer.
+          elGrille.parentNode.insertBefore(zone, elGrille);
+        }
+        // LA PHRASE VIT DANS LE BANDEAU, PAS DANS LE COMPTE, et c'est ce que
+        // l'ecran a impose. Ecrire T.indispo dans .hx-rayon-compte alors que
+        // 24 produits restent affiches produisait DEUX ETATS CONTRADICTOIRES
+        // cote a cote -- « Rayon indisponible » en tete d'une grille pleine
+        // -- et detruisait au passage un compte qui etait ENCORE VRAI : les
+        // 200 references existent toujours, c'est la page 2 qui manque.
+        //
+        // Le bandeau porte donc role="status" et prend l'annonce a son
+        // compte. Le compte garde son total, qui n'a pas cesse d'etre juste.
+        zone.innerHTML = '<p class="hx-rayon-panne-texte">' + esc(T.indispo) + "</p>" +
+                         actionsPanne();
+        // La pagination reste visible et la grille intacte. Le rail et la
+        // barre aussi : un visiteur qui a filtre garde le moyen de DEFAIRE
+        // son filtre, ce qui est parfois le remede.
+        return;
+      }
+
+      // Grille vide : rien a preserver, le compte porte la phrase comme avant.
       elCompte.textContent = T.indispo;
       elPagination.hidden = true;
       // Panne au PREMIER chargement : le rail n'a jamais rien recu et ne
@@ -1235,15 +1424,7 @@
       // des deux branches ne portait, et que ni l'une ni l'autre n'aurait pu
       // voir seule.
       majColonneRail(!elRail.innerHTML);
-      var h = '<div class="hx-rayon-etat hx-rayon-etat-panne">' +
-        '<div class="hx-rayon-actions">' +
-        '<button type="button" class="hx-rayon-reessayer">' + esc(T.reessayer) + "</button>";
-      var lien = fallbackHref ? fallbackHref(config.category) : null;
-      if (lien) {
-        h += '<a class="hx-rayon-secours" href="' + esc(lien) + '">' +
-             esc(T.continuerSur) + " →</a>";
-      }
-      elGrille.innerHTML = h + "</div></div>";
+      elGrille.innerHTML = actionsPanne();
       // Le rail et la barre restent en place : un visiteur qui a filtre garde
       // le moyen de DEFAIRE son filtre, ce qui est parfois le remede.
     }

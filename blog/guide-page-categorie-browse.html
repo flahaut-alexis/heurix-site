@@ -209,7 +209,7 @@
       <p>Ces mêmes catégories sont aussi visibles et gérables depuis <a href="../console.html">votre console</a>, onglet Dashboard → Browse &amp; Discovery.</p>
 
       <h2>Étape 3 — Affichez la page, avec le snippet fourni</h2>
-      <p>Téléchargez <a href="../downloads/heurix-browse-widget.js?v=1788730650" download>heurix-browse-widget.js</a>, renseignez votre clé et votre catalogue en tête de fichier, puis incluez-le sur votre page de catégorie :</p>
+      <p>Téléchargez <a href="../downloads/heurix-browse-widget.js?v=1788782395" download>heurix-browse-widget.js</a>, renseignez votre clé et votre catalogue en tête de fichier, puis incluez-le sur votre page de catégorie :</p>
       <pre class="docs-code"><code>&lt;div id="ma-page-categorie"&gt;&lt;/div&gt;
 &lt;script src="heurix-browse-widget.js"&gt;&lt;/script&gt;
 &lt;script&gt;
@@ -242,6 +242,10 @@
   filters: { brand: "Makita" },
   containerId: "ma-page-categorie"
 });</code></pre>
+      <h2>Quand l'API ne répond pas</h2>
+      <p>Depuis septembre 2026, un appel qui traîne est abandonné au bout de <strong>5 secondes</strong> — un visiteur attend devant sa page, mieux vaut lui rendre la main. Réglable par <code class="docs-inline-code">timeoutMs</code> ; <code class="docs-inline-code">0</code> désactive le délai.</p>
+      <p>Une panne ne s'affiche plus comme une catégorie vide : le message « Aucun produit dans cette catégorie » est réservé au cas où le moteur a bien répondu et n'a rien trouvé. Le diagnostic détaillé — clé rejetée, domaine non autorisé, catalogue introuvable, quota — part dans la console du navigateur, à l'endroit où un développeur regarde, jamais sous les yeux d'un acheteur.</p>
+      <p>La promesse rendue par <code class="docs-inline-code">Heurix.browse()</code> continue de se résoudre comme avant : un <code class="docs-inline-code">.then()</code> écrit sans <code class="docs-inline-code">.catch()</code> ne se met pas à lever. En cas de panne elle rend <code class="docs-inline-code">{ total: 0, hits: [], heurixError: { code, transitoire } }</code> — <code class="docs-inline-code">hits</code> est toujours un tableau, ce qui n'était pas le cas auparavant.</p>
       <p>Et pour mettre en avant toute une marque ou une gamme sans éditer produit par produit, une règle de boost par attribut se pose une fois depuis la console (ou l'API). Voir <a href="../docs.html#ep-browse">la documentation complète</a> pour le détail des endpoints d'épinglage et de boost.</p>
     </div>
 
