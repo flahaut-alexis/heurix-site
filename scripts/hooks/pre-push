@@ -145,6 +145,43 @@ CI="./.github/workflows/CI.yml"
 # pas savoir, et se taire reviendrait à répondre « tout va bien ».
 BLOCS="$(python3 - "$CI" <<'PY' 2>/dev/null
 import sys, yaml, io, json
+
+
+def etiquette(s, jid, i):
+    """Comment désigner une étape que CI.yml ne nomme pas.
+
+    LE REPLI PRÉCÉDENT ÉTAIT `f"{jid}[{i}]"`, ET IL A ÉTÉ MAL LU TROIS FOIS EN
+    UNE SEMAINE (7 septembre 2026). Le job « Suite de tests » est le seul dont
+    les blocs `run:` n'ont pas de `name:` : `npm ci` devenait `tests[2]` et
+    `npx vitest run` devenait `tests[3]`. Le compte rendu affichait donc
+    « SAUTÉ tests[2] » sous « OK tests :: tests[3] », et trois sessions y ont
+    lu DEUX contrôles de tests dont l'un n'aurait pas tourné. Il n'y en a
+    qu'un : `tests[2]` est l'installation des dépendances.
+
+    `[i]` indexe les ÉTAPES du job, `uses:` comprises, alors que le compte
+    rendu ne liste que les blocs `run:` -- les numéros y sautent, ce qui
+    achève de les faire passer pour des identifiants opaques. On rend donc la
+    COMMANDE, qui est ce que l'étape fait.
+
+    Le préambule est écarté : mesuré sur CI.yml, 2 des 5 blocs `run:`
+    commencent par `set -euo pipefail`, et s'en tenir à la première ligne les
+    rendrait indiscernables l'un de l'autre -- le défaut d'origine déplacé,
+    pas fermé.
+
+    NOMMER LES ÉTAPES DANS CI.yml AURAIT RETIRÉ LES DEUX OCCURRENCES DU JOUR
+    SANS TOUCHER À CE REPLI : la prochaine étape sans `name:` aurait rouvert
+    la mauvaise lecture, en silence, puisque rien n'exige un `name:`. Le
+    correctif est ici, à l'endroit qui invente l'étiquette.
+    """
+    if s.get("name"):
+        return s["name"]
+    for ligne in s["run"].splitlines():
+        ligne = ligne.strip()
+        if ligne and not ligne.startswith(("#", "set -")):
+            return ligne
+    return f"{jid}[{i}]"
+
+
 w = yaml.safe_load(io.open(sys.argv[1], encoding="utf-8"))
 sortie = []
 for jid, job in (w.get("jobs") or {}).items():
@@ -153,7 +190,7 @@ for jid, job in (w.get("jobs") or {}).items():
             continue
         sortie.append({
             "job": jid,
-            "nom": s.get("name") or f"{jid}[{i}]",
+            "nom": etiquette(s, jid, i),
             "run": s["run"],
         })
 print(json.dumps(sortie))
@@ -187,9 +224,9 @@ t0 = time.time()
 for b in blocs:
     # `npm ci` est sauté SCIEMMENT : réinstaller les dépendances à chaque push
     # coûterait plus que tout le reste réuni. Le prix est en tête de fichier,
-    # limite 3 -- il n'est pas caché ici.
+    # au point 3 de « CE QU'IL NE COUVRE PAS » -- il n'est pas caché ici.
     if b["run"].strip().startswith(("npm ci", "npm install")):
-        saute.append(b["nom"])
+        saute.append(b)
         rendus += 1
         continue
     d = time.time()
@@ -203,10 +240,18 @@ for b in blocs:
         for flux in (p.stdout, p.stderr):
             for ligne in (flux or "").strip().splitlines()[-25:]:
                 print(f"         | {ligne}", file=sys.stderr)
+# LES SAUTÉS AVANT LE TOTAL, ET AU MÊME FORMAT QUE LES AUTRES. Ils étaient
+# imprimés APRÈS la ligne de total, sans le préfixe `{job} ::` que portent les
+# lignes OK/ECHEC : deux formats pour une même population, et un bloc rangé
+# sous le compte qui prétend le couvrir. Regroupés ici, les N lignes se
+# comptent à l'oeil et doivent égaler le « N avec un compte rendu » qui suit.
+for b in saute:
+    print(f"  SAUTÉ      -  {b['job']} :: {b['nom'][:52]}", file=sys.stderr)
+if saute:
+    print("         (sauté sciemment -- voir « CE QU'IL NE COUVRE PAS », "
+          "point 3, en tête de scripts/hooks/pre-push)", file=sys.stderr)
 print(f"  {len(blocs)} bloc(s) trouvé(s), {rendus} avec un compte rendu, "
       f"{time.time()-t0:.1f}s au total.", file=sys.stderr)
-for n in saute:
-    print(f"  SAUTÉ  {n} -- voir limite 3 en tête de scripts/hooks/pre-push", file=sys.stderr)
 sys.exit(echec)
 PY
 CODE=$?
