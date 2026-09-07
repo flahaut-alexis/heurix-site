@@ -63,6 +63,93 @@ describe("index derive — forme", () => {
     }
   });
 
+  // -------------------------------------------------------------------------
+  // LE `k` D'UNE ANCRE NE SORT QUE DE SON PROPRE TITRE (7 septembre 2026).
+  //
+  // POURQUOI CE TEMOIN EXISTE. Deux gardes interdisent deja qu'une ancre
+  // remonte sur un mot etranger a son titre -- tests/ancres-classement.test.js
+  // les tient, sur la sortie du vrai moteur. Mais ils tombent LOIN de la
+  // cause : si le generateur se remet a faire heriter `k` du corps de la page,
+  // c'est le classement qui rougit, et il faut remonter de search-engine.js
+  // jusqu'a une ligne de Python pour comprendre. Ce test-ci tombe sur la
+  // ligne fautive, et le message nomme le terme et son ancre.
+  //
+  // CE QU'IL AURAIT ATTRAPE. Le commentaire du generateur a annonce
+  // l'inverse du code du 27 aout au 7 septembre : « une ancre herite du
+  // vocabulaire de sa page ». Une session qui l'aurait lu et cru aurait
+  // enrichi un corps en croyant rendre la section trouvable, ou pire, aurait
+  // « repare » le code pour qu'il tienne la promesse du commentaire.
+  //
+  // LA FORME DE L'ASSERTION. `termes()` derive plus que les mots du titre --
+  // composantes de tiret (« 6205-2rs » credite « 6205 »), graphie collee
+  // (« m8 x 20 » credite « m8x20 »). La reecrire ici la dupliquerait, et le
+  // test suivrait ses bugs. On verifie donc la propriete qui survit a toute
+  // derivation : un terme d'ancre, vide de ses separateurs, EST une
+  // sous-chaine du titre vide des siens. Un terme venu du corps ne l'est pas.
+  // Mesure du 7 septembre : 0 hors titre sur 267 termes d'ancres en FR
+  // (248 en EN), pour 68 et 66 ancres.
+  it("le `k` d'une ancre ne sort que de son propre titre", () => {
+    // sans accents, sans separateurs : « heurix-search.js » -> « heurixsearchjs »
+    const compact = (s) =>
+      (s || "").toLowerCase().normalize("NFD")
+        .replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]/g, "");
+
+    for (const f of ["search-index-fr.json", "search-index-en.json"]) {
+      const index = lire(f);
+      const ancres = index.entrees.filter((e) => e.ancre);
+      const pages = new Map(index.entrees.filter((e) => !e.ancre).map((e) => [e.p, e]));
+
+      // NON-VACUITE. Sans ces deux lignes le test passerait sur zero ancre,
+      // ou sur des ancres dont la page ne porte rien de plus qu'elles --
+      // il n'y aurait alors aucun heritage POSSIBLE, donc rien de verifie.
+      expect(ancres.length, `${f} : aucune ancre a verifier`).toBeGreaterThan(20);
+      const heritables = ancres.filter((a) => {
+        const p = pages.get(a.p.split("#")[0]);
+        if (!p) return false;
+        const sien = new Set((a.k || "").split(" "));
+        return (p.k || "").split(" ").some((m) => m && !sien.has(m));
+      });
+      expect(heritables.length,
+        `${f} : aucune ancre dont la page porte un terme qu'elle n'a pas -- ` +
+        `le test ne peut rien distinguer`).toBe(ancres.length);
+
+      const indus = [];
+      for (const a of ancres) {
+        const titre = compact(a.t);
+        for (const m of (a.k || "").split(" ")) {
+          if (m && !titre.includes(compact(m))) indus.push(`${a.p} :: « ${m} » absent de « ${a.t} »`);
+        }
+      }
+      expect(indus, `${f} : termes d'ancre etrangers a leur titre`).toEqual([]);
+    }
+  });
+
+  // UN POSITIF CONNU, et non plus une propriete generale. Si la regle
+  // ci-dessus devenait vraie par accident -- des ancres sans `k`, un index
+  // vide, un filtre `.ancre` qui ne rend plus rien -- ce cas-ci le dirait :
+  // il nomme le mot, la page, et le compte mesure le 7 septembre 2026.
+  // C'est exactement le mot par lequel le defaut du 4 septembre s'etait vu.
+  it("« merchandising » ne descend pas de fonctionnalites.html dans ses ancres", () => {
+    const fr = lire("search-index-fr.json");
+    const page = fr.entrees.find((e) => e.p === "fonctionnalites.html" && !e.ancre);
+    expect(page.k.split(" "), "la page doit bien porter le mot").toContain("merchandising");
+
+    const ancres = fr.entrees.filter((e) => e.ancre && e.p.startsWith("fonctionnalites.html#"));
+    expect(ancres.length).toBe(41);
+    // `e` porte le titre de la page mere : les 41 l'ont. C'est un repere
+    // d'affichage, et search-engine.js ne le classe pas pour une ancre.
+    expect(ancres.filter((a) => /merchandising/i.test(a.e)).length).toBe(41);
+    // `k` classe, lui. Seules les trois ancres qui ecrivent le mot dans leur
+    // propre titre le portent.
+    const portent = ancres.filter((a) => a.k.split(" ").includes("merchandising"));
+    expect(portent.map((a) => a.p).sort()).toEqual([
+      "fonctionnalites.html#merchandising-e-commerce-classer-sans-recherche",
+      "fonctionnalites.html#merchandising-manuel",
+      "fonctionnalites.html#merchandising-manuel-vous-gardez-la-main",
+    ]);
+    for (const a of portent) expect(a.t.toLowerCase()).toContain("merchandising");
+  });
+
   it("les deux langues ne se melangent pas", () => {
     expect(lire("search-index-fr.json").entrees.every((e) => !e.p.startsWith("en/"))).toBe(true);
     expect(lire("search-index-en.json").entrees.every((e) => e.p.startsWith("en/"))).toBe(true);

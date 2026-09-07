@@ -368,9 +368,40 @@ def construire(langue: str) -> dict:
             "s": source(chemin),
             "k": " ".join(sorted(termes(brut["t"] + " " + brut["e"] + " " + brut["corps"]))),
         })
-        # Une ancre herite du vocabulaire de sa page : elle y mene, et son
-        # propre titre est trop court pour porter seul les termes qui
-        # amenent un visiteur jusqu'a elle.
+        # UNE ANCRE N'HERITE DE RIEN DU CORPS DE SA PAGE, ET C'EST VOULU.
+        #
+        # Le `k` ecrit plus bas est fait du SEUL titre de l'ancre. Il ne
+        # reprend ni le corps de la page, ni sa description, ni son titre.
+        # Le commentaire qui tenait cette place depuis le 27 aout (db47d4a1)
+        # annoncait l'inverse -- « une ancre herite du vocabulaire de sa
+        # page » -- et n'a jamais decrit cette ligne : il decrivait `e`, le
+        # titre de la page parente, seul emprunt reel, et le 4 septembre l'a
+        # sorti du classement.
+        #
+        # POURQUOI PAS D'HERITAGE. search-engine.js accorde le score 0 a une
+        # entree dont `e` contient la requete, mais BRANCHE sur `item.ancre`
+        # pour en exclure les ancres (4 septembre 2026, chercher « `e` NE
+        # CLASSE PAS UNE ANCRE »). Motif : une ancre remontait sur un mot du
+        # titre de sa page mere, ecrit nulle part sur sa propre ligne, donc
+        # sans surlignage -- 41 ancres de fonctionnalites.html portent
+        # « merchandising » dans `e`, 3 seulement dans leur titre. Faire
+        # heriter `k` du corps rouvrirait la meme porte un cran plus bas, au
+        # palier -0,5, avec le meme symptome et sans le meme signal.
+        #
+        # CE QUE DEUX GARDES IMPOSENT, et rougiraient au premier heritage :
+        #   tests/ancres-classement.test.js
+        #     « aucune ancre ne remonte sur un mot absent de son propre titre »
+        #     « toute ancre affichee surligne le mot qui l'a fait remonter »
+        #   tests/index-recherche.test.js
+        #     « le `k` d'une ancre ne sort que de son propre titre » -- temoin
+        #     pose ici meme, sur l'index, pour que la cause soit lisible avant
+        #     que le classement ne devienne rouge.
+        #
+        # LE PRIX, ASSUME ET MESURE LE 7 SEPTEMBRE 2026. Du vocabulaire ajoute
+        # dans le corps d'une section n'enrichit que l'entree de la PAGE. Vu
+        # depuis une ancre, la page porte 887 termes en FR (815 en EN) quand
+        # l'ancre en porte 3,9 (3,8). Ecrire dans le corps ne rend PAS la
+        # section trouvable : c'est son titre, et lui seul, qu'il faut ecrire.
         src = open(os.path.join(RACINE, chemin), encoding="utf8").read()
         for a in ancres(chemin, src):
             entrees.append({

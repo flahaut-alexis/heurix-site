@@ -11,8 +11,11 @@ const RACINE = path.resolve(__dirname, "..");
 //
 // `scripts/index-recherche.py` ecrit `e` deux fois, avec deux sens :
 //
-//     ligne 350, une PAGE   : e = sa propre <meta name="description">
-//     ligne 366, une ANCRE  : e = le <title> de sa PAGE PARENTE
+// (references par le champ et non par le numero de ligne : « ligne 350 » et
+// « ligne 366 » etaient deja fausses de 17 lignes le jour ou on les a lues.)
+//
+//     `"e": brut["e"]`, une PAGE   : sa propre <meta name="description">
+//     `"e": brut["t"]`, une ANCRE  : le <title> de sa PAGE PARENTE
 //
 // `search-engine.js` accorde le score 0 quand la requete est dans `e`. Pour
 // une page c'est du contenu -- son propre resume, affiche ET surligne. Pour
