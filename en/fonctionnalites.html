@@ -231,12 +231,13 @@
         <p>A fashion catalog left on the hardware pack never finds out on its own. The endpoint annotates a sample of your catalog with every available pack and compares the real coverage: actual content decides, not the vertical declared at signup. Never changes anything: the suggestion is shown, the decision stays yours.</p>
         <p>A winner without its gap can't be judged: <code class="docs-inline-code">marge</code> says by how much the leader is ahead of its best competitor, and on which criterion. When that criterion is <code class="docs-inline-code">null</code>, both packs annotate exactly as much — the engine then recommends nothing rather than letting alphabetical order decide.</p>
         <pre class="docs-code"><code>GET /v1/index/{catalog}/rulepack-suggestion
-→ {"recommande": "fashion", "raison": "...",
-   "marge": {"second": "hardware", "produits_annotes": 31.67,
+→ {"recommande": "mode", "raison": "...",
+   "marge": {"second": "outillage", "produits_annotes": 31.67,
              "annotations_distinctes": 14.0,
              "critere": "produits_annotes"}}
 
 POST /v1/rulepacks/suggest   same response, before any import</code></pre>
+        <p><code class="docs-inline-code">"mode"</code> is the fashion pack and <code class="docs-inline-code">"outillage"</code> the hardware one: <code class="docs-inline-code">recommande</code> and <code class="docs-inline-code">second</code> carry the engine's own names, in French, whatever language you call from.</p>
         <a href="docs.html#ep-rulepack-suggestion">Suggestion endpoint →</a>
       </div>
 
@@ -268,9 +269,9 @@ POST /v1/rulepacks/suggest   same response, before any import</code></pre>
 
       <div class="feat-card feat-card-highlight">
         <h3 id="faceted-search">Faceted search</h3>
-        <p>Filter by genre, country, dimension, material... with disjunctive counting per group: selecting "Sweden" doesn't erase the other countries from the count, exactly like a standard e-commerce filter sidebar. This is what powers the prisms in the homepage demo.</p>
-        <pre class="docs-code"><code>{"q": "crime", "facets": ["PAYS"], "filters": ["PAYS_SE"]}
-→ "facets": {"PAYS": {"PAYS_SE": 12, "PAYS_FR": 34, ...}}</code></pre>
+        <p>Filter by genre, format, dimension, material... with disjunctive counting per group: selecting "Pocket" doesn't erase the other formats from the count, exactly like a standard e-commerce filter sidebar. This is what powers the prisms in the homepage demo.</p>
+        <pre class="docs-code"><code>{"q": "polar", "facets": ["FORMAT"], "filters": ["FORMAT_POCHE"]}
+→ "facets": {"FORMAT": {"FORMAT_POCHE": 17, "FORMAT_BROCHE": 9, ...}}</code></pre>
         <a href="docs.html#facettes">Facets and filters →</a>
       </div>
 
@@ -373,7 +374,8 @@ POST /v1/rulepacks/suggest   same response, before any import</code></pre>
       <div class="feat-card">
         <h3 id="explainable-results">Explainable results</h3>
         <p>Every result includes a <code class="docs-inline-code">matched</code> field listing why it ranks: term found, typo corrected, shared annotation. It's your diagnostic tool when a result surprises you.</p>
-        <pre class="docs-code"><code>"matched": ["annotation #VIS_M8X20", "term 'stainless'"]</code></pre>
+        <pre class="docs-code"><code>"matched": ["annotation #VIS_M8X20", "terme 'stainless'"]</code></pre>
+        <p>The <code class="docs-inline-code">terme</code> and <code class="docs-inline-code">annotation</code> prefixes are emitted by the engine in French, in every language.</p>
         <a href="docs.html#ep-search">See a sample response →</a>
       </div>
 

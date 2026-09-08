@@ -314,9 +314,9 @@ POST /v1/rulepacks/suggest   même réponse, avant tout import</code></pre>
 
       <div class="feat-card feat-card-highlight">
         <h3 id="recherche-a-facettes">Recherche à facettes</h3>
-        <p>Filtrez par genre, pays, dimension, matière... avec un décompte disjonctif par groupe : sélectionner « Suède » n'efface pas les autres pays du décompte, exactement comme un filtre de boutique en ligne classique. C'est ce qui alimente les prismes de la démonstration en page d'accueil.</p>
-        <pre class="docs-code"><code>{"q": "polar", "facets": ["PAYS"], "filters": ["PAYS_SE"]}
-→ "facets": {"PAYS": {"PAYS_SE": 12, "PAYS_FR": 34, ...}}</code></pre>
+        <p>Filtrez par genre, format, dimension, matière... avec un décompte disjonctif par groupe : sélectionner « Poche » n'efface pas les autres formats du décompte, exactement comme un filtre de boutique en ligne classique. C'est ce qui alimente les prismes de la démonstration en page d'accueil.</p>
+        <pre class="docs-code"><code>{"q": "polar", "facets": ["FORMAT"], "filters": ["FORMAT_POCHE"]}
+→ "facets": {"FORMAT": {"FORMAT_POCHE": 17, "FORMAT_BROCHE": 9, ...}}</code></pre>
         <a href="docs.html#facettes">Facettes et filtres →</a>
       </div>
 
