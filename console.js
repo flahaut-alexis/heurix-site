@@ -7174,11 +7174,67 @@
           // rien : un catalogue a zero annotation est un probleme, meme sans
           // meilleur candidat.
           var meilleur = d.meilleur || {};
+          var marge = d.marge || {};
           if (meilleur.produits_annotes === 0) {
             zone.hidden = false;
             zone.className = "pack-suggestion pack-suggestion-alerte";
             zone.innerHTML = "<strong>" + T("Aucun attribut reconnu") + "</strong> " +
               T("sur cet échantillon. Vos produits ne bénéficient d'aucune annotation — vérifiez que le pack correspond bien à votre secteur, ou créez des reconnaissances personnalisées.");
+          } else if (marge.critere === null && marge.second && meilleur.pack !== d.pack_actuel) {
+            // EGALITE STRICTE : LE MOTEUR REFUSE DE RECOMMANDER, ET CE
+            // REFUS N'EST PAS UN VIDE (9 septembre 2026, heurix-engine
+            // d78f5bb, fusionne dans son `main`). `comparer_packs` rendait
+            // jusque-la l'argmax brut ; quand deux packs annotent les MEMES
+            // produits avec le MEME nombre d'etiquettes, le gagnant etait
+            // celui dont le nom vient en premier dans l'alphabet. Le moteur
+            // pose donc `recommande` a null et le dit dans `marge.critere`.
+            //
+            // SANS CETTE BRANCHE, LA ZONE SE MASQUAIT SANS UN MOT. Reproduit
+            // avant correction en faisant tourner cette fonction sur les
+            // deux moteurs, corpus d'egalite du moteur (100 produits portant
+            // « M{d} DN {d} » ; `industrie`, `outillage` et `plomberie` a
+            // 100 produits annotes et 13 etiquettes distinctes chacun) :
+            //
+            //   moteur d'AVANT d78f5bb   « Le pack industrie semble mieux
+            //                             adapte » -- une recommandation
+            //                             decidee par l'ordre alphabetique
+            //   moteur d'APRES           zone.hidden = true, zero caractere
+            //
+            // Le marchand ne voyait donc ni suggestion, ni raison de son
+            // absence.
+            //
+            // `marge.critere === null` EN COMPARAISON STRICTE, ET C'EST
+            // VOULU : un moteur qui ne sert pas encore la cle rend
+            // `undefined`, qui n'est pas `null`. Le site se deploie
+            // independamment du moteur -- cette branche reste donc eteinte
+            // tant que le lot moteur n'est pas en ligne, au lieu de
+            // s'allumer sur une reponse qui ne porte pas l'information.
+            //
+            // `meilleur.pack !== d.pack_actuel` REPRODUIT L'ORDRE DES
+            // BRANCHES DU MOTEUR, il ne l'invente pas : `comparer_packs`
+            // teste « le pack actuel est deja le plus pertinent » AVANT
+            // l'egalite. Etre deja pose sur l'un des packs a egalite
+            // n'appelle aucune action, et cette zone doit rester muette --
+            // mesure : pack_actuel=`industrie` sur le meme corpus, raison
+            // « le pack actuel est deja le plus pertinent ».
+            //
+            // CE QU'ELLE NE SAIT PAS DISTINGUER. Le moteur refuse aussi
+            // quand le meilleur pack pose moins de `SEUIL_SIGNAL` = 5
+            // etiquettes ; si DEUX packs sont alors a egalite sous ce seuil,
+            // cette branche parle d'egalite la ou le moteur pense
+            // « signal insuffisant ». Le message reste vrai (la mesure ne
+            // les separe pas), il n'est pas le plus utile. Recopier le
+            // seuil ici poserait une DEUXIEME copie d'une constante du
+            // moteur chez un lecteur que le moteur ne peut pas prevenir --
+            // il en recense cinq. La vraie reponse serait un code de raison
+            // lisible par machine dans la reponse, pas une constante de
+            // plus ici.
+            zone.hidden = false;
+            zone.className = "pack-suggestion pack-suggestion-alerte";
+            zone.innerHTML = "<strong>" +
+              T("{0} et {1} sont à égalité", esc(meilleur.pack), esc(marge.second)) + "</strong> " +
+              T("sur cet échantillon de {0} produits : les deux packs annotent {1} produits avec {2} étiquettes distinctes. La mesure ne les départage pas — ce n'est pas qu'aucun pack ne convient, c'est qu'aucun ne se distingue. Choisissez celui de votre métier, ou créez une reconnaissance personnalisée qui sépare les deux.",
+                d.echantillon, meilleur.produits_annotes, meilleur.annotations_distinctes);
           } else {
             zone.hidden = true;
           }

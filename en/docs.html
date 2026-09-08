@@ -1015,7 +1015,32 @@ done</code></pre>
 → {"classement": [
      {"pack": "fashion", "annotations_distinctes": 42, "produits_annotes": 380, "couverture_pct": 95.0},
      {"pack": "hardware", "annotations_distinctes": 3, "produits_annotes": 12, "couverture_pct": 3.0}
-   ], "recommande": "fashion", "raison": "..."}</code></pre>
+   ], "recommande": "fashion", "raison": "...",
+   "marge": {"second": "hardware", "produits_annotes": 31.67,
+             "annotations_distinctes": 14.0, "critere": "produits_annotes"}}</code></pre>
+
+      <h3 id="marge-recommandation">By how much the winner wins, and when it doesn't</h3>
+      <p><code class="docs-inline-code">recommande</code> <strong>can be <code class="docs-inline-code">null</code></strong>, and that is a result, not a failure: no pack recognises your references significantly, the pack already in place is the best one, the gap with it is too small to justify a reindex, or two packs are tied. <code class="docs-inline-code">raison</code> says which of those applies. A client that displays the recommendation must handle that null value rather than treat it as a missing answer.</p>
+      <p><code class="docs-inline-code">marge</code> says <strong>by how much</strong> the winner leads its best competitor. <code class="docs-inline-code">second</code> is not the runner-up in the ranking: it is the best pack that recognises anything at all — comparing against a pack that annotates nothing would be a division by zero. With no competitor, all three fields are <code class="docs-inline-code">null</code>; a winner with no rival has no margin, which is not the same thing as a zero margin.</p>
+      <p>The ranking sorts on two criteria in this order — <code class="docs-inline-code">produits_annotes</code> first, <code class="docs-inline-code">annotations_distinctes</code> to break the tie — and both ratios are returned because neither is enough on its own. <strong><code class="docs-inline-code">critere</code> is the only authority on ties</strong>: the ratios are rounded for display, <code class="docs-inline-code">critere</code> is computed on the integers. When it is <code class="docs-inline-code">null</code>, the two packs annotate exactly the same thing and the sort separated nothing — the engine then refuses to recommend, and <code class="docs-inline-code">recommande</code> is <code class="docs-inline-code">null</code> too. No threshold is applied to the margin itself: you get the number, the decision stays yours.</p>
+
+      <h3 id="ep-rulepacks-suggest">Before indexing, on a plain sample</h3>
+      <div class="docs-endpoint"><span class="docs-method docs-method-post">POST</span><code>/v1/rulepacks/suggest</code></div>
+      <p>The same comparison, but <strong>before any import</strong>: you send a sample of products and get the same response object back, with no indexed catalog. That is what lets you pick a pack before the first import rather than after — fixing it afterwards means reimporting everything. At most 300 products are examined; anything beyond that in the body is ignored. An empty sample is rejected with a <code class="docs-inline-code">422</code>. Doesn't count against quota, and writes nothing: no catalog is created.</p>
+      <p><code class="docs-inline-code">pack_actuel</code> is always <code class="docs-inline-code">null</code> in this response — there is no catalog yet, so no pack in place to compare against.</p>
+      <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/rulepacks/suggest \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"items": [{"id": "1", "ref": "VIS-M8X20", "name": "Vis tête hexagonale M8x20 inox A2"},
+                 {"id": "2", "ref": "ECR-M8", "name": "Écrou hexagonal M8 zingué"}]}'
+
+→ {"classement": [
+     {"pack": "hardware", "annotations_distinctes": 9, "produits_annotes": 2, "couverture_pct": 100.0},
+     {"pack": "plumbing", "annotations_distinctes": 1, "produits_annotes": 1, "couverture_pct": 50.0}
+   ], "recommande": "hardware", "raison": "aucun pack n'est configuré",
+   "pack_actuel": null, "echantillon": 2,
+   "marge": {"second": "plumbing", "produits_annotes": 2.0,
+             "annotations_distinctes": 9.0, "critere": "produits_annotes"}}</code></pre>
     </section>
 
     <section id="ep-custom-rules" class="docs-section">

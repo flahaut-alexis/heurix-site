@@ -275,8 +275,14 @@
       <div class="feat-card">
         <h3 id="suggestion-de-pack-automatique">Suggestion de pack automatique</h3>
         <p>Un catalogue de vêtements resté sur le pack outillage ne le sait jamais tout seul. L'endpoint annote un échantillon de votre catalogue avec chaque pack disponible et compare la couverture réelle : le vrai contenu tranche, pas le secteur déclaré à l'inscription. Ne modifie jamais rien : la suggestion est affichée, la décision reste la vôtre.</p>
+        <p>Un gagnant sans son écart ne se juge pas : <code class="docs-inline-code">marge</code> dit de combien le premier devance son meilleur concurrent, et sur quel critère. Quand ce critère est <code class="docs-inline-code">null</code>, les deux packs annotent exactement autant — le moteur ne recommande alors rien plutôt que de laisser l'ordre alphabétique décider.</p>
         <pre class="docs-code"><code>GET /v1/index/{catalog}/rulepack-suggestion
-→ {"recommande": "mode", "raison": "..."}</code></pre>
+→ {"recommande": "mode", "raison": "...",
+   "marge": {"second": "outillage", "produits_annotes": 31.67,
+             "annotations_distinctes": 14.0,
+             "critere": "produits_annotes"}}
+
+POST /v1/rulepacks/suggest   même réponse, avant tout import</code></pre>
         <a href="docs.html#ep-rulepack-suggestion">Endpoint suggestion de pack →</a>
       </div>
 

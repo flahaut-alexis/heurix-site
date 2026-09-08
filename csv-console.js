@@ -495,9 +495,32 @@ async function recommanderPack() {
       body: JSON.stringify({ items: produits.slice(0, 300) }),
     });
     if (!d.recommande) {
+      // NOMMER LES DEUX PACKS QUAND C'EST UNE EGALITE (9 septembre 2026).
+      // « Aucun pack ne se détache » reste vrai dans tous les cas de refus,
+      // et c'est ce qui s'affichait ici avant ce lot -- reproduit sur le
+      // corpus d'égalité du moteur, sans une ligne à changer. Mais le
+      // moteur sait désormais dire POURQUOI il se tait (heurix-engine
+      // d78f5bb, `marge.critere`), et deux packs à égalité n'appellent pas
+      // le même geste qu'un catalogue que rien ne reconnaît : dans un cas
+      // on choisit entre deux, dans l'autre on importe sans pack.
+      //
+      // `critere === null` en comparaison stricte : un moteur qui ne sert
+      // pas encore la clé rend `undefined` et l'ancien message reste.
+      // `meilleur.pack !== d.pack_actuel` est ici toujours vrai -- cette
+      // route (`POST /v1/rulepacks/suggest`) passe `pack_actuel=None` au
+      // moteur, il n'y a pas encore de catalogue. On l'écrit quand même,
+      // pour que les deux consoles lisent la réponse de la même façon.
+      const marge = d.marge || {};
+      const tete = d.meilleur || {};
+      const egalite = marge.critere === null && marge.second &&
+        tete.pack !== d.pack_actuel;
       zone.className = "csv-reco csv-reco-neutre";
-      zone.innerHTML = "<strong>" + T("Aucun pack ne se détache") + "</strong> " +
-        T("sur cet échantillon. Vous pouvez importer sans pack : la recherche fonctionnera sur les mots, sans reconnaissance de structure.");
+      zone.innerHTML = egalite
+        ? "<strong>" + T("{0} et {1} sont à égalité", escaper(tete.pack), escaper(marge.second)) + "</strong> " +
+          T("sur cet échantillon : les deux packs annotent {0} produits avec {1} étiquettes distinctes. La mesure ne les départage pas — choisissez celui de votre métier, l'import fonctionne avec l'un comme avec l'autre.",
+            tete.produits_annotes, tete.annotations_distinctes)
+        : "<strong>" + T("Aucun pack ne se détache") + "</strong> " +
+          T("sur cet échantillon. Vous pouvez importer sans pack : la recherche fonctionnera sur les mots, sans reconnaissance de structure.");
       return;
     }
     const meilleur = (d.classement || [])[0] || {};
