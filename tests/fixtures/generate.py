@@ -54,10 +54,34 @@ if ENGINE is None:
 sys.path.insert(0, ENGINE)
 
 from heurix.index import Store  # noqa: E402
+from heurix.pack_advisor import comparer_packs  # noqa: E402
 from heurix.rules import load_rulepacks  # noqa: E402
 from heurix.search import search  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+
+# Corpus d'EGALITE STRICTE, repris de heurix-engine
+# (tests/test_pack_advisor.py, `_produits_egalite_stricte`). Chaque produit
+# porte « M{d} » ET « DN {d} » pour le meme d : `industrie`, `outillage` et
+# `plomberie` lisent chacun une des deux notations, couvrent les memes
+# produits et posent le meme nombre d'etiquettes distinctes. Le tri
+# `(-produits_annotes, -annotations_distinctes)` n'a alors rien pour
+# departager, et le moteur refuse de recommander plutot que de laisser
+# l'ordre alphabetique decider (heurix-engine d78f5bb, capture ici depuis 9465756).
+#
+# C'EST LE SEUL ETAT QUI REND `recommande` NUL AVEC UN CATALOGUE QUI
+# S'ANNOTE BIEN, et donc le seul qui atteignait la branche muette de
+# `chargerSuggestionPack`. On le capture depuis le VRAI moteur pour la
+# meme raison que le reste de ce fichier : un payload ecrit a la main
+# prouverait que la console sait afficher un objet qu'on a invente.
+_DIAMETRES_COMMUNS = [4, 5, 6, 8, 10, 12, 14, 16, 20, 25, 32, 40, 50]
+EGALITE_STRICTE = [
+    {"id": f"P{i}",
+     "ref": f"M{_DIAMETRES_COMMUNS[i % len(_DIAMETRES_COMMUNS)]}",
+     "name": f"M{_DIAMETRES_COMMUNS[i % len(_DIAMETRES_COMMUNS)]} "
+             f"DN {_DIAMETRES_COMMUNS[i % len(_DIAMETRES_COMMUNS)]}"}
+    for i in range(100)
+]
 
 PRODUITS = [
     {"id": "V001", "name": "Vis à métaux tête hexagonale", "ref": "M8 x 20 - Inox A2",
@@ -120,6 +144,27 @@ def main() -> None:
         }
         fixtures["cles_reponse_recherche"] = sorted(avec_facettes.keys())
 
+        # --- Recommandation de pack : les trois etats du refus ---------------
+        # `pack_actuel` change la BRANCHE du moteur, pas la mesure :
+        #   None       -- un changement serait recommande, l'egalite le refuse
+        #   "vins"     -- pack en place qui n'annote rien, meme refus
+        #   "industrie"-- deja pose sur l'un des packs a egalite : rien a faire
+        # La console doit parler dans les deux premiers cas et se taire dans
+        # le troisieme ; sans les trois, un test ne pourrait pas montrer la
+        # difference.
+        fixtures["rulepack_suggestion_egalite"] = {
+            str(pack_actuel): comparer_packs(EGALITE_STRICTE, rulepacks, pack_actuel)
+            for pack_actuel in (None, "vins", "industrie")
+        }
+
+        # L'AUTRE refus, celui qui existait deja : aucun pack ne reconnait
+        # rien. `marge` y vaut None sur ses quatre champs -- il n'y a pas de
+        # concurrent a comparer. Les deux consoles doivent distinguer ce cas
+        # de l'egalite : ici on importe sans pack, la on choisit entre deux.
+        fixtures["rulepack_suggestion_sans_signal"] = comparer_packs(
+            PRODUITS, {n: rulepacks[n] for n in ("mode", "vins")}, None
+        )
+
         chemin = os.path.join(HERE, "engine-contract.json")
         with open(chemin, "w", encoding="utf-8") as f:
             json.dump(fixtures, f, ensure_ascii=False, indent=2)
@@ -128,6 +173,12 @@ def main() -> None:
         print(f"  facettes capturees   : {list((avec_facettes.get('facets') or {}).keys())}")
         print(f"  format de filtre     : {fixtures['format_filtre_attendu']}")
         print(f"  cles d'un hit        : {fixtures['forme_du_hit']['cles_racine']}")
+        egalite = fixtures["rulepack_suggestion_egalite"]["None"]
+        print(f"  egalite stricte      : recommande={egalite['recommande']!r} "
+              f"marge={egalite.get('marge')}")
+        muet = fixtures["rulepack_suggestion_sans_signal"]
+        print(f"  sans signal          : recommande={muet['recommande']!r} "
+              f"marge={muet.get('marge')}")
 
 
 if __name__ == "__main__":

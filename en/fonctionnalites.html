@@ -229,8 +229,14 @@
       <div class="feat-card">
         <h3 id="automatic-pack-suggestion">Automatic pack suggestion</h3>
         <p>A fashion catalog left on the hardware pack never finds out on its own. The endpoint annotates a sample of your catalog with every available pack and compares the real coverage: actual content decides, not the vertical declared at signup. Never changes anything: the suggestion is shown, the decision stays yours.</p>
+        <p>A winner without its gap can't be judged: <code class="docs-inline-code">marge</code> says by how much the leader is ahead of its best competitor, and on which criterion. When that criterion is <code class="docs-inline-code">null</code>, both packs annotate exactly as much — the engine then recommends nothing rather than letting alphabetical order decide.</p>
         <pre class="docs-code"><code>GET /v1/index/{catalog}/rulepack-suggestion
-→ {"recommande": "fashion", "raison": "..."}</code></pre>
+→ {"recommande": "fashion", "raison": "...",
+   "marge": {"second": "hardware", "produits_annotes": 31.67,
+             "annotations_distinctes": 14.0,
+             "critere": "produits_annotes"}}
+
+POST /v1/rulepacks/suggest   same response, before any import</code></pre>
         <a href="docs.html#ep-rulepack-suggestion">Suggestion endpoint →</a>
       </div>
 

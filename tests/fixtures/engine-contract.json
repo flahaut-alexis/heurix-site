@@ -25,7 +25,9 @@
         "matched": [
           "terme 'vis' (depuis 'vis', x1.00)",
           "annotation #FAM_VIS"
-        ]
+        ],
+        "pinned": false,
+        "buried": false
       },
       {
         "product": {
@@ -44,7 +46,9 @@
         "matched": [
           "terme 'vis' (depuis 'vis', x1.00)",
           "annotation #FAM_VIS"
-        ]
+        ],
+        "pinned": false,
+        "buried": false
       }
     ],
     "fallback": false,
@@ -105,7 +109,9 @@
         "matched": [
           "terme 'hexagonal' (depuis 'hex', x0.22)",
           "annotation #TETE_HEX"
-        ]
+        ],
+        "pinned": false,
+        "buried": false
       },
       {
         "product": {
@@ -124,7 +130,9 @@
         "matched": [
           "terme 'hexagonale' (depuis 'hex', x0.22)",
           "annotation #TETE_HEX"
-        ]
+        ],
+        "pinned": false,
+        "buried": false
       },
       {
         "product": {
@@ -143,15 +151,19 @@
         "matched": [
           "terme 'hexagonale' (depuis 'hex', x0.22)",
           "annotation #TETE_HEX"
-        ]
+        ],
+        "pinned": false,
+        "buried": false
       }
     ],
     "fallback": false
   },
   "forme_du_hit": {
     "cles_racine": [
+      "buried",
       "in_stock",
       "matched",
+      "pinned",
       "product",
       "score"
     ],
@@ -174,5 +186,311 @@
     "query",
     "tokens",
     "total"
-  ]
+  ],
+  "rulepack_suggestion_egalite": {
+    "None": {
+      "classement": [
+        {
+          "pack": "industrie",
+          "annotations_distinctes": 13,
+          "produits_annotes": 100,
+          "couverture_pct": 100.0
+        },
+        {
+          "pack": "outillage",
+          "annotations_distinctes": 13,
+          "produits_annotes": 100,
+          "couverture_pct": 100.0
+        },
+        {
+          "pack": "plomberie",
+          "annotations_distinctes": 13,
+          "produits_annotes": 100,
+          "couverture_pct": 100.0
+        },
+        {
+          "pack": "automobile",
+          "annotations_distinctes": 0,
+          "produits_annotes": 0,
+          "couverture_pct": 0.0
+        },
+        {
+          "pack": "electricite",
+          "annotations_distinctes": 0,
+          "produits_annotes": 0,
+          "couverture_pct": 0.0
+        },
+        {
+          "pack": "electronique",
+          "annotations_distinctes": 0,
+          "produits_annotes": 0,
+          "couverture_pct": 0.0
+        },
+        {
+          "pack": "finance",
+          "annotations_distinctes": 0,
+          "produits_annotes": 0,
+          "couverture_pct": 0.0
+        },
+        {
+          "pack": "livres",
+          "annotations_distinctes": 0,
+          "produits_annotes": 0,
+          "couverture_pct": 0.0
+        },
+        {
+          "pack": "mode",
+          "annotations_distinctes": 0,
+          "produits_annotes": 0,
+          "couverture_pct": 0.0
+        },
+        {
+          "pack": "sport",
+          "annotations_distinctes": 0,
+          "produits_annotes": 0,
+          "couverture_pct": 0.0
+        },
+        {
+          "pack": "vins",
+          "annotations_distinctes": 0,
+          "produits_annotes": 0,
+          "couverture_pct": 0.0
+        }
+      ],
+      "recommande": null,
+      "raison": "deux packs reconnaissent exactement autant : la mesure ne les départage pas",
+      "pack_actuel": null,
+      "echantillon": 100,
+      "actuel": null,
+      "meilleur": {
+        "pack": "industrie",
+        "annotations_distinctes": 13,
+        "produits_annotes": 100,
+        "couverture_pct": 100.0
+      },
+      "marge": {
+        "second": "outillage",
+        "produits_annotes": 1.0,
+        "annotations_distinctes": 1.0,
+        "critere": null
+      }
+    },
+    "vins": {
+      "classement": [
+        {
+          "pack": "industrie",
+          "annotations_distinctes": 13,
+          "produits_annotes": 100,
+          "couverture_pct": 100.0
+        },
+        {
+          "pack": "outillage",
+          "annotations_distinctes": 13,
+          "produits_annotes": 100,
+          "couverture_pct": 100.0
+        },
+        {
+          "pack": "plomberie",
+          "annotations_distinctes": 13,
+          "produits_annotes": 100,
+          "couverture_pct": 100.0
+        },
+        {
+          "pack": "automobile",
+          "annotations_distinctes": 0,
+          "produits_annotes": 0,
+          "couverture_pct": 0.0
+        },
+        {
+          "pack": "electricite",
+          "annotations_distinctes": 0,
+          "produits_annotes": 0,
+          "couverture_pct": 0.0
+        },
+        {
+          "pack": "electronique",
+          "annotations_distinctes": 0,
+          "produits_annotes": 0,
+          "couverture_pct": 0.0
+        },
+        {
+          "pack": "finance",
+          "annotations_distinctes": 0,
+          "produits_annotes": 0,
+          "couverture_pct": 0.0
+        },
+        {
+          "pack": "livres",
+          "annotations_distinctes": 0,
+          "produits_annotes": 0,
+          "couverture_pct": 0.0
+        },
+        {
+          "pack": "mode",
+          "annotations_distinctes": 0,
+          "produits_annotes": 0,
+          "couverture_pct": 0.0
+        },
+        {
+          "pack": "sport",
+          "annotations_distinctes": 0,
+          "produits_annotes": 0,
+          "couverture_pct": 0.0
+        },
+        {
+          "pack": "vins",
+          "annotations_distinctes": 0,
+          "produits_annotes": 0,
+          "couverture_pct": 0.0
+        }
+      ],
+      "recommande": null,
+      "raison": "deux packs reconnaissent exactement autant : la mesure ne les départage pas",
+      "pack_actuel": "vins",
+      "echantillon": 100,
+      "actuel": {
+        "pack": "vins",
+        "annotations_distinctes": 0,
+        "produits_annotes": 0,
+        "couverture_pct": 0.0
+      },
+      "meilleur": {
+        "pack": "industrie",
+        "annotations_distinctes": 13,
+        "produits_annotes": 100,
+        "couverture_pct": 100.0
+      },
+      "marge": {
+        "second": "outillage",
+        "produits_annotes": 1.0,
+        "annotations_distinctes": 1.0,
+        "critere": null
+      }
+    },
+    "industrie": {
+      "classement": [
+        {
+          "pack": "industrie",
+          "annotations_distinctes": 13,
+          "produits_annotes": 100,
+          "couverture_pct": 100.0
+        },
+        {
+          "pack": "outillage",
+          "annotations_distinctes": 13,
+          "produits_annotes": 100,
+          "couverture_pct": 100.0
+        },
+        {
+          "pack": "plomberie",
+          "annotations_distinctes": 13,
+          "produits_annotes": 100,
+          "couverture_pct": 100.0
+        },
+        {
+          "pack": "automobile",
+          "annotations_distinctes": 0,
+          "produits_annotes": 0,
+          "couverture_pct": 0.0
+        },
+        {
+          "pack": "electricite",
+          "annotations_distinctes": 0,
+          "produits_annotes": 0,
+          "couverture_pct": 0.0
+        },
+        {
+          "pack": "electronique",
+          "annotations_distinctes": 0,
+          "produits_annotes": 0,
+          "couverture_pct": 0.0
+        },
+        {
+          "pack": "finance",
+          "annotations_distinctes": 0,
+          "produits_annotes": 0,
+          "couverture_pct": 0.0
+        },
+        {
+          "pack": "livres",
+          "annotations_distinctes": 0,
+          "produits_annotes": 0,
+          "couverture_pct": 0.0
+        },
+        {
+          "pack": "mode",
+          "annotations_distinctes": 0,
+          "produits_annotes": 0,
+          "couverture_pct": 0.0
+        },
+        {
+          "pack": "sport",
+          "annotations_distinctes": 0,
+          "produits_annotes": 0,
+          "couverture_pct": 0.0
+        },
+        {
+          "pack": "vins",
+          "annotations_distinctes": 0,
+          "produits_annotes": 0,
+          "couverture_pct": 0.0
+        }
+      ],
+      "recommande": null,
+      "raison": "le pack actuel est déjà le plus pertinent",
+      "pack_actuel": "industrie",
+      "echantillon": 100,
+      "actuel": {
+        "pack": "industrie",
+        "annotations_distinctes": 13,
+        "produits_annotes": 100,
+        "couverture_pct": 100.0
+      },
+      "meilleur": {
+        "pack": "industrie",
+        "annotations_distinctes": 13,
+        "produits_annotes": 100,
+        "couverture_pct": 100.0
+      },
+      "marge": {
+        "second": "outillage",
+        "produits_annotes": 1.0,
+        "annotations_distinctes": 1.0,
+        "critere": null
+      }
+    }
+  },
+  "rulepack_suggestion_sans_signal": {
+    "classement": [
+      {
+        "pack": "mode",
+        "annotations_distinctes": 0,
+        "produits_annotes": 0,
+        "couverture_pct": 0.0
+      },
+      {
+        "pack": "vins",
+        "annotations_distinctes": 0,
+        "produits_annotes": 0,
+        "couverture_pct": 0.0
+      }
+    ],
+    "recommande": null,
+    "raison": "aucun pack ne reconnaît vos références de façon significative",
+    "pack_actuel": null,
+    "echantillon": 3,
+    "actuel": null,
+    "meilleur": {
+      "pack": "mode",
+      "annotations_distinctes": 0,
+      "produits_annotes": 0,
+      "couverture_pct": 0.0
+    },
+    "marge": {
+      "second": null,
+      "produits_annotes": null,
+      "annotations_distinctes": null,
+      "critere": null
+    }
+  }
 }

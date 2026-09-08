@@ -1029,7 +1029,32 @@ done</code></pre>
 → {"classement": [
      {"pack": "mode", "annotations_distinctes": 42, "produits_annotes": 380, "couverture_pct": 95.0},
      {"pack": "outillage", "annotations_distinctes": 3, "produits_annotes": 12, "couverture_pct": 3.0}
-   ], "recommande": "mode", "raison": "..."}</code></pre>
+   ], "recommande": "mode", "raison": "...",
+   "marge": {"second": "outillage", "produits_annotes": 31.67,
+             "annotations_distinctes": 14.0, "critere": "produits_annotes"}}</code></pre>
+
+      <h3 id="marge-recommandation">De combien le premier gagne, et quand il ne gagne pas</h3>
+      <p><code class="docs-inline-code">recommande</code> <strong>peut valoir <code class="docs-inline-code">null</code></strong>, et c'est un résultat, pas une panne : aucun pack ne reconnaît vos références de façon significative, le pack déjà en place est le meilleur, l'écart avec lui est trop faible pour justifier une réindexation, ou deux packs sont à égalité. <code class="docs-inline-code">raison</code> dit lequel de ces cas s'applique. Un client qui affiche la recommandation doit prévoir cette valeur nulle plutôt que de la traiter comme une absence de réponse.</p>
+      <p><code class="docs-inline-code">marge</code> dit <strong>de combien</strong> le premier devance son meilleur concurrent. <code class="docs-inline-code">second</code> n'est pas le deuxième du classement : c'est le meilleur pack qui reconnaît quelque chose — comparer à un pack qui n'annote rien rendrait une division par zéro. Sans concurrent, les trois champs valent <code class="docs-inline-code">null</code> ; un premier sans rival n'a pas de marge, et ce n'est pas la même chose qu'une marge nulle.</p>
+      <p>Le classement se fait sur deux critères dans cet ordre — <code class="docs-inline-code">produits_annotes</code> d'abord, <code class="docs-inline-code">annotations_distinctes</code> pour départager — et les deux ratios sont donnés parce qu'aucun des deux ne suffit seul. <strong><code class="docs-inline-code">critere</code> est la seule autorité sur l'égalité</strong> : les ratios sont arrondis pour l'affichage, <code class="docs-inline-code">critere</code> est calculé sur les entiers. Quand il vaut <code class="docs-inline-code">null</code>, les deux packs annotent exactement la même chose, le tri n'a rien départagé — le moteur refuse alors de recommander, et <code class="docs-inline-code">recommande</code> vaut <code class="docs-inline-code">null</code> lui aussi. Aucun seuil n'est appliqué sur la marge elle-même : le nombre vous est rendu, la décision reste la vôtre.</p>
+
+      <h3 id="ep-rulepacks-suggest">Avant l'indexation, sur un simple échantillon</h3>
+      <div class="docs-endpoint"><span class="docs-method docs-method-post">POST</span><code>/v1/rulepacks/suggest</code></div>
+      <p>Même comparaison, mais <strong>avant tout import</strong> : on envoie un échantillon de produits et on obtient le même objet de réponse, sans catalogue indexé. C'est ce qui permet de choisir son pack avant le premier import plutôt qu'après — corriger après coup impose de tout réimporter. Au plus 300 produits sont examinés ; au-delà, le reste du corps est ignoré. Un échantillon vide est refusé par un <code class="docs-inline-code">422</code>. Ne compte pas dans le quota, et n'écrit rien : aucun catalogue n'est créé.</p>
+      <p><code class="docs-inline-code">pack_actuel</code> vaut toujours <code class="docs-inline-code">null</code> dans cette réponse — il n'y a pas encore de catalogue, donc pas de pack en place à comparer.</p>
+      <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/rulepacks/suggest \
+  -H "Authorization: Bearer VOTRE_CLE_API" \
+  -H "Content-Type: application/json" \
+  -d '{"items": [{"id": "1", "ref": "VIS-M8X20", "name": "Vis tête hexagonale M8x20 inox A2"},
+                 {"id": "2", "ref": "ECR-M8", "name": "Écrou hexagonal M8 zingué"}]}'
+
+→ {"classement": [
+     {"pack": "outillage", "annotations_distinctes": 9, "produits_annotes": 2, "couverture_pct": 100.0},
+     {"pack": "plomberie", "annotations_distinctes": 1, "produits_annotes": 1, "couverture_pct": 50.0}
+   ], "recommande": "outillage", "raison": "aucun pack n'est configuré",
+   "pack_actuel": null, "echantillon": 2,
+   "marge": {"second": "plomberie", "produits_annotes": 2.0,
+             "annotations_distinctes": 9.0, "critere": "produits_annotes"}}</code></pre>
     </section>
 
     <section id="ep-custom-rules" class="docs-section">

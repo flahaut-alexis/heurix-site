@@ -369,6 +369,12 @@
       "Changing this reindexes your catalogue.",
     "Cette action est irréversible.": "This action cannot be undone.",
     "Aucun attribut reconnu": "No attributes recognised",
+    // Egalite stricte : le moteur refuse de recommander (ae76e68). La
+    // premiere de ces deux chaines sert AUSSI a csv-console.js, dont le
+    // message differe ensuite -- une seule entree, deux appelants.
+    "{0} et {1} sont à égalité": "{0} and {1} are tied",
+    "sur cet échantillon de {0} produits : les deux packs annotent {1} produits avec {2} étiquettes distinctes. La mesure ne les départage pas — ce n'est pas qu'aucun pack ne convient, c'est qu'aucun ne se distingue. Choisissez celui de votre métier, ou créez une reconnaissance personnalisée qui sépare les deux.":
+      "on this sample of {0} products: both packs annotate {1} products with {2} distinct labels. The measurement does not separate them — it is not that no pack fits, it is that none stands apart. Pick the one that matches your trade, or create a custom recognition rule that tells them apart.",
     "erreur à traiter": "error to handle",
     "erreurs à traiter": "errors to handle",
     "événement sans conséquence": "harmless event",
@@ -985,6 +991,8 @@
     "Aucun pack ne se détache": "No pack stands out",
     "sur cet échantillon. Vous pouvez importer sans pack : la recherche fonctionnera sur les mots, sans reconnaissance de structure.":
       "on this sample. You can import without a pack: search will work on words, with no structure recognition.",
+    "sur cet échantillon : les deux packs annotent {0} produits avec {1} étiquettes distinctes. La mesure ne les départage pas — choisissez celui de votre métier, l'import fonctionne avec l'un comme avec l'autre.":
+      "on this sample: both packs annotate {0} products with {1} distinct labels. The measurement does not separate them — pick the one that matches your trade, the import works with either.",
     "Pack recommandé : {0}": "Recommended pack: {0}",
     "{0} produits sur {1} reconnus.": "{0} products out of {1} recognized.",
     "Sélectionné automatiquement. Vous pouvez le changer ci-dessous.": "Automatically selected. You can change it below.",
