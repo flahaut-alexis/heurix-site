@@ -93,6 +93,52 @@ PRODUITS = [
 ]
 
 
+def _inventaire_par_l_api(rulepacks: dict) -> list:
+    """Interroge GET /v1/rulepacks/annotations sur une instance jetable.
+
+    Le moteur monte ici comme il monte en production -- app FastAPI, cle
+    creee par l'admin, requete HTTP. Une base temporaire, jetee a la sortie :
+    l'inventaire ne depend d'aucun catalogue.
+
+    Leve si la route repond autre chose que 200 : un moteur trop ancien pour
+    la porter doit le dire, pas produire une fixture vide que le garde lirait
+    comme « aucune annotation n'existe » -- il declarerait alors fausses les
+    657 occurrences justes du site.
+    """
+    import importlib
+    from fastapi.testclient import TestClient
+
+    with tempfile.TemporaryDirectory() as tmp:
+        os.environ["HEURIX_DATA_DIR"] = tmp
+        os.environ["HEURIX_ADMIN_KEY"] = "fixtures-admin"
+        os.environ["HEURIX_RULEPACKS"] = os.path.join(ENGINE, "rulepacks")
+        from heurix import main as main_module
+        importlib.reload(main_module)
+        client = TestClient(main_module.app)
+        cle = client.post(
+            "/v1/admin/keys",
+            headers={"Authorization": "Bearer fixtures-admin"},
+            json={"label": "fixtures"},
+        ).json()["key"]
+        r = client.get("/v1/rulepacks/annotations",
+                       headers={"Authorization": f"Bearer {cle}"})
+        if r.status_code != 200:
+            raise SystemExit(
+                f"GET /v1/rulepacks/annotations a repondu {r.status_code}. "
+                "Ce moteur ne publie pas son inventaire d'annotations : "
+                "mettez-le a jour (heurix-engine 8f178d5 ou plus recent)."
+            )
+        publie = r.json()["annotations"]
+
+    if set(publie) != set(rulepacks):
+        raise SystemExit(
+            "l'inventaire publie ne porte pas les memes packs que le disque : "
+            f"{set(publie) ^ set(rulepacks)}"
+        )
+    plat = sorted({(e["modele"], e["motif"]) for v in publie.values() for e in v})
+    return [{"modele": m, "motif": r} for m, r in plat]
+
+
 def main() -> None:
     with tempfile.TemporaryDirectory() as tmp:
         rulepacks = load_rulepacks(os.path.join(ENGINE, "rulepacks"))
@@ -165,6 +211,42 @@ def main() -> None:
             PRODUITS, {n: rulepacks[n] for n in ("mode", "vins")}, None
         )
 
+        # --- Inventaire des annotations : ce que les packs peuvent ECRIRE ---
+        #
+        # CAPTURE PAR L'API, PAS PAR `rules.inventaire_annotations`, et c'est
+        # le seul endroit de ce fichier qui le fait. Les autres captures
+        # portent sur des FONCTIONS que la console appelle a travers l'API ;
+        # celle-ci porte sur le CONTRAT de la route elle-meme. Si le moteur
+        # renommait la clef `annotations` ou changeait son enveloppe, la
+        # fonction ne bougerait pas et la fixture resterait juste alors que
+        # la production aurait change de forme.
+        #
+        # ON NE VERSE PAS LES `regles`. L'endpoint rend `{modele, motif,
+        # regles}` par pack -- 25,5 Ko. Le garde valide des jetons : il lui
+        # faut le motif, et le modele pour ecrire un message lisible
+        # (« FORMAT_PO rejete ; le pack ecrit FORMAT_POCHE »). Les noms de
+        # regle servent au diagnostic COTE MOTEUR, ou ils sont deja publies.
+        # Mesure du 9 septembre 2026, fixture a 7,7 Ko avant ce lot :
+        #
+        #     tout (modele+motif+regles)   25,5 Ko   x4,3
+        #     modele+motif, par pack       13,5 Ko   x2,8
+        #     modele+motif, liste plate    13,0 Ko   x2,7   <- retenu
+        #     motif seul, liste plate       5,2 Ko   x1,7
+        #
+        # La liste plate plutot que le groupement par pack : 223 entrees au
+        # lieu de 228, et surtout un garde qui n'a pas a choisir un pack pour
+        # valider un jeton -- une page de documentation ne declare pas quel
+        # pack elle illustre. Les 5 entrees d'ecart sont les modeles qu'un
+        # meme nom porte dans deux packs (`MAT_INOX` est pose par outillage
+        # ET par plomberie).
+        #
+        # LE MOTIF SEUL AURAIT SUFFI A VALIDER, a 5,2 Ko. C'est le modele qui
+        # coute, et il est garde exprES : un garde qui dit « ^FORMAT_[A-Za-z
+        # 0-9.,/-]*$ ne reconnait pas FORMAT_PO » fait chercher, un garde qui
+        # dit « FORMAT_POCHE, FORMAT_BROCHE, FORMAT_GF » fait corriger.
+        inventaire = _inventaire_par_l_api(rulepacks)
+        fixtures["inventaire_annotations"] = inventaire
+
         chemin = os.path.join(HERE, "engine-contract.json")
         with open(chemin, "w", encoding="utf-8") as f:
             json.dump(fixtures, f, ensure_ascii=False, indent=2)
@@ -176,6 +258,7 @@ def main() -> None:
         egalite = fixtures["rulepack_suggestion_egalite"]["None"]
         print(f"  egalite stricte      : recommande={egalite['recommande']!r} "
               f"marge={egalite.get('marge')}")
+        print(f"  inventaire annotations : {len(inventaire)} modeles distincts")
         muet = fixtures["rulepack_suggestion_sans_signal"]
         print(f"  sans signal          : recommande={muet['recommande']!r} "
               f"marge={muet.get('marge')}")

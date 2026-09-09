@@ -194,19 +194,85 @@
           "pack": "industrie",
           "annotations_distinctes": 13,
           "produits_annotes": 100,
-          "couverture_pct": 100.0
+          "couverture_pct": 100.0,
+          "etiquettes": [
+            "DN10",
+            "DN12",
+            "DN14",
+            "DN16",
+            "DN20",
+            "DN25",
+            "DN32",
+            "DN4",
+            "DN40",
+            "DN5",
+            "DN50",
+            "DN6",
+            "DN8"
+          ],
+          "exemple": {
+            "id": "P50",
+            "name": "M40 DN 40",
+            "etiquettes": [
+              "DN40"
+            ]
+          }
         },
         {
           "pack": "outillage",
           "annotations_distinctes": 13,
           "produits_annotes": 100,
-          "couverture_pct": 100.0
+          "couverture_pct": 100.0,
+          "etiquettes": [
+            "DIAM_M10",
+            "DIAM_M12",
+            "DIAM_M14",
+            "DIAM_M16",
+            "DIAM_M20",
+            "DIAM_M25",
+            "DIAM_M32",
+            "DIAM_M4",
+            "DIAM_M40",
+            "DIAM_M5",
+            "DIAM_M50",
+            "DIAM_M6",
+            "DIAM_M8"
+          ],
+          "exemple": {
+            "id": "P50",
+            "name": "M40 DN 40",
+            "etiquettes": [
+              "DIAM_M40"
+            ]
+          }
         },
         {
           "pack": "plomberie",
           "annotations_distinctes": 13,
           "produits_annotes": 100,
-          "couverture_pct": 100.0
+          "couverture_pct": 100.0,
+          "etiquettes": [
+            "DN_10",
+            "DN_12",
+            "DN_14",
+            "DN_16",
+            "DN_20",
+            "DN_25",
+            "DN_32",
+            "DN_4",
+            "DN_40",
+            "DN_5",
+            "DN_50",
+            "DN_6",
+            "DN_8"
+          ],
+          "exemple": {
+            "id": "P50",
+            "name": "M40 DN 40",
+            "etiquettes": [
+              "DN_40"
+            ]
+          }
         },
         {
           "pack": "automobile",
@@ -281,19 +347,85 @@
           "pack": "industrie",
           "annotations_distinctes": 13,
           "produits_annotes": 100,
-          "couverture_pct": 100.0
+          "couverture_pct": 100.0,
+          "etiquettes": [
+            "DN10",
+            "DN12",
+            "DN14",
+            "DN16",
+            "DN20",
+            "DN25",
+            "DN32",
+            "DN4",
+            "DN40",
+            "DN5",
+            "DN50",
+            "DN6",
+            "DN8"
+          ],
+          "exemple": {
+            "id": "P50",
+            "name": "M40 DN 40",
+            "etiquettes": [
+              "DN40"
+            ]
+          }
         },
         {
           "pack": "outillage",
           "annotations_distinctes": 13,
           "produits_annotes": 100,
-          "couverture_pct": 100.0
+          "couverture_pct": 100.0,
+          "etiquettes": [
+            "DIAM_M10",
+            "DIAM_M12",
+            "DIAM_M14",
+            "DIAM_M16",
+            "DIAM_M20",
+            "DIAM_M25",
+            "DIAM_M32",
+            "DIAM_M4",
+            "DIAM_M40",
+            "DIAM_M5",
+            "DIAM_M50",
+            "DIAM_M6",
+            "DIAM_M8"
+          ],
+          "exemple": {
+            "id": "P50",
+            "name": "M40 DN 40",
+            "etiquettes": [
+              "DIAM_M40"
+            ]
+          }
         },
         {
           "pack": "plomberie",
           "annotations_distinctes": 13,
           "produits_annotes": 100,
-          "couverture_pct": 100.0
+          "couverture_pct": 100.0,
+          "etiquettes": [
+            "DN_10",
+            "DN_12",
+            "DN_14",
+            "DN_16",
+            "DN_20",
+            "DN_25",
+            "DN_32",
+            "DN_4",
+            "DN_40",
+            "DN_5",
+            "DN_50",
+            "DN_6",
+            "DN_8"
+          ],
+          "exemple": {
+            "id": "P50",
+            "name": "M40 DN 40",
+            "etiquettes": [
+              "DN_40"
+            ]
+          }
         },
         {
           "pack": "automobile",
@@ -373,19 +505,85 @@
           "pack": "industrie",
           "annotations_distinctes": 13,
           "produits_annotes": 100,
-          "couverture_pct": 100.0
+          "couverture_pct": 100.0,
+          "etiquettes": [
+            "DN10",
+            "DN12",
+            "DN14",
+            "DN16",
+            "DN20",
+            "DN25",
+            "DN32",
+            "DN4",
+            "DN40",
+            "DN5",
+            "DN50",
+            "DN6",
+            "DN8"
+          ],
+          "exemple": {
+            "id": "P50",
+            "name": "M40 DN 40",
+            "etiquettes": [
+              "DN40"
+            ]
+          }
         },
         {
           "pack": "outillage",
           "annotations_distinctes": 13,
           "produits_annotes": 100,
-          "couverture_pct": 100.0
+          "couverture_pct": 100.0,
+          "etiquettes": [
+            "DIAM_M10",
+            "DIAM_M12",
+            "DIAM_M14",
+            "DIAM_M16",
+            "DIAM_M20",
+            "DIAM_M25",
+            "DIAM_M32",
+            "DIAM_M4",
+            "DIAM_M40",
+            "DIAM_M5",
+            "DIAM_M50",
+            "DIAM_M6",
+            "DIAM_M8"
+          ],
+          "exemple": {
+            "id": "P50",
+            "name": "M40 DN 40",
+            "etiquettes": [
+              "DIAM_M40"
+            ]
+          }
         },
         {
           "pack": "plomberie",
           "annotations_distinctes": 13,
           "produits_annotes": 100,
-          "couverture_pct": 100.0
+          "couverture_pct": 100.0,
+          "etiquettes": [
+            "DN_10",
+            "DN_12",
+            "DN_14",
+            "DN_16",
+            "DN_20",
+            "DN_25",
+            "DN_32",
+            "DN_4",
+            "DN_40",
+            "DN_5",
+            "DN_50",
+            "DN_6",
+            "DN_8"
+          ],
+          "exemple": {
+            "id": "P50",
+            "name": "M40 DN 40",
+            "etiquettes": [
+              "DN_40"
+            ]
+          }
         },
         {
           "pack": "automobile",
@@ -492,5 +690,899 @@
       "annotations_distinctes": null,
       "critere": null
     }
-  }
+  },
+  "inventaire_annotations": [
+    {
+      "modele": "AILE_{1}{2}M2",
+      "motif": "^AILE_[A-Za-z0-9.,/-]*[A-Za-z0-9.,/-]*M2$"
+    },
+    {
+      "modele": "AUTONOMIE_{1}H",
+      "motif": "^AUTONOMIE_[A-Za-z0-9.,/-]*H$"
+    },
+    {
+      "modele": "BALLON_T{1}{2}",
+      "motif": "^BALLON_T[A-Za-z0-9.,/-]*[A-Za-z0-9.,/-]*$"
+    },
+    {
+      "modele": "BAR_{1}",
+      "motif": "^BAR_[A-Za-z0-9.,/-]*$"
+    },
+    {
+      "modele": "BT_AUTONOMIE_{1}H",
+      "motif": "^BT_AUTONOMIE_[A-Za-z0-9.,/-]*H$"
+    },
+    {
+      "modele": "CABLE_SECT_{1}",
+      "motif": "^CABLE_SECT_[A-Za-z0-9.,/-]*$"
+    },
+    {
+      "modele": "CABLE_{1}",
+      "motif": "^CABLE_[A-Za-z0-9.,/-]*$"
+    },
+    {
+      "modele": "CAL_{1}A",
+      "motif": "^CAL_[A-Za-z0-9.,/-]*A$"
+    },
+    {
+      "modele": "CAPACITE_{1}GO",
+      "motif": "^CAPACITE_[A-Za-z0-9.,/-]*GO$"
+    },
+    {
+      "modele": "CAPACITE_{1}TO",
+      "motif": "^CAPACITE_[A-Za-z0-9.,/-]*TO$"
+    },
+    {
+      "modele": "CARB_DIESEL",
+      "motif": "^CARB_DIESEL$"
+    },
+    {
+      "modele": "CARB_ESSENCE",
+      "motif": "^CARB_ESSENCE$"
+    },
+    {
+      "modele": "CHARGEUR_{1}W",
+      "motif": "^CHARGEUR_[A-Za-z0-9.,/-]*W$"
+    },
+    {
+      "modele": "CLASSE_{1}",
+      "motif": "^CLASSE_[A-Za-z0-9.,/-]*$"
+    },
+    {
+      "modele": "COLLECTOR_GRAND_FORMAT",
+      "motif": "^COLLECTOR_GRAND_FORMAT$"
+    },
+    {
+      "modele": "COL_BLEU",
+      "motif": "^COL_BLEU$"
+    },
+    {
+      "modele": "COL_ECRU",
+      "motif": "^COL_ECRU$"
+    },
+    {
+      "modele": "COL_NOIR",
+      "motif": "^COL_NOIR$"
+    },
+    {
+      "modele": "COL_ROUGE",
+      "motif": "^COL_ROUGE$"
+    },
+    {
+      "modele": "COL_ROULE",
+      "motif": "^COL_ROULE$"
+    },
+    {
+      "modele": "COL_V",
+      "motif": "^COL_V$"
+    },
+    {
+      "modele": "COMBI_{1}{3}_{2}{4}",
+      "motif": "^COMBI_[A-Za-z0-9.,/-]*[A-Za-z0-9.,/-]*_[A-Za-z0-9.,/-]*[A-Za-z0-9.,/-]*$"
+    },
+    {
+      "modele": "CONN_BT",
+      "motif": "^CONN_BT$"
+    },
+    {
+      "modele": "CONN_FILAIRE",
+      "motif": "^CONN_FILAIRE$"
+    },
+    {
+      "modele": "CONN_HDMI",
+      "motif": "^CONN_HDMI$"
+    },
+    {
+      "modele": "CONN_JACK",
+      "motif": "^CONN_JACK$"
+    },
+    {
+      "modele": "CONN_USBC",
+      "motif": "^CONN_USBC$"
+    },
+    {
+      "modele": "CORDAGE_{1}X{2}",
+      "motif": "^CORDAGE_[A-Za-z0-9.,/-]*X[A-Za-z0-9.,/-]*$"
+    },
+    {
+      "modele": "COTE_DROIT",
+      "motif": "^COTE_DROIT$"
+    },
+    {
+      "modele": "COTE_GAUCHE",
+      "motif": "^COTE_GAUCHE$"
+    },
+    {
+      "modele": "COULEUR_BLANC",
+      "motif": "^COULEUR_BLANC$"
+    },
+    {
+      "modele": "COULEUR_ROSE",
+      "motif": "^COULEUR_ROSE$"
+    },
+    {
+      "modele": "COULEUR_ROUGE",
+      "motif": "^COULEUR_ROUGE$"
+    },
+    {
+      "modele": "COUPE_SLIM",
+      "motif": "^COUPE_SLIM$"
+    },
+    {
+      "modele": "COURANT_{1}A",
+      "motif": "^COURANT_[A-Za-z0-9.,/-]*A$"
+    },
+    {
+      "modele": "COURBE_{1}",
+      "motif": "^COURBE_[A-Za-z0-9.,/-]*$"
+    },
+    {
+      "modele": "COURROIE_{1}_{2}",
+      "motif": "^COURROIE_[A-Za-z0-9.,/-]*_[A-Za-z0-9.,/-]*$"
+    },
+    {
+      "modele": "CYL_{1}{2}",
+      "motif": "^CYL_[A-Za-z0-9.,/-]*[A-Za-z0-9.,/-]*$"
+    },
+    {
+      "modele": "DEGRE_{1}{2}",
+      "motif": "^DEGRE_[A-Za-z0-9.,/-]*[A-Za-z0-9.,/-]*$"
+    },
+    {
+      "modele": "DIAM_MM{1}",
+      "motif": "^DIAM_MM[A-Za-z0-9.,/-]*$"
+    },
+    {
+      "modele": "DIAM_M{1}",
+      "motif": "^DIAM_M[A-Za-z0-9.,/-]*$"
+    },
+    {
+      "modele": "DIAM_M{1}_INOX",
+      "motif": "^DIAM_M[A-Za-z0-9.,/-]*_INOX$"
+    },
+    {
+      "modele": "DIAM_{1}MM",
+      "motif": "^DIAM_[A-Za-z0-9.,/-]*MM$"
+    },
+    {
+      "modele": "DIFF_{1}MA",
+      "motif": "^DIFF_[A-Za-z0-9.,/-]*MA$"
+    },
+    {
+      "modele": "DISC_BASKET",
+      "motif": "^DISC_BASKET$"
+    },
+    {
+      "modele": "DISC_FOIL",
+      "motif": "^DISC_FOIL$"
+    },
+    {
+      "modele": "DISC_HANDBALL",
+      "motif": "^DISC_HANDBALL$"
+    },
+    {
+      "modele": "DISC_KITE",
+      "motif": "^DISC_KITE$"
+    },
+    {
+      "modele": "DISC_RUNNING",
+      "motif": "^DISC_RUNNING$"
+    },
+    {
+      "modele": "DISC_SURF",
+      "motif": "^DISC_SURF$"
+    },
+    {
+      "modele": "DISC_TENNIS",
+      "motif": "^DISC_TENNIS$"
+    },
+    {
+      "modele": "DISJ_{1}{2}A",
+      "motif": "^DISJ_[A-Za-z0-9.,/-]*[A-Za-z0-9.,/-]*A$"
+    },
+    {
+      "modele": "DN_{1}",
+      "motif": "^DN_[A-Za-z0-9.,/-]*$"
+    },
+    {
+      "modele": "DN{1}",
+      "motif": "^DN[A-Za-z0-9.,/-]*$"
+    },
+    {
+      "modele": "DOC_COMMANDE",
+      "motif": "^DOC_COMMANDE$"
+    },
+    {
+      "modele": "DOC_DEVIS",
+      "motif": "^DOC_DEVIS$"
+    },
+    {
+      "modele": "DOC_FACTURE",
+      "motif": "^DOC_FACTURE$"
+    },
+    {
+      "modele": "ED_ANNOTE",
+      "motif": "^ED_ANNOTE$"
+    },
+    {
+      "modele": "ED_BILINGUE",
+      "motif": "^ED_BILINGUE$"
+    },
+    {
+      "modele": "ED_COLLECTOR",
+      "motif": "^ED_COLLECTOR$"
+    },
+    {
+      "modele": "ELEVAGE_BIO",
+      "motif": "^ELEVAGE_BIO$"
+    },
+    {
+      "modele": "ELEVAGE_BIODYNAMIE",
+      "motif": "^ELEVAGE_BIODYNAMIE$"
+    },
+    {
+      "modele": "ELEVAGE_FUT_CHENE",
+      "motif": "^ELEVAGE_FUT_CHENE$"
+    },
+    {
+      "modele": "ETANCH_2RS",
+      "motif": "^ETANCH_2RS$"
+    },
+    {
+      "modele": "ETANCH_ZZ",
+      "motif": "^ETANCH_ZZ$"
+    },
+    {
+      "modele": "FAM_AILE",
+      "motif": "^FAM_AILE$"
+    },
+    {
+      "modele": "FAM_ALLUMAGE",
+      "motif": "^FAM_ALLUMAGE$"
+    },
+    {
+      "modele": "FAM_BALLON",
+      "motif": "^FAM_BALLON$"
+    },
+    {
+      "modele": "FAM_BOULON",
+      "motif": "^FAM_BOULON$"
+    },
+    {
+      "modele": "FAM_CABLE",
+      "motif": "^FAM_CABLE$"
+    },
+    {
+      "modele": "FAM_CHARGEUR",
+      "motif": "^FAM_CHARGEUR$"
+    },
+    {
+      "modele": "FAM_CHAUFFAGE",
+      "motif": "^FAM_CHAUFFAGE$"
+    },
+    {
+      "modele": "FAM_CHAUSSURE",
+      "motif": "^FAM_CHAUSSURE$"
+    },
+    {
+      "modele": "FAM_CHEMISE",
+      "motif": "^FAM_CHEMISE$"
+    },
+    {
+      "modele": "FAM_CHEVILLE",
+      "motif": "^FAM_CHEVILLE$"
+    },
+    {
+      "modele": "FAM_COFFRET",
+      "motif": "^FAM_COFFRET$"
+    },
+    {
+      "modele": "FAM_COMBINAISON",
+      "motif": "^FAM_COMBINAISON$"
+    },
+    {
+      "modele": "FAM_COURROIE",
+      "motif": "^FAM_COURROIE$"
+    },
+    {
+      "modele": "FAM_DIFFERENTIEL",
+      "motif": "^FAM_DIFFERENTIEL$"
+    },
+    {
+      "modele": "FAM_DISJONCTEUR",
+      "motif": "^FAM_DISJONCTEUR$"
+    },
+    {
+      "modele": "FAM_DISTRIBUTION",
+      "motif": "^FAM_DISTRIBUTION$"
+    },
+    {
+      "modele": "FAM_ECHAPPEMENT",
+      "motif": "^FAM_ECHAPPEMENT$"
+    },
+    {
+      "modele": "FAM_ECLAIRAGE",
+      "motif": "^FAM_ECLAIRAGE$"
+    },
+    {
+      "modele": "FAM_ECOUTEURS",
+      "motif": "^FAM_ECOUTEURS$"
+    },
+    {
+      "modele": "FAM_ECROU",
+      "motif": "^FAM_ECROU$"
+    },
+    {
+      "modele": "FAM_EMBRAYAGE",
+      "motif": "^FAM_EMBRAYAGE$"
+    },
+    {
+      "modele": "FAM_ENCEINTE",
+      "motif": "^FAM_ENCEINTE$"
+    },
+    {
+      "modele": "FAM_EVACUATION",
+      "motif": "^FAM_EVACUATION$"
+    },
+    {
+      "modele": "FAM_FILTRATION",
+      "motif": "^FAM_FILTRATION$"
+    },
+    {
+      "modele": "FAM_FREINAGE",
+      "motif": "^FAM_FREINAGE$"
+    },
+    {
+      "modele": "FAM_GOUJON",
+      "motif": "^FAM_GOUJON$"
+    },
+    {
+      "modele": "FAM_INTERRUPTEUR",
+      "motif": "^FAM_INTERRUPTEUR$"
+    },
+    {
+      "modele": "FAM_JOINT",
+      "motif": "^FAM_JOINT$"
+    },
+    {
+      "modele": "FAM_PANTALON",
+      "motif": "^FAM_PANTALON$"
+    },
+    {
+      "modele": "FAM_PLANCHE",
+      "motif": "^FAM_PLANCHE$"
+    },
+    {
+      "modele": "FAM_PRISE",
+      "motif": "^FAM_PRISE$"
+    },
+    {
+      "modele": "FAM_PULL",
+      "motif": "^FAM_PULL$"
+    },
+    {
+      "modele": "FAM_RACCORD",
+      "motif": "^FAM_RACCORD$"
+    },
+    {
+      "modele": "FAM_RAQUETTE",
+      "motif": "^FAM_RAQUETTE$"
+    },
+    {
+      "modele": "FAM_RONDELLE",
+      "motif": "^FAM_RONDELLE$"
+    },
+    {
+      "modele": "FAM_ROULEMENT",
+      "motif": "^FAM_ROULEMENT$"
+    },
+    {
+      "modele": "FAM_SANITAIRE",
+      "motif": "^FAM_SANITAIRE$"
+    },
+    {
+      "modele": "FAM_SUSPENSION",
+      "motif": "^FAM_SUSPENSION$"
+    },
+    {
+      "modele": "FAM_TUBE",
+      "motif": "^FAM_TUBE$"
+    },
+    {
+      "modele": "FAM_VANNE",
+      "motif": "^FAM_VANNE$"
+    },
+    {
+      "modele": "FAM_VIS",
+      "motif": "^FAM_VIS$"
+    },
+    {
+      "modele": "FERM_BOUTONS",
+      "motif": "^FERM_BOUTONS$"
+    },
+    {
+      "modele": "FERM_ZIP",
+      "motif": "^FERM_ZIP$"
+    },
+    {
+      "modele": "FILET_{1}",
+      "motif": "^FILET_[A-Za-z0-9.,/-]*$"
+    },
+    {
+      "modele": "FILTRE_DIESEL",
+      "motif": "^FILTRE_DIESEL$"
+    },
+    {
+      "modele": "FINITION_DELAVE",
+      "motif": "^FINITION_DELAVE$"
+    },
+    {
+      "modele": "FLUX_{1}",
+      "motif": "^FLUX_[A-Za-z0-9.,/-]*$"
+    },
+    {
+      "modele": "FOIL_{1}{2}L",
+      "motif": "^FOIL_[A-Za-z0-9.,/-]*[A-Za-z0-9.,/-]*L$"
+    },
+    {
+      "modele": "FORMAT_37CL",
+      "motif": "^FORMAT_37CL$"
+    },
+    {
+      "modele": "FORMAT_75CL",
+      "motif": "^FORMAT_75CL$"
+    },
+    {
+      "modele": "FORMAT_AUDIO",
+      "motif": "^FORMAT_AUDIO$"
+    },
+    {
+      "modele": "FORMAT_BROCHE",
+      "motif": "^FORMAT_BROCHE$"
+    },
+    {
+      "modele": "FORMAT_GF",
+      "motif": "^FORMAT_GF$"
+    },
+    {
+      "modele": "FORMAT_ILLUSTRE",
+      "motif": "^FORMAT_ILLUSTRE$"
+    },
+    {
+      "modele": "FORMAT_JEROBOAM",
+      "motif": "^FORMAT_JEROBOAM$"
+    },
+    {
+      "modele": "FORMAT_MAGNUM",
+      "motif": "^FORMAT_MAGNUM$"
+    },
+    {
+      "modele": "FORMAT_POCHE",
+      "motif": "^FORMAT_POCHE$"
+    },
+    {
+      "modele": "FREIN_ARRIERE",
+      "motif": "^FREIN_ARRIERE$"
+    },
+    {
+      "modele": "FREIN_AVANT",
+      "motif": "^FREIN_AVANT$"
+    },
+    {
+      "modele": "GENRE_BD",
+      "motif": "^GENRE_BD$"
+    },
+    {
+      "modele": "GENRE_CLASSIQUE",
+      "motif": "^GENRE_CLASSIQUE$"
+    },
+    {
+      "modele": "GENRE_ESSAI",
+      "motif": "^GENRE_ESSAI$"
+    },
+    {
+      "modele": "GENRE_FANTASY",
+      "motif": "^GENRE_FANTASY$"
+    },
+    {
+      "modele": "GENRE_FEMELLE",
+      "motif": "^GENRE_FEMELLE$"
+    },
+    {
+      "modele": "GENRE_JEUNESSE",
+      "motif": "^GENRE_JEUNESSE$"
+    },
+    {
+      "modele": "GENRE_MALE",
+      "motif": "^GENRE_MALE$"
+    },
+    {
+      "modele": "GENRE_POESIE",
+      "motif": "^GENRE_POESIE$"
+    },
+    {
+      "modele": "GENRE_POLAR",
+      "motif": "^GENRE_POLAR$"
+    },
+    {
+      "modele": "GENRE_ROMAN",
+      "motif": "^GENRE_ROMAN$"
+    },
+    {
+      "modele": "GENRE_SF",
+      "motif": "^GENRE_SF$"
+    },
+    {
+      "modele": "GRIP_L{1}",
+      "motif": "^GRIP_L[A-Za-z0-9.,/-]*$"
+    },
+    {
+      "modele": "IBAN_{1}",
+      "motif": "^IBAN_[A-Za-z0-9.,/-]*$"
+    },
+    {
+      "modele": "IK_{1}",
+      "motif": "^IK_[A-Za-z0-9.,/-]*$"
+    },
+    {
+      "modele": "IP_{1}",
+      "motif": "^IP_[A-Za-z0-9.,/-]*$"
+    },
+    {
+      "modele": "ISBN_{1}",
+      "motif": "^ISBN_[A-Za-z0-9.,/-]*$"
+    },
+    {
+      "modele": "JEAN_T{1}{3}_{2}{4}",
+      "motif": "^JEAN_T[A-Za-z0-9.,/-]*[A-Za-z0-9.,/-]*_[A-Za-z0-9.,/-]*[A-Za-z0-9.,/-]*$"
+    },
+    {
+      "modele": "JOINT_{1}X{2}",
+      "motif": "^JOINT_[A-Za-z0-9.,/-]*X[A-Za-z0-9.,/-]*$"
+    },
+    {
+      "modele": "LANG_EN",
+      "motif": "^LANG_EN$"
+    },
+    {
+      "modele": "LANG_FR",
+      "motif": "^LANG_FR$"
+    },
+    {
+      "modele": "LONG_{1}",
+      "motif": "^LONG_[A-Za-z0-9.,/-]*$"
+    },
+    {
+      "modele": "MARQUE_{1}",
+      "motif": "^MARQUE_[A-Za-z0-9.,/-]*$"
+    },
+    {
+      "modele": "MAT_ACIER",
+      "motif": "^MAT_ACIER$"
+    },
+    {
+      "modele": "MAT_CARBONE",
+      "motif": "^MAT_CARBONE$"
+    },
+    {
+      "modele": "MAT_COTON",
+      "motif": "^MAT_COTON$"
+    },
+    {
+      "modele": "MAT_CUIVRE",
+      "motif": "^MAT_CUIVRE$"
+    },
+    {
+      "modele": "MAT_DENIM",
+      "motif": "^MAT_DENIM$"
+    },
+    {
+      "modele": "MAT_EPOXY",
+      "motif": "^MAT_EPOXY$"
+    },
+    {
+      "modele": "MAT_EPS",
+      "motif": "^MAT_EPS$"
+    },
+    {
+      "modele": "MAT_INOX",
+      "motif": "^MAT_INOX$"
+    },
+    {
+      "modele": "MAT_LAINE",
+      "motif": "^MAT_LAINE$"
+    },
+    {
+      "modele": "MAT_LAITON",
+      "motif": "^MAT_LAITON$"
+    },
+    {
+      "modele": "MAT_NEOPRENE",
+      "motif": "^MAT_NEOPRENE$"
+    },
+    {
+      "modele": "MAT_PER",
+      "motif": "^MAT_PER$"
+    },
+    {
+      "modele": "MAT_PVC",
+      "motif": "^MAT_PVC$"
+    },
+    {
+      "modele": "MILLESIME_{1}",
+      "motif": "^MILLESIME_[A-Za-z0-9.,/-]*$"
+    },
+    {
+      "modele": "MOTIF_FLEURI",
+      "motif": "^MOTIF_FLEURI$"
+    },
+    {
+      "modele": "MOTIF_POIS",
+      "motif": "^MOTIF_POIS$"
+    },
+    {
+      "modele": "MOTIF_RAYURES",
+      "motif": "^MOTIF_RAYURES$"
+    },
+    {
+      "modele": "MOTIF_UNI",
+      "motif": "^MOTIF_UNI$"
+    },
+    {
+      "modele": "MOUSSEUX_MILLESIME_{1}",
+      "motif": "^MOUSSEUX_MILLESIME_[A-Za-z0-9.,/-]*$"
+    },
+    {
+      "modele": "NEO_{1}_{2}",
+      "motif": "^NEO_[A-Za-z0-9.,/-]*_[A-Za-z0-9.,/-]*$"
+    },
+    {
+      "modele": "NEO_{1}_{2}_{3}",
+      "motif": "^NEO_[A-Za-z0-9.,/-]*_[A-Za-z0-9.,/-]*_[A-Za-z0-9.,/-]*$"
+    },
+    {
+      "modele": "NORME_DIN{1}",
+      "motif": "^NORME_DIN[A-Za-z0-9.,/-]*$"
+    },
+    {
+      "modele": "NORME_IP{1}",
+      "motif": "^NORME_IP[A-Za-z0-9.,/-]*$"
+    },
+    {
+      "modele": "NORME_ISO{1}",
+      "motif": "^NORME_ISO[A-Za-z0-9.,/-]*$"
+    },
+    {
+      "modele": "NORME_NFE{1}_{2}",
+      "motif": "^NORME_NFE[A-Za-z0-9.,/-]*_[A-Za-z0-9.,/-]*$"
+    },
+    {
+      "modele": "PLANCHE_{1}{2}L",
+      "motif": "^PLANCHE_[A-Za-z0-9.,/-]*[A-Za-z0-9.,/-]*L$"
+    },
+    {
+      "modele": "PN_{1}",
+      "motif": "^PN_[A-Za-z0-9.,/-]*$"
+    },
+    {
+      "modele": "PN{1}",
+      "motif": "^PN[A-Za-z0-9.,/-]*$"
+    },
+    {
+      "modele": "POIDS_{1}G",
+      "motif": "^POIDS_[A-Za-z0-9.,/-]*G$"
+    },
+    {
+      "modele": "POLAR_POCHE",
+      "motif": "^POLAR_POCHE$"
+    },
+    {
+      "modele": "POLES_1",
+      "motif": "^POLES_1$"
+    },
+    {
+      "modele": "POLES_2",
+      "motif": "^POLES_2$"
+    },
+    {
+      "modele": "POLES_3",
+      "motif": "^POLES_3$"
+    },
+    {
+      "modele": "POLES_4",
+      "motif": "^POLES_4$"
+    },
+    {
+      "modele": "POLES_{1}",
+      "motif": "^POLES_[A-Za-z0-9.,/-]*$"
+    },
+    {
+      "modele": "POS_ARRIERE",
+      "motif": "^POS_ARRIERE$"
+    },
+    {
+      "modele": "POS_AVANT",
+      "motif": "^POS_AVANT$"
+    },
+    {
+      "modele": "POUCE_{1}",
+      "motif": "^POUCE_[A-Za-z0-9.,/-]*$"
+    },
+    {
+      "modele": "PUISSANCE_{1}W",
+      "motif": "^PUISSANCE_[A-Za-z0-9.,/-]*W$"
+    },
+    {
+      "modele": "PUISS_{1}",
+      "motif": "^PUISS_[A-Za-z0-9.,/-]*$"
+    },
+    {
+      "modele": "PUISS_{1}KW",
+      "motif": "^PUISS_[A-Za-z0-9.,/-]*KW$"
+    },
+    {
+      "modele": "PUISS_{1}W",
+      "motif": "^PUISS_[A-Za-z0-9.,/-]*W$"
+    },
+    {
+      "modele": "PULL_COL_ROULE",
+      "motif": "^PULL_COL_ROULE$"
+    },
+    {
+      "modele": "RACC_{1}",
+      "motif": "^RACC_[A-Za-z0-9.,/-]*$"
+    },
+    {
+      "modele": "RAQUETTE_{1}{2}G",
+      "motif": "^RAQUETTE_[A-Za-z0-9.,/-]*[A-Za-z0-9.,/-]*G$"
+    },
+    {
+      "modele": "REF_BOSCH_{1}",
+      "motif": "^REF_BOSCH_[A-Za-z0-9.,/-]*$"
+    },
+    {
+      "modele": "REF_MANN_{1}",
+      "motif": "^REF_MANN_[A-Za-z0-9.,/-]*$"
+    },
+    {
+      "modele": "REF_VALEO_{1}",
+      "motif": "^REF_VALEO_[A-Za-z0-9.,/-]*$"
+    },
+    {
+      "modele": "RLT_{1}",
+      "motif": "^RLT_[A-Za-z0-9.,/-]*$"
+    },
+    {
+      "modele": "RLT_{1}{2}_2RS",
+      "motif": "^RLT_[A-Za-z0-9.,/-]*[A-Za-z0-9.,/-]*_2RS$"
+    },
+    {
+      "modele": "RLT_{1}{2}_ZZ",
+      "motif": "^RLT_[A-Za-z0-9.,/-]*[A-Za-z0-9.,/-]*_ZZ$"
+    },
+    {
+      "modele": "ROUGE_BIODYNAMIE",
+      "motif": "^ROUGE_BIODYNAMIE$"
+    },
+    {
+      "modele": "SAISON_AW{1}",
+      "motif": "^SAISON_AW[A-Za-z0-9.,/-]*$"
+    },
+    {
+      "modele": "SAISON_SS{1}",
+      "motif": "^SAISON_SS[A-Za-z0-9.,/-]*$"
+    },
+    {
+      "modele": "SECTION_{1}",
+      "motif": "^SECTION_[A-Za-z0-9.,/-]*$"
+    },
+    {
+      "modele": "SENS_{1}MA",
+      "motif": "^SENS_[A-Za-z0-9.,/-]*MA$"
+    },
+    {
+      "modele": "SIREN_{1}",
+      "motif": "^SIREN_[A-Za-z0-9.,/-]*$"
+    },
+    {
+      "modele": "SIRET_{1}",
+      "motif": "^SIRET_[A-Za-z0-9.,/-]*$"
+    },
+    {
+      "modele": "SURF_{1}M2",
+      "motif": "^SURF_[A-Za-z0-9.,/-]*M2$"
+    },
+    {
+      "modele": "SUSP_COTE_{1}{2}",
+      "motif": "^SUSP_COTE_[A-Za-z0-9.,/-]*[A-Za-z0-9.,/-]*$"
+    },
+    {
+      "modele": "TAILLE_T{1}",
+      "motif": "^TAILLE_T[A-Za-z0-9.,/-]*$"
+    },
+    {
+      "modele": "TAILLE_{1}_{2}",
+      "motif": "^TAILLE_[A-Za-z0-9.,/-]*_[A-Za-z0-9.,/-]*$"
+    },
+    {
+      "modele": "TAILLE_{1}{2}",
+      "motif": "^TAILLE_[A-Za-z0-9.,/-]*[A-Za-z0-9.,/-]*$"
+    },
+    {
+      "modele": "TEMP_{1}K",
+      "motif": "^TEMP_[A-Za-z0-9.,/-]*K$"
+    },
+    {
+      "modele": "TENSION_{1}V",
+      "motif": "^TENSION_[A-Za-z0-9.,/-]*V$"
+    },
+    {
+      "modele": "TETE_CYL",
+      "motif": "^TETE_CYL$"
+    },
+    {
+      "modele": "TETE_FRAISEE",
+      "motif": "^TETE_FRAISEE$"
+    },
+    {
+      "modele": "TETE_HEX",
+      "motif": "^TETE_HEX$"
+    },
+    {
+      "modele": "TUBE_MAT_{1}",
+      "motif": "^TUBE_MAT_[A-Za-z0-9.,/-]*$"
+    },
+    {
+      "modele": "TUBE_{1}X{2}",
+      "motif": "^TUBE_[A-Za-z0-9.,/-]*X[A-Za-z0-9.,/-]*$"
+    },
+    {
+      "modele": "TVA_{1}",
+      "motif": "^TVA_[A-Za-z0-9.,/-]*$"
+    },
+    {
+      "modele": "TYPE_MOUSSEUX",
+      "motif": "^TYPE_MOUSSEUX$"
+    },
+    {
+      "modele": "TYPE_TRANQUILLE",
+      "motif": "^TYPE_TRANQUILLE$"
+    },
+    {
+      "modele": "TYPE_{1}",
+      "motif": "^TYPE_[A-Za-z0-9.,/-]*$"
+    },
+    {
+      "modele": "VANNE_DN_{1}{2}",
+      "motif": "^VANNE_DN_[A-Za-z0-9.,/-]*[A-Za-z0-9.,/-]*$"
+    },
+    {
+      "modele": "VIS_M{1}X{2}",
+      "motif": "^VIS_M[A-Za-z0-9.,/-]*X[A-Za-z0-9.,/-]*$"
+    },
+    {
+      "modele": "VOL_{1}",
+      "motif": "^VOL_[A-Za-z0-9.,/-]*$"
+    }
+  ]
 }
