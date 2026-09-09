@@ -338,9 +338,9 @@
         <tr><td><strong>Scale</strong> — €139/month</td><td>150,000 then billed</td><td>50,000</td><td>unlimited</td></tr>
       </table></div>
       <p>Past the 14-day trial without subscribing to a paid plan, a key automatically reverts to trial limits until subscription — your catalogs and their configuration remain intact, simply less accessible in volume until you move to a paid plan.</p>
-      <p>Exceeding a limit returns a <code class="docs-inline-code">429</code> code with the detail of the cause:</p>
+      <p>Exceeding a limit returns a <code class="docs-inline-code">429</code> code with the detail of the cause. The <code class="docs-inline-code">detail</code> sentence comes out in French, as <a href="#erreurs">every error message does</a> — <code class="docs-inline-code">plan</code> and <code class="docs-inline-code">limit_type</code> are what you branch on:</p>
       <pre class="docs-code"><code>{
-  "detail": "Starter plan request limit exceeded (5,512/5,000, 10% grace margin also exceeded). Upgrade to a higher plan to continue.",
+  "detail": "Plafond de requêtes du plan 'starter' dépassé (5512/5000, marge de 10% également dépassée). Passez à un plan supérieur pour continuer.",
   "plan": "starter",
   "limit_type": "requests",
   "upgrade_url": "https://heurix.fr/pricing.html"
@@ -374,8 +374,8 @@
         <tr><td><code class="docs-inline-code">q</code></td><td>string</td><td>The search query (0 to 500 characters — empty allowed, see browse mode above).</td></tr>
         <tr><td><code class="docs-inline-code">limit</code></td><td>integer</td><td>Results per page (1–100, default 10).</td></tr>
         <tr><td><code class="docs-inline-code">offset</code></td><td>integer</td><td>Pagination offset (default 0).</td></tr>
-        <tr><td><code class="docs-inline-code">facets</code></td><td>array of string</td><td>Annotation groups to return counts for (e.g. <code class="docs-inline-code">["PAYS", "FORMAT"]</code>). See <a href="#facettes">Facets and filters</a>.</td></tr>
-        <tr><td><code class="docs-inline-code">filters</code></td><td>array of string</td><td>Required filters, combined with AND. Two forms, told apart by the "<code class="docs-inline-code">:</code>":<br><code class="docs-inline-code">["PAYS_SE", "FORMAT_PO"]</code> — exact <strong>annotations</strong>.<br><code class="docs-inline-code">["brand:Makita", "color:blue"]</code> — <strong>product fields</strong>, the same ones <a href="#ep-browse">Browse</a> uses: any non-reserved text field becomes filterable at indexing time, no configuration. The pipe means OR within one field (<code class="docs-inline-code">brand:Makita|Bosch</code>).<br>Both forms mix freely in one list. No annotation shipped in the rule packs contains a "<code class="docs-inline-code">:</code>", and a custom rule cannot produce one, so the distinction can never turn ambiguous.</td></tr>
+        <tr><td><code class="docs-inline-code">facets</code></td><td>array of string</td><td>Annotation groups to return counts for (e.g. <code class="docs-inline-code">["FORMAT", "LANG"]</code>). See <a href="#facettes">Facets and filters</a>.</td></tr>
+        <tr><td><code class="docs-inline-code">filters</code></td><td>array of string</td><td>Required filters, combined with AND. Two forms, told apart by the "<code class="docs-inline-code">:</code>":<br><code class="docs-inline-code">["FORMAT_POCHE", "LANG_FR"]</code> — exact <strong>annotations</strong>.<br><code class="docs-inline-code">["brand:Makita", "color:blue"]</code> — <strong>product fields</strong>, the same ones <a href="#ep-browse">Browse</a> uses: any non-reserved text field becomes filterable at indexing time, no configuration. The pipe means OR within one field (<code class="docs-inline-code">brand:Makita|Bosch</code>).<br>Both forms mix freely in one list. No annotation shipped in the rule packs contains a "<code class="docs-inline-code">:</code>", and a custom rule cannot produce one, so the distinction can never turn ambiguous.</td></tr>
         <tr><td><code class="docs-inline-code">lat</code><br><code class="docs-inline-code">lon</code><br><code class="docs-inline-code">radius_km</code></td><td>number</td><td>Restricts results to a radius around a point. <strong>All three together, or none</strong>: a partial radius is an integration mistake rather than a request to interpret, and the API answers <code class="docs-inline-code">422</code> naming what is missing.<br><code class="docs-inline-code">lat</code> from −90 to 90, <code class="docs-inline-code">lon</code> from −180 to 180, <code class="docs-inline-code">radius_km</code> above 0 and up to <strong>200</strong>. Past 200 km, "near me" stops describing a radius and starts describing a region — and a region is filtered by field (<code class="docs-inline-code">filters: ["region:Brittany"]</code>), which costs less and reads better.<br><strong>A product with no position is excluded from a radius search</strong>, deliberately: a branch whose coordinates you have not entered stays invisible to every radius search, even at 200 km. Keeping it instead would return out-of-area results that nothing in the response tells apart from the good ones — and would be most wrong when your data is newest.</td></tr>
         <tr><td><code class="docs-inline-code">in_stock_only</code></td><td>bool</td><td>Excludes out-of-stock products (default <code class="docs-inline-code">false</code> — some catalogs deliberately show out-of-stock items to signal a product exists).</td></tr>
         <tr><td><code class="docs-inline-code">lang</code></td><td>string</td><td>Filters by language if your products carry a <code class="docs-inline-code">lang</code> field (e.g. <code class="docs-inline-code">"fr"</code>, <code class="docs-inline-code">"en"</code>). A product without this field stays visible regardless of the requested language — useful for a mostly single-language catalog with a few bilingual entries. Omitted, no filtering is applied.</td></tr>
@@ -459,9 +459,9 @@
         <tr><td><code class="docs-inline-code">price_visible</code></td><td>bool</td><td>At <code class="docs-inline-code">false</code>, no price is served. Defaults to <code class="docs-inline-code">true</code>.</td></tr>
       </table></div>
       <p><strong>Server keys only.</strong> A public key lives in a browser: if it could declare its own price, any visitor would read trade prices by changing one parameter. For the same reason there is <strong>no price parameter in a search request</strong> — the configuration comes from the key, never from the call.</p>
-      <p><strong>A field no product carries is refused</strong>, and the message lists the ones that exist:</p>
-      <pre class="docs-code"><code>{"detail": "None of the 5000 products in « mycatalog » carries the field
- « price_prro ». Price fields present: price, price_pro."}</code></pre>
+      <p><strong>A field no product carries is refused</strong>, and the message lists the ones that exist (in French, like <a href="#erreurs">every error message</a>):</p>
+      <pre class="docs-code"><code>{"detail": "Aucun des 5000 produits de « mycatalog » ne porte le champ
+ « price_prro ». Champs de prix présents : price, price_pro."}</code></pre>
       <p>Partial coverage is accepted and counted. Products without the field <strong>have no price at all</strong> — never a silent fallback to <code class="docs-inline-code">price</code>, which would serve the list price to a trade buyer without saying so.</p>
       <p><strong>Hiding removes every price field</strong>, not just <code class="docs-inline-code">price</code>: "no price without an account" would mean nothing if <code class="docs-inline-code">price_pro</code> kept coming out because it isn't called <code class="docs-inline-code">price</code>. Fields whose name contains <code class="docs-inline-code">price</code>, <code class="docs-inline-code">prix</code> or <code class="docs-inline-code">tarif</code> are removed — and the response lists them rather than letting you find out later:</p>
       <pre class="docs-code"><code>{"price_visible": false,
@@ -539,25 +539,27 @@
 
     <section id="facettes" class="docs-section">
       <h2>Facets and filters</h2>
-      <p>A facet groups the annotations that share a common prefix — <code class="docs-inline-code">PAYS_SE</code> and <code class="docs-inline-code">PAYS_FR</code> belong to the <code class="docs-inline-code">PAYS</code> group. Request a per-group count with <code class="docs-inline-code">facets</code>, narrow results with <code class="docs-inline-code">filters</code>:</p>
+      <p>A facet groups the annotations that share a common prefix — <code class="docs-inline-code">FORMAT_POCHE</code> and <code class="docs-inline-code">FORMAT_BROCHE</code> belong to the <code class="docs-inline-code">FORMAT</code> group. The group is the prefix, not a declared name: the engine keeps the annotations starting with <code class="docs-inline-code">FORMAT_</code>. Request a per-group count with <code class="docs-inline-code">facets</code>, narrow results with <code class="docs-inline-code">filters</code>:</p>
       <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/index/mycatalog/search \
   -H "Authorization: Bearer YOUR_API_KEY" \
-  -d '{"q": "crime", "facets": ["PAYS", "FORMAT"], "filters": ["PAYS_SE"]}'</code></pre>
+  -d '{"q": "polar", "facets": ["FORMAT", "LANG"], "filters": ["FORMAT_POCHE"]}'</code></pre>
       <pre class="docs-code"><code>{
-  "total": 12,
+  "total": 17,
   "hits": [ ... ],
   "facets": {
-    "PAYS":   {"PAYS_SE": 12, "PAYS_FR": 34, "PAYS_UK": 9},
-    "FORMAT": {"FORMAT_PO": 8, "FORMAT_BR": 4}
+    "FORMAT": {"FORMAT_POCHE": 17, "FORMAT_BROCHE": 9, "FORMAT_GF": 4},
+    "LANG":   {"LANG_FR": 12, "LANG_EN": 5}
   }
 }</code></pre>
+      <p class="form-note">Response taken from the engine, <code class="docs-inline-code">livres</code> pack, on a 44-record catalog holding 30 crime novels — 12 pocket in French, 9 paperback in French, 5 pocket in English, 4 hardcover in French. The five annotation names above are the ones the pack actually emits, in French like every annotation: <code class="docs-inline-code">POCHE</code> is pocket, <code class="docs-inline-code">BROCHE</code> paperback, <code class="docs-inline-code">GF</code> hardcover. The query is <code class="docs-inline-code">"polar"</code> because that is the word this catalog stores; an English catalog would be searched in English.</p>
       <p><strong>Counting and filtering do not behave the same way, and that is the distinction to remember.</strong> Counting is disjunctive; filtering is cumulative. They answer two different questions.</p>
       <ul>
-        <li><strong>Counting</strong> is disjunctive within a single group: filtering on <code class="docs-inline-code">PAYS_SE</code> doesn't make <code class="docs-inline-code">PAYS_FR</code> disappear from the count. That's what lets you show "France (34)" as an alternative option even once Sweden is selected, exactly like a standard e-commerce filter sidebar. It answers: <em>"how many would there be if I ticked this one?"</em></li>
-        <li><strong>Filtering</strong> is cumulative everywhere — across different groups and within a single group alike. <code class="docs-inline-code">filters: ["PAYS_SE", "PAYS_FR"]</code> asks for products carrying <em>both</em> annotations, not one or the other: in a catalog where a book has a single country, that returns <strong>zero results</strong>, while the count above still shows 12 and 34. It answers: <em>"which ones satisfy everything that is ticked?"</em></li>
+        <li><strong>Counting</strong> is disjunctive within a single group: filtering on <code class="docs-inline-code">FORMAT_POCHE</code> doesn't make <code class="docs-inline-code">FORMAT_BROCHE</code> disappear from the count. That's what lets you show "Paperback (9)" as an alternative option even once pocket is selected, exactly like a standard e-commerce filter sidebar. It answers: <em>"how many would there be if I ticked this one?"</em></li>
+        <li><strong>Across groups the filter does apply</strong> — which is why <code class="docs-inline-code">LANG</code> shows 12 and 5 rather than 25 and 5: the languages counted are those of the pocket-format crime novels only. Disjunction holds inside the filtered group, not beyond it.</li>
+        <li><strong>Filtering</strong> is cumulative everywhere — across different groups and within a single group alike. <code class="docs-inline-code">filters: ["FORMAT_POCHE", "FORMAT_BROCHE"]</code> asks for products carrying <em>both</em> annotations, not one or the other: in a catalog where a book has a single format, that returns <strong>zero results</strong>, while the count still shows 17 and 9. Measured on the same catalog. It answers: <em>"which ones satisfy everything that is ticked?"</em></li>
       </ul>
       <p>So it isn't a contradiction, but it needs to be understood before wiring a checkbox sidebar: ticking two values of the same group empties the list while the counters still show positive numbers.</p>
-      <p><strong>To express an OR, on Browse only</strong>: <code class="docs-inline-code">filters=country:SE|FR</code> — the pipe separates alternatives within one field, the comma separates fields, which stay cumulative. See <a href="#ep-browse">Browse</a>. <strong>On the search side the pipe works for field filters too</strong> — <code class="docs-inline-code">filters: ["brand:Makita|Bosch"]</code> returns either one. <em>Annotations</em>, however, stay cumulative with one another: <code class="docs-inline-code">["PAYS_SE", "PAYS_FR"]</code> demands both, and no syntax asks for just one of them.</p>
+      <p><strong>To express an OR, on Browse only</strong>: <code class="docs-inline-code">filters=langue:fr|en</code> — the pipe separates alternatives within one <em>business field</em>, the one you supply at indexing time, the comma separates fields, which stay cumulative. See <a href="#ep-browse">Browse</a>. <strong>On the search side the pipe works for field filters too</strong> — <code class="docs-inline-code">filters: ["brand:Makita|Bosch"]</code> returns either one. <em>Annotations</em>, however, stay cumulative with one another: <code class="docs-inline-code">["FORMAT_POCHE", "FORMAT_BROCHE"]</code> demands both, and no syntax asks for just one of them.</p>
     </section>
 
     <section id="ep-browse" class="docs-section">
@@ -1013,11 +1015,13 @@ done</code></pre>
   -H "Authorization: Bearer YOUR_API_KEY"
 
 → {"classement": [
-     {"pack": "fashion", "annotations_distinctes": 42, "produits_annotes": 380, "couverture_pct": 95.0},
-     {"pack": "hardware", "annotations_distinctes": 3, "produits_annotes": 12, "couverture_pct": 3.0}
-   ], "recommande": "fashion", "raison": "...",
-   "marge": {"second": "hardware", "produits_annotes": 31.67,
+     {"pack": "mode", "annotations_distinctes": 42, "produits_annotes": 380, "couverture_pct": 95.0},
+     {"pack": "outillage", "annotations_distinctes": 3, "produits_annotes": 12, "couverture_pct": 3.0}
+   ], "recommande": "mode", "raison": "...",
+   "marge": {"second": "outillage", "produits_annotes": 31.67,
              "annotations_distinctes": 14.0, "critere": "produits_annotes"}}</code></pre>
+
+      <p><strong>Pack names are engine constants, not display labels.</strong> The eleven packs are named after their rule files, in French, and <code class="docs-inline-code">pack</code>, <code class="docs-inline-code">recommande</code>, <code class="docs-inline-code">second</code> and <code class="docs-inline-code">pack_actuel</code> all carry those exact strings whatever language you call from: <code class="docs-inline-code">automobile</code>, <code class="docs-inline-code">electricite</code>, <code class="docs-inline-code">electronique</code>, <code class="docs-inline-code">finance</code>, <code class="docs-inline-code">industrie</code>, <code class="docs-inline-code">livres</code>, <code class="docs-inline-code">mode</code>, <code class="docs-inline-code">outillage</code>, <code class="docs-inline-code">plomberie</code>, <code class="docs-inline-code">sport</code>, <code class="docs-inline-code">vins</code>. Above, <code class="docs-inline-code">"mode"</code> is the fashion pack and <code class="docs-inline-code">"outillage"</code> the hardware one — compare against those strings, not against their English names. Same for <code class="docs-inline-code">raison</code>, a French sentence like <a href="#erreurs">every message the API writes</a>.</p>
 
       <h3 id="marge-recommandation">By how much the winner wins, and when it doesn't</h3>
       <p><code class="docs-inline-code">recommande</code> <strong>can be <code class="docs-inline-code">null</code></strong>, and that is a result, not a failure: no pack recognises your references significantly, the pack already in place is the best one, the gap with it is too small to justify a reindex, or two packs are tied. <code class="docs-inline-code">raison</code> says which of those applies. A client that displays the recommendation must handle that null value rather than treat it as a missing answer.</p>
@@ -1035,11 +1039,11 @@ done</code></pre>
                  {"id": "2", "ref": "ECR-M8", "name": "Écrou hexagonal M8 zingué"}]}'
 
 → {"classement": [
-     {"pack": "hardware", "annotations_distinctes": 9, "produits_annotes": 2, "couverture_pct": 100.0},
-     {"pack": "plumbing", "annotations_distinctes": 1, "produits_annotes": 1, "couverture_pct": 50.0}
-   ], "recommande": "hardware", "raison": "aucun pack n'est configuré",
+     {"pack": "outillage", "annotations_distinctes": 9, "produits_annotes": 2, "couverture_pct": 100.0},
+     {"pack": "plomberie", "annotations_distinctes": 1, "produits_annotes": 1, "couverture_pct": 50.0}
+   ], "recommande": "outillage", "raison": "aucun pack n'est configuré",
    "pack_actuel": null, "echantillon": 2,
-   "marge": {"second": "plumbing", "produits_annotes": 2.0,
+   "marge": {"second": "plomberie", "produits_annotes": 2.0,
              "annotations_distinctes": 9.0, "critere": "produits_annotes"}}</code></pre>
     </section>
 
