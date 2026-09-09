@@ -135,8 +135,35 @@ def _inventaire_par_l_api(rulepacks: dict) -> list:
             "l'inventaire publie ne porte pas les memes packs que le disque : "
             f"{set(publie) ^ set(rulepacks)}"
         )
-    plat = sorted({(e["modele"], e["motif"]) for v in publie.values() for e in v})
-    return [{"modele": m, "motif": r} for m, r in plat]
+    # LES PACKS SONT GARDES, LE GROUPEMENT NON, et les deux consommateurs
+    # tiennent sur la meme capture. `annotations-dans-blocs.test.js` valide
+    # un jeton cite dans la documentation : il ne sait pas quel pack la page
+    # illustre, et la liste doit rester PLATE pour qu'il n'ait pas a choisir.
+    # `pictos-annotations.test.js` verifie que chaque pack peut afficher au
+    # moins un pictogramme : il lui faut l'appartenance, et sans elle son
+    # assertion serait verte en laissant `livres` et `finance` entierement
+    # au repli -- ces deux packs ne posent aucune annotation `FAM_`, donc
+    # aucun defaut de couverture ne les fait apparaitre.
+    #
+    # Un champ par entree plutot qu'un second groupement : la liste garde ses
+    # 223 modeles distincts, le compte et la forme que le premier garde
+    # asserte, et les 5 modeles qu'un meme nom porte dans deux packs portent
+    # leurs deux noms au lieu d'etre deux entrees (`MAT_INOX` est ecrit par
+    # outillage ET par plomberie).
+    #
+    # COUT MESURE, dans la forme VERSIONNEE (`json.dump(indent=2)`, celle du
+    # fichier, pas celle de la reponse HTTP) : la clef passe de 16,1 Ko a
+    # 24,6 Ko, soit +8,5 Ko. L'essentiel n'est pas la donnee mais l'indent --
+    # une liste d'un seul nom occupe trois lignes. Une chaine « outillage
+    # plomberie » couterait moins ; on garde le tableau, qui est la forme que
+    # la route rend et qu'un lecteur n'a pas a re-decouper. Le fichier n'est
+    # lu que par `npm test`, jamais servi a un navigateur.
+    par_modele: dict[tuple, set] = {}
+    for nom_pack, entrees in publie.items():
+        for e in entrees:
+            par_modele.setdefault((e["modele"], e["motif"]), set()).add(nom_pack)
+    return [{"modele": m, "motif": r, "packs": sorted(par_modele[(m, r)])}
+            for m, r in sorted(par_modele)]
 
 
 def main() -> None:
@@ -244,6 +271,20 @@ def main() -> None:
         # coute, et il est garde exprES : un garde qui dit « ^FORMAT_[A-Za-z
         # 0-9.,/-]*$ ne reconnait pas FORMAT_PO » fait chercher, un garde qui
         # dit « FORMAT_POCHE, FORMAT_BROCHE, FORMAT_GF » fait corriger.
+        #
+        # LE NIVEAU N'EST PAS PUBLIE, ET ON NE VA PAS LE CHERCHER AILLEURS.
+        # `inventaire_annotations` cote moteur parcourt `pack.levels` et
+        # jette le numero. Un import de `load_rulepacks` le rendrait -- et
+        # ferait DEUX sources pour une donnee, dont une qui lit les
+        # internes du moteur quand l'autre lit son contrat. Mesure du
+        # 9 septembre 2026 : les 41 annotations `FAM_` du depot sont TOUTES
+        # de niveau 1, donc la couverture des familles ne change pas d'un
+        # iota sans ce champ. Ce qu'on perd est l'avenir : le jour ou un
+        # pack ecrira un `FAM_` compose au niveau 2, le garde des
+        # pictogrammes exigera pour lui une entree que rien ne peut
+        # atteindre la premiere -- ses constituants de niveau 1 sont dans le
+        # meme `matched` et le precedent. Le remede sera alors de publier le
+        # niveau sur la route, pas de rouvrir une seconde capture ici.
         inventaire = _inventaire_par_l_api(rulepacks)
         fixtures["inventaire_annotations"] = inventaire
 
