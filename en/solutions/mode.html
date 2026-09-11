@@ -3,19 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fashion &amp; retail: a size 38 is not a model number | Heurix</title>
-<meta name="description" content="“Wool turtleneck sweater size 38”: four pieces of information in four different vocabularies. One single query.">
+<title>Fashion &amp; retail: four vocabularies, one single search | Heurix</title>
+<meta name="description" content="“Wool turtleneck sweater size M”: four pieces of information in four different vocabularies. One single query.">
 <link rel="alternate" hreflang="fr" href="https://heurix.fr/solutions/mode.html">
 <link rel="alternate" hreflang="en" href="https://heurix.fr/en/solutions/mode.html">
 <link rel="alternate" hreflang="x-default" href="https://heurix.fr/solutions/mode.html">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Fashion &amp; retail: a size 38 is not a model number | Heurix">
-<meta property="og:description" content="“Wool turtleneck sweater size 38”: four pieces of information in four different vocabularies. One single query.">
+<meta property="og:title" content="Fashion &amp; retail: four vocabularies, one single search | Heurix">
+<meta property="og:description" content="“Wool turtleneck sweater size M”: four pieces of information in four different vocabularies. One single query.">
 <meta property="og:image" content="https://heurix.fr/img/solutions/mode.jpg">
 <meta property="og:url" content="https://heurix.fr/en/solutions/mode.html">
 <meta property="og:locale" content="en_US">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Fashion &amp; retail: a size 38 is not a model number | Heurix">
+<meta name="twitter:title" content="Fashion &amp; retail: four vocabularies, one single search | Heurix">
 <meta name="twitter:image" content="https://heurix.fr/img/solutions/mode.jpg">
 <link rel="icon" type="image/png" href="../../favicon-32.png">
 <link rel="apple-touch-icon" href="../../apple-touch-icon.png">
@@ -183,43 +183,43 @@
       <span class="breadcrumb-current">Fashion & retail</span>
     </nav>
     <div class="kicker kicker-mode">🧵 Solutions · Fashion & retail</div>
-    <h1>Fashion &amp; retail: a size 38 is not a model number</h1>
+    <h1>Fashion &amp; retail: four vocabularies, one single search</h1>
     <div class="solution-intro solution-intro-droite">
       <img class="solution-intro-img" src="../../img/solutions/mode.jpg?v=1787855970"
            width="1000" height="671" decoding="async"
            alt="Three folded wool swatches stacked up, teal, mid-grey and charcoal, their pinked edges visible.">
-      <p class="post-lede">“Wool turtleneck sweater size 38”: four pieces of information in four different vocabularies. One single query.</p>
+      <p class="post-lede">“Wool turtleneck sweater size M”: four pieces of information in four different vocabularies. One single query.</p>
     </div>
 
     <div class="post-body">
       <h2>Six attributes, no fixed order</h2>
-      <p>Fashion vocabulary mixes product family, cut, material, color, size, and season (<a href="#annotations">the detail of each attribute</a>), often in no fixed order. An engine that treats the phrase as a bag of words doesn't know that “UK 10” is a size, not a reference — or that “turtleneck” is a cut, not a distinct product.</p>
+      <p>Fashion vocabulary mixes product family, cut, material, color, size, and season (<a href="#annotations">the detail of each attribute</a>), often in no fixed order. An engine that treats the phrase as a bag of words doesn't know that “W30 L32” is a trouser size, not a reference — or that “turtleneck” is a cut, not a distinct product.</p>
 
       <h2 id="annotations">Size, cut and material recognized</h2>
       <p>The <code class="docs-inline-code">mode</code> rule pack activates when you pick this industry, at indexing time. It produces these annotations, each becoming a usable filter:</p>
       <div class="table-scroll"><table class="docs-params">
         <tr><th>Annotation</th><th>What it isolates</th></tr>
-        <tr><td><code class="docs-inline-code">TAILLE_38</code></td><td>the size, distinguished from a model number</td></tr>
+        <tr><td><code class="docs-inline-code">TAILLE_m</code></td><td>the letter size, XXS through 3XL</td></tr>
         <tr><td><code class="docs-inline-code">COL_ROULE</code></td><td>the collar cut, turtleneck or V-neck</td></tr>
         <tr><td><code class="docs-inline-code">MAT_LAINE</code></td><td>the material — merino, cashmere and mohair under one annotation</td></tr>
         <tr><td><code class="docs-inline-code">SAISON_AW25</code></td><td>the season in trade format, SS25 as well as AW25 or FW25</td></tr>
-        <tr><td><code class="docs-inline-code">JEAN_T38_W30</code></td><td>clothing size and jean size reconciled</td></tr>
+        <tr><td><code class="docs-inline-code">JEAN_T30_32</code></td><td>a pair of trousers and its waist/length size, joined whatever the order of the label</td></tr>
       </table></div>
       <p>On top of those: colour, pattern and fastening. Four colour families absorb their shades — burgundy and garnet fall in with red, navy and denim with blue —, four patterns cover the trade's wording (plain, striped, polka dot, floral), and ten synonym groups cover its spellings: t-shirt, tee-shirt, tshirt and “tee shirt” all point at the same aisle, and so do sneaker and trainer. This is the one pack where the difficulty is not reading a code, but accepting that the same garment is written ten different ways.</p>
 
       <h2>Three items, as indexed</h2>
       <div class="table-scroll"><table class="docs-params">
         <tr><th>Indexed reference</th><th>What the engine extracts</th></tr>
-        <tr><td class="mono">Merino wool turtleneck sweater, size 38</td><td><code class="docs-inline-code">FAM_PULL · COL_ROULE · MAT_LAINE · TAILLE_38</code><span class="docs-params-plain">turtleneck sweater, wool, size 38</span></td></tr>
-        <tr><td class="mono">Slim faded jeans W30 L32</td><td><code class="docs-inline-code">FAM_PANTALON · COUPE_SLIM · FINITION_DELAVE · TAILLE_30_32</code><span class="docs-params-plain">slim-fit faded jeans, size 30/32</span></td></tr>
+        <tr><td class="mono">Merino wool turtleneck sweater, size M</td><td><code class="docs-inline-code">FAM_PULL · COL_ROULE · MAT_LAINE · TAILLE_m</code><span class="docs-params-plain">turtleneck sweater, wool, size M</span></td></tr>
+        <tr><td class="mono">Slim washed jeans W30 L32</td><td><code class="docs-inline-code">FAM_PANTALON · COUPE_SLIM · FINITION_DELAVE · TAILLE_30_32 · JEAN_T30_32</code><span class="docs-params-plain">slim-fit washed jeans, size 30/32</span></td></tr>
         <tr><td class="mono">Striped cotton shirt AW25</td><td><code class="docs-inline-code">FAM_CHEMISE · MOTIF_RAYURES · MAT_COTON · SAISON_AW25</code><span class="docs-params-plain">striped cotton shirt, fall-winter 25 collection</span></td></tr>
       </table></div>
 
       <h2>Three vocabulary gaps, one customer</h2>
       <p>A customer searches “red sweater size 38”. Your listings say “burgundy”, “size UK 10”, and “knit”. Three vocabulary gaps, and an empty result on a product you have in stock.</p>
 
-      <h2>Your brand's vocabulary, already known</h2>
-      <p>The fashion pack handles these vocabulary equivalences natively. You add your own — house color names, collection abbreviations — via Custom Rules, with no regex to write.</p>
+      <h2>One gap in three covered by the pack</h2>
+      <p>The fashion pack covers one of them: burgundy falls in with red. The other two are not in the pack. You add your own — house color names, collection abbreviations — via Custom Rules, with no regex to write.</p>
       <div class="regex-reassure"><span class="regex-reassure-icone" aria-hidden="true">🧵</span><p>A term specific to your catalog that the pack still misses (an in-house collection abbreviation, for example)? Add your own <a href="../docs.html#ep-custom-rules">Custom Rule</a> from the console, simply describing what it should recognize — no regex required.</p></div>
 
       <h2>Index your fashion catalog</h2>

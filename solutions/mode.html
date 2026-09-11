@@ -3,20 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mode &amp; retail : la taille 38 n'est pas un numéro de modèle | Heurix</title>
-<meta name="description" content="« Pull col roulé laine T38 » : quatre informations dans quatre vocabulaires différents. Une seule requête.">
+<title>Mode &amp; retail : quatre vocabulaires, une seule recherche | Heurix</title>
+<meta name="description" content="« Pull col roulé laine taille M » : quatre informations dans quatre vocabulaires différents. Une seule requête.">
 <link rel="alternate" hreflang="fr" href="https://heurix.fr/solutions/mode.html">
 <link rel="alternate" hreflang="en" href="https://heurix.fr/en/solutions/mode.html">
 <link rel="alternate" hreflang="x-default" href="https://heurix.fr/solutions/mode.html">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Mode &amp; retail : la taille 38 n'est pas un numéro de modèle | Heurix">
-<meta property="og:description" content="« Pull col roulé laine T38 » : quatre informations dans quatre vocabulaires différents. Une seule requête.">
+<meta property="og:title" content="Mode &amp; retail : quatre vocabulaires, une seule recherche | Heurix">
+<meta property="og:description" content="« Pull col roulé laine taille M » : quatre informations dans quatre vocabulaires différents. Une seule requête.">
 <meta property="og:image" content="https://heurix.fr/img/solutions/mode.jpg">
 <meta property="og:url" content="https://heurix.fr/solutions/mode.html">
 <meta property="og:locale" content="fr_FR">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Mode &amp; retail : la taille 38 n'est pas un numéro de modèle | Heurix">
-<meta name="twitter:description" content="« Pull col roulé laine T38 » : quatre informations dans quatre vocabulaires différents. Une seule requête.">
+<meta name="twitter:title" content="Mode &amp; retail : quatre vocabulaires, une seule recherche | Heurix">
+<meta name="twitter:description" content="« Pull col roulé laine taille M » : quatre informations dans quatre vocabulaires différents. Une seule requête.">
 <meta name="twitter:image" content="https://heurix.fr/img/solutions/mode.jpg">
 <link rel="icon" type="image/png" href="../favicon-32.png">
 <link rel="apple-touch-icon" href="../apple-touch-icon.png">
@@ -183,43 +183,43 @@
       <span class="breadcrumb-current">Mode & retail</span>
     </nav>
     <div class="kicker kicker-mode">🧵 Solutions · Mode & retail</div>
-    <h1>Mode &amp; retail : une taille 38 n'est pas un numéro de modèle</h1>
+    <h1>Mode &amp; retail : quatre vocabulaires, une seule recherche</h1>
     <div class="solution-intro solution-intro-droite">
       <img class="solution-intro-img" src="../img/solutions/mode.jpg?v=1787855970"
            width="1000" height="671" decoding="async"
            alt="Trois coupons de laine pliés et empilés, vert-de-gris, gris moyen et anthracite, leurs bords crantés visibles.">
-      <p class="post-lede">« Pull col roulé laine T38 » : quatre informations dans quatre vocabulaires différents. Une seule requête.</p>
+      <p class="post-lede">« Pull col roulé laine taille M » : quatre informations dans quatre vocabulaires différents. Une seule requête.</p>
     </div>
 
     <div class="post-body">
       <h2>Six attributs, aucun ordre fixe</h2>
-      <p>Le vocabulaire de la mode mélange famille, coupe, matière, couleur, taille et saison (<a href="#annotations">le détail de chaque attribut</a>), souvent sans ordre fixe. Un moteur qui traite la phrase comme un sac de mots ne sait pas que « T38 » est une taille, pas une référence — ni que « col roulé » est une coupe, pas un produit.</p>
+      <p>Le vocabulaire de la mode mélange famille, coupe, matière, couleur, taille et saison (<a href="#annotations">le détail de chaque attribut</a>), souvent sans ordre fixe. Un moteur qui traite la phrase comme un sac de mots ne sait pas que « W30 L32 » est une taille de pantalon, pas une référence — ni que « col roulé » est une coupe, pas un produit.</p>
 
       <h2 id="annotations">Taille, coupe et matière reconnues</h2>
       <p>Le pack de règles <code class="docs-inline-code">mode</code> s'active au choix du secteur, à l'indexation. Il produit ces annotations, qui deviennent autant de filtres exploitables :</p>
       <div class="table-scroll"><table class="docs-params">
         <tr><th>Annotation</th><th>Ce qu'elle isole</th></tr>
-        <tr><td><code class="docs-inline-code">TAILLE_38</code></td><td>la taille, distinguée d'un numéro de modèle</td></tr>
+        <tr><td><code class="docs-inline-code">TAILLE_m</code></td><td>la taille en lettres, de XXS à 3XL</td></tr>
         <tr><td><code class="docs-inline-code">COL_ROULE</code></td><td>la coupe du col, roulé ou V</td></tr>
         <tr><td><code class="docs-inline-code">MAT_LAINE</code></td><td>la matière — mérinos, cachemire et mohair sous la même annotation</td></tr>
         <tr><td><code class="docs-inline-code">SAISON_AW25</code></td><td>la saison au format professionnel, SS25 comme AW25 ou FW25</td></tr>
-        <tr><td><code class="docs-inline-code">JEAN_T38_W30</code></td><td>taille de confection et taille jean rapprochées</td></tr>
+        <tr><td><code class="docs-inline-code">JEAN_T30_32</code></td><td>un pantalon et sa taille tour de taille / longueur, réunis quel que soit l'ordre du libellé</td></tr>
       </table></div>
       <p>S'y ajoutent le coloris, le motif et la fermeture. Quatre familles de couleur absorbent leurs nuances — bordeaux et grenat tombent avec rouge, marine et denim avec bleu —, quatre motifs les libellés du secteur (uni, rayé, à pois, fleuri), et dix groupes de synonymes ses graphies : t-shirt, tee-shirt, tshirt et « tee shirt » désignent le même rayon, sneaker et basket aussi. C'est le seul pack où la difficulté n'est pas de lire un code, mais d'admettre qu'un même vêtement s'écrit de dix façons.</p>
 
       <h2>Trois articles, tels qu'indexés</h2>
       <div class="table-scroll"><table class="docs-params">
         <tr><th>Référence indexée</th><th>Ce que le moteur en extrait</th></tr>
-        <tr><td class="mono">Pull col roulé laine mérinos T38</td><td><code class="docs-inline-code">FAM_PULL · COL_ROULE · MAT_LAINE · TAILLE_38</code><span class="docs-params-plain">pull à col roulé, en laine, taille 38</span></td></tr>
-        <tr><td class="mono">Jean slim délavé W30 L32</td><td><code class="docs-inline-code">FAM_PANTALON · COUPE_SLIM · FINITION_DELAVE · TAILLE_30_32</code><span class="docs-params-plain">jean coupe slim délavée, taille 30/32</span></td></tr>
+        <tr><td class="mono">Pull col roulé laine mérinos taille M</td><td><code class="docs-inline-code">FAM_PULL · COL_ROULE · MAT_LAINE · TAILLE_m</code><span class="docs-params-plain">pull à col roulé, en laine, taille M</span></td></tr>
+        <tr><td class="mono">Jean slim délavé W30 L32</td><td><code class="docs-inline-code">FAM_PANTALON · COUPE_SLIM · FINITION_DELAVE · TAILLE_30_32 · JEAN_T30_32</code><span class="docs-params-plain">jean coupe slim délavée, taille 30/32</span></td></tr>
         <tr><td class="mono">Chemise rayures coton AW25</td><td><code class="docs-inline-code">FAM_CHEMISE · MOTIF_RAYURES · MAT_COTON · SAISON_AW25</code><span class="docs-params-plain">chemise à rayures en coton, collection automne-hiver 25</span></td></tr>
       </table></div>
 
       <h2>Trois écarts de vocabulaire, un client</h2>
       <p>Une cliente cherche « pull rouge 38 ». Vos fiches disent « bordeaux », « T38 » et « maille ». Trois écarts de vocabulaire, et un résultat vide sur un produit que vous avez en stock.</p>
 
-      <h2>Le vocabulaire de marque déjà connu</h2>
-      <p>Le pack mode traite ces équivalences de vocabulaire nativement. Vous ajoutez les vôtres — noms de couleurs maison, abréviations de collection — via les Custom Rules, sans écrire de regex.</p>
+      <h2>Un écart sur trois couvert par le pack</h2>
+      <p>Le pack mode en couvre un : bordeaux tombe dans la famille rouge. Les deux autres ne sont pas dans le pack. Vous ajoutez les vôtres — noms de couleurs maison, abréviations de collection — via les Custom Rules, sans écrire de regex.</p>
       <div class="regex-reassure"><span class="regex-reassure-icone" aria-hidden="true">🧵</span><p>Un terme propre à votre catalogue échappe encore au pack (une abréviation de collection maison, par exemple) ? Ajoutez votre propre <a href="../docs.html#ep-custom-rules">Custom Rule</a> depuis la console, en décrivant ce qu'elle doit reconnaître — sans écrire de regex.</p></div>
 
       <h2>Indexer votre catalogue mode</h2>

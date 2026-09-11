@@ -57,7 +57,23 @@ const INVENTAIRE = CONTRAT.inventaire_annotations;
 // ce qui distingue « la documentation AFFIRME que cette annotation existe »
 // de « la page contient une constante ».
 const BLOC = /<(pre|code)\b[^>]*class="[^"]*(?:docs-code|docs-inline-code|hero-code|panel-code|integration-code)[^"]*"[^>]*>([\s\S]*?)<\/\1>/g;
-const JETON = /\b[A-Z][A-Z0-9]*(?:_[A-Z0-9./-]+)+\b/g;
+// LES SEGMENTS APRES LE PREMIER ACCEPTENT LES MINUSCULES (11 septembre 2026).
+// Le niveau 1 d'un pack capture dans le texte normalise, donc en minuscules :
+// le moteur ecrit `MARQUE_skf`, `CABLE_h07v-u`, `IBAN_fr76...`. Un JETON
+// en majuscules seules ne les voyait pas -- ni vraies, ni fausses. Mesure a
+// l'elargissement : 10 jetons de plus, 9 annotations reelles deja citees
+// (COURBE_c, TYPE_ac, FILET_15x21, RACC_15x21, RACC_20x27, CABLE_h07v-u,
+// REF_MANN_w712/75, TVA_fr40552100554, IBAN_fr7630006000011234567890189) et
+// une ellipse, `IBAN_fr76...`, remplacee par la valeur entiere. Aucun jeton
+// deja releve ne change de forme, aucune constante n'entre : la tete reste en
+// majuscules.
+//
+// L'ORDRE ETAIT IMPOSE. Elargir avant heurix-engine 622a964, c'etait lire
+// `MARQUE_skf` avec une classe unique `[A-Za-z0-9.,/-]*` -- acceptee, comme
+// `MARQUE_SKF` : le garde n'aurait rien distingue. Et avant de corriger les
+// pages, il aurait remonte les quatorze releves faux en meme temps que les
+// dix nouveaux : deux causes sous un seul rouge.
+const JETON = /\b[A-Z][A-Z0-9]*(?:_[A-Za-z0-9./-]+)+\b/g;
 
 // ---------------------------------------------------------------------------
 // CINQ PREFIXES, ET NON QUINZE NOMS. C'est la reponse mesuree a « comment
@@ -133,6 +149,12 @@ describe("annotations citees dans les blocs de code", () => {
     expect(INVENTAIRE.length, "inventaire vide ou tronque").toBeGreaterThanOrEqual(200);
     expect(releves.length, "aucun jeton releve : le motif ou le perimetre est casse").toBeGreaterThanOrEqual(500);
     expect(new Set(releves.map((r) => r.jeton)).size).toBeGreaterThanOrEqual(100);
+    // Et il voit les minuscules : sans ce temoin, un JETON ramene aux
+    // majuscules rendrait tout le reste vert en ignorant les valeurs de niveau 1.
+    const vus = new Set(releves.map((r) => r.jeton));
+    for (const j of ["MARQUE_skf", "CABLE_h07v-u", "COURBE_c"]) {
+      expect(vus.has(j), `${j} est cite et le balayage ne le voit plus`).toBe(true);
+    }
   });
 
   it("toute annotation citee est un modele que les packs peuvent ecrire", () => {
@@ -143,20 +165,28 @@ describe("annotations citees dans les blocs de code", () => {
     ).toEqual([]);
   });
 
-  // LE TEMOIN DU QUANTIFICATEUR. Il ne relit pas le motif, il le REJOUE :
-  // on remplace `]*` par `]+` dans les 223 motifs de la fixture et on exige
-  // que le balayage se mette a rejeter -- exactement les trois annotations
-  // du pack sport, et rien d'autre. Une assertion qui dirait seulement
-  // « le motif contient une etoile » serait vraie sur un motif ou l'etoile
-  // ne sert a rien.
-  it("il ne rejette rien de vrai -- le quantificateur est teste, pas relu", () => {
-    const stricts = INVENTAIRE.map((e) => new RegExp(e.motif.replaceAll("]*", "]+")));
-    // LA DIFFERENCE, PAS L'ENSEMBLE. Une premiere version comparait tous les
-    // jetons que le `+` rejette a une liste de trois -- vert sur le site
-    // corrige, ROUGE sur un site fautif, ou les onze faux s'y ajoutent alors
-    // qu'ils n'ont rien a voir avec le quantificateur. Le temoin mesurait
-    // l'etat du site en croyant mesurer le motif. Ce qui isole l'un de
-    // l'autre : les jetons que l'ETOILE accepte et que le PLUS refuse.
+  // LE TEMOIN DE L'OPTIONALITE. Il ne relit pas le motif, il le REJOUE.
+  //
+  // Jusqu'au 11 septembre 2026, chaque `{n}` etait publie en
+  // `[A-Za-z0-9.,/-]*`, et ce temoin remplacait `]*` par `]+`. Depuis
+  // heurix-engine 622a964, `{n}` est publie comme le langage de SON groupe,
+  // rendu optionnel : `(?:...)?`. Aucun des 224 motifs ne contient plus
+  // `]*` -- l'ancienne mutation ne mutait plus rien, et ce test tombait en
+  // disant que l'etoile ne servait plus, ce qui etait vrai et sans objet.
+  //
+  // La mutation porte donc sur `)?`. Elle est plus large que la seule
+  // optionalite du groupe : elle rend aussi obligatoires les parties
+  // optionnelles DANS le langage d'un groupe (l'espace de l'ISBN, le point
+  // de CYL_1.6). Mesure du 11 septembre : elle fait perdre NEUF jetons du
+  // site, dont les trois qui n'existent que parce qu'un groupe ne participe
+  // pas. D'ou `arrayContaining` et non l'egalite : on exige que ces
+  // trois-la tombent, pas que la liste soit figee sur des effets de bord.
+  //
+  // CE QUE LE TEMOIN PROUVE, SANS DEPENDRE DE L'ETAT DU SITE : les jetons
+  // que le motif publie accepte et que le motif mute refuse. Un site fautif
+  // n'y ajoute rien -- ses faux sont refuses par les deux.
+  it("il ne rejette rien de vrai -- l'optionalite des groupes est testee, pas relue", () => {
+    const stricts = INVENTAIRE.map((e) => new RegExp(e.motif.replaceAll(")?", ")")));
     const perdus = [...new Set(
       releves
         .filter((r) => motifs.some((m) => m.re.test(r.jeton)))
@@ -165,9 +195,9 @@ describe("annotations citees dans les blocs de code", () => {
     )].sort();
     expect(
       perdus,
-      "un `+` a la place du `*` doit faire perdre ces trois-la, et seulement eux : "
-      + "liste vide, le temoin ne prouve plus que l'etoile sert",
-    ).toEqual(["AILE_5M2", "BALLON_T3", "COMBI_4_3"]);
+      "rendre les groupes obligatoires doit faire perdre au moins ces trois-la : "
+      + "sinon le temoin ne prouve plus qu'un groupe non participant est accepte",
+    ).toEqual(expect.arrayContaining(["AILE_5M2", "BALLON_T3", "COMBI_4_3"]));
   });
 
   // CE QUI FAIT QU'UN PREFIXE N'EST PAS UN TROU. Il est verifie contre la
@@ -186,6 +216,17 @@ describe("annotations citees dans les blocs de code", () => {
   // mois. VIS_M8_INOX est le plus instructif : il porte le prefixe et la
   // forme d'une annotation d'outillage, et aucune regle ne l'ecrit --
   // `DIAM_INOX` rend `DIAM_M8_INOX`.
+  // LES QUATRE QUE LA CLASSE UNIQUE ACCEPTAIT, releves sur les pages et
+  // corriges avec ce que le moteur ecrit REELLEMENT, par execution
+  // (heurix-engine MESURE-INVENTAIRE-ANNOTATIONS.md, sections 3 et 6).
+  it("rejette les quatre valeurs que la classe unique acceptait (11 septembre 2026)", () => {
+    const faux = ["MARQUE_SKF", "COURROIE_A_1200", "TAILLE_38", "JEAN_T38_W30"];
+    expect(faux.filter((f) => motifs.some((m) => m.re.test(f))), "valeurs qu'aucune regle n'ecrit, acceptees").toEqual([]);
+    for (const vrai of ["MARQUE_skf", "COURROIE_spa_1200", "TAILLE_m", "JEAN_T30_32"]) {
+      expect(motifs.some((m) => m.re.test(vrai)), `${vrai} est ecrit par le moteur et devrait etre reconnu`).toBe(true);
+    }
+  });
+
   it("rejette les onze identifiants trouves sur le site le 9 septembre 2026", () => {
     const faux = [
       "MAT_SS", "SCREW_M8_SS", "FAM_TROUSERS", "SIZE_32_34", "JEANS_T32_34",
