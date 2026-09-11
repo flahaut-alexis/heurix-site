@@ -135,6 +135,43 @@
   // une icone de livre a un raccord. De meme `FORMAT_` prendrait
   // `FORMAT_75CL`, une bouteille. Le raccourci se voit court et sur.
   //
+  // CETTE REGLE A UNE SECONDE RAISON, ET LA RETIRER FERAIT PERDRE LES DEUX.
+  // Le moteur ecrit la valeur capturee au niveau 1 depuis le texte normalise,
+  // donc EN MINUSCULES : « SKF » sur la fiche donne `MARQUE_skf` dans
+  // `matched`, pas `MARQUE_SKF`. Et la casse n'est pas une affaire de niveau :
+  // une regle de niveau 2 capture dans le flux des annotations et HERITE de
+  // la casse de ce qu'elle lit -- `RACC_{1}` lit `FILET_(\w+)` et ecrit
+  // `RACC_15x21`, avec le « x » du niveau 1. Une clef qui entrerait dans la
+  // partie capturee dependrait donc de la casse que le moteur choisit, et la
+  // table ne peut pas la lire de facon sure : l'inventaire publie ne porte
+  // pas le niveau ; depuis heurix-engine 4c9ea02 son motif porte la casse
+  // d'une capture de niveau 1 (`MARQUE_{1}` n'y accepte que `skf`, `fag`...)
+  // mais pas celle qu'un niveau 2 herite (`RACC_{1}` y accepte les deux) ;
+  // et la fixture du site, capturee contre aede7aa, ne porte ni l'un ni
+  // l'autre. Une tete s'arrete AVANT la valeur capturee : sa correspondance
+  // ne depend pas de la casse, par construction.
+  //
+  // Mesure du 11 septembre 2026, sur heurix-site 7385b5a9 : les verdicts du
+  // garde -- dessins inatteignables, packs sans pictogramme, conflits de
+  // sous-chaine -- rejoues avec quatre jeux de valeurs capturees, « 7 » et
+  // « INOX », « 7 » seul, « 7 » et « inox », « inox » seul : 0 / 0 / 0 a
+  // chaque fois. Douze modeles peuvent porter une minuscule dans leur valeur
+  // capturee : onze de niveau 1, dont la capture admet une lettre (douze
+  // regles, `CABLE_{1}` en a deux ; lu sur l'arbre de la regex et non a
+  // l'oeil -- `\d` n'est pas une lettre), et `RACC_{1}` au niveau 2, par
+  // heritage. Aucun n'est une famille -- aucun `FAM_` n'est un gabarit -- et
+  // deux seulement touchent une clef, `IBAN_{1}` et `TVA_{1}`, toutes deux
+  // par leur tete. Par le chemin de production -- indexer, chercher, lire
+  // `matched` -- le corpus de test du moteur rend huit annotations en
+  // minuscules a 4c9ea02 : aucune famille, aucune qui touche une clef.
+  //
+  // CE QUE CETTE IMMUNITE NE COUVRE PAS. Elle tient parce qu'aucun
+  // pictogramme n'est atteint par un gabarit autrement que par sa tete. Le
+  // garde refuse aujourd'hui une clef comme `MARQUE_SKF` ou `MARQUE_skf`
+  // (ni annotation entiere, ni tete) ; si cette regle est un jour relachee
+  // pour une clef qui porte une valeur capturee, la casse redevient un
+  // probleme, et rien dans la fixture ne permettrait de le voir.
+  //
   // ON NE COUVRE QUE LE NIVEAU 1. Une annotation de niveau 2 est composee de
   // celles du niveau 1, qui sont dans le meme `matched` : `POLAR_POCHE`
   // n'arrive jamais sans `GENRE_POLAR` ni `FORMAT_POCHE`. L'inscrire ici
