@@ -933,12 +933,10 @@ for batch in batch-*.json; do
     --data-binary @$batch
 done</code></pre>
 
-      <p><strong>Order of magnitude.</strong> Expect roughly one second per 10,000 products for indexing itself. The network upload usually takes longer than that.</p>
-
       <h3>Changing an existing catalog's rule pack</h3>
       <p>The pack is declared <strong>at indexing time</strong>, in the <code class="docs-inline-code">rulepack</code> field. There's no endpoint to change it afterward, and that's not an oversight: <strong>annotations are computed at indexing time</strong>, not at search time. Changing the pack without re-indexing would leave your products with the old pack's annotations.</p>
       <p>To change packs, <strong>re-import your catalog</strong> with the new pack name. Existing products are updated, nothing is lost.</p>
-      <p>Expect roughly <strong>6 seconds for 10,000 products</strong>, a minute for 100,000. During that time, searches across your whole instance are queued — pick an off-peak hour for a large catalog.</p>
+      <p>During re-indexing, searches across your whole instance are queued — pick an off-peak hour for a large catalog.</p>
 
       <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/index/mycatalog/items \
   -H "Authorization: Bearer YOUR_API_KEY" \

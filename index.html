@@ -90,7 +90,7 @@
       "name": "Et si Heurix ne répond pas ?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Nos modules embarquent un repli automatique : la recherche native reprend la main en une seconde. Une panne de moteur ne devient jamais une panne de boutique."
+        "text": "Nos modules embarquent un repli automatique : la recherche native reprend la main au bout de trois secondes. Une panne de moteur ne devient jamais une panne de boutique."
       }
     },
     {
@@ -350,8 +350,8 @@
         <p class="section-lede" style="margin-bottom:0;">La démonstration en haut de page tourne sur ce moteur : les chiffres ci-contre sont mesurés, pas promis.</p>
       </div>
       <div class="index-card">
-        <div class="line"><span class="k">benchmark_index</span><span class="v">10 000 refs</span></div>
-        <div class="line"><span class="k">median_query_time</span><span class="v">≈ 10 ms</span></div>
+        <div class="line"><span class="k">benchmark_index</span><span class="v">2 821 refs (public-demo)</span></div>
+        <div class="line"><span class="k">round_trip</span><span class="v">20 à 160 ms · médiane 46 ms</span></div>
         <div class="line"><span class="k">typo_tolerance</span><span class="v">2/mot · 1/référence</span></div>
         <div class="line"><span class="k">rulepacks</span><span class="v">11 secteurs, extensibles</span></div>
         <div class="line"><span class="k">custom_rules</span><span class="v">en libre-service, sans regex</span></div>
@@ -403,9 +403,9 @@
   
     <div class="why-cards reveal">
       <div class="why-card">
-        <div class="why-num">≈ 10 ms</div>
-        <h3>Réponse instantanée</h3>
-        <p>Temps de réponse médian du moteur, mesuré sur un catalogue de 10 000 produits. Chaque milliseconde de latence coûte des conversions.</p>
+        <div class="why-num">20 à 160 ms</div>
+        <h3>Aller-retour mesuré</h3>
+        <p>Recherche complète, réseau compris, mesurée le 11 septembre 2026 sur la démonstration publique (2 821 et 1 500 produits) : 120 appels, médiane 46 ms, depuis un poste à 11 ms du serveur. Le moteur seul en prend environ 30 en médiane, le reste est le réseau. Plus loin du serveur, comptez plus.</p>
       </div>
       <div class="why-card why-card-highlight">
         <div class="why-num">2 fautes</div>
@@ -541,7 +541,7 @@
       <details class="faq-item">
         <summary>Et si Heurix ne répond pas ?</summary>
         <div class="faq-answer">
-          <p>Nos modules embarquent un repli automatique : la recherche native reprend la main en une seconde. Une panne de moteur ne devient jamais une panne de boutique.</p>
+          <p>Nos modules embarquent un repli automatique : la recherche native reprend la main au bout de trois secondes. Une panne de moteur ne devient jamais une panne de boutique.</p>
         </div>
       </details>
 

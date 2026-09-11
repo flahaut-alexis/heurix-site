@@ -215,8 +215,8 @@
         <p class="section-lede" style="margin-bottom:0;">The demo at the top of this page runs on this exact engine: the numbers alongside it are measured, not promised.</p>
       </div>
       <div class="index-card">
-        <div class="line"><span class="k">benchmark_index</span><span class="v">10,000 refs</span></div>
-        <div class="line"><span class="k">median_query_time</span><span class="v">≈ 10 ms</span></div>
+        <div class="line"><span class="k">benchmark_index</span><span class="v">2,821 refs (public-demo)</span></div>
+        <div class="line"><span class="k">round_trip</span><span class="v">20-160 ms · median 46 ms</span></div>
         <div class="line"><span class="k">typo_tolerance</span><span class="v">2/word · 1/reference</span></div>
         <div class="line"><span class="k">rulepacks</span><span class="v">11 industries, extensible</span></div>
         <div class="line"><span class="k">custom_rules</span><span class="v">self-service, no regex</span></div>
@@ -321,9 +321,9 @@ FAM_PANTALON + TAILLE_32_34 → JEAN_T32_34</code></pre>
   
     <div class="why-cards reveal">
       <div class="why-card">
-        <div class="why-num">≈ 10 ms</div>
-        <h3>Instant response</h3>
-        <p>Median engine response time, measured on a 10,000-product catalog. Every millisecond of latency costs conversions.</p>
+        <div class="why-num">20-160 ms</div>
+        <h3>Measured round trip</h3>
+        <p>Full search round trip, network included, measured on 11 September 2026 on the public demo (2,821 and 1,500 products): 120 calls, median 46 ms, from a machine 11 ms from the server. The engine itself accounts for about 30 ms of that at the median, the rest is network. Further from the server, expect more.</p>
       </div>
       <div class="why-card why-card-highlight">
         <div class="why-num">2 typos</div>
