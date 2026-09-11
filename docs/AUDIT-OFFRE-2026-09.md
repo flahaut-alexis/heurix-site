@@ -7,6 +7,11 @@ Lu sur :
 - heurix-site `7599f777` (main = origin/main, vérifié par `ls-remote` le 11 septembre 2026), worktree `audit-offre`.
 - heurix-engine `ad8757d` (main = origin/main, même vérification), en lecture seule.
 
+Relu le même soir, après que les deux main ont bougé :
+
+- heurix-site origin/main `cc2f4ddf` : seules 8 pages solutions ont changé parmi les pages citées. Le balayage du point 4 a été refait sur ce SHA, et donne toujours 0 sur les 24.
+- heurix-engine origin/main `bd6d2b9` : aucun des fichiers cités (`usage.py`, `main.py`, `deps.py`, `search.py`, `browse.py`, `billing.py`, `routers/index.py`, `routers/stripe.py`, `routers/browse.py`) n'a changé depuis `ad8757d`.
+
 Point de comparaison : depict.ai. Leur FAQ répond publiquement au dépassement (rien d'automatique, pas de blocage), à ce qui compte (une visite, bots non séparés), et ils ont un palier gratuit permanent avec filigrane. Leur page dit « Every plan includes everything ».
 
 ## Populations lues
@@ -158,7 +163,12 @@ Délai de réponse :
 
 ### Côté site
 
-Balayage PCRE, insensible à la casse, FR et EN. Témoin positif : le même motif trouve 3 lignes dans `pricing.html` et 19 dans `docs.html`.
+Balayage PCRE, insensible à la casse, FR et EN, avec deux motifs :
+
+- **Motif étroit** (pin, boost, bury, épingl) : témoin positif de 3 lignes dans `pricing.html` et 19 dans `docs.html`.
+- **Motif large** (le précédent plus merchandising, mise en avant, enterr, rétrograd) : témoin positif de 4 lignes et 25 lignes. C'est celui qui a été passé sur les pages solutions.
+
+Les deux rendent 0 sur les 24 pages solutions.
 
 | Surface | Présence |
 |---|---|
