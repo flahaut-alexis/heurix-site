@@ -197,38 +197,6 @@
   </div>
 </section>
 
-<section>
-  <div class="wrap">
-    <h2>Ce que le marchand garde en main</h2>
-    <p>Le classement n’est pas seulement affaire de moteur. Sur cette démonstration, trois épingles placent trois produits en tête de la requête <code>vis</code> — posées le 2 septembre 2026 pour cette page, chacune avec sa raison&nbsp;:</p>
-    <ul>
-      <li><strong>Boîte de 200 vis à bois FISCHER Power-Fast — Ø et longueur au choix</strong> — le conditionnement le plus vendu sur cette requête, et la seule fiche qui couvre toute la gamme plutôt qu’un diamètre.</li>
-      <li><strong>Coffret 31 embouts de vissage NEO TOOLS</strong> — l’accessoire complémentaire&nbsp;: qui cherche des vis a besoin d’embouts.</li>
-      <li><strong>Boîte de 1&nbsp;000 vis en bande DEWALT 3,5 × 35&nbsp;mm</strong> — le gros conditionnement, pour le panier moyen. Le catalogue en porte deux&nbsp;; c’est celle à 19,90&nbsp;€, pas sa jumelle en 3,5 × 25.</li>
-    </ul>
-    <p><strong>Avec les épingles</strong>&nbsp;: <strong>846 résultats</strong>. Les trois produits mis en avant, dans l’ordre choisi par le marchand, puis le classement du moteur.</p>
-    <p><strong>Sans les épingles</strong>&nbsp;: <strong>845 résultats</strong>, dont <strong>41 à égalité de score</strong> en tête — 25,76 pour chacune. Le moteur n’a aucune raison d’en préférer une&nbsp;; l’ordre entre elles est un départage, pas un classement.</p>
-
-    <h3>Le score du coffret est zéro</h3>
-    <p>Des trois produits épinglés, le coffret d’embouts sort à <strong>0,00</strong>. Ni son nom ni sa description ne contiennent le mot «&nbsp;vis&nbsp;» isolé&nbsp;: le moteur ne lui donne <em>aucune</em> raison d’être là.</p>
-    <p>Il est premier parce qu’un humain l’a décidé, et le score le dit. C’est la démonstration la plus nette de la séparation&nbsp;: ce qui vient du moteur porte un score, ce qui vient d’une règle posée à la main porte zéro.</p>
-
-    <h3>Une épingle ne réordonne pas seulement</h3>
-    <p>845 résultats deviennent 846. La différence est le coffret&nbsp;: <strong>l’épinglage fait entrer un produit que la requête n’atteignait pas</strong>. Une épingle n’est donc pas seulement un réordonnancement — elle ajoute.</p>
-
-    <h3>Sur quelle surface, et comment le refaire vous-même</h3>
-    <p>Le merchandising s’applique sur les <strong>deux</strong> surfaces&nbsp;: l’API authentifiée (<code>/v1/index/&lt;catalogue&gt;/search</code>), celle que votre site appellerait, <em>et</em> le point d’entrée public et sans clé (<code>/v1/public-demo/search</code>) qu’interroge le widget de démonstration de notre accueil.</p>
-    <p><strong>Alors refaites la requête.</strong> Tapez <code>vis</code> dans la démonstration de notre page d’accueil&nbsp;: mêmes trois produits en tête de liste, même ordre, même total de 846. Sans nous écrire, sans clé et sans compte. La tuile «&nbsp;Pack recommandé&nbsp;» affichée au-dessus est une zone distincte, pas le premier résultat.</p>
-    <p>Et si vous voulez les scores, que le widget n’affiche pas, la même réponse en une ligne&nbsp;:</p>
-    <pre class="docs-code"><code>curl -X POST 'https://api.heurix.fr/v1/public-demo/search?vertical=outillage' \
-  -H 'Content-Type: application/json' -d '{"q":"vis","limit":20}'</code></pre>
-    <p>Les trois épinglés en tête portent <code>"pinned": true</code>, le coffret <code>"score": 0.0</code>, et les rangs 4 à 44 le même 25,76.</p>
-    <p>Une réserve, pour que l’invitation tienne ce qu’elle promet&nbsp;: l’état <em>sans</em> les épingles n’est plus reproductible nulle part. Les 845 résultats et les 41 à égalité ont été relevés avant que les règles soient posées. C’est la seule ligne de ce bloc que vous devez nous croire sur parole.</p>
-    <p>Aucun des deux états n’est «&nbsp;le bon&nbsp;». Le premier est ce que le marchand a décidé, le second ce que le moteur propose quand il n’a pas de raison de choisir. Dans un catalogue de visserie, le mot «&nbsp;vis&nbsp;» ne discrimine rien&nbsp;: c’est au marchand de dire ce qu’il veut montrer.</p>
-    <p class="form-note">Mesure du 2 septembre 2026 sur <code>public-demo</code>, requête «&nbsp;vis&nbsp;»&nbsp;: 846 résultats avec les trois épingles, 845 sans, 41 fiches au score de tête (25,76), coffret épinglé à 0,00. <strong>Chiffres revérifiés le 4 septembre 2026</strong> sur le point d’entrée public&nbsp;: 846, les trois épingles en tête, coffret à 0,00, puis 41 fiches à 25,76 des rangs 4 à 44 — inchangés. Le 845 a été relevé avant la pose des épingles&nbsp;; il se recoupe avec 846 moins le coffret, seul épinglé dont la liste de correspondances est vide. Jusqu’au 4 septembre, ce bloc annonçait que le point public n’appliquait pas les surcharges&nbsp;: c’était exact, un correctif du moteur l’a rendu faux le matin même.</p>
-  </div>
-</section>
-
 <section class="soft">
   <div class="wrap">
     <h2>Ce que ça vaut</h2>
