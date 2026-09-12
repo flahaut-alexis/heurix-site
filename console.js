@@ -1825,11 +1825,24 @@
       aide: T("Si elle se répète, écrivez à contact@heurix.fr avec la date et l'heure.") },
   ];
 
+  // UNE ENTREE SANS MOTIF NE SAIT PAS CE QUE DIT LE MESSAGE (13 septembre
+  // 2026). Sur un 4xx, le message est une HTTPException ecrite pour le
+  // client : il prime, et l'entree n'apporte que son action. Mesure sur le
+  // moteur a 4298061, lignes qu'un marchand peut voir (journal filtre sur sa
+  // cle serveur) : { 422, null } recouvrait 18 messages distincts -- « Pack
+  // de règles inconnu : 'quincaillerie'. Valeurs possibles : [...] » devenait
+  // « format ou paramètre invalide » ; { 429, null } recouvrait le plafond de
+  // produits et le plafond Browse, et parlait d'un « quota de requêtes » qui
+  // ne coupe plus rien. Sur un 5xx, le message est `{type}: {exc}` : la
+  // traduction reste. Un message vide retombe aussi sur la traduction.
   function traduireErreur(e) {
     for (var i = 0; i < TRADUCTIONS_ERREUR.length; i++) {
       var t = TRADUCTIONS_ERREUR[i];
       if (t.code !== e.status_code) continue;
       if (t.motif && !t.motif.test(e.message || "")) continue;
+      if (!t.motif && e.status_code < 500 && e.message) {
+        return { texte: e.message, action: t.action, brut: true };
+      }
       return t;
     }
     // Repli : on montre le message d'origine plutot que rien.
