@@ -337,6 +337,84 @@ describe("index derive — le verificateur", () => {
     expect(fs.readFileSync(path.join(RACINE, "search-index-fr.json"), "utf8").length)
       .toBeGreaterThan(1000);
   }, DELAI);
+
+  // UN ARTICLE NEUF : LE COMMIT NE CHANGE PAS LE VERDICT (13 septembre 2026).
+  //
+  // Trois sessions le meme jour : index genere avec l'article NON SUIVI,
+  // `--verifier` dit « a jour », commit, et le pre-push refuse « les derniers
+  // articles ont change -- attendu blog/<nouveau>.html ». `date_ajout()`
+  // rendait 0 pour une page sans commit d'ajout : l'article le plus recent
+  // etait classe le plus ancien, jusqu'a ce que le commit lui donne une date.
+  //
+  // LE DECOR REPREND CE QUE LA GENERATION ECRIT ET QUE LE VERIFICATEUR LIT --
+  // l'empreinte de la page et `derniers` --, par les fonctions memes du
+  // generateur. Le reste de l'index demande le moteur, et le verificateur ne
+  // le lit pas.
+  //
+  // LE SCRIPT EST CELUI DE L'ARBRE DE TRAVAIL, lance DANS la copie : `RACINE`
+  // s'y resout par `git rev-parse` dans le dossier courant. `verifier(copie)`
+  // lancerait le script de HEAD, et un correctif non commite ne serait jamais
+  // eprouve.
+  //
+  // SANS LES VARIABLES GIT_* DU PROCESSUS (13 septembre 2026). Lance depuis le
+  // pre-push d'un WORKTREE, vitest herite de GIT_DIR -- mesure : git ne
+  // l'exporte au crochet que depuis un worktree, pas depuis le checkout
+  // principal. `git -C copie commit` ecrivait alors dans le depot de GIT_DIR :
+  // la page jetable a ete commitee sur la branche qui poussait, et poussee
+  // avec elle (7b66e60b). Le rejeu manuel du crochet, sans GIT_DIR, ne l'avait
+  // pas montre.
+  it("un article neuf verifie avant son commit l'est encore apres", () => {
+    const script = path.join(RACINE, "scripts/index-recherche.py");
+    const env = Object.fromEntries(
+      Object.entries(process.env).filter(([k]) => !k.startsWith("GIT_")));
+    const tete = () => execFileSync("git", ["-C", RACINE, "rev-parse", "HEAD"], { encoding: "utf8" });
+    const teteAvant = tete();
+    const verifierCopie = (copie) => {
+      try {
+        execFileSync("python3", [script, "--verifier"], { cwd: copie, encoding: "utf8", env });
+        return { code: 0, sortie: "" };
+      } catch (e) {
+        return { code: e.status, sortie: (e.stdout || "") + (e.stderr || "") };
+      }
+    };
+    const neuf = "blog/page-jetable-derniers.html";
+
+    dansUneCopie((copie) => {
+      const modele = fs.readdirSync(path.join(copie, "blog")).find((f) => f.endsWith(".html"));
+      fs.writeFileSync(path.join(copie, neuf),
+        fs.readFileSync(path.join(copie, "blog", modele), "utf8")
+          .replace(/<title>[^<]*<\/title>/, "<title>Page jetable derniers</title>"));
+      const sitemap = path.join(copie, "sitemap.xml");
+      fs.writeFileSync(sitemap, fs.readFileSync(sitemap, "utf8").replace("</urlset>",
+        `  <url><loc>https://heurix.fr/${neuf}</loc></url>\n</urlset>`));
+
+      execFileSync("python3", ["-c", `
+import importlib.util, json, sys
+spec = importlib.util.spec_from_file_location("ir", sys.argv[1])
+m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
+f = "search-index-fr.json"; idx = json.load(open(f, encoding="utf8"))
+idx["empreintes"][sys.argv[2]] = m.empreinte(m.extraire(sys.argv[2]))
+idx["derniers"] = m.derniers_articles("fr")
+json.dump(idx, open(f, "w", encoding="utf8"), ensure_ascii=False, separators=(",", ":"))
+`, script, neuf], { cwd: copie, env });
+
+      const avant = verifierCopie(copie);
+      expect(avant.code, `AVANT le commit : ${avant.sortie}`).toBe(0);
+
+      execFileSync("git", ["-C", copie, "add", "--", neuf, "sitemap.xml", "search-index-fr.json"], { env });
+      execFileSync("git", ["-C", copie, "-c", "user.name=test", "-c", "user.email=test@invalid",
+        "-c", "commit.gpgsign=false", "commit", "-q", "--no-verify", "-m", "jetable"], { env });
+      const apres = verifierCopie(copie);
+      expect(apres.code, `APRES le commit : ${apres.sortie}`).toBe(0);
+
+      // UN POSITIF CONNU : sans lui, deux verdicts egaux sur un article classe
+      // hors des cinq passeraient aussi.
+      const idx = JSON.parse(fs.readFileSync(path.join(copie, "search-index-fr.json"), "utf8"));
+      expect(idx.derniers[0]).toBe(neuf);
+    });
+    expect(fs.existsSync(path.join(RACINE, neuf))).toBe(false);
+    expect(tete(), "le commit jetable a atteint la branche de l'arbre teste").toBe(teteAvant);
+  }, DELAI);
 });
 
 // ---------------------------------------------------------------------------
