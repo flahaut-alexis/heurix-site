@@ -355,11 +355,23 @@ describe("index derive — le verificateur", () => {
   // s'y resout par `git rev-parse` dans le dossier courant. `verifier(copie)`
   // lancerait le script de HEAD, et un correctif non commite ne serait jamais
   // eprouve.
+  //
+  // SANS LES VARIABLES GIT_* DU PROCESSUS (13 septembre 2026). Lance depuis le
+  // pre-push d'un WORKTREE, vitest herite de GIT_DIR -- mesure : git ne
+  // l'exporte au crochet que depuis un worktree, pas depuis le checkout
+  // principal. `git -C copie commit` ecrivait alors dans le depot de GIT_DIR :
+  // la page jetable a ete commitee sur la branche qui poussait, et poussee
+  // avec elle (7b66e60b). Le rejeu manuel du crochet, sans GIT_DIR, ne l'avait
+  // pas montre.
   it("un article neuf verifie avant son commit l'est encore apres", () => {
     const script = path.join(RACINE, "scripts/index-recherche.py");
+    const env = Object.fromEntries(
+      Object.entries(process.env).filter(([k]) => !k.startsWith("GIT_")));
+    const tete = () => execFileSync("git", ["-C", RACINE, "rev-parse", "HEAD"], { encoding: "utf8" });
+    const teteAvant = tete();
     const verifierCopie = (copie) => {
       try {
-        execFileSync("python3", [script, "--verifier"], { cwd: copie, encoding: "utf8" });
+        execFileSync("python3", [script, "--verifier"], { cwd: copie, encoding: "utf8", env });
         return { code: 0, sortie: "" };
       } catch (e) {
         return { code: e.status, sortie: (e.stdout || "") + (e.stderr || "") };
@@ -384,14 +396,14 @@ f = "search-index-fr.json"; idx = json.load(open(f, encoding="utf8"))
 idx["empreintes"][sys.argv[2]] = m.empreinte(m.extraire(sys.argv[2]))
 idx["derniers"] = m.derniers_articles("fr")
 json.dump(idx, open(f, "w", encoding="utf8"), ensure_ascii=False, separators=(",", ":"))
-`, script, neuf], { cwd: copie });
+`, script, neuf], { cwd: copie, env });
 
       const avant = verifierCopie(copie);
       expect(avant.code, `AVANT le commit : ${avant.sortie}`).toBe(0);
 
-      execFileSync("git", ["-C", copie, "add", "--", neuf, "sitemap.xml", "search-index-fr.json"]);
+      execFileSync("git", ["-C", copie, "add", "--", neuf, "sitemap.xml", "search-index-fr.json"], { env });
       execFileSync("git", ["-C", copie, "-c", "user.name=test", "-c", "user.email=test@invalid",
-        "-c", "commit.gpgsign=false", "commit", "-q", "--no-verify", "-m", "jetable"]);
+        "-c", "commit.gpgsign=false", "commit", "-q", "--no-verify", "-m", "jetable"], { env });
       const apres = verifierCopie(copie);
       expect(apres.code, `APRES le commit : ${apres.sortie}`).toBe(0);
 
@@ -401,6 +413,7 @@ json.dump(idx, open(f, "w", encoding="utf8"), ensure_ascii=False, separators=(",
       expect(idx.derniers[0]).toBe(neuf);
     });
     expect(fs.existsSync(path.join(RACINE, neuf))).toBe(false);
+    expect(tete(), "le commit jetable a atteint la branche de l'arbre teste").toBe(teteAvant);
   }, DELAI);
 });
 
