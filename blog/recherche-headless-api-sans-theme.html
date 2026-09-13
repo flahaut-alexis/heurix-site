@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recherche headless : ce que la réponse porte, et l'URL que votre front compose — Heurix</title>
+<meta name="description" content="Le produit entier en un appel, ou les identifiants seuls. Le moteur ne compose jamais d'URL : le front la compose. Et allowed_origins, mesuré.">
+<link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/recherche-headless-api-sans-theme.html">
+<link rel="alternate" hreflang="en" href="https://heurix.fr/en/blog/recherche-headless-api-sans-theme.html">
+<link rel="alternate" hreflang="x-default" href="https://heurix.fr/blog/recherche-headless-api-sans-theme.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Recherche headless : ce que la réponse porte, et l'URL que votre front compose — Heurix">
+<meta property="og:description" content="Le produit entier en un appel, ou les identifiants seuls. Le moteur ne compose jamais d'URL : le front la compose. Et allowed_origins, mesuré.">
+<meta property="og:image" content="https://heurix.fr/og-image.png">
+<meta property="og:url" content="https://heurix.fr/blog/recherche-headless-api-sans-theme.html">
+<meta property="og:locale" content="fr_FR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Recherche headless : ce que la réponse porte, et l'URL que votre front compose — Heurix">
+<meta name="twitter:description" content="Le produit entier en un appel, ou les identifiants seuls. Le moteur ne compose jamais d'URL : le front la compose. Et allowed_origins, mesuré.">
+<meta name="twitter:image" content="https://heurix.fr/og-image.png">
+<link rel="icon" type="image/png" href="../favicon-32.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<link rel="stylesheet" href="../styles.css?v=1788685422">
+<link rel="canonical" href="https://heurix.fr/blog/recherche-headless-api-sans-theme.html">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Heurix",
+  "url": "https://heurix.fr",
+  "logo": "https://heurix.fr/logo.svg?v=1787610626",
+  "image": "https://heurix.fr/og-image.png",
+  "description": "Moteur de recherche et search & discovery pour sites e-commerce, basé sur des expressions régulières, conçu en France.",
+  "email": "contact@heurix.fr",
+  "sameAs": ["https://www.linkedin.com/company/heurix-search/"],
+  "founder": {"@type": "Person", "name": "Alexis Flahaut"},
+  "areaServed": "FR"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Recherche headless : ce que la réponse porte, et l'URL que votre front compose",
+  "description": "Le produit entier en un appel, ou les identifiants seuls. Le moteur ne compose jamais d'URL : le front la compose. Et allowed_origins, mesuré.",
+  "datePublished": "2026-09-13T18:40:28+02:00",
+  "inLanguage": "fr",
+  "mainEntityOfPage": "https://heurix.fr/blog/recherche-headless-api-sans-theme.html",
+  "author": {
+    "@type": "Person",
+    "name": "Alexis Flahaut",
+    "url": "https://heurix.fr/about.html"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Heurix",
+    "url": "https://heurix.fr"
+  }
+}
+</script>
+</head>
+<body class="docs-dark">
+<!-- Banniere de langue : regle de declenchement, cle et exemption CNIL dans langue-banniere.js. -->
+<aside class="langue-banniere" id="langue-banniere" lang="en" hidden>
+  <div class="langue-banniere-corps">
+    <span>This page is available in English.</span>
+    <a class="langue-banniere-lien" href="../en/blog/recherche-headless-api-sans-theme.html">Read in English</a>
+    <button type="button" class="langue-banniere-non">No thanks</button>
+  </div>
+</aside>
+<script>(function(){var b=document.getElementById('langue-banniere');if(!b)return;var pageFr=(document.documentElement.lang||'fr').slice(0,2).toLowerCase()==='fr',l=navigator.languages||[navigator.language||''],litFr=false;for(var i=0;i<l.length;i++)if(String(l[i]).slice(0,2).toLowerCase()==='fr')litFr=true;if(litFr===pageFr)return;try{if(localStorage.getItem('heurix_langue'))return;}catch(e){}b.hidden=false;})();</script>
+<header>
+  <div class="header-top">
+    <nav class="header-top-inner">
+      <a href="../index.html" class="logo"><img src="../logo.svg?v=1787610626" alt="Heurix"> <span class="wordmark">Heurix</span></a>
+      <div class="nav-links">
+        <div class="nav-drop">
+          <button type="button" class="nav-drop-btn" aria-expanded="false" aria-haspopup="true">Produit</button>
+          <div class="nav-drop-panel nav-panel-groupes">
+            <div class="nav-promo">
+              <p class="nav-promo-sur">D&Eacute;MO EN DIRECT</p>
+              <div class="nav-promo-vis"><span class="nav-promo-q">vis inox m8x20</span><span class="nav-promo-chip">DIN 933</span><span class="nav-promo-chip">rondelle</span></div>
+              <p class="nav-promo-t">Voir Heurix en action</p>
+              <p class="nav-promo-d">Une boutique r&eacute;elle, servie par le moteur.</p>
+              <a class="nav-promo-cta" href="../demo/index.html">Lancer la d&eacute;mo &rarr;</a>
+            </div>
+            <div class="nav-drop-col">
+              <p class="nav-drop-groupe">Comprendre</p>
+              <a class="nav-row" href="../index.html#probleme"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span><span><span class="nav-row-t">Le probl&egrave;me</span> <span class="nav-row-d">Le point de conversion le moins surveill&eacute; d&rsquo;un site.</span></span></a>
+              <a class="nav-row" href="../produit.html#mission"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg></span><span><span class="nav-row-t">Notre mission</span> <span class="nav-row-d">Faire de la recherche un levier, pas un fardeau.</span></span></a>
+            </div>
+            <div class="nav-drop-col">
+              <p class="nav-drop-groupe">Le produit</p>
+              <a class="nav-row" href="../index.html#moteur"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg></span><span><span class="nav-row-t">Le moteur</span> <span class="nav-row-d">Notre propre moteur, d&eacute;velopp&eacute; en France.</span></span></a>
+              <a class="nav-row" href="../fonctionnalites.html"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></span><span><span class="nav-row-t">Fonctionnalit&eacute;s</span> <span class="nav-row-d">Cascade d&rsquo;annotations, fautes tol&eacute;r&eacute;es, synonymes m&eacute;tier.</span></span></a>
+            </div>
+            <div class="nav-drop-col">
+              <p class="nav-drop-groupe">Passer &agrave; l'action</p>
+              <a class="nav-row" href="../roi.html"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span><span><span class="nav-row-t">Simulateur ROI</span> <span class="nav-row-d">Vos hypoth&egrave;ses, en curseurs, avec leurs sources.</span></span></a>
+              <a class="nav-row" href="../mesure.html"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg></span><span><span class="nav-row-t">La mesure</span> <span class="nav-row-d">+28 points de rappel sur 300 requ&ecirc;tes, refaisable.</span></span></a>
+            </div>
+          </div>
+        </div>
+        <div class="nav-drop">
+          <button type="button" class="nav-drop-btn" aria-expanded="false" aria-haspopup="true">Solutions</button>
+          <div class="nav-drop-panel nav-panel-secteurs">
+          <a class="nav-drop-tous" href="../secteurs.html">Tous les secteurs &rarr;</a>
+          <a href="../solutions/outillage.html"><span class="nav-icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg></span>Quincaillerie & outillage</a>
+          <a href="../solutions/industrie.html"><span class="nav-icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></span>Pièces détachées & industrie</a>
+          <a href="../solutions/automobile.html"><span class="nav-icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></span>Automobile</a>
+          <a href="../solutions/electricite.html"><span class="nav-icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6z"/></svg></span>Électricité & installation</a>
+          <a href="../solutions/plomberie.html"><span class="nav-icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z"/></svg></span>Plomberie & sanitaire</a>
+          <a href="../solutions/mode.html"><span class="nav-icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.38 3.46 16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.47a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.47a2 2 0 00-1.34-2.23z"/></svg></span>Mode & retail</a>
+          <a href="../solutions/electronique.html"><span class="nav-icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg></span>Électronique & high-tech</a>
+          <a href="../solutions/livres.html"><span class="nav-icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg></span>Librairie & édition</a>
+          <a href="../solutions/vins.html"><span class="nav-icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 22h8"/><path d="M12 15v7"/><path d="M12 15a5 5 0 005-5V3H7v7a5 5 0 005 5z"/></svg></span>Vins & spiritueux</a>
+          <a href="../solutions/sport.html"><span class="nav-icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span>Sport & glisse</a>
+          <a href="../solutions/finance.html"><span class="nav-icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>Finance & comptabilité</a>
+          </div>
+        </div>
+        <div class="nav-drop">
+          <button type="button" class="nav-drop-btn" aria-expanded="false" aria-haspopup="true">Developers</button>
+          <div class="nav-drop-panel nav-panel-groupes">
+            <div class="nav-promo">
+              <p class="nav-promo-sur">D&Eacute;MARRAGE</p>
+              <div class="nav-promo-vis"><div class="nav-promo-code"><b>POST</b> /v1/index/{catalog}/search&#10;{ "q": "vis inox m8x20" }</div></div>
+              <p class="nav-promo-t">D&eacute;marrer en 5 minutes</p>
+              <p class="nav-promo-d">De la cl&eacute; API au premier r&eacute;sultat pertinent.</p>
+              <a class="nav-promo-cta" href="../blog/guide-mise-en-route.html">Guide de mise en route &rarr;</a>
+            </div>
+            <div class="nav-drop-col">
+              <p class="nav-drop-groupe">D&eacute;marrer</p>
+              <a class="nav-row" href="../blog/guide-mise-en-route.html"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg></span><span><span class="nav-row-t">Guide de mise en route</span> <span class="nav-row-d">Trois &eacute;tapes pour une recherche qui fonctionne.</span></span></a>
+              <a class="nav-row" href="../docs.html"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></span><span><span class="nav-row-t">Documentation</span> <span class="nav-row-d">Indexer un catalogue, lancer une recherche en minutes.</span></span></a>
+            </div>
+            <div class="nav-drop-col">
+              <p class="nav-drop-groupe">Concepts</p>
+              <a class="nav-row" href="../docs.html#cascade"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></span><span><span class="nav-row-t">La cascade d&rsquo;annotations</span> <span class="nav-row-d">Le c&oelig;ur du moteur : des r&egrave;gles organis&eacute;es en niveaux.</span></span></a>
+              <a class="nav-row" href="../docs.html#produits"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></span><span><span class="nav-row-t">Structure des produits</span> <span class="nav-row-d">Un objet JSON libre, dont quatre champs ont un r&ocirc;le.</span></span></a>
+            </div>
+            <div class="nav-drop-col">
+              <p class="nav-drop-groupe">Int&eacute;grations</p>
+              <a class="nav-row" href="../integrations.html"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></span><span><span class="nav-row-t">Int&eacute;grations</span> <span class="nav-row-d">Des guides techniques avec du vrai code.</span></span></a>
+              <a class="nav-row" href="../prestashop.html"><span class="nav-row-icn marque" aria-hidden="true" style="background:rgba(223,0,103,.12); color:#CB005E;">P</span><span><span class="nav-row-t">PrestaShop</span> <span class="nav-row-d">Module natif, via ProductSearchProviderInterface.</span></span></a>
+              <a class="nav-row" href="../woocommerce.html"><span class="nav-row-icn marque" aria-hidden="true" style="background:rgba(127,84,179,.12); color:#7F54B3;">W</span><span><span class="nav-row-t">WooCommerce</span> <span class="nav-row-d">Extension WordPress, via le hook pre_get_posts.</span></span></a>
+              <a class="nav-row" href="../shopify.html"><span class="nav-row-icn marque" aria-hidden="true" style="background:rgba(94,142,62,.14); color:#4E7533;">S</span><span><span class="nav-row-t">Shopify</span> <span class="nav-row-d">Int&eacute;gration via l&rsquo;API REST document&eacute;e.</span></span></a>
+            </div>
+          </div>
+        </div>
+        <a href="../blog.html">Blog</a>
+        <a href="../console.html" class="nav-link-mobile-seul">Mon compte</a>
+      </div>
+      <div class="header-search">
+        <button id="heurix-search-btn" class="search-trigger" aria-label="Chercher sur le site" type="button">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <span class="search-trigger-text">Chercher sur le site</span>
+          <span class="search-trigger-kbd">Ctrl K</span>
+        </button>
+      </div>
+      <div class="header-utility">
+        <button type="button" id="mobile-nav-toggle" class="mobile-nav-toggle" aria-label="Menu" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+        <a href="../console.html" class="header-signin"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0116 0v1"/></svg>Mon compte</a>
+        <a href="../en/blog/recherche-headless-api-sans-theme.html" class="lang-switch">EN</a>
+        <a href="../pricing.html" class="btn">Démarrer l'essai gratuit</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+
+<article class="post">
+  <div class="wrap post-wrap">
+    <a href="../blog.html" class="back-link">← Tous les articles</a>
+    <div class="kicker">Guide · Septembre 2026</div>
+    <h1>Recherche headless : ce que la réponse porte, et l'URL que votre front compose</h1>
+    <p class="post-lede">Un front headless n'a pas de thème pour afficher un résultat : il reçoit des données et construit la page lui-même. Il doit donc savoir exactement ce que la recherche lui rend, et ce qu'il devra aller chercher ailleurs. Voici la réponse de Heurix champ par champ, avec des appels réels, et les limites qu'un intégrateur rencontre dès le premier jour.</p>
+
+    <div class="post-body">
+      <p>Les réponses reproduites ici sont celles du moteur dans la version servie en production le 13 septembre 2026, sur un catalogue de trois produits indexé pour l'occasion : deux variantes d'une même vis et un écrou.</p>
+
+      <h2>Un appel, le produit entier</h2>
+      <p>Par défaut, chaque résultat porte le produit complet tel que vous l'avez indexé. Le choix est délibéré : le client n'a jamais à faire un second appel pour afficher une carte de résultat. Pour un front headless, c'est un aller-retour réseau de moins par recherche.</p>
+      <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/index/boutique/search \
+  -H "Authorization: Bearer hxp_votre_cle_publique" \
+  -H "Content-Type: application/json" \
+  -d '{"q": "vis inox m8", "limit": 1, "exclude_description": true}'</code></pre>
+      <pre class="docs-code"><code>{
+  "query": "vis inox m8",
+  "tokens": [
+    "vis",
+    "inox",
+    "m8"
+  ],
+  "total": 3,
+  "offset": 0,
+  "limit": 1,
+  "hits": [
+    {
+      "product": {
+        "id": "44556677889901",
+        "platform_id": 44556677889901,
+        "produit_id": "8801",
+        "handle": "vis-tete-hexagonale-inox-a2",
+        "ref": "VIS-M8X20-A2",
+        "name": "Vis tête hexagonale M8x20 inox A2",
+        "price": 12.9,
+        "compare_at_price": 15.9,
+        "stock": true,
+        "category": "Visserie",
+        "url": "https://boutique.example/products/vis-tete-hexagonale-inox-a2",
+        "image": "https://cdn.example/vis-m8x20.jpg"
+      },
+      "score": 54.8,
+      "in_stock": true,
+      "matched": [
+        "terme 'vis' (depuis 'vis', x1.00)",
+        "terme 'vis-m8x20-a2' (depuis 'vis', x0.22)",
+        "terme 'inox' (depuis 'inox', x1.00)",
+        "annotation #DIAM_M8",
+        "annotation #DIAM_M8_INOX",
+        "annotation #FAM_VIS",
+        "annotation #MAT_INOX"
+      ],
+      "pinned": false,
+      "buried": false
+    }
+  ],
+  "fallback": false
+}</code></pre>
+      <p>Le produit indexé portait aussi un champ <code class="docs-inline-code">margin</code>. Il n'est pas dans la réponse : une clé publique ne le reçoit jamais. Voici d'où vient chaque champ.</p>
+      <div class="table-scroll"><table class="docs-params">
+        <tr><th>Champ</th><th>D'où il vient</th></tr>
+        <tr><td><code class="docs-inline-code">product.*</code></td><td>Votre dernier envoi d'indexation, tel quel. Rien n'est relu sur votre plateforme au moment de la recherche.</td></tr>
+        <tr><td><code class="docs-inline-code">product.price</code></td><td>Le champ de prix que sert la clé appelante : <code class="docs-inline-code">price</code> par défaut.</td></tr>
+        <tr><td><code class="docs-inline-code">product.margin</code></td><td>Retiré pour une clé publique, servi à une clé serveur.</td></tr>
+        <tr><td><code class="docs-inline-code">score</code><br><code class="docs-inline-code">matched</code></td><td>Calculés par cette recherche : la pertinence, et ses raisons lisibles.</td></tr>
+        <tr><td><code class="docs-inline-code">in_stock</code></td><td>Déduit de votre champ <code class="docs-inline-code">stock</code>.</td></tr>
+        <tr><td><code class="docs-inline-code">pinned</code><br><code class="docs-inline-code">buried</code></td><td>Les priorités de requête posées dans la console.</td></tr>
+        <tr><td><code class="docs-inline-code">fallback</code></td><td><code class="docs-inline-code">true</code> quand <code class="docs-inline-code">hits</code> contient vos produits <code class="docs-inline-code">featured</code> faute de résultat ; <code class="docs-inline-code">total</code> reste alors à 0.</td></tr>
+        <tr><td><code class="docs-inline-code">facets</code><br><code class="docs-inline-code">price_filter</code><br><code class="docs-inline-code">filters_unknown</code><br><code class="docs-inline-code">suggested_category</code><br><code class="docs-inline-code">highlighted_bundle</code></td><td>Présents seulement quand ils ont quelque chose à dire. Leur absence est le cas normal.</td></tr>
+      </table></div>
+      <p>Ce que la réponse ne porte pas, sauf si vous l'avez indexé : l'URL de la fiche, l'image, les variantes et leurs options, la devise, le stock et le prix en temps réel. Un prix changé dans votre back-office n'existe pour la recherche qu'à votre prochain envoi. Le poids, lui, se règle avec <code class="docs-inline-code">exclude_description</code> : sur un catalogue réel, la description représente plus de 80&nbsp;% du poids d'un produit dans la réponse.</p>
+
+      <h2>Le moteur ne compose jamais d'URL, le front la compose</h2>
+      <p>Dans la réponse ci-dessus, <code class="docs-inline-code">url</code> est présent parce qu'il a été indexé. La seconde variante de la même vis n'en a pas, et le moteur n'en fabrique pas : il ne connaît ni votre domaine, ni votre canal de vente, ni vos routes.</p>
+      <p>C'est ce qui rend la réponse utilisable sans thème. Indexez l'élément stable, un handle ou un slug, et composez le chemin côté front :</p>
+      <pre class="docs-code"><code>const lien = p.url || "/products/" + encodeURIComponent(p.handle);</code></pre>
+      <p>Un chemin relatif reste juste sur le domaine de production, sur localhost et sur un domaine de prévisualisation. C'est la règle qu'applique notre propre script de vitrine Shopify : une boutique protégée par mot de passe, l'état de tout marchand qui prépare son ouverture, ne fournit pas d'URL publique de produit, et le chemin se reconstruit depuis le handle.</p>
+
+      <h2>ids_only : quand votre plateforme hydrate ses fiches</h2>
+      <p>Si votre front lit déjà ses produits ailleurs, dans un CMS, un PIM ou l'API de votre plateforme, demandez seulement l'ordre :</p>
+      <pre class="docs-code"><code>{"q": "inox m8", "ids_only": true}
+
+{"total": 3, "ids": ["44556677889903", "44556677889901", "44556677889902"]}</code></pre>
+      <p><code class="docs-inline-code">id_field</code> renvoie un autre champ à la place de <code class="docs-inline-code">id</code> : l'identifiant qu'attend votre plateforme, un handle, un slug.</p>
+      <pre class="docs-code"><code>{"q": "inox m8", "ids_only": true, "id_field": "handle"}
+
+{"total": 3, "ids": ["ecrou-hexagonal-inox-a2", "vis-tete-hexagonale-inox-a2", "vis-tete-hexagonale-inox-a2"]}</code></pre>
+      <p>Trois identifiants, deux distincts. Un catalogue indexé par variante renvoie le handle du produit une fois par variante trouvée : dédoublonnez avant d'hydrater, en gardant la première occurrence pour conserver l'ordre. Un produit sans le champ demandé est écarté, et compté :</p>
+      <pre class="docs-code"><code>{"q": "inox m8", "ids_only": true, "id_field": "url"}
+
+{"total": 3, "ids": ["https://boutique.example/products/vis-tete-hexagonale-inox-a2"], "ignores": 2, "champ_manquant": "url"}</code></pre>
+
+      <h3>Ce que ids_only laisse de côté</h3>
+      <p>La réponse légère ne porte que <code class="docs-inline-code">total</code> et <code class="docs-inline-code">ids</code>. Mesuré sur le même catalogue :</p>
+      <ul>
+        <li><strong>Les facettes demandées sont absentes, sans avertissement.</strong> La même requête en mode complet rend <code class="docs-inline-code">"facets": {"FAM": {"FAM_VIS": 2, "FAM_ECROU": 1}}</code>.</li>
+        <li><strong>Zéro résultat rend <code class="docs-inline-code">{"total": 0, "ids": []}</code>.</strong> Le mode complet rend vos produits <code class="docs-inline-code">featured</code> avec <code class="docs-inline-code">"fallback": true</code>.</li>
+        <li><code class="docs-inline-code">price_filter</code>, <code class="docs-inline-code">filters_unknown</code> et <code class="docs-inline-code">matched</code> n'apparaissent pas non plus.</li>
+      </ul>
+      <p>Si votre page de résultats affiche des facettes, le mode complet avec <code class="docs-inline-code">exclude_description</code> reste l'appel à faire.</p>
+
+      <h2>La clé publique, et ce qu'impose allowed_origins</h2>
+      <p>Un front headless appelle depuis le navigateur, avec une clé publique <code class="docs-inline-code">hxp_</code> créée par votre clé serveur. Elle cherche, parcourt un catalogue et remonte des événements, rien d'autre : une clé publique qui tente d'indexer reçoit un 403. Son quota est celui de la clé serveur qui l'a créée.</p>
+      <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/keys/public \
+  -H "Authorization: Bearer VOTRE_CLE_SERVEUR" \
+  -H "Content-Type: application/json" \
+  -d '{"allowed_origins": "https://www.boutique.example, boutique.example, localhost:3000"}'
+
+{"key": "hxp_...", "allowed_origins": "www.boutique.example,boutique.example,localhost", "scope": "search, browse, events"}</code></pre>
+      <p>La comparaison porte sur l'hôte seul : le schéma et le port sont retirés, à l'écriture comme à chaque requête. Trois conséquences, mesurées :</p>
+      <ul>
+        <li><strong>localhost est accepté sur tous les ports.</strong> Déclaré <code class="docs-inline-code">localhost:3000</code>, il laisse aussi passer une origine <code class="docs-inline-code">http://localhost:5173</code>.</li>
+        <li><strong>Pas de joker.</strong> <code class="docs-inline-code">*.boutique.example</code> est refusé en 422, et <code class="docs-inline-code">*</code> aussi. Un champ vide est la seule façon d'autoriser toutes les origines.</li>
+        <li><strong>Chaque domaine de prévisualisation est un hôte distinct, donc refusé.</strong></li>
+      </ul>
+      <pre class="docs-code"><code>Origin: https://boutique-git-panier-acme.vercel.app
+
+HTTP 403
+{"detail": "Origine 'boutique-git-panier-acme.vercel.app' non autorisée pour cette clé publique. Domaines autorisés : www.boutique.example, boutique.example, localhost."}</code></pre>
+      <p>Vercel et Netlify créent un domaine par déploiement, que la liste ne peut pas énumérer. Aujourd'hui, un environnement de prévisualisation n'a qu'une issue : une clé publique sans restriction d'origine, utilisable depuis n'importe quel site tant qu'elle existe.</p>
+
+      <h2>Rendu côté serveur : aujourd'hui, deux options, aucune satisfaisante</h2>
+      <p>Un rendu côté serveur appelle depuis Node, pas depuis un navigateur : la requête ne porte pas d'en-tête <code class="docs-inline-code">Origin</code>, et une clé publique restreinte la refuse.</p>
+      <pre class="docs-code"><code>HTTP 403
+{"detail": "Origine 'absente' non autorisée pour cette clé publique. Domaines autorisés : www.boutique.example, boutique.example, localhost."}</code></pre>
+      <p>Deux options existent, et chacune a un coût.</p>
+      <ul>
+        <li><strong>Une clé publique sans restriction d'origine.</strong> Le serveur l'appelle sans difficulté. Mais la restriction tombe pour tout le monde : si cette clé est aussi servie au navigateur, n'importe quel site peut l'utiliser, sur votre quota.</li>
+        <li><strong>La clé serveur.</strong> Elle n'a pas besoin d'<code class="docs-inline-code">Origin</code>, mais elle voit le catalogue entier : la marge sort dans la réponse, et le prix configuré sur une clé publique ne s'applique pas. Tout ce que votre rendu transmet au navigateur pour l'hydratation emporte ces champs.</li>
+      </ul>
+      <p>Le même produit, pour la même requête, selon la clé :</p>
+      <pre class="docs-code"><code>// clé serveur
+{
+  "id": "44556677889903",
+  "platform_id": 44556677889903,
+  "produit_id": "8802",
+  "handle": "ecrou-hexagonal-inox-a2",
+  "ref": "ECR-M8-A2",
+  "name": "Écrou hexagonal M8 inox A2",
+  "price": 6.2,
+  "margin": 2.0,
+  "stock": true,
+  "category": "Visserie",
+  "featured": true
+}
+
+// clé publique
+{
+  "id": "44556677889903",
+  "platform_id": 44556677889903,
+  "produit_id": "8802",
+  "handle": "ecrou-hexagonal-inox-a2",
+  "ref": "ECR-M8-A2",
+  "name": "Écrou hexagonal M8 inox A2",
+  "price": 6.2,
+  "stock": true,
+  "category": "Visserie",
+  "featured": true
+}</code></pre>
+      <p>Aucune des deux n'est satisfaisante.</p>
+
+      <h2>Le widget ou l'API</h2>
+      <p><code class="docs-inline-code">heurix-search.js</code> est une barre de recherche prête à poser. <code class="docs-inline-code">Heurix.searchBox()</code> exige un élément du DOM (<code class="docs-inline-code">containerId</code>), injecte ses styles et dessine sa propre liste. Il lit <code class="docs-inline-code">name</code>, <code class="docs-inline-code">ref</code>, <code class="docs-inline-code">price</code> et <code class="docs-inline-code">compare_at_price</code>, donc le mode complet, et accepte <code class="docs-inline-code">renderItem</code>, <code class="docs-inline-code">onSelect</code> et <code class="docs-inline-code">resultHref</code> pour le rendu et la navigation. Il convient à une page rendue dans le navigateur qui veut une autocomplétion sans l'écrire. Il ne tourne pas dans un rendu serveur, ce n'est pas un composant React ou Vue, et aucun paquet npm n'est publié.</p>
+      <p>Un front qui a ses propres composants appelle l'API directement :</p>
+      <pre class="docs-code"><code>const r = await fetch("https://api.heurix.fr/v1/index/boutique/search", {
+  method: "POST",
+  headers: {
+    "Authorization": "Bearer hxp_votre_cle_publique",
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({ q, limit: 24, exclude_description: true }),
+});
+const { total, hits, facets, fallback } = await r.json();</code></pre>
+      <p>Un champ mal nommé dans le corps est refusé en 422 plutôt qu'ignoré : <code class="docs-inline-code">{"query": "écrou"}</code> ne renvoie pas le catalogue entier, la réponse nomme le champ en trop.</p>
+
+      <h2>Pour la suite</h2>
+      <p>Les trois niveaux d'intégration et le détail de <code class="docs-inline-code">ids_only</code> sont dans <a href="../docs.html#niveaux-integration">la documentation</a>, la création et la révocation des clés publiques dans <a href="../docs.html#authentification">Authentification</a>, et la liste complète des paramètres dans <a href="../docs.html#ep-search">Recherche</a>. Pour servir un prix différent par population de clients, voir <a href="prix-comptes-pro-visiteurs-anonymes.html">le prix par clé publique</a>.</p>
+    </div>
+
+    <div class="post-footer-cta">
+      <p>Brancher Heurix sur votre front headless ?</p>
+      <a href="../pricing.html" class="btn">Essayer gratuitement</a>
+    </div>
+  </div>
+</article>
+
+<footer>
+  <div class="wrap foot-grid">
+    <a href="../index.html" class="logo" style="font-size:15px;"><img src="../logo.svg?v=1787610626" alt="Heurix" style="height:22px;width:22px;"> <span class="wordmark">Heurix</span></a>
+    <div class="foot-links">
+      <a href="../blog.html">Blog</a>
+      <a href="../docs.html">Documentation API</a>
+      <a href="../fonctionnalites.html">Fonctionnalités</a>
+      <a href="../integrations.html">Intégrations</a>
+      <a href="../partners.html">Programme partenaires</a>
+      <a href="../console.html">Console</a>
+      <a href="../about.html">À propos</a>
+      <a href="../faq.html">FAQ</a>
+      <a href="../cgv.html">CGV</a>
+      <a href="../mentions-legales.html">Mentions légales</a>
+      <a href="#" data-rouvrir-consentement>Gérer les cookies</a>
+      <a href="../confidentialite.html">Confidentialité</a>
+      <a href="mailto:contact@heurix.fr">contact@heurix.fr</a>
+    </div>
+    <div class="foot-social">
+      <span class="foot-social-label">Réseaux sociaux</span>
+      <a href="https://www.linkedin.com/company/heurix-search/" target="_blank" rel="noopener" aria-label="LinkedIn" class="foot-social-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+      </a>
+    </div>
+    <div class="foot-legal">
+      Heurix — Entreprise individuelle (micro-entreprise). SIRET 107 681 900 00018. Conseil en systèmes et logiciels informatiques.<br>
+      © <span id="year">2026</span> Heurix. Tous droits réservés.
+    </div>
+  </div>
+</footer>
+
+<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+<script src="../search-engine.js?v=1788523609"></script>
+<script src="../nav-dropdown.js?v=1788086140"></script>
+<script src="../mobile-nav.js?v=1788597902"></script>
+<div id="pricing-nudge" class="pricing-nudge">
+  <button type="button" class="pricing-nudge-close" aria-label="Fermer">&times;</button>
+  <div class="pricing-nudge-kicker">Essai gratuit 14 jours</div>
+  <p>Testez Heurix sur votre catalogue, sans carte bancaire.</p>
+  <a href="../pricing.html" class="btn">Voir les tarifs</a>
+</div>
+<script src="../pricing-nudge.js?v=1787906653"></script>
+<script>window.HEURIX_RACINE='../';</script><script src="../consent.js?v=1788689121"></script>
+<script src="../langue-banniere.js?v=1788686174"></script>
+</body>
+</html>

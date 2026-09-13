@@ -261,6 +261,9 @@
     <loc>https://heurix.fr/blog/mode-retail-attributs-vetements.html</loc>
   </url>
   <url>
+    <loc>https://heurix.fr/blog/recherche-headless-api-sans-theme.html</loc>
+  </url>
+  <url>
     <loc>https://heurix.fr/blog/mise-en-avant-bundles-packs.html</loc>
   </url>
   <url>
@@ -333,4 +336,5 @@
   <url><loc>https://heurix.fr/en/blog/guide-serveur-mcp-heurix.html</loc></url>
   <url><loc>https://heurix.fr/en/blog/guide-page-categorie-browse.html</loc></url>
   <url><loc>https://heurix.fr/en/blog/guide-utilisation-console.html</loc></url>
+  <url><loc>https://heurix.fr/en/blog/recherche-headless-api-sans-theme.html</loc></url>
 </urlset>
