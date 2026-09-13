@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Headless search: what the response carries, and the URL your front end composes — Heurix</title>
+<meta name="description" content="The whole product in one call, or identifiers only. The engine never composes a URL; the front end does. And allowed_origins, measured.">
+<link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/recherche-headless-api-sans-theme.html">
+<link rel="alternate" hreflang="en" href="https://heurix.fr/en/blog/recherche-headless-api-sans-theme.html">
+<link rel="alternate" hreflang="x-default" href="https://heurix.fr/blog/recherche-headless-api-sans-theme.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Headless search: what the response carries, and the URL your front end composes — Heurix">
+<meta property="og:description" content="The whole product in one call, or identifiers only. The engine never composes a URL; the front end does. And allowed_origins, measured.">
+<meta property="og:image" content="https://heurix.fr/og-image.png">
+<meta property="og:url" content="https://heurix.fr/en/blog/recherche-headless-api-sans-theme.html">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Headless search: what the response carries, and the URL your front end composes — Heurix">
+<meta name="twitter:image" content="https://heurix.fr/og-image.png">
+<link rel="icon" type="image/png" href="../../favicon-32.png">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<link rel="stylesheet" href="../../styles.css?v=1788685422">
+<link rel="canonical" href="https://heurix.fr/en/blog/recherche-headless-api-sans-theme.html">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Heurix",
+  "url": "https://heurix.fr",
+  "logo": "https://heurix.fr/logo.svg?v=1787610626",
+  "image": "https://heurix.fr/og-image.png",
+  "description": "Regex-powered search and discovery engine for e-commerce sites, designed in France.",
+  "email": "contact@heurix.fr",
+  "sameAs": ["https://www.linkedin.com/company/heurix-search/"],
+  "founder": {"@type": "Person", "name": "Alexis Flahaut"},
+  "areaServed": "FR"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Headless search: what the response carries, and the URL your front end composes",
+  "description": "The whole product in one call, or identifiers only. The engine never composes a URL; the front end does. And allowed_origins, measured.",
+  "datePublished": "2026-09-13T18:40:28+02:00",
+  "inLanguage": "en",
+  "mainEntityOfPage": "https://heurix.fr/en/blog/recherche-headless-api-sans-theme.html",
+  "author": {
+    "@type": "Person",
+    "name": "Alexis Flahaut",
+    "url": "https://heurix.fr/about.html"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Heurix",
+    "url": "https://heurix.fr"
+  }
+}
+</script>
+</head>
+<body class="docs-dark">
+<!-- Banniere de langue : regle de declenchement, cle et exemption CNIL dans langue-banniere.js. -->
+<aside class="langue-banniere" id="langue-banniere" lang="fr" hidden>
+  <div class="langue-banniere-corps">
+    <span>Cette page est disponible en français.</span>
+    <a class="langue-banniere-lien" href="../../blog/recherche-headless-api-sans-theme.html">Lire en français</a>
+    <button type="button" class="langue-banniere-non">Non merci</button>
+  </div>
+</aside>
+<script>(function(){var b=document.getElementById('langue-banniere');if(!b)return;var pageFr=(document.documentElement.lang||'fr').slice(0,2).toLowerCase()==='fr',l=navigator.languages||[navigator.language||''],litFr=false;for(var i=0;i<l.length;i++)if(String(l[i]).slice(0,2).toLowerCase()==='fr')litFr=true;if(litFr===pageFr)return;try{if(localStorage.getItem('heurix_langue'))return;}catch(e){}b.hidden=false;})();</script>
+<header>
+  <div class="header-top">
+    <nav class="header-top-inner">
+      <a href="../index.html" class="logo"><img src="../../logo.svg?v=1787610626" alt="Heurix"> <span class="wordmark">Heurix</span></a>
+      <div class="nav-links">
+        <div class="nav-drop">
+          <button type="button" class="nav-drop-btn" aria-expanded="false" aria-haspopup="true">Product</button>
+          <div class="nav-drop-panel nav-panel-groupes">
+            <div class="nav-promo">
+              <p class="nav-promo-sur">LIVE DEMO</p>
+              <div class="nav-promo-vis"><span class="nav-promo-q">stainless screws m8x20</span><span class="nav-promo-chip">DIN 933</span><span class="nav-promo-chip">washer</span></div>
+              <p class="nav-promo-t">See Heurix at work</p>
+              <p class="nav-promo-d">A real storefront, served by the engine.</p>
+              <a class="nav-promo-cta" href="../demo/index.html">Launch the demo &rarr;</a>
+            </div>
+            <div class="nav-drop-col">
+              <p class="nav-drop-groupe">Understand</p>
+              <a class="nav-row" href="../index.html#probleme"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span><span><span class="nav-row-t">The problem</span> <span class="nav-row-d">The least-monitored conversion point on a site.</span></span></a>
+              <a class="nav-row" href="../produit.html#mission"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg></span><span><span class="nav-row-t">Our mission</span> <span class="nav-row-d">Making search a lever, not a burden.</span></span></a>
+            </div>
+            <div class="nav-drop-col">
+              <p class="nav-drop-groupe">The product</p>
+              <a class="nav-row" href="../index.html#moteur"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg></span><span><span class="nav-row-t">The engine</span> <span class="nav-row-d">Our own engine, built in France.</span></span></a>
+              <a class="nav-row" href="../fonctionnalites.html"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></span><span><span class="nav-row-t">Features</span> <span class="nav-row-d">Annotation cascade, typo tolerance, business synonyms.</span></span></a>
+            </div>
+            <div class="nav-drop-col">
+              <p class="nav-drop-groupe">Take action</p>
+              <a class="nav-row" href="../roi.html"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span><span><span class="nav-row-t">ROI simulator</span> <span class="nav-row-d">Your assumptions, as sliders, with their sources.</span></span></a>
+              <a class="nav-row" href="../mesure.html"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg></span><span><span class="nav-row-t">The measurement</span> <span class="nav-row-d">+28 points of recall on 300 queries, repeatable.</span></span></a>
+            </div>
+          </div>
+        </div>
+        <div class="nav-drop">
+          <button type="button" class="nav-drop-btn" aria-expanded="false" aria-haspopup="true">Solutions</button>
+          <div class="nav-drop-panel nav-panel-secteurs">
+          <a class="nav-drop-tous" href="../secteurs.html">All sectors &rarr;</a>
+          <a href="../solutions/outillage.html"><span class="nav-icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg></span>Hardware & tools</a>
+          <a href="../solutions/industrie.html"><span class="nav-icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></span>Spare parts & industry</a>
+          <a href="../solutions/automobile.html"><span class="nav-icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></span>Automotive</a>
+          <a href="../solutions/electricite.html"><span class="nav-icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6z"/></svg></span>Electrical & installation</a>
+          <a href="../solutions/plomberie.html"><span class="nav-icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z"/></svg></span>Plumbing & sanitary</a>
+          <a href="../solutions/mode.html"><span class="nav-icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.38 3.46 16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.47a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.47a2 2 0 00-1.34-2.23z"/></svg></span>Fashion & retail</a>
+          <a href="../solutions/electronique.html"><span class="nav-icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg></span>Electronics & high-tech</a>
+          <a href="../solutions/livres.html"><span class="nav-icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg></span>Books & publishing</a>
+          <a href="../solutions/vins.html"><span class="nav-icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 22h8"/><path d="M12 15v7"/><path d="M12 15a5 5 0 005-5V3H7v7a5 5 0 005 5z"/></svg></span>Wine & spirits</a>
+          <a href="../solutions/sport.html"><span class="nav-icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span>Sport & surf</a>
+          <a href="../solutions/finance.html"><span class="nav-icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>Finance & accounting</a>
+          </div>
+        </div>
+        <div class="nav-drop">
+          <button type="button" class="nav-drop-btn" aria-expanded="false" aria-haspopup="true">Developers</button>
+          <div class="nav-drop-panel nav-panel-groupes">
+            <div class="nav-promo">
+              <p class="nav-promo-sur">QUICKSTART</p>
+              <div class="nav-promo-vis"><div class="nav-promo-code"><b>POST</b> /v1/index/{catalog}/search&#10;{ "q": "stainless screws m8x20" }</div></div>
+              <p class="nav-promo-t">Get started in 5 minutes</p>
+              <p class="nav-promo-d">From API key to your first relevant result.</p>
+              <a class="nav-promo-cta" href="../blog/guide-mise-en-route.html">Getting started guide &rarr;</a>
+            </div>
+            <div class="nav-drop-col">
+              <p class="nav-drop-groupe">Get started</p>
+              <a class="nav-row" href="../blog/guide-mise-en-route.html"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg></span><span><span class="nav-row-t">Getting started guide</span> <span class="nav-row-d">Three steps to get working search.</span></span></a>
+              <a class="nav-row" href="../docs.html"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></span><span><span class="nav-row-t">Documentation</span> <span class="nav-row-d">Index a catalog and run a first search in minutes.</span></span></a>
+            </div>
+            <div class="nav-drop-col">
+              <p class="nav-drop-groupe">Concepts</p>
+              <a class="nav-row" href="../docs.html#cascade"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></span><span><span class="nav-row-t">The annotation cascade</span> <span class="nav-row-d">The engine&rsquo;s core: rules organized in levels.</span></span></a>
+              <a class="nav-row" href="../docs.html#produits"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></span><span><span class="nav-row-t">Product structure</span> <span class="nav-row-d">A free-form JSON object; four fields play a special role.</span></span></a>
+            </div>
+            <div class="nav-drop-col">
+              <p class="nav-drop-groupe">Integrations</p>
+              <a class="nav-row" href="../integrations.html"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></span><span><span class="nav-row-t">Integrations</span> <span class="nav-row-d">Technical guides with real code.</span></span></a>
+              <a class="nav-row" href="../prestashop.html"><span class="nav-row-icn marque" aria-hidden="true" style="background:rgba(223,0,103,.12); color:#CB005E;">P</span><span><span class="nav-row-t">PrestaShop</span> <span class="nav-row-d">Native module, via ProductSearchProviderInterface.</span></span></a>
+              <a class="nav-row" href="../woocommerce.html"><span class="nav-row-icn marque" aria-hidden="true" style="background:rgba(127,84,179,.12); color:#7F54B3;">W</span><span><span class="nav-row-t">WooCommerce</span> <span class="nav-row-d">WordPress extension, via the pre_get_posts hook.</span></span></a>
+              <a class="nav-row" href="../shopify.html"><span class="nav-row-icn marque" aria-hidden="true" style="background:rgba(94,142,62,.14); color:#4E7533;">S</span><span><span class="nav-row-t">Shopify</span> <span class="nav-row-d">Integration via the documented REST API.</span></span></a>
+            </div>
+          </div>
+        </div>
+        <a href="../blog.html">Blog</a>
+        <a href="../console.html" class="nav-link-mobile-seul">My account</a>
+      </div>
+      <div class="header-search">
+        <button id="heurix-search-btn" class="search-trigger" aria-label="Search this site" type="button">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <span class="search-trigger-text">Search this site</span>
+          <span class="search-trigger-kbd">Ctrl K</span>
+        </button>
+      </div>
+      <div class="header-utility">
+        <button type="button" id="mobile-nav-toggle" class="mobile-nav-toggle" aria-label="Menu" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+        <a href="../console.html" class="header-signin"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0116 0v1"/></svg>My account</a>
+        <a href="../../blog/recherche-headless-api-sans-theme.html" class="lang-switch">FR</a>
+        <a href="../pricing.html" class="btn">Start free trial</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+
+<article class="post">
+  <div class="wrap post-wrap">
+    <a href="../blog.html" class="back-link">← All articles</a>
+    <div class="kicker">Guide · September 2026</div>
+    <h1>Headless search: what the response carries, and the URL your front end composes</h1>
+    <p class="post-lede">A headless front end has no theme to render a result: it receives data and builds the page itself. So it needs to know exactly what search returns, and what it will have to fetch elsewhere. Here is the Heurix response field by field, with real calls, and the limits an integrator runs into on day one.</p>
+
+    <div class="post-body">
+      <p>The responses shown here come from the engine at the version served in production on 13 September 2026, on a three-product catalog indexed for this article: two variants of the same screw and one nut. Product values and API messages are shown as the API returns them, in French.</p>
+
+      <h2>One call, the whole product</h2>
+      <p>By default, each result carries the complete product as you indexed it. This is deliberate: the client never has to make a second call to render a result card. For a headless front end, that is one network round trip fewer per search.</p>
+      <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/index/boutique/search \
+  -H "Authorization: Bearer hxp_your_public_key" \
+  -H "Content-Type: application/json" \
+  -d '{"q": "vis inox m8", "limit": 1, "exclude_description": true}'</code></pre>
+      <pre class="docs-code"><code>{
+  "query": "vis inox m8",
+  "tokens": [
+    "vis",
+    "inox",
+    "m8"
+  ],
+  "total": 3,
+  "offset": 0,
+  "limit": 1,
+  "hits": [
+    {
+      "product": {
+        "id": "44556677889901",
+        "platform_id": 44556677889901,
+        "produit_id": "8801",
+        "handle": "vis-tete-hexagonale-inox-a2",
+        "ref": "VIS-M8X20-A2",
+        "name": "Vis tête hexagonale M8x20 inox A2",
+        "price": 12.9,
+        "compare_at_price": 15.9,
+        "stock": true,
+        "category": "Visserie",
+        "url": "https://boutique.example/products/vis-tete-hexagonale-inox-a2",
+        "image": "https://cdn.example/vis-m8x20.jpg"
+      },
+      "score": 54.8,
+      "in_stock": true,
+      "matched": [
+        "terme 'vis' (depuis 'vis', x1.00)",
+        "terme 'vis-m8x20-a2' (depuis 'vis', x0.22)",
+        "terme 'inox' (depuis 'inox', x1.00)",
+        "annotation #DIAM_M8",
+        "annotation #DIAM_M8_INOX",
+        "annotation #FAM_VIS",
+        "annotation #MAT_INOX"
+      ],
+      "pinned": false,
+      "buried": false
+    }
+  ],
+  "fallback": false
+}</code></pre>
+      <p>The indexed product also had a <code class="docs-inline-code">margin</code> field. It is not in the response: a public key never receives it. Here is where each field comes from.</p>
+      <div class="table-scroll"><table class="docs-params">
+        <tr><th>Field</th><th>Where it comes from</th></tr>
+        <tr><td><code class="docs-inline-code">product.*</code></td><td>Your last indexing call, as sent. Nothing is read back from your platform at search time.</td></tr>
+        <tr><td><code class="docs-inline-code">product.price</code></td><td>The price field the calling key serves: <code class="docs-inline-code">price</code> by default.</td></tr>
+        <tr><td><code class="docs-inline-code">product.margin</code></td><td>Removed for a public key, served to a server key.</td></tr>
+        <tr><td><code class="docs-inline-code">score</code><br><code class="docs-inline-code">matched</code></td><td>Computed by this search: relevance, and its readable reasons.</td></tr>
+        <tr><td><code class="docs-inline-code">in_stock</code></td><td>Derived from your <code class="docs-inline-code">stock</code> field.</td></tr>
+        <tr><td><code class="docs-inline-code">pinned</code><br><code class="docs-inline-code">buried</code></td><td>Query rules set in the console.</td></tr>
+        <tr><td><code class="docs-inline-code">fallback</code></td><td><code class="docs-inline-code">true</code> when <code class="docs-inline-code">hits</code> holds your <code class="docs-inline-code">featured</code> products because nothing matched; <code class="docs-inline-code">total</code> then stays at 0.</td></tr>
+        <tr><td><code class="docs-inline-code">facets</code><br><code class="docs-inline-code">price_filter</code><br><code class="docs-inline-code">filters_unknown</code><br><code class="docs-inline-code">suggested_category</code><br><code class="docs-inline-code">highlighted_bundle</code></td><td>Present only when they have something to say. Their absence is the normal case.</td></tr>
+      </table></div>
+      <p>What the response does not carry, unless you indexed it: the product page URL, the image, variants and their options, the currency, real-time stock and price. A price changed in your back office only exists for search after your next indexing call. Payload size is controlled with <code class="docs-inline-code">exclude_description</code>: on a real catalog, the description accounts for more than 80% of a product's weight in the response.</p>
+
+      <h2>The engine never composes a URL; the front end does</h2>
+      <p>In the response above, <code class="docs-inline-code">url</code> is present because it was indexed. The second variant of the same screw has none, and the engine does not make one up: it knows neither your domain, nor your sales channel, nor your routes.</p>
+      <p>That is what makes the response usable without a theme. Index the stable part, a handle or a slug, and compose the path in the front end:</p>
+      <pre class="docs-code"><code>const link = p.url || "/products/" + encodeURIComponent(p.handle);</code></pre>
+      <p>A relative path stays correct on the production domain, on localhost and on a preview domain. It is the rule our own Shopify storefront script applies: a password-protected store, the state of every merchant preparing to open, does not provide a public product URL, and the path is rebuilt from the handle.</p>
+
+      <h2>ids_only: when your platform hydrates its own product data</h2>
+      <p>If your front end already reads its products elsewhere, from a CMS, a PIM or your platform's API, ask for the order only:</p>
+      <pre class="docs-code"><code>{"q": "inox m8", "ids_only": true}
+
+{"total": 3, "ids": ["44556677889903", "44556677889901", "44556677889902"]}</code></pre>
+      <p><code class="docs-inline-code">id_field</code> returns another field instead of <code class="docs-inline-code">id</code>: the identifier your platform expects, a handle, a slug.</p>
+      <pre class="docs-code"><code>{"q": "inox m8", "ids_only": true, "id_field": "handle"}
+
+{"total": 3, "ids": ["ecrou-hexagonal-inox-a2", "vis-tete-hexagonale-inox-a2", "vis-tete-hexagonale-inox-a2"]}</code></pre>
+      <p>Three identifiers, two distinct. A catalog indexed per variant returns the product handle once per matching variant: deduplicate before hydrating, keeping the first occurrence to preserve the order. A product without the requested field is dropped, and counted:</p>
+      <pre class="docs-code"><code>{"q": "inox m8", "ids_only": true, "id_field": "url"}
+
+{"total": 3, "ids": ["https://boutique.example/products/vis-tete-hexagonale-inox-a2"], "ignores": 2, "champ_manquant": "url"}</code></pre>
+
+      <h3>What ids_only leaves out</h3>
+      <p>The light response carries only <code class="docs-inline-code">total</code> and <code class="docs-inline-code">ids</code>. Measured on the same catalog:</p>
+      <ul>
+        <li><strong>Requested facets are missing, with no warning.</strong> The same query in full mode returns <code class="docs-inline-code">"facets": {"FAM": {"FAM_VIS": 2, "FAM_ECROU": 1}}</code>.</li>
+        <li><strong>Zero results returns <code class="docs-inline-code">{"total": 0, "ids": []}</code>.</strong> Full mode returns your <code class="docs-inline-code">featured</code> products with <code class="docs-inline-code">"fallback": true</code>.</li>
+        <li><code class="docs-inline-code">price_filter</code>, <code class="docs-inline-code">filters_unknown</code> and <code class="docs-inline-code">matched</code> do not appear either.</li>
+      </ul>
+      <p>If your results page shows facets, full mode with <code class="docs-inline-code">exclude_description</code> remains the call to make.</p>
+
+      <h2>The public key, and what allowed_origins imposes</h2>
+      <p>A headless front end calls from the browser, with a public <code class="docs-inline-code">hxp_</code> key created by your server key. It searches, browses a catalog and sends events, nothing else: a public key that tries to index gets a 403. Its quota is that of the server key that created it.</p>
+      <pre class="docs-code"><code>curl -X POST https://api.heurix.fr/v1/keys/public \
+  -H "Authorization: Bearer YOUR_SERVER_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"allowed_origins": "https://www.boutique.example, boutique.example, localhost:3000"}'
+
+{"key": "hxp_...", "allowed_origins": "www.boutique.example,boutique.example,localhost", "scope": "search, browse, events"}</code></pre>
+      <p>The comparison is on the host alone: scheme and port are stripped, both when stored and on every request. Three consequences, measured:</p>
+      <ul>
+        <li><strong>localhost is accepted on every port.</strong> Declared as <code class="docs-inline-code">localhost:3000</code>, it also lets an <code class="docs-inline-code">http://localhost:5173</code> origin through.</li>
+        <li><strong>No wildcard.</strong> <code class="docs-inline-code">*.boutique.example</code> is rejected with a 422, and so is <code class="docs-inline-code">*</code>. An empty field is the only way to allow every origin.</li>
+        <li><strong>Each preview domain is a distinct host, so it is rejected.</strong></li>
+      </ul>
+      <pre class="docs-code"><code>Origin: https://boutique-git-panier-acme.vercel.app
+
+HTTP 403
+{"detail": "Origine 'boutique-git-panier-acme.vercel.app' non autorisée pour cette clé publique. Domaines autorisés : www.boutique.example, boutique.example, localhost."}</code></pre>
+      <p>Vercel and Netlify create one domain per deployment, which the list cannot enumerate. Today, a preview environment has a single way out: a public key with no origin restriction, usable from any site for as long as it exists.</p>
+
+      <h2>Server-side rendering: today, two options, neither satisfactory</h2>
+      <p>Server-side rendering calls from Node, not from a browser: the request carries no <code class="docs-inline-code">Origin</code> header, and a restricted public key rejects it.</p>
+      <pre class="docs-code"><code>HTTP 403
+{"detail": "Origine 'absente' non autorisée pour cette clé publique. Domaines autorisés : www.boutique.example, boutique.example, localhost."}</code></pre>
+      <p>Two options exist, and each has a cost.</p>
+      <ul>
+        <li><strong>A public key with no origin restriction.</strong> The server calls it without trouble. But the restriction is gone for everyone: if that key is also served to the browser, any site can use it, on your quota.</li>
+        <li><strong>The server key.</strong> It needs no <code class="docs-inline-code">Origin</code>, but it sees the whole catalog: the margin comes out in the response, and the price configured on a public key does not apply. Anything your render passes to the browser for hydration carries those fields.</li>
+      </ul>
+      <p>The same product, for the same query, depending on the key:</p>
+      <pre class="docs-code"><code>// server key
+{
+  "id": "44556677889903",
+  "platform_id": 44556677889903,
+  "produit_id": "8802",
+  "handle": "ecrou-hexagonal-inox-a2",
+  "ref": "ECR-M8-A2",
+  "name": "Écrou hexagonal M8 inox A2",
+  "price": 6.2,
+  "margin": 2.0,
+  "stock": true,
+  "category": "Visserie",
+  "featured": true
+}
+
+// public key
+{
+  "id": "44556677889903",
+  "platform_id": 44556677889903,
+  "produit_id": "8802",
+  "handle": "ecrou-hexagonal-inox-a2",
+  "ref": "ECR-M8-A2",
+  "name": "Écrou hexagonal M8 inox A2",
+  "price": 6.2,
+  "stock": true,
+  "category": "Visserie",
+  "featured": true
+}</code></pre>
+      <p>Neither is satisfactory.</p>
+
+      <h2>The widget or the API</h2>
+      <p><code class="docs-inline-code">heurix-search.js</code> is a ready-to-drop search bar. <code class="docs-inline-code">Heurix.searchBox()</code> requires a DOM element (<code class="docs-inline-code">containerId</code>), injects its styles and draws its own list. It reads <code class="docs-inline-code">name</code>, <code class="docs-inline-code">ref</code>, <code class="docs-inline-code">price</code> and <code class="docs-inline-code">compare_at_price</code>, so it needs full mode, and accepts <code class="docs-inline-code">renderItem</code>, <code class="docs-inline-code">onSelect</code> and <code class="docs-inline-code">resultHref</code> for rendering and navigation. It suits a browser-rendered page that wants autocomplete without writing it. It does not run in a server render, it is not a React or Vue component, and no npm package is published.</p>
+      <p>A front end with its own components calls the API directly:</p>
+      <pre class="docs-code"><code>const r = await fetch("https://api.heurix.fr/v1/index/boutique/search", {
+  method: "POST",
+  headers: {
+    "Authorization": "Bearer hxp_your_public_key",
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({ q, limit: 24, exclude_description: true }),
+});
+const { total, hits, facets, fallback } = await r.json();</code></pre>
+      <p>A misnamed field in the body is rejected with a 422 rather than ignored: <code class="docs-inline-code">{"query": "écrou"}</code> does not return the whole catalog, the response names the extra field.</p>
+
+      <h2>Next steps</h2>
+      <p>The three integration levels and the details of <code class="docs-inline-code">ids_only</code> are in <a href="../docs.html#niveaux-integration">the documentation</a>, creating and revoking public keys in <a href="../docs.html#authentification">Authentication</a>, and the full parameter list in <a href="../docs.html#ep-search">Search</a>.</p>
+    </div>
+
+    <div class="post-footer-cta">
+      <p>Connecting Heurix to your headless front end?</p>
+      <a href="../pricing.html" class="btn">Try for free</a>
+    </div>
+  </div>
+</article>
+
+<footer>
+  <div class="wrap foot-grid">
+    <a href="../index.html" class="logo" style="font-size:15px;"><img src="../../logo.svg?v=1787610626" alt="Heurix" style="height:22px;width:22px;"> <span class="wordmark">Heurix</span></a>
+    <div class="foot-links">
+      <a href="../blog.html">Blog</a>
+      <a href="../docs.html">API Documentation</a>
+      <a href="../fonctionnalites.html">Features</a>
+      <a href="../integrations.html">Integrations</a>
+      <a href="../partners.html">Partner program</a>
+      <a href="../console.html">Console</a>
+      <a href="../about.html">About</a>
+      <a href="../faq.html">FAQ</a>
+      <a href="../cgv.html">Terms of Service</a>
+      <a href="../mentions-legales.html">Legal notice</a>
+      <a href="#" data-rouvrir-consentement>Manage cookies</a>
+      <a href="../privacy.html">Privacy</a>
+      <a href="mailto:contact@heurix.fr">contact@heurix.fr</a>
+    </div>
+    <div class="foot-social">
+      <span class="foot-social-label">Social networks</span>
+      <a href="https://www.linkedin.com/company/heurix-search/" target="_blank" rel="noopener" aria-label="LinkedIn" class="foot-social-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+      </a>
+    </div>
+    <div class="foot-legal">
+      Heurix — Sole proprietorship (French micro-entreprise). SIRET 107 681 900 00018. IT systems and software consulting.<br>
+      © <span id="year">2026</span> Heurix. All rights reserved.
+    </div>
+  </div>
+</footer>
+
+<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+<script src="../../search-engine.js?v=1788523609"></script>
+<script src="../../nav-dropdown.js?v=1788086140"></script>
+<script src="../../mobile-nav.js?v=1788597902"></script>
+<div id="pricing-nudge" class="pricing-nudge">
+  <button type="button" class="pricing-nudge-close" aria-label="Close">&times;</button>
+  <div class="pricing-nudge-kicker">14-day free trial</div>
+  <p>Try Heurix on your catalog, no credit card.</p>
+  <a href="../pricing.html" class="btn">See pricing</a>
+</div>
+<script src="../../pricing-nudge.js?v=1787906653"></script>
+<script>window.HEURIX_RACINE='../../';</script><script src="../../consent.js?v=1788689121"></script>
+<script src="../../langue-banniere.js?v=1788686174"></script>
+</body>
+</html>
