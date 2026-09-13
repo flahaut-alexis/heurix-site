@@ -524,10 +524,22 @@ N_DERNIERS = 5
 # les trois suivants datent du 24.
 # ---------------------------------------------------------------------------
 
+# UNE PAGE SANS COMMIT D'AJOUT EST LA PLUS RECENTE (13 septembre 2026). Elle
+# rendait 0 : un article neuf, encore non commite, etait classe le plus ancien.
+# L'index genere a ce moment passait `--verifier`, puis le commit datait
+# l'article, le mettait en tete, et le pre-push refusait « les derniers
+# articles ont change ». Trois sessions le meme jour. Son commit sera plus
+# recent que tout article deja commite : le classer en tete des maintenant
+# rend le meme ordre avant et apres. Une CONSTANTE plutot que l'heure : deux
+# articles neufs se departagent alors par le chemin, comme dans un commit
+# commun.
+NON_COMMITE = sys.maxsize
+
+
 def date_ajout(chemin: str) -> int:
     out = subprocess.run(["git", "-C", RACINE, "log", "--diff-filter=A", "--format=%at",
                           "--", chemin], capture_output=True, text=True).stdout.strip().split("\n")
-    return int(out[-1]) if out and out[-1] else 0
+    return int(out[-1]) if out and out[-1] else NON_COMMITE
 
 
 class HistoriqueTronque(RuntimeError):
