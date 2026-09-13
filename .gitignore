@@ -42,3 +42,7 @@ skills-lock.json
 # `git add -A` serait publiee sur le site au prochain deploiement, sans que
 # personne l'ait voulu -- meme motif que .agents/ et .impeccable/.
 .scratch/
+
+# Caches Python, laisses par scripts/index-recherche.py
+__pycache__/
+*.pyc
