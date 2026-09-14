@@ -306,7 +306,7 @@
         <tr><td>Management</td><td>Most management calls are not counted — keys, accounts, subscription, merchandising priorities, analytics. Nine endpoints are the exception, listed just below</td></tr>
         <tr><td>Ranking</td><td>1 <code class="docs-inline-code">browse</code> call = 1 <em>Browse</em> request, on a separate counter from search</td></tr>
         <tr><td>Overage (Scale)</td><td>Extra usage is billed at the rate shown on the <a href="pricing.html">pricing page</a> — never a cutoff</td></tr>
-        <tr><td>Overage (other plans)</td><td>A 10% grace margin absorbs a one-off spike; beyond that, the request is rejected with a clear <code class="docs-inline-code">429</code> code</td></tr>
+        <tr><td>Overage (other plans)</td><td>No cutoff either: past the monthly limit, requests are still served and still counted</td></tr>
       </table></div>
 
       <h3 id="comptage-gestion">Management calls that are counted</h3>
@@ -338,11 +338,11 @@
         <tr><td><strong>Scale</strong> — €139/month</td><td>150,000 then billed</td><td>50,000</td><td>unlimited</td></tr>
       </table></div>
       <p>Past the 14-day trial without subscribing to a paid plan, a key automatically reverts to trial limits until subscription — your catalogs and their configuration remain intact, simply less accessible in volume until you move to a paid plan.</p>
-      <p>Exceeding a limit returns a <code class="docs-inline-code">429</code> code with the detail of the cause. The <code class="docs-inline-code">detail</code> sentence comes out in French, as <a href="#erreurs">every error message does</a> — <code class="docs-inline-code">plan</code> and <code class="docs-inline-code">limit_type</code> are what you branch on:</p>
+      <p>The request limit never rejects a call. Only two limits return a <code class="docs-inline-code">429</code> code, both on indexing (<code class="docs-inline-code">POST /v1/index/{catalog}/items</code>): the product count, beyond a 10% grace margin (<code class="docs-inline-code">limit_type</code> <code class="docs-inline-code">"products"</code>), and the catalog count, as soon as a batch would create one too many (<code class="docs-inline-code">"catalogs"</code>). The response carries the detail of the cause. The <code class="docs-inline-code">detail</code> sentence comes out in French, as <a href="#erreurs">every error message does</a> — <code class="docs-inline-code">plan</code> and <code class="docs-inline-code">limit_type</code> are what you branch on:</p>
       <pre class="docs-code"><code>{
-  "detail": "Plafond de requêtes du plan 'starter' dépassé (5512/5000, marge de 10% également dépassée). Passez à un plan supérieur pour continuer.",
+  "detail": "Plafond de 8000 produits du plan 'starter' dépassé (9000 produits, marge de 10% également dépassée). Passez à un plan supérieur pour indexer davantage.",
   "plan": "starter",
-  "limit_type": "requests",
+  "limit_type": "products",
   "upgrade_url": "https://heurix.fr/pricing.html"
 }</code></pre>
     </section>
