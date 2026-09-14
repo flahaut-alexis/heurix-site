@@ -180,6 +180,42 @@ describe("le lien de politique du bandeau de consentement mene a un fichier reel
     expect(chargent.length).toBeGreaterThan(100);
   });
 
+  // DELAI EXPLICITE SUR LES DEUX BALAYAGES (14 septembre 2026). Le crochet
+  // pre-push, rejoue sur `console-email-sent` (798ae5ed), a echoue une fois sur
+  // le second : « Test timed out in 5000ms ». Le meme test passait 3/3 seul, et
+  // le crochet au rejeu immediat. Charge moyenne ~25 sur 8 coeurs, quatre autres
+  // `vitest` de sessions paralleles.
+  //
+  // LE TRAVAIL EST PETIT. Chaque balayage construit 144 JSDOM, un par page qui
+  // charge consent.js. La meme boucle chronometree par phase dans vitest :
+  // 579 ms, dont 406 de constructeur JSDOM, 133 d'attente du `load` (lecture et
+  // evaluation de consent.js) et 27 de lecture des pages. `window.close()` apres
+  // chaque page n'y change rien de mesurable.
+  //
+  // LA DUREE MURALE SUIT LA MACHINE, PAS LE TEST :
+  //
+  //     seul, releve du signalement             2 886 ms   2 976 ms
+  //     seul, 23:23, charge 25 montant a 82     4 062 ms   4 007 ms
+  //     seul, 23:26, charge ~30, trois passages  533 a 598 ms
+  //     suite entiere, 23:27, charge ~11          859 ms     917 ms
+  //     suite entiere, 23:28, charge ~11        1 204 ms     940 ms
+  //     crochet pre-push, charge ~25            > 5 000 ms (echec)
+  //
+  // Meme commande, meme arbre, a trois minutes d'ecart : un facteur 7. La charge
+  // moyenne ne le predit pas -- 30 a rendu 555 ms, 25 a rendu 4 062.
+  //
+  // POURQUOI PAS UN TEST MOINS CHER. Le cout est par page et tient au
+  // constructeur. Le reduire voudrait dire reutiliser une fenetre d'une page a
+  // l'autre, ou son HEURIX_RACINE survivrait a la page suivante -- celle des 8
+  // pages sans global -- ou regrouper les pages par contexte, ce qui suppose
+  // savoir de quoi depend consent.js. Dans les deux cas le harnais mettrait en
+  // scene sa reponse, ce que l'en-tete de ce fichier refuse.
+  //
+  // 30 s ICI SEULEMENT, comme les tests du verificateur d'index-recherche.test.js :
+  // ~50 fois le travail mesure, ~7 fois le pire releve seul. Un `load` que jsdom
+  // ne rend pas en 30 s est pendu, pas ralenti, et le delai le dit encore.
+  const DELAI = 30_000;
+
   it("aucune page ne sert un lien de politique mort", async () => {
     const morts = [];
     for (const page of pages) {
@@ -189,7 +225,7 @@ describe("le lien de politique du bandeau de consentement mene a un fichier reel
       if (resolu === null || !surDisque(resolu)) morts.push(`${page} :: href="${href}" -> ${resolu}`);
     }
     expect(morts).toEqual([]);
-  });
+  }, DELAI);
 
   it("le lien sert la politique de la LANGUE de la page, pas celle du site", async () => {
     const ecarts = [];
@@ -206,5 +242,5 @@ describe("le lien de politique du bandeau de consentement mene a un fichier reel
       }
     }
     expect(ecarts).toEqual([]);
-  });
+  }, DELAI);
 });
