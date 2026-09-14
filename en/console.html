@@ -98,6 +98,57 @@
   </div>
 </section>
 
+<!-- ===================== KEY SCREEN (right after signup only) ===================== -->
+<!-- Absent from this page from 3 August to 14 September 2026, when it was
+     added to console.html only. console.js wrote into its elements anyway:
+     the TypeError fell into the signup `.catch`, so an English signup
+     created the account, lost the session, and displayed "Couldn't reach
+     api.heurix.fr". Same ids as console.html; the text is written here in
+     English, like the rest of this page. -->
+<section id="post-signup-screen" class="console-login" hidden>
+  <div class="wrap console-login-wrap">
+    <h1>Your key is ready.</h1>
+    <p class="lede" id="post-signup-email-envoye">Also sent to <strong id="post-signup-email"></strong>.</p>
+    <p class="lede" id="post-signup-email-echec" hidden></p>
+    <div class="console-postsignup-key">
+      <code id="post-signup-key-value"></code>
+      <button type="button" id="post-signup-copy-btn" class="btn btn-ghost">Copy</button>
+    </div>
+    <p class="console-login-micro">Don't share it: it gives write access to your catalog.</p>
+    <p id="post-signup-copy-confirm" class="console-login-micro" hidden>Copied.</p>
+
+    <div class="console-segmentation">
+      <label for="seg-secteur">Which sector best describes your catalog? <span class="console-field-optional">(optional)</span></label>
+      <select id="seg-secteur">
+        <option value="">— Choose —</option>
+        <option value="mode">Fashion &amp; retail</option>
+        <option value="outillage">Tools &amp; hardware</option>
+        <option value="industrie">Industry &amp; professional equipment</option>
+        <option value="electronique">Electronics &amp; high-tech</option>
+        <option value="automobile">Automotive</option>
+        <option value="livres">Books &amp; publishing</option>
+        <option value="vins">Wine &amp; spirits</option>
+        <option value="electricite">Electrical &amp; installation</option>
+        <option value="plomberie">Plumbing &amp; sanitary</option>
+        <option value="finance">Finance &amp; accounting</option>
+        <option value="sport">Sport &amp; surf</option>
+        <option value="autre">Other technical sector</option>
+      </select>
+      <label for="seg-plateforme" style="margin-top:14px;">Which platform does your store run on? <span class="console-field-optional">(optional)</span></label>
+      <select id="seg-plateforme">
+        <option value="">— Choose —</option>
+        <option value="shopify">Shopify</option>
+        <option value="prestashop">PrestaShop</option>
+        <option value="woocommerce">WooCommerce</option>
+        <option value="magento">Magento</option>
+        <option value="autre">Other / custom stack</option>
+      </select>
+    </div>
+
+    <button type="button" id="post-signup-continue-btn" class="btn" style="margin-top:18px;">Go to my dashboard</button>
+  </div>
+</section>
+
 <section id="dashboard" class="console-dash" hidden>
   <div class="wrap">
     <div class="console-dash-head">
@@ -1307,8 +1358,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="../console-select.js?v=1787610626"></script>
 <script src="../visite-editeur.js?v=1787610626"></script>
-<script src="../console-i18n.js?v=1788909214"></script>
-<script src="../console.js?v=1789250759"></script>
+<script src="../console-i18n.js?v=1789420567"></script>
+<script src="../console.js?v=1789420567"></script>
 <script type="module" src="../csv-console.js?v=1788909214"></script>
 <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 

@@ -494,10 +494,11 @@ describe("packs — les affirmations du site s'accordent", () => {
   // « il y a N secteurs » en en proposant N, sans jamais l'ecrire.
   //
   // Ce champ est DERIVE, pas liste : seules les pages qui portent un
-  // seg-secteur sont verifiees. en/console.html n'en a pas -- non par oubli
-  // de parite, mais parce qu'elle n'a pas l'ecran de post-inscription du
-  // tout (section post-signup-screen, absente : 6 identifiants cote
-  // francais, zero cote anglais). Ticket ouvert separement.
+  // seg-secteur sont verifiees. en/console.html n'en portait pas jusqu'au
+  // 14 septembre 2026 : elle n'avait pas l'ecran de post-inscription du
+  // tout, et une inscription en anglais affichait « Couldn't reach
+  // api.heurix.fr ». Ecran ajoute ce jour-la ; les deux pages sont
+  // desormais verifiees ici (tests/console-email-non-parti.test.js).
   // ---------------------------------------------------------------------
 
   // Les value du select s'ecrivent sans accent (electricite) la ou les
