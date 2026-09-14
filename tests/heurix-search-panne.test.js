@@ -141,16 +141,25 @@ describe("1. delai d'attente -- une API qui pend ne bloque plus le panneau", () 
   });
 });
 
-describe("2. classification des codes -- six cas, pas un message generique", () => {
+describe("2. classification des codes -- un libelle par cas, pas un message generique", () => {
   const CAS = [
     [401, "Missing or malformed Authorization header", false, "error"],
     [403, "Origine 'x.fr' non autorisée pour cette clé publique", false, "error"],
     [403, "clef inconnue", false, "error"],
     [404, "Catalogue « x » introuvable", false, "error"],
-    [429, "quota depasse", false, "error"],
-    [500, "boom", true, "warn"],
-    [503, "indisponible", true, "warn"],
+    [422, "limit: Input should be less than or equal to 100", false, "error"],
+    [429, "Too Many Requests", false, "error"],
+    [500, "Erreur interne. Si elle persiste, écrivez à contact@heurix.fr.", true, "warn"],
+    [503, "Service Unavailable", true, "warn"],
   ];
+
+  // La coupure au quota de requetes est partie le 12 septembre 2026 (moteur
+  // 266a90e) ; aucun libelle ne doit plus la nommer.
+  const CAUSE_RETIREE = /quota|plan/i;
+
+  it("TEMOIN : le motif de la cause retiree attrape l'ancien libelle du 429", () => {
+    expect("HTTP 429 -- quota depasse. Verifiez votre plan.").toMatch(CAUSE_RETIREE);
+  });
 
   it.each(CAS)(
     "HTTP %i (%s) -> transitoire=%s, console=%s",
@@ -160,8 +169,29 @@ describe("2. classification des codes -- six cas, pas un message generique", () 
       const dernier = ctx.journal[ctx.journal.length - 1];
       expect(dernier, "le marchand doit etre prevenu").toBeTruthy();
       expect(dernier.niveau).toBe(niveau);
+      expect(dernier.message, "le marchand lit la cause que donne le moteur").toContain(detail);
+      expect(dernier.message).not.toMatch(CAUSE_RETIREE);
     }
   );
+
+  it("un 422 porte une LISTE d'erreurs : le marchand lit le champ, pas [object Object]", async () => {
+    // Forme rendue par _validation_lisible cote moteur.
+    const detail = [{ type: "less_than_equal", loc: ["body", "limit"], msg: "Input should be less than or equal to 100" }];
+    const ctx = monter(apiQuiRefuse(422, detail));
+    await ctx.taper("vis");
+    const msg = ctx.journal[ctx.journal.length - 1].message;
+    expect(msg).toContain('"limit"');
+    expect(msg).not.toContain("[object Object]");
+  });
+
+  it("un 403 sans corps lisible nomme les hypotheses, pas une seule cause", async () => {
+    const ctx = monter(async () => ({ ok: false, status: 403, json: async () => { throw new Error("html"); } }));
+    await ctx.taper("vis");
+    const msg = ctx.journal[ctx.journal.length - 1].message;
+    expect(msg).toMatch(/cle invalide/);
+    expect(msg).toMatch(/catalogue d'une autre cle/);
+    expect(msg).not.toMatch(/cle publique rejetee/);
+  });
 
   it("le 403 « origine » et le 403 « clef » ne disent PAS la meme chose au marchand", async () => {
     // C'EST LE CAS QUI JUSTIFIE DE NE PAS AVOIR RECOPIE LA TABLE PHP.
@@ -185,18 +215,20 @@ describe("2. classification des codes -- six cas, pas un message generique", () 
     expect(msgClef).not.toMatch(/domaine de cette page/i);
   });
 
-  it("le VISITEUR ne lit jamais le diagnostic du marchand", async () => {
+  it.each(CAS)("le VISITEUR ne lit jamais le diagnostic du marchand -- HTTP %i", async (statut, detail) => {
     // Deux publics, deux canaux. PrestaShop l'obtient gratuitement
     // (PrestaShopLogger d'un cote, la page de l'autre) ; dans un navigateur
     // les deux publics regardent le meme ecran, donc la separation se pose
-    // a la main, et se verifie.
-    const ctx = monter(
-      apiQuiRefuse(403, "Origine 'boutique.fr' non autorisée pour cette clé publique")
-    );
+    // a la main, et se verifie -- sur chaque code, maintenant que le detail
+    // du serveur accompagne chaque libelle.
+    const ctx = monter(apiQuiRefuse(statut, detail));
     await ctx.taper("vis");
     const vu = ctx.panneau();
     expect(vu).toContain("Recherche indisponible");
-    expect(vu).not.toMatch(/403|Origine|clé publique|HTTP/);
+    expect(vu).not.toContain(String(statut));
+    expect(vu).not.toContain(detail);
+    expect(vu).not.toMatch(/HTTP|Reponse du serveur|clé publique/);
+    expect(ctx.annonce()).not.toContain(detail);
   });
 });
 
@@ -215,10 +247,15 @@ describe("3. coupe-circuit -- alimente par les seules pannes transitoires", () =
   });
 
   it("UN 429 NE MET PAS EN PAUSE -- chantier I1, 5 aout 2026", async () => {
-    // Un quota epuise dure jusqu'a la fin de la periode de facturation. Une
-    // pause de 60 s ne protege rien et masque le signal que le marchand doit
-    // voir a chaque recherche. C'est la revision que ce test verrouille.
-    const r = await appelsApresDeuxRecherches(apiQuiRefuse(429, "quota"));
+    // Sa raison d'origine -- un quota epuise dure jusqu'a la fin du mois --
+    // est partie avec la coupure (12 septembre 2026). Le comportement reste
+    // verrouille en attendant la limite de debit : voir le 429 de classerEchec.
+    const r = await appelsApresDeuxRecherches(apiQuiRefuse(429, "Too Many Requests"));
+    expect(r.apresSeconde).toBeGreaterThan(r.apresPremiere);
+  });
+
+  it("un 422 ne met pas en pause : un corps refuse ne se repare pas en 60 s", async () => {
+    const r = await appelsApresDeuxRecherches(apiQuiRefuse(422, "limit"));
     expect(r.apresSeconde).toBeGreaterThan(r.apresPremiere);
   });
 
