@@ -1,5 +1,24 @@
 # Dépassement facturé : ce que le site promet, ce que le moteur fait
 
+> ## DÉCISION, 14 septembre 2026 : A sauf Scale, non exécutée
+>
+> Ce document mesurait et proposait, sans rien changer. La décision est prise par Alexis. Aucun lot ne l'exécute encore.
+>
+> - **A pour Starter et Growth (recherche) et pour les trois paliers Ranking.** Le site dira la vérité du moteur : au-delà du quota, la requête est servie, comptée et non facturée.
+>   - Promesses propres à ces plans : S3 (cartes Ranking), S4 et S7 (partie Browse).
+>   - Promesses générales : S1, S5, S6, S8, S9 et l'article 7 (S12). Elles couvrent aussi Scale. Leur réécriture ne doit donc pas trancher Scale à sa place.
+> - **Scale (recherche) reste en attente** des requêtes de production du point 3. Une clé Scale au-delà de 150 000 requêtes par mois change la réponse. Les promesses propres à Scale restent en l'état : S2 (carte, 0,80 € / 1 000), S7 (« Scale + dépassement facturé »), S10 et S11 (documentation). L'écart de 50 000 contre 100 000 produits n'est pas tranché par cette décision.
+> - **La documentation PrestaShop est un lot à part** : le 429 « quota épuisé jusqu'à la fin de la période » que le moteur ne renvoie plus (point 2, connecteurs).
+>
+> **Deux affirmations du compte rendu ont été corrigées en relisant les sorties. Elles restent telles quelles plus bas ou dans l'historique, voici ce qui les remplace :**
+>
+> 1. **Les pertes du motif étroit** ne viennent pas toutes des formulations.
+>    - Par ligne, sur les promesses S1 à S12 : **7 lignes perdues par la formulation** (les quatre metas S1, dont l'og:description anglaise que seul le motif 3 attrape ; S4 FR, S9, S11 FR), **2 par la locale** (S7 FR, `pricing.html:679` et `:707`).
+>    - Hors promesses, la locale fait perdre en plus `blog/cout-moteur-recherche-ecommerce.html:196` et deux lignes de `CLAUDE.md`.
+>    - Même motif : 61 lignes en `C`, 66 en UTF-8.
+> 2. **« Le motif étroit ratait `en/fonctionnalites.html:410`, cutoff écrit en un mot »** (première version de ce relevé et compte rendu du 14) **est faux.** La ligne porte aussi « overage », et le motif l'a rendue dans les deux locales.
+>    - C'est le défaut des témoins, dans l'autre sens : là, une ligne comptée pour la mauvaise raison ; ici, une perte déduite du mot qu'on croyait décisif, sans regarder la sortie.
+
 Relevé du 14 septembre 2026. Ce lot mesure et propose. Il ne change ni le site ni le moteur.
 
 ## Sur quoi c'est lu
