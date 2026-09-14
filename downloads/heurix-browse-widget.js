@@ -178,12 +178,16 @@
     if (statut === 401) {
       return { code: "cle-absente", transitoire: false,
                marchand: "HTTP 401 -- en-tete Authorization absent ou malforme. " +
-                         "Verifiez la valeur passee a `apiKey`." };
+                         "Verifiez la valeur passee a `apiKey`." + reponseServeur(detail) };
     }
     if (statut === 403) {
-      // 403 recouvre DEUX causes de remedes opposes, et seul le corps les
-      // separe. On lit `detail` plutot que de deviner ; a defaut de corps
-      // lisible, on nomme les deux hypotheses au lieu d'en choisir une.
+      // 403 recouvre PLUSIEURS causes, et seul le corps les separe. Relu le
+      // 14 septembre 2026 dans le moteur (cf6a61b), pour GET /v1/browse :
+      // cle invalide, domaine non autorise, Browse absent de l'offre (palier
+      // 'none'), catalogue d'une autre cle, catalogue en bac a sable appele
+      // par une cle publique. Seule l'origine a un remede propre au widget ;
+      // pour les autres, on rend la parole au serveur, et a defaut de corps
+      // lisible on nomme les hypotheses au lieu d'en choisir une.
       var origine = detail && /origine|origin/i.test(detail);
       return {
         code: origine ? "origine" : "cle-refusee",
@@ -191,28 +195,65 @@
         marchand: origine
           ? "HTTP 403 -- le domaine de cette page n'est pas autorise pour cette " +
             "cle publique. Ajoutez-le dans votre console Heurix : " +
-            "Mon compte > Cle API. Reponse du serveur : " + detail
-          : "HTTP 403 -- cle publique rejetee." +
-            (detail ? " Reponse du serveur : " + detail : ""),
+            "Mon compte > Cle API." + reponseServeur(detail)
+          : "HTTP 403 -- appel refuse." +
+            (detail ? reponseServeur(detail)
+                    : " Causes possibles : cle invalide, domaine non autorise, " +
+                      "Browse absent de l'offre, catalogue d'une autre cle, " +
+                      "catalogue en bac a sable."),
       };
     }
     if (statut === 404) {
       return { code: "catalogue", transitoire: false,
                marchand: "HTTP 404 -- catalogue ou categorie introuvable. Verifiez " +
                          "les valeurs passees a `catalog` et `category`." +
-                         (detail ? " Reponse du serveur : " + detail : "") };
+                         reponseServeur(detail) };
+    }
+    if (statut === 422) {
+      // NON TRANSITOIRE (14 septembre 2026). Il tombait dans le cas generique :
+      // pause de 60 s et « reponse inattendue ». C'est pourtant un refus des
+      // parametres envoyes -- mesure sur le moteur cf6a61b : `limit=abc` et
+      // `in_stock_only=peut-etre` rendent 422, ce qu'un `limit: "24px"` passe
+      // a Heurix.browse produit --, que soixante secondes ne reparent pas. Le
+      // detail nomme le champ en cause.
+      return { code: "requete-refusee", transitoire: false,
+               marchand: "HTTP 422 -- l'API refuse les parametres de la requete." +
+                         reponseServeur(detail) };
     }
     if (statut === 429) {
-      // NON TRANSITOIRE, et c'est une revision assumee (chantier I1, 5 aout
-      // 2026, module PrestaShop puis plugin WooCommerce). Un quota epuise
-      // dure jusqu'a la fin de la periode de facturation : une pause de 60 s
-      // ne protege rien, et masque le signal que le marchand doit voir.
-      return { code: "quota", transitoire: false,
-               marchand: "HTTP 429 -- quota depasse. Verifiez votre plan." };
+      // AUCUN QUOTA DERRIERE CE CODE (14 septembre 2026). Le libelle disait
+      // « quota depasse. Verifiez votre plan ». Sur GET /v1/browse, le moteur
+      // (cf6a61b) appelle _require_browse_access, qui rend 403 au palier
+      // 'none', puis check_browse_request_limit, qui ne leve que si
+      // `overage_billed` est faux -- et seul 'none' l'est. Mesure le jour meme,
+      // cle publique, compteur Browse a 10 000 000 : 'none' 403 x35, les
+      // quatre paliers payants 200 x35 chacun. Temoin : le meme montage, starter
+      // force a `overage_billed: False`, rend 429.
+      //
+      // Le libelle ne nomme donc aucune cause : il dit le code, et rend la
+      // parole au serveur. Meme correction que heurix-search.js.
+      //
+      // NON TRANSITOIRE, INCHANGE. La raison du chantier I1 (5 aout 2026) --
+      // un quota epuise dure jusqu'a la fin du mois -- ne tient plus. Mais la
+      // duree d'un refus futur n'est pas connue ici : le classer transitoire
+      // serait deviner la pause qu'il merite.
+      return { code: "trop-de-requetes", transitoire: false,
+               marchand: "HTTP 429 -- trop de requetes." + reponseServeur(detail) };
     }
     // Tout autre hors-2xx, 5xx en tete -> transitoire.
     return { code: "http", transitoire: true,
-             marchand: "HTTP " + statut + " -- reponse inattendue de l'API." };
+             marchand: "HTTP " + statut + " -- reponse inattendue de l'API." +
+                       reponseServeur(detail) };
+  }
+
+  // LE DETAIL DU SERVEUR ACCOMPAGNE CHAQUE LIBELLE (14 septembre 2026). Il
+  // n'etait lu que sur 403 et 404 : sur 401, 429 et 5xx le marchand lisait la
+  // seule hypothese du widget, quand le moteur disait la cause. Un 422 porte
+  // une LISTE d'erreurs, d'ou JSON.stringify -- sans lui, « [object Object] ».
+  function reponseServeur(detail) {
+    if (detail == null || detail === "") return "";
+    return " Reponse du serveur : " +
+      (typeof detail === "string" ? detail : JSON.stringify(detail));
   }
 
   /* 2. L'ARMEUR DU COUPE-CIRCUIT.
