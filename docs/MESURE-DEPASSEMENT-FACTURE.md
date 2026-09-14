@@ -6,7 +6,7 @@ Relevé du 14 septembre 2026. Ce lot mesure et propose. Il ne change ni le site 
 
 | Dépôt | SHA lu | Vérification |
 |---|---|---|
-| heurix-site | `ede131de` | La consigne donnait `24a4da64`. `ls-remote` a rendu `24a4da64` à 23:23, puis `ede131de` à 23:29. Quatre commits d'une session voisine ont modifié `docs.html` et `en/docs.html` (931f7b22, 63a5db90 : « la documentation ne promet plus un 429 »). La branche a été avancée et ces deux fichiers relus : les lignes citées ici sont celles de `ede131de`. Le main local du dépôt principal porte `017f1cfd`, pas encore sur origin. Il touche la console, et son diff contient 0 ligne avec factur, billed, dépass, overage, quota, surplus, coupure ou cutoff. |
+| heurix-site | `ede131de` | La consigne donnait `24a4da64`. `ls-remote` a rendu `24a4da64` à 23:23, puis `ede131de` à 23:29. Quatre commits d'une session voisine ont modifié `docs.html` et `en/docs.html` (931f7b22, 63a5db90 : « la documentation ne promet plus un 429 »). La branche a été avancée et ces deux fichiers relus : les lignes citées ici sont celles de `ede131de`. Le main local du dépôt principal porte `017f1cfd`, pas encore sur origin. Il touche la console, et son diff contient 0 ligne avec factur, billed, dépass, overage, quota, surplus, coupure ou cutoff. À la poussée, origin/main est à `28a4298d`. De `ede131de` à `28a4298d`, `docs.html` et `en/docs.html` ne changent que des paramètres `?v=` de téléchargement, et le diff console ne contient toujours aucun de ces mots. Les lignes citées sont inchangées. |
 | heurix-engine | `cf6a61b` | `ls-remote` à 23:23 et à 23:29 : inchangé. |
 | heurix-shopify | `1ef7d64` | origin/main à 23:23 |
 | heurix-woocommerce | `500d859` | origin/main à 23:23 |
@@ -133,18 +133,35 @@ Conséquence : le calculateur envoie vers un devis Enterprise un prospect qui a 
 
 Trois motifs `git grep -i -I`, sur les fichiers `*.html *.js *.json *.txt *.md` du site (`ede131de`), hors `docs/` et `tests/`. Les index de recherche `search-index-*.json` sont dérivés et exclus des motifs 2 et 3.
 
-1. **Motif étroit** : `dépassement|overage|surplus|excédent|au-delà du quota|beyond your plan|facturé à l'usage|billed|par tranche|coupure|cut off|interruption`.
+1. **Motif étroit**, tel que lancé : `d[ée]passement|overage|surplus|exc[ée]dent|au-del[àa] d[ue] (votre |du |ce )?(quota|forfait|plafond|volume)|beyond (your |the )?(quota|plan|limit|included)|factur[ée]+s? (à|a) l.usage|billed|par tranche|per (1[ ,.]?000|block|tranche)|coupure|cut off|interruption`.
    - Témoin positif : `pricing.html` 9 lignes, `cgv.html` 2. On y retrouve les lignes que citait l'audit, qui ont bougé depuis : `pricing.html:479`, `:561` (l'audit disait `:559`), `cgv.html:228` (`:225`).
-   - **Ce qu'il a raté**, trouvé par les deux motifs suivants :
-     - `docs.html:352` « 150 000 puis facturé » ;
-     - `en/fonctionnalites.html:410` (« cutoff » en un mot) ;
-     - les metas `pricing.html:7` et `:13` ;
-     - `llms.txt:11` ;
-     - `pricing.html:463` et `:707`.
-   - `pricing.html:292` (« puis 0,80 € / 1 000 ») n'a été attrapé **que par le nom de classe** `price-tier-overage`.
-2. **Motif élargi** : `factur|billed|cutoff|cut-off|cut off|coupure|then billed|rate shown|tarif indiqu`.
-3. **Motif de modèle** : `usage-based|pay-as-you-go|metered|per use|by usage|à l'usage`.
-4. **Motif de tarif** : `0[,.]80|€ / 1 000` et variantes. Il rend 2 lignes, `pricing.html:292` et `en/pricing.html:280`. Aucun autre tarif de dépassement n'est affiché sur le site.
+   - **Il était à moitié aveugle sur les accents, et son témoin ne pouvait pas le voir.** Sur cette machine, `LANG` et `LC_ALL` sont vides, donc `LC_CTYPE` vaut `C`. Dans ce cas, `git grep -E` perd les classes qui contiennent un caractère multi-octet : `d[ée]passement` ne voit que `depassement`.
+     - Rejoué sur `ede131de` : **61 lignes en `C`, 66 en `LC_ALL=en_US.UTF-8`**.
+     - Les 5 lignes perdues : `pricing.html:679` et `:707` (calculateur, « dépassement facturé »), `blog/cout-moteur-recherche-ecommerce.html:196`, et deux lignes de `CLAUDE.md`, interne.
+     - Les lignes témoins passaient dans les deux locales parce que chacune porte aussi un autre mot du motif (« coupure », « surplus », « billed »).
+   - `pricing.html:292` (« puis 0,80 € / 1 000 ») n'est attrapé **que par le nom de classe** `price-tier-overage`. C'est le même mécanisme : une ligne comptée à cause d'un autre mot que celui qu'on croit.
+2. **Motif élargi** : `factur|billed|cutoff|cut-off|cut off|coupure|then billed|rate shown|tarif indiqu`. 148 lignes dans les deux locales, bruit compris.
+3. **Motif de modèle** : `usage-based|usage based|pay[- ]as[- ]you[- ]go|metered|per use|by usage|à l.usage|a l.usage`. 18 lignes dans les deux locales.
+4. **Motif de tarif** : `0[,.]80|€ ?/ ?1[  ,.]?000|/ ?1[  ,.]?000 ?(€|requ|search|recherch)`. 2 lignes dans les deux locales, `pricing.html:292` et `en/pricing.html:280`. Aucun autre tarif de dépassement n'est affiché sur le site.
+
+**Ce que chaque motif a trouvé, promesse par promesse.** Relevé dans les sorties sauvegardées, pas déduit des mots du motif. « FR » et « EN » indiquent quelle version de la ligne est présente dans la sortie ; « - » : aucune.
+
+| Promesse | Motif 1 en `C` (lancé) | Motif 1 en UTF-8 | Motif 2 | Motif 3 | Motif 4 |
+|---|---|---|---|---|---|
+| S1 metas | - | - | FR | FR, EN | - |
+| S2 carte Scale | FR, EN (classe CSS) | FR, EN | - | - | FR, EN |
+| S3 cartes Ranking | FR, EN | FR, EN | FR, EN | FR, EN | - |
+| S4 note Browse | EN | EN | FR, EN | - | - |
+| S5 tableau de comptage | FR, EN | FR, EN | FR, EN | - | - |
+| S6 FAQ tarifs | FR, EN | FR, EN | FR, EN | - | - |
+| S7 calculateur | EN | FR, EN | FR, EN | - | - |
+| S8 FAQ | FR, EN | FR, EN | FR, EN | FR | - |
+| S9 `llms.txt` | - | - | oui | oui | - |
+| S10 docs, dépassement Scale | FR, EN | FR, EN | FR, EN | - | - |
+| S11 docs, « 150 000 puis facturé » | EN | EN | FR, EN | - | - |
+| S12 CGV art. 7 | FR, EN | FR, EN | FR, EN | - | - |
+
+**Bilan du motif 1 tel que lancé** : il manquait **deux promesses entièrement**, S1 et S9. Pour trois autres, il ne voyait que la ligne anglaise : S4, S7 et S11. S7 FR est perdu par la locale, S4 et S11 FR par la formulation. Aucun motif seul ne couvre les douze : le 2 manque S2 et la meta anglaise de S1, le 3 et le 4 ne visent qu'une forme.
 
 Connecteurs : motif étroit, plus un balayage large sur les mots de plan et de quota (`quota|plafond|forfait|pricing|tarif|starter|growth|scale|429|upgrade_url|facturation|billing`).
 
