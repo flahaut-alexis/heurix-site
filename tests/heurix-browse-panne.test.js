@@ -183,21 +183,57 @@ describe("1. delai d'attente -- une API qui pend ne bloque plus le rayon", () =>
 
 // ===========================================================================
 describe("2. classification des codes -- pas un message generique", () => {
+  // Le 403 du palier 'none' est le corps rendu par _require_browse_access
+  // (moteur cf6a61b) : c'est lui qui arrete un compte sans Browse, pas un 429.
   const CAS = [
     [401, "Missing or malformed Authorization header", "error"],
     [403, "Origine 'x.fr' non autorisée pour cette clé publique", "error"],
-    [403, "clef inconnue", "error"],
+    [403, "Clé API invalide", "error"],
+    [403, "Browse & Discovery n'est pas inclus dans votre offre actuelle — disponible en autonome ou en option sur les plans Growth/Scale. Contactez contact@heurix.fr.", "error"],
     [404, "Catalogue « x » introuvable", "error"],
-    [429, "quota depasse", "error"],
-    [500, "boom", "warn"],
-    [503, "indisponible", "warn"],
+    [422, "limit: Input should be a valid integer", "error"],
+    [429, "Too Many Requests", "error"],
+    [500, "Erreur interne. Si elle persiste, écrivez à contact@heurix.fr.", "warn"],
+    [503, "Service Unavailable", "warn"],
   ];
+
+  // Aucun palier Browse ne peut plus rendre 429 (14 septembre 2026) ; aucun
+  // libelle du WIDGET ne doit nommer un quota ou un plan. Le motif porte sur
+  // le message prive du detail : le corps du 403 'none', lui, dit « plans
+  // Growth/Scale », et c'est la parole du serveur.
+  const CAUSE_RETIREE = /quota|plan/i;
+
+  it("TEMOIN : le motif de la cause retiree attrape l'ancien libelle du 429", () => {
+    expect("HTTP 429 -- quota depasse. Verifiez votre plan.").toMatch(CAUSE_RETIREE);
+  });
 
   it.each(CAS)("HTTP %i (%s) -> console=%s", async (statut, detail, niveau) => {
     const ctx = monter(apiQuiRefuse(statut, detail));
     await attendre(120);
     expect(ctx.dernier(), "le marchand doit etre prevenu").toBeTruthy();
     expect(ctx.dernier().niveau).toBe(niveau);
+    expect(ctx.dernier().message, "le marchand lit la cause que donne le moteur").toContain(detail);
+    expect(ctx.dernier().message.replace(detail, "")).not.toMatch(CAUSE_RETIREE);
+  });
+
+  it("un 422 porte une LISTE d'erreurs : le marchand lit le champ, pas [object Object]", async () => {
+    // Forme mesuree sur le moteur cf6a61b pour GET /v1/browse?limit=abc.
+    const detail = [{ type: "int_parsing", loc: ["query", "limit"], msg: "Input should be a valid integer, unable to parse string as an integer", input: "abc" }];
+    const ctx = monter(apiQuiRefuse(422, detail));
+    await attendre(120);
+    const msg = ctx.dernier().message;
+    expect(msg).toContain('"limit"');
+    expect(msg).not.toContain("[object Object]");
+  });
+
+  it("un 403 sans corps lisible nomme les hypotheses, pas une seule cause", async () => {
+    const ctx = monter(async () => ({ ok: false, status: 403, json: async () => { throw new Error("html"); } }));
+    await attendre(120);
+    const msg = ctx.dernier().message;
+    expect(msg).toMatch(/cle invalide/);
+    expect(msg).toMatch(/Browse absent de l'offre/);
+    expect(msg).toMatch(/catalogue d'une autre cle/);
+    expect(msg).not.toMatch(/cle publique rejetee/);
   });
 
   it("le 403 « origine » et le 403 « clef » ne disent PAS la meme chose au marchand", async () => {
@@ -230,17 +266,19 @@ describe("2. classification des codes -- pas un message generique", () => {
     expect(ctx.dernier().message).toMatch(/`category`/);
   });
 
-  it("le VISITEUR ne lit jamais le diagnostic du marchand", async () => {
+  it.each(CAS)("le VISITEUR ne lit jamais le diagnostic du marchand -- HTTP %i", async (statut, detail) => {
     // Deux publics, deux canaux. PrestaShop l'obtient gratuitement
     // (PrestaShopLogger d'un cote, la page de l'autre) ; dans un navigateur
     // les deux publics regardent le meme ecran, donc la separation se pose a
-    // la main, et se verifie.
-    const ctx = monter(apiQuiRefuse(403,
-      "Origine 'boutique.fr' non autorisée pour cette clé publique"));
+    // la main, et se verifie -- sur chaque code, maintenant que le detail du
+    // serveur accompagne chaque libelle.
+    const ctx = monter(apiQuiRefuse(statut, detail));
     await attendre(120);
-    const vu = ctx.grille() + " " + ctx.compte();
+    const vu = ctx.ecran();
     expect(vu).toContain("Rayon indisponible");
-    expect(vu).not.toMatch(/403|Origine|clé publique|HTTP/);
+    expect(vu).not.toContain(String(statut));
+    expect(vu).not.toContain(detail);
+    expect(vu).not.toMatch(/HTTP|Reponse du serveur|clé publique/);
   });
 });
 
@@ -272,10 +310,15 @@ describe("3. coupe-circuit -- alimente par les seules pannes transitoires", () =
   });
 
   it("UN 429 NE MET PAS EN PAUSE -- chantier I1, 5 aout 2026", async () => {
-    // Un quota epuise dure jusqu'a la fin de la periode de facturation. Une
-    // pause de 60 s ne protege rien et masque le signal que le marchand doit
-    // voir a chaque chargement. C'est la revision que ce test verrouille.
-    const r = await troisTentatives(apiQuiRefuse(429, "quota"));
+    // Sa raison d'origine -- un quota epuise dure jusqu'a la fin du mois --
+    // n'est atteignable sur aucun palier Browse (14 septembre 2026). Le
+    // comportement reste verrouille : voir le 429 de classerEchec.
+    const r = await troisTentatives(apiQuiRefuse(429, "Too Many Requests"));
+    expect(r.apresSuite).toBeGreaterThan(r.apresPremiere);
+  });
+
+  it("un 422 ne met pas en pause : des parametres refuses ne se reparent pas en 60 s", async () => {
+    const r = await troisTentatives(apiQuiRefuse(422, "limit"));
     expect(r.apresSuite).toBeGreaterThan(r.apresPremiere);
   });
 

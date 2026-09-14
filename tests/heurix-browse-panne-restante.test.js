@@ -177,11 +177,14 @@ describe("3. Heurix.browse -- le coupe-circuit vaut aussi ici", () => {
   });
 
   it("UN 429 NE MET PAS EN PAUSE -- la regle du chantier I1 vaut sur les deux chemins", async () => {
-    const ctx = monter(apiQuiRefuse(429, "quota"));
+    // Sa raison d'origine -- un quota epuise -- n'est atteignable sur aucun
+    // palier Browse (14 septembre 2026) ; le comportement reste verrouille,
+    // voir le 429 de classerEchec.
+    const ctx = monter(apiQuiRefuse(429, "Too Many Requests"));
     await ctx.api.browse({ ...BASE, containerId: "c" }).catch(() => {});
     const apresPremier = ctx.appels();
     await ctx.api.browse({ ...BASE, containerId: "c" }).catch(() => {});
-    expect(ctx.appels(), "un quota ne se repare pas en 60 s").toBeGreaterThan(apresPremier);
+    expect(ctx.appels(), "un 429 ne met pas en pause").toBeGreaterThan(apresPremier);
   });
 });
 
