@@ -764,6 +764,8 @@
     "Promouvoir admin": "Promote to admin",
     "Envoi…": "Sending…",
     "Invitation envoyée à {0}.": "Invitation sent to {0}.",
+    "Invitation créée pour {0}, mais l'email n'a pas pu partir : votre collègue ne l'a pas reçue. Réessayez plus tard ; si cela persiste, écrivez à contact@heurix.fr.":
+      "Invitation created for {0}, but the email couldn't be sent: your colleague hasn't received it. Try again later; if it keeps happening, email contact@heurix.fr.",
     "Échec de l'envoi.": "Failed to send.",
     "Enregistrement…": "Saving…",
     "Informations enregistrées.": "Information saved.",
@@ -925,6 +927,10 @@
     "Se connecter": "Sign in",
     "Création…": "Creating…",
     "Si un compte existe avec cet email, un lien de réinitialisation vient d'être envoyé.": "If an account exists with this email, a reset link was just sent.",
+    "Aucun lien n'a pu être envoyé : notre service d'email est indisponible pour le moment. Réessayez plus tard, ou écrivez à contact@heurix.fr.":
+      "No link could be sent: our email service is unavailable right now. Try again later, or email contact@heurix.fr.",
+    "L'email de bienvenue n'a pas pu être envoyé à {0}. Copiez votre clé maintenant : elle reste aussi lisible dans l'onglet Ma clé API.":
+      "The welcome email couldn't be sent to {0}. Copy your key now: you can also find it under My API key.",
     "Réinitialisation…": "Resetting…",
     "Mot de passe mis à jour — vous pouvez vous connecter.": "Password updated — you can sign in now.",
     "Vous rejoignez l'équipe de {0} ({1}).": "You're joining {0}'s team ({1}).",

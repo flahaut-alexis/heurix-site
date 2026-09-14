@@ -2400,9 +2400,20 @@
           inviteStatus.hidden = true;
           apiFetch("/v1/auth/invite", localStorage.getItem(SESSION_STORAGE_KEY), { method: "POST", body: { email: emailInput.value.trim() } })
             .then(function (r) {
-              inviteStatus.textContent = T("Invitation envoyée à {0}.", r.invited);
+              // Ni `ok` ni `err` : un echec d'action d'equipe pose `err` sur
+              // ce meme element (signalerEchec), et le laisserait en rouge.
+              inviteStatus.classList.remove("ok", "err");
+              if (r.email_sent === false) {
+                // Le jeton ne vit que dans l'email : aucune route ne le rend,
+                // et l'ancien reste valide sept jours sans que personne puisse
+                // le lire. Reinviter est le seul geste -- l'adresse reste
+                // donc dans le champ, « Inviter » relance l'envoi.
+                inviteStatus.textContent = T("Invitation créée pour {0}, mais l'email n'a pas pu partir : votre collègue ne l'a pas reçue. Réessayez plus tard ; si cela persiste, écrivez à contact@heurix.fr.", r.invited);
+              } else {
+                inviteStatus.textContent = T("Invitation envoyée à {0}.", r.invited);
+                emailInput.value = "";
+              }
               inviteStatus.hidden = false;
-              emailInput.value = "";
             })
             .catch(function (err) {
               inviteStatus.textContent = (err && err.message) || T("Échec de l'envoi.");
@@ -7690,7 +7701,7 @@
       numero_tva: signupTva.value.trim() || null,
     })
       .then(function (data) {
-        showPostSignupScreen(data.session_token, data.key, signupEmail.value.trim());
+        showPostSignupScreen(data.session_token, data.key, signupEmail.value.trim(), data.email_sent);
       })
       .catch(function (err) {
         signupError.textContent = (err && err.status) ? err.message : L.loginErrorNetwork;
@@ -7711,6 +7722,8 @@
   // code directement après le POST /v1/auth/signup.
   var postSignupScreen = document.getElementById("post-signup-screen");
   var postSignupEmail = document.getElementById("post-signup-email");
+  var postSignupEmailEnvoye = document.getElementById("post-signup-email-envoye");
+  var postSignupEmailEchec = document.getElementById("post-signup-email-echec");
   var postSignupKeyValue = document.getElementById("post-signup-key-value");
   var postSignupCopyBtn = document.getElementById("post-signup-copy-btn");
   var postSignupCopyConfirm = document.getElementById("post-signup-copy-confirm");
@@ -7718,12 +7731,29 @@
   var segSecteur = document.getElementById("seg-secteur");
   var segPlateforme = document.getElementById("seg-plateforme");
 
-  function showPostSignupScreen(sessionToken, key, email) {
+  // L'EMAIL NON PARTI NE CHANGE QUE SA LIGNE (14 septembre 2026). Le compte
+  // existe et la cle est a l'ecran : le titre « Votre clé est prête » reste
+  // vrai. BREVO_API_KEY a manque sept semaines, et cette ligne affirmait
+  // « Également envoyée » a chaque inscription. `=== false` strict : un
+  // moteur qui ne rend pas `email_sent` garde la phrase d'origine.
+  //
+  // CET ECRAN N'EXISTAIT PAS SUR en/console.html du 3 aout au 14 septembre
+  // 2026. La premiere ligne ci-dessous levait une TypeError, rattrapee par
+  // le `.catch` de l'inscription : compte cree, session perdue, et l'ecran
+  // affichait « Couldn't reach api.heurix.fr ». Voir
+  // tests/console-email-non-parti.test.js, joue dans les deux langues.
+  function showPostSignupScreen(sessionToken, key, email, emailSent) {
     AUTH_FORMS.forEach(function (f) { f.hidden = true; });
     loginScreen.hidden = true;
     authLinks.hidden = true;
     authBack.hidden = true;
     postSignupEmail.textContent = email;
+    var emailNonParti = emailSent === false;
+    postSignupEmailEnvoye.hidden = emailNonParti;
+    postSignupEmailEchec.hidden = !emailNonParti;
+    postSignupEmailEchec.textContent = emailNonParti
+      ? T("L'email de bienvenue n'a pas pu être envoyé à {0}. Copiez votre clé maintenant : elle reste aussi lisible dans l'onglet Ma clé API.", email)
+      : "";
     postSignupKeyValue.textContent = key;
     postSignupCopyConfirm.hidden = true;
     if (segSecteur) segSecteur.value = "";
@@ -7783,8 +7813,14 @@
     resetRequestBtn.disabled = true;
     resetRequestBtn.textContent = T("Envoi…");
     apiPost("/v1/auth/request-password-reset", { email: resetEmail.value.trim() })
-      .then(function () {
-        resetRequestMsg.textContent = T("Si un compte existe avec cet email, un lien de réinitialisation vient d'être envoyé.");
+      .then(function (data) {
+        // `sent: false` depend de la configuration seule, identique pour
+        // toutes les adresses : le dire ne revele pas qui a un compte. Le
+        // `reason` du moteur n'est pas affiche -- « n'est pas configuré »
+        // nomme une cause chez nous, que le marchand ne peut pas corriger.
+        resetRequestMsg.textContent = data.sent === false
+          ? T("Aucun lien n'a pu être envoyé : notre service d'email est indisponible pour le moment. Réessayez plus tard, ou écrivez à contact@heurix.fr.")
+          : T("Si un compte existe avec cet email, un lien de réinitialisation vient d'être envoyé.");
         resetRequestMsg.hidden = false;
         resetRequestForm.reset();
       })
