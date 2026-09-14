@@ -193,6 +193,30 @@ describe("2. classification des codes -- un libelle par cas, pas un message gene
     expect(msg).not.toMatch(/cle publique rejetee/);
   });
 
+  it.each([
+    "Clé API invalide",
+    "Origine 'boutique.fr' non autorisée pour cette clé publique. Domaines autorisés : heurix.fr",
+    "Cette clé n'a pas accès à ce catalogue — il appartient à une autre clé.",
+    null,
+  ])("401 et 403 portant le meme corps disent la meme chose au marchand (%s)", async (detail) => {
+    // Le moteur fait passer « Clé API invalide » de 403 a 401 ; ce fichier,
+    // heberge chez les marchands, ne suivra pas. Le libelle ne doit donc
+    // attacher aucune cause au statut : seul le numero cite peut differer.
+    const lire = async (statut) => {
+      const ctx = monter(detail === null
+        ? async () => ({ ok: false, status: statut, json: async () => { throw new Error("html"); } })
+        : apiQuiRefuse(statut, detail));
+      await ctx.taper("vis");
+      return ctx.journal[ctx.journal.length - 1];
+    };
+    const a401 = await lire(401);
+    const a403 = await lire(403);
+    expect(a401.message).toContain("HTTP 401");
+    expect(a401.message.replace("HTTP 401", "HTTP 403")).toBe(a403.message);
+    expect(a401.niveau).toBe(a403.niveau);
+    expect(a401.message).not.toMatch(/Authorization absent ou malforme/);
+  });
+
   it("le 403 « origine » et le 403 « clef » ne disent PAS la meme chose au marchand", async () => {
     // C'EST LE CAS QUI JUSTIFIE DE NE PAS AVOIR RECOPIE LA TABLE PHP.
     // Une clef SERVEUR n'envoie pas d'en-tete Origin, donc HeurixClient ne

@@ -256,6 +256,29 @@ describe("2. classification des codes -- pas un message generique", () => {
     expect(msgClef).not.toMatch(/domaine de cette page/i);
   });
 
+  it.each([
+    "Clé API invalide",
+    "Origine 'boutique.fr' non autorisée pour cette clé publique. Domaines autorisés : heurix.fr",
+    "Cette clé n'a pas accès à ce catalogue — il appartient à une autre clé.",
+    null,
+  ])("401 et 403 portant le meme corps disent la meme chose au marchand (%s)", async (detail) => {
+    // Meme garde que heurix-search-panne : le moteur fait passer « Clé API
+    // invalide » de 403 a 401, et ce fichier heberge ne suivra pas.
+    const lire = async (statut) => {
+      const ctx = monter(detail === null
+        ? async () => ({ ok: false, status: statut, json: async () => { throw new Error("html"); } })
+        : apiQuiRefuse(statut, detail));
+      await attendre(120);
+      return ctx.dernier();
+    };
+    const a401 = await lire(401);
+    const a403 = await lire(403);
+    expect(a401.message).toContain("HTTP 401");
+    expect(a401.message.replace("HTTP 401", "HTTP 403")).toBe(a403.message);
+    expect(a401.niveau).toBe(a403.niveau);
+    expect(a401.message).not.toMatch(/Authorization absent ou malforme/);
+  });
+
   it("un 404 nomme les DEUX options du chemin -- catalog et category", async () => {
     // Divergence assumee avec heurix-search.js, dont le 404 ne peut viser que
     // `catalog`. Ici la categorie est dans le chemin elle aussi : nommer la

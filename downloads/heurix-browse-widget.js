@@ -175,32 +175,41 @@
       return { code: "reseau", transitoire: true,
                marchand: "appel reseau echoue (" + (erreur.message || erreur) + ")" };
     }
-    if (statut === 401) {
-      return { code: "cle-absente", transitoire: false,
-               marchand: "HTTP 401 -- en-tete Authorization absent ou malforme. " +
-                         "Verifiez la valeur passee a `apiKey`." + reponseServeur(detail) };
-    }
-    if (statut === 403) {
-      // 403 recouvre PLUSIEURS causes, et seul le corps les separe. Relu le
-      // 14 septembre 2026 dans le moteur (cf6a61b), pour GET /v1/browse :
-      // cle invalide, domaine non autorise, Browse absent de l'offre (palier
-      // 'none'), catalogue d'une autre cle, catalogue en bac a sable appele
-      // par une cle publique. Seule l'origine a un remede propre au widget ;
-      // pour les autres, on rend la parole au serveur, et a defaut de corps
-      // lisible on nomme les hypotheses au lieu d'en choisir une.
+    if (statut === 401 || statut === 403) {
+      // 401 ET 403 NE SE SEPARENT PAS ICI (14 septembre 2026). Meme correction
+      // que heurix-search.js, pour la meme raison : ce fichier est heberge
+      // chez les marchands, et un libelle qui attache une cause a un statut y
+      // devient faux quand « Clé API invalide » passe de 403 a 401. La cause
+      // vient du corps ; le statut n'est cite que comme fait.
+      //
+      // Causes relues dans le moteur cf6a61b pour GET /v1/browse : cle
+      // invalide ou revoquee (le moteur supprime la cle revoquee et rend le
+      // meme « Clé API invalide »), en-tete absent, domaine non autorise,
+      // Browse absent de l'offre (palier 'none'), catalogue d'une autre cle,
+      // catalogue en bac a sable appele par une cle publique. Seule l'origine
+      // a un remede propre au widget ; a defaut de corps lisible, on nomme les
+      // hypotheses au lieu d'en choisir une.
+      //
+      // CONTRAT NON ECRIT (14 septembre 2026). `code` sort chez l'integrateur :
+      // Heurix.browse le rend dans `heurixError.code` (resultatEnEchec). Le
+      // guide blog/guide-page-categorie-browse.html documente la forme
+      // `{ code, transitoire }` ; aucune page n'en liste les valeurs. Ce lot a
+      // change celle d'un 401 : « cle-absente » devient « cle-refusee ». Un
+      // integrateur qui testait « cle-absente » ne la recoit plus. Changer une
+      // valeur ici, c'est changer ce contrat.
       var origine = detail && /origine|origin/i.test(detail);
       return {
         code: origine ? "origine" : "cle-refusee",
         transitoire: false,
         marchand: origine
-          ? "HTTP 403 -- le domaine de cette page n'est pas autorise pour cette " +
+          ? "HTTP " + statut + " -- le domaine de cette page n'est pas autorise pour cette " +
             "cle publique. Ajoutez-le dans votre console Heurix : " +
             "Mon compte > Cle API." + reponseServeur(detail)
-          : "HTTP 403 -- appel refuse." +
+          : "HTTP " + statut + " -- appel refuse." +
             (detail ? reponseServeur(detail)
-                    : " Causes possibles : cle invalide, domaine non autorise, " +
-                      "Browse absent de l'offre, catalogue d'une autre cle, " +
-                      "catalogue en bac a sable."),
+                    : " Causes possibles : cle invalide ou revoquee, en-tete Authorization " +
+                      "absent, domaine non autorise, Browse absent de l'offre, " +
+                      "catalogue d'une autre cle, catalogue en bac a sable."),
       };
     }
     if (statut === 404) {
