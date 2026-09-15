@@ -144,9 +144,11 @@ const LECTURE_EN_POST = /\/(search|simulate)"/;
 // quoi qu'il arrive, et le corps de la reponse n'est jamais lu.
 // Les reponses d'onboarding (15 septembre 2026) : facultatives, envoyees en
 // tache de fond au moment ou l'ecran qui les porte se ferme ; il ne reste
-// aucun element ou poser un message. CE SILENCE A CACHE UN 401 DU 3 AOUT AU
-// 15 SEPTEMBRE 2026 (pas d'Authorization) : l'en-tete est garde par
-// tests/console-onboarding-profile-cle.test.js, pas par ce fichier.
+// aucun element ou poser un message au marchand. CE SILENCE A CACHE UN 401
+// DU 3 AOUT AU 15 SEPTEMBRE 2026 (pas d'Authorization). L'exemption ne
+// couvre donc que l'ecran : l'echec passe par console.warn, et c'est
+// tests/console-onboarding-profile-cle.test.js qui l'affirme, pas ce
+// fichier -- console.warn ne compte pas comme « parler » ici.
 const SANS_RETOUR = /\/v1\/auth\/(logout|onboarding-profile)/;
 
 function ecritDirectement(c) {
