@@ -168,16 +168,16 @@
       <h2>What native search can't do</h2>
       <div class="int-grid">
       <div class="int-card">
-        <h3>No typo tolerance</h3>
-        <p>Shopify's native search doesn't correct “wahser”. On a technical catalog where people type references on a keyboard, that's a dealbreaker.</p>
+        <h3>Narrow typo tolerance</h3>
+        <p>According to its documentation, Shopify's native search accepts one wrong letter or two swapped letters, only if the first four letters are right, and only in the title, product type, variant title and vendor. “wahser”, whose swap falls inside the first four letters, is outside that scope. On a technical catalog where people type references on a keyboard, that limit matters.</p>
       </div>
       <div class="int-card">
         <h3>Large catalogs</h3>
-        <p>Beyond 5,000 products, native filters plateau: 25 filters maximum. That's exactly the size where a real engine becomes necessary.</p>
+        <p>According to the Search &amp; Discovery documentation, a collection with more than 5,000 products doesn't display filters, and a store can have at most 25 filters. That's exactly the size where a real engine becomes necessary.</p>
       </div>
       <div class="int-card">
         <h3>Technical references</h3>
-        <p>“M8x20” and “M8 x 20” remain two different strings to the native engine, semantic or not.</p>
+        <p>Its documentation says search matches complete words, and that part of a code is found only when the code contains hyphens: “abc1888” must be typed in full.</p>
       </div>
       </div>
     </div>

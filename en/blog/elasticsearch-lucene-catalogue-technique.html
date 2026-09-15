@@ -214,7 +214,7 @@
         <li><strong>Version upgrades</strong> with breaking changes, and reindexing that comes with them.</li>
         <li><strong>Monitoring cluster health</strong> — it's a distributed system, with the failure modes that come with one.</li>
       </ul>
-      <p>And one point many discover late: <strong>the licensing question.</strong> Since 2021, Elasticsearch is no longer under Apache 2.0. It's now available under a choice of three licenses — AGPLv3, added in September 2024, SSPL, and Elastic License 2.0 — but the official distributions remain under Elastic's terms. That change is what triggered AWS's OpenSearch fork, now under Apache 2.0 and governed by the Linux Foundation. Nothing blocking, but a decision to make knowingly if you're embedding the engine in a product you resell.</p>
+      <p>And one point many discover late: <strong>the licensing question.</strong> Since 2021, Elasticsearch is no longer under Apache 2.0. It's now available under a choice of three licenses — AGPLv3, added in September 2024, SSPL, and Elastic License 2.0 — but the official distributions remain under Elastic's terms. That change is what triggered AWS's OpenSearch fork, now under Apache 2.0 and, since September 16, 2024, stewarded by the OpenSearch Software Foundation, hosted by the Linux Foundation. Nothing blocking, but a decision to make knowingly if you're embedding the engine in a product you resell.</p>
 
       <h2>Heurix's approach: the business logic is already written</h2>
       <p>Heurix doesn't replace Elasticsearch on its own turf. It does one thing: <strong>it ships, pre-written, the analysis work you would have had to produce.</strong></p>
@@ -225,7 +225,7 @@ M8X20                  → DIAM_M8, LONG_20, VIS_M8X20
 M 8 x 20               → DIAM_M8, LONG_20, VIS_M8X20
 M8-20 screw stainless  → DIAM_M8, DIAM_M8_INOX, FAM_VIS, MAT_INOX</pre>
       <p>Five spellings, the same annotations. That's what lets a customer typing <code class="docs-inline-code">M8-20 screw stainless</code> find a product whose label says <code class="docs-inline-code">M8X20 A2</code>.</p>
-      <p>Eleven industry packs cover hardware, electronics, industry, automotive, electrical, plumbing, fashion, wine, books, and finance. Whatever the pack doesn't recognize, you add from your console — <strong>with no regular expression to write</strong>, by describing what it should recognize.</p>
+      <p>Eleven industry packs cover hardware, electronics, industry, automotive, electrical, plumbing, fashion, wine, books, finance, and sport. Whatever the pack doesn't recognize, you add from your console — <strong>with no regular expression to write</strong>, by describing what it should recognize.</p>
 
       <h2>What Heurix doesn't do</h2>
       <p>Might as well say it plainly, it'll save you an unpleasant discovery:</p>

@@ -181,9 +181,9 @@
 
       <p>Here are the three blind spots that come up most often when auditing a native engine.</p>
 
-      <h2>1. No tolerance for typos</h2>
-      <p>A visitor who types "swetaer" instead of "sweater" gets a blank page in most cases. The engine looks for an exact match, doesn't find one, and stops there. On mobile, where typos are statistically more common, the impact is even more pronounced.</p>
-      <p>The fix isn't technically complex: configure a tolerance of one to two characters on search terms. But it's almost never enabled by default.</p>
+      <h2>1. Typo tolerance exists, within limits</h2>
+      <p>The three platforms differ here, and none of them ships with nothing. According to <a href="https://help.shopify.com/en/manual/online-store/storefront-search/search-behavior" rel="noopener">Shopify's documentation</a>, its search accepts one wrong letter or two swapped letters, only if the first four letters are right, and only in the title, product type, variant title and vendor. PrestaShop turns approximate search on by default: <code class="docs-inline-code">PS_SEARCH_FUZZY</code> is 1 in the <a href="https://github.com/PrestaShop/PrestaShop/blob/9.1.5/install-dev/data/xml/configuration.xml" rel="noopener">shipped configuration</a> of versions 8.2.8 and 9.1.5, with a minimum word length of 3 (<code class="docs-inline-code">PS_SEARCH_MINWORDLEN</code>). WooCommerce, in <a href="https://github.com/woocommerce/woocommerce/blob/11.1.0/plugins/woocommerce/includes/class-wc-query.php" rel="noopener">its source code</a> (version 11.1.0), matches each word as a substring of the title, excerpt and content, and that query has no typo tolerance.</p>
+      <p>So the gap isn't the absence of tolerance, it's where it stops. "swetaer" for "sweater" swaps letters inside the first four, which Shopify requires to be right. "M8" is shorter than PrestaShop's three characters. On a technical catalog, short terms and codes are exactly what falls outside these limits.</p>
 
       <h2>2. A sort order that ignores stock and margin</h2>
       <p>By default, most engines sort results by raw text relevance, or worse, by catalog add date. Result: an out-of-stock product can show up first, while an available, more profitable item ends up on page three.</p>
@@ -202,6 +202,7 @@
         <li>Search a common synonym of one of your flagship products rather than its exact name</li>
       </ul>
       <p>If any of these three tests fails, that's a concrete signal — not a matter of opinion about design or UX, but a measurable problem costing you sales every day.</p>
+      <p><em>Corrected on September 15, 2026. The first section said native engines have no typo tolerance and that it is almost never enabled by default. That was false for Shopify and PrestaShop, which both ship with it turned on.</em></p>
     </div>
 
     <div class="post-footer-cta">

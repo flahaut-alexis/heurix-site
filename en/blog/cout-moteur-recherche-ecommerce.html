@@ -181,7 +181,7 @@
       <p>"How much does a search engine cost?" has no single answer, because billing models vary widely from one provider to another: per search, per indexed product, a flat fee, or some mix of the three. Comparing two offers without understanding what unit is billed almost always leads to a bad estimate.</p>
 
       <h2>The market's main models</h2>
-      <p>Algolia bills mainly on search operation volume, with a limited free tier and a cost curve that can surprise past a few tens of thousands of monthly requests. Meilisearch Cloud and Typesense Cloud offer monthly plans starting around twenty euros, generally tied to index size rather than pure search volume. Heurix follows a logic close to that second model: billed on request volume with explicit tiers, starting at <a href="../pricing.html">€19/month</a>.</p>
+      <p>Algolia includes a volume of search requests and records in each plan (10,000 requests a month on Free, Grow and Grow Plus, per <a href="https://www.algolia.com/pricing" rel="noopener">its pricing page</a>), then bills the overage on its paid plans. Meilisearch Cloud starts at $20 a month, with usage-based or resource-based billing, and <a href="https://www.meilisearch.com/pricing" rel="noopener">its cost estimator</a> is set by number of documents and number of searches. Typesense Cloud bills <a href="https://cloud-help.typesense.org/article/billing-process" rel="noopener">by the hour</a> for the cluster configuration (RAM, CPU, etc.), plus bandwidth per GB. Heurix bills monthly tiers that combine a request volume and a product cap, starting at <a href="../pricing.html">€19/month</a>. Figures read on September 15, 2026.</p>
 
       <h2>The real cost is rarely in the subscription</h2>
       <p>A search engine's listed price is often only part of the real cost. Initial setup — synonyms, matching rules, relevance sorting — takes developer time, sometimes several days depending on catalog complexity. An engine that ships pre-configured rule packs by industry cuts this hidden cost — not by making it free, but by making a correct result much faster to reach.</p>
@@ -193,6 +193,7 @@
 
       <h2>What to check before signing</h2>
       <p>Three simple questions avoid a bad surprise: what happens on quota overage — an abrupt cutoff, or transparent billing beyond it? Does the price include setting up matching rules, or is a developer needed on top? And finally — often forgotten — can you test it on a real catalog before paying? A free trial with no credit card remains the most reliable way to confirm an engine fits before committing.</p>
+      <p><em>Corrected on September 15, 2026. This article put Meilisearch Cloud and Typesense Cloud at around twenty euros a month, tied to index size. Meilisearch starts at $20 and its estimator also counts searches; Typesense bills by the hour for the cluster configuration.</em></p>
         </div>
 
     <div class="post-footer-cta">

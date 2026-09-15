@@ -76,7 +76,7 @@ const BLOC = /<(pre|code)\b[^>]*class="[^"]*(?:docs-code|docs-inline-code|hero-c
 const JETON = /\b[A-Z][A-Z0-9]*(?:_[A-Za-z0-9./-]+)+\b/g;
 
 // ---------------------------------------------------------------------------
-// CINQ PREFIXES, ET NON QUINZE NOMS. C'est la reponse mesuree a « comment
+// SIX PREFIXES, ET NON QUINZE NOMS. C'est la reponse mesuree a « comment
 // les distinguer sans liste ecrite a la main ».
 //
 // Dans le perimetre, quinze jetons distincts (128 occurrences) restaient
@@ -104,7 +104,15 @@ const JETON = /\b[A-Z][A-Z0-9]*(?:_[A-Za-z0-9./-]+)+\b/g;
 // annotation qui commencerait pareil. `aucun prefixe exclu ne masque un
 // modele` l'interdit contre l'inventaire lui-meme -- donc contre la donnee
 // du moteur, regeneree a chaque capture, pas contre une relecture.
-const PREFIXES_HORS_PACKS = ["CURLOPT_", "HEURIX_", "VOTRE_", "YOUR_", "CUSTOM_"];
+//
+// LE SIXIEME, PS_ (15 septembre 2026), est de la famille de CURLOPT_ : les
+// cles de configuration de PrestaShop. `moteur-natif-ne-suffit-pas`, FR et EN,
+// cite `PS_SEARCH_FUZZY` et `PS_SEARCH_MINWORDLEN` pour dire ce que PrestaShop
+// livre par defaut -- 2 jetons, 4 occurrences, et ce garde les declarait
+// annotations inventees. La correction qui les a poses rendait l'article vrai ;
+// retirer le style de code pour echapper au perimetre l'aurait rendu vert sans
+// rien decider.
+const PREFIXES_HORS_PACKS = ["CURLOPT_", "HEURIX_", "VOTRE_", "YOUR_", "CUSTOM_", "PS_"];
 
 const motifs = INVENTAIRE.map((e) => ({ modele: e.modele, re: new RegExp(e.motif) }));
 
