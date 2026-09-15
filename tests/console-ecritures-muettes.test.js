@@ -142,7 +142,12 @@ const LECTURE_EN_POST = /\/(search|simulate)"/;
 
 // La deconnexion : envoi sans retour. La session est detruite localement
 // quoi qu'il arrive, et le corps de la reponse n'est jamais lu.
-const SANS_RETOUR = /\/v1\/auth\/logout/;
+// Les reponses d'onboarding (15 septembre 2026) : facultatives, envoyees en
+// tache de fond au moment ou l'ecran qui les porte se ferme ; il ne reste
+// aucun element ou poser un message. CE SILENCE A CACHE UN 401 DU 3 AOUT AU
+// 15 SEPTEMBRE 2026 (pas d'Authorization) : l'en-tete est garde par
+// tests/console-onboarding-profile-cle.test.js, pas par ce fichier.
+const SANS_RETOUR = /\/v1\/auth\/(logout|onboarding-profile)/;
 
 function ecritDirectement(c) {
   return VERBE.test(c.tete) && !LECTURE_EN_POST.test(c.tete);
