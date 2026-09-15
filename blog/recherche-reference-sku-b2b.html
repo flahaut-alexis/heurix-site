@@ -200,15 +200,16 @@
       <h2>La solution : expressions régulières et normalisation</h2>
       <p>Deux mécanismes complémentaires permettent de corriger ce problème :</p>
       <ul>
-        <li><strong>La normalisation des requêtes avant indexation :</strong> les espaces, tirets et variations de casse sont uniformisés à la fois dans le catalogue et dans la requête tapée, avant toute comparaison. <code>DIN-933</code>, <code>DIN 933</code> et <code>din933</code> deviennent équivalents.</li>
-        <li><strong>Les expressions régulières (regex) :</strong> elles permettent de reconnaître un format de référence (par exemple une désignation de vis metric) et d'en extraire les composants pertinents — diamètre, longueur, norme — plutôt que de chercher une correspondance texte à texte.</li>
+        <li><strong>La normalisation, avant toute comparaison :</strong> la casse est uniformisée à la fois dans le catalogue et dans la requête tapée. Elle ne suffit pas pour les séparateurs : <code>DIN-933</code>, <code>DIN 933</code> et <code>din933</code> restent trois découpages différents du texte.</li>
+        <li><strong>Les expressions régulières (regex) :</strong> elles permettent de reconnaître un format de référence (par exemple une désignation de vis métrique) et d'en extraire les composants pertinents : diamètre, longueur, norme. C'est cette reconnaissance qui rend <code>DIN-933</code>, <code>DIN 933</code> et <code>din933</code> équivalents, puisque les trois écritures produisent la même norme.</li>
       </ul>
-      <p>Concrètement, un client qui tape une référence partielle ou légèrement mal formatée retrouve quand même le bon produit, parce que le moteur comprend la structure de la référence plutôt que de se contenter de comparer des caractères.</p>
+      <p>Concrètement, un client qui tape la référence avec un espace, un tiret ou une casse différente retrouve les mêmes produits. Une référence incomplète est un autre cas. Mesuré sur notre moteur le 15 septembre 2026, sur un catalogue de test de 12 vis : « DIN93 » ne retrouve qu'une vis DIN 933 sur six, et « M8 30 », écrit sans le « x », classe la vis M8x30 au même score qu'une M8x300.</p>
 
       <blockquote>Un acheteur professionnel qui ne trouve pas une référence qu'il connaît déjà ne cherche pas ailleurs sur votre site — il va chez le concurrent.</blockquote>
 
       <h2>Comment évaluer votre situation</h2>
       <p>Un test simple : prenez cinq références de votre catalogue, tapez-les dans votre moteur avec un format légèrement différent de celui enregistré (espace en plus, tiret en moins, casse différente). Si plus d'une requête sur cinq échoue, le sujet mérite un audit — c'est un problème structurel de configuration, pas un manque de contenu.</p>
+      <p><em>Corrigé le 15 septembre 2026. Cet article attribuait l'équivalence de DIN-933, DIN 933 et din933 à la normalisation ; elle vient de la reconnaissance du format. Il affirmait qu'une référence partielle retrouve le bon produit, ce que nos mesures ne confirment pas. Et jusqu'au correctif déployé le même jour, notre moteur ne rattachait pas DIN-933 aux deux autres écritures.</em></p>
     </div>
 
     <div class="post-footer-cta">

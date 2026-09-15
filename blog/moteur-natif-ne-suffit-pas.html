@@ -195,9 +195,9 @@
 
       <p>Voici les trois angles morts qui reviennent le plus souvent quand on audite un moteur natif.</p>
 
-      <h2>1. Aucune tolérance aux fautes de frappe</h2>
-      <p>Un visiteur qui tape « pul » au lieu de « pull », ou « chausure » au lieu de « chaussure », obtient dans la majorité des cas une page vide. Le moteur cherche une correspondance exacte, ne la trouve pas, et s'arrête là. Sur mobile, où les fautes de frappe sont statistiquement plus fréquentes, l'impact est encore plus marqué.</p>
-      <p>La correction n'est pas complexe techniquement : il s'agit de configurer une tolérance de un à deux caractères sur les termes recherchés. Mais elle n'est presque jamais activée par défaut.</p>
+      <h2>1. Une tolérance aux fautes qui existe, mais avec des bornes</h2>
+      <p>Les trois plateformes ne se valent pas sur ce point, et aucune n'est livrée sans rien. D'après <a href="https://help.shopify.com/en/manual/online-store/storefront-search/search-behavior" rel="noopener">la documentation de Shopify</a>, sa recherche accepte une lettre fausse ou deux lettres inversées, à condition que les quatre premières lettres soient justes, et seulement dans le titre, le type de produit, le titre de variante et la marque. PrestaShop active sa recherche approchée par défaut : <code class="docs-inline-code">PS_SEARCH_FUZZY</code> vaut 1 dans la <a href="https://github.com/PrestaShop/PrestaShop/blob/9.1.5/install-dev/data/xml/configuration.xml" rel="noopener">configuration livrée</a> des versions 8.2.8 et 9.1.5, avec une longueur minimale de mot de 3 (<code class="docs-inline-code">PS_SEARCH_MINWORDLEN</code>). WooCommerce, dans <a href="https://github.com/woocommerce/woocommerce/blob/11.1.0/plugins/woocommerce/includes/class-wc-query.php" rel="noopener">son code source</a> (version 11.1.0), cherche chaque mot comme une sous-chaîne du titre, de l'extrait et du contenu, et cette requête ne tolère aucune faute.</p>
+      <p>Le défaut n'est donc pas l'absence de tolérance, ce sont ses bornes. « cahussure » pour « chaussure » inverse deux lettres parmi les quatre premières, que Shopify exige justes. « M8 » est plus court que les trois caractères de PrestaShop. Sur un catalogue technique, ce sont précisément les termes courts et les codes qui sortent de ces bornes.</p>
 
       <h2>2. Un ordre de tri qui ignore la disponibilité et la marge</h2>
       <p>Par défaut, la plupart des moteurs trient les résultats par pertinence textuelle brute, ou pire, par date d'ajout au catalogue. Résultat : un produit en rupture de stock peut apparaître en première position, pendant qu'une référence disponible et plus rentable se retrouve en page trois.</p>
@@ -216,6 +216,7 @@
         <li>Tapez un synonyme courant d'un de vos produits phares plutôt que son nom exact</li>
       </ul>
       <p>Si l'un de ces trois tests échoue, c'est un signal concret — pas une question d'opinion sur le design ou l'ergonomie, mais un problème mesurable qui coûte des ventes chaque jour.</p>
+      <p><em>Corrigé le 15 septembre 2026. La première section disait que les moteurs natifs n'ont aucune tolérance aux fautes, et qu'elle n'est presque jamais activée par défaut. C'était faux pour Shopify et PrestaShop, qui la livrent activée.</em></p>
     </div>
 
     <div class="post-footer-cta">

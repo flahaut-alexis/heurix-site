@@ -194,7 +194,7 @@
       <p>C'est un scénario classique : un site e-commerce B2B démarre avec quelques milliers de références, le moteur de recherche natif de la plateforme (Shopify, PrestaShop, Magento) fait très bien le travail. Puis le catalogue grossit — nouvelles gammes, nouveaux fournisseurs, déclinaisons multiples — et la recherche se dégrade progressivement, sans qu'on identifie clairement pourquoi.</p>
 
       <h2>Ce qui se passe techniquement</h2>
-      <p>Les moteurs natifs de la plupart des CMS e-commerce reposent sur des bases de données relationnelles classiques (SQL), qui ne sont pas conçues à l'origine pour la recherche textuelle à grande échelle. Ce type de base de données gère très bien les transactions (commandes, stocks, paiements), mais devient sensiblement plus lent dès que le volume de texte à indexer et la fréquence de mise à jour augmentent.</p>
+      <p>Les trois plateformes ne cherchent pas avec la même technologie. PrestaShop interroge sa propre base : sa recherche lit une table de mots indexés par une requête SQL <code class="docs-inline-code">LIKE</code> (<a href="https://github.com/PrestaShop/PrestaShop/blob/9.1.5/classes/Search.php" rel="noopener">code source 9.1.5</a>). Magento, lui, ne cherche plus dans sa base depuis la version 2.4 : <a href="https://experienceleague.adobe.com/en/docs/commerce-operations/installation-guide/prerequisites/search-engine/overview" rel="noopener">la documentation d'Adobe</a> impose Elasticsearch ou OpenSearch. Shopify décrit le comportement de sa recherche, pas la technologie qui la porte.</p>
       <p>Au-delà d'un certain volume de références — le seuil varie selon la plateforme et la structure du catalogue, mais se situe généralement autour de quelques dizaines de milliers de fiches produits — deux symptômes apparaissent typiquement :</p>
       <ul>
         <li>Un temps de réponse de la recherche qui se dégrade, perceptible par les visiteurs</li>
@@ -209,6 +209,7 @@
 
       <h2>Comment savoir si vous êtes concerné</h2>
       <p>Si votre catalogue dépasse 10 000 références et que vous constatez un ralentissement perceptible de la recherche, ou une pertinence qui s'est dégradée avec la croissance du catalogue, c'est le signal à surveiller. Un audit permet de mesurer précisément le temps de réponse actuel et d'évaluer si un moteur externe est justifié, ou si un simple réglage du moteur natif suffit encore.</p>
+      <p><em>Corrigé le 15 septembre 2026. Cet article disait que les moteurs natifs reposent sur des bases de données relationnelles. Magento exige Elasticsearch ou OpenSearch depuis la version 2.4, et Shopify ne décrit pas la technologie de sa recherche.</em></p>
     </div>
 
     <div class="post-footer-cta">

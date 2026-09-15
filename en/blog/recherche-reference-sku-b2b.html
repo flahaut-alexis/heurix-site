@@ -186,15 +186,16 @@
       <h2>The fix: regular expressions and normalization</h2>
       <p>Two complementary mechanisms solve this problem:</p>
       <ul>
-        <li><strong>Query normalization before indexing:</strong> spaces, dashes, and casing are standardized in both the catalog and the typed query before any comparison happens. <code>DIN-933</code>, <code>DIN 933</code>, and <code>din933</code> become equivalent.</li>
-        <li><strong>Regular expressions (regex):</strong> they let the engine recognize a reference format (for example, a metric screw designation) and extract its relevant components — diameter, length, standard — rather than comparing text character by character.</li>
+        <li><strong>Normalization, before any comparison:</strong> casing is standardized in both the catalog and the typed query. It isn't enough for separators: <code>DIN-933</code>, <code>DIN 933</code>, and <code>din933</code> remain three different splits of the text.</li>
+        <li><strong>Regular expressions (regex):</strong> they let the engine recognize a reference format (for example, a metric screw designation) and extract its relevant components: diameter, length, standard. That recognition is what makes <code>DIN-933</code>, <code>DIN 933</code>, and <code>din933</code> equivalent, since all three spellings produce the same standard.</li>
       </ul>
-      <p>In practice, a customer typing a partial or slightly mis-formatted reference still finds the right product, because the engine understands the structure of the reference rather than just comparing characters.</p>
+      <p>In practice, a customer typing the reference with a space, a dash, or different casing finds the same products. An incomplete reference is another matter. Measured on our engine on September 15, 2026, on a test catalog of 12 screws: "DIN93" finds only one DIN 933 screw out of six, and "M8 30", typed without the "x", ranks the M8x30 screw at the same score as an M8x300.</p>
 
       <blockquote>A professional buyer who can't find a reference they already know doesn't keep looking on your site — they go to a competitor.</blockquote>
 
       <h2>How to assess your own situation</h2>
       <p>A simple test: take five references from your catalog, type them into your search engine with a slightly different format than the one stored (extra space, missing dash, different casing). If more than one out of five fails, this is worth an audit — it's a structural configuration issue, not a content gap.</p>
+      <p><em>Corrected on September 15, 2026. This article credited normalization with making DIN-933, DIN 933, and din933 equivalent; it comes from format recognition. It claimed a partial reference still finds the right product, which our measurements don't confirm. And until the fix deployed that same day, our engine didn't match DIN-933 to the other two spellings.</em></p>
     </div>
 
     <div class="post-footer-cta">
