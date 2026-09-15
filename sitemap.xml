@@ -270,6 +270,9 @@
     <loc>https://heurix.fr/blog/mesurer-pertinence-recherche.html</loc>
   </url>
   <url>
+    <loc>https://heurix.fr/blog/agent-ia-catalogue-technique.html</loc>
+  </url>
+  <url>
     <loc>https://heurix.fr/blog/tests-qui-ne-peuvent-pas-echouer.html</loc>
   </url>
   <url>
@@ -349,4 +352,5 @@
   <url><loc>https://heurix.fr/en/blog/guide-page-categorie-browse.html</loc></url>
   <url><loc>https://heurix.fr/en/blog/guide-utilisation-console.html</loc></url>
   <url><loc>https://heurix.fr/en/blog/recherche-headless-api-sans-theme.html</loc></url>
+  <url><loc>https://heurix.fr/en/blog/agent-ia-catalogue-technique.html</loc></url>
 </urlset>

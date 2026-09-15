@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ce qu'un agent IA trouve, et ne trouve pas, dans un catalogue technique — Heurix</title>
+<meta name="description" content="Trois outils MCP, 12 requêtes en langage naturel, un catalogue indexé avec et sans pack. Ce que l'agent reçoit, ce qu'il rate, et ce qu'il ne peut pas découvrir.">
+<link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/agent-ia-catalogue-technique.html">
+<link rel="alternate" hreflang="en" href="https://heurix.fr/en/blog/agent-ia-catalogue-technique.html">
+<link rel="alternate" hreflang="x-default" href="https://heurix.fr/blog/agent-ia-catalogue-technique.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Ce qu'un agent IA trouve, et ne trouve pas, dans un catalogue technique — Heurix">
+<meta property="og:description" content="Trois outils MCP, 12 requêtes en langage naturel, un catalogue indexé avec et sans pack. Ce que l'agent reçoit, ce qu'il rate, et ce qu'il ne peut pas découvrir.">
+<meta property="og:image" content="https://heurix.fr/og-image.png">
+<meta property="og:url" content="https://heurix.fr/blog/agent-ia-catalogue-technique.html">
+<meta property="og:locale" content="fr_FR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Ce qu'un agent IA trouve, et ne trouve pas, dans un catalogue technique — Heurix">
+<meta name="twitter:description" content="Trois outils MCP, 12 requêtes en langage naturel, un catalogue indexé avec et sans pack. Ce que l'agent reçoit, ce qu'il rate, et ce qu'il ne peut pas découvrir.">
+<meta name="twitter:image" content="https://heurix.fr/og-image.png">
+<link rel="icon" type="image/png" href="../favicon-32.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<link rel="stylesheet" href="../styles.css?v=1788685422">
+<link rel="canonical" href="https://heurix.fr/blog/agent-ia-catalogue-technique.html">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Heurix",
+  "url": "https://heurix.fr",
+  "logo": "https://heurix.fr/logo.svg?v=1787610626",
+  "image": "https://heurix.fr/og-image.png",
+  "description": "Moteur de recherche et search & discovery pour sites e-commerce, basé sur des expressions régulières, conçu en France.",
+  "email": "contact@heurix.fr",
+  "sameAs": ["https://www.linkedin.com/company/heurix-search/"],
+  "founder": {"@type": "Person", "name": "Alexis Flahaut"},
+  "areaServed": "FR"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Ce qu'un agent IA trouve, et ne trouve pas, dans un catalogue technique",
+  "description": "Trois outils MCP, 12 requêtes en langage naturel, un catalogue indexé avec et sans pack. Ce que l'agent reçoit, ce qu'il rate, et ce qu'il ne peut pas découvrir.",
+  "datePublished": "2026-09-15T23:06:55+02:00",
+  "inLanguage": "fr",
+  "mainEntityOfPage": "https://heurix.fr/blog/agent-ia-catalogue-technique.html",
+  "author": {
+    "@type": "Person",
+    "name": "Alexis Flahaut",
+    "url": "https://heurix.fr/about.html"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Heurix",
+    "url": "https://heurix.fr"
+  }
+}
+</script>
+</head>
+<body class="docs-dark">
+<!-- Banniere de langue : regle de declenchement, cle et exemption CNIL dans langue-banniere.js. -->
+<aside class="langue-banniere" id="langue-banniere" lang="en" hidden>
+  <div class="langue-banniere-corps">
+    <span>This page is available in English.</span>
+    <a class="langue-banniere-lien" href="../en/blog/agent-ia-catalogue-technique.html">Read in English</a>
+    <button type="button" class="langue-banniere-non">No thanks</button>
+  </div>
+</aside>
+<script>(function(){var b=document.getElementById('langue-banniere');if(!b)return;var pageFr=(document.documentElement.lang||'fr').slice(0,2).toLowerCase()==='fr',l=navigator.languages||[navigator.language||''],litFr=false;for(var i=0;i<l.length;i++)if(String(l[i]).slice(0,2).toLowerCase()==='fr')litFr=true;if(litFr===pageFr)return;try{if(localStorage.getItem('heurix_langue'))return;}catch(e){}b.hidden=false;})();</script>
+<header>
+  <div class="header-top">
+    <nav class="header-top-inner">
+      <a href="../index.html" class="logo"><img src="../logo.svg?v=1787610626" alt="Heurix"> <span class="wordmark">Heurix</span></a>
+      <div class="nav-links">
+        <div class="nav-drop">
+          <button type="button" class="nav-drop-btn" aria-expanded="false" aria-haspopup="true">Produit</button>
+          <div class="nav-drop-panel nav-panel-groupes">
+            <div class="nav-promo">
+              <p class="nav-promo-sur">D&Eacute;MO EN DIRECT</p>
+              <div class="nav-promo-vis"><span class="nav-promo-q">vis inox m8x20</span><span class="nav-promo-chip">DIN 933</span><span class="nav-promo-chip">rondelle</span></div>
+              <p class="nav-promo-t">Voir Heurix en action</p>
+              <p class="nav-promo-d">Une boutique r&eacute;elle, servie par le moteur.</p>
+              <a class="nav-promo-cta" href="../demo/index.html">Lancer la d&eacute;mo &rarr;</a>
+            </div>
+            <div class="nav-drop-col">
+              <p class="nav-drop-groupe">Comprendre</p>
+              <a class="nav-row" href="../index.html#probleme"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span><span><span class="nav-row-t">Le probl&egrave;me</span> <span class="nav-row-d">Le point de conversion le moins surveill&eacute; d&rsquo;un site.</span></span></a>
+              <a class="nav-row" href="../produit.html#mission"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg></span><span><span class="nav-row-t">Notre mission</span> <span class="nav-row-d">Faire de la recherche un levier, pas un fardeau.</span></span></a>
+            </div>
+            <div class="nav-drop-col">
+              <p class="nav-drop-groupe">Le produit</p>
+              <a class="nav-row" href="../index.html#moteur"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg></span><span><span class="nav-row-t">Le moteur</span> <span class="nav-row-d">Notre propre moteur, d&eacute;velopp&eacute; en France.</span></span></a>
+              <a class="nav-row" href="../fonctionnalites.html"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></span><span><span class="nav-row-t">Fonctionnalit&eacute;s</span> <span class="nav-row-d">Cascade d&rsquo;annotations, fautes tol&eacute;r&eacute;es, synonymes m&eacute;tier.</span></span></a>
+            </div>
+            <div class="nav-drop-col">
+              <p class="nav-drop-groupe">Passer &agrave; l'action</p>
+              <a class="nav-row" href="../roi.html"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span><span><span class="nav-row-t">Simulateur ROI</span> <span class="nav-row-d">Vos hypoth&egrave;ses, en curseurs, avec leurs sources.</span></span></a>
+              <a class="nav-row" href="../mesure.html"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg></span><span><span class="nav-row-t">La mesure</span> <span class="nav-row-d">+28 points de rappel sur 300 requ&ecirc;tes, refaisable.</span></span></a>
+            </div>
+          </div>
+        </div>
+        <div class="nav-drop">
+          <button type="button" class="nav-drop-btn" aria-expanded="false" aria-haspopup="true">Solutions</button>
+          <div class="nav-drop-panel nav-panel-secteurs">
+          <a class="nav-drop-tous" href="../secteurs.html">Tous les secteurs &rarr;</a>
+          <a href="../solutions/outillage.html"><span class="nav-icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg></span>Quincaillerie & outillage</a>
+          <a href="../solutions/industrie.html"><span class="nav-icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></span>Pièces détachées & industrie</a>
+          <a href="../solutions/automobile.html"><span class="nav-icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></span>Automobile</a>
+          <a href="../solutions/electricite.html"><span class="nav-icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6z"/></svg></span>Électricité & installation</a>
+          <a href="../solutions/plomberie.html"><span class="nav-icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z"/></svg></span>Plomberie & sanitaire</a>
+          <a href="../solutions/mode.html"><span class="nav-icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.38 3.46 16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.47a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.47a2 2 0 00-1.34-2.23z"/></svg></span>Mode & retail</a>
+          <a href="../solutions/electronique.html"><span class="nav-icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg></span>Électronique & high-tech</a>
+          <a href="../solutions/livres.html"><span class="nav-icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg></span>Librairie & édition</a>
+          <a href="../solutions/vins.html"><span class="nav-icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 22h8"/><path d="M12 15v7"/><path d="M12 15a5 5 0 005-5V3H7v7a5 5 0 005 5z"/></svg></span>Vins & spiritueux</a>
+          <a href="../solutions/sport.html"><span class="nav-icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span>Sport & glisse</a>
+          <a href="../solutions/finance.html"><span class="nav-icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>Finance & comptabilité</a>
+          </div>
+        </div>
+        <div class="nav-drop">
+          <button type="button" class="nav-drop-btn" aria-expanded="false" aria-haspopup="true">Developers</button>
+          <div class="nav-drop-panel nav-panel-groupes">
+            <div class="nav-promo">
+              <p class="nav-promo-sur">D&Eacute;MARRAGE</p>
+              <div class="nav-promo-vis"><div class="nav-promo-code"><b>POST</b> /v1/index/{catalog}/search&#10;{ "q": "vis inox m8x20" }</div></div>
+              <p class="nav-promo-t">D&eacute;marrer en 5 minutes</p>
+              <p class="nav-promo-d">De la cl&eacute; API au premier r&eacute;sultat pertinent.</p>
+              <a class="nav-promo-cta" href="../blog/guide-mise-en-route.html">Guide de mise en route &rarr;</a>
+            </div>
+            <div class="nav-drop-col">
+              <p class="nav-drop-groupe">D&eacute;marrer</p>
+              <a class="nav-row" href="../blog/guide-mise-en-route.html"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg></span><span><span class="nav-row-t">Guide de mise en route</span> <span class="nav-row-d">Trois &eacute;tapes pour une recherche qui fonctionne.</span></span></a>
+              <a class="nav-row" href="../docs.html"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></span><span><span class="nav-row-t">Documentation</span> <span class="nav-row-d">Indexer un catalogue, lancer une recherche en minutes.</span></span></a>
+            </div>
+            <div class="nav-drop-col">
+              <p class="nav-drop-groupe">Concepts</p>
+              <a class="nav-row" href="../docs.html#cascade"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></span><span><span class="nav-row-t">La cascade d&rsquo;annotations</span> <span class="nav-row-d">Le c&oelig;ur du moteur : des r&egrave;gles organis&eacute;es en niveaux.</span></span></a>
+              <a class="nav-row" href="../docs.html#produits"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></span><span><span class="nav-row-t">Structure des produits</span> <span class="nav-row-d">Un objet JSON libre, dont quatre champs ont un r&ocirc;le.</span></span></a>
+            </div>
+            <div class="nav-drop-col">
+              <p class="nav-drop-groupe">Int&eacute;grations</p>
+              <a class="nav-row" href="../integrations.html"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></span><span><span class="nav-row-t">Int&eacute;grations</span> <span class="nav-row-d">Des guides techniques avec du vrai code.</span></span></a>
+              <a class="nav-row" href="../prestashop.html"><span class="nav-row-icn marque" aria-hidden="true" style="background:rgba(223,0,103,.12); color:#CB005E;">P</span><span><span class="nav-row-t">PrestaShop</span> <span class="nav-row-d">Module natif, via ProductSearchProviderInterface.</span></span></a>
+              <a class="nav-row" href="../woocommerce.html"><span class="nav-row-icn marque" aria-hidden="true" style="background:rgba(127,84,179,.12); color:#7F54B3;">W</span><span><span class="nav-row-t">WooCommerce</span> <span class="nav-row-d">Extension WordPress, via le hook pre_get_posts.</span></span></a>
+              <a class="nav-row" href="../shopify.html"><span class="nav-row-icn marque" aria-hidden="true" style="background:rgba(94,142,62,.14); color:#4E7533;">S</span><span><span class="nav-row-t">Shopify</span> <span class="nav-row-d">Int&eacute;gration via l&rsquo;API REST document&eacute;e.</span></span></a>
+            </div>
+          </div>
+        </div>
+        <a href="../blog.html">Blog</a>
+        <a href="../console.html" class="nav-link-mobile-seul">Mon compte</a>
+      </div>
+      <div class="header-search">
+        <button id="heurix-search-btn" class="search-trigger" aria-label="Chercher sur le site" type="button">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <span class="search-trigger-text">Chercher sur le site</span>
+          <span class="search-trigger-kbd">Ctrl K</span>
+        </button>
+      </div>
+      <div class="header-utility">
+        <button type="button" id="mobile-nav-toggle" class="mobile-nav-toggle" aria-label="Menu" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+        <a href="../console.html" class="header-signin"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0116 0v1"/></svg>Mon compte</a>
+        <a href="../en/blog/agent-ia-catalogue-technique.html" class="lang-switch">EN</a>
+        <a href="../pricing.html" class="btn">Démarrer l'essai gratuit</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+
+<article class="post">
+  <div class="wrap post-wrap">
+    <a href="../blog.html" class="back-link">← Tous les articles</a>
+    <div class="kicker">Analyse · Septembre 2026</div>
+    <h1>Ce qu'un agent IA trouve, et ne trouve pas, dans un catalogue technique</h1>
+    <p class="post-lede">Un agent IA ne sait pas qu'un catalogue de visserie porte des diamètres, des longueurs et des normes. Il écrit une phrase, et il transmet ce qu'on lui a dit. Voici ce que notre serveur MCP lui rend, champ par champ, ce qu'il obtient sur 12 demandes en langage naturel, avec et sans pack de règles, et ce qu'il ne peut pas découvrir seul.</p>
+
+    <div class="post-body">
+      <p>Meilisearch a publié le 9 septembre un guide pour construire un outil de recherche destiné aux agents. Cet article part d'un outil qui existe déjà, <code class="docs-inline-code">heurix-mcp-server</code>, et mesure ce qu'il rend sur un catalogue technique. Les mesures ont été faites avec la version 0.1.0. La 0.1.1, celle que PyPI sert aujourd'hui, n'en change que les descriptions et les instructions que l'agent lit, pas le code des outils : c'est de ces textes-là, en 0.1.1, qu'il est question plus bas. L'installation dans Claude Desktop et Cursor est décrite dans <a href="guide-serveur-mcp-heurix.html">le guide du serveur MCP</a> ; elle n'est pas reprise ici.</p>
+      <p><strong>Conditions de la mesure.</strong> Moteur Heurix en local, à la version servie en production le 15 septembre 2026. Catalogue de 10 000 références de quincaillerie produit par le générateur du moteur, avec son désordre voulu : quatre graphies de la même dimension (M8x30, M8 x 30, M8-30, M8*30), des abréviations métier, des fiches en anglais, des champs manquants. Ce catalogue est indexé deux fois, à l'identique : une fois avec le pack <code class="docs-inline-code">outillage</code>, une fois sans pack. Les appels passent par les fonctions d'outil du serveur MCP, sans modification ; le transport MCP lui-même n'est pas en jeu dans les résultats.</p>
+
+      <h2>Ce que l'agent reçoit</h2>
+      <p>Le serveur expose trois outils. Chacun relaie un ou deux appels de l'API REST, sans logique propre.</p>
+      <div class="table-scroll"><table class="docs-params">
+        <tr><th>Outil</th><th>Paramètres</th><th>Appel relayé</th><th>Quota de recherche</th></tr>
+        <tr><td><code class="docs-inline-code">heurix_catalog_stats</code></td><td><code class="docs-inline-code">catalog</code> (facultatif)</td><td>Sans argument : <code class="docs-inline-code">GET /v1/index/catalogs</code>. Avec un catalogue : <code class="docs-inline-code">GET /v1/index/{catalog}/stats</code> puis <code class="docs-inline-code">/browse-categories</code></td><td>0 sans argument, 1 requête avec un catalogue</td></tr>
+        <tr><td><code class="docs-inline-code">heurix_search</code></td><td><code class="docs-inline-code">catalog</code>, <code class="docs-inline-code">query</code>, <code class="docs-inline-code">filters</code>, <code class="docs-inline-code">limit</code> (1 à 100, 10 par défaut)</td><td><code class="docs-inline-code">POST /v1/index/{catalog}/search</code></td><td>1 requête</td></tr>
+        <tr><td><code class="docs-inline-code">heurix_browse</code></td><td><code class="docs-inline-code">catalog</code>, <code class="docs-inline-code">category</code>, <code class="docs-inline-code">sort</code>, <code class="docs-inline-code">limit</code></td><td><code class="docs-inline-code">GET /v1/browse/{catalog}/{category}</code></td><td>0 : compté sur le quota Browse</td></tr>
+      </table></div>
+      <p>La colonne quota est mesurée sur le compteur de la clé, avant et après chaque appel.</p>
+
+      <h3>Découvrir le catalogue</h3>
+      <p>La description de <code class="docs-inline-code">heurix_catalog_stats</code> demande de l'appeler en premier. Avec un nom de catalogue, l'agent reçoit :</p>
+      <pre class="docs-code"><code>{
+  "catalog": "quincaillerie-outillage",
+  "products": 10000,
+  "terms": 5621,
+  "annotations": 271,
+  "rulepack": "outillage",
+  "rulepacks": [
+    "outillage"
+  ],
+  "synonym_groups": 0,
+  "sandbox": false,
+  "browse_categories": [
+    {
+      "category": "fixation",
+      "products": 9239
+    },
+    {
+      "category": "boulonnerie",
+      "products": 4700
+    },
+    {
+      "category": "visserie",
+      "products": 4516
+    },
+    {
+      "category": "accessoires",
+      "products": 1080
+    },
+    {
+      "category": "maconnerie",
+      "products": 465
+    }
+  ]
+}</code></pre>
+      <p>Le nom du pack actif, des comptes, et les catégories avec leur nombre de produits. <code class="docs-inline-code">annotations: 271</code> est un nombre : la liste des 271 annotations n'y est pas. Les noms des champs du produit (<code class="docs-inline-code">famille</code>, <code class="docs-inline-code">matiere</code>, <code class="docs-inline-code">diametre</code>, <code class="docs-inline-code">norme</code>) n'y sont pas non plus. Les instructions du serveur le disent, et renvoient l'agent aux résultats de <code class="docs-inline-code">heurix_search</code> pour les lire.</p>
+      <p>Sur une clé dont l'offre n'inclut pas Browse, la même réponse porte <code class="docs-inline-code">"browse_categories": []</code>. La description de l'outil prévient que c'est le cas, mais la réponse elle-même ne distingue pas « pas d'accès » de « pas de catégorie » : l'agent ne le sait qu'en appelant <code class="docs-inline-code">heurix_browse</code>, qui rend alors une erreur 403. Et un nom de catégorie mal cassé, <code class="docs-inline-code">Visserie</code> au lieu de <code class="docs-inline-code">visserie</code>, rend <code class="docs-inline-code">total: 0</code> sans erreur.</p>
+
+      <h3>Chercher</h3>
+      <p><code class="docs-inline-code">heurix_search</code> transmet quatre choses : le catalogue, le texte, les filtres et la limite. L'API de recherche en accepte davantage, que l'outil ne transmet pas : <code class="docs-inline-code">offset</code>, <code class="docs-inline-code">facets</code>, <code class="docs-inline-code">in_stock_only</code>, <code class="docs-inline-code">exclude_description</code>, <code class="docs-inline-code">group_by</code>, <code class="docs-inline-code">lang</code>. Un agent ne peut donc ni paginer, ni demander des facettes, ni écarter les ruptures. Voici un résultat, tel qu'il le reçoit :</p>
+      <pre class="docs-code"><code>{
+  "query": "vis M8 x 30 inox",
+  "tokens": [
+    "vis",
+    "m8",
+    "x",
+    "30",
+    "inox"
+  ],
+  "total": 6733,
+  "offset": 0,
+  "limit": 1,
+  "hits": [
+    {
+      "product": {
+        "id": "REF-000004",
+        "name": "Vis hexagonale M8 x 30 inox A4",
+        "price": 1.79,
+        "categories": [
+          "visserie",
+          "fixation"
+        ],
+        "famille": "Vis",
+        "matiere": "inox A4",
+        "diametre": "M8",
+        "description": "ISO 4762 filetage métrique M8",
+        "norme": "ISO 4762",
+        "stock": 3643
+      },
+      "score": 77.4,
+      "in_stock": true,
+      "matched": [
+        "terme 'vis' (depuis 'vis', x1.00)",
+        "terme 'm8' (depuis 'm8', x1.00)",
+        "terme '30' (depuis '30', x1.00)",
+        "terme 'inox' (depuis 'inox', x1.00)",
+        "annotation #DIAM_M8",
+        "annotation #DIAM_M8_INOX",
+        "annotation #FAM_VIS",
+        "annotation #LONG_30"
+      ],
+      "pinned": false,
+      "buried": false
+    }
+  ],
+  "fallback": false
+}</code></pre>
+      <div class="table-scroll"><table class="docs-params">
+        <tr><th>Champ</th><th>Ce que l'agent peut en faire</th></tr>
+        <tr><td><code class="docs-inline-code">total</code></td><td>Le nombre de produits trouvés. Il compte ce qui contient un terme de la requête, pas ce qui répond à la demande : 6 582 pour « vis inox M8 » sur 10 000 références.</td></tr>
+        <tr><td><code class="docs-inline-code">tokens</code></td><td>La requête telle que le moteur l'a découpée.</td></tr>
+        <tr><td><code class="docs-inline-code">hits[].product</code></td><td>Le produit tel qu'il a été indexé, description comprise. Les dix résultats de « vis inox M8 » pèsent environ 6 Ko.</td></tr>
+        <tr><td><code class="docs-inline-code">hits[].matched</code></td><td>Pourquoi ce produit est là : les termes trouvés et les annotations partagées avec la requête. C'est le champ qui permet à un agent d'expliquer un résultat plutôt que de le paraphraser.</td></tr>
+        <tr><td><code class="docs-inline-code">hits[].score</code><br><code class="docs-inline-code">in_stock</code><br><code class="docs-inline-code">pinned</code><br><code class="docs-inline-code">buried</code></td><td>La pertinence, la disponibilité, les priorités posées par le marchand.</td></tr>
+        <tr><td><code class="docs-inline-code">fallback</code></td><td><code class="docs-inline-code">true</code> quand les résultats sont des produits mis en avant faute de correspondance.</td></tr>
+        <tr><td><code class="docs-inline-code">price_filter</code><br><code class="docs-inline-code">suggested_category</code><br><code class="docs-inline-code">filters_unknown</code></td><td>Présents seulement quand ils ont quelque chose à dire. Voir plus bas.</td></tr>
+      </table></div>
+
+      <h2>Ce que l'agent tape, et ce qu'il obtient</h2>
+      <p>Douze demandes, écrites comme un agent les transmet. Pour chacune, on compte les produits qui répondent à toute la demande, d'après les champs structurés du produit (famille, matière, diamètre, norme, prix) et la longueur écrite dans son nom. Le tableau donne le nombre de ces produits dans les dix premiers résultats, et le rang du premier.</p>
+      <div class="table-scroll"><table class="docs-params">
+        <tr><th>Requête</th><th>Produits qui répondent</th><th>Avec pack outillage</th><th>Sans pack</th></tr>
+        <tr><td>vis inox M8 de 30 mm de long</td><td>4</td><td>0 dans les 10, premier au rang 36</td><td>0 dans les 10, premier au rang 63</td></tr>
+        <tr><td>vis de 8 par 30 en inox</td><td>4</td><td>aucun dans les 100 premiers</td><td>aucun dans les 100 premiers</td></tr>
+        <tr><td>vis inox M8x30</td><td>4</td><td>2 dans les 10, rang 1</td><td>aucun dans les 100 premiers</td></tr>
+        <tr><td>vis M8 x 30 inox</td><td>4</td><td>3 dans les 10, rang 1</td><td>0 dans les 10, rang 63</td></tr>
+        <tr><td>cheville nylon de 8</td><td>5</td><td>0 dans les 10, rang 19</td><td>0 dans les 10, rang 19</td></tr>
+        <tr><td>cheville nylon M8</td><td>5</td><td>3 dans les 10, rang 1</td><td>2 dans les 10, rang 1</td></tr>
+        <tr><td>stainless steel hex bolt M8</td><td>11</td><td>5 dans les 10, rang 1</td><td>0 dans les 10, rang 11</td></tr>
+        <tr><td>vis à tête fraisée M5 en inox</td><td>20</td><td>7 dans les 10, rang 1</td><td>3 dans les 10, rang 1</td></tr>
+        <tr><td>vis DIN 912 M12x40</td><td>1</td><td>rang 2</td><td>aucun dans les 100 premiers</td></tr>
+        <tr><td>écrou M6 inox A4</td><td>34</td><td>10 dans les 10</td><td>10 dans les 10</td></tr>
+        <tr><td>tige filetée M16 laiton</td><td>22</td><td>8 dans les 10</td><td>8 dans les 10</td></tr>
+        <tr><td>vis inox moins de 1 euro</td><td>168</td><td>10 dans les 10</td><td>10 dans les 10</td></tr>
+      </table></div>
+      <p>Pour « hex bolt », seuls les boulons sont comptés. En comptant aussi les vis à tête hexagonale, 35 produits répondent : 10 parmi les 10 premiers avec le pack, 4 sans.</p>
+
+      <h3>Une dimension écrite en phrase n'est pas lue comme une dimension</h3>
+      <p>« de 30 mm de long » ne pèse rien, avec ou sans pack. Le premier résultat est une vis de 80 mm, et voici pourquoi il est là :</p>
+      <pre class="docs-code"><code>{
+  "product": {
+    "id": "REF-000148",
+    "name": "Vis TF M8 x 80 inox A2",
+    "price": 1.96,
+    "categories": [
+      "visserie",
+      "fixation"
+    ],
+    "famille": "Vis",
+    "matiere": "inox A2",
+    "diametre": "M8",
+    "ref": "VIS-8-80-INOX",
+    "description": "ISO 4762 filetage métrique M8",
+    "norme": "ISO 4762",
+    "stock": 3978
+  },
+  "score": 57.0,
+  "in_stock": true,
+  "matched": [
+    "terme 'vis' (depuis 'vis', x1.00)",
+    "terme 'inox' (depuis 'inox', x1.00)",
+    "terme 'm8' (depuis 'm8', x1.00)",
+    "annotation #DIAM_M8",
+    "annotation #DIAM_M8_INOX",
+    "annotation #FAM_VIS",
+    "annotation #MAT_INOX"
+  ],
+  "pinned": false,
+  "buried": false
+}</code></pre>
+      <p>Diamètre, matière, famille : tout est reconnu, sauf la longueur. <code class="docs-inline-code">30</code> est un terme isolé parmi <code class="docs-inline-code">de</code>, <code class="docs-inline-code">mm</code> et <code class="docs-inline-code">long</code>. Le pack lit une dimension comme un catalogue l'écrit, <code class="docs-inline-code">M8x30</code> ou <code class="docs-inline-code">M8 x 30</code>, et la réponse à « vis inox M8x30 » porte alors <code class="docs-inline-code">annotation #LONG_30</code> et <code class="docs-inline-code">annotation #VIS_M8X30</code>. De même, « de 8 » n'est pas un diamètre : « cheville nylon M8 » place le bon produit en tête, « cheville nylon de 8 » au rang 19.</p>
+      <p>La description de l'outil dit que les formats différents sont tolérés. C'est exact pour les graphies d'une référence : avec M8x30 comme avec M8 x 30, le premier résultat répond à la demande. Ce ne l'est pas pour une phrase qui décrit la référence.</p>
+
+      <h3>Là où le pack change le résultat</h3>
+      <p>Sur les requêtes dont les mots figurent tels quels dans les noms de produits (écrou, rondelle, tige filetée, laiton), les deux catalogues rendent les mêmes 10 premiers résultats. Le pack change le résultat quand la requête et la fiche n'écrivent pas la même chose :</p>
+      <ul>
+        <li><strong>Une autre langue.</strong> Le catalogue ne contient pas le mot « bolt » ; le pack le range dans la même famille que « boulon ». Sans pack, « stainless steel hex bolt M8 » ne place aucun boulon inox M8 à tête hexagonale parmi les 10 premiers.</li>
+        <li><strong>Une abréviation.</strong> Les fiches écrivent « TF » pour tête fraisée. Avec le pack, 7 des 10 premiers résultats sont des vis fraisées M5 inox ; sans, 3.</li>
+        <li><strong>Une famille écrite autrement.</strong> Une partie des vis du catalogue s'appelle « Screw » : 111 des 225 vis M8. Le pack reconnaît les deux mots comme la même famille, et la requête « vis » rend 2 721 produits, contre 1 391 sans pack.</li>
+        <li><strong>Une dimension collée.</strong> « vis inox M8x30 » : 4 produits sur 4 dans les cent premiers avec le pack, aucun sans. Sans pack, <code class="docs-inline-code">m8x30</code> reste un seul terme, et aucun des quatre produits ne l'écrit ainsi.</li>
+      </ul>
+      <p>La contrainte de prix, elle, ne dépend pas du pack : « moins de 1 euro » est reconnu des deux côtés et la réponse porte <code class="docs-inline-code">"price_filter": {"min": null, "max": 1.0}</code>.</p>
+
+      <h2>Les filtres : ce que l'agent sait avant d'essayer</h2>
+      <p>Le paramètre <code class="docs-inline-code">filters</code> restreint la recherche. Sa description en donne deux formes, <code class="docs-inline-code">champ:valeur</code> pour un champ du produit et une annotation seule pour une étiquette du pack, et demande à l'agent de chercher d'abord sans filtre pour lire les noms dans la réponse. Voici ce que rendent les filtres qu'un agent peut essayer, sur la requête « vis » :</p>
+      <div class="table-scroll"><table class="docs-params">
+        <tr><th><code class="docs-inline-code">filters</code></th><th>Avec pack</th><th>Sans pack</th></tr>
+        <tr><td><code class="docs-inline-code">["M8"]</code></td><td>0, <code class="docs-inline-code">filters_unknown: ["M8"]</code></td><td>0, <code class="docs-inline-code">filters_unknown: ["M8"]</code></td></tr>
+        <tr><td><code class="docs-inline-code">["inox"]</code></td><td>0, <code class="docs-inline-code">filters_unknown: ["inox"]</code></td><td>0, <code class="docs-inline-code">filters_unknown: ["inox"]</code></td></tr>
+        <tr><td><code class="docs-inline-code">["DIAM_M8"]</code></td><td>225</td><td>0, <code class="docs-inline-code">filters_unknown: ["DIAM_M8"]</code></td></tr>
+        <tr><td><code class="docs-inline-code">["diametre:M8"]</code></td><td>225</td><td>114</td></tr>
+        <tr><td><code class="docs-inline-code">["Diametre:M8"]</code></td><td>0, <code class="docs-inline-code">filters_unknown: ["Diametre"]</code></td><td>0, <code class="docs-inline-code">filters_unknown: ["Diametre"]</code></td></tr>
+        <tr><td><code class="docs-inline-code">["matiere:inox A2"]</code></td><td>588</td><td>305</td></tr>
+        <tr><td><code class="docs-inline-code">["matiere:inox"]</code></td><td>0, sans signal</td><td>0, sans signal</td></tr>
+      </table></div>
+      <p>Trois choses se lisent dans ce tableau.</p>
+      <ul>
+        <li><strong>Une annotation n'existe que si le pack l'écrit.</strong> <code class="docs-inline-code">DIAM_M8</code> rend zéro sur un catalogue sans pack, et un mot seul comme <code class="docs-inline-code">M8</code> est lu comme une annotation, ce que la description dit. <code class="docs-inline-code">filters_unknown</code> le signale, à condition que l'agent le lise.</li>
+        <li><strong>Les champs du produit sont filtrables, avec ou sans pack</strong>, sous la forme <code class="docs-inline-code">champ:valeur</code>, et le nom du champ est sensible à la casse : <code class="docs-inline-code">Diametre</code> n'est pas <code class="docs-inline-code">diametre</code>. La syntaxe complète est dans <a href="../docs.html#ep-search">la référence de la recherche</a>.</li>
+        <li><strong>Une valeur fausse ne se signale pas.</strong> <code class="docs-inline-code">matiere:inox</code> désigne un champ qui existe et une valeur qu'aucun produit ne porte : les valeurs sont « inox A2 » et « inox A4 ». La réponse est <code class="docs-inline-code">total: 0</code>, identique à celle d'un filtre juste qui ne trouve rien. Le moteur vérifie le nom du champ, jamais la valeur, et c'est une décision : l'ensemble des valeurs d'un champ est ouvert. La description de l'outil le dit ; la réponse, elle, ne le dit pas.</li>
+      </ul>
+
+      <h2>Ce qui manque à un agent aujourd'hui</h2>
+      <p>Pour filtrer juste, un agent doit connaître deux listes : les champs du catalogue avec leurs valeurs, et les annotations que son pack écrit. Aucun des trois outils ne les rend. Les instructions du serveur envoient l'agent les lire dans une première recherche : <code class="docs-inline-code">product</code> porte les noms des champs, <code class="docs-inline-code">matched</code> les annotations. C'est partiel : une recherche ne montre que les valeurs des produits qu'elle rend, et <code class="docs-inline-code">matched</code> s'arrête à 8 entrées par résultat, limitées à ce qui a compté pour ce résultat.</p>
+      <p>L'API en porte une vue plus complète, sur deux routes que le serveur MCP n'appelle pas :</p>
+      <ul>
+        <li><code class="docs-inline-code">GET /v1/index/{catalog}/browse-attributes</code> rend les champs filtrables et leurs vingt valeurs les plus fréquentes. Sur ce catalogue : <code class="docs-inline-code">diametre</code> (12 valeurs), <code class="docs-inline-code">famille</code> (8), <code class="docs-inline-code">matiere</code> (6), <code class="docs-inline-code">norme</code> (9). Elle exige une offre qui inclut Browse, et refuse en 403 sinon.</li>
+        <li><code class="docs-inline-code">GET /v1/rulepacks/annotations</code> rend, pour chaque pack, les modèles d'annotation qu'il peut écrire, comme <code class="docs-inline-code">DIAM_M{1}</code> ou <code class="docs-inline-code">MAT_INOX</code>. Ce sont des modèles, pas les annotations présentes dans un catalogue donné, et la réponse pèse environ 26 Ko pour les onze packs.</li>
+      </ul>
+      <p>Exposer ces listes à l'agent serait un outil de plus. Il n'existe pas aujourd'hui, et cet article ne le date pas.</p>
+
+      <h2>Ce que vous pouvez faire dès maintenant</h2>
+      <p>Vous connaissez ce que l'agent ne découvre qu'en partie. Donnez-le-lui dans ses instructions :</p>
+      <ul>
+        <li><strong>Les champs et leurs valeurs exactes</strong>, sous la forme que <code class="docs-inline-code">filters</code> accepte : <code class="docs-inline-code">diametre:M8</code>, <code class="docs-inline-code">matiere:inox A2|inox A4</code>. Le tuyau est un OU.</li>
+        <li><strong>La grammaire de vos références</strong> : demandez-lui de transmettre la dimension comme votre catalogue l'écrit, <code class="docs-inline-code">M8x30</code> plutôt que « de 8 par 30 ».</li>
+        <li><strong>Deux signaux à lire avant de conclure « rien trouvé »</strong> : <code class="docs-inline-code">filters_unknown</code>, et <code class="docs-inline-code">fallback</code>, qui signale une liste de produits mis en avant et non des résultats.</li>
+        <li><strong>Les noms exacts de catégories</strong>, casse comprise, si vos clés ont accès à Browse.</li>
+      </ul>
+      <p>Pour aller plus loin : l'installation du serveur dans <a href="guide-serveur-mcp-heurix.html">le guide MCP</a>, la syntaxe complète des filtres dans <a href="../docs.html#ep-search">Recherche</a>, et le détail de chaque champ de la réponse dans <a href="recherche-headless-api-sans-theme.html">l'article sur la recherche headless</a>.</p>
+    </div>
+
+    <div class="post-footer-cta">
+      <p>Brancher un agent sur votre catalogue ?</p>
+      <a href="../pricing.html" class="btn">Essayer gratuitement</a>
+    </div>
+  </div>
+</article>
+
+<footer>
+  <div class="wrap foot-grid">
+    <a href="../index.html" class="logo" style="font-size:15px;"><img src="../logo.svg?v=1787610626" alt="Heurix" style="height:22px;width:22px;"> <span class="wordmark">Heurix</span></a>
+    <div class="foot-links">
+      <a href="../blog.html">Blog</a>
+      <a href="../docs.html">Documentation API</a>
+      <a href="../fonctionnalites.html">Fonctionnalités</a>
+      <a href="../integrations.html">Intégrations</a>
+      <a href="../partners.html">Programme partenaires</a>
+      <a href="../console.html">Console</a>
+      <a href="../about.html">À propos</a>
+      <a href="../faq.html">FAQ</a>
+      <a href="../cgv.html">CGV</a>
+      <a href="../mentions-legales.html">Mentions légales</a>
+      <a href="#" data-rouvrir-consentement>Gérer les cookies</a>
+      <a href="../confidentialite.html">Confidentialité</a>
+      <a href="mailto:contact@heurix.fr">contact@heurix.fr</a>
+    </div>
+    <div class="foot-social">
+      <span class="foot-social-label">Réseaux sociaux</span>
+      <a href="https://www.linkedin.com/company/heurix-search/" target="_blank" rel="noopener" aria-label="LinkedIn" class="foot-social-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+      </a>
+    </div>
+    <div class="foot-legal">
+      Heurix — Entreprise individuelle (micro-entreprise). SIRET 107 681 900 00018. Conseil en systèmes et logiciels informatiques.<br>
+      © <span id="year">2026</span> Heurix. Tous droits réservés.
+    </div>
+  </div>
+</footer>
+
+<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+<script src="../search-engine.js?v=1788523609"></script>
+<script src="../nav-dropdown.js?v=1788086140"></script>
+<script src="../mobile-nav.js?v=1788597902"></script>
+<div id="pricing-nudge" class="pricing-nudge">
+  <button type="button" class="pricing-nudge-close" aria-label="Fermer">&times;</button>
+  <div class="pricing-nudge-kicker">Essai gratuit 14 jours</div>
+  <p>Testez Heurix sur votre catalogue, sans carte bancaire.</p>
+  <a href="../pricing.html" class="btn">Voir les tarifs</a>
+</div>
+<script src="../pricing-nudge.js?v=1787906653"></script>
+<script>window.HEURIX_RACINE='../';</script><script src="../consent.js?v=1788689121"></script>
+<script src="../langue-banniere.js?v=1788686174"></script>
+</body>
+</html>

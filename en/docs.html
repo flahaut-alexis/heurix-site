@@ -1242,7 +1242,7 @@ console.log(results.hits);</code></pre>
       <div class="regex-reassure"><span class="regex-reassure-icone" aria-hidden="true">🚀</span><p><a href="../downloads/heurix-mcp-server.zip?v=1789582089" download>Download the MCP server</a> — detailed installation and configuration (Claude Desktop and Cursor) on <a href="blog/guide-serveur-mcp-heurix.html">the dedicated guide</a>.</p></div>
       <pre class="docs-code"><code>pip install -r requirements.txt
 HEURIX_API_KEY=hx_your_key python3 server.py</code></pre>
-      <p>The API key lives only in the MCP client's local configuration (a JSON file on the user's machine), never sent in the clear in a tool call. Every call consumes the normal quota of the key used — <code class="docs-inline-code">heurix_search</code> and <code class="docs-inline-code">heurix_browse</code> count like any search or Browse call, <code class="docs-inline-code">heurix_catalog_stats</code> does not.</p>
+      <p>The API key lives only in the MCP client's local configuration (a JSON file on the user's machine), never sent in the clear in a tool call. Every call consumes the normal quota of the key used — <code class="docs-inline-code">heurix_search</code> and <code class="docs-inline-code">heurix_browse</code> count like any search or Browse call; <code class="docs-inline-code">heurix_catalog_stats</code> counts nothing with no argument, and one request when a catalog is given.</p>
     </section>
 
     <section id="glossaire" class="docs-section">
