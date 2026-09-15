@@ -7765,11 +7765,18 @@
       // La requête part en tâche de fond (pas de await, pas de .then
       // avant startSession) -- même si elle échoue ou traîne, l'accès au
       // tableau de bord ne dépend jamais d'elle.
+      // La route est derriere require_key : sans la cle serveur, 401, avale
+      // par le .catch -- aucune reponse enregistree du 3 aout au 15 septembre
+      // 2026. Le marchand n'a rien a faire d'un echec, mais il se journalise :
+      // c'est le silence qui a cache ce 401. Voir
+      // tests/console-onboarding-profile-cle.test.js.
       var secteur = segSecteur && segSecteur.value ? segSecteur.value : null;
       var plateforme = segPlateforme && segPlateforme.value ? segPlateforme.value : null;
       if (secteur || plateforme) {
-        apiPost("/v1/auth/onboarding-profile", { secteur: secteur, plateforme: plateforme })
-          .catch(function () { /* tache de fond : un echec ici n'affecte jamais l'acces au tableau de bord */ });
+        apiFetch("/v1/auth/onboarding-profile", key, { method: "POST", body: { secteur: secteur, plateforme: plateforme } })
+          .catch(function (err) {
+            console.warn("POST /v1/auth/onboarding-profile refuse :", err.status, err.message);
+          });
       }
       postSignupScreen.hidden = true;
       startSession(sessionToken, key);
