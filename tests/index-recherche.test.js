@@ -506,6 +506,16 @@ describe("index derive — la recherche lit vraiment les termes", () => {
 
   const PAGES_DIN_933 = [
     "blog/alternative-algolia-catalogue-technique.html",
+    // ENTREE LE 16 SEPTEMBRE 2026, ET prestashop.html RESSORT. L'article
+    // mesure un plongement sur un corpus de visserie dont toutes les fiches
+    // portent « DIN 933 » : il traite la norme, il ne la mentionne pas en
+    // passant. Neuf entrees correspondent desormais, pour huit places
+    // affichees (`search-engine.js`, limite par defaut 8) -- c'est une
+    // EVICTION par le plafond, pas une chute de prestashop.html, qui n'a pas
+    // change d'un mot. Meme mecanisme que le 2 septembre, et il est note ici
+    // pour qu'on sache que la page PrestaShop ne remonte plus sur cette
+    // requete.
+    "blog/decoupage-rag-catalogue-produit.html",
     "blog/heurix-vs-algolia-typesense-sensefuel-doofinder.html",
     "blog/recherche-reference-sku-b2b.html",
     "blog/recherche-vectorielle-catalogues-techniques.html",
@@ -522,7 +532,6 @@ describe("index derive — la recherche lit vraiment les termes", () => {
     // dans huit places, mais l'ancre #annotations en occupait une. Le
     // « DEPLACEMENT » note le 2 septembre etait donc une EVICTION, et sa cause
     // n'etait pas celle qu'on lui a prêtee.
-    "prestashop.html",
     "solutions/outillage.html",
   ];
 

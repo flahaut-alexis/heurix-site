@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Découper une fiche de trois lignes : ce qu'un plongement fait d'une référence technique — Heurix</title>
+<meta name="description" content="Mesure sur 64 vis : un plongement place une M6 devant la M10 demandée 9 fois sur 64, à 0,0009 de cosinus. Notre moteur rend 64 sur 64, et rate « 6 pans ».">
+<link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/decoupage-rag-catalogue-produit.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Découper une fiche de trois lignes : ce qu'un plongement fait d'une référence technique — Heurix">
+<meta property="og:description" content="Mesure sur 64 vis : un plongement place une M6 devant la M10 demandée 9 fois sur 64, à 0,0009 de cosinus. Notre moteur rend 64 sur 64, et rate « 6 pans ».">
+<meta property="og:image" content="https://heurix.fr/og-image.png">
+<meta property="og:url" content="https://heurix.fr/blog/decoupage-rag-catalogue-produit.html">
+<meta property="og:locale" content="fr_FR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Découper une fiche de trois lignes : ce qu'un plongement fait d'une référence technique — Heurix">
+<meta name="twitter:description" content="Mesure sur 64 vis : un plongement place une M6 devant la M10 demandée 9 fois sur 64, à 0,0009 de cosinus. Notre moteur rend 64 sur 64, et rate « 6 pans ».">
+<meta name="twitter:image" content="https://heurix.fr/og-image.png">
+<link rel="icon" type="image/png" href="../favicon-32.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<link rel="stylesheet" href="../styles.css?v=1788685422">
+<link rel="canonical" href="https://heurix.fr/blog/decoupage-rag-catalogue-produit.html">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Heurix",
+  "url": "https://heurix.fr",
+  "logo": "https://heurix.fr/logo.svg?v=1787610626",
+  "image": "https://heurix.fr/og-image.png",
+  "description": "Moteur de recherche et search & discovery pour sites e-commerce, basé sur des expressions régulières, conçu en France.",
+  "email": "contact@heurix.fr",
+  "sameAs": ["https://www.linkedin.com/company/heurix-search/"],
+  "founder": {"@type": "Person", "name": "Alexis Flahaut"},
+  "areaServed": "FR"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Découper une fiche de trois lignes : ce qu'un plongement fait d'une référence technique",
+  "description": "Le découpage RAG suppose des documents longs. Une fiche produit fait trois lignes. Mesure comparée d'un plongement multilingue et du moteur Heurix sur le même corpus de visserie.",
+  "datePublished": "2026-09-16T09:20:00+02:00",
+  "inLanguage": "fr",
+  "mainEntityOfPage": "https://heurix.fr/blog/decoupage-rag-catalogue-produit.html",
+  "author": {
+    "@type": "Person",
+    "name": "Alexis Flahaut",
+    "url": "https://heurix.fr/about.html"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Heurix",
+    "url": "https://heurix.fr"
+  }
+}
+</script>
+</head>
+<body class="docs-dark">
+<header>
+  <div class="header-top">
+    <nav class="header-top-inner">
+      <a href="../index.html" class="logo"><img src="../logo.svg?v=1787610626" alt="Heurix"> <span class="wordmark">Heurix</span></a>
+      <div class="nav-links">
+        <div class="nav-drop">
+          <button type="button" class="nav-drop-btn" aria-expanded="false" aria-haspopup="true">Produit</button>
+          <div class="nav-drop-panel nav-panel-groupes">
+            <div class="nav-promo">
+              <p class="nav-promo-sur">D&Eacute;MO EN DIRECT</p>
+              <div class="nav-promo-vis"><span class="nav-promo-q">vis inox m8x20</span><span class="nav-promo-chip">DIN 933</span><span class="nav-promo-chip">rondelle</span></div>
+              <p class="nav-promo-t">Voir Heurix en action</p>
+              <p class="nav-promo-d">Une boutique r&eacute;elle, servie par le moteur.</p>
+              <a class="nav-promo-cta" href="../demo/index.html">Lancer la d&eacute;mo &rarr;</a>
+            </div>
+            <div class="nav-drop-col">
+              <p class="nav-drop-groupe">Comprendre</p>
+              <a class="nav-row" href="../index.html#probleme"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span><span><span class="nav-row-t">Le probl&egrave;me</span> <span class="nav-row-d">Le point de conversion le moins surveill&eacute; d&rsquo;un site.</span></span></a>
+              <a class="nav-row" href="../produit.html#mission"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg></span><span><span class="nav-row-t">Notre mission</span> <span class="nav-row-d">Faire de la recherche un levier, pas un fardeau.</span></span></a>
+            </div>
+            <div class="nav-drop-col">
+              <p class="nav-drop-groupe">Le produit</p>
+              <a class="nav-row" href="../index.html#moteur"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg></span><span><span class="nav-row-t">Le moteur</span> <span class="nav-row-d">Notre propre moteur, d&eacute;velopp&eacute; en France.</span></span></a>
+              <a class="nav-row" href="../fonctionnalites.html"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></span><span><span class="nav-row-t">Fonctionnalit&eacute;s</span> <span class="nav-row-d">Cascade d&rsquo;annotations, fautes tol&eacute;r&eacute;es, synonymes m&eacute;tier.</span></span></a>
+            </div>
+            <div class="nav-drop-col">
+              <p class="nav-drop-groupe">Passer &agrave; l'action</p>
+              <a class="nav-row" href="../roi.html"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span><span><span class="nav-row-t">Simulateur ROI</span> <span class="nav-row-d">Vos hypoth&egrave;ses, en curseurs, avec leurs sources.</span></span></a>
+              <a class="nav-row" href="../mesure.html"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg></span><span><span class="nav-row-t">La mesure</span> <span class="nav-row-d">+28 points de rappel sur 300 requ&ecirc;tes, refaisable.</span></span></a>
+            </div>
+          </div>
+        </div>
+        <div class="nav-drop">
+          <button type="button" class="nav-drop-btn" aria-expanded="false" aria-haspopup="true">Solutions</button>
+          <div class="nav-drop-panel nav-panel-secteurs">
+          <a class="nav-drop-tous" href="../secteurs.html">Tous les secteurs &rarr;</a>
+          <a href="../solutions/outillage.html"><span class="nav-icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg></span>Quincaillerie & outillage</a>
+          <a href="../solutions/industrie.html"><span class="nav-icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></span>Pièces détachées & industrie</a>
+          <a href="../solutions/automobile.html"><span class="nav-icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></span>Automobile</a>
+          <a href="../solutions/electricite.html"><span class="nav-icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6z"/></svg></span>Électricité & installation</a>
+          <a href="../solutions/plomberie.html"><span class="nav-icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z"/></svg></span>Plomberie & sanitaire</a>
+          <a href="../solutions/mode.html"><span class="nav-icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.38 3.46 16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.47a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.47a2 2 0 00-1.34-2.23z"/></svg></span>Mode & retail</a>
+          <a href="../solutions/electronique.html"><span class="nav-icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg></span>Électronique & high-tech</a>
+          <a href="../solutions/livres.html"><span class="nav-icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg></span>Librairie & édition</a>
+          <a href="../solutions/vins.html"><span class="nav-icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 22h8"/><path d="M12 15v7"/><path d="M12 15a5 5 0 005-5V3H7v7a5 5 0 005 5z"/></svg></span>Vins & spiritueux</a>
+          <a href="../solutions/sport.html"><span class="nav-icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span>Sport & glisse</a>
+          <a href="../solutions/finance.html"><span class="nav-icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>Finance & comptabilité</a>
+          </div>
+        </div>
+        <div class="nav-drop">
+          <button type="button" class="nav-drop-btn" aria-expanded="false" aria-haspopup="true">Developers</button>
+          <div class="nav-drop-panel nav-panel-groupes">
+            <div class="nav-promo">
+              <p class="nav-promo-sur">D&Eacute;MARRAGE</p>
+              <div class="nav-promo-vis"><div class="nav-promo-code"><b>POST</b> /v1/index/{catalog}/search&#10;{ "q": "vis inox m8x20" }</div></div>
+              <p class="nav-promo-t">D&eacute;marrer en 5 minutes</p>
+              <p class="nav-promo-d">De la cl&eacute; API au premier r&eacute;sultat pertinent.</p>
+              <a class="nav-promo-cta" href="../blog/guide-mise-en-route.html">Guide de mise en route &rarr;</a>
+            </div>
+            <div class="nav-drop-col">
+              <p class="nav-drop-groupe">D&eacute;marrer</p>
+              <a class="nav-row" href="../blog/guide-mise-en-route.html"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg></span><span><span class="nav-row-t">Guide de mise en route</span> <span class="nav-row-d">Trois &eacute;tapes pour une recherche qui fonctionne.</span></span></a>
+              <a class="nav-row" href="../docs.html"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></span><span><span class="nav-row-t">Documentation</span> <span class="nav-row-d">Indexer un catalogue, lancer une recherche en minutes.</span></span></a>
+            </div>
+            <div class="nav-drop-col">
+              <p class="nav-drop-groupe">Concepts</p>
+              <a class="nav-row" href="../docs.html#cascade"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></span><span><span class="nav-row-t">La cascade d&rsquo;annotations</span> <span class="nav-row-d">Le c&oelig;ur du moteur : des r&egrave;gles organis&eacute;es en niveaux.</span></span></a>
+              <a class="nav-row" href="../docs.html#produits"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></span><span><span class="nav-row-t">Structure des produits</span> <span class="nav-row-d">Un objet JSON libre, dont quatre champs ont un r&ocirc;le.</span></span></a>
+            </div>
+            <div class="nav-drop-col">
+              <p class="nav-drop-groupe">Int&eacute;grations</p>
+              <a class="nav-row" href="../integrations.html"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></span><span><span class="nav-row-t">Int&eacute;grations</span> <span class="nav-row-d">Des guides techniques avec du vrai code.</span></span></a>
+              <a class="nav-row" href="../prestashop.html"><span class="nav-row-icn marque" aria-hidden="true" style="background:rgba(223,0,103,.12); color:#CB005E;">P</span><span><span class="nav-row-t">PrestaShop</span> <span class="nav-row-d">Module natif, via ProductSearchProviderInterface.</span></span></a>
+              <a class="nav-row" href="../woocommerce.html"><span class="nav-row-icn marque" aria-hidden="true" style="background:rgba(127,84,179,.12); color:#7F54B3;">W</span><span><span class="nav-row-t">WooCommerce</span> <span class="nav-row-d">Extension WordPress, via le hook pre_get_posts.</span></span></a>
+              <a class="nav-row" href="../shopify.html"><span class="nav-row-icn marque" aria-hidden="true" style="background:rgba(94,142,62,.14); color:#4E7533;">S</span><span><span class="nav-row-t">Shopify</span> <span class="nav-row-d">Int&eacute;gration via l&rsquo;API REST document&eacute;e.</span></span></a>
+            </div>
+          </div>
+        </div>
+        <a href="../blog.html">Blog</a>
+        <a href="../console.html" class="nav-link-mobile-seul">Mon compte</a>
+      </div>
+      <div class="header-search">
+        <button id="heurix-search-btn" class="search-trigger" aria-label="Chercher sur le site" type="button">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <span class="search-trigger-text">Chercher sur le site</span>
+          <span class="search-trigger-kbd">Ctrl K</span>
+        </button>
+      </div>
+      <div class="header-utility">
+        <button type="button" id="mobile-nav-toggle" class="mobile-nav-toggle" aria-label="Menu" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+        <a href="../console.html" class="header-signin"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0116 0v1"/></svg>Mon compte</a>
+        <a href="../en/blog.html" class="lang-switch">EN</a>
+        <a href="../pricing.html" class="btn">Démarrer l'essai gratuit</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+
+<article class="post">
+  <div class="wrap post-wrap">
+    <a href="../blog.html" class="back-link">← Tous les articles</a>
+    <div class="kicker">Mesure · Septembre 2026</div>
+    <h1>Découper une fiche de trois lignes : ce qu'un plongement fait d'une référence technique</h1>
+    <p class="post-lede">Les méthodes de RAG découpent des documents longs. Une fiche de visserie en fait trois lignes, et il n'y a rien à découper. Nous avons mesuré ce qu'un plongement en fait, et ce que notre moteur en fait, sur le même corpus.</p>
+
+    <div class="post-body">
+      <h2>Le découpage suppose un document long</h2>
+      <p>La littérature du RAG traite du découpage : longueur fixe, phrase, paragraphe, fenêtre glissante, découpage récursif, hiérarchique, thématique, agentique. Toutes ces stratégies répondent à la même contrainte : un document dépasse la fenêtre de contexte, il faut le couper sans perdre le sens.</p>
+      <p>Une fiche de catalogue technique ne pose pas ce problème. « Vis TH M8x30 inox A2, DIN 933, boîte de 100 » tient en une ligne. La couper en deux ne produit pas deux unités de sens, elle produit une moitié inutilisable.</p>
+      <p>Il faut être juste : la question du catalogue n'est pas ignorée par tout le monde. L'article de Meilisearch sur le RAG appliqué aux données structurées prend explicitement la ligne entière comme unité de plongement, et recommande des filtres exacts à côté de la recherche sémantique. Le débat n'est donc pas « faut-il découper une fiche », il est ailleurs : <strong>d'où viennent les valeurs de ces filtres exacts</strong>, et que vaut la similarité quand le produit voisin ne diffère que par un chiffre.</p>
+
+      <h2>La mesure</h2>
+      <p>Corpus construit pour l'occasion, pas relevé chez un marchand : 64 fiches de visserie, 4 diamètres (M6, M8, M10, M12), 4 longueurs, 2 nuances d'inox, 2 types de tête. Les fiches sont rédigées en style catalogue, les requêtes en style acheteur, et les deux ne se ressemblent pas :</p>
+      <pre class="docs-code"><code>fiche   : Vis à tête hexagonale M10 x 30 mm, acier inoxydable A2, DIN 933
+requête : vis 6 pans m10x30 inox a2</code></pre>
+      <p>Le même corpus est passé deux fois. D'abord dans un plongement multilingue, <code class="docs-inline-code">intfloat/multilingual-e5-small</code> (révision 614241f6, export ONNX, moyenne masquée, préfixes <code class="docs-inline-code">query:</code> et <code class="docs-inline-code">passage:</code>), plus proche voisin par cosinus. Ensuite dans notre moteur, indexé avec le pack de règles outillage. Pour chaque requête, on regarde le premier résultat et on compte combien d'attributs il a justes.</p>
+      <div class="table-scroll"><table class="docs-params">
+        <tr><th>Premier résultat, sur 64 requêtes</th><th>Plongement e5-small</th><th>Moteur Heurix</th></tr>
+        <tr><td>bon diamètre</td><td>55 / 64</td><td>64 / 64</td></tr>
+        <tr><td>bonne longueur</td><td>64 / 64</td><td>64 / 64</td></tr>
+        <tr><td>bonne nuance d'inox</td><td>64 / 64</td><td>64 / 64</td></tr>
+        <tr><td>bon type de tête</td><td>62 / 64</td><td>32 / 64</td></tr>
+        <tr><td>la fiche exacte</td><td>53 / 64</td><td>32 / 64</td></tr>
+      </table></div>
+      <p>Aucun des deux ne gagne partout, et les deux colonnes ne se trompent pas sur les mêmes choses. C'est tout l'objet de cet article.</p>
+
+      <h2>Les neuf erreurs du plongement portent sur le chiffre qui décide</h2>
+      <p>Les 9 échecs de diamètre sont concentrés : 8 fois une M10 demandée, une M6 rendue ; une fois une M12 demandée, une M6 rendue. Jamais l'inverse. Voici le classement complet pour « vis 6 pans m10x30 inox a2 » :</p>
+      <pre class="docs-code"><code>0,9085  Vis à tête hexagonale M6 x 30 mm, acier inoxydable A2, DIN 933
+0,9076  Vis à tête hexagonale M10 x 30 mm, acier inoxydable A2, DIN 933
+0,9063  Vis à tête fraisée M6 x 30 mm, acier inoxydable A2, DIN 933
+0,9057  Vis à tête fraisée M10 x 30 mm, acier inoxydable A2, DIN 933
+0,9022  Vis à tête hexagonale M12 x 30 mm, acier inoxydable A2, DIN 933</code></pre>
+      <p>Neuf dix-millièmes séparent la mauvaise vis de la bonne. Pour situer l'échelle : sur les mêmes chaînes, un marteau de charpentier est à 0,84 de la vis M8x30, et une vis qui ne diffère que par son diamètre est à 0,985. Autrement dit, la vis qui n'est pas la bonne est environ dix fois moins loin que le produit sans rapport (0,015 contre 0,16 d'écart au cosinus). Tout se joue dans une marge que n'importe quelle variation de formulation dépasse.</p>
+      <p>Ce n'est pas un artefact de tokenisation. Le modèle voit bien le nombre, et il le voit entier :</p>
+      <pre class="docs-code"><code>m6x16   →  ['▁m', '6',  'x', '16']
+m10x16  →  ['▁m', '10', 'x', '16']</code></pre>
+      <p>Le « 10 » est présent, distinct, au bon endroit. Le modèle ne l'a pas perdu : il ne lui donne simplement pas le poids qu'il a dans le métier. Une vis trop courte de cinq millimètres traverse la pièce ; pour une mesure de distance apprise sur du texte, cinq millimètres sont un détail de surface.</p>
+
+      <h2>Ce que notre moteur fait à la place</h2>
+      <p>Le moteur ne calcule pas de distance : il applique au texte des motifs déclarés par secteur, en deux niveaux. Le niveau 1 reconnaît les motifs bruts, le niveau 2 les compose. La même cascade traverse la fiche et la requête.</p>
+      <pre class="docs-code"><code>Vis TH M8x30 inox A2, DIN 933
+  → FAM_VIS TETE_HEX DIAM_M8 LONG_30 MAT_INOX NORME_DIN933
+  → VIS_M8X30 DIAM_M8_INOX
+
+Écrou H M8 inox A2, DIN 934
+  → FAM_ECROU DIAM_M8 MAT_INOX NORME_DIN934</code></pre>
+      <p>C'est un découpage, mais par attribut et non par position. Rien n'est coupé : la longueur est isolée comme une valeur, pas comme un fragment de chaîne. D'où la différence de nature avec le découpage d'un document : une fenêtre glissante choisit <em>où</em> couper, une règle choisit <em>quoi</em> lire. Et une valeur lue est filtrable, comparable, groupable ; un fragment ne l'est pas.</p>
+      <p>Cela repose sur une condition qu'il faut énoncer : quelqu'un a écrit les règles du secteur. Le diamètre métrique, la longueur après le « x », les normes DIN, ISO et NF, les familles, les types de tête. Sur un catalogue dont le vocabulaire n'est décrit par aucun pack, le moteur ne lit rien de plus qu'un moteur de texte.</p>
+
+      <h2>Et ce que notre moteur rate</h2>
+      <p>Deux échecs mesurés, sur ce même corpus.</p>
+      <p><strong>« 6 pans » ne figure pas dans les règles.</strong> Le pack reconnaît « hexagonale », « hex », « th », mais pas la tournure d'atelier « 6 pans ». Les 32 requêtes qui l'emploient tombent donc à égalité entre tête hexagonale et tête fraisée, et le classement tranche au hasard du reste. Le plongement, lui, rapproche « 6 pans » de « tête hexagonale » sans qu'on lui ait rien déclaré : 62 sur 64. C'est exactement ce qu'une mesure de similarité sait faire et qu'une règle ne sait pas.</p>
+      <p><strong>La nuance d'inox n'est pas isolée comme attribut.</strong> « inox », « A2 » et « A4 » produisent tous la même annotation de matière. Les deux nuances restent séparables par le mot lui-même, ce qui suffit au classement de ce corpus, mais la nuance n'existe pas comme valeur : elle n'est ni filtrable, ni utilisable en facette. Sur un catalogue réel où d'autres signaux pèsent, cela se voit dans l'ordre des résultats. C'est une limite de notre pack, pas une propriété de la méthode, et elle est en cours de correction.</p>
+
+      <h2>Où la frontière passe</h2>
+      <p>Rien de ce qui précède ne dit que le RAG est inutile. Il dit que retrouver une référence n'est pas la tâche pour laquelle il a été conçu.</p>
+      <div class="table-scroll"><table class="docs-params">
+        <tr><th>Le découpage et le plongement servent</th><th>Les règles servent</th></tr>
+        <tr><td>Une notice, une fiche technique en PDF, un manuel de montage : des documents longs, qu'il faut bien couper.</td><td>Une fiche de trois lignes, où chaque jeton est une valeur.</td></tr>
+        <tr><td>Une question en langage naturel : « quelle vis pour fixer une terrasse en bord de mer ? »</td><td>Une requête qui est déjà une spécification : « vis th m8x30 a4 ».</td></tr>
+        <tr><td>Le vocabulaire imprévu : « 6 pans », « boulon à tête six pans ».</td><td>La valeur qui décide : un diamètre, une longueur, une norme, un suffixe.</td></tr>
+      </table></div>
+      <p>La composition utile se lit dans le tableau : le plongement pour la formulation, les règles pour les valeurs. Une question en langage naturel doit finir par retomber sur des attributs exacts, sinon elle rend un produit voisin et plausible. « Bord de mer » veut dire A4, et c'est une valeur, pas une ambiance.</p>
+
+      <h2>Le test que vous pouvez refaire</h2>
+      <p>Prenez deux fiches de votre catalogue qui ne diffèrent que par la valeur qui décide : deux longueurs, deux diamètres, deux suffixes d'étanchéité. Interrogez votre moteur avec la première. Regardez le rang de la seconde, et surtout l'écart de score entre les deux. Si cet écart est de l'ordre du millième quand un produit sans rapport est dix fois plus loin, votre classement se joue sur du bruit.</p>
+      <p>Les chiffres de cet article valent pour ce modèle et ce corpus construit. Un autre modèle de plongement donnerait d'autres nombres ; la question, elle, se repose à l'identique. Sur le principe, l'article <a href="recherche-vectorielle-catalogues-techniques.html">pourquoi la recherche vectorielle échoue sur les catalogues techniques</a> explique ce que fait un moteur vectoriel et sur quels catalogues il convient. Celui-ci le mesure. Le fonctionnement de la cascade est détaillé dans <a href="cascade-annotations-resultats-explicables.html">ce que votre moteur a compris, et pourquoi il vous le montre</a>.</p>
+
+    </div>
+
+    <div class="post-footer-cta">
+      <p>Voir ce que le moteur lit de vos références ?</p>
+      <a href="../pricing.html" class="btn">Essayer gratuitement</a>
+    </div>
+  </div>
+</article>
+
+<footer>
+  <div class="wrap foot-grid">
+    <a href="../index.html" class="logo" style="font-size:15px;"><img src="../logo.svg?v=1787610626" alt="Heurix" style="height:22px;width:22px;"> <span class="wordmark">Heurix</span></a>
+    <div class="foot-links">
+      <a href="../blog.html">Blog</a>
+      <a href="../docs.html">Documentation API</a>
+      <a href="../fonctionnalites.html">Fonctionnalités</a>
+      <a href="../integrations.html">Intégrations</a>
+      <a href="../partners.html">Programme partenaires</a>
+      <a href="../console.html">Console</a>
+      <a href="../about.html">À propos</a>
+      <a href="../faq.html">FAQ</a>
+      <a href="../cgv.html">CGV</a>
+      <a href="../mentions-legales.html">Mentions légales</a>
+      <a href="#" data-rouvrir-consentement>Gérer les cookies</a>
+      <a href="../confidentialite.html">Confidentialité</a>
+      <a href="mailto:contact@heurix.fr">contact@heurix.fr</a>
+    </div>
+    <div class="foot-social">
+      <span class="foot-social-label">Réseaux sociaux</span>
+      <a href="https://www.linkedin.com/company/heurix-search/" target="_blank" rel="noopener" aria-label="LinkedIn" class="foot-social-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+      </a>
+    </div>
+    <div class="foot-legal">
+      Heurix — Entreprise individuelle (micro-entreprise). SIRET 107 681 900 00018. Conseil en systèmes et logiciels informatiques.<br>
+      © <span id="year">2026</span> Heurix. Tous droits réservés.
+    </div>
+  </div>
+</footer>
+
+<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+<script src="../search-engine.js?v=1788523609"></script>
+<script src="../nav-dropdown.js?v=1788086140"></script>
+<script src="../mobile-nav.js?v=1788597902"></script>
+<div id="pricing-nudge" class="pricing-nudge">
+  <button type="button" class="pricing-nudge-close" aria-label="Fermer">&times;</button>
+  <div class="pricing-nudge-kicker">Essai gratuit 14 jours</div>
+  <p>Testez Heurix sur votre catalogue, sans carte bancaire.</p>
+  <a href="../pricing.html" class="btn">Voir les tarifs</a>
+</div>
+<script src="../pricing-nudge.js?v=1787906653"></script>
+<script>window.HEURIX_RACINE='../';</script><script src="../consent.js?v=1788689121"></script>
+</body>
+</html>
