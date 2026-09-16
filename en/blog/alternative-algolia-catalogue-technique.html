@@ -3,19 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Algolia, Typesense, Meilisearch: what alternative for a technical catalog? — Heurix</title>
-<meta name="description" content="Where these three excellent generalist search engines stop short against a catalog of technical references.">
+<title>Algolia alternatives for a technical catalog: what each engine does with M8x30 — Heurix</title>
+<meta name="description" content="What the documentation of Algolia, Typesense, Meilisearch, Elasticsearch, Doofinder, Sensefuel and the platforms says about references like DIN 933 or M8x30, and what our engine still gets wrong.">
 <link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/alternative-algolia-catalogue-technique.html">
 <link rel="alternate" hreflang="en" href="https://heurix.fr/en/blog/alternative-algolia-catalogue-technique.html">
 <link rel="alternate" hreflang="x-default" href="https://heurix.fr/blog/alternative-algolia-catalogue-technique.html">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Algolia, Typesense, Meilisearch: what alternative for a technical catalog? — Heurix">
-<meta property="og:description" content="Where these three excellent generalist search engines stop short against a catalog of technical references.">
+<meta property="og:title" content="Algolia alternatives for a technical catalog: what each engine does with M8x30 — Heurix">
+<meta property="og:description" content="What the documentation of Algolia, Typesense, Meilisearch, Elasticsearch, Doofinder, Sensefuel and the platforms says about references like DIN 933 or M8x30, and what our engine still gets wrong.">
 <meta property="og:image" content="https://heurix.fr/og-image.png">
 <meta property="og:url" content="https://heurix.fr/en/blog/alternative-algolia-catalogue-technique.html">
 <meta property="og:locale" content="en_US">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Algolia, Typesense, Meilisearch: what alternative for a technical catalog? — Heurix">
+<meta name="twitter:title" content="Algolia alternatives for a technical catalog: what each engine does with M8x30 — Heurix">
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="../../favicon-32.png">
 <link rel="apple-touch-icon" href="../../apple-touch-icon.png">
@@ -40,8 +40,8 @@
 {
   "@context": "https://schema.org",
   "@type": "BlogPosting",
-  "headline": "Algolia, Typesense, Meilisearch: what alternative for a technical catalog?",
-  "description": "Where these three excellent generalist search engines stop short against a catalog of technical references.",
+  "headline": "Algolia alternatives for a technical catalog: what each engine does with M8x30",
+  "description": "What the documentation of Algolia, Typesense, Meilisearch, Elasticsearch, Doofinder, Sensefuel and the platforms says about references like DIN 933 or M8x30, and what our engine still gets wrong.",
   "datePublished": "2026-07-31T09:36:11+02:00",
   "inLanguage": "en",
   "mainEntityOfPage": "https://heurix.fr/en/blog/alternative-algolia-catalogue-technique.html",
@@ -173,27 +173,89 @@
   <div class="wrap post-wrap">
     <a href="../blog.html" class="back-link">← All articles</a>
     <div class="kicker">Blog · July 2026</div>
-    <h1>Algolia, Typesense, Meilisearch: what alternative for a technical catalog?</h1>
-    <p class="post-lede">These three engines are excellent generalist choices. Here's precisely where they stop short against a catalog of technical references — and where it actually plays out.</p>
+    <h1>Algolia alternatives for a technical catalog: what each engine does with M8x30</h1>
+    <p class="post-lede">For a fasteners catalog, speed and price don't settle much. What settles it is what an engine does with "M8x30", "M8 x 30" or "DIN-933". Here is what the documentation of Algolia, Typesense, Meilisearch, Elasticsearch, Doofinder, Sensefuel and the platforms says about it, and what our own engine gets wrong.</p>
 
     <div class="post-body">
-      <h2>What these engines do very well</h2>
-      <p>Algolia, Typesense, and Meilisearch share a common strength: extremely fast full-text indexing, generalist typo tolerance, and infrastructure proven at scale. For a fashion catalog, home decor, or editorial content — where search terms are everyday-language words — these are excellent choices, often better than what a small team could build itself.</p>
+      <h2>The question put to every engine</h2>
+      <p>An M8 screw, 30 mm long, DIN 933 standard, reaches a catalog under several spellings, and buyers type still others:</p>
+      <div class="table-scroll"><table class="docs-params">
+        <tr><th>Spelling</th><th>What changes</th></tr>
+        <tr><td><code class="docs-inline-code">M8x30</code></td><td>The compact form</td></tr>
+        <tr><td><code class="docs-inline-code">M8 x 30</code></td><td>Spaces</td></tr>
+        <tr><td><code class="docs-inline-code">M8-30</code></td><td>A dash instead of the "x"</td></tr>
+        <tr><td><code class="docs-inline-code">DIN 933</code>, <code class="docs-inline-code">DIN933</code>, <code class="docs-inline-code">DIN-933</code></td><td>The standard, with or without a separator</td></tr>
+      </table></div>
+      <p>An engine has to do two things with these spellings: bring them together, and rank the right dimension above the wrong one. An M8x300 contains the same characters as an M8x30, and it is not the same screw.</p>
 
-      <h2>Where it gets complicated: structured references</h2>
-      <p>The problem shows up on a specific kind of search: one where the reference itself carries the information. "M8x20," "6205-2RS," "DIN 933" aren't words: they're codes where each segment has a meaning (diameter, length, standard). A generalist typo-tolerant engine treats these strings as text to fuzzy-match, not as a structure to decompose. Result: a slightly misformatted reference, one extra or missing space, a supplier's own spelling variant, and the search silently fails.</p>
-      <p>These three engines do let you configure synonym rules or custom matching rules, but it's on you to write them, one by one, reference by reference. On a 500-product catalog, that's doable. On 50,000, it isn't.</p>
+      <h2>What we read, and what we didn't do</h2>
+      <p>For each competitor, we read its public documentation on September 16, 2026, and every claim below links to its page. We didn't try any of these products. When a documentation page says nothing about a case, we say so rather than guess. Heurix, on the other hand, is measured, and what it gets wrong is further down.</p>
 
-      <h2>The difference in approach</h2>
-      <p>Heurix doesn't replace these engines on their own turf. It answers a narrower, more specific problem: rule packs pre-configured by industry (hardware, fashion, industry) that recognize a reference's <em>structure</em> automatically, with no rule-by-rule manual setup. "M8 x 20 — A2" and "m8x20 stainless" point to the same product because the engine understands it's a diameter, a length, and a material — not because someone wrote a matching rule between those two exact strings.</p>
+      <h2>Algolia</h2>
+      <p>According to <a href="https://www.algolia.com/doc/guides/managing-results/optimize-search-results/handling-natural-languages-nlp/in-depth/tokenization" rel="noopener">its tokenization documentation</a>, letters and digits form a single block and the dash is a separator. By that rule, "M8x30" stays one word, and a query with a dash requires its pieces to appear in order. Algolia can also <a href="https://www.algolia.com/doc/guides/managing-results/optimize-search-results/handling-natural-languages-nlp/in-depth/splitting-and-concatenation/" rel="noopener">join two words typed apart or split one word in two</a>, with an exception that affects references: a piece that starts with a digit isn't joined to its neighbors. What happens to "DIN 933" against "DIN933", that page doesn't say, and we haven't tried it.</p>
+      <p>For codes with dashes, <a href="https://www.algolia.com/doc/guides/managing-results/optimize-search-results/typo-tolerance/how-to/how-to-search-in-hyphenated-attributes" rel="noopener">its guide</a> recommends storing in each record the list of spellings of the reference, with and without spaces. <a href="https://www.algolia.com/doc/guides/managing-results/rules/rules-overview/in-depth/implementing-rules" rel="noopener">Its rules</a> recognize literal words or any value of a declared facet. So you can target every value of a "diameter" field; the page doesn't offer a way to write a pattern such as "M followed by a number".</p>
 
-      <blockquote>The question isn't "what's the best search engine" — it's "which engine matches the nature of your references." A good choice for a clothing catalog can be a bad choice for a bearings catalog, and vice versa.</blockquote>
+      <h2>Typesense</h2>
+      <p><a href="https://typesense.org/docs/guide/tips-for-searching-common-types-of-data.html" rel="noopener">Its documentation</a> says Typesense removes special characters by default, when indexing and when searching: in its example, a reference with dots becomes a single joined string. You can declare those characters as separators, field by field. The <code class="docs-inline-code">split_join_tokens</code> parameter treats a space as a typo and tries the joined or split form, <a href="https://typesense.org/docs/30.2/api/search.html" rel="noopener">but only when the original query returns nothing</a>. The same page enables typo tolerance by default on words that mix letters and digits.</p>
+      <p>Its <a href="https://typesense.org/docs/30.2/api/curation.html" rel="noopener">curation rules</a> can filter on a facet value found in the query. As with Algolia, recognition works on declared values, not on a pattern.</p>
 
-      <h2>And the price?</h2>
-      <p>Algolia bills per search operation, with tiers that climb quickly past a few tens of thousands of monthly requests. Meilisearch Cloud and Typesense Cloud are more affordable at the entry level but demand more technical setup to reach a comparable result on structured references. Heurix sits on the same usage-based billing principle (<a href="../pricing.html">starting at €19/month</a>), with the advantage that reference understanding is included in the price, not something to build alongside it.</p>
+      <h2>Meilisearch</h2>
+      <p>In <a href="https://github.com/meilisearch/charabia/blob/main/charabia/src/separators.rs" rel="noopener">its tokenizer's code</a>, the dash is among the default separators. <a href="https://www.meilisearch.com/docs/resources/internals/typo_tolerance" rel="noopener">Its documentation</a> describes concatenation: up to three consecutive query words are also tried joined, and each joined form counts as one typo in ranking. By that rule, "DIN 933" can find "DIN933", behind an exact match; that is what the page describes, not what we measured.</p>
+      <p><a href="https://www.meilisearch.com/docs/capabilities/search_rules/overview" rel="noopener">Its search rules</a> support, according to their own page, neither regular expressions nor numeric patterns.</p>
+
+      <h2>Elasticsearch</h2>
+      <p>Elasticsearch provides building blocks rather than a behavior. <a href="https://www.elastic.co/docs/reference/text-analysis/analysis-standard-tokenizer" rel="noopener">Its standard tokenizer</a> follows the Unicode text segmentation algorithm. <a href="https://www.elastic.co/docs/reference/text-analysis/analysis-word-delimiter-graph-tokenfilter" rel="noopener">The word_delimiter_graph filter</a> splits by default at letter-digit boundaries, as in their example where "j2se" gives three pieces; its re-joining options produce tokens that indexing doesn't support without precautions, the same page says. For an exact code, <a href="https://www.elastic.co/docs/reference/text-analysis/normalizers" rel="noopener">a normalizer</a> emits a single token. Everything is possible, provided you assemble it: we inventoried that work in <a href="elasticsearch-lucene-catalogue-technique.html">a dedicated article</a>.</p>
+
+      <h2>Doofinder and Sensefuel</h2>
+      <p>Doofinder <a href="https://support.doofinder.com/faq/indexing" rel="noopener">indexes a product's identifiers by default</a>, including SKU, reference and GTIN, and offers <a href="https://support.doofinder.com/search/search-setup/search-fields" rel="noopener">fields that search on parts of a reference number</a>. <a href="https://support.doofinder.com/search/promotional-tools/custom-results" rel="noopener">Its custom results</a> include or exclude products for given terms. What those fields do with a dash or a space in a code, we didn't find in its documentation.</p>
+      <p>Sensefuel presents <a href="https://www.sensefuel.com/en/solutions/ecommerce-search/" rel="noopener">a search</a> that understands semantics and tolerates typos. We found no public page on how it handles product codes, and its help center didn't open to our reading. So we say nothing about it.</p>
+
+      <h2>Platform native engines</h2>
+      <ul>
+        <li><strong>Shopify</strong>: SKU is searched, and part of a code is found only when the code contains dashes (<a href="https://help.shopify.com/en/manual/online-store/storefront-search/search-behavior" rel="noopener">documentation</a>).</li>
+        <li><strong>PrestaShop</strong>: the <a href="https://github.com/PrestaShop/PrestaShop/blob/9.1.5/install-dev/data/xml/configuration.xml" rel="noopener">shipped configuration</a> sets the minimum word length to 3 characters, and <a href="https://github.com/PrestaShop/PrestaShop/blob/9.1.5/classes/Search.php" rel="noopener">the search code</a> skips shorter words. "M8" typed alone doesn't count.</li>
+        <li><strong>WooCommerce</strong>: <a href="https://github.com/woocommerce/woocommerce/blob/11.1.0/plugins/woocommerce/includes/class-wc-query.php" rel="noopener">the storefront search code</a> (version 11.1.0) matches words against the title, excerpt and content; SKU isn't among them.</li>
+        <li><strong>Adobe Commerce (Magento)</strong>: <a href="https://experienceleague.adobe.com/en/docs/commerce-admin/catalog/catalog/search/search-results" rel="noopener">the documentation</a> says searching by the end of a SKU isn't supported out of the box.</li>
+      </ul>
+      <p>What these engines do by default, in detail: <a href="moteur-natif-ne-suffit-pas.html">why your platform's native search engine isn't enough</a>.</p>
+
+      <h2>Heurix: recognition, not normalization</h2>
+      <p>Heurix doesn't bring these spellings together by cleaning the text. Its normalization only unifies casing: "din-933", "din 933" and "din933" remain three different splits. Rules written as regular expressions, grouped by industry, read each spelling and produce the same label. Output of the production engine, hardware industry:</p>
+      <pre class="docs-code">M8x30      → DIAM_M8, LONG_30, VIS_M8X30
+M8 x 30    → DIAM_M8, LONG_30, VIS_M8X30
+M8-30      → DIAM_M8, LONG_30, VIS_M8X30
+DIN-933    → NORME_DIN933
+DIN 933    → NORME_DIN933
+din933     → NORME_DIN933</pre>
+      <p>The same rules read product records and queries. That is what ranks the right dimension above the wrong one: on our bench, the query "M8x30" puts the five M8x30 screws, whatever their spelling, above the M8x300, the M8x35 and the M10x30. Spelling still weighs: the same screw scores 36 or 22.5 depending on whether its record says "M8x30" or "M8 X 30".</p>
+
+      <h2>What Heurix gets wrong, measured</h2>
+      <p>Bench run on September 16, 2026 against the production engine (<code class="docs-inline-code">cbfc93d</code>): a test catalog of 12 screws with the hardware industry, one of 5 bearings with the industry sector, identical results across two runs. A bench this size tells you whether a case works, not how often it comes up in your catalog.</p>
+      <div class="table-scroll"><table class="docs-params">
+        <tr><th>Query</th><th>What the engine returns</th></tr>
+        <tr><td><code class="docs-inline-code">ISO 4017</code></td><td>None of the 6 DIN 933 screws. The engine knows no correspondence between standards: it only brings together spellings of the same standard.</td></tr>
+        <tr><td><code class="docs-inline-code">8x30</code></td><td>Without the "M", the M10x30 screw gets the same score as two M8x30 screws spelled differently.</td></tr>
+        <tr><td><code class="docs-inline-code">M8 30</code></td><td>Without the "x", three M8x30 screws get the same score as the M8x300 and the M8x35.</td></tr>
+        <tr><td><code class="docs-inline-code">DIN93</code></td><td>An incomplete reference: 1 DIN 933 screw out of 6.</td></tr>
+        <tr><td><code class="docs-inline-code">6205-2RS</code></td><td>The 6206-2RS bearing, a different size, ranks above the 6205-ZZ, the right size with a different seal.</td></tr>
+        <tr><td><code class="docs-inline-code">62052RS</code></td><td>Typed without a separator, the reference finds only the record spelled the same way.</td></tr>
+      </table></div>
+      <p>And bearings are recognized only when the catalog uses the industry sector: the hardware sector doesn't read "6205-2RS".</p>
+
+      <h2>When to choose another engine</h2>
+      <ul>
+        <li><strong>Your customers search by words, not codes.</strong> The criterion in this article then weighs little, and the comparison plays out elsewhere.</li>
+        <li><strong>You want to host the engine yourself.</strong> Typesense <a href="https://typesense.org/docs/guide/install-typesense.html" rel="noopener">documents self-hosting</a>; Heurix is an API, hosted in France at OVH.</li>
+        <li><strong>Visual merchandising comes before references.</strong> Doofinder documents its custom results, Sensefuel highlights banners and promoted products.</li>
+      </ul>
 
       <h2>How to decide</h2>
-      <p>A simple question: if you type a product reference with a typo or a format slightly different from how it was saved, does your current engine still find it? If the answer is no more than one time in five, the problem probably isn't general typo tolerance. It's the lack of understanding of your references' structure. That's exactly the problem Heurix's rule packs were built to solve.</p>
+      <p>Take a reference from your catalog and type it into your current engine in every spelling from the table at the top, then in an incomplete form. Count the results, and check whether the right dimension comes first. Then run the same test on Heurix, <a href="../pricing.html">free for 14 days</a>: you'll also see what it gets wrong on your catalog.</p>
+      <p>On references themselves: <a href="recherche-reference-sku-b2b.html">configuring search by reference on a B2B e-commerce site</a>.</p>
+
+      <h2>Sources</h2>
+      <p>Documentation read on September 16, 2026. Algolia: tokenization, splitting and concatenation, hyphenated codes, rules. Typesense: common data types, search parameters, curation, installation. Meilisearch: tokenizer code, typo tolerance, search rules. Elasticsearch: standard tokenizer, word_delimiter_graph, normalizers. Doofinder: indexing, search fields, custom results. Sensefuel: search page. Shopify: search behavior. PrestaShop 9.1.5: shipped configuration and Search.php. WooCommerce 11.1.0: class-wc-query.php. Adobe Commerce: search results. Each page is linked where it is cited.</p>
+      <p><em>Rewritten on September 16, 2026. The July version claimed these engines make you write rules "one by one, reference by reference", without a source: their documentation shows they already bring together some spellings without any rule. It also compared prices without a source, and said nothing about what our engine gets wrong.</em></p>
     </div>
 
     <div class="post-footer-cta">
