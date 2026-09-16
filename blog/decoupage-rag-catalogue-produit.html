@@ -3,25 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pourquoi la recherche vectorielle échoue sur les catalogues techniques — Heurix</title>
-<meta name="description" content="La similarité sémantique aide sur du langage naturel et nuit sur des références structurées. Démonstration sur visserie, roulements, ISBN et millésimes.">
-<link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/recherche-vectorielle-catalogues-techniques.html">
-<link rel="alternate" hreflang="en" href="https://heurix.fr/en/blog/recherche-vectorielle-catalogues-techniques.html">
-<link rel="alternate" hreflang="x-default" href="https://heurix.fr/blog/recherche-vectorielle-catalogues-techniques.html">
+<title>Découper une fiche de trois lignes : ce qu'un plongement fait d'une référence technique — Heurix</title>
+<meta name="description" content="Mesure sur 64 vis : un plongement place une M6 devant la M10 demandée 9 fois sur 64, à 0,0009 de cosinus. Notre moteur rend 64 sur 64, et rate « 6 pans ».">
+<link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/decoupage-rag-catalogue-produit.html">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Pourquoi la recherche vectorielle échoue sur les catalogues techniques — Heurix">
-<meta property="og:description" content="La similarité sémantique aide sur du langage naturel et nuit sur des références structurées. Démonstration sur visserie, roulements, ISBN et millésimes.">
+<meta property="og:title" content="Découper une fiche de trois lignes : ce qu'un plongement fait d'une référence technique — Heurix">
+<meta property="og:description" content="Mesure sur 64 vis : un plongement place une M6 devant la M10 demandée 9 fois sur 64, à 0,0009 de cosinus. Notre moteur rend 64 sur 64, et rate « 6 pans ».">
 <meta property="og:image" content="https://heurix.fr/og-image.png">
-<meta property="og:url" content="https://heurix.fr/blog/recherche-vectorielle-catalogues-techniques.html">
+<meta property="og:url" content="https://heurix.fr/blog/decoupage-rag-catalogue-produit.html">
 <meta property="og:locale" content="fr_FR">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Pourquoi la recherche vectorielle échoue sur les catalogues techniques — Heurix">
-<meta name="twitter:description" content="La similarité sémantique aide sur du langage naturel et nuit sur des références structurées. Démonstration sur visserie, roulements, ISBN et millésimes.">
+<meta name="twitter:title" content="Découper une fiche de trois lignes : ce qu'un plongement fait d'une référence technique — Heurix">
+<meta name="twitter:description" content="Mesure sur 64 vis : un plongement place une M6 devant la M10 demandée 9 fois sur 64, à 0,0009 de cosinus. Notre moteur rend 64 sur 64, et rate « 6 pans ».">
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="../favicon-32.png">
 <link rel="apple-touch-icon" href="../apple-touch-icon.png">
 <link rel="stylesheet" href="../styles.css?v=1788685422">
-<link rel="canonical" href="https://heurix.fr/blog/recherche-vectorielle-catalogues-techniques.html">
+<link rel="canonical" href="https://heurix.fr/blog/decoupage-rag-catalogue-produit.html">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -41,11 +39,11 @@
 {
   "@context": "https://schema.org",
   "@type": "BlogPosting",
-  "headline": "Pourquoi la recherche vectorielle échoue sur les catalogues techniques",
-  "description": "La similarité sémantique est un atout sur du langage naturel et un défaut sur des références structurées. Démonstration sur de vrais cas : visserie, roulements, ISBN, millésimes.",
-  "datePublished": "2026-07-25T16:08:55+02:00",
+  "headline": "Découper une fiche de trois lignes : ce qu'un plongement fait d'une référence technique",
+  "description": "Le découpage RAG suppose des documents longs. Une fiche produit fait trois lignes. Mesure comparée d'un plongement multilingue et du moteur Heurix sur le même corpus de visserie.",
+  "datePublished": "2026-09-16T09:20:00+02:00",
   "inLanguage": "fr",
-  "mainEntityOfPage": "https://heurix.fr/blog/recherche-vectorielle-catalogues-techniques.html",
+  "mainEntityOfPage": "https://heurix.fr/blog/decoupage-rag-catalogue-produit.html",
   "author": {
     "@type": "Person",
     "name": "Alexis Flahaut",
@@ -60,15 +58,6 @@
 </script>
 </head>
 <body class="docs-dark">
-<!-- Banniere de langue : regle de declenchement, cle et exemption CNIL dans langue-banniere.js. -->
-<aside class="langue-banniere" id="langue-banniere" lang="en" hidden>
-  <div class="langue-banniere-corps">
-    <span>This page is available in English.</span>
-    <a class="langue-banniere-lien" href="../en/blog/recherche-vectorielle-catalogues-techniques.html">Read in English</a>
-    <button type="button" class="langue-banniere-non">No thanks</button>
-  </div>
-</aside>
-<script>(function(){var b=document.getElementById('langue-banniere');if(!b)return;var pageFr=(document.documentElement.lang||'fr').slice(0,2).toLowerCase()==='fr',l=navigator.languages||[navigator.language||''],litFr=false;for(var i=0;i<l.length;i++)if(String(l[i]).slice(0,2).toLowerCase()==='fr')litFr=true;if(litFr===pageFr)return;try{if(localStorage.getItem('heurix_langue'))return;}catch(e){}b.hidden=false;})();</script>
 <header>
   <div class="header-top">
     <nav class="header-top-inner">
@@ -162,7 +151,7 @@
           <span></span><span></span><span></span>
         </button>
         <a href="../console.html" class="header-signin"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0116 0v1"/></svg>Mon compte</a>
-        <a href="../en/blog/recherche-vectorielle-catalogues-techniques.html" class="lang-switch">EN</a>
+        <a href="../en/blog.html" class="lang-switch">EN</a>
         <a href="../pricing.html" class="btn">Démarrer l'essai gratuit</a>
       </div>
     </nav>
@@ -173,76 +162,79 @@
 <article class="post">
   <div class="wrap post-wrap">
     <a href="../blog.html" class="back-link">← Tous les articles</a>
-    <div class="kicker">Analyse · Juillet 2026</div>
-    <h1>Pourquoi la recherche vectorielle échoue sur les catalogues techniques</h1>
-    <p class="post-lede">La similarité sémantique est une avancée réelle. Elle est aussi le mauvais outil quand vos références encodent des dimensions, des normes et des identifiants — et voici précisément pourquoi.</p>
+    <div class="kicker">Mesure · Septembre 2026</div>
+    <h1>Découper une fiche de trois lignes : ce qu'un plongement fait d'une référence technique</h1>
+    <p class="post-lede">Les méthodes de RAG découpent des documents longs. Une fiche de visserie en fait trois lignes, et il n'y a rien à découper. Nous avons mesuré ce qu'un plongement en fait, et ce que notre moteur en fait, sur le même corpus.</p>
 
     <div class="post-body">
-      <h2>Ce que fait un moteur vectoriel, et pourquoi c'est brillant</h2>
-      <p>Un moteur vectoriel transforme chaque texte en une suite de nombres — un point dans un espace à plusieurs centaines de dimensions. Deux textes de sens proche se retrouvent proches dans cet espace. C'est ce qui permet à une recherche de « chaussures pour courir » de trouver des « baskets de running », sans qu'aucun synonyme n'ait été déclaré.</p>
-      <p>Sur du langage naturel, c'est une avancée considérable. Sur un catalogue de mode, de mobilier ou de contenu éditorial, la similarité sémantique répond exactement au besoin : l'acheteur décrit ce qu'il veut avec ses mots, le moteur comprend l'intention.</p>
-      <p><strong>Le problème n'est donc pas la technique. C'est son adéquation à un type de catalogue précis.</strong></p>
+      <h2>Le découpage suppose un document long</h2>
+      <p>La littérature du RAG traite du découpage : longueur fixe, phrase, paragraphe, fenêtre glissante, découpage récursif, hiérarchique, thématique, agentique. Toutes ces stratégies répondent à la même contrainte : un document dépasse la fenêtre de contexte, il faut le couper sans perdre le sens.</p>
+      <p>Une fiche de catalogue technique ne pose pas ce problème. « Vis TH M8x30 inox A2, DIN 933, boîte de 100 » tient en une ligne. La couper en deux ne produit pas deux unités de sens, elle produit une moitié inutilisable.</p>
+      <p>Il faut être juste : la question du catalogue n'est pas ignorée par tout le monde. L'article de Meilisearch sur le RAG appliqué aux données structurées prend explicitement la ligne entière comme unité de plongement, et recommande des filtres exacts à côté de la recherche sémantique. Le débat n'est donc pas « faut-il découper une fiche », il est ailleurs : <strong>d'où viennent les valeurs de ces filtres exacts</strong>, et que vaut la similarité quand le produit voisin ne diffère que par un chiffre.</p>
 
-      <h2>Le cœur du problème : une distance qui ne mesure pas la bonne chose</h2>
-      <p>Prenons deux références de visserie, telles qu'elles existent dans n'importe quel catalogue de quincaillerie :</p>
+      <h2>La mesure</h2>
+      <p>Corpus construit pour l'occasion, pas relevé chez un marchand : 64 fiches de visserie, 4 diamètres (M6, M8, M10, M12), 4 longueurs, 2 nuances d'inox, 2 types de tête. Les fiches sont rédigées en style catalogue, les requêtes en style acheteur, et les deux ne se ressemblent pas :</p>
+      <pre class="docs-code"><code>fiche   : Vis à tête hexagonale M10 x 30 mm, acier inoxydable A2, DIN 933
+requête : vis 6 pans m10x30 inox a2</code></pre>
+      <p>Le même corpus est passé deux fois. D'abord dans un plongement multilingue, <code class="docs-inline-code">intfloat/multilingual-e5-small</code> (révision 614241f6, export ONNX, moyenne masquée, préfixes <code class="docs-inline-code">query:</code> et <code class="docs-inline-code">passage:</code>), plus proche voisin par cosinus. Ensuite dans notre moteur, indexé avec le pack de règles outillage. Pour chaque requête, on regarde le premier résultat et on compte combien d'attributs il a justes.</p>
       <div class="table-scroll"><table class="docs-params">
-        <tr><th>Référence</th><th>Distance sémantique</th><th>Distance commerciale</th></tr>
-        <tr><td class="mono">M8 x 20 - Inox A2 - DIN 933</td><td rowspan="2" style="vertical-align:middle;">Quasi nulle — les deux textes sont presque identiques</td><td rowspan="2" style="vertical-align:middle;"><strong>Totale</strong> — ce sont deux produits incompatibles</td></tr>
-        <tr><td class="mono">M8 x 25 - Inox A2 - DIN 933</td></tr>
+        <tr><th>Premier résultat, sur 64 requêtes</th><th>Plongement e5-small</th><th>Moteur Heurix</th></tr>
+        <tr><td>bon diamètre</td><td>55 / 64</td><td>64 / 64</td></tr>
+        <tr><td>bonne longueur</td><td>64 / 64</td><td>64 / 64</td></tr>
+        <tr><td>bonne nuance d'inox</td><td>64 / 64</td><td>64 / 64</td></tr>
+        <tr><td>bon type de tête</td><td>62 / 64</td><td>32 / 64</td></tr>
+        <tr><td>la fiche exacte</td><td>53 / 64</td><td>32 / 64</td></tr>
       </table></div>
-      <p>Un moteur vectoriel n'est pas incapable de distinguer ces deux chaînes : « 20 » et « 25 » sont bien deux jetons différents. Le problème est ailleurs, et il est plus fondamental : <strong>la distance qu'il calcule ne corrèle pas avec la distance qui compte</strong>. Sur ces deux références, la différence de sens est infime alors que la différence d'usage est absolue. Une vis trop longue de 5 mm traverse la pièce.</p>
-      <p>C'est cette décorrélation qui produit les symptômes que connaissent les distributeurs techniques : des résultats « proches » mais faux, une confiance dégradée dans la recherche, et des retours de marchandise dont personne ne fait le lien avec le moteur.</p>
+      <p>Aucun des deux ne gagne partout, et les deux colonnes ne se trompent pas sur les mêmes choses. C'est tout l'objet de cet article.</p>
 
-      <h2>Trois autres cas où l'écart se creuse</h2>
+      <h2>Les neuf erreurs du plongement portent sur le chiffre qui décide</h2>
+      <p>Les 9 échecs de diamètre sont concentrés : 8 fois une M10 demandée, une M6 rendue ; une fois une M12 demandée, une M6 rendue. Jamais l'inverse. Voici le classement complet pour « vis 6 pans m10x30 inox a2 » :</p>
+      <pre class="docs-code"><code>0,9085  Vis à tête hexagonale M6 x 30 mm, acier inoxydable A2, DIN 933
+0,9076  Vis à tête hexagonale M10 x 30 mm, acier inoxydable A2, DIN 933
+0,9063  Vis à tête fraisée M6 x 30 mm, acier inoxydable A2, DIN 933
+0,9057  Vis à tête fraisée M10 x 30 mm, acier inoxydable A2, DIN 933
+0,9022  Vis à tête hexagonale M12 x 30 mm, acier inoxydable A2, DIN 933</code></pre>
+      <p>Neuf dix-millièmes séparent la mauvaise vis de la bonne. Pour situer l'échelle : sur les mêmes chaînes, un marteau de charpentier est à 0,84 de la vis M8x30, et une vis qui ne diffère que par son diamètre est à 0,985. Autrement dit, la vis qui n'est pas la bonne est environ dix fois moins loin que le produit sans rapport (0,015 contre 0,16 d'écart au cosinus). Tout se joue dans une marge que n'importe quelle variation de formulation dépasse.</p>
+      <p>Ce n'est pas un artefact de tokenisation. Le modèle voit bien le nombre, et il le voit entier :</p>
+      <pre class="docs-code"><code>m6x16   →  ['▁m', '6',  'x', '16']
+m10x16  →  ['▁m', '10', 'x', '16']</code></pre>
+      <p>Le « 10 » est présent, distinct, au bon endroit. Le modèle ne l'a pas perdu : il ne lui donne simplement pas le poids qu'il a dans le métier. Une vis trop courte de cinq millimètres traverse la pièce ; pour une mesure de distance apprise sur du texte, cinq millimètres sont un détail de surface.</p>
 
-      <h3>Le suffixe qui change tout</h3>
-      <p>Dans les pièces détachées, l'information décisive est souvent le suffixe. Un roulement <span class="mono">6204-2RS</span> et un <span class="mono">6204-ZZ</span> portent le même numéro et diffèrent par leur étanchéité : joints caoutchouc contre flasques tôle. Deux caractères d'écart dans le texte, deux pièces non interchangeables sur une machine en production.</p>
+      <h2>Ce que notre moteur fait à la place</h2>
+      <p>Le moteur ne calcule pas de distance : il applique au texte des motifs déclarés par secteur, en deux niveaux. Le niveau 1 reconnaît les motifs bruts, le niveau 2 les compose. La même cascade traverse la fiche et la requête.</p>
+      <pre class="docs-code"><code>Vis TH M8x30 inox A2, DIN 933
+  → FAM_VIS TETE_HEX DIAM_M8 LONG_30 MAT_INOX NORME_DIN933
+  → VIS_M8X30 DIAM_M8_INOX
 
-      <h3>L'identifiant qui a plusieurs écritures</h3>
-      <p>Un ISBN se présente indifféremment sous la forme <span class="mono">978-2-07-041311-9</span> ou <span class="mono">9782070413119</span>. Ce sont deux écritures du même identifiant, et un acheteur utilisera l'une ou l'autre selon sa source. Un moteur qui traite ces chaînes comme du texte les considère comme différentes — alors qu'il s'agit du même livre.</p>
-      <p>Inversement, deux éditions d'un même titre portent le même nom, le même auteur, la même couverture parfois — et deux ISBN distincts. Sémantiquement, elles sont interchangeables. Commercialement, ce sont deux produits, deux prix, deux disponibilités.</p>
+Écrou H M8 inox A2, DIN 934
+  → FAM_ECROU DIAM_M8 MAT_INOX NORME_DIN934</code></pre>
+      <p>C'est un découpage, mais par attribut et non par position. Rien n'est coupé : la longueur est isolée comme une valeur, pas comme un fragment de chaîne. D'où la différence de nature avec le découpage d'un document : une fenêtre glissante choisit <em>où</em> couper, une règle choisit <em>quoi</em> lire. Et une valeur lue est filtrable, comparable, groupable ; un fragment ne l'est pas.</p>
+      <p>Cela repose sur une condition qu'il faut énoncer : quelqu'un a écrit les règles du secteur. Le diamètre métrique, la longueur après le « x », les normes DIN, ISO et NF, les familles, les types de tête. Sur un catalogue dont le vocabulaire n'est décrit par aucun pack, le moteur ne lit rien de plus qu'un moteur de texte.</p>
 
-      <h3>Le nombre qui n'est pas une quantité</h3>
-      <p>Sur un vin, <span class="mono">2015</span> est un millésime, pas une quantité ni un prix. Un moteur généraliste le traite comme un nombre parmi d'autres — et une recherche de « magnum 2015 » remonte alors tout ce qui contient « 2015 » quelque part, y compris une référence interne ou un prix à 20,15 €.</p>
+      <h2>Et ce que notre moteur rate</h2>
+      <p>Deux échecs mesurés, sur ce même corpus.</p>
+      <p><strong>« 6 pans » ne figure pas dans les règles.</strong> Le pack reconnaît « hexagonale », « hex », « th », mais pas la tournure d'atelier « 6 pans ». Les 32 requêtes qui l'emploient tombent donc à égalité entre tête hexagonale et tête fraisée, et le classement tranche au hasard du reste. Le plongement, lui, rapproche « 6 pans » de « tête hexagonale » sans qu'on lui ait rien déclaré : 62 sur 64. C'est exactement ce qu'une mesure de similarité sait faire et qu'une règle ne sait pas.</p>
+      <p><strong>La nuance d'inox n'est pas isolée comme attribut.</strong> « inox », « A2 » et « A4 » produisent tous la même annotation de matière. Les deux nuances restent séparables par le mot lui-même, ce qui suffit au classement de ce corpus, mais la nuance n'existe pas comme valeur : elle n'est ni filtrable, ni utilisable en facette. Sur un catalogue réel où d'autres signaux pèsent, cela se voit dans l'ordre des résultats. C'est une limite de notre pack, pas une propriété de la méthode, et elle est en cours de correction.</p>
 
-      <h2>L'approche inverse : reconnaître la structure</h2>
-      <p>Heurix ne calcule pas de distance sémantique. Il reconnaît la <strong>structure</strong> d'une référence, par une cascade de règles, et en extrait des attributs exploitables. Sur les deux vis du début :</p>
+      <h2>Où la frontière passe</h2>
+      <p>Rien de ce qui précède ne dit que le RAG est inutile. Il dit que retrouver une référence n'est pas la tâche pour laquelle il a été conçu.</p>
       <div class="table-scroll"><table class="docs-params">
-        <tr><th>Référence</th><th>Ce que le moteur en extrait</th></tr>
-        <tr><td class="mono">M8 x 20 - Inox A2 - DIN 933</td><td><code class="docs-inline-code">DIAM_M8</code> <code class="docs-inline-code">LONG_20</code> <code class="docs-inline-code">MAT_INOX</code> <code class="docs-inline-code">NORME_DIN933</code></td></tr>
-        <tr><td class="mono">M8 x 25 - Inox A2 - DIN 933</td><td><code class="docs-inline-code">DIAM_M8</code> <code class="docs-inline-code">LONG_25</code> <code class="docs-inline-code">MAT_INOX</code> <code class="docs-inline-code">NORME_DIN933</code></td></tr>
+        <tr><th>Le découpage et le plongement servent</th><th>Les règles servent</th></tr>
+        <tr><td>Une notice, une fiche technique en PDF, un manuel de montage : des documents longs, qu'il faut bien couper.</td><td>Une fiche de trois lignes, où chaque jeton est une valeur.</td></tr>
+        <tr><td>Une question en langage naturel : « quelle vis pour fixer une terrasse en bord de mer ? »</td><td>Une requête qui est déjà une spécification : « vis th m8x30 a4 ».</td></tr>
+        <tr><td>Le vocabulaire imprévu : « 6 pans », « boulon à tête six pans ».</td><td>La valeur qui décide : un diamètre, une longueur, une norme, un suffixe.</td></tr>
       </table></div>
-      <p>Les deux références partagent leur diamètre, leur matière et leur norme. Elles diffèrent sur la longueur, isolée comme un attribut à part entière — donc filtrable, comparable, et jamais confondue. Le moteur ne se trompe pas sur ce point parce qu'il ne l'estime pas : il le lit.</p>
-      <p>Une conséquence utile : chaque résultat peut <strong>expliquer pourquoi il sort</strong>. Correspondance exacte, faute de frappe tolérée, annotation reconnue. Un classement vectoriel, lui, est difficilement explicable — la proximité dans un espace à plusieurs centaines de dimensions (384 pour le modèle multilingue que nous avons mesuré) ne se raconte pas.</p>
+      <p>La composition utile se lit dans le tableau : le plongement pour la formulation, les règles pour les valeurs. Une question en langage naturel doit finir par retomber sur des attributs exacts, sinon elle rend un produit voisin et plausible. « Bord de mer » veut dire A4, et c'est une valeur, pas une ambiance.</p>
 
-      <h2>Comment savoir de quel côté vous êtes</h2>
-      <p>La question n'est pas de savoir quelle technique est supérieure, mais laquelle correspond à votre catalogue. Quelques indices concrets :</p>
-      <div class="table-scroll"><table class="docs-params">
-        <tr><th>La similarité sémantique convient si…</th><th>La reconnaissance de structure convient si…</th></tr>
-        <tr>
-          <td>Vos clients décrivent un besoin avec leurs mots<br>Vos produits se distinguent par le style, l'usage, l'ambiance<br>Une réponse « approchante » est satisfaisante</td>
-          <td>Vos clients tapent une référence ou un identifiant<br>Vos produits se distinguent par des dimensions, des normes, des suffixes<br>Une réponse approchante est une <strong>erreur de commande</strong></td>
-        </tr>
-      </table></div>
-      <p>Beaucoup de catalogues relèvent des deux, selon la page et selon le visiteur. L'erreur n'est pas de choisir une technique, c'est de croire qu'une seule suffit.</p>
+      <h2>Le test que vous pouvez refaire</h2>
+      <p>Prenez deux fiches de votre catalogue qui ne diffèrent que par la valeur qui décide : deux longueurs, deux diamètres, deux suffixes d'étanchéité. Interrogez votre moteur avec la première. Regardez le rang de la seconde, et surtout l'écart de score entre les deux. Si cet écart est de l'ordre du millième quand un produit sans rapport est dix fois plus loin, votre classement se joue sur du bruit.</p>
+      <p>Les chiffres de cet article valent pour ce modèle et ce corpus construit. Un autre modèle de plongement donnerait d'autres nombres ; la question, elle, se repose à l'identique. Sur le principe, l'article <a href="recherche-vectorielle-catalogues-techniques.html">pourquoi la recherche vectorielle échoue sur les catalogues techniques</a> explique ce que fait un moteur vectoriel et sur quels catalogues il convient. Celui-ci le mesure. Le fonctionnement de la cascade est détaillé dans <a href="cascade-annotations-resultats-explicables.html">ce que votre moteur a compris, et pourquoi il vous le montre</a>.</p>
 
-      <h2>Un test que vous pouvez faire aujourd'hui, sur votre propre moteur</h2>
-      <p>Sans changer d'outil, sans appeler personne :</p>
-      <ol>
-        <li>Prenez deux références qui ne diffèrent que par une dimension — deux longueurs, deux diamètres, deux suffixes.</li>
-        <li>Cherchez la première dans votre moteur actuel.</li>
-        <li>Regardez si la seconde apparaît, et à quel rang.</li>
-      </ol>
-      <p>Si elle remonte juste après, votre moteur mesure une ressemblance de texte, pas une différence de produit. Refaites l'exercice avec un identifiant écrit dans deux formats, avec et sans ponctuation — l'écart est souvent plus parlant encore.</p>
-
-      <h2>Pour aller plus loin</h2>
-      <p>Les <a href="../index.html#moteur">principes du moteur</a> sont détaillés sur la page d'accueil, et chaque secteur a sa page dédiée : <a href="../solutions/outillage.html">quincaillerie et outillage</a>, <a href="../solutions/industrie.html">pièces détachées</a>, <a href="../solutions/livres.html">librairie</a>, <a href="../solutions/vins.html">vins et spiritueux</a>.</p>
-      <p>Le même principe de mesure avant de choisir, plutôt que de généraliser une préférence, explique aussi <a href="tolerance-fautes-frappe-taille-catalogue.html">pourquoi la tolérance aux fautes de frappe change de stratégie selon la taille du catalogue</a>.</p>
     </div>
 
     <div class="post-footer-cta">
-      <p>Faites le test sur votre propre catalogue</p>
-      <a href="../pricing.html" class="btn">Essayer gratuitement — 14 jours</a>
+      <p>Voir ce que le moteur lit de vos références ?</p>
+      <a href="../pricing.html" class="btn">Essayer gratuitement</a>
     </div>
   </div>
 </article>
@@ -290,6 +282,5 @@
 </div>
 <script src="../pricing-nudge.js?v=1787906653"></script>
 <script>window.HEURIX_RACINE='../';</script><script src="../consent.js?v=1788689121"></script>
-<script src="../langue-banniere.js?v=1788686174"></script>
 </body>
 </html>

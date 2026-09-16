@@ -86,7 +86,13 @@ describe("compteurs", () => {
     // remontait sur le <title> de sa page mere, pas sur son propre texte, et
     // `e` ne classe plus une ancre (search-engine.js). Une entree de moins,
     // aucune page de moins -- la page mere etait deja premiere.
-    expect(total).toBe(8);
+    // NEUF DE NOUVEAU DEPUIS LE 16 SEPTEMBRE 2026, et pour une autre raison
+    // que le 2 septembre : ce n'est pas une ancre qui revient, c'est une page
+    // de plus. `blog/decoupage-rag-catalogue-produit.html` mesure un
+    // plongement sur des fiches qui portent toutes « DIN 933 ». Les compteurs
+    // lisent TOUTES les correspondances (`runSearch` avec limite 0), donc
+    // neuf ; la liste, elle, en affiche huit.
+    expect(total).toBe(9);
     expect(Number(compteDe(w, "blog"))).toBeGreaterThan(0);
   });
 
@@ -135,7 +141,9 @@ describe("filtrer", () => {
     // 9 depuis mesure.html (2 sept. 2026), 8 depuis que `e` ne classe plus
     // une ancre (4 sept. 2026) : l'ancre #annotations de solutions/outillage
     // remontait sur le titre de sa page mere.
-    expect(haut()).toBe("8 résultats");
+    // 9 depuis l'article du 16 septembre 2026 (voir le compteur ci-dessus) :
+    // le compteur du haut annonce le total, pas les huit places affichees.
+    expect(haut()).toBe("9 résultats");
     cocher(w, "blog");
     expect(haut()).toBe(`${compteDe(w, "blog")} résultats`);
   });
