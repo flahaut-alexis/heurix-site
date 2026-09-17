@@ -29,9 +29,14 @@
 //     « Mis a jour le 17 septembre 2026 » et le premier dateModified.
 //     Le champ est donc admis a une condition : une note de revision
 //     VISIBLE, et le meme jour qu'elle. Le JOUR vient de la page ; l'heure,
-//     du commit qui a pose la note (e5dd7bb7 pour le 17), comme le jour de
-//     datePublished vient du commit d'ajout. Les dix pages du 15 ne le
-//     portent pas encore : le garde l'admet, il ne l'exige pas.
+//     du commit qui a pose la note (9a38886f pour le 15, e5dd7bb7 pour le
+//     17), RAMENEE AU JOUR DE LA NOTE QUAND ELLE DEBORDE : 633bc905 porte
+//     « Corrige le 15 septembre » et date du 16 a 00:00:03, les deux
+//     recherche-reference-sku-b2b portent donc 2026-09-15T23:59:59. Une
+//     revision ne precede pas sa propre mention.
+//
+//     Depuis le 17 septembre, les onze pages a note le portent, et le garde
+//     l'EXIGE : une note de revision sans dateModified est rouge.
 //
 //   image -- techniquement disponible, mais les 70 articles portent LA MEME
 //     og-image.png generique. Declarer une image de marque comme « l'image de
@@ -142,7 +147,7 @@ describe("schema des articles — un BlogPosting sur chacun", () => {
     expect(examines).toBe(articles.length);
   });
 
-  it("les champs ecartes le restent (image, et dateModified sans note de revision)", () => {
+  it("image reste ecarte, et dateModified va avec une note de revision, et seulement avec elle", () => {
     const intrus = [];
     let examines = 0;
     for (const a of articles) {
@@ -151,8 +156,11 @@ describe("schema des articles — un BlogPosting sur chacun", () => {
       if (!o) continue;
       examines++;
       if ("image" in o) intrus.push(`${a} : image -- voir l'en-tete de ce fichier`);
-      if (!("dateModified" in o)) continue;
       const jours = noteDeRevision(s);
+      if (!("dateModified" in o)) {
+        if (jours.length) intrus.push(`${a} : note de revision sans dateModified -- voir l'en-tete`);
+        continue;
+      }
       if (!jours.length)
         intrus.push(`${a} : dateModified sans note de revision visible -- voir l'en-tete`);
       else if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+-]\d{2}:\d{2}$/.test(o.dateModified))
