@@ -92,6 +92,40 @@ describe("heurix-search.js — contrat avec le moteur", () => {
     expect(filtreEnvoye).not.toContain(":");
   });
 
+  it("envoie « champ:valeur » pour une facette de champ metier", async () => {
+    // Depuis le 2 septembre 2026, le moteur facette aussi un champ du
+    // produit (`brand`). Ses valeurs n'ont pas le prefixe `groupe_` des
+    // annotations, et le moteur lit un filtre sans « : » comme une
+    // annotation : envoyer « Facom » brut rend zero resultat.
+    // Le libelle, lui, retirait `len(groupe) + 1` caracteres a toute valeur :
+    // « Legallais » sous « brand » s'affichait « Ais ».
+    const reponse = CONTRAT.search_facette_champ_metier;
+    const valeurs = Object.keys(reponse.facets.brand);
+    const valeur = valeurs.find((v) => v.length > "brand".length + 1);
+    expect(valeur, "la capture doit porter une valeur plus longue que le champ").toBeTruthy();
+    const contrat = CONTRAT.contrat_filtres[valeur];
+    expect(contrat.resultats_avec_valeur_brute).toBe(0);
+    expect(contrat.resultats_avec_prefixe_groupe).toBeGreaterThan(0);
+
+    const ctx = chargerWidget({ reponses: { defaut: reponse }, config: { facets: ["brand"] } });
+    await taper(ctx, reponse.query);
+
+    const puce = () => [...ctx.document.querySelectorAll(".hx-search-facet-chip")]
+      .find((c) => c.textContent.startsWith(valeur + " ("));
+    expect([...ctx.document.querySelectorAll(".hx-search-facet-chip")].map((c) => c.textContent))
+      .toEqual(valeurs.map((v) => `${v} (${reponse.facets.brand[v]})`));
+    puce().click();
+    await attendre();
+
+    expect(ctx.appels[ctx.appels.length - 1].corps.filters).toEqual(["brand:" + valeur]);
+    const rendue = puce();
+    expect(rendue.classList.contains("hx-active"), "la puce cliquee reste active").toBe(true);
+
+    rendue.click();
+    await attendre();
+    expect(ctx.appels[ctx.appels.length - 1].corps.filters).toEqual([]);
+  });
+
   it("appelle l'endpoint de recherche avec la forme de requete attendue", async () => {
     const ctx = chargerWidget();
     await taper(ctx, "vis");

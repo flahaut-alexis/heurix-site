@@ -478,7 +478,15 @@
   function humanizeGroup(code) {
     return code.charAt(0).toUpperCase() + code.slice(1).toLowerCase();
   }
+  // Un nom de facette peut aussi designer un CHAMP METIER du produit
+  // ("departement" -> "Gironde", moteur du 2 septembre 2026). Seules les
+  // annotations commencent par "GROUPE_" ; une valeur de champ s'affiche
+  // telle quelle et se filtre en "champ:valeur".
+  function isAnnotationOf(value, group) {
+    return value.indexOf(group + "_") === 0;
+  }
   function humanizeValue(annotation, group) {
+    if (!isAnnotationOf(annotation, group)) return annotation;
     var rest = annotation.slice(group.length + 1); // retire "GROUPE_" du debut
     if (!rest) return annotation;
     return rest.split("_").map(function (w) {
@@ -1075,9 +1083,13 @@
           // La version precedente envoyait "DIAM:DIAM_M8", qui ne
           // correspondait a aucune annotation cote moteur : cliquer une
           // facette vidait les resultats. Corrige au chantier I3.
-          var active = activeFilters.indexOf(value) !== -1;
+          // Un champ metier, a l'inverse, se filtre en "champ:valeur" : le
+          // moteur lit tout filtre sans ":" comme une annotation, et
+          // "Gironde" brut rendait zero resultat.
+          var token = isAnnotationOf(value, field) ? value : field + ":" + value;
+          var active = activeFilters.indexOf(token) !== -1;
           html += '<button type="button" class="hx-search-facet-chip' + (active ? " hx-active" : "") +
-            '" data-filter="' + esc(value) + '" title="' + esc(humanizeGroup(field)) + '">' +
+            '" data-filter="' + esc(token) + '" title="' + esc(humanizeGroup(field)) + '">' +
             esc(humanizeValue(value, field)) + " (" + values[value] + ")</button>";
         });
       });
