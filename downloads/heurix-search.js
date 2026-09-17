@@ -482,6 +482,11 @@
   // ("departement" -> "Gironde", moteur du 2 septembre 2026). Seules les
   // annotations commencent par "GROUPE_" ; une valeur de champ s'affiche
   // telle quelle et se filtre en "champ:valeur".
+  //
+  // LIMITE ASSUMEE (17 septembre 2026), ni testee ni exercee aujourd'hui :
+  // une valeur metier qui commencerait par "champ_" serait prise pour une
+  // annotation et partirait brute ; une valeur contenant "|" serait mal
+  // filtree, le moteur lisant "|" comme un separateur d'alternatives.
   function isAnnotationOf(value, group) {
     return value.indexOf(group + "_") === 0;
   }
