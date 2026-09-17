@@ -59,6 +59,87 @@
       }
     }
   },
+  "search_facette_champ_metier": {
+    "query": "m8",
+    "tokens": [
+      "m8"
+    ],
+    "total": 3,
+    "offset": 0,
+    "limit": 10,
+    "hits": [
+      {
+        "product": {
+          "id": "E001",
+          "name": "Écrou hexagonal",
+          "ref": "M8 - Zingué",
+          "stock": 300,
+          "price": 0.4,
+          "categories": [
+            "visserie"
+          ],
+          "brand": "Legallais"
+        },
+        "score": 18.0,
+        "in_stock": true,
+        "matched": [
+          "terme 'm8' (depuis 'm8', x1.00)",
+          "annotation #DIAM_M8"
+        ],
+        "pinned": false,
+        "buried": false
+      },
+      {
+        "product": {
+          "id": "V001",
+          "name": "Vis à métaux tête hexagonale",
+          "ref": "M8 x 20 - Inox A2",
+          "stock": 120,
+          "price": 5.9,
+          "categories": [
+            "visserie"
+          ],
+          "brand": "Facom"
+        },
+        "score": 18.0,
+        "in_stock": true,
+        "matched": [
+          "terme 'm8' (depuis 'm8', x1.00)",
+          "annotation #DIAM_M8"
+        ],
+        "pinned": false,
+        "buried": false
+      },
+      {
+        "product": {
+          "id": "V002",
+          "name": "Vis à métaux tête hexagonale",
+          "ref": "M8 x 30 - Inox A2",
+          "stock": 0,
+          "price": 7.9,
+          "categories": [
+            "visserie"
+          ],
+          "brand": "Facom"
+        },
+        "score": 18.0,
+        "in_stock": false,
+        "matched": [
+          "terme 'm8' (depuis 'm8', x1.00)",
+          "annotation #DIAM_M8"
+        ],
+        "pinned": false,
+        "buried": false
+      }
+    ],
+    "fallback": false,
+    "facets": {
+      "brand": {
+        "Facom": 2,
+        "Legallais": 1
+      }
+    }
+  },
   "contrat_filtres": {
     "DIAM_M8": {
       "groupe_facette": "DIAM",
@@ -69,6 +150,16 @@
       "groupe_facette": "DIAM",
       "resultats_avec_valeur_brute": 2,
       "resultats_avec_prefixe_groupe": 0
+    },
+    "Facom": {
+      "groupe_facette": "brand",
+      "resultats_avec_valeur_brute": 0,
+      "resultats_avec_prefixe_groupe": 2
+    },
+    "Legallais": {
+      "groupe_facette": "brand",
+      "resultats_avec_valeur_brute": 0,
+      "resultats_avec_prefixe_groupe": 1
     }
   },
   "format_filtre_attendu": "valeur_brute",
@@ -1898,6 +1989,20 @@
     {
       "modele": "NORME_NFE{1}_{2}",
       "motif": "^NORME_NFE(?:(?:[0-9]){2})?_(?:(?:[0-9]){3})?$",
+      "packs": [
+        "outillage"
+      ]
+    },
+    {
+      "modele": "NUANCE_A2",
+      "motif": "^NUANCE_A2$",
+      "packs": [
+        "outillage"
+      ]
+    },
+    {
+      "modele": "NUANCE_A4",
+      "motif": "^NUANCE_A4$",
       "packs": [
         "outillage"
       ]

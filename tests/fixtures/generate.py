@@ -179,20 +179,32 @@ def main() -> None:
         avec_facettes = search(catalog, "vis", facets=["DIAM"])
         fixtures["search_avec_facettes"] = avec_facettes
 
+        # --- Facette sur un CHAMP METIER (moteur du 2 septembre 2026) --------
+        # Un nom de facette peut designer un attribut du produit (`brand`),
+        # pas seulement un groupe d'annotations. Ses valeurs sont les valeurs
+        # du champ (« Facom »), sans le prefixe `groupe_` des annotations, et
+        # le moteur ne les filtre que sous la forme « champ:valeur ». « m8 »
+        # remonte les deux marques : « Legallais », plus long que « brand »,
+        # est celle qu'un libelle coupe a `len(groupe) + 1` rend illisible.
+        champ_metier = search(catalog, "m8", facets=["brand"])
+        fixtures["search_facette_champ_metier"] = champ_metier
+
         # --- LE contrat qui a manque au widget -----------------------------
         # On determine empiriquement quel format de filtre le moteur accepte,
         # au lieu de le supposer. `groupe_facette` est la CLE du dict facets,
         # `filtre_accepte` est ce qu'il faut renvoyer a l'API pour filtrer.
         contrat_filtres = {}
-        for groupe, valeurs in (avec_facettes.get("facets") or {}).items():
-            for valeur in valeurs:
-                brut = search(catalog, "vis", filters=[valeur])["total"]
-                prefixe = search(catalog, "vis", filters=[f"{groupe}:{valeur}"])["total"]
-                contrat_filtres[valeur] = {
-                    "groupe_facette": groupe,
-                    "resultats_avec_valeur_brute": brut,
-                    "resultats_avec_prefixe_groupe": prefixe,
-                }
+        for reponse in (avec_facettes, champ_metier):
+            for groupe, valeurs in (reponse.get("facets") or {}).items():
+                for valeur in valeurs:
+                    q = reponse["query"]
+                    brut = search(catalog, q, filters=[valeur])["total"]
+                    prefixe = search(catalog, q, filters=[f"{groupe}:{valeur}"])["total"]
+                    contrat_filtres[valeur] = {
+                        "groupe_facette": groupe,
+                        "resultats_avec_valeur_brute": brut,
+                        "resultats_avec_prefixe_groupe": prefixe,
+                    }
         fixtures["contrat_filtres"] = contrat_filtres
 
         # Determine LE format correct, pour que les tests l'assertent
