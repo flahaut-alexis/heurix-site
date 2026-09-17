@@ -20,8 +20,8 @@ const RACINE = path.resolve(__dirname, "..");
 // le calculateur (« Scale + depassement facture ») et la documentation
 // (« Depassement (Scale) », « 150 000 puis facture ») ne changent pas.
 //
-// LES PROMESSES GENERALES (metas, tableau de comptage, deux FAQ, llms.txt)
-// couvrent aussi Scale. Elles disent donc la regle sans nommer
+// LES PROMESSES GENERALES (metas, tableau de comptage, deux FAQ, llms.txt,
+// CGV art. 7) couvrent aussi Scale. Elles disent donc la regle sans nommer
 // de plan : « un depassement n'est facture que si votre plan affiche un
 // tarif de depassement ». Starter, Growth et Ranking n'en affichent aucun ;
 // Scale garde celui de sa carte, tel quel.
@@ -70,6 +70,10 @@ const RETIREES = [
     quoi: "calculateur Browse : + depassement facture",
     motif: /['"],\s*\+\s*(d[ée]passement\s+factur[ée]|overage\s+billed)['"]/i,
   },
+  {
+    quoi: "CGV art. 7 : le surplus est facture, sans condition",
+    motif: /le\s+surplus\s+est\s+factur[ée]\s+selon\s+les\s+r[èe]gles|is\s+billed\s+according\s+to\s+the\s+public\s+counting\s+rules/i,
+  },
 ];
 
 describe("dépassement — ce que le site promet", () => {
@@ -85,6 +89,7 @@ describe("dépassement — ce que le site promet", () => {
   it("le balayage lit vraiment les pages qu'il prétend lire", () => {
     expect(PUBLIES).toContain("pricing.html");
     expect(PUBLIES).toContain("en/faq.html");
+    expect(PUBLIES).toContain("en/cgv.html");
     expect(PUBLIES.some((f) => f.startsWith("docs/"))).toBe(false);
     expect(texte("pricing.html")).toMatch(/puis 0,80 € \/ 1 000/);
     expect(texte("en/pricing.html")).toMatch(/then €0\.80 \/ 1,000/);
