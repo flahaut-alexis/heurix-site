@@ -4,13 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>E-commerce search engine pricing — Heurix</title>
-<meta name="description" content="The Heurix search engine, self-service, starting free. Usage-based billing, no commitment.">
+<meta name="description" content="The Heurix search engine, self-service, starting free, no commitment.">
 <link rel="alternate" hreflang="fr" href="https://heurix.fr/pricing.html">
 <link rel="alternate" hreflang="en" href="https://heurix.fr/en/pricing.html">
 <link rel="alternate" hreflang="x-default" href="https://heurix.fr/pricing.html">
 <meta property="og:type" content="website">
 <meta property="og:title" content="E-commerce search engine pricing — Heurix">
-<meta property="og:description" content="The Heurix search engine, self-service, starting free. Usage-based billing, no commitment.">
+<meta property="og:description" content="The Heurix search engine, self-service, starting free, no commitment.">
 <meta property="og:image" content="https://heurix.fr/og-image.png">
 <meta property="og:url" content="https://heurix.fr/en/pricing.html">
 <meta property="og:locale" content="en_US">
@@ -71,7 +71,7 @@
       "name": "What happens if I exceed my request quota?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "The service keeps working normally — the surplus is simply billed at the per-tier rate shown on your plan. You're warned before any significant overage, no surprise cutoff."
+        "text": "The service keeps working normally: requests beyond it are still served and counted. Overage is billed only if your plan shows an overage rate. You're warned before any significant overage, no surprise cutoff."
       }
     },
     {
@@ -335,7 +335,7 @@
           <li><strong>50,000</strong> ranking requests / month</li>
           <li>Pinning, margin, stock, popularity</li>
           <li>Visual editor and simulation</li>
-          <li>Overage billed by usage, service never cut off</li>
+          <li>Never cut off, no extra charge beyond the quota</li>
         </ul>
         <button type="button" class="btn checkout-browse-btn" data-browse-plan="starter">Subscribe</button>
       </div>
@@ -347,7 +347,7 @@
           <li><strong>150,000</strong> ranking requests / month</li>
           <li>Pinning, margin, stock, popularity</li>
           <li>Visual editor and simulation</li>
-          <li>Overage billed by usage, service never cut off</li>
+          <li>Never cut off, no extra charge beyond the quota</li>
         </ul>
         <button type="button" class="btn checkout-browse-btn" data-browse-plan="growth">Subscribe</button>
       </div>
@@ -359,7 +359,7 @@
           <li><strong>500,000</strong> ranking requests / month</li>
           <li>Pinning, margin, stock, popularity</li>
           <li>Visual editor and simulation</li>
-          <li>Overage billed by usage, service never cut off</li>
+          <li>Never cut off, no extra charge beyond the quota</li>
         </ul>
         <button type="button" class="btn checkout-browse-btn" data-browse-plan="scale">Subscribe</button>
       </div>
@@ -448,7 +448,7 @@
           <span class="calc-recommend-label">+ <span id="calc-out-browse-requests">0</span> Browse requests / month</span>
           <span class="calc-recommend-plan" id="calc-out-browse-plan">Recommended Browse tier</span>
         </div>
-        <p class="calc-results-note">Browse traffic is separate from search traffic — counted and billed separately, with -25% if you already have a Search plan above. Counting details in the <a href="docs.html#comptage">documentation</a>.</p>
+        <p class="calc-results-note">Browse traffic is separate from search traffic — counted against its own quota and subscribed separately, with -25% if you already have a Search plan above. Counting details in the <a href="docs.html#comptage">documentation</a>.</p>
       </div>
     </div>
   </div>
@@ -464,7 +464,7 @@
       <tr><td>Indexing</td><td>Never counted. Update your catalog as often as you need; only the total number of indexed products is capped by your plan</td></tr>
       <tr><td>API calls</td><td>Management calls are not counted: keys, accounts, subscription, merchandising priorities, analytics. A few endpoints are the exception and count as one request — each is listed in <a href="docs.html#comptage">the documentation</a></td></tr>
       <tr><td>Ranking</td><td>Every call to a category page counts as one Browse request — on a separate counter from search, only if you're subscribed to Browse</td></tr>
-      <tr><td>Overage</td><td>Beyond the volume included in your plan, the surplus is billed at the rate shown on your plan — never an abrupt service cutoff</td></tr>
+      <tr><td>Overage</td><td>Beyond the volume included in your plan, requests are still served and counted — never an abrupt service cutoff. Overage is billed only if your plan shows an overage rate</td></tr>
     </table>
   </div>
 </section>
@@ -546,7 +546,7 @@
       <details class="faq-item">
         <summary>What happens if I exceed my request quota?</summary>
         <div class="faq-answer">
-          <p>The service keeps working normally — the surplus is simply billed at the per-tier rate shown on your plan. You're warned before any significant overage, no surprise cutoff.</p>
+          <p>The service keeps working normally: requests beyond it are still served and counted. Overage is billed only if your plan shows an overage rate. You're warned before any significant overage, no surprise cutoff.</p>
         </div>
       </details>
 
@@ -687,7 +687,7 @@
       const browseBeyond = browseRequests > BROWSE_TIERS[BROWSE_TIERS.length - 1].limit;
       document.getElementById('calc-out-browse-plan').textContent = browseTier.name + ' — €' +
         browseTier.priceAddon + '/month as an add-on to a Search plan (€' + browseTier.priceStandalone + ' standalone)' +
-        (browseBeyond ? ', + overage billed' : '');
+        (browseBeyond ? ', beyond that: still served, no extra charge' : '');
     }
   }
   ['calc-visitors', 'calc-rate', 'calc-per-user', 'calc-browse-rate', 'calc-browse-pages'].forEach(id => {

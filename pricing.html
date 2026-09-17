@@ -4,13 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tarifs Search API — Heurix</title>
-<meta name="description" content="Le moteur de recherche Heurix en self-service, à partir de gratuit. Facturation à l'usage, sans engagement.">
+<meta name="description" content="Le moteur de recherche Heurix en self-service, à partir de gratuit, sans engagement.">
 <link rel="alternate" hreflang="fr" href="https://heurix.fr/pricing.html">
 <link rel="alternate" hreflang="en" href="https://heurix.fr/en/pricing.html">
 <link rel="alternate" hreflang="x-default" href="https://heurix.fr/pricing.html">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Tarifs Search API — Heurix">
-<meta property="og:description" content="Le moteur de recherche Heurix en self-service, à partir de gratuit. Facturation à l'usage, sans engagement.">
+<meta property="og:description" content="Le moteur de recherche Heurix en self-service, à partir de gratuit, sans engagement.">
 <meta property="og:image" content="https://heurix.fr/og-image.png">
 <meta property="og:url" content="https://heurix.fr/pricing.html">
 <meta property="og:locale" content="fr_FR">
@@ -82,7 +82,7 @@
       "name": "Que se passe-t-il si je dépasse mon quota de requêtes ?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Le service continue de fonctionner normalement — le surplus est simplement facturé au tarif par tranche indiqué sur votre forfait. Vous êtes prévenu avant tout dépassement significatif, pas de coupure surprise."
+        "text": "Le service continue de fonctionner normalement : les requêtes au-delà restent servies et comptées. Un dépassement n'est facturé que si votre forfait affiche un tarif de dépassement. Vous êtes prévenu avant tout dépassement significatif, pas de coupure surprise."
       }
     },
     {
@@ -347,7 +347,7 @@
           <li><strong>50 000</strong> requêtes de classement / mois</li>
           <li>Épinglage, marge, stock, popularité</li>
           <li>Éditeur visuel et simulation</li>
-          <li>Dépassement facturé à l'usage, jamais de coupure</li>
+          <li>Jamais de coupure ni de supplément au-delà du quota</li>
         </ul>
         <button type="button" class="btn checkout-browse-btn" data-browse-plan="starter">Souscrire</button>
       </div>
@@ -359,7 +359,7 @@
           <li><strong>150 000</strong> requêtes de classement / mois</li>
           <li>Épinglage, marge, stock, popularité</li>
           <li>Éditeur visuel et simulation</li>
-          <li>Dépassement facturé à l'usage, jamais de coupure</li>
+          <li>Jamais de coupure ni de supplément au-delà du quota</li>
         </ul>
         <button type="button" class="btn checkout-browse-btn" data-browse-plan="growth">Souscrire</button>
       </div>
@@ -371,7 +371,7 @@
           <li><strong>500 000</strong> requêtes de classement / mois</li>
           <li>Épinglage, marge, stock, popularité</li>
           <li>Éditeur visuel et simulation</li>
-          <li>Dépassement facturé à l'usage, jamais de coupure</li>
+          <li>Jamais de coupure ni de supplément au-delà du quota</li>
         </ul>
         <button type="button" class="btn checkout-browse-btn" data-browse-plan="scale">Souscrire</button>
       </div>
@@ -460,7 +460,7 @@
           <span class="calc-recommend-label">+ <span id="calc-out-browse-requests">0</span> requêtes Browse / mois</span>
           <span class="calc-recommend-plan" id="calc-out-browse-plan">Palier Browse recommandé</span>
         </div>
-        <p class="calc-results-note">Le trafic Browse est distinct du trafic de recherche — comptabilisé et facturé à part, avec -25% si vous prenez déjà un plan Search ci-dessus. Détail du comptage dans la <a href="docs.html#comptage">documentation</a>.</p>
+        <p class="calc-results-note">Le trafic Browse est distinct du trafic de recherche — compté sur son propre quota et souscrit à part, avec -25% si vous prenez déjà un plan Search ci-dessus. Détail du comptage dans la <a href="docs.html#comptage">documentation</a>.</p>
       </div>
     </div>
   </div>
@@ -476,7 +476,7 @@
       <tr><td>Indexation</td><td>Jamais décomptée. Mettez à jour votre catalogue aussi souvent que nécessaire ; seul le nombre total de produits indexés est plafonné par votre plan</td></tr>
       <tr><td>Appels API</td><td>Les appels de gestion ne sont pas décomptés : clés, comptes, abonnement, priorités de merchandising, statistiques. Quelques points d'entrée font exception et comptent pour une requête — chacun est listé dans <a href="docs.html#comptage">la documentation</a></td></tr>
       <tr><td>Ranking</td><td>Chaque appel à une page de catégorie compte pour une requête Browse — sur un compteur séparé de celui de la recherche, uniquement si vous êtes abonné à Browse</td></tr>
-      <tr><td>Dépassement</td><td>Au-delà du volume inclus dans votre forfait, le surplus est facturé au tarif indiqué sur votre plan — jamais de coupure brutale du service</td></tr>
+      <tr><td>Dépassement</td><td>Au-delà du volume inclus dans votre forfait, les requêtes restent servies et comptées — jamais de coupure brutale du service. Un dépassement n'est facturé que si votre plan affiche un tarif de dépassement</td></tr>
     </table>
   </div>
 </section>
@@ -558,7 +558,7 @@
       <details class="faq-item">
         <summary>Que se passe-t-il si je dépasse mon quota de requêtes ?</summary>
         <div class="faq-answer">
-          <p>Le service continue de fonctionner normalement — le surplus est simplement facturé au tarif par tranche indiqué sur votre forfait. Vous êtes prévenu avant tout dépassement significatif, pas de coupure surprise.</p>
+          <p>Le service continue de fonctionner normalement : les requêtes au-delà restent servies et comptées. Un dépassement n'est facturé que si votre forfait affiche un tarif de dépassement. Vous êtes prévenu avant tout dépassement significatif, pas de coupure surprise.</p>
         </div>
       </details>
 
@@ -704,7 +704,7 @@
       const browseBeyond = browseRequests > BROWSE_TIERS[BROWSE_TIERS.length - 1].limit;
       document.getElementById('calc-out-browse-plan').textContent = browseTier.name + ' — ' +
         browseTier.priceAddon + ' €/mois en option sur un plan Search (' + browseTier.priceStandalone + ' € en autonome)' +
-        (browseBeyond ? ', + dépassement facturé' : '');
+        (browseBeyond ? ', au-delà : servi sans supplément' : '');
     }
   }
   ['calc-visitors', 'calc-rate', 'calc-per-user', 'calc-browse-rate', 'calc-browse-pages'].forEach(id => {
