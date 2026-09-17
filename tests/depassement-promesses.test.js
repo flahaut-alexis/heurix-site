@@ -32,12 +32,16 @@ const RACINE = path.resolve(__dirname, "..");
 // avant d'ecrire. Il ne protege pas non plus les lignes Scale : un garde qui
 // les exigerait refuserait la decision encore a prendre.
 //
-// `docs/` est exclu : le releve y cite les phrases retirees.
+// `docs/` est exclu : le releve y cite les phrases retirees. Les CGV 1.0 le
+// sont aussi, nommement : elles sont publiees telles que des clients les ont
+// acceptees, article 7 compris.
 // ---------------------------------------------------------------------------
+
+const ARCHIVES = ["cgv-1.0.html", "en/cgv-1.0.html"];
 
 const PUBLIES = execFileSync("git", ["ls-files"], { cwd: RACINE, encoding: "utf8" })
   .split("\n")
-  .filter((f) => f && /\.(html|md|txt)$/.test(f) && !f.startsWith("docs/"));
+  .filter((f) => f && /\.(html|md|txt)$/.test(f) && !f.startsWith("docs/") && !ARCHIVES.includes(f));
 
 const texte = (f) => fs.readFileSync(path.join(RACINE, f), "utf8");
 
@@ -94,5 +98,15 @@ describe("dépassement — ce que le site promet", () => {
     expect(texte("pricing.html")).toMatch(/puis 0,80 € \/ 1 000/);
     expect(texte("en/pricing.html")).toMatch(/then €0\.80 \/ 1,000/);
     expect(texte("docs.html")).toMatch(/Dépassement \(Scale\)/);
+  });
+
+  // L'exclusion ne vaut que pour des archives : si l'une cessait de porter
+  // l'ancien article 7, elle ne serait plus la version acceptee.
+  it("les CGV 1.0 publiées portent l'article 7 d'origine", () => {
+    const cgv7 = RETIREES.find((r) => r.quoi.startsWith("CGV")).motif;
+    for (const f of ARCHIVES) {
+      expect(texte(f)).toMatch(cgv7);
+      expect(texte(f)).toMatch(/Version 1\.0/);
+    }
   });
 });
