@@ -16,9 +16,22 @@
 // CE QUI EST VOLONTAIREMENT ABSENT DU SCHEMA, pour que personne ne le
 // « comble » plus tard en croyant reparer un oubli :
 //
-//   dateModified -- la donnee n'existe pas. Aucune page ne declare de
-//     revision, et la deriver du dernier commit ferait passer une correction
-//     de typographie pour une mise a jour editoriale.
+//   dateModified, SAUF SUR UNE PAGE QUI DECLARE SA REVISION. La deriver du
+//     dernier commit ferait passer une correction de typographie pour une
+//     mise a jour editoriale : mesure du 17 septembre 2026, 78 articles sur
+//     78 ont plus d'un commit, 11 seulement portent une note de revision.
+//     Cette moitie de la regle tient.
+//
+//     L'autre moitie disait « aucune page ne declare de revision ». Vrai le
+//     4 septembre, faux depuis le 15 : dix pages (cinq FR, cinq EN) portent
+//     « Corrige le 15 septembre 2026 » / « Corrected on September 15, 2026 »
+//     sans le dire au schema. Le 17, decoupage-rag-catalogue-produit porte
+//     « Mis a jour le 17 septembre 2026 » et le premier dateModified.
+//     Le champ est donc admis a une condition : une note de revision
+//     VISIBLE, et le meme jour qu'elle. Le JOUR vient de la page ; l'heure,
+//     du commit qui a pose la note (e5dd7bb7 pour le 17), comme le jour de
+//     datePublished vient du commit d'ajout. Les dix pages du 15 ne le
+//     portent pas encore : le garde l'admet, il ne l'exige pas.
 //
 //   image -- techniquement disponible, mais les 70 articles portent LA MEME
 //     og-image.png generique. Declarer une image de marque comme « l'image de
@@ -87,6 +100,20 @@ const schemaDe = (s) => {
   return null;
 };
 
+// Les jours declares par une note de revision visible, en tete de paragraphe
+// en italique : « Corrige le 15 septembre 2026 », « Mis a jour le ... »,
+// « Corrected on September 15, 2026 », « Updated on ... ».
+const noteDeRevision = (s) => {
+  const jours = [];
+  for (const m of s.matchAll(
+    /<p><em>(?:Corrigé le|Mis à jour le) (\d{1,2}) (\S+) (\d{4})\.|<p><em>(?:Corrected|Updated) on (\S+) (\d{1,2}), (\d{4})\./g)) {
+    const [j, mois, an] = m[1] ? [m[1], m[2], m[3]] : [m[5], m[4], m[6]];
+    const n = MOIS[mois.toLowerCase()];
+    if (n) jours.push(`${an}-${String(n).padStart(2, "0")}-${String(j).padStart(2, "0")}`);
+  }
+  return jours;
+};
+
 describe("schema des articles — un BlogPosting sur chacun", () => {
   it("le balayage a reellement trouve les articles des deux langues", () => {
     expect(articles.filter((a) => a.startsWith("blog/")).length).toBeGreaterThan(30);
@@ -115,18 +142,37 @@ describe("schema des articles — un BlogPosting sur chacun", () => {
     expect(examines).toBe(articles.length);
   });
 
-  it("les champs ecartes le restent (dateModified, image)", () => {
+  it("les champs ecartes le restent (image, et dateModified sans note de revision)", () => {
     const intrus = [];
     let examines = 0;
     for (const a of articles) {
-      const o = schemaDe(lire(a));
+      const s = lire(a);
+      const o = schemaDe(s);
       if (!o) continue;
       examines++;
-      for (const c of ["dateModified", "image"])
-        if (c in o) intrus.push(`${a} : ${c} -- voir l'en-tete de ce fichier`);
+      if ("image" in o) intrus.push(`${a} : image -- voir l'en-tete de ce fichier`);
+      if (!("dateModified" in o)) continue;
+      const jours = noteDeRevision(s);
+      if (!jours.length)
+        intrus.push(`${a} : dateModified sans note de revision visible -- voir l'en-tete`);
+      else if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+-]\d{2}:\d{2}$/.test(o.dateModified))
+        intrus.push(`${a} : dateModified « ${o.dateModified} » n'est pas un ISO 8601 complet avec fuseau`);
+      else if (!jours.includes(o.dateModified.slice(0, 10)))
+        intrus.push(`${a} : dateModified ${o.dateModified} n'est le jour d'aucune note (${jours})`);
+      else if (o.dateModified < o.datePublished)
+        intrus.push(`${a} : dateModified avant datePublished`);
     }
     expect(intrus).toEqual([]);
     expect(examines).toBe(articles.length);
+  });
+
+  // TEMOIN : sans lui, un noteDeRevision qui ne lit rien rendrait le garde
+  // ci-dessus vert en refusant tout -- et l'article du 17 le ferait rougir,
+  // mais les pages du 15 ne diraient rien.
+  it("la note de revision est lue sur les pages qui la portent", () => {
+    expect(noteDeRevision(lire("blog/decoupage-rag-catalogue-produit.html"))).toEqual(["2026-09-17"]);
+    expect(noteDeRevision(lire("en/blog/recherche-reference-sku-b2b.html"))).toEqual(["2026-09-15"]);
+    expect(articles.filter((a) => noteDeRevision(lire(a)).length).length).toBeGreaterThanOrEqual(11);
   });
 });
 
