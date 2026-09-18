@@ -1101,6 +1101,30 @@
     "Filtrer par rayon": "Filter by radius",
     "Utiliser ma position": "Use my location",
     "Rayon en km": "Radius in km",
+
+    // --------------------------------- gabarits passes a T() sans clef (18 sept.)
+    // Releves par tests/console-i18n-couverture.test.js, qui echoue desormais
+    // sur tout litteral passe a T() sans entree ici.
+    //
+    // Le bouton d'inscription : son libelle a change le 3 aout (67646ae7) cote
+    // console.js, pas ici. La clef « Créer mon compte » plus haut n'a plus
+    // d'appelant. La traduction reprend le libelle d'en/console.html, pour que
+    // le bouton rende le meme texte avant et apres l'envoi.
+    "Créer mon compte et obtenir ma clé": "Create my account",
+    "{0} changements non publiés. Vos visiteurs voient toujours le classement actuel.": "{0} unpublished changes. Your visitors still see the current ranking.",
+    "{0} changement non publié. Vos visiteurs voient toujours le classement actuel.": "{0} unpublished change. Your visitors still see the current ranking.",
+    "{0} changements sur le catalogue {1}. Vos visiteurs ne voient encore rien.": "{0} changes on the catalog {1}. Your visitors don't see anything yet.",
+    "{0} changement sur le catalogue {1}. Vos visiteurs ne voient encore rien.": "{0} change on the catalog {1}. Your visitors don't see anything yet.",
+    "{0} règles appliquées — elles passent après le classement automatique": "{0} rules applied — they come after the automatic ranking",
+    "{0} règle appliquée — elle passe après le classement automatique": "{0} rule applied — it comes after the automatic ranking",
+    "{0} règles": "{0} rules",
+    "{0} règle": "{0} rule",
+    "{0} règles actives sur cette page": "{0} active rules on this page",
+    "{0} règle active sur cette page": "{0} active rule on this page",
+    // Ecrits en dur dans console.js jusqu'au 18 septembre, hors de T().
+    "Publier sur {0}": "Publish to {0}",
+    "Retirer ce groupe": "Remove this group",
+    "Supprimer le groupe de synonymes <strong>« {0} »</strong> ?": "Delete the synonym group <strong>“{0}”</strong>?",
   };
 
   // Attributs porteurs de texte visible ou annoncé aux lecteurs d'écran.

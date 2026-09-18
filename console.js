@@ -4062,7 +4062,7 @@
     // -- publier sur le mauvais doit devenir difficile (brief §4.1).
     var boutonAppliquer = document.getElementById("so-simu-apply");
     if (boutonAppliquer && session.soCurrentCatalog) {
-      boutonAppliquer.textContent = "Publier sur " + session.soCurrentCatalog;
+      boutonAppliquer.textContent = T("Publier sur {0}", session.soCurrentCatalog);
     }
     var content = document.getElementById("so-content");
     if (!session.soCurrentCatalog) { content.hidden = true; return; }
@@ -5609,7 +5609,7 @@
     // Meme correctif Lot 1 que Search Overrides.
     var boutonAppliquerBr = document.getElementById("br-simu-apply");
     if (boutonAppliquerBr && catalog) {
-      boutonAppliquerBr.textContent = "Publier sur " + catalog;
+      boutonAppliquerBr.textContent = T("Publier sur {0}", catalog);
     }
     var champCategorie = document.getElementById("browse-category-search");
     var idCategorie = document.getElementById("browse-category-select");
@@ -6887,7 +6887,7 @@
         ? esc(termes[0]) + " <em>" + (bidir ? T("équivaut à") : T("trouve")) + "</em> " + esc(termes.slice(1).join(", "))
         : esc(termes.join(", "));
       return '<span class="catalog-synonym-group" data-idx="' + i + '">' + libelle +
-        '<button type="button" class="catalog-synonym-remove" data-idx="' + i + '" aria-label="Retirer ce groupe">&times;</button></span>';
+        '<button type="button" class="catalog-synonym-remove" data-idx="' + i + '" aria-label="' + T("Retirer ce groupe") + '">&times;</button></span>';
     }).join("");
   }
 
@@ -6899,8 +6899,9 @@
     // interrompait saveGroups AVANT render(), et l'ajout n'apparaissait
     // qu'apres rechargement de la page alors qu'il etait bien enregistre.
     if (!meta) return;
-    meta.textContent = catalog.products + " produit" + (catalog.products > 1 ? "s" : "") + " · " +
-      catalog.annotations + " annotations · " + catalog.synonym_groups + " groupe" + (catalog.synonym_groups > 1 ? "s" : "") + " de synonymes";
+    meta.textContent = T(catalog.products > 1 ? "{0} produits" : "{0} produit", catalog.products) + " · " +
+      T("{0} annotations", catalog.annotations) + " · " +
+      T(catalog.synonym_groups > 1 ? "{0} groupes de synonymes" : "{0} groupe de synonymes", catalog.synonym_groups);
   }
 
   // Alimente l'etat vide des synonymes depuis les recherches sans
@@ -6992,7 +6993,7 @@
           var idx = parseInt(btn.getAttribute("data-idx"), 10);
           var groupe = (currentGroups[idx] || []).join(", ");
           confirmerSuppression(
-            "Supprimer le groupe de synonymes <strong>« " + esc(groupe) + " »</strong> ?",
+            T("Supprimer le groupe de synonymes <strong>« {0} »</strong> ?", esc(groupe)),
             btn,
             function () {
               saveGroups(currentGroups.filter(function (_, i) { return i !== idx; })).catch(function (err) {
