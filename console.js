@@ -7965,7 +7965,10 @@
           showLogin(statut ? err.message : L.loginErrorNetwork);
         });
     } else {
-      setAuthMode("login");
+      // `?inscription` : destination du bouton « Démarrer l'essai gratuit »
+      // (en-tete, FAQ tarifs). Sans lui, l'essai sans carte n'etait joignable
+      // que par Mon compte -> lien sous le formulaire de connexion.
+      setAuthMode(new URLSearchParams(window.location.search).has("inscription") ? "signup" : "login");
     }
   }
 })();
