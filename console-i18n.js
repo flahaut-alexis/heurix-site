@@ -778,12 +778,12 @@
     "{0} : {1} pour cent utilisés": "{0}: {1} percent used",
     "Essai gratuit": "Free trial",
     "Souscrire une formule": "Subscribe to a plan",
-    "Vous êtes en période d'essai : choisissez une formule pour continuer après son terme. Aucun abonnement n'est encore actif sur votre compte.":
-      "You're in your trial period: pick a plan to continue after it ends. No subscription is active on your account yet.",
+    "Vous êtes en période d'essai. À son terme, votre compte garde les plafonds de l'essai ; une formule les lève. Aucun abonnement n'est encore actif sur votre compte.":
+      "You're in your trial period. When it ends, your account keeps the trial limits; a plan lifts them. No subscription is active on your account yet.",
     "Le changement se fait depuis le portail de facturation : Stripe calcule le prorata et ajuste votre abonnement en cours. Vous n'êtes pas facturé deux fois, et il n'y a pas de nouvelle période d'essai.":
       "Changes happen from the billing portal: Stripe calculates the proration and adjusts your current subscription. You're never billed twice, and there's no new trial period.",
-    "<strong>Votre essai est terminé.</strong> Choisissez une formule pour continuer à utiliser Heurix.":
-      "<strong>Your trial has ended.</strong> Choose a plan to keep using Heurix.",
+    "<strong>Votre essai est terminé.</strong> Votre compte garde les plafonds de l'essai ; une formule les lève.":
+      "<strong>Your trial has ended.</strong> Your account keeps the trial limits; a plan lifts them.",
     "Il vous reste {0} jours d'essai.": "You have {0} days left in your trial.",
     "Il vous reste {0} jour d'essai.": "You have {0} day left in your trial.",
     "Impossible de charger votre abonnement.": "Couldn't load your subscription.",

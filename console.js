@@ -1674,7 +1674,7 @@
         if (titreUpgrade) titreUpgrade.textContent = enEssai ? T("Souscrire une formule") : T("Changer de formule");
         if (texteUpgrade) {
           texteUpgrade.textContent = enEssai
-            ? T("Vous êtes en période d'essai : choisissez une formule pour continuer après son terme. Aucun abonnement n'est encore actif sur votre compte.")
+            ? T("Vous êtes en période d'essai. À son terme, votre compte garde les plafonds de l'essai ; une formule les lève. Aucun abonnement n'est encore actif sur votre compte.")
             : T("Le changement se fait depuis le portail de facturation : Stripe calcule le prorata et ajuste votre abonnement en cours. Vous n'êtes pas facturé deux fois, et il n'y a pas de nouvelle période d'essai.");
         }
         if (boutonUpgrade) {
@@ -1686,7 +1686,7 @@
       if (essai) {
         if (d.trial_expired) {
           essai.hidden = false;
-          essai.innerHTML = T("<strong>Votre essai est terminé.</strong> Choisissez une formule pour continuer à utiliser Heurix.");
+          essai.innerHTML = T("<strong>Votre essai est terminé.</strong> Votre compte garde les plafonds de l'essai ; une formule les lève.");
         } else if (d.trial_days_left !== undefined && d.trial_days_left !== null) {
           essai.hidden = false;
           essai.textContent = T(d.trial_days_left > 1 ? "Il vous reste {0} jours d'essai." : "Il vous reste {0} jour d'essai.", d.trial_days_left);
