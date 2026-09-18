@@ -1,4 +1,11 @@
-// Heurix — rappel flottant vers la page tarifs, discret, après un peu de défilement.
+// Heurix — rappel flottant vers l'inscription à l'essai gratuit, discret, après un peu de défilement.
+//
+// LE NOM EST RESTÉ, LA CIBLE A CHANGÉ (18 septembre 2026). Le rappel menait à
+// pricing.html sous « Essai gratuit 14 jours, sans carte bancaire » ; or les
+// cartes des tarifs exigent un moyen de paiement. Son bouton mène désormais à
+// console.html?inscription. Les tarifs restent atteignables par l'en-tête et le
+// pied (797e8d93). Le fichier, l'id et les classes gardent « pricing » : les
+// renommer toucherait 136 pages et la feuille de style pour un nom seulement.
 (function () {
   "use strict";
   var el = document.getElementById("pricing-nudge");
