@@ -109,4 +109,11 @@ describe("dépassement — ce que le site promet", () => {
       expect(texte(f)).toMatch(/Version 1\.0/);
     }
   });
+
+  // La 1.1 porte l'article 7 corrige, donc pas ARCHIVES ; ce qu'elle garde de
+  // l'ancien, c'est l'article 2 d'avant la 1.2 (18 septembre 2026).
+  it("les CGV 1.1 publiées portent l'article 2 d'origine", () => {
+    expect(texte("cgv-1.1.html")).toMatch(/Formule d'abonnement \(Free, Growth, Scale ou toute formule ultérieure\)/);
+    expect(texte("en/cgv-1.1.html")).toMatch(/Subscription tier \(Free, Growth, Scale, or any later tier\)/);
+  });
 });
