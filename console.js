@@ -454,6 +454,8 @@
   var showSignupLink = document.getElementById("show-signup");
   var showResetLink = document.getElementById("show-reset");
   var showLoginLink = document.getElementById("show-login");
+  var showLoginInscriptionLink = document.getElementById("show-login-inscription");
+  var dejaConnecte = document.getElementById("deja-connecte");
   var authLinks = document.getElementById("auth-links");
   var authBack = document.getElementById("auth-back");
 
@@ -475,6 +477,10 @@
     AUTH_FORMS.forEach(function (f) { f.hidden = true; });
     loginError.hidden = true; signupError.hidden = true; resetConfirmError.hidden = true;
     resetRequestMsg.hidden = true; acceptInviteError.hidden = true;
+    // Le pied de l'inscription proposait « Créer un compte gratuit » --
+    // l'ecran ou l'on se trouve -- et n'avait aucun chemin vers la connexion.
+    showSignupLink.hidden = mode === "signup";
+    showLoginInscriptionLink.hidden = mode !== "signup";
     if (mode === "login") { loginForm.hidden = false; authLinks.hidden = false; authBack.hidden = true; }
     if (mode === "signup") { signupForm.hidden = false; authLinks.hidden = false; authBack.hidden = true; }
     if (mode === "reset-request") { resetRequestForm.hidden = false; authLinks.hidden = true; authBack.hidden = false; }
@@ -7651,6 +7657,7 @@
     if (globalSelect) { globalSelect.innerHTML = ""; globalSelect.disabled = true; }
     var banniere = document.getElementById("sandbox-banner");
     if (banniere) banniere.hidden = true;
+    dejaConnecte.hidden = true;
 
     setAuthMode("login");
     loginForm.reset();
@@ -7870,6 +7877,7 @@
   showSignupLink.addEventListener("click", function (e) { e.preventDefault(); setAuthMode("signup"); });
   showResetLink.addEventListener("click", function (e) { e.preventDefault(); setAuthMode("reset-request"); });
   showLoginLink.addEventListener("click", function (e) { e.preventDefault(); setAuthMode("login"); });
+  showLoginInscriptionLink.addEventListener("click", function (e) { e.preventDefault(); setAuthMode("login"); });
 
   logoutBtn.addEventListener("click", endSession);
 
@@ -7931,6 +7939,15 @@
         .then(function (data) {
           if (!data.keys || !data.keys.length) { throw new Error("no_key"); }
           session.activeKey = data.keys[0].key;
+          // `?inscription` AVEC UNE SESSION VALIDE : le tableau de bord, mais
+          // en le disant. Afficher le formulaire ne serait pas neutre : une
+          // inscription reussie remplace le jeton stocke (startSession), et
+          // fermerait de fait la session en cours dans ce navigateur. Le 401
+          // et la panne reseau gardent la connexion et son message.
+          if (new URLSearchParams(window.location.search).has("inscription")) {
+            dejaConnecte.textContent = T("Vous êtes déjà connecté ({0}). Pour ouvrir un compte pour une autre entreprise, déconnectez-vous d'abord.", data.email);
+            dejaConnecte.hidden = false;
+          }
           showDashboard();
           cablerConsole(session.activeKey);
           chargerDonnees(session.activeKey, periodSelect.value);

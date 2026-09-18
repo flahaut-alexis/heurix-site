@@ -868,9 +868,11 @@
     "Dupliquer — modifiez au moins un champ": "Duplicate — change at least one field",
     "Modifier la règle": "Edit rule",
     "Créer cette règle": "Create this rule",
-    "Créer votre compte.": "Create your account.",
-    "Une entreprise, un email, un mot de passe — votre clé API est générée immédiatement et envoyée par email.":
-      "A company, an email, a password — your API key is generated immediately and emailed to you.",
+    "Votre clé API, en moins d'une minute.": "Your API key, in under a minute.",
+    "Une entreprise, un email, un mot de passe — la clé est générée immédiatement, affichée ici et envoyée par email.":
+      "A company, an email, a password: the key is generated immediately, shown here and emailed to you.",
+    "Vous êtes déjà connecté ({0}). Pour ouvrir un compte pour une autre entreprise, déconnectez-vous d'abord.":
+      "You're already signed in ({0}). To open an account for another company, sign out first.",
     "Indiquez votre email, on vous envoie un lien pour en choisir un nouveau.":
       "Enter your email and we'll send you a link to choose a new one.",
     "Nouveau mot de passe.": "New password.",
