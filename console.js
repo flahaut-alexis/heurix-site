@@ -396,6 +396,7 @@
       method: options.method || "GET",
       headers: headers,
       body: options.body ? JSON.stringify(options.body) : undefined,
+      signal: options.signal,
     }).then(function (r) {
       return r.json().catch(function () { return {}; }).then(function (data) {
         if (!r.ok) { throw erreurDeReponse(data, r.status); }
@@ -491,7 +492,12 @@
   }
 
 
+  // Pose par le <head> de console.html quand une session est stockee : ni
+  // connexion ni tableau de bord tant que /v1/auth/me n'a pas repondu.
+  function finAttenteSession() { document.documentElement.removeAttribute("data-attente-session"); }
+
   function showLogin(message) {
+    finAttenteSession();
     dashboard.hidden = true;
     loginScreen.hidden = false;
     logoutBtn.hidden = true;
@@ -502,6 +508,7 @@
   }
 
   function showDashboard() {
+    finAttenteSession();
     loginScreen.hidden = true;
     dashboard.hidden = false;
     logoutBtn.hidden = false;
@@ -7935,7 +7942,16 @@
   } else {
     var existingSession = localStorage.getItem(SESSION_STORAGE_KEY);
     if (existingSession) {
-      apiFetch("/v1/auth/me", existingSession)
+      // ATTENTE BORNEE A 8 s. Pendant l'appel, la page n'affiche rien
+      // (voir le <head> de console.html) ; sans borne, un /me qui ne repond
+      // jamais laissait un indicateur eternel, la ou l'ancien formulaire
+      // restait au moins utilisable. L'abandon INTERROMPT la requete au lieu
+      // d'ignorer sa reponse : une reponse tardive ne peut plus ecraser une
+      // connexion faite entre-temps. Il tombe dans la branche reseau
+      // ci-dessous -- message de panne reseau, jeton conserve.
+      var attenteMe = new AbortController();
+      setTimeout(function () { attenteMe.abort(); }, 8000);
+      apiFetch("/v1/auth/me", existingSession, { signal: attenteMe.signal })
         .then(function (data) {
           if (!data.keys || !data.keys.length) { throw new Error("no_key"); }
           session.activeKey = data.keys[0].key;
