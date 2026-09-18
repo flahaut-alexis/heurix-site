@@ -816,10 +816,20 @@
       checkoutBrowseBtns.forEach(function (b) { b.disabled = true; });
       btn.textContent = "Redirection…";
 
+      // PERIODE LUE SUR LA REGLETTE (18 septembre 2026). Ce bouton n'envoyait
+      // que browse_plan : en annuel, la carte affichait 421 €/an et le moteur,
+      // sans billing_period, ouvrait un abonnement MENSUEL a 39 € -- 468 € sur
+      // douze mois, sans l'engagement annuel des CGV 1.4. billing-toggle.js ne
+      // pose data-billing-period que sur .checkout-btn : on lit donc l'option
+      // active de la reglette, la meme qui a ecrit le prix de la carte.
+      const payload = { browse_plan: browsePlan };
+      const periodeActive = document.querySelector('#billing-toggle .billing-toggle-opt.on');
+      if (periodeActive && periodeActive.getAttribute('data-period') === 'annual') payload.billing_period = 'annual';
+
       fetch("https://api.heurix.fr/v1/stripe/create-browse-checkout-session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ browse_plan: browsePlan }),
+        body: JSON.stringify(payload),
       })
         .then(function (r) {
           if (!r.ok) throw new Error("HTTP " + r.status);
