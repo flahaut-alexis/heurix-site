@@ -326,7 +326,7 @@
 
     </div>
 
-    <p class="pricing-note">Tarifs HT. En facturation mensuelle, sans engagement de durée — vous changez ou arrêtez à tout moment. En facturation annuelle, engagement de douze mois payés d'avance, sans remboursement, résiliable à tout moment avec effet au terme. <strong>14 jours sans prélèvement</strong> si vous souscrivez pendant votre essai gratuit. L'indexation de votre catalogue n'est jamais décomptée de votre quota de requêtes. <strong>Ranking</strong> a son propre quota, indépendant de la recherche — cochez l'option sur Growth ou Scale pour -25%, ou <a href="#browse-standalone">souscrivez-le seul, sans recherche</a>. En souscrivant, vous acceptez nos <a href="cgv.html">CGV</a>.</p>
+    <p class="pricing-note">Tarifs HT. En facturation mensuelle, sans engagement de durée — vous changez ou arrêtez à tout moment. En facturation annuelle, engagement de douze mois payés d'avance, sans remboursement, résiliable à tout moment avec effet au terme. <strong>14 jours sans prélèvement</strong> si vous souscrivez pendant votre essai gratuit. L'indexation de votre catalogue n'est jamais décomptée de votre quota de requêtes. <strong>Ranking</strong> a son propre quota, indépendant de la recherche — cochez l'option sur Growth ou Scale pour -25%, ou <a href="#browse-standalone">souscrivez-le seul, sans recherche</a>. Déjà abonné à Growth ou Scale&nbsp;? Ajoutez Ranking depuis <a href="console.html">Mon abonnement, dans la console</a>&nbsp;: payer ici créerait un second abonnement Search. En souscrivant, vous acceptez nos <a href="cgv.html">CGV</a>.</p>
   </div>
 </section>
 
@@ -337,6 +337,7 @@
     <p class="section-lede" style="text-align:center; max-width:620px; margin:0 auto 26px;">
       Le classement de vos pages de catégorie fonctionne indépendamment de la recherche.
       Souscrit avec un plan Search, il bénéficie de <strong>&minus;25&nbsp;%</strong>.
+      Déjà abonné à Growth ou Scale&nbsp;? L'option se prend depuis <a href="console.html">Mon abonnement, dans la console</a>.
     </p>
 
     <div class="pricing-grid pricing-grid-trois">
@@ -777,6 +778,9 @@
         body: JSON.stringify(payload),
       })
         .then(function (r) {
+          // 409 : le moteur refuse un second abonnement a un compte deja
+          // abonne, identifie par son jeton de session (18 septembre 2026).
+          if (r.status === 409) { const e = new Error("deja abonne"); e.dejaAbonne = true; throw e; }
           if (!r.ok) throw new Error("HTTP " + r.status);
           return r.json();
         })
@@ -784,9 +788,13 @@
           if (window.dataLayer) window.dataLayer.push({ event: "checkout_started", plan: plan, browse_plan: browsePlan });
           window.location.href = data.checkout_url;
         })
-        .catch(function () {
+        .catch(function (err) {
           checkoutBtns.forEach(function (b) { b.disabled = false; });
           btn.textContent = originalText;
+          if (err && err.dejaAbonne) {
+            if (confirm("Ce compte a déjà un abonnement actif : payer ici en créerait un second, facturé en plus du premier. Pour changer de formule ou ajouter Ranking, passez par Mon abonnement, dans la console.\n\nOuvrir la console ?")) window.location.href = "console.html";
+            return;
+          }
           alert("Une erreur est survenue — réessayez, ou écrivez à contact@heurix.fr si ça persiste.");
         });
     });
