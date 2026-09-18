@@ -644,6 +644,9 @@
   const BROWSE_TIERS = [
     { name: 'Browse Starter', priceStandalone: 39, priceAddon: 29, limit: 50000 },
     { name: 'Browse Growth', priceStandalone: 89, priceAddon: 67, limit: 150000 },
+    // Carte « Ranking Scale » (moteur : BROWSE_PLAN_LIMITS["scale"], 500 000).
+    // Aucune case de cette page ne le vend en option : pas de prix -25 %.
+    { name: 'Browse Scale', priceStandalone: 199, priceAddon: null, limit: 500000 },
   ];
   function computeCalc() {
     const visitors = parseInt(document.getElementById('calc-visitors').value, 10);
@@ -703,7 +706,9 @@
       }
       const browseBeyond = browseRequests > BROWSE_TIERS[BROWSE_TIERS.length - 1].limit;
       document.getElementById('calc-out-browse-plan').textContent = browseTier.name + ' — ' +
-        browseTier.priceAddon + ' €/mois en option sur un plan Search (' + browseTier.priceStandalone + ' € en autonome)' +
+        (browseTier.priceAddon === null
+          ? browseTier.priceStandalone + ' €/mois'
+          : browseTier.priceAddon + ' €/mois en option sur un plan Search (' + browseTier.priceStandalone + ' € en autonome)') +
         (browseBeyond ? ', au-delà : servi sans supplément' : '');
     }
   }

@@ -1,14 +1,14 @@
 # Heurix
 
-> Heurix est un moteur de recherche et de discovery pour l'e-commerce, basé sur des expressions régulières et une cascade d'annotations, conçu en France. Il est pensé pour les catalogues où les références comptent — outillage, pièces détachées, mode, industrie, librairie, vin — là où les moteurs classiques échouent sur les références produits (M8x20, DIN 933, 6205-2RS, W32L34). Le Search API est en self-service, avec un plan gratuit pour démarrer.
+> Heurix est un moteur de recherche et de discovery pour l'e-commerce, basé sur des expressions régulières et une cascade d'annotations, conçu en France. Il est pensé pour les catalogues où les références comptent — outillage, pièces détachées, mode, industrie, librairie, vin — là où les moteurs classiques échouent sur les références produits (M8x20, DIN 933, 6205-2RS, W32L34). Le Search API est en self-service, avec un essai gratuit de 14 jours pour démarrer.
 
-Heurix is a regex-powered search & discovery engine for e-commerce, designed in France, built for catalogs where references matter — standard engines fail on product references. The Search API is self-service, with a free plan to get started.
+Heurix is a regex-powered search & discovery engine for e-commerce, designed in France, built for catalogs where references matter — standard engines fail on product references. The Search API is self-service, with a 14-day free trial to get started.
 
 ## Pages principales / Main pages
 
 - [Accueil (FR)](https://heurix.fr/): présentation du moteur, démo interactive, simulateur ROI, FAQ
 - [Home (EN)](https://heurix.fr/en/): engine overview, live demo, ROI simulator, FAQ
-- [Tarifs Search API / Pricing](https://heurix.fr/pricing.html): plans Free (0 €), Growth (49 €/mois), Scale (139 €/mois), sans engagement
+- [Tarifs Search API / Pricing](https://heurix.fr/pricing.html): plans Starter (19 €/mois), Growth (49 €/mois), Scale (139 €/mois), sans engagement, essai gratuit de 14 jours
 - [Documentation API (FR)](https://heurix.fr/docs.html): référence complète — authentification, indexation, recherche, synonymes, packs de règles, cascade d'annotations
 - [API Documentation (EN)](https://heurix.fr/en/docs.html): full reference — authentication, indexing, search, synonyms, rule packs, annotation cascade
 - [Intégrations / Integrations](https://heurix.fr/integrations.html): guides techniques Shopify, PrestaShop, WooCommerce, Magento (recherche + synchronisation catalogue)
