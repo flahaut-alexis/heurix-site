@@ -138,3 +138,60 @@ describe.each(LANGUES)("$page ?inscription", (L) => {
     expect($(document, "deja-connecte").hidden).toBe(true);
   });
 });
+
+/* LA CASE DES CGV A L'INSCRIPTION (18 septembre 2026).
+ *
+ * L'article 2 compte l'essai gratuit parmi les Plans : l'inscription est une
+ * souscription, et elle remet la cle sur-le-champ. Avant ce lot, elle ne
+ * mentionnait pas les CGV, et rien n'enregistrait la version acceptee.
+ *
+ * La version cochee part au moteur, qui l'enregistre avec la date. Elle doit
+ * donc etre celle que la page CGV declare en vigueur : une 1.5 publiee sans
+ * toucher a la console rougit ici.
+ */
+const CGV = [
+  { page: "console.html", cgv: "cgv.html", enVigueur: /Version (\d+\.\d+), en vigueur depuis/,
+    libelle: /^J'accepte les conditions générales de vente \(version (\d+\.\d+)\)\.$/ },
+  { page: "en/console.html", cgv: "en/cgv.html", enVigueur: /Version (\d+\.\d+), in force since/,
+    libelle: /^I accept the Terms of Service \(version (\d+\.\d+)\)\.$/ },
+];
+
+describe.each(CGV)("$page : la case des CGV", (C) => {
+  const versionEnVigueur = () => {
+    const m = fs.readFileSync(path.join(RACINE, C.cgv), "utf8").match(C.enVigueur);
+    expect(m, `${C.cgv} ne declare plus sa version en vigueur`).not.toBeNull();
+    return m[1];
+  };
+
+  it("obligatoire, decochee, et a la version en vigueur des CGV", () => {
+    const { document } = chargerConsole(C.page, { recherche: "?inscription" });
+    const caseCgv = $(document, "signup-cgv");
+    expect(caseCgv.type).toBe("checkbox");
+    expect(caseCgv.required).toBe(true);
+    expect(caseCgv.checked).toBe(false);
+    expect(caseCgv.closest("form").id).toBe("signup-form");
+    const version = versionEnVigueur();
+    expect(caseCgv.getAttribute("data-cgv-version")).toBe(version);
+    const lue = texte(caseCgv.closest("label")).match(C.libelle);
+    expect(lue, texte(caseCgv.closest("label"))).not.toBeNull();
+    expect(lue[1], "la version affichee").toBe(version);
+    expect(caseCgv.closest("label").querySelector("a").getAttribute("href")).toBe("cgv.html");
+  });
+
+  it("decochee, le formulaire ne part pas ; cochee, la version part au moteur", async () => {
+    const { window, document } = chargerConsole(C.page, { recherche: "?inscription" });
+    $(document, "signup-raison-sociale").value = "Maison Test";
+    $(document, "signup-email").value = "m@heurix.fr";
+    $(document, "signup-password").value = "un mot de passe solide";
+    const formulaire = $(document, "signup-form");
+    expect(formulaire.checkValidity()).toBe(false);
+    expect($(document, "signup-cgv").validity.valueMissing).toBe(true);
+
+    $(document, "signup-cgv").checked = true;
+    expect(formulaire.checkValidity()).toBe(true);
+    formulaire.dispatchEvent(new window.Event("submit", { cancelable: true }));
+    await vi.waitFor(() => expect(window.fetch.mock.calls.some(([u]) => String(u).includes("/v1/auth/signup"))).toBe(true));
+    const [, options] = window.fetch.mock.calls.find(([u]) => String(u).includes("/v1/auth/signup"));
+    expect(JSON.parse(options.body).cgv_version).toBe(versionEnVigueur());
+  });
+});

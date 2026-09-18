@@ -432,6 +432,7 @@
   var signupEmail = document.getElementById("signup-email");
   var signupPassword = document.getElementById("signup-password");
   var signupTva = document.getElementById("signup-tva");
+  var signupCgv = document.getElementById("signup-cgv");
   var signupError = document.getElementById("signup-error");
   var signupBtn = document.getElementById("signup-btn");
 
@@ -7713,6 +7714,8 @@
       email: signupEmail.value.trim(), password: signupPassword.value,
       raison_sociale: signupRaisonSociale.value.trim(),
       numero_tva: signupTva.value.trim() || null,
+      // La case est `required` : le formulaire n'arrive ici que cochee.
+      cgv_version: signupCgv.getAttribute("data-cgv-version"),
     })
       .then(function (data) {
         showPostSignupScreen(data.session_token, data.key, signupEmail.value.trim(), data.email_sent);
