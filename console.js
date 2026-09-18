@@ -1597,6 +1597,20 @@
     trial: T("Essai gratuit"), starter: "Starter", growth: "Growth", scale: "Scale",
   };
 
+  // AJOUTER RANKING A UN PLAN SEARCH (18 septembre 2026). La page tarifs ne
+  // sait pas qui est deja abonne : un client Growth qui y cochait Ranking
+  // payait un second Search. L'ajout se fait ici, par la route en option du
+  // moteur, rattachee au client Stripe existant.
+  //
+  // Meme table que le moteur (ADDON_BROWSE_PLAN_FOR) et que la page tarifs
+  // (data-browse-plan) : le moteur refuse tout autre palier en 422.
+  var PALIER_RANKING_OPTION = { growth: "starter", scale: "growth" };
+  // Retour de Stripe (success_url du moteur). Le webhook peut arriver apres
+  // la redirection : /v1/usage dit encore `none` quelques secondes, et le
+  // bouton se proposerait de nouveau a qui vient de payer.
+  var rankingPaye = new URLSearchParams(window.location.search).has("browse_added");
+  var ouvrirFacturationAuRetour = rankingPaye;
+
   // ---------------- Jauges de quota (audit UX, point 2) ----------------
   //
   // Les quotas s'affichaient en chiffres bruts : « 1247 / 15000 ». Correct,
@@ -1684,6 +1698,28 @@
         }
       }
 
+      // `browse_plan` absent (moteur d'avant le 18 septembre, qui ne le
+      // renvoyait pas) : le bloc reste masque. Ne rien proposer vaut mieux
+      // que proposer Ranking a qui l'a deja.
+      var blocRanking = document.getElementById("billing-ranking");
+      var texteRanking = document.getElementById("billing-ranking-text");
+      var boutonRanking = document.getElementById("billing-ranking-add");
+      var palierRanking = PALIER_RANKING_OPTION[plan];
+      var sansRanking = d.browse_plan === "none";
+      if (blocRanking) {
+        blocRanking.hidden = !(palierRanking && sansRanking);
+        if (!blocRanking.hidden && texteRanking && boutonRanking) {
+          if (rankingPaye) {
+            texteRanking.textContent = T("Paiement reçu. Ranking s'active dès que Stripe nous le confirme, en général en quelques secondes : rechargez cette page dans un instant.");
+            boutonRanking.hidden = true;
+          } else {
+            texteRanking.textContent = T("Classez vos pages de catégorie avec les mêmes règles que la recherche. Sur votre formule {0}, l'option est Ranking {1}, à -25 % du tarif autonome, dans un abonnement distinct facturé chaque mois. Le montant s'affiche sur la page de paiement, avant validation.", PLAN_LIBELLES[plan], PLAN_LIBELLES[palierRanking]);
+            boutonRanking.hidden = false;
+            boutonRanking.setAttribute("data-browse-plan", palierRanking);
+          }
+        }
+      }
+
       if (essai) {
         if (d.trial_expired) {
           essai.hidden = false;
@@ -1734,6 +1770,28 @@
       // portail, lui, MODIFIE l'abonnement existant avec prorata.
       ouvrirPortail(key, changer, statutU,
         T("Aucun abonnement actif : souscrivez d'abord une formule depuis la page des tarifs."));
+    });
+
+    var ajouter = document.getElementById("billing-ranking-add");
+    if (ajouter) ajouter.addEventListener("click", function () {
+      var palier = ajouter.getAttribute("data-browse-plan");
+      if (!palier) return;
+      ajouter.disabled = true;
+      statutU.className = "catalog-rule-status";
+      statutU.textContent = T("Redirection vers le paiement…");
+      // Les refus du moteur (409 Ranking deja actif, 422 plan ou palier)
+      // s'affichent tels quels : ils disent quoi faire a la place.
+      apiFetch("/v1/stripe/create-browse-addon-checkout-session", key,
+               { method: "POST", body: { browse_plan: palier } })
+        .then(function (d) {
+          if (!d.checkout_url) throw new Error(T("Le paiement n'a pas pu s'ouvrir. Réessayez, ou écrivez à contact@heurix.fr."));
+          window.location.href = d.checkout_url;
+        })
+        .catch(function (err) {
+          statutU.className = "catalog-rule-status err";
+          statutU.textContent = (err && err.message) || T("Le paiement n'a pas pu s'ouvrir. Réessayez, ou écrivez à contact@heurix.fr.");
+          ajouter.disabled = false;
+        });
     });
 
     var bouton = document.getElementById("billing-portal");
@@ -6843,6 +6901,11 @@
       loadSearchOverridesCatalogs(key);
       if (catalogues) chargerVuesCategories(key, catalogues);
       session.cleCourante = key;
+      if (ouvrirFacturationAuRetour) {
+        ouvrirFacturationAuRetour = false;
+        history.replaceState(null, "", window.location.pathname);
+        showPane("pane-billing");
+      }
       // EXPOSITION POUR LES MODULES. L'import CSV est un module ES,
       // chargé séparément : il n'a pas accès aux variables de cette
       // fonction anonyme. Sans cela, il utilisait le jeton de SESSION,
