@@ -228,11 +228,12 @@ La documentation suffit pour le mode de fonctionnement (workers, tests). Elle ne
 
 ## Propositions
 
-1. **Surcharger `_search_with_fuzzy`**, avec les cinq règles du point 1. Le repli y est naturel, puisque `super()` est la recherche native.
-2. **Surcharger `_get_shop_domain`**, sinon les facettes ne voient pas les produits trouvés par Heurix (relevé du 16 ; 20.0 l'appelle deux fois).
-3. **Repli :** délai court, disjoncteur partagé entre les workers, refus non comptés comme pannes, aucun appel sans clé.
-4. **Viser 19.0**, puis 18.0. 20.0 plus tard, en code séparé.
-5. **Écrire dans la description publique**, en plus de l'opt-in dans l'écran du module :
+1. **Première contrainte du module, décidée le 18 septembre : un disjoncteur dont l'état est partagé entre les workers.** Sans lui, une panne d'Heurix ralentit toute la base du marchand, back-office compris (point 2, 9,3 s pour six recherches). Un disjoncteur en mémoire ne protège que le worker qui a vu les échecs. Seules les vraies pannes l'ouvrent (réseau, délai, 5xx) ; les refus 401, 403 et 402 ne comptent pas.
+2. **Le reste du repli :** délai court, aucun appel sans clé.
+3. **Surcharger `_search_with_fuzzy`**, avec les cinq règles du point 1. Le repli y est naturel, puisque `super()` est la recherche native.
+4. **Surcharger `_get_shop_domain`**, sinon les facettes ne voient pas les produits trouvés par Heurix (relevé du 16 ; 20.0 l'appelle deux fois).
+5. **Viser 19.0**, puis 18.0. 20.0 plus tard, en code séparé.
+6. **Écrire dans la description publique**, en plus de l'opt-in dans l'écran du module :
    - le service externe ;
    - les données envoyées ;
    - le lien vers la politique de confidentialité ;
