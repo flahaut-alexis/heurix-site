@@ -1,0 +1,82 @@
+public shop                      1 appel(s)
+       product_template|search=''|/shop|public|n=28|21.7ms|addons/website_sale/controllers/main.py:235 _shop_lookup_products
+public shop page 2               1 appel(s)
+       product_template|search=''|/shop/page/2|public|n=28|9.0ms|addons/website_sale/controllers/main.py:235 _shop_lookup_products
+public shop tri prix             1 appel(s)
+       product_template|search=''|/shop|public|n=28|9.2ms|addons/website_sale/controllers/main.py:235 _shop_lookup_products
+public shop categorie            1 appel(s)
+       product_template|search=''|/shop/category/desks-1|public|n=9|9.7ms|addons/website_sale/controllers/main.py:235 _shop_lookup_products
+public shop filtre attribut      1 appel(s)
+       product_template|search=''|/shop|public|n=28|9.7ms|addons/website_sale/controllers/main.py:235 _shop_lookup_products
+public shop filtre prix          1 appel(s)
+       product_template|search=''|/shop|public|n=20|8.8ms|addons/website_sale/controllers/main.py:235 _shop_lookup_products
+public shop recherche            1 appel(s)
+       product_template|search='desk'|/shop|public|n=10|23.6ms|addons/website_sale/controllers/main.py:235 _shop_lookup_products
+public shop recherche floue      1 appel(s)
+       product_template|search='dosk'|/shop|public|n=10|34.9ms|addons/website_sale/controllers/main.py:235 _shop_lookup_products
+public shop recherche + categorie 1 appel(s)
+       product_template|search='desk'|/shop/category/desks-1|public|n=8|28.5ms|addons/website_sale/controllers/main.py:235 _shop_lookup_products
+public panier                    0 appel(s)
+public wishlist                  0 appel(s)
+public comparaison               1 appel(s)
+       product_template|search=''|/shop|public|n=28|9.8ms|addons/website_sale/controllers/main.py:235 _shop_lookup_products
+public website/search all        1 appel(s)
+       all|search='desk'|/website/search|public|n=11|131.1ms|addons/website/controllers/main.py:1210 autocomplete
+public website/search products   1 appel(s)
+       products|search='desk'|/website/search/products|public|n=11|26.6ms|addons/website/controllers/main.py:1210 autocomplete
+public blog recherche            1 appel(s)
+       blog_post|search='desk'|/blog|public|n=0|31.6ms|addons/website_blog/controllers/main.py:120 _prepare_blog_values
+public blog                      1 appel(s)
+       blog_post|search=None|/blog|public|n=7|0.9ms|addons/website_blog/controllers/main.py:120 _prepare_blog_values
+public event recherche           1 appel(s)
+       events|search='desk'|/event|public|n=0|19.8ms|addons/website_event/controllers/main.py:79 events
+public event                     1 appel(s)
+       events|search=''|/event|public|n=6|4.2ms|addons/website_event/controllers/main.py:79 events
+public forum recherche           1 appel(s)
+       forum_post|search='desk'|/forum/help-1|public|n=0|10.4ms|addons/website_forum/controllers/website_forum.py:154 questions
+public forum                     1 appel(s)
+       forum_post|search=''|/forum/help-1|public|n=2|2.6ms|addons/website_forum/controllers/website_forum.py:154 questions
+public jobs recherche            1 appel(s)
+       jobs|search='desk'|/jobs|public|n=0|10.6ms|addons/website_hr_recruitment/controllers/main.py:125 jobs
+public jobs                      1 appel(s)
+       jobs|search=None|/jobs|public|n=3|1.1ms|addons/website_hr_recruitment/controllers/main.py:125 jobs
+public slides recherche          1 appel(s)
+       slide_channel|search='desk'|/slides|public|n=0|11.3ms|addons/website_slides/controllers/main.py:454 slides_channel_values
+public slides                    1 appel(s)
+       slide_channel|search=None|/slides|public|n=5|1.7ms|addons/website_slides/controllers/main.py:454 slides_channel_values
+public accueil                   0 appel(s)
+public contactus                 1 appel(s)
+       product_template|search=''|/shop|public|n=28|9.7ms|addons/website_sale/controllers/main.py:235 _shop_lookup_products
+public fiche produit             0 appel(s)
+autocomplete products            1 appel(s)
+       products|search='desk'|/website/snippet/autocomplete|public|n=11|30.5ms|addons/website/controllers/main.py:1210 autocomplete
+autocomplete product_template    1 appel(s)
+       product_template|search='desk'|/website/snippet/autocomplete|public|n=10|34.6ms|addons/website/controllers/main.py:1210 autocomplete
+autocomplete all                 1 appel(s)
+       all|search='desk'|/website/snippet/autocomplete|public|n=11|149.1ms|addons/website/controllers/main.py:1210 autocomplete
+autocomplete blog_post           1 appel(s)
+       blog_post|search='desk'|/website/snippet/autocomplete|public|n=0|33.3ms|addons/website/controllers/main.py:1210 autocomplete
+autocomplete events              1 appel(s)
+       events|search='desk'|/website/snippet/autocomplete|public|n=0|27.3ms|addons/website/controllers/main.py:1210 autocomplete
+autocomplete forum_post          1 appel(s)
+       forum_post|search='desk'|/website/snippet/autocomplete|public|n=0|12.6ms|addons/website/controllers/main.py:1210 autocomplete
+autocomplete slides              1 appel(s)
+       slides|search='desk'|/website/snippet/autocomplete|public|n=0|27.8ms|addons/website/controllers/main.py:1210 autocomplete
+autocomplete jobs                1 appel(s)
+       jobs|search='desk'|/website/snippet/autocomplete|public|n=0|12.5ms|addons/website/controllers/main.py:1210 autocomplete
+autocomplete pages               1 appel(s)
+       pages|search='desk'|/website/snippet/autocomplete|public|n=0|52.9ms|addons/website/controllers/main.py:1210 autocomplete
+login admin                      0 appel(s)
+admin shop                       1 appel(s)
+       product_template|search=''|/shop|uid2|n=80|6.9ms|addons/website_sale/controllers/main.py:235 _shop_lookup_products
+admin shop recherche             1 appel(s)
+       product_template|search='desk'|/shop|uid2|n=11|16.7ms|addons/website_sale/controllers/main.py:235 _shop_lookup_products
+admin backend                    0 appel(s)
+admin action produits            0 appel(s)
+orm name_search produit          0 appel(s)
+orm web_search_read produit      0 appel(s)
+orm search_read commandes        0 appel(s)
+orm name_search page             0 appel(s)
+orm name_search blog             0 appel(s)
+rapport commande html            0 appel(s)
+tous les crons                   0 appel(s)

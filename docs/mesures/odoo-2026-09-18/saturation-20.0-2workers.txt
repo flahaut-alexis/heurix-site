@@ -1,0 +1,1 @@
+timeout 3s http://127.0.0.1:8099/hang               N=6  /contactus  9.43 s  back-office  9.34 s  recherches: max  9.63 s
