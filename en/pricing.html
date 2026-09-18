@@ -314,7 +314,7 @@
 
     </div>
 
-    <p class="pricing-note">Prices excl. VAT. With monthly billing, no long-term commitment — change or cancel anytime. With annual billing, a twelve-month commitment paid in advance, non-refundable, cancellable at any time effective at the end of the term. <strong>No charge for 14 days</strong> if you subscribe during your free trial. Indexing your catalog is never counted against your request quota. <strong>Ranking</strong> has its own quota, separate from search — check the option on Growth or Scale for -25%, or <a href="#browse-standalone">subscribe to it standalone, without search</a>. By subscribing, you accept our <a href="cgv.html">Terms of Service</a>.</p>
+    <p class="pricing-note">Prices excl. VAT. With monthly billing, no long-term commitment — change or cancel anytime. With annual billing, a twelve-month commitment paid in advance, non-refundable, cancellable at any time effective at the end of the term. <strong>No charge for 14 days</strong> if you subscribe during your free trial. Indexing your catalog is never counted against your request quota. <strong>Ranking</strong> has its own quota, separate from search — check the option on Growth or Scale for -25%, or <a href="#browse-standalone">subscribe to it standalone, without search</a>. Already on Growth or Scale? Add Ranking from <a href="console.html">My subscription, in the console</a>: paying here would create a second Search subscription. By subscribing, you accept our <a href="cgv.html">Terms of Service</a>.</p>
   </div>
 </section>
 
@@ -325,6 +325,7 @@
     <p class="section-lede" style="text-align:center; max-width:620px; margin:0 auto 26px;">
       Ranking for your category pages works independently of search.
       Subscribed alongside a Search plan, it gets <strong>&minus;25%</strong>.
+      Already on Growth or Scale? The add-on is taken from <a href="console.html">My subscription, in the console</a>.
     </p>
 
     <div class="pricing-grid pricing-grid-trois">
@@ -725,6 +726,9 @@
         body: JSON.stringify(payload),
       })
         .then(function (r) {
+          // 409 : le moteur refuse un second abonnement a un compte deja
+          // abonne, identifie par son jeton de session (18 septembre 2026).
+          if (r.status === 409) { const e = new Error("deja abonne"); e.dejaAbonne = true; throw e; }
           if (!r.ok) throw new Error("HTTP " + r.status);
           return r.json();
         })
@@ -732,9 +736,13 @@
           if (window.dataLayer) window.dataLayer.push({ event: "checkout_started", plan: plan, browse_plan: browsePlan });
           window.location.href = data.checkout_url;
         })
-        .catch(function () {
+        .catch(function (err) {
           checkoutBtns.forEach(function (b) { b.disabled = false; });
           btn.textContent = originalText;
+          if (err && err.dejaAbonne) {
+            if (confirm("This account already has an active subscription: paying here would create a second one, billed on top of the first. To change plan or add Ranking, use My subscription, in the console.\n\nOpen the console?")) window.location.href = "console.html";
+            return;
+          }
           alert("Something went wrong — please try again, or write to contact@heurix.fr if it persists.");
         });
     });
