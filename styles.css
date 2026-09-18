@@ -4690,6 +4690,25 @@ footer{ padding:40px 0; border-top:1px solid var(--line); }
 @media (max-width:760px){
   .header-search .search-trigger{ max-width:38px; }
 }
+/* LA RECHERCHE EST LE SEUL ELEMENT DE LA BARRE QUI RETRECIT (18 septembre
+   2026). Juste au-dessus du hamburger, elle paie seule chaque lien du menu.
+   Mesure a chaque pixel de 1081 a 1440, article du blog, logique
+   « texte ou Ctrl K qui depasse du bouton ou passe sous Mon compte » :
+
+     avant Tarifs, FR        Ctrl K recouvert de 1081 a 1140
+     avec Tarifs, FR         libelle recouvert de 1081 a 1132, Ctrl K jusqu'a 1250
+     avec Pricing, EN        Ctrl K recouvert de 1081 a 1111
+     avec ces deux regles    aucun recouvrement, FR comme EN
+
+   Le raccourci disparait donc jusqu'a 1250, et le libelle jusqu'a 1140, ou
+   la loupe seule reprend la forme qu'elle a deja sous 760. */
+@media (min-width:1081px) and (max-width:1250px){
+  .header-search .search-trigger-kbd{ display:none; }
+}
+@media (min-width:1081px) and (max-width:1140px){
+  .header-search .search-trigger-text{ display:none; }
+  .header-search .search-trigger{ width:38px; max-width:38px; padding:0; justify-content:center; }
+}
 /* En dessous de 1080px la barre ne tient plus sur une ligne : le menu passe
    sous le bouton hamburger, comme avant, mais desormais porte par
    .nav-links puisque le second bandeau n'existe plus. */
