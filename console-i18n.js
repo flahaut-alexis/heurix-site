@@ -336,6 +336,14 @@
     "Invitation envoyée": "Invitation sent",
     "En attente": "Pending",
     "Changer de formule": "Change plan",
+    "Ajouter Ranking": "Add Ranking",
+    "Classez vos pages de catégorie avec les mêmes règles que la recherche. Sur votre formule {0}, l'option est Ranking {1}, à -25 % du tarif autonome, dans un abonnement distinct facturé chaque mois. Le montant s'affiche sur la page de paiement, avant validation.":
+      "Rank your category pages with the same rules as search. On your {0} plan, the add-on is Ranking {1}, 25% off the standalone price, in a separate subscription billed monthly. The amount is shown on the payment page before you confirm.",
+    "Paiement reçu. Ranking s'active dès que Stripe nous le confirme, en général en quelques secondes : rechargez cette page dans un instant.":
+      "Payment received. Ranking turns on as soon as Stripe confirms it, usually within seconds: reload this page in a moment.",
+    "Redirection vers le paiement…": "Redirecting to payment…",
+    "Le paiement n'a pas pu s'ouvrir. Réessayez, ou écrivez à contact@heurix.fr.":
+      "The payment page couldn't open. Try again, or email contact@heurix.fr.",
     "Gérer mon abonnement": "Manage my subscription",
     "Facturation": "Billing",
     "Prochaine échéance": "Next renewal",
