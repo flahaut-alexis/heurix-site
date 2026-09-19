@@ -131,6 +131,7 @@
 #   1  la suite est INCONCLUSE deux    -> push refusé, relancez plus tard
 #      fois (voir « UNE LENTEUR N'EST PAS UN TEST ROUGE », plus bas)
 #   2  les contrôles sont INEXÉCUTABLES -> push refusé, réparez l'outillage
+#      (PyYAML manquant, ou clone superficiel : voir plus bas)
 #
 set -uo pipefail
 
@@ -146,6 +147,45 @@ while read -r _local_ref local_sha _remote_ref _remote_sha; do
 done
 if [ "$SUPPRESSION_SEULE" -eq 1 ]; then
   exit 0
+fi
+
+# ─────────────────────────────────────────────────────────────────────────────
+# UN CLONE SUPERFICIEL REND LES CONTRÔLES INEXÉCUTABLES, PAS FAUX
+# (19 septembre 2026).
+#
+# Mesuré le jour même, sur un `git clone --depth 1` de main, propre et à
+# jour : le crochet a refusé sous « un contrôle de la CI échoue en local ».
+# Rien n'échouait. Sans historique, `git log` date TOUS les fichiers de la
+# même seconde ; le bloc de l'index l'écrit lui-même (« IMPOSSIBLE DE
+# VÉRIFIER [...] clone SUPERFICIEL ») et six tests qui lisent l'historique
+# tombent avec lui. Après `git fetch --unshallow`, le même clone sort en 0.
+#
+# C'est le défaut fermé la veille sur la lenteur de vitest, déplacé d'un
+# cran : « je n'ai pas pu vérifier » rendu comme « ça a échoué ». La sortie 2
+# existe pour ça depuis le premier jour et ne servait qu'à PyYAML manquant.
+#
+# LE CONTRÔLE EST ICI, AVANT LES BLOCS, et il porte sur l'ÉTAT DU DÉPÔT.
+# Le déduire de leur échec reviendrait à lire une cause dans un symptôme qui
+# en a plusieurs : un bloc rouge sur un clone superficiel peut aussi être
+# rouge pour une vraie raison, et on retomberait dans la confusion qu'on
+# ferme. Coût : une milliseconde.
+# ─────────────────────────────────────────────────────────────────────────────
+if [ "$(git rev-parse --is-shallow-repository)" = "true" ]; then
+  cat >&2 <<'MSG'
+pre-push : CONTRÔLES INEXÉCUTABLES -- ce clone est SUPERFICIEL.
+
+  Ce n'est pas un échec de contrôle, et rien n'a été lancé. Sans historique,
+  git date tous les fichiers de la même seconde : la liste des derniers
+  articles et les tests qui lisent l'historique ne mesurent plus rien, et
+  leur rouge ne dirait rien de votre commit.
+
+  NE RÉGÉNÉREZ PAS l'index depuis ce clone : vous y écririez une liste de
+  derniers articles fausse, d'apparence normale.
+
+  Réparez :   git fetch --unshallow
+  Ou, en CI :  actions/checkout@v4 avec fetch-depth: 0
+MSG
+  exit 2
 fi
 
 CI="./.github/workflows/CI.yml"
