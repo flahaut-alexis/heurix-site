@@ -151,7 +151,7 @@
     <div class="wrap">
       <div class="kicker">Plateforme</div>
       <h1 style="max-width:720px;">La recherche PrestaShop qui comprend vos références</h1>
-      <p class="section-lede" style="max-width:640px;">Testez d'abord sur votre propre site : cherchez la même référence sous trois formes — <code>M8x20</code>, <code>M8 x 20</code>, <code>M8-20</code>. Si les trois nombres de résultats diffèrent, cette page vous concerne.</p>
+      <p class="section-lede" style="max-width:640px;">Testez d'abord sur votre propre site : cherchez la même référence sous trois formes — <code>M8x20</code>, <code>M8 x 20</code>, <code>M8-20</code>. Si l'une des trois ne rend pas la bonne vis en tête, cette page vous concerne.</p>
       <p style="margin-top:18px;">
         <a class="btn" href="demo/index.html">Voir le moteur en action</a>
         <a class="btn btn-ghost" href="docs.html">Documentation</a>
@@ -165,15 +165,15 @@
       <div class="int-grid">
       <div class="int-card">
         <h3>Les graphies de références</h3>
-        <p>« M8x20 », « M8 x 20 » et « M8-20 » donnent trois résultats différents : vos clients ne trouvent que s'ils tapent exactement comme votre catalogue est saisi.</p>
+        <p>Mesuré sur PrestaShop 9.1, avec un catalogue qui écrit « M8x20 » : « M8x20 » trouve la vis, « M8 x 20 » ne rend rien, « M8-20 » rend la vis M8-40. Vos clients ne trouvent à coup sûr que s'ils tapent comme votre catalogue est saisi.</p>
       </div>
       <div class="int-card">
-        <h3>Les fautes de frappe</h3>
-        <p>« rondele » ne trouve pas « rondelle ». Sur un site professionnel où l'on tape vite, c'est une vente perdue à chaque faute.</p>
+        <h3>Une correction qui remplace sans prévenir</h3>
+        <p>PrestaShop corrige les fautes, mais sans plancher : il remplace le mot absent par le plus proche de votre catalogue, jusqu'à cinq lettres d'écart. Sur un catalogue de visserie de 177 produits, « pneu » rend 68 produits sans rapport, et « zzzzzz » un roulement.</p>
       </div>
       <div class="int-card">
-        <h3>La structure technique</h3>
-        <p>La recherche native compare des caractères. Elle ne sait pas que M8 est un diamètre, inox une matière, DIN 933 une norme.</p>
+        <h3>Les mots courts disparaissent</h3>
+        <p>PrestaShop ignore les mots de moins de trois caractères, réglage livré : M8, A2, 20. « M8 » seul ne rend rien, et « vis inox M8 20 » rend toutes les vis inox du catalogue, M8 ou non.</p>
       </div>
       </div>
     </div>
@@ -200,8 +200,8 @@
         <p>C'est le temps d'intégration constaté pour un catalogue déjà exporté, réglages et vérifications compris.</p>
       </div>
       </div>
-      <p class="section-lede" style="margin-top:22px; max-width:640px;">Le module est en bêta : fourni sur demande, avec accompagnement direct du fondateur pendant l'intégration.</p>
-      <p style="margin-top:8px;"><a class="btn" href="mailto:contact@heurix.fr?subject=Module%20prestashop">Demander le module</a>
+      <p class="section-lede" style="margin-top:22px; max-width:640px;">Le module est payant : il s'achète sur PrestaShop Addons, et se branche sur votre compte Heurix.</p>
+      <p style="margin-top:8px;"><a class="btn" href="https://addons.prestashop.com/fr/recherches-filtres/98535-heurix-smart-product-search.html" target="_blank" rel="noopener">Voir le module sur PrestaShop Addons</a>
       <a class="btn btn-ghost" href="faq.html">Questions fréquentes</a></p>
     </div>
   </section>
