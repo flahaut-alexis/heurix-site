@@ -120,7 +120,7 @@ const MOTIFS = [
     motif:
       /nav-row-d">(?:Rendu par votre th(?:&egrave;|è)me, via la Section Rendering API|Rendered by your theme, via the Section Rendering API)/g,
     aLaPlace:
-      "Intégration via l'API REST documentée. / Integration via the documented REST API.",
+      "Application en revue chez Shopify, et API REST. / App in review at Shopify, and REST API. (ligne de nav depuis le 19 septembre 2026 ; « via l'API REST documentee » taisait l'app)",
   },
   {
     id: "extension-de-theme-existe",
