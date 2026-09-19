@@ -204,7 +204,7 @@
       <p>Inversement, deux éditions d'un même titre portent le même nom, le même auteur, la même couverture parfois — et deux ISBN distincts. Sémantiquement, elles sont interchangeables. Commercialement, ce sont deux produits, deux prix, deux disponibilités.</p>
 
       <h3>Le nombre qui n'est pas une quantité</h3>
-      <p>Sur un vin, <span class="mono">2015</span> est un millésime, pas une quantité ni un prix. Un moteur généraliste le traite comme un nombre parmi d'autres — et une recherche de « magnum 2015 » remonte alors tout ce qui contient « 2015 » quelque part, y compris une référence interne ou un prix à 20,15 €.</p>
+      <p>Sur un vin, <span class="mono">2015</span> est un millésime, pas une quantité ni un prix. Un moteur généraliste le traite comme un nombre parmi d'autres — et une recherche de « magnum 2015 » remonte alors tout ce qui contient « 2015 » quelque part, y compris une référence interne ou un prix à 20,15 €. Ce que le pack vins isole à la place, millésime, format et degré, est détaillé dans <a href="vins-spiritueux-millesime-format-prix.html">un millésime n'est pas un prix</a>.</p>
 
       <h2>L'approche inverse : reconnaître la structure</h2>
       <p>Heurix ne calcule pas de distance sémantique. Il reconnaît la <strong>structure</strong> d'une référence, par une cascade de règles, et en extrait des attributs exploitables. Sur les deux vis du début :</p>
@@ -214,7 +214,7 @@
         <tr><td class="mono">M8 x 25 - Inox A2 - DIN 933</td><td><code class="docs-inline-code">DIAM_M8</code> <code class="docs-inline-code">LONG_25</code> <code class="docs-inline-code">MAT_INOX</code> <code class="docs-inline-code">NORME_DIN933</code></td></tr>
       </table></div>
       <p>Les deux références partagent leur diamètre, leur matière et leur norme. Elles diffèrent sur la longueur, isolée comme un attribut à part entière — donc filtrable, comparable, et jamais confondue. Le moteur ne se trompe pas sur ce point parce qu'il ne l'estime pas : il le lit.</p>
-      <p>Une conséquence utile : chaque résultat peut <strong>expliquer pourquoi il sort</strong>. Correspondance exacte, faute de frappe tolérée, annotation reconnue. Un classement vectoriel, lui, est difficilement explicable — la proximité dans un espace à plusieurs centaines de dimensions (384 pour le modèle multilingue que nous avons mesuré) ne se raconte pas.</p>
+      <p>Une conséquence utile : chaque résultat peut <strong>expliquer pourquoi il sort</strong>. Correspondance exacte, faute de frappe tolérée, annotation reconnue. Un classement vectoriel, lui, est difficilement explicable — la proximité dans un espace à plusieurs centaines de dimensions (384 pour le <a href="decoupage-rag-catalogue-produit.html">modèle multilingue que nous avons mesuré</a>) ne se raconte pas.</p>
 
       <h2>Comment savoir de quel côté vous êtes</h2>
       <p>La question n'est pas de savoir quelle technique est supérieure, mais laquelle correspond à votre catalogue. Quelques indices concrets :</p>

@@ -216,6 +216,7 @@ Do I have M8 screws in stock, and at what price?</code></pre>
 
       <h2>The three available tools</h2>
       <p><code class="docs-inline-code">heurix_search</code> (keyword search, typo-tolerant), <code class="docs-inline-code">heurix_browse</code> (products in a category, with sorting — stock, price, popularity...), and <code class="docs-inline-code">heurix_catalog_stats</code> (lists available catalogs and categories — useful as a first call if the agent doesn't yet know your structure). Every search or Browse call consumes the normal quota of the key used, just like a direct API call.</p>
+      <p>What an agent actually gets from these three tools on a hardware catalog, query by query, is measured in <a href="agent-ia-catalogue-technique.html">what an AI agent finds, and does not find, in a technical catalog</a>.</p>
 
       <h2>Security</h2>
       <p>Your API key lives only in the MCP client's local configuration file, never sent in the clear in a tool call: the server reads it once at startup and uses it for every call to the Heurix API. Full documentation of the three tools is in <a href="../docs.html#ep-mcp">the API reference</a>.</p>

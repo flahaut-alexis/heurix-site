@@ -183,7 +183,7 @@
 
       <h2>Why keyword search fails on technical references</h2>
       <p>Default search engines split text word by word (called tokenization) and look for matches between those tokens. This works well for natural language, but poorly for structured strings like <code>M8x20</code> or <code>DIN 933</code>.</p>
-      <p>The problem comes from format variation: the same reference might be stored as <code>DIN933</code>, <code>DIN-933</code>, or <code>DIN 933</code> depending on who filled in the product sheet, and the query a customer types rarely matches that exact format. The engine doesn't make the connection: to it, these are different strings.</p>
+      <p>The problem comes from format variation: the same reference might be stored as <code>DIN933</code>, <code>DIN-933</code>, or <code>DIN 933</code> depending on who filled in the product sheet, and the query a customer types rarely matches that exact format. The engine doesn't make the connection: to it, these are different strings. What each engine on the market does with these spellings, according to its documentation: <a href="alternative-algolia-catalogue-technique.html">Algolia alternatives for a technical catalog</a>.</p>
 
       <h2>The fix: regular expressions and normalization</h2>
       <p>Two complementary mechanisms solve this problem:</p>
