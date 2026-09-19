@@ -2,7 +2,10 @@ import { describe, it, expect } from "vitest";
 import fs from "node:fs";
 import path from "node:path";
 import os from "node:os";
-import { execFileSync } from "node:child_process";
+import { execFile } from "node:child_process";
+import { promisify } from "node:util";
+
+const executer = promisify(execFile);
 
 const RACINE = path.resolve(__dirname, "..");
 const lire = (f) => JSON.parse(fs.readFileSync(path.join(RACINE, f), "utf8"));
@@ -238,16 +241,33 @@ describe("index derive — le verificateur", () => {
   //
   // Ce residu est borne et il ne bloque rien : il coute du disque et une
   // ligne dans `git worktree list`, jamais un fichier suivi.
+  //
+  // AUCUN SOUS-PROCESSUS SYNCHRONE DANS CE BLOC (19 septembre 2026).
+  //
+  // vitest ne rend pas la main a la boucle d'evenements entre deux tests
+  // synchrones. Le processus de test attend pourtant l'accuse de reception de
+  // ses resultats (`onTaskUpdate`), avec un delai de 60 s fixe en dur dans
+  // birpc et qu'aucune option de vitest 3.2.7 ne change. Les cinq tests
+  // ci-dessous etaient en `execFileSync` : leur enchainement bloquait le
+  // processus d'un seul tenant. Au-dela de 60 s, l'accuse deja arrive n'est
+  // pas lu avant l'expiration du delai, et vitest sort en 1 sur
+  // « Timeout calling "onTaskUpdate" » avec tous les tests verts.
+  //
+  // Mesure, huit passages de la suite : bloc de 34,6 a 54,2 s -> code 0 (6/6) ;
+  // 65,6 et 76,3 s sous charge -> code 1 (2/2). Seuil reproduit a part :
+  // 35 s + 35 s synchrones -> timeout, 55 s -> propre, 35 s + 35 s ATTENDUS
+  // (`execFile` promis) -> propre. Le crochet pre-push a refuse ainsi un push
+  // de 989 tests verts. Tout appel ici passe donc par `executer`.
   let nCopie = 0;
-  const dansUneCopie = (fn) => {
+  const dansUneCopie = async (fn) => {
     const copie = path.join(os.tmpdir(),
       `heurix-verif-${process.pid}-${Date.now()}-${nCopie++}`);
-    execFileSync("git", ["-C", RACINE, "worktree", "add", "--detach", "-q", copie, "HEAD"]);
+    await executer("git", ["-C", RACINE, "worktree", "add", "--detach", "-q", copie, "HEAD"]);
     try {
-      return fn(copie);
+      return await fn(copie);
     } finally {
       try {
-        execFileSync("git", ["-C", RACINE, "worktree", "remove", "--force", copie]);
+        await executer("git", ["-C", RACINE, "worktree", "remove", "--force", copie]);
       } catch { /* la copie survit ; l'arbre suivi, lui, n'a rien vu */ }
     }
   };
@@ -268,13 +288,15 @@ describe("index derive — le verificateur", () => {
   // blocage reel. Un sous-processus Python qui met 30 s est pendu, pas charge.
   const DELAI = 30_000;
 
-  const verifier = (racine = RACINE) => {
+  // `e.code` et non `e.status` : c'est le champ ou la forme promise
+  // d'`execFile` range le code de sortie.
+  const verifier = async (racine = RACINE) => {
     try {
-      execFileSync("python3", [path.join(racine, "scripts/index-recherche.py"), "--verifier"],
-                   { cwd: racine, encoding: "utf8" });
+      await executer("python3", [path.join(racine, "scripts/index-recherche.py"), "--verifier"],
+                     { cwd: racine, encoding: "utf8" });
       return { code: 0, sortie: "" };
     } catch (e) {
-      return { code: e.status, sortie: (e.stdout || "") + (e.stderr || "") };
+      return { code: e.code, sortie: (e.stdout || "") + (e.stderr || "") };
     }
   };
 
@@ -288,24 +310,24 @@ describe("index derive — le verificateur", () => {
   // La fonction `verifier()` capture pourtant deja stdout et stderr dans
   // `.sortie`. Le test connaissait la cause de son echec et ne la montrait
   // pas. Le second argument d'`expect` l'affiche.
-  it("sort 0 quand l'index correspond aux pages", () => {
-    const r = verifier();
+  it("sort 0 quand l'index correspond aux pages", async () => {
+    const r = await verifier();
     expect(r.code, r.sortie).toBe(0);
   }, DELAI);
 
-  it("tourne SANS le moteur ni sa wheel — c'est sa raison d'etre", () => {
+  it("tourne SANS le moteur ni sa wheel — c'est sa raison d'etre", async () => {
     // Si le generateur importait le moteur au chargement, cet appel
     // echouerait ici comme il echouerait dans la CI du site.
-    const r = verifier();
+    const r = await verifier();
     expect(r.code, r.sortie).toBe(0);
   }, DELAI);
 
-  it("NOMME la page fautive plutot que de sortir 1 en silence", () => {
-    dansUneCopie((copie) => {
+  it("NOMME la page fautive plutot que de sortir 1 en silence", async () => {
+    await dansUneCopie(async (copie) => {
       const page = path.join(copie, "docs.html");
       fs.writeFileSync(page,
         fs.readFileSync(page, "utf8").replace("</title>", " modifie</title>"));
-      const r = verifier(copie);
+      const r = await verifier(copie);
       expect(r.code, r.sortie).toBe(1);
       expect(r.sortie).toContain("docs.html");
     });
@@ -322,14 +344,14 @@ describe("index derive — le verificateur", () => {
   //
   // On retire donc l'empreinte d'une page EXISTANTE de l'index : du point de
   // vue du verificateur, cette page vient d'etre AJOUTEE.
-  it("detecte une page AJOUTEE — celle qui ne change aucune empreinte", () => {
-    dansUneCopie((copie) => {
+  it("detecte une page AJOUTEE — celle qui ne change aucune empreinte", async () => {
+    await dansUneCopie(async (copie) => {
       const f = path.join(copie, "search-index-fr.json");
       const idx = JSON.parse(fs.readFileSync(f, "utf8"));
       const orpheline = Object.keys(idx.empreintes)[0];
       delete idx.empreintes[orpheline];
       fs.writeFileSync(f, JSON.stringify(idx));
-      const r = verifier(copie);
+      const r = await verifier(copie);
       expect(r.code, r.sortie).toBe(1);
       expect(r.sortie).toContain(orpheline);
       expect(r.sortie).toContain("AJOUTEE");
@@ -363,23 +385,23 @@ describe("index derive — le verificateur", () => {
   // la page jetable a ete commitee sur la branche qui poussait, et poussee
   // avec elle (7b66e60b). Le rejeu manuel du crochet, sans GIT_DIR, ne l'avait
   // pas montre.
-  it("un article neuf verifie avant son commit l'est encore apres", () => {
+  it("un article neuf verifie avant son commit l'est encore apres", async () => {
     const script = path.join(RACINE, "scripts/index-recherche.py");
     const env = Object.fromEntries(
       Object.entries(process.env).filter(([k]) => !k.startsWith("GIT_")));
-    const tete = () => execFileSync("git", ["-C", RACINE, "rev-parse", "HEAD"], { encoding: "utf8" });
-    const teteAvant = tete();
-    const verifierCopie = (copie) => {
+    const tete = async () => (await executer("git", ["-C", RACINE, "rev-parse", "HEAD"], { encoding: "utf8" })).stdout;
+    const teteAvant = await tete();
+    const verifierCopie = async (copie) => {
       try {
-        execFileSync("python3", [script, "--verifier"], { cwd: copie, encoding: "utf8", env });
+        await executer("python3", [script, "--verifier"], { cwd: copie, encoding: "utf8", env });
         return { code: 0, sortie: "" };
       } catch (e) {
-        return { code: e.status, sortie: (e.stdout || "") + (e.stderr || "") };
+        return { code: e.code, sortie: (e.stdout || "") + (e.stderr || "") };
       }
     };
     const neuf = "blog/page-jetable-derniers.html";
 
-    dansUneCopie((copie) => {
+    await dansUneCopie(async (copie) => {
       const modele = fs.readdirSync(path.join(copie, "blog")).find((f) => f.endsWith(".html"));
       fs.writeFileSync(path.join(copie, neuf),
         fs.readFileSync(path.join(copie, "blog", modele), "utf8")
@@ -388,7 +410,7 @@ describe("index derive — le verificateur", () => {
       fs.writeFileSync(sitemap, fs.readFileSync(sitemap, "utf8").replace("</urlset>",
         `  <url><loc>https://heurix.fr/${neuf}</loc></url>\n</urlset>`));
 
-      execFileSync("python3", ["-c", `
+      await executer("python3", ["-c", `
 import importlib.util, json, sys
 spec = importlib.util.spec_from_file_location("ir", sys.argv[1])
 m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
@@ -398,13 +420,13 @@ idx["derniers"] = m.derniers_articles("fr")
 json.dump(idx, open(f, "w", encoding="utf8"), ensure_ascii=False, separators=(",", ":"))
 `, script, neuf], { cwd: copie, env });
 
-      const avant = verifierCopie(copie);
+      const avant = await verifierCopie(copie);
       expect(avant.code, `AVANT le commit : ${avant.sortie}`).toBe(0);
 
-      execFileSync("git", ["-C", copie, "add", "--", neuf, "sitemap.xml", "search-index-fr.json"], { env });
-      execFileSync("git", ["-C", copie, "-c", "user.name=test", "-c", "user.email=test@invalid",
+      await executer("git", ["-C", copie, "add", "--", neuf, "sitemap.xml", "search-index-fr.json"], { env });
+      await executer("git", ["-C", copie, "-c", "user.name=test", "-c", "user.email=test@invalid",
         "-c", "commit.gpgsign=false", "commit", "-q", "--no-verify", "-m", "jetable"], { env });
-      const apres = verifierCopie(copie);
+      const apres = await verifierCopie(copie);
       expect(apres.code, `APRES le commit : ${apres.sortie}`).toBe(0);
 
       // UN POSITIF CONNU : sans lui, deux verdicts egaux sur un article classe
@@ -413,7 +435,7 @@ json.dump(idx, open(f, "w", encoding="utf8"), ensure_ascii=False, separators=(",
       expect(idx.derniers[0]).toBe(neuf);
     });
     expect(fs.existsSync(path.join(RACINE, neuf))).toBe(false);
-    expect(tete(), "le commit jetable a atteint la branche de l'arbre teste").toBe(teteAvant);
+    expect(await tete(), "le commit jetable a atteint la branche de l'arbre teste").toBe(teteAvant);
   }, DELAI);
 });
 
