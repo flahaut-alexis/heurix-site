@@ -1,0 +1,36 @@
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/index-recherche.test.js > index derive — le verificateur > un article neuf verifie avant son commit l'est encore apres
+Error: Test timed out in 30000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ tests/index-recherche.test.js:366:5
+    364|   // avec elle (7b66e60b). Le rejeu manuel du crochet, sans GIT_DIR, n…
+    365|   // pas montre.
+    366|   it("un article neuf verifie avant son commit l'est encore apres", ()…
+       |     ^
+    367|     const script = path.join(RACINE, "scripts/index-recherche.py");
+    368|     const env = Object.fromEntries(
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+⎯⎯⎯⎯⎯⎯ Unhandled Errors ⎯⎯⎯⎯⎯⎯
+
+Vitest caught 1 unhandled error during the test run.
+This might cause false positive tests. Resolve unhandled errors to make sure your tests are not affected.
+
+⎯⎯⎯⎯⎯⎯ Unhandled Error ⎯⎯⎯⎯⎯⎯⎯
+Error: [vitest-worker]: Timeout calling "onTaskUpdate"
+ ❯ Object.onTimeoutError node_modules/vitest/dist/chunks/rpc.-pEldfrD.js:53:10
+ ❯ Timeout._onTimeout node_modules/vitest/dist/chunks/index.B521nVV-.js:59:62
+ ❯ listOnTimeout node:internal/timers:605:17
+ ❯ processTimers node:internal/timers:541:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+
+
+ Test Files  1 failed | 88 passed (89)
+      Tests  1 failed | 988 passed (989)
+     Errors  1 error
+   Start at  19:16:34
+   Duration  67.59s (transform 756ms, setup 0ms, collect 71.25s, tests 268.99s, environment 35ms, prepare 22.60s)
+
