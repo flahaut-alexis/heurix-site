@@ -1,0 +1,2542 @@
+[
+    {
+        "q": "rondelle",
+        "total": 4,
+        "trace": [
+            "rondelle:4"
+        ],
+        "resultats": [
+            [
+                "ROND-125-M10-A2",
+                "D-ecrit",
+                "Rondelle plate M10 DIN 125 inox A2"
+            ],
+            [
+                "ROND-127-M8-Z",
+                "D-ecrit",
+                "Rondelle Grower M8 DIN 127 acier zingué"
+            ],
+            [
+                "ROND-9021-M6-A4",
+                "D-ecrit",
+                "Rondelle large M6 DIN 9021 inox A4"
+            ],
+            [
+                "ROND-M8-Z",
+                "B-site",
+                "Rondelle plate M8 acier zingué"
+            ]
+        ]
+    },
+    {
+        "q": "rondele",
+        "total": 4,
+        "trace": [
+            "rondele=>~rondelle"
+        ],
+        "resultats": [
+            [
+                "ROND-125-M10-A2",
+                "D-ecrit",
+                "Rondelle plate M10 DIN 125 inox A2"
+            ],
+            [
+                "ROND-127-M8-Z",
+                "D-ecrit",
+                "Rondelle Grower M8 DIN 127 acier zingué"
+            ],
+            [
+                "ROND-9021-M6-A4",
+                "D-ecrit",
+                "Rondelle large M6 DIN 9021 inox A4"
+            ],
+            [
+                "ROND-M8-Z",
+                "B-site",
+                "Rondelle plate M8 acier zingué"
+            ]
+        ]
+    },
+    {
+        "q": "rondelles",
+        "total": 4,
+        "trace": [
+            "rondelles=>~rondelle"
+        ],
+        "resultats": [
+            [
+                "ROND-125-M10-A2",
+                "D-ecrit",
+                "Rondelle plate M10 DIN 125 inox A2"
+            ],
+            [
+                "ROND-127-M8-Z",
+                "D-ecrit",
+                "Rondelle Grower M8 DIN 127 acier zingué"
+            ],
+            [
+                "ROND-9021-M6-A4",
+                "D-ecrit",
+                "Rondelle large M6 DIN 9021 inox A4"
+            ],
+            [
+                "ROND-M8-Z",
+                "B-site",
+                "Rondelle plate M8 acier zingué"
+            ]
+        ]
+    },
+    {
+        "q": "rondlle",
+        "total": 4,
+        "trace": [
+            "rondlle=>~rondelle"
+        ],
+        "resultats": [
+            [
+                "ROND-125-M10-A2",
+                "D-ecrit",
+                "Rondelle plate M10 DIN 125 inox A2"
+            ],
+            [
+                "ROND-127-M8-Z",
+                "D-ecrit",
+                "Rondelle Grower M8 DIN 127 acier zingué"
+            ],
+            [
+                "ROND-9021-M6-A4",
+                "D-ecrit",
+                "Rondelle large M6 DIN 9021 inox A4"
+            ],
+            [
+                "ROND-M8-Z",
+                "B-site",
+                "Rondelle plate M8 acier zingué"
+            ]
+        ]
+    },
+    {
+        "q": "rondell",
+        "total": 4,
+        "trace": [
+            "rondell:4"
+        ],
+        "resultats": [
+            [
+                "ROND-125-M10-A2",
+                "D-ecrit",
+                "Rondelle plate M10 DIN 125 inox A2"
+            ],
+            [
+                "ROND-127-M8-Z",
+                "D-ecrit",
+                "Rondelle Grower M8 DIN 127 acier zingué"
+            ],
+            [
+                "ROND-9021-M6-A4",
+                "D-ecrit",
+                "Rondelle large M6 DIN 9021 inox A4"
+            ],
+            [
+                "ROND-M8-Z",
+                "B-site",
+                "Rondelle plate M8 acier zingué"
+            ]
+        ]
+    },
+    {
+        "q": "M8",
+        "total": 0,
+        "trace": [
+            "m8:ECARTE(court)"
+        ],
+        "resultats": []
+    },
+    {
+        "q": "M8x20",
+        "total": 1,
+        "trace": [
+            "m8x20:1"
+        ],
+        "resultats": [
+            [
+                "VIS-M8-020-A2",
+                "B-site",
+                "Vis à tête hexagonale M8x20 inox A2"
+            ]
+        ]
+    },
+    {
+        "q": "M8 x 20",
+        "total": 0,
+        "trace": [
+            "m8:ECARTE(court)",
+            "x:ECARTE(court)",
+            "20:ECARTE(court)"
+        ],
+        "resultats": []
+    },
+    {
+        "q": "M8-20",
+        "total": 1,
+        "trace": [
+            "m820=>~m840"
+        ],
+        "resultats": [
+            [
+                "VIS-933-M8-40-Z",
+                "D-ecrit",
+                "Vis tête hexagonale M8-40 DIN 933 acier zingué 8.8"
+            ]
+        ]
+    },
+    {
+        "q": "M8x25",
+        "total": 1,
+        "trace": [
+            "m8x25=>~m825"
+        ],
+        "resultats": [
+            [
+                "VIS-912-M8-25-A2",
+                "D-ecrit",
+                "Vis CHC M8 x 25 DIN 912 inox A2"
+            ]
+        ]
+    },
+    {
+        "q": "M10x30",
+        "total": 4,
+        "trace": [
+            "m10x30=>~1030"
+        ],
+        "resultats": [
+            [
+                "TH-M10-30-A2",
+                "C-genere",
+                "Vis à tête hexagonale M10 x 30 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M10-30-A2",
+                "C-genere",
+                "Vis à tête fraisée M10 x 30 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M10-30-A4",
+                "C-genere",
+                "Vis à tête hexagonale M10 x 30 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M10-30-A4",
+                "C-genere",
+                "Vis à tête fraisée M10 x 30 mm, acier inoxydable A4, DIN 933"
+            ]
+        ]
+    },
+    {
+        "q": "M10 x 30",
+        "total": 18,
+        "trace": [
+            "m10:18",
+            "x:ECARTE(court)",
+            "30:ECARTE(court)"
+        ],
+        "resultats": [
+            [
+                "ROND-125-M10-A2",
+                "D-ecrit",
+                "Rondelle plate M10 DIN 125 inox A2"
+            ],
+            [
+                "ECR-934-M10-Z",
+                "D-ecrit",
+                "Écrou hexagonal M10 DIN 934 acier zingué classe 8"
+            ],
+            [
+                "TH-M10-16-A2",
+                "C-genere",
+                "Vis à tête hexagonale M10 x 16 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M10-16-A2",
+                "C-genere",
+                "Vis à tête fraisée M10 x 16 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M10-16-A4",
+                "C-genere",
+                "Vis à tête hexagonale M10 x 16 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M10-16-A4",
+                "C-genere",
+                "Vis à tête fraisée M10 x 16 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TH-M10-30-A2",
+                "C-genere",
+                "Vis à tête hexagonale M10 x 30 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M10-30-A2",
+                "C-genere",
+                "Vis à tête fraisée M10 x 30 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M10-30-A4",
+                "C-genere",
+                "Vis à tête hexagonale M10 x 30 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M10-30-A4",
+                "C-genere",
+                "Vis à tête fraisée M10 x 30 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TH-M10-50-A2",
+                "C-genere",
+                "Vis à tête hexagonale M10 x 50 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M10-50-A2",
+                "C-genere",
+                "Vis à tête fraisée M10 x 50 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M10-50-A4",
+                "C-genere",
+                "Vis à tête hexagonale M10 x 50 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M10-50-A4",
+                "C-genere",
+                "Vis à tête fraisée M10 x 50 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TH-M10-80-A2",
+                "C-genere",
+                "Vis à tête hexagonale M10 x 80 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M10-80-A2",
+                "C-genere",
+                "Vis à tête fraisée M10 x 80 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M10-80-A4",
+                "C-genere",
+                "Vis à tête hexagonale M10 x 80 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M10-80-A4",
+                "C-genere",
+                "Vis à tête fraisée M10 x 80 mm, acier inoxydable A4, DIN 933"
+            ]
+        ]
+    },
+    {
+        "q": "M8 20",
+        "total": 0,
+        "trace": [
+            "m8:ECARTE(court)",
+            "20:ECARTE(court)"
+        ],
+        "resultats": []
+    },
+    {
+        "q": "DIN 933",
+        "total": 65,
+        "trace": [
+            "din:72",
+            "933:65"
+        ],
+        "resultats": [
+            [
+                "VIS-933-M8-40-Z",
+                "D-ecrit",
+                "Vis tête hexagonale M8-40 DIN 933 acier zingué 8.8"
+            ],
+            [
+                "TH-M6-16-A2",
+                "C-genere",
+                "Vis à tête hexagonale M6 x 16 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M6-16-A2",
+                "C-genere",
+                "Vis à tête fraisée M6 x 16 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M6-16-A4",
+                "C-genere",
+                "Vis à tête hexagonale M6 x 16 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M6-16-A4",
+                "C-genere",
+                "Vis à tête fraisée M6 x 16 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TH-M6-30-A2",
+                "C-genere",
+                "Vis à tête hexagonale M6 x 30 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M6-30-A2",
+                "C-genere",
+                "Vis à tête fraisée M6 x 30 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M6-30-A4",
+                "C-genere",
+                "Vis à tête hexagonale M6 x 30 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M6-30-A4",
+                "C-genere",
+                "Vis à tête fraisée M6 x 30 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TH-M6-50-A2",
+                "C-genere",
+                "Vis à tête hexagonale M6 x 50 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M6-50-A2",
+                "C-genere",
+                "Vis à tête fraisée M6 x 50 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M6-50-A4",
+                "C-genere",
+                "Vis à tête hexagonale M6 x 50 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M6-50-A4",
+                "C-genere",
+                "Vis à tête fraisée M6 x 50 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TH-M6-80-A2",
+                "C-genere",
+                "Vis à tête hexagonale M6 x 80 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M6-80-A2",
+                "C-genere",
+                "Vis à tête fraisée M6 x 80 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M6-80-A4",
+                "C-genere",
+                "Vis à tête hexagonale M6 x 80 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M6-80-A4",
+                "C-genere",
+                "Vis à tête fraisée M6 x 80 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TH-M8-16-A2",
+                "C-genere",
+                "Vis à tête hexagonale M8 x 16 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M8-16-A2",
+                "C-genere",
+                "Vis à tête fraisée M8 x 16 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M8-16-A4",
+                "C-genere",
+                "Vis à tête hexagonale M8 x 16 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M8-16-A4",
+                "C-genere",
+                "Vis à tête fraisée M8 x 16 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TH-M8-30-A2",
+                "C-genere",
+                "Vis à tête hexagonale M8 x 30 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M8-30-A2",
+                "C-genere",
+                "Vis à tête fraisée M8 x 30 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M8-30-A4",
+                "C-genere",
+                "Vis à tête hexagonale M8 x 30 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M8-30-A4",
+                "C-genere",
+                "Vis à tête fraisée M8 x 30 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TH-M8-50-A2",
+                "C-genere",
+                "Vis à tête hexagonale M8 x 50 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M8-50-A2",
+                "C-genere",
+                "Vis à tête fraisée M8 x 50 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M8-50-A4",
+                "C-genere",
+                "Vis à tête hexagonale M8 x 50 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M8-50-A4",
+                "C-genere",
+                "Vis à tête fraisée M8 x 50 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TH-M8-80-A2",
+                "C-genere",
+                "Vis à tête hexagonale M8 x 80 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M8-80-A2",
+                "C-genere",
+                "Vis à tête fraisée M8 x 80 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M8-80-A4",
+                "C-genere",
+                "Vis à tête hexagonale M8 x 80 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M8-80-A4",
+                "C-genere",
+                "Vis à tête fraisée M8 x 80 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TH-M10-16-A2",
+                "C-genere",
+                "Vis à tête hexagonale M10 x 16 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M10-16-A2",
+                "C-genere",
+                "Vis à tête fraisée M10 x 16 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M10-16-A4",
+                "C-genere",
+                "Vis à tête hexagonale M10 x 16 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M10-16-A4",
+                "C-genere",
+                "Vis à tête fraisée M10 x 16 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TH-M10-30-A2",
+                "C-genere",
+                "Vis à tête hexagonale M10 x 30 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M10-30-A2",
+                "C-genere",
+                "Vis à tête fraisée M10 x 30 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M10-30-A4",
+                "C-genere",
+                "Vis à tête hexagonale M10 x 30 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M10-30-A4",
+                "C-genere",
+                "Vis à tête fraisée M10 x 30 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TH-M10-50-A2",
+                "C-genere",
+                "Vis à tête hexagonale M10 x 50 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M10-50-A2",
+                "C-genere",
+                "Vis à tête fraisée M10 x 50 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M10-50-A4",
+                "C-genere",
+                "Vis à tête hexagonale M10 x 50 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M10-50-A4",
+                "C-genere",
+                "Vis à tête fraisée M10 x 50 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TH-M10-80-A2",
+                "C-genere",
+                "Vis à tête hexagonale M10 x 80 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M10-80-A2",
+                "C-genere",
+                "Vis à tête fraisée M10 x 80 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M10-80-A4",
+                "C-genere",
+                "Vis à tête hexagonale M10 x 80 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M10-80-A4",
+                "C-genere",
+                "Vis à tête fraisée M10 x 80 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TH-M12-16-A2",
+                "C-genere",
+                "Vis à tête hexagonale M12 x 16 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M12-16-A2",
+                "C-genere",
+                "Vis à tête fraisée M12 x 16 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M12-16-A4",
+                "C-genere",
+                "Vis à tête hexagonale M12 x 16 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M12-16-A4",
+                "C-genere",
+                "Vis à tête fraisée M12 x 16 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TH-M12-30-A2",
+                "C-genere",
+                "Vis à tête hexagonale M12 x 30 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M12-30-A2",
+                "C-genere",
+                "Vis à tête fraisée M12 x 30 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M12-30-A4",
+                "C-genere",
+                "Vis à tête hexagonale M12 x 30 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M12-30-A4",
+                "C-genere",
+                "Vis à tête fraisée M12 x 30 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TH-M12-50-A2",
+                "C-genere",
+                "Vis à tête hexagonale M12 x 50 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M12-50-A2",
+                "C-genere",
+                "Vis à tête fraisée M12 x 50 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M12-50-A4",
+                "C-genere",
+                "Vis à tête hexagonale M12 x 50 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M12-50-A4",
+                "C-genere",
+                "Vis à tête fraisée M12 x 50 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TH-M12-80-A2",
+                "C-genere",
+                "Vis à tête hexagonale M12 x 80 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M12-80-A2",
+                "C-genere",
+                "Vis à tête fraisée M12 x 80 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M12-80-A4",
+                "C-genere",
+                "Vis à tête hexagonale M12 x 80 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M12-80-A4",
+                "C-genere",
+                "Vis à tête fraisée M12 x 80 mm, acier inoxydable A4, DIN 933"
+            ]
+        ]
+    },
+    {
+        "q": "DIN933",
+        "total": 72,
+        "trace": [
+            "din933=>~din"
+        ],
+        "resultats": [
+            [
+                "TH-M6-16-A2",
+                "C-genere",
+                "Vis à tête hexagonale M6 x 16 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M6-16-A2",
+                "C-genere",
+                "Vis à tête fraisée M6 x 16 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M6-16-A4",
+                "C-genere",
+                "Vis à tête hexagonale M6 x 16 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M6-16-A4",
+                "C-genere",
+                "Vis à tête fraisée M6 x 16 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TH-M6-30-A2",
+                "C-genere",
+                "Vis à tête hexagonale M6 x 30 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M6-30-A2",
+                "C-genere",
+                "Vis à tête fraisée M6 x 30 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M6-30-A4",
+                "C-genere",
+                "Vis à tête hexagonale M6 x 30 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M6-30-A4",
+                "C-genere",
+                "Vis à tête fraisée M6 x 30 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TH-M6-50-A2",
+                "C-genere",
+                "Vis à tête hexagonale M6 x 50 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M6-50-A2",
+                "C-genere",
+                "Vis à tête fraisée M6 x 50 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M6-50-A4",
+                "C-genere",
+                "Vis à tête hexagonale M6 x 50 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M6-50-A4",
+                "C-genere",
+                "Vis à tête fraisée M6 x 50 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TH-M6-80-A2",
+                "C-genere",
+                "Vis à tête hexagonale M6 x 80 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M6-80-A2",
+                "C-genere",
+                "Vis à tête fraisée M6 x 80 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M6-80-A4",
+                "C-genere",
+                "Vis à tête hexagonale M6 x 80 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M6-80-A4",
+                "C-genere",
+                "Vis à tête fraisée M6 x 80 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TH-M8-16-A2",
+                "C-genere",
+                "Vis à tête hexagonale M8 x 16 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M8-16-A2",
+                "C-genere",
+                "Vis à tête fraisée M8 x 16 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M8-16-A4",
+                "C-genere",
+                "Vis à tête hexagonale M8 x 16 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M8-16-A4",
+                "C-genere",
+                "Vis à tête fraisée M8 x 16 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TH-M8-30-A2",
+                "C-genere",
+                "Vis à tête hexagonale M8 x 30 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M8-30-A2",
+                "C-genere",
+                "Vis à tête fraisée M8 x 30 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M8-30-A4",
+                "C-genere",
+                "Vis à tête hexagonale M8 x 30 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M8-30-A4",
+                "C-genere",
+                "Vis à tête fraisée M8 x 30 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TH-M8-50-A2",
+                "C-genere",
+                "Vis à tête hexagonale M8 x 50 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M8-50-A2",
+                "C-genere",
+                "Vis à tête fraisée M8 x 50 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M8-50-A4",
+                "C-genere",
+                "Vis à tête hexagonale M8 x 50 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M8-50-A4",
+                "C-genere",
+                "Vis à tête fraisée M8 x 50 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TH-M8-80-A2",
+                "C-genere",
+                "Vis à tête hexagonale M8 x 80 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M8-80-A2",
+                "C-genere",
+                "Vis à tête fraisée M8 x 80 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M8-80-A4",
+                "C-genere",
+                "Vis à tête hexagonale M8 x 80 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M8-80-A4",
+                "C-genere",
+                "Vis à tête fraisée M8 x 80 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TH-M10-16-A2",
+                "C-genere",
+                "Vis à tête hexagonale M10 x 16 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M10-16-A2",
+                "C-genere",
+                "Vis à tête fraisée M10 x 16 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M10-16-A4",
+                "C-genere",
+                "Vis à tête hexagonale M10 x 16 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M10-16-A4",
+                "C-genere",
+                "Vis à tête fraisée M10 x 16 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TH-M10-30-A2",
+                "C-genere",
+                "Vis à tête hexagonale M10 x 30 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M10-30-A2",
+                "C-genere",
+                "Vis à tête fraisée M10 x 30 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M10-30-A4",
+                "C-genere",
+                "Vis à tête hexagonale M10 x 30 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M10-30-A4",
+                "C-genere",
+                "Vis à tête fraisée M10 x 30 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TH-M10-50-A2",
+                "C-genere",
+                "Vis à tête hexagonale M10 x 50 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M10-50-A2",
+                "C-genere",
+                "Vis à tête fraisée M10 x 50 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M10-50-A4",
+                "C-genere",
+                "Vis à tête hexagonale M10 x 50 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M10-50-A4",
+                "C-genere",
+                "Vis à tête fraisée M10 x 50 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TH-M10-80-A2",
+                "C-genere",
+                "Vis à tête hexagonale M10 x 80 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M10-80-A2",
+                "C-genere",
+                "Vis à tête fraisée M10 x 80 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M10-80-A4",
+                "C-genere",
+                "Vis à tête hexagonale M10 x 80 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M10-80-A4",
+                "C-genere",
+                "Vis à tête fraisée M10 x 80 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TH-M12-16-A2",
+                "C-genere",
+                "Vis à tête hexagonale M12 x 16 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M12-16-A2",
+                "C-genere",
+                "Vis à tête fraisée M12 x 16 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M12-16-A4",
+                "C-genere",
+                "Vis à tête hexagonale M12 x 16 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M12-16-A4",
+                "C-genere",
+                "Vis à tête fraisée M12 x 16 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TH-M12-30-A2",
+                "C-genere",
+                "Vis à tête hexagonale M12 x 30 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M12-30-A2",
+                "C-genere",
+                "Vis à tête fraisée M12 x 30 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M12-30-A4",
+                "C-genere",
+                "Vis à tête hexagonale M12 x 30 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M12-30-A4",
+                "C-genere",
+                "Vis à tête fraisée M12 x 30 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TH-M12-50-A2",
+                "C-genere",
+                "Vis à tête hexagonale M12 x 50 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M12-50-A2",
+                "C-genere",
+                "Vis à tête fraisée M12 x 50 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M12-50-A4",
+                "C-genere",
+                "Vis à tête hexagonale M12 x 50 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M12-50-A4",
+                "C-genere",
+                "Vis à tête fraisée M12 x 50 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TH-M12-80-A2",
+                "C-genere",
+                "Vis à tête hexagonale M12 x 80 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M12-80-A2",
+                "C-genere",
+                "Vis à tête fraisée M12 x 80 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M12-80-A4",
+                "C-genere",
+                "Vis à tête hexagonale M12 x 80 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M12-80-A4",
+                "C-genere",
+                "Vis à tête fraisée M12 x 80 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "ROND-125-M10-A2",
+                "D-ecrit",
+                "Rondelle plate M10 DIN 125 inox A2"
+            ],
+            [
+                "ROND-127-M8-Z",
+                "D-ecrit",
+                "Rondelle Grower M8 DIN 127 acier zingué"
+            ],
+            [
+                "ROND-9021-M6-A4",
+                "D-ecrit",
+                "Rondelle large M6 DIN 9021 inox A4"
+            ],
+            [
+                "ECR-934-M10-Z",
+                "D-ecrit",
+                "Écrou hexagonal M10 DIN 934 acier zingué classe 8"
+            ],
+            [
+                "ECR-985-M8-A2",
+                "D-ecrit",
+                "Écrou frein nylstop M8 DIN 985 inox A2"
+            ],
+            [
+                "VIS-933-M8-40-Z",
+                "D-ecrit",
+                "Vis tête hexagonale M8-40 DIN 933 acier zingué 8.8"
+            ],
+            [
+                "VIS-912-M8-25-A2",
+                "D-ecrit",
+                "Vis CHC M8 x 25 DIN 912 inox A2"
+            ],
+            [
+                "TIGE-975-M8-1M",
+                "D-ecrit",
+                "Tige filetée M8 longueur 1 m DIN 975 acier zingué"
+            ]
+        ]
+    },
+    {
+        "q": "DIN 934",
+        "total": 1,
+        "trace": [
+            "din:72",
+            "934:1"
+        ],
+        "resultats": [
+            [
+                "ECR-934-M10-Z",
+                "D-ecrit",
+                "Écrou hexagonal M10 DIN 934 acier zingué classe 8"
+            ]
+        ]
+    },
+    {
+        "q": "DIN 125",
+        "total": 5,
+        "trace": [
+            "din:72",
+            "125:5"
+        ],
+        "resultats": [
+            [
+                "ROND-125-M10-A2",
+                "D-ecrit",
+                "Rondelle plate M10 DIN 125 inox A2"
+            ],
+            [
+                "TH-M12-50-A2",
+                "C-genere",
+                "Vis à tête hexagonale M12 x 50 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M12-50-A2",
+                "C-genere",
+                "Vis à tête fraisée M12 x 50 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M12-50-A4",
+                "C-genere",
+                "Vis à tête hexagonale M12 x 50 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M12-50-A4",
+                "C-genere",
+                "Vis à tête fraisée M12 x 50 mm, acier inoxydable A4, DIN 933"
+            ]
+        ]
+    },
+    {
+        "q": "din 127",
+        "total": 1,
+        "trace": [
+            "din:72",
+            "127:1"
+        ],
+        "resultats": [
+            [
+                "ROND-127-M8-Z",
+                "D-ecrit",
+                "Rondelle Grower M8 DIN 127 acier zingué"
+            ]
+        ]
+    },
+    {
+        "q": "6205-2RS",
+        "total": 1,
+        "trace": [
+            "62052rs:1"
+        ],
+        "resultats": [
+            [
+                "ROUL-6205-2RS",
+                "D-ecrit",
+                "Roulement à billes 6205-2RS 25x52x15 mm"
+            ]
+        ]
+    },
+    {
+        "q": "6205 2RS",
+        "total": 0,
+        "trace": [
+            "6205:2",
+            "2rs=>~vis"
+        ],
+        "resultats": []
+    },
+    {
+        "q": "62052RS",
+        "total": 1,
+        "trace": [
+            "62052rs:1"
+        ],
+        "resultats": [
+            [
+                "ROUL-6205-2RS",
+                "D-ecrit",
+                "Roulement à billes 6205-2RS 25x52x15 mm"
+            ]
+        ]
+    },
+    {
+        "q": "6205",
+        "total": 2,
+        "trace": [
+            "6205:2"
+        ],
+        "resultats": [
+            [
+                "ROUL-6205-ZZ",
+                "D-ecrit",
+                "Roulement à billes 6205-ZZ 25x52x15 mm"
+            ],
+            [
+                "ROUL-6205-2RS",
+                "D-ecrit",
+                "Roulement à billes 6205-2RS 25x52x15 mm"
+            ]
+        ]
+    },
+    {
+        "q": "6205-2rs",
+        "total": 1,
+        "trace": [
+            "62052rs:1"
+        ],
+        "resultats": [
+            [
+                "ROUL-6205-2RS",
+                "D-ecrit",
+                "Roulement à billes 6205-2RS 25x52x15 mm"
+            ]
+        ]
+    },
+    {
+        "q": "6205 2rs",
+        "total": 0,
+        "trace": [
+            "6205:2",
+            "2rs=>~vis"
+        ],
+        "resultats": []
+    },
+    {
+        "q": "vis inox M8 20",
+        "total": 67,
+        "trace": [
+            "vis:69",
+            "inox:71",
+            "m8:ECARTE(court)",
+            "20:ECARTE(court)"
+        ],
+        "resultats": [
+            [
+                "TH-M6-16-A2",
+                "C-genere",
+                "Vis à tête hexagonale M6 x 16 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M6-16-A2",
+                "C-genere",
+                "Vis à tête fraisée M6 x 16 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M6-16-A4",
+                "C-genere",
+                "Vis à tête hexagonale M6 x 16 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M6-16-A4",
+                "C-genere",
+                "Vis à tête fraisée M6 x 16 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TH-M6-30-A2",
+                "C-genere",
+                "Vis à tête hexagonale M6 x 30 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M6-30-A2",
+                "C-genere",
+                "Vis à tête fraisée M6 x 30 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M6-30-A4",
+                "C-genere",
+                "Vis à tête hexagonale M6 x 30 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M6-30-A4",
+                "C-genere",
+                "Vis à tête fraisée M6 x 30 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TH-M6-50-A2",
+                "C-genere",
+                "Vis à tête hexagonale M6 x 50 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M6-50-A2",
+                "C-genere",
+                "Vis à tête fraisée M6 x 50 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M6-50-A4",
+                "C-genere",
+                "Vis à tête hexagonale M6 x 50 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M6-50-A4",
+                "C-genere",
+                "Vis à tête fraisée M6 x 50 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TH-M6-80-A2",
+                "C-genere",
+                "Vis à tête hexagonale M6 x 80 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M6-80-A2",
+                "C-genere",
+                "Vis à tête fraisée M6 x 80 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M6-80-A4",
+                "C-genere",
+                "Vis à tête hexagonale M6 x 80 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M6-80-A4",
+                "C-genere",
+                "Vis à tête fraisée M6 x 80 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TH-M8-16-A2",
+                "C-genere",
+                "Vis à tête hexagonale M8 x 16 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M8-16-A2",
+                "C-genere",
+                "Vis à tête fraisée M8 x 16 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M8-16-A4",
+                "C-genere",
+                "Vis à tête hexagonale M8 x 16 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M8-16-A4",
+                "C-genere",
+                "Vis à tête fraisée M8 x 16 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TH-M8-30-A2",
+                "C-genere",
+                "Vis à tête hexagonale M8 x 30 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M8-30-A2",
+                "C-genere",
+                "Vis à tête fraisée M8 x 30 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M8-30-A4",
+                "C-genere",
+                "Vis à tête hexagonale M8 x 30 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M8-30-A4",
+                "C-genere",
+                "Vis à tête fraisée M8 x 30 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TH-M8-50-A2",
+                "C-genere",
+                "Vis à tête hexagonale M8 x 50 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M8-50-A2",
+                "C-genere",
+                "Vis à tête fraisée M8 x 50 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M8-50-A4",
+                "C-genere",
+                "Vis à tête hexagonale M8 x 50 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M8-50-A4",
+                "C-genere",
+                "Vis à tête fraisée M8 x 50 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TH-M8-80-A2",
+                "C-genere",
+                "Vis à tête hexagonale M8 x 80 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M8-80-A2",
+                "C-genere",
+                "Vis à tête fraisée M8 x 80 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M8-80-A4",
+                "C-genere",
+                "Vis à tête hexagonale M8 x 80 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M8-80-A4",
+                "C-genere",
+                "Vis à tête fraisée M8 x 80 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TH-M10-16-A2",
+                "C-genere",
+                "Vis à tête hexagonale M10 x 16 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M10-16-A2",
+                "C-genere",
+                "Vis à tête fraisée M10 x 16 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M10-16-A4",
+                "C-genere",
+                "Vis à tête hexagonale M10 x 16 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M10-16-A4",
+                "C-genere",
+                "Vis à tête fraisée M10 x 16 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TH-M10-30-A2",
+                "C-genere",
+                "Vis à tête hexagonale M10 x 30 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M10-30-A2",
+                "C-genere",
+                "Vis à tête fraisée M10 x 30 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M10-30-A4",
+                "C-genere",
+                "Vis à tête hexagonale M10 x 30 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M10-30-A4",
+                "C-genere",
+                "Vis à tête fraisée M10 x 30 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TH-M10-50-A2",
+                "C-genere",
+                "Vis à tête hexagonale M10 x 50 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M10-50-A2",
+                "C-genere",
+                "Vis à tête fraisée M10 x 50 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M10-50-A4",
+                "C-genere",
+                "Vis à tête hexagonale M10 x 50 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M10-50-A4",
+                "C-genere",
+                "Vis à tête fraisée M10 x 50 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TH-M10-80-A2",
+                "C-genere",
+                "Vis à tête hexagonale M10 x 80 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M10-80-A2",
+                "C-genere",
+                "Vis à tête fraisée M10 x 80 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M10-80-A4",
+                "C-genere",
+                "Vis à tête hexagonale M10 x 80 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M10-80-A4",
+                "C-genere",
+                "Vis à tête fraisée M10 x 80 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TH-M12-16-A2",
+                "C-genere",
+                "Vis à tête hexagonale M12 x 16 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M12-16-A2",
+                "C-genere",
+                "Vis à tête fraisée M12 x 16 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M12-16-A4",
+                "C-genere",
+                "Vis à tête hexagonale M12 x 16 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M12-16-A4",
+                "C-genere",
+                "Vis à tête fraisée M12 x 16 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TH-M12-30-A2",
+                "C-genere",
+                "Vis à tête hexagonale M12 x 30 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M12-30-A2",
+                "C-genere",
+                "Vis à tête fraisée M12 x 30 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M12-30-A4",
+                "C-genere",
+                "Vis à tête hexagonale M12 x 30 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M12-30-A4",
+                "C-genere",
+                "Vis à tête fraisée M12 x 30 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TH-M12-50-A2",
+                "C-genere",
+                "Vis à tête hexagonale M12 x 50 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M12-50-A2",
+                "C-genere",
+                "Vis à tête fraisée M12 x 50 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M12-50-A4",
+                "C-genere",
+                "Vis à tête hexagonale M12 x 50 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M12-50-A4",
+                "C-genere",
+                "Vis à tête fraisée M12 x 50 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TH-M12-80-A2",
+                "C-genere",
+                "Vis à tête hexagonale M12 x 80 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M12-80-A2",
+                "C-genere",
+                "Vis à tête fraisée M12 x 80 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M12-80-A4",
+                "C-genere",
+                "Vis à tête hexagonale M12 x 80 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M12-80-A4",
+                "C-genere",
+                "Vis à tête fraisée M12 x 80 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "VIS-912-M8-25-A2",
+                "D-ecrit",
+                "Vis CHC M8 x 25 DIN 912 inox A2"
+            ],
+            [
+                "VIS-M8-020-A2",
+                "B-site",
+                "Vis à tête hexagonale M8x20 inox A2"
+            ],
+            [
+                "VIS-M8-030-A2",
+                "B-site",
+                "Vis à tête hexagonale M8x30 inox A2"
+            ]
+        ]
+    },
+    {
+        "q": "vis inox M8x20",
+        "total": 1,
+        "trace": [
+            "vis:69",
+            "inox:71",
+            "m8x20:1"
+        ],
+        "resultats": [
+            [
+                "VIS-M8-020-A2",
+                "B-site",
+                "Vis à tête hexagonale M8x20 inox A2"
+            ]
+        ]
+    },
+    {
+        "q": "vis inox m8x20 a2",
+        "total": 1,
+        "trace": [
+            "vis:69",
+            "inox:71",
+            "m8x20:1",
+            "a2:ECARTE(court)"
+        ],
+        "resultats": [
+            [
+                "VIS-M8-020-A2",
+                "B-site",
+                "Vis à tête hexagonale M8x20 inox A2"
+            ]
+        ]
+    },
+    {
+        "q": "vis inox A4 M10",
+        "total": 16,
+        "trace": [
+            "vis:69",
+            "inox:71",
+            "a4:ECARTE(court)",
+            "m10:18"
+        ],
+        "resultats": [
+            [
+                "TH-M10-16-A2",
+                "C-genere",
+                "Vis à tête hexagonale M10 x 16 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M10-16-A2",
+                "C-genere",
+                "Vis à tête fraisée M10 x 16 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M10-16-A4",
+                "C-genere",
+                "Vis à tête hexagonale M10 x 16 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M10-16-A4",
+                "C-genere",
+                "Vis à tête fraisée M10 x 16 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TH-M10-30-A2",
+                "C-genere",
+                "Vis à tête hexagonale M10 x 30 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M10-30-A2",
+                "C-genere",
+                "Vis à tête fraisée M10 x 30 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M10-30-A4",
+                "C-genere",
+                "Vis à tête hexagonale M10 x 30 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M10-30-A4",
+                "C-genere",
+                "Vis à tête fraisée M10 x 30 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TH-M10-50-A2",
+                "C-genere",
+                "Vis à tête hexagonale M10 x 50 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M10-50-A2",
+                "C-genere",
+                "Vis à tête fraisée M10 x 50 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M10-50-A4",
+                "C-genere",
+                "Vis à tête hexagonale M10 x 50 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M10-50-A4",
+                "C-genere",
+                "Vis à tête fraisée M10 x 50 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TH-M10-80-A2",
+                "C-genere",
+                "Vis à tête hexagonale M10 x 80 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M10-80-A2",
+                "C-genere",
+                "Vis à tête fraisée M10 x 80 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M10-80-A4",
+                "C-genere",
+                "Vis à tête hexagonale M10 x 80 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M10-80-A4",
+                "C-genere",
+                "Vis à tête fraisée M10 x 80 mm, acier inoxydable A4, DIN 933"
+            ]
+        ]
+    },
+    {
+        "q": "ecrou M8",
+        "total": 3,
+        "trace": [
+            "ecrou:3",
+            "m8:ECARTE(court)"
+        ],
+        "resultats": [
+            [
+                "ECR-934-M10-Z",
+                "D-ecrit",
+                "Écrou hexagonal M10 DIN 934 acier zingué classe 8"
+            ],
+            [
+                "ECR-985-M8-A2",
+                "D-ecrit",
+                "Écrou frein nylstop M8 DIN 985 inox A2"
+            ],
+            [
+                "ECR-M8-A2",
+                "B-site",
+                "Écrou hexagonal M8 inox A2"
+            ]
+        ]
+    },
+    {
+        "q": "écrou inox",
+        "total": 2,
+        "trace": [
+            "ecrou:3",
+            "inox:71"
+        ],
+        "resultats": [
+            [
+                "ECR-985-M8-A2",
+                "D-ecrit",
+                "Écrou frein nylstop M8 DIN 985 inox A2"
+            ],
+            [
+                "ECR-M8-A2",
+                "B-site",
+                "Écrou hexagonal M8 inox A2"
+            ]
+        ]
+    },
+    {
+        "q": "ecrou nylstop",
+        "total": 1,
+        "trace": [
+            "ecrou:3",
+            "nylstop:1"
+        ],
+        "resultats": [
+            [
+                "ECR-985-M8-A2",
+                "D-ecrit",
+                "Écrou frein nylstop M8 DIN 985 inox A2"
+            ]
+        ]
+    },
+    {
+        "q": "vis tete fraisee",
+        "total": 32,
+        "trace": [
+            "vis:69",
+            "tete:68",
+            "fraisee:32"
+        ],
+        "resultats": [
+            [
+                "TF-M6-16-A2",
+                "C-genere",
+                "Vis à tête fraisée M6 x 16 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M6-16-A4",
+                "C-genere",
+                "Vis à tête fraisée M6 x 16 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M6-30-A2",
+                "C-genere",
+                "Vis à tête fraisée M6 x 30 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M6-30-A4",
+                "C-genere",
+                "Vis à tête fraisée M6 x 30 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M6-50-A2",
+                "C-genere",
+                "Vis à tête fraisée M6 x 50 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M6-50-A4",
+                "C-genere",
+                "Vis à tête fraisée M6 x 50 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M6-80-A2",
+                "C-genere",
+                "Vis à tête fraisée M6 x 80 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M6-80-A4",
+                "C-genere",
+                "Vis à tête fraisée M6 x 80 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M8-16-A2",
+                "C-genere",
+                "Vis à tête fraisée M8 x 16 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M8-16-A4",
+                "C-genere",
+                "Vis à tête fraisée M8 x 16 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M8-30-A2",
+                "C-genere",
+                "Vis à tête fraisée M8 x 30 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M8-30-A4",
+                "C-genere",
+                "Vis à tête fraisée M8 x 30 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M8-50-A2",
+                "C-genere",
+                "Vis à tête fraisée M8 x 50 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M8-50-A4",
+                "C-genere",
+                "Vis à tête fraisée M8 x 50 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M8-80-A2",
+                "C-genere",
+                "Vis à tête fraisée M8 x 80 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M8-80-A4",
+                "C-genere",
+                "Vis à tête fraisée M8 x 80 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M10-16-A2",
+                "C-genere",
+                "Vis à tête fraisée M10 x 16 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M10-16-A4",
+                "C-genere",
+                "Vis à tête fraisée M10 x 16 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M10-30-A2",
+                "C-genere",
+                "Vis à tête fraisée M10 x 30 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M10-30-A4",
+                "C-genere",
+                "Vis à tête fraisée M10 x 30 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M10-50-A2",
+                "C-genere",
+                "Vis à tête fraisée M10 x 50 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M10-50-A4",
+                "C-genere",
+                "Vis à tête fraisée M10 x 50 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M10-80-A2",
+                "C-genere",
+                "Vis à tête fraisée M10 x 80 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M10-80-A4",
+                "C-genere",
+                "Vis à tête fraisée M10 x 80 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M12-16-A2",
+                "C-genere",
+                "Vis à tête fraisée M12 x 16 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M12-16-A4",
+                "C-genere",
+                "Vis à tête fraisée M12 x 16 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M12-30-A2",
+                "C-genere",
+                "Vis à tête fraisée M12 x 30 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M12-30-A4",
+                "C-genere",
+                "Vis à tête fraisée M12 x 30 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M12-50-A2",
+                "C-genere",
+                "Vis à tête fraisée M12 x 50 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M12-50-A4",
+                "C-genere",
+                "Vis à tête fraisée M12 x 50 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M12-80-A2",
+                "C-genere",
+                "Vis à tête fraisée M12 x 80 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M12-80-A4",
+                "C-genere",
+                "Vis à tête fraisée M12 x 80 mm, acier inoxydable A4, DIN 933"
+            ]
+        ]
+    },
+    {
+        "q": "vis tête fraisée",
+        "total": 32,
+        "trace": [
+            "vis:69",
+            "tete:68",
+            "fraisee:32"
+        ],
+        "resultats": [
+            [
+                "TF-M6-16-A2",
+                "C-genere",
+                "Vis à tête fraisée M6 x 16 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M6-16-A4",
+                "C-genere",
+                "Vis à tête fraisée M6 x 16 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M6-30-A2",
+                "C-genere",
+                "Vis à tête fraisée M6 x 30 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M6-30-A4",
+                "C-genere",
+                "Vis à tête fraisée M6 x 30 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M6-50-A2",
+                "C-genere",
+                "Vis à tête fraisée M6 x 50 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M6-50-A4",
+                "C-genere",
+                "Vis à tête fraisée M6 x 50 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M6-80-A2",
+                "C-genere",
+                "Vis à tête fraisée M6 x 80 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M6-80-A4",
+                "C-genere",
+                "Vis à tête fraisée M6 x 80 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M8-16-A2",
+                "C-genere",
+                "Vis à tête fraisée M8 x 16 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M8-16-A4",
+                "C-genere",
+                "Vis à tête fraisée M8 x 16 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M8-30-A2",
+                "C-genere",
+                "Vis à tête fraisée M8 x 30 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M8-30-A4",
+                "C-genere",
+                "Vis à tête fraisée M8 x 30 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M8-50-A2",
+                "C-genere",
+                "Vis à tête fraisée M8 x 50 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M8-50-A4",
+                "C-genere",
+                "Vis à tête fraisée M8 x 50 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M8-80-A2",
+                "C-genere",
+                "Vis à tête fraisée M8 x 80 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M8-80-A4",
+                "C-genere",
+                "Vis à tête fraisée M8 x 80 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M10-16-A2",
+                "C-genere",
+                "Vis à tête fraisée M10 x 16 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M10-16-A4",
+                "C-genere",
+                "Vis à tête fraisée M10 x 16 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M10-30-A2",
+                "C-genere",
+                "Vis à tête fraisée M10 x 30 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M10-30-A4",
+                "C-genere",
+                "Vis à tête fraisée M10 x 30 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M10-50-A2",
+                "C-genere",
+                "Vis à tête fraisée M10 x 50 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M10-50-A4",
+                "C-genere",
+                "Vis à tête fraisée M10 x 50 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M10-80-A2",
+                "C-genere",
+                "Vis à tête fraisée M10 x 80 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M10-80-A4",
+                "C-genere",
+                "Vis à tête fraisée M10 x 80 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M12-16-A2",
+                "C-genere",
+                "Vis à tête fraisée M12 x 16 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M12-16-A4",
+                "C-genere",
+                "Vis à tête fraisée M12 x 16 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M12-30-A2",
+                "C-genere",
+                "Vis à tête fraisée M12 x 30 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M12-30-A4",
+                "C-genere",
+                "Vis à tête fraisée M12 x 30 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M12-50-A2",
+                "C-genere",
+                "Vis à tête fraisée M12 x 50 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M12-50-A4",
+                "C-genere",
+                "Vis à tête fraisée M12 x 50 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TF-M12-80-A2",
+                "C-genere",
+                "Vis à tête fraisée M12 x 80 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TF-M12-80-A4",
+                "C-genere",
+                "Vis à tête fraisée M12 x 80 mm, acier inoxydable A4, DIN 933"
+            ]
+        ]
+    },
+    {
+        "q": "vis 6 pans",
+        "total": 1,
+        "trace": [
+            "vis:69",
+            "6:ECARTE(court)",
+            "pans:1"
+        ],
+        "resultats": [
+            [
+                "VIS-912-M8-25-A2",
+                "D-ecrit",
+                "Vis CHC M8 x 25 DIN 912 inox A2"
+            ]
+        ]
+    },
+    {
+        "q": "vis CHC",
+        "total": 1,
+        "trace": [
+            "vis:69",
+            "chc:1"
+        ],
+        "resultats": [
+            [
+                "VIS-912-M8-25-A2",
+                "D-ecrit",
+                "Vis CHC M8 x 25 DIN 912 inox A2"
+            ]
+        ]
+    },
+    {
+        "q": "hexagonale",
+        "total": 35,
+        "trace": [
+            "hexagonale:35"
+        ],
+        "resultats": [
+            [
+                "VIS-M8-020-A2",
+                "B-site",
+                "Vis à tête hexagonale M8x20 inox A2"
+            ],
+            [
+                "VIS-M8-030-A2",
+                "B-site",
+                "Vis à tête hexagonale M8x30 inox A2"
+            ],
+            [
+                "TH-M6-16-A2",
+                "C-genere",
+                "Vis à tête hexagonale M6 x 16 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M6-16-A4",
+                "C-genere",
+                "Vis à tête hexagonale M6 x 16 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TH-M6-30-A2",
+                "C-genere",
+                "Vis à tête hexagonale M6 x 30 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M6-30-A4",
+                "C-genere",
+                "Vis à tête hexagonale M6 x 30 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TH-M6-50-A2",
+                "C-genere",
+                "Vis à tête hexagonale M6 x 50 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M6-50-A4",
+                "C-genere",
+                "Vis à tête hexagonale M6 x 50 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TH-M6-80-A2",
+                "C-genere",
+                "Vis à tête hexagonale M6 x 80 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M6-80-A4",
+                "C-genere",
+                "Vis à tête hexagonale M6 x 80 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TH-M8-16-A2",
+                "C-genere",
+                "Vis à tête hexagonale M8 x 16 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M8-16-A4",
+                "C-genere",
+                "Vis à tête hexagonale M8 x 16 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TH-M8-30-A2",
+                "C-genere",
+                "Vis à tête hexagonale M8 x 30 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M8-30-A4",
+                "C-genere",
+                "Vis à tête hexagonale M8 x 30 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TH-M8-50-A2",
+                "C-genere",
+                "Vis à tête hexagonale M8 x 50 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M8-50-A4",
+                "C-genere",
+                "Vis à tête hexagonale M8 x 50 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TH-M8-80-A2",
+                "C-genere",
+                "Vis à tête hexagonale M8 x 80 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M8-80-A4",
+                "C-genere",
+                "Vis à tête hexagonale M8 x 80 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TH-M10-16-A2",
+                "C-genere",
+                "Vis à tête hexagonale M10 x 16 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M10-16-A4",
+                "C-genere",
+                "Vis à tête hexagonale M10 x 16 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TH-M10-30-A2",
+                "C-genere",
+                "Vis à tête hexagonale M10 x 30 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M10-30-A4",
+                "C-genere",
+                "Vis à tête hexagonale M10 x 30 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TH-M10-50-A2",
+                "C-genere",
+                "Vis à tête hexagonale M10 x 50 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M10-50-A4",
+                "C-genere",
+                "Vis à tête hexagonale M10 x 50 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TH-M10-80-A2",
+                "C-genere",
+                "Vis à tête hexagonale M10 x 80 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M10-80-A4",
+                "C-genere",
+                "Vis à tête hexagonale M10 x 80 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TH-M12-16-A2",
+                "C-genere",
+                "Vis à tête hexagonale M12 x 16 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M12-16-A4",
+                "C-genere",
+                "Vis à tête hexagonale M12 x 16 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TH-M12-30-A2",
+                "C-genere",
+                "Vis à tête hexagonale M12 x 30 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M12-30-A4",
+                "C-genere",
+                "Vis à tête hexagonale M12 x 30 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TH-M12-50-A2",
+                "C-genere",
+                "Vis à tête hexagonale M12 x 50 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M12-50-A4",
+                "C-genere",
+                "Vis à tête hexagonale M12 x 50 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "TH-M12-80-A2",
+                "C-genere",
+                "Vis à tête hexagonale M12 x 80 mm, acier inoxydable A2, DIN 933"
+            ],
+            [
+                "TH-M12-80-A4",
+                "C-genere",
+                "Vis à tête hexagonale M12 x 80 mm, acier inoxydable A4, DIN 933"
+            ],
+            [
+                "VIS-933-M8-40-Z",
+                "D-ecrit",
+                "Vis tête hexagonale M8-40 DIN 933 acier zingué 8.8"
+            ]
+        ]
+    },
+    {
+        "q": "cheville",
+        "total": 2,
+        "trace": [
+            "cheville:2"
+        ],
+        "resultats": [
+            [
+                "CHEV-06-NYL",
+                "B-site",
+                "Cheville nylon Ø6 x 30 mm"
+            ],
+            [
+                "CHEV-08-NYL",
+                "B-site",
+                "Cheville nylon Ø8 x 40 mm"
+            ]
+        ]
+    },
+    {
+        "q": "chevile",
+        "total": 2,
+        "trace": [
+            "chevile=>~cheville"
+        ],
+        "resultats": [
+            [
+                "CHEV-06-NYL",
+                "B-site",
+                "Cheville nylon Ø6 x 30 mm"
+            ],
+            [
+                "CHEV-08-NYL",
+                "B-site",
+                "Cheville nylon Ø8 x 40 mm"
+            ]
+        ]
+    },
+    {
+        "q": "chevilles fischer",
+        "total": 2,
+        "trace": [
+            "chevilles=>~cheville",
+            "fischer:2"
+        ],
+        "resultats": [
+            [
+                "CHEV-06-NYL",
+                "B-site",
+                "Cheville nylon Ø6 x 30 mm"
+            ],
+            [
+                "CHEV-08-NYL",
+                "B-site",
+                "Cheville nylon Ø8 x 40 mm"
+            ]
+        ]
+    },
+    {
+        "q": "fisher",
+        "total": 2,
+        "trace": [
+            "fisher=>~fischer"
+        ],
+        "resultats": [
+            [
+                "CHEV-06-NYL",
+                "B-site",
+                "Cheville nylon Ø6 x 30 mm"
+            ],
+            [
+                "CHEV-08-NYL",
+                "B-site",
+                "Cheville nylon Ø8 x 40 mm"
+            ]
+        ]
+    },
+    {
+        "q": "fischr",
+        "total": 2,
+        "trace": [
+            "fischr=>~fischer"
+        ],
+        "resultats": [
+            [
+                "CHEV-06-NYL",
+                "B-site",
+                "Cheville nylon Ø6 x 30 mm"
+            ],
+            [
+                "CHEV-08-NYL",
+                "B-site",
+                "Cheville nylon Ø8 x 40 mm"
+            ]
+        ]
+    },
+    {
+        "q": "vis placo",
+        "total": 0,
+        "trace": [
+            "vis:69",
+            "placo=>~plate"
+        ],
+        "resultats": []
+    },
+    {
+        "q": "vis placco",
+        "total": 0,
+        "trace": [
+            "vis:69",
+            "placco=>~plate"
+        ],
+        "resultats": []
+    },
+    {
+        "q": "vis terrasse inox",
+        "total": 0,
+        "trace": [
+            "vis:69",
+            "terrasse=>~classe",
+            "inox:71"
+        ],
+        "resultats": []
+    },
+    {
+        "q": "tige filetee",
+        "total": 1,
+        "trace": [
+            "tige:1",
+            "filetee:2"
+        ],
+        "resultats": [
+            [
+                "TIGE-975-M8-1M",
+                "D-ecrit",
+                "Tige filetée M8 longueur 1 m DIN 975 acier zingué"
+            ]
+        ]
+    },
+    {
+        "q": "roulement",
+        "total": 4,
+        "trace": [
+            "roulement:4"
+        ],
+        "resultats": [
+            [
+                "ROUL-6205-2RS",
+                "D-ecrit",
+                "Roulement à billes 6205-2RS 25x52x15 mm"
+            ],
+            [
+                "ROUL-6205-ZZ",
+                "D-ecrit",
+                "Roulement à billes 6205-ZZ 25x52x15 mm"
+            ],
+            [
+                "ROUL-6204-2RS",
+                "D-ecrit",
+                "Roulement à billes 6204-2RS 20x47x14 mm"
+            ],
+            [
+                "ROUL-6305-2RS",
+                "D-ecrit",
+                "Roulement à billes 6305-2RS 25x62x17 mm"
+            ]
+        ]
+    },
+    {
+        "q": "roulemnt",
+        "total": 4,
+        "trace": [
+            "roulemnt=>~roulement"
+        ],
+        "resultats": [
+            [
+                "ROUL-6205-2RS",
+                "D-ecrit",
+                "Roulement à billes 6205-2RS 25x52x15 mm"
+            ],
+            [
+                "ROUL-6205-ZZ",
+                "D-ecrit",
+                "Roulement à billes 6205-ZZ 25x52x15 mm"
+            ],
+            [
+                "ROUL-6204-2RS",
+                "D-ecrit",
+                "Roulement à billes 6204-2RS 20x47x14 mm"
+            ],
+            [
+                "ROUL-6305-2RS",
+                "D-ecrit",
+                "Roulement à billes 6305-2RS 25x62x17 mm"
+            ]
+        ]
+    },
+    {
+        "q": "roulements 6205",
+        "total": 2,
+        "trace": [
+            "roulements=>~roulement",
+            "6205:2"
+        ],
+        "resultats": [
+            [
+                "ROUL-6205-ZZ",
+                "D-ecrit",
+                "Roulement à billes 6205-ZZ 25x52x15 mm"
+            ],
+            [
+                "ROUL-6205-2RS",
+                "D-ecrit",
+                "Roulement à billes 6205-2RS 25x52x15 mm"
+            ]
+        ]
+    },
+    {
+        "q": "zzzzzz",
+        "total": 1,
+        "trace": [
+            "zzzzzz=>~6205zz"
+        ],
+        "resultats": [
+            [
+                "ROUL-6205-ZZ",
+                "D-ecrit",
+                "Roulement à billes 6205-ZZ 25x52x15 mm"
+            ]
+        ]
+    },
+    {
+        "q": "pneu",
+        "total": 1,
+        "trace": [
+            "pneu=>~per"
+        ],
+        "resultats": [
+            [
+                "PER-18V-BL",
+                "B-site",
+                "Perceuse-visseuse 18V brushless 2 batteries"
+            ]
+        ]
+    },
+    {
+        "q": "marteau",
+        "total": 1,
+        "trace": [
+            "marteau=>~large"
+        ],
+        "resultats": [
+            [
+                "ROND-9021-M6-A4",
+                "D-ecrit",
+                "Rondelle large M6 DIN 9021 inox A4"
+            ]
+        ]
+    }
+]

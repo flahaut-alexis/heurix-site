@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>La recherche native de PrestaShop, mesurée : ce qu'elle corrige, ce qu'elle remplace, ce qu'elle ne lit pas — Heurix</title>
+<meta name="description" content="Mesure sur PrestaShop 9.1.4 : « rondele » trouve « rondelle », notre page disait le contraire. Le vrai défaut est ailleurs : M8 n'est pas indexé, et une faute dans une fiche désactive la correction.">
+<link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/recherche-native-prestashop-mesuree.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="La recherche native de PrestaShop, mesurée : ce qu'elle corrige, ce qu'elle remplace, ce qu'elle ne lit pas — Heurix">
+<meta property="og:description" content="Mesure sur PrestaShop 9.1.4 : « rondele » trouve « rondelle », notre page disait le contraire. Le vrai défaut est ailleurs : M8 n'est pas indexé, et une faute dans une fiche désactive la correction.">
+<meta property="og:image" content="https://heurix.fr/og-image.png">
+<meta property="og:url" content="https://heurix.fr/blog/recherche-native-prestashop-mesuree.html">
+<meta property="og:locale" content="fr_FR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="La recherche native de PrestaShop, mesurée : ce qu'elle corrige, ce qu'elle remplace, ce qu'elle ne lit pas — Heurix">
+<meta name="twitter:description" content="Mesure sur PrestaShop 9.1.4 : « rondele » trouve « rondelle », notre page disait le contraire. Le vrai défaut est ailleurs : M8 n'est pas indexé, et une faute dans une fiche désactive la correction.">
+<meta name="twitter:image" content="https://heurix.fr/og-image.png">
+<link rel="icon" type="image/png" href="../favicon-32.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<link rel="stylesheet" href="../styles.css?v=1789721626">
+<link rel="canonical" href="https://heurix.fr/blog/recherche-native-prestashop-mesuree.html">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Heurix",
+  "url": "https://heurix.fr",
+  "logo": "https://heurix.fr/logo.svg?v=1787610626",
+  "image": "https://heurix.fr/og-image.png",
+  "description": "Moteur de recherche et search & discovery pour sites e-commerce, basé sur des expressions régulières, conçu en France.",
+  "email": "contact@heurix.fr",
+  "sameAs": ["https://www.linkedin.com/company/heurix-search/"],
+  "founder": {"@type": "Person", "name": "Alexis Flahaut"},
+  "areaServed": "FR"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "La recherche native de PrestaShop, mesurée : ce qu'elle corrige, ce qu'elle remplace, ce qu'elle ne lit pas",
+  "description": "Mesure de la recherche native de PrestaShop 9.1.4 sur 177 fiches de visserie : correction des fautes activée à la livraison, mots de moins de trois caractères ignorés, correction sans plancher, et une faute de catalogue qui désactive la correction.",
+  "datePublished": "2026-09-19T19:30:00+02:00",
+  "inLanguage": "fr",
+  "mainEntityOfPage": "https://heurix.fr/blog/recherche-native-prestashop-mesuree.html",
+  "author": {
+    "@type": "Person",
+    "name": "Alexis Flahaut",
+    "url": "https://heurix.fr/about.html"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Heurix",
+    "url": "https://heurix.fr"
+  }
+}
+</script>
+</head>
+<body class="docs-dark">
+<header>
+  <div class="header-top">
+    <nav class="header-top-inner">
+      <a href="../index.html" class="logo"><img src="../logo.svg?v=1787610626" alt="Heurix"> <span class="wordmark">Heurix</span></a>
+      <div class="nav-links">
+        <div class="nav-drop">
+          <button type="button" class="nav-drop-btn" aria-expanded="false" aria-haspopup="true">Produit</button>
+          <div class="nav-drop-panel nav-panel-groupes">
+            <div class="nav-promo">
+              <p class="nav-promo-sur">D&Eacute;MO EN DIRECT</p>
+              <div class="nav-promo-vis"><span class="nav-promo-q">vis inox m8x20</span><span class="nav-promo-chip">DIN 933</span><span class="nav-promo-chip">rondelle</span></div>
+              <p class="nav-promo-t">Voir Heurix en action</p>
+              <p class="nav-promo-d">Une boutique r&eacute;elle, servie par le moteur.</p>
+              <a class="nav-promo-cta" href="../demo/index.html">Lancer la d&eacute;mo &rarr;</a>
+            </div>
+            <div class="nav-drop-col">
+              <p class="nav-drop-groupe">Comprendre</p>
+              <a class="nav-row" href="../index.html#probleme"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span><span><span class="nav-row-t">Le probl&egrave;me</span> <span class="nav-row-d">Le point de conversion le moins surveill&eacute; d&rsquo;un site.</span></span></a>
+              <a class="nav-row" href="../produit.html#mission"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg></span><span><span class="nav-row-t">Notre mission</span> <span class="nav-row-d">Faire de la recherche un levier, pas un fardeau.</span></span></a>
+            </div>
+            <div class="nav-drop-col">
+              <p class="nav-drop-groupe">Le produit</p>
+              <a class="nav-row" href="../index.html#moteur"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg></span><span><span class="nav-row-t">Le moteur</span> <span class="nav-row-d">Notre propre moteur, d&eacute;velopp&eacute; en France.</span></span></a>
+              <a class="nav-row" href="../fonctionnalites.html"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></span><span><span class="nav-row-t">Fonctionnalit&eacute;s</span> <span class="nav-row-d">Cascade d&rsquo;annotations, fautes tol&eacute;r&eacute;es, synonymes m&eacute;tier.</span></span></a>
+            </div>
+            <div class="nav-drop-col">
+              <p class="nav-drop-groupe">Passer &agrave; l'action</p>
+              <a class="nav-row" href="../roi.html"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span><span><span class="nav-row-t">Simulateur ROI</span> <span class="nav-row-d">Vos hypoth&egrave;ses, en curseurs, avec leurs sources.</span></span></a>
+              <a class="nav-row" href="../mesure.html"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg></span><span><span class="nav-row-t">La mesure</span> <span class="nav-row-d">+28 points de rappel sur 300 requ&ecirc;tes, refaisable.</span></span></a>
+            </div>
+          </div>
+        </div>
+        <div class="nav-drop">
+          <button type="button" class="nav-drop-btn" aria-expanded="false" aria-haspopup="true">Solutions</button>
+          <div class="nav-drop-panel nav-panel-secteurs">
+          <a class="nav-drop-tous" href="../secteurs.html">Tous les secteurs &rarr;</a>
+          <a href="../solutions/outillage.html"><span class="nav-icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg></span>Quincaillerie & outillage</a>
+          <a href="../solutions/industrie.html"><span class="nav-icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></span>Pièces détachées & industrie</a>
+          <a href="../solutions/automobile.html"><span class="nav-icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></span>Automobile</a>
+          <a href="../solutions/electricite.html"><span class="nav-icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6z"/></svg></span>Électricité & installation</a>
+          <a href="../solutions/plomberie.html"><span class="nav-icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z"/></svg></span>Plomberie & sanitaire</a>
+          <a href="../solutions/mode.html"><span class="nav-icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.38 3.46 16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.47a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.47a2 2 0 00-1.34-2.23z"/></svg></span>Mode & retail</a>
+          <a href="../solutions/electronique.html"><span class="nav-icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg></span>Électronique & high-tech</a>
+          <a href="../solutions/livres.html"><span class="nav-icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg></span>Librairie & édition</a>
+          <a href="../solutions/vins.html"><span class="nav-icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 22h8"/><path d="M12 15v7"/><path d="M12 15a5 5 0 005-5V3H7v7a5 5 0 005 5z"/></svg></span>Vins & spiritueux</a>
+          <a href="../solutions/sport.html"><span class="nav-icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span>Sport & glisse</a>
+          <a href="../solutions/finance.html"><span class="nav-icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>Finance & comptabilité</a>
+          </div>
+        </div>
+        <div class="nav-drop">
+          <button type="button" class="nav-drop-btn" aria-expanded="false" aria-haspopup="true">Developers</button>
+          <div class="nav-drop-panel nav-panel-groupes">
+            <div class="nav-promo">
+              <p class="nav-promo-sur">D&Eacute;MARRAGE</p>
+              <div class="nav-promo-vis"><div class="nav-promo-code"><b>POST</b> /v1/index/{catalog}/search&#10;{ "q": "vis inox m8x20" }</div></div>
+              <p class="nav-promo-t">D&eacute;marrer en 5 minutes</p>
+              <p class="nav-promo-d">De la cl&eacute; API au premier r&eacute;sultat pertinent.</p>
+              <a class="nav-promo-cta" href="../blog/guide-mise-en-route.html">Guide de mise en route &rarr;</a>
+            </div>
+            <div class="nav-drop-col">
+              <p class="nav-drop-groupe">D&eacute;marrer</p>
+              <a class="nav-row" href="../blog/guide-mise-en-route.html"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg></span><span><span class="nav-row-t">Guide de mise en route</span> <span class="nav-row-d">Trois &eacute;tapes pour une recherche qui fonctionne.</span></span></a>
+              <a class="nav-row" href="../docs.html"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></span><span><span class="nav-row-t">Documentation</span> <span class="nav-row-d">Indexer un catalogue, lancer une recherche en minutes.</span></span></a>
+            </div>
+            <div class="nav-drop-col">
+              <p class="nav-drop-groupe">Concepts</p>
+              <a class="nav-row" href="../docs.html#cascade"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></span><span><span class="nav-row-t">La cascade d&rsquo;annotations</span> <span class="nav-row-d">Le c&oelig;ur du moteur : des r&egrave;gles organis&eacute;es en niveaux.</span></span></a>
+              <a class="nav-row" href="../docs.html#produits"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></span><span><span class="nav-row-t">Structure des produits</span> <span class="nav-row-d">Un objet JSON libre, dont quatre champs ont un r&ocirc;le.</span></span></a>
+            </div>
+            <div class="nav-drop-col">
+              <p class="nav-drop-groupe">Int&eacute;grations</p>
+              <a class="nav-row" href="../integrations.html"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></span><span><span class="nav-row-t">Int&eacute;grations</span> <span class="nav-row-d">Des guides techniques avec du vrai code.</span></span></a>
+              <a class="nav-row" href="../prestashop.html"><span class="nav-row-icn marque" aria-hidden="true" style="background:rgba(223,0,103,.12); color:#CB005E;">P</span><span><span class="nav-row-t">PrestaShop</span> <span class="nav-row-d">Module natif, via ProductSearchProviderInterface.</span></span></a>
+              <a class="nav-row" href="../woocommerce.html"><span class="nav-row-icn marque" aria-hidden="true" style="background:rgba(127,84,179,.12); color:#7F54B3;">W</span><span><span class="nav-row-t">WooCommerce</span> <span class="nav-row-d">Extension WordPress, via le hook pre_get_posts.</span></span></a>
+              <a class="nav-row" href="../shopify.html"><span class="nav-row-icn marque" aria-hidden="true" style="background:rgba(94,142,62,.14); color:#4E7533;">S</span><span><span class="nav-row-t">Shopify</span> <span class="nav-row-d">Application en revue chez Shopify, et API REST.</span></span></a>
+            </div>
+          </div>
+        </div>
+        <a href="../blog.html">Blog</a>
+        <a href="../pricing.html">Tarifs</a>
+        <a href="../console.html" class="nav-link-mobile-seul">Mon compte</a>
+      </div>
+      <div class="header-search">
+        <button id="heurix-search-btn" class="search-trigger" aria-label="Chercher sur le site" type="button">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <span class="search-trigger-text">Chercher sur le site</span>
+          <span class="search-trigger-kbd">Ctrl K</span>
+        </button>
+      </div>
+      <div class="header-utility">
+        <button type="button" id="mobile-nav-toggle" class="mobile-nav-toggle" aria-label="Menu" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+        <a href="../console.html" class="header-signin"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0116 0v1"/></svg>Mon compte</a>
+        <a href="../en/blog.html" class="lang-switch">EN</a>
+        <a href="../console.html?inscription" class="btn">Démarrer l'essai gratuit</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+
+<article class="post">
+  <div class="wrap post-wrap">
+    <a href="../blog.html" class="back-link">← Tous les articles</a>
+    <div class="kicker">Mesure · Septembre 2026</div>
+    <h1>La recherche native de PrestaShop, mesurée : ce qu'elle corrige, ce qu'elle remplace, ce qu'elle ne lit pas</h1>
+    <p class="post-lede">Notre page PrestaShop disait que « rondele » ne trouve pas « rondelle ». Nous avons installé un PrestaShop neuf, indexé un catalogue de visserie, et passé 51 requêtes. « rondele » trouve « rondelle ». Le vrai défaut est ailleurs, et il est plus grave pour un distributeur.</p>
+
+    <div class="post-body">
+      <h2>Notre argument était faux</h2>
+      <p>Depuis sa publication, notre <a href="../prestashop.html">page PrestaShop</a> présentait les fautes de frappe comme le premier défaut de la recherche native, avec cet exemple : « rondele » ne trouve pas « rondelle ». En anglais, « wahser » ne trouvait pas « washer ». Nous ne l'avions jamais mesuré.</p>
+      <p>Mesuré le 19 septembre 2026 : sur une installation neuve de PrestaShop 9.1.4, le réglage <code class="docs-inline-code">PS_SEARCH_FUZZY</code> vaut 1, c'est-à-dire que la recherche approchée est activée à la livraison. « rondele » rend les quatre rondelles du catalogue, plus deux fiches qui en citent une dans leur description. « wahser » rend les deux produits « washer » que nous avions ajoutés pour le vérifier. Notre page disait le contraire de ce que fait le produit de nos futurs clients. Elle a été corrigée le jour même.</p>
+      <p>Cet article dit ce que nous avons trouvé à la place. Trois choses, dont une que nous n'aurions pas vue sans un catalogue réel.</p>
+
+      <h2>La mesure</h2>
+      <p>PrestaShop 9.1.4, installé en ligne de commande, en français, sans produits de démonstration. Les réglages de recherche sont ceux de la livraison, lus en base après l'installation :</p>
+      <pre class="docs-code"><code>PS_SEARCH_FUZZY                 1    recherche approchée activée
+PS_SEARCH_FUZZY_MAX_DIFFERENCE  5    lettres d'écart tolérées
+PS_SEARCH_MINWORDLEN            3    longueur minimale d'un mot</code></pre>
+      <p>Le catalogue compte 177 fiches, et il faut dire d'où elles viennent. 91 sont réelles : la collection « chevilles et vis » d'une boutique de fixation, Fischer, SPAX, DEWALT, copiée le 1er août 2026. Les 86 autres sont à nous : 10 fiches d'exemple de notre site, 64 fiches de vis générées pour un <a href="decoupage-rag-catalogue-produit.html">article précédent</a>, et 12 fiches écrites pour cette mesure (rondelles, écrous, roulements), parce qu'aucune source réelle à notre disposition ne portait de roulement.</p>
+      <p>Chaque requête est passée deux fois : par la fonction de recherche de PrestaShop, <code class="docs-inline-code">Search::find()</code>, avec la trace de ce qu'elle fait de chaque mot, puis par le fournisseur de résultats qu'appelle la page de recherche de la boutique. Les deux rendent les mêmes totaux.</p>
+
+      <h2>M8 n'est pas indexé</h2>
+      <p>C'est le défaut qui compte pour un distributeur, et notre page ne le disait pas. PrestaShop ignore les mots de moins de trois caractères. Il ne les cherche pas, et il ne les indexe pas non plus : dans la table des mots de la boutique, « M8 », « A2 », « 20 » n'existent pas.</p>
+      <div class="table-scroll"><table class="docs-params">
+        <tr><th>Requête</th><th>Ce que PrestaShop cherche</th><th>Résultat</th></tr>
+        <tr><td>M8</td><td>rien</td><td>0</td></tr>
+        <tr><td>M8 x 20</td><td>rien : les trois mots sont trop courts</td><td>0</td></tr>
+        <tr><td>vis inox M8 20</td><td>vis, inox</td><td>80, toutes les vis inox, M6 en tête</td></tr>
+        <tr><td>ecrou M8</td><td>ecrou</td><td>3 écrous, dont un M10 en premier</td></tr>
+        <tr><td>vis 6 pans</td><td>vis, pans</td><td>2, dont aucune vis à tête hexagonale</td></tr>
+      </table></div>
+      <p>La requête ne rend pas zéro résultat, ce qui se verrait. Elle rend des résultats, et ce ne sont pas ceux qu'on demandait. « vis inox M8 20 » est une spécification complète ; PrestaShop en garde « vis inox », et le client reçoit 80 vis dans un ordre où le diamètre n'a joué aucun rôle.</p>
+      <p>La même règle explique le test des graphies. Sur un catalogue qui écrit « M8x20 », « M8x20 » trouve la vis, parce que c'est un seul mot de cinq caractères. « M8 x 20 » ne rend rien. Et « M8-20 » rend une autre vis, pour la raison qui suit.</p>
+
+      <h2>Une correction sans plancher</h2>
+      <p>La recherche approchée de PrestaShop fonctionne ainsi : si un mot de la requête ne commence aucun mot indexé, PrestaShop le remplace par le mot indexé le plus proche, jusqu'à cinq lettres d'écart. C'est ce qui fait marcher « rondele ». C'est aussi ce qui fait ceci :</p>
+      <pre class="docs-code"><code>M8-20      → m820 remplacé par m840   → la vis M8-40
+6205 2RS   → 2rs remplacé par vis     → 0 résultat
+zzzzzz     → remplacé par 6205zz      → un roulement 6205-ZZ
+pneu       → remplacé par une         → 68 produits sans rapport</code></pre>
+      <p>Sur un mot de quatre lettres, cinq lettres d'écart autorisent presque n'importe quel mot du catalogue. La correction ne sait pas dire « je n'ai rien de proche » : elle prend le moins éloigné, et le client voit une page de résultats pleine, sans savoir que sa requête a été réécrite. Pour « M8-20 », il reçoit une vis M8-40 présentée comme la réponse. Pour « 6205 2RS », il reçoit zéro alors que « 6205-2RS » trouve le roulement : le second mot a été remplacé par « vis », et aucune fiche ne porte à la fois « 6205 » et « vis ».</p>
+
+      <h2>Une faute dans une fiche désactive la correction pour tout le monde</h2>
+      <p>C'est la mesure que nous n'aurions pas faite sans fiches réelles. La correction ne se déclenche que si <strong>aucun</strong> mot indexé ne commence par le mot tapé. Or les catalogues contiennent des fautes. Dans la description d'une vraie cheville Fischer DuoPower, on lit « une chevile intelligente ».</p>
+      <div class="table-scroll"><table class="docs-params">
+        <tr><th>Requête</th><th>Ce que PrestaShop fait</th><th>Résultat</th></tr>
+        <tr><td>cheville</td><td>cherche « cheville »</td><td>60</td></tr>
+        <tr><td>chevile</td><td>trouve « chevile » dans la fiche DuoPower, ne corrige pas</td><td>2 chevilles sur 51</td></tr>
+      </table></div>
+      <p>Le client qui tape « chevile » ne reçoit pas les 51 chevilles corrigées : il reçoit les deux fiches qui portent la même faute que lui. Une seule faute, dans une seule fiche, a désactivé la correction de ce mot pour tous les visiteurs. Le marchand ne le voit pas, puisque la requête rend des résultats, et le mot fautif est dans une description que personne ne relit.</p>
+      <p>Nous avons refait le mécanisme sur un catalogue sans fiche réelle, en ajoutant une seule fiche dont la description porte « chevile » :</p>
+      <pre class="docs-code"><code>sans la fiche fautive   cheville → 2    chevile → 2 (corrigé)
+avec la fiche fautive   cheville → 3    chevile → 1 (la fiche fautive seule)</code></pre>
+
+      <h2>Ce que notre module fait sur la même boutique</h2>
+      <p>Nous avons installé notre module PrestaShop sur cette même boutique, branché sur notre moteur lancé en local sur le code du 19 septembre, et passé les mêmes requêtes par le même point d'entrée que la page de recherche. Pour 48 des 51 requêtes, les fiches attendues sont fixées par une règle sur leur nom (les rondelles pour « rondele », la vis M8x20 pour « M8-20 »), et nous comptons si le premier résultat en fait partie. Ces règles ont été écrites après la mesure : elles sont publiées avec le reste, pour qu'on puisse les contester.</p>
+      <p>Neuf fois, le natif ne rend rien ou rend un mauvais premier résultat, et le module rend le bon : « M8 », « M8 x 20 », « M8-20 », « M10 x 30 », « 6205 2RS » dans ses deux casses, « vis inox A4 M10 », « ecrou M8 », « vis 6 pans ». Le moteur lit « M8 » comme un diamètre, « M8 x 20 » et « M8-20 » comme la vis M8x20, « 6 pans » comme une tête hexagonale. Et « pneu », « zzzzzz » rendent zéro.</p>
+      <p>Et voici ce que nous ne faisons pas mieux :</p>
+      <ul>
+        <li><strong>« M8 20 ».</strong> Un nombre seul, sans « x » ni tiret, n'est pas lu comme une longueur : la vis M8x20 n'est pas sur la première page. Le natif ne la trouve pas non plus.</li>
+        <li><strong>« vis inox M8 20 ».</strong> La bonne vis arrive deuxième, derrière une vis M8x25.</li>
+        <li><strong>Les fautes de frappe.</strong> Sur « rondele », « rondlle », « roulemnt », le module met en tête les mêmes produits que le natif. La correction de PrestaShop fait ce travail-là.</li>
+        <li><strong>Le nombre de résultats.</strong> Le moteur annonce large : 151 résultats pour « vis CHC », dont un seul est une vis CHC. Le premier est le bon ; le total ne dit rien.</li>
+      </ul>
+      <p>Un dernier point, qui compte autant que les autres. Sur ces 48 requêtes, le natif met le bon produit en tête 37 fois, le module 46 fois. Nous ne publions pas ce rapport comme un taux : nous avons choisi les requêtes, et 86 des 177 fiches sont les nôtres. Ce sont des cas, pas une moyenne.</p>
+
+      <h2>Refaire la mesure</h2>
+      <p>Le kit est publié : <a href="https://github.com/flahaut-alexis/heurix-site/tree/main/docs/mesures/prestashop-natif-2026-09-19" target="_blank" rel="noopener">docs/mesures/prestashop-natif-2026-09-19</a>, dans le dépôt public de ce site. Il contient le catalogue, les 51 requêtes, les scripts qui importent les fiches et passent les requêtes par <code class="docs-inline-code">Search::find()</code>, et ce qu'ils ont rendu. Il porte 86 fiches, pas 177 : les 91 fiches réelles sont des textes de Fischer et de la boutique d'origine, nous ne les republions pas. Les totaux changent là où elles comptaient (« rondele » rend 4 au lieu de 6), le mécanisme non ; le README donne les deux colonnes.</p>
+      <p>Sur votre propre boutique, trois requêtes suffisent :</p>
+      <ul>
+        <li>un diamètre seul, « M8 » : si la page est vide, vos mots courts ne sont pas indexés ;</li>
+        <li>une référence de votre catalogue écrite avec un tiret à la place du « x » : regardez si le premier résultat est le bon produit, et pas seulement s'il y a un résultat ;</li>
+        <li>un mot mal orthographié que vous savez présent dans une de vos fiches : si la requête correcte rend beaucoup plus que la requête fautive, la correction est désactivée pour ce mot.</li>
+      </ul>
+      <p>Ces chiffres valent pour PrestaShop 9.1.4 avec ses réglages de livraison. Un marchand peut désactiver la recherche approchée, changer la longueur minimale ou installer un module de recherche : chacun de ces choix change le résultat. Le mécanisme de la correction et celui des mots courts sont lisibles dans <code class="docs-inline-code">classes/Search.php</code> ; les effets décrits ici, eux, ont été mesurés.</p>
+    </div>
+
+    <div class="post-footer-cta">
+      <p>Voir ce que le moteur lit de vos références ?</p>
+      <a href="../console.html?inscription" class="btn">Essayer gratuitement</a>
+    </div>
+  </div>
+</article>
+
+<footer>
+  <div class="wrap foot-grid">
+    <a href="../index.html" class="logo" style="font-size:15px;"><img src="../logo.svg?v=1787610626" alt="Heurix" style="height:22px;width:22px;"> <span class="wordmark">Heurix</span></a>
+    <div class="foot-links">
+      <a href="../blog.html">Blog</a>
+      <a href="../docs.html">Documentation API</a>
+      <a href="../fonctionnalites.html">Fonctionnalités</a>
+      <a href="../pricing.html">Tarifs</a>
+      <a href="../integrations.html">Intégrations</a>
+      <a href="../partners.html">Programme partenaires</a>
+      <a href="../console.html">Console</a>
+      <a href="../about.html">À propos</a>
+      <a href="../faq.html">FAQ</a>
+      <a href="../cgv.html">CGV</a>
+      <a href="../mentions-legales.html">Mentions légales</a>
+      <a href="#" data-rouvrir-consentement>Gérer les cookies</a>
+      <a href="../confidentialite.html">Confidentialité</a>
+      <a href="mailto:contact@heurix.fr">contact@heurix.fr</a>
+    </div>
+    <div class="foot-social">
+      <span class="foot-social-label">Réseaux sociaux</span>
+      <a href="https://www.linkedin.com/company/heurix-search/" target="_blank" rel="noopener" aria-label="LinkedIn" class="foot-social-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+      </a>
+    </div>
+    <div class="foot-legal">
+      Heurix — Entreprise individuelle (micro-entreprise). SIRET 107 681 900 00018. Conseil en systèmes et logiciels informatiques.<br>
+      © <span id="year">2026</span> Heurix. Tous droits réservés.
+    </div>
+  </div>
+</footer>
+
+<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+<script src="../search-engine.js?v=1788523609"></script>
+<script src="../nav-dropdown.js?v=1788086140"></script>
+<script src="../mobile-nav.js?v=1788597902"></script>
+<div id="pricing-nudge" class="pricing-nudge">
+  <button type="button" class="pricing-nudge-close" aria-label="Fermer">&times;</button>
+  <div class="pricing-nudge-kicker">Essai gratuit 14 jours</div>
+  <p>Testez Heurix sur votre catalogue, sans carte bancaire.</p>
+  <a href="../console.html?inscription" class="btn">Démarrer l'essai gratuit</a>
+</div>
+<script src="../pricing-nudge.js?v=1789722847"></script>
+<script>window.HEURIX_RACINE='../';</script><script src="../consent.js?v=1788689121"></script>
+</body>
+</html>
