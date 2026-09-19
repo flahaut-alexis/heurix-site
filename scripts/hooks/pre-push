@@ -119,6 +119,8 @@
 #
 #   0  tout passe                      -> le push part
 #   1  un contrôle ÉCHOUE              -> push refusé, corrigez
+#   1  la suite est INCONCLUSE deux    -> push refusé, relancez plus tard
+#      fois (voir « UNE LENTEUR N'EST PAS UN TEST ROUGE », plus bas)
 #   2  les contrôles sont INEXÉCUTABLES -> push refusé, réparez l'outillage
 #
 set -uo pipefail
@@ -215,12 +217,76 @@ echo "pre-push : contrôles de CI.yml (sur ce dépôt, un push sur main déploie
 
 export BLOCS
 python3 - <<'PY'
-import json, subprocess, sys, time, os
+import json, re, subprocess, sys, time, os
 blocs = json.loads(os.environ["BLOCS"])
 echec = 0
+inconclu = 0
 saute = []
 rendus = 0
 t0 = time.time()
+
+# ─────────────────────────────────────────────────────────────────────────────
+# UNE LENTEUR N'EST PAS UN TEST ROUGE, ET ELLE NE LE PROUVE PAS NON PLUS
+# (19 septembre 2026).
+#
+# vitest sort en 1 des qu'une erreur NON RATTACHEE a un test est levee, meme
+# si tous les tests passent. L'une d'elles est de l'outillage :
+# `[vitest-worker]: Timeout calling "onTaskUpdate"`. Le processus de test
+# attend l'accuse de reception de ses resultats avec un delai de 60 s fixe en
+# dur ; un fichier qui bloque son processus plus longtemps le fait expirer.
+# Mesure le 19 septembre : 989/989 verts, « Errors 1 error », push refuse.
+#
+# LE TRI SEUL N'EST PAS SUR, ET C'EST MESURE. Sur huit passages de la suite,
+# la meme lenteur a produit une fois le timeout SEUL et une fois le timeout
+# ET un vrai test rouge (delai de 30 s depasse). « Timeout present, donc on
+# ignore » aurait laisse partir le second. Le tri ne fait donc que DECIDER
+# D'UNE RELANCE : le push ne part que si la relance est entierement verte.
+# Il ne laisse jamais rien passer sur son seul verdict.
+#
+# LE TRI EXIGE TOUT, ET SE TROMPE DU COTE DU REFUS :
+#   - code de sortie 1 ;
+#   - « Test Files  N passed (N) » et « Tests  M passed (M) » : aucun rouge,
+#     aucun saute, et le compte egal au total collecte ;
+#   - « Errors  k error(s) », et k lignes exactement egales a l'erreur
+#     ci-dessous -- aucune autre erreur non rattachee.
+# Une ligne absente ou d'une autre forme rend « pas une lenteur » : refus.
+#
+# Ce que ce timeout n'emporte pas, mesure a part : le test rouge d'un fichier
+# qui l'a leve est bien compte, et les tests places apres ont tourne. Le
+# compte egal au total dit donc que la suite a tout execute.
+#
+# La cause de celui du 19 septembre est retiree dans
+# tests/index-recherche.test.js ; ce filet reste pour la suivante.
+# ─────────────────────────────────────────────────────────────────────────────
+ANSI = re.compile(r"\x1b\[[0-9;]*m")
+TIMEOUT = 'Error: [vitest-worker]: Timeout calling "onTaskUpdate"'
+
+
+def lenteur_seule(p):
+    if p.returncode != 1:
+        return None
+    s = ANSI.sub("", (p.stdout or "") + (p.stderr or ""))
+    fichiers = re.search(r"^ *Test Files +(\d+) passed \((\d+)\) *$", s, re.M)
+    tests = re.search(r"^ *Tests +(\d+) passed \((\d+)\) *$", s, re.M)
+    erreurs = re.search(r"^ *Errors +(\d+) errors? *$", s, re.M)
+    if not (fichiers and tests and erreurs):
+        return None
+    if fichiers[1] != fichiers[2] or tests[1] != tests[2]:
+        return None
+    k = int(erreurs[1])
+    if k == 0 or [l.strip() for l in s.splitlines()].count(TIMEOUT) != k:
+        return None
+    return (f"{tests[1]}/{tests[2]} tests et {fichiers[1]}/{fichiers[2]} fichiers "
+            f"passes ; erreur(s) non rattachee(s) : {k} x [vitest-worker] "
+            f'Timeout calling "onTaskUpdate"')
+
+
+def resume_vitest(p):
+    s = ANSI.sub("", (p.stdout or "") + (p.stderr or ""))
+    return " ; ".join(l.strip() for l in s.splitlines()
+                      if re.match(r"^ *(Test Files|Tests|Errors)  ", l))
+
+
 for b in blocs:
     # `npm ci` est sauté SCIEMMENT : réinstaller les dépendances à chaque push
     # coûterait plus que tout le reste réuni. Le prix est en tête de fichier,
@@ -233,10 +299,34 @@ for b in blocs:
     p = subprocess.run(["bash", "-c", b["run"]], capture_output=True, text=True)
     duree = time.time() - d
     rendus += 1
+    suffixe = ""
+    lenteur = lenteur_seule(p)
+    if lenteur:
+        print(f"  INCONCLU {duree:5.1f}s  {b['job']} :: {b['nom'][:52]}", file=sys.stderr)
+        print(f"         | {lenteur}", file=sys.stderr)
+        print("         | cause connue : un fichier de test a bloque son processus "
+              "60 s ou plus -- ce n'est pas un test rouge.", file=sys.stderr)
+        print("         | relance, une seule fois ; le push ne part que si elle "
+              "est entierement verte.", file=sys.stderr)
+        d = time.time()
+        p = subprocess.run(["bash", "-c", b["run"]], capture_output=True, text=True)
+        duree = time.time() - d
+        suffixe = " (relance)"
+        lenteur = lenteur_seule(p)
     etat = "OK  " if p.returncode == 0 else "ECHEC"
-    print(f"  {etat}  {duree:5.1f}s  {b['job']} :: {b['nom'][:52]}", file=sys.stderr)
-    if p.returncode != 0:
+    print(f"  {etat}  {duree:5.1f}s  {b['job']} :: {b['nom'][:52]}{suffixe}", file=sys.stderr)
+    if lenteur:
+        # Deux lenteurs de suite : toujours aucun rouge, mais toujours rien de
+        # prouve. Refus, sous un nom qui n'est pas « un controle echoue ».
+        inconclu = 1
+        print(f"         | {lenteur}", file=sys.stderr)
+        print("         | inconclu deux fois de suite : la machine est trop chargee "
+              "pour que la suite conclue.", file=sys.stderr)
+    elif p.returncode != 0:
         echec = 1
+        resume = resume_vitest(p)
+        if resume:
+            print(f"         > {resume}", file=sys.stderr)
         for flux in (p.stdout, p.stderr):
             for ligne in (flux or "").strip().splitlines()[-25:]:
                 print(f"         | {ligne}", file=sys.stderr)
@@ -252,9 +342,25 @@ if saute:
           "point 3, en tête de scripts/hooks/pre-push)", file=sys.stderr)
 print(f"  {len(blocs)} bloc(s) trouvé(s), {rendus} avec un compte rendu, "
       f"{time.time()-t0:.1f}s au total.", file=sys.stderr)
-sys.exit(echec)
+# Un vrai echec l'emporte : il demande une correction, l'autre une relance.
+sys.exit(1 if echec else 3 if inconclu else 0)
 PY
 CODE=$?
+
+if [ "$CODE" -eq 3 ]; then
+  cat >&2 <<'MSG'
+
+pre-push : PUSH REFUSÉ -- la suite de tests n'a pas pu conclure, deux fois.
+
+  Aucun test rouge : chaque passage a tout exécuté et tout vu passer, mais
+  vitest a signalé une erreur d'outillage (« Timeout calling onTaskUpdate »)
+  qui l'empêche de répondre. Ce n'est pas un défaut du commit. C'est aussi
+  une réponse qui ne prouve rien.
+
+  Relancez le push quand la machine est moins chargée.
+MSG
+  exit 1
+fi
 
 if [ "$CODE" -ne 0 ]; then
   cat >&2 <<'MSG'
