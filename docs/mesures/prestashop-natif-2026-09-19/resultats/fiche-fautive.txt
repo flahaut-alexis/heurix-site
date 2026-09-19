@@ -1,0 +1,7 @@
+sans        cheville     total=2  Cheville nylon Ø6 x 30 mm | Cheville nylon Ø8 x 40 mm
+sans        chevile      total=2  Cheville nylon Ø6 x 30 mm | Cheville nylon Ø8 x 40 mm
+sans        chevilles    total=2  Cheville nylon Ø6 x 30 mm | Cheville nylon Ø8 x 40 mm
+avec        cheville     total=3  Cheville nylon Ø6 x 30 mm | Cheville nylon Ø8 x 40 mm | Cheville à expansion nylon Ø10 x 50 mm
+avec        chevile      total=1  Cheville à expansion nylon Ø10 x 50 mm
+avec        chevilles    total=3  Cheville nylon Ø6 x 30 mm | Cheville nylon Ø8 x 40 mm | Cheville à expansion nylon Ø10 x 50 mm
+fiche retiree, produits restants : 86

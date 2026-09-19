@@ -490,13 +490,18 @@ describe("index derive — la recherche lit vraiment les termes", () => {
   // page qui parle vraiment de « 2rs ».
   const PAGES_2RS = [
     "blog/alternative-algolia-catalogue-technique.html",
+    // ENTREE LE 19 SEPTEMBRE 2026, ET woocommerce.html SORT. L'article mesure
+    // la recherche native de PrestaShop, et « 6205 2RS » y est un cas traite :
+    // « 2rs » remplace par « vis », zero resultat. Neuf pages correspondent,
+    // pour huit places affichees : EVICTION par le plafond, comme pour
+    // « din 933 » le 16 septembre. woocommerce.html n'a pas change d'un mot.
+    "blog/recherche-native-prestashop-mesuree.html",
     "blog/recherche-vectorielle-catalogues-techniques.html",
     "blog/tutoriel-catalogue-outillage-5-minutes.html",
     "fonctionnalites.html",
     "index.html",
     "solutions/index.html",
     "solutions/industrie.html",
-    "woocommerce.html",
   ];
 
   it("« 2rs » remonte les huit pages qui en parlent — celles que l'index ecrit a la main ne trouvait pas", async () => {
