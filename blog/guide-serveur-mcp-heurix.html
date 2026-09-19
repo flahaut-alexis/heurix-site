@@ -217,6 +217,7 @@ Est-ce que j'ai des vis M8 en stock, et à quel prix ?</code></pre>
 
       <h2>Les trois outils disponibles</h2>
       <p><code class="docs-inline-code">heurix_search</code> (recherche par mot-clé, tolérante aux fautes de frappe), <code class="docs-inline-code">heurix_browse</code> (produits d'une catégorie, avec tri — stock, prix, popularité...), et <code class="docs-inline-code">heurix_catalog_stats</code> (liste les catalogues et catégories disponibles — utile en premier appel si l'agent ne connaît pas encore votre structure). Chaque appel de recherche ou de Browse consomme le quota normal de la clé utilisée, comme un appel direct à l'API.</p>
+      <p>Ce qu'un agent obtient réellement de ces trois outils sur un catalogue de quincaillerie, requête par requête, est mesuré dans <a href="agent-ia-catalogue-technique.html">ce qu'un agent IA trouve, et ne trouve pas, dans un catalogue technique</a>.</p>
 
       <h2>Sécurité</h2>
       <p>Votre clé API vit uniquement dans le fichier de configuration local du client MCP, jamais transmise en clair dans un appel d'outil : le serveur la lit une fois au démarrage et l'utilise pour chaque appel vers l'API Heurix. Documentation complète des trois outils sur <a href="../docs.html#ep-mcp">la référence API</a>.</p>
