@@ -3229,6 +3229,47 @@ refuser de tourner si la mutation est déjà là — c'est ce qui a été fait l
 28 août sur ces deux assertions, et ça reste vrai quand le processus meurt
 entre les deux.
 
+#### Le plafond de 30 s : lot fermé par une mesure, sans correctif (19 septembre 2026)
+
+**Ce qui l'a ouvert.** Le 19 septembre, sous charge, « un article neuf verifie
+avant son commit l'est encore apres » a mis **30,4 s** contre le plafond de
+**30 s** de son bloc, et la suite est sortie rouge. Un lot était prévu pour ce
+plafond.
+
+**Ce qui l'a fermé, et qui ne le visait pas.** Le même jour, les cinq tests du
+bloc « le vérificateur » sont passés de `execFileSync` à `execFile` attendu,
+pour une autre raison : le délai de 60 s d'`onTaskUpdate`, que vitest fait
+expirer quand un fichier bloque son processus aussi longtemps. Le mécanisme
+est en tête du bloc « le vérificateur » dans `tests/index-recherche.test.js`,
+et le filet qui en découle sous « UNE LENTEUR N'EST PAS UN TEST ROUGE » dans
+`scripts/hooks/pre-push`. Les mêmes
+tests, sur la même machine :
+
+| | charge | le plus lent des cinq |
+|---|---|---|
+| avant, en synchrone | 76 à 106 | **27,8 s** et **30,4 s** (le rouge) |
+| après, en asynchrone | 11 à 82 | 10,6 à 13,5 s |
+| après, six passages | 20 à 32 | 11,0 à **12,1 s** |
+
+**Pire cas mesuré : 12,1 s sur un plafond de 30, soit 40 %.** La marge dénoncée
+plus haut — « un test dont la durée s'approche de son plafond est déjà cassé » —
+est revenue sans qu'on y touche.
+
+**DEUX RÉSERVES, ET ELLES SONT LA RAISON D'ÉCRIRE CECI ICI.**
+
+1. **Le gain n'est pas expliqué.** Mêmes sous-processus, même machine, charge
+   comparable, moitié moins de temps. Je n'ai pas mesuré pourquoi. Un gain
+   dont on ignore la cause peut repartir comme il est venu.
+2. **Le plafond reste à 30 s.** Il protège d'un sous-processus **bloqué**, une
+   panne différente de la charge, et ce besoin-là n'a pas changé.
+
+**SEUIL DE RÉOUVERTURE : au-delà de 20 s pour l'un de ces cinq tests, il y a
+une cause réelle à chercher** — pas un plafond à relever.
+
+Ceci est écrit ici parce qu'un lot fermé par une mesure ne laisse aucune trace
+dans le code : pas de diff, pas de test, rien à relire. C'est exactement celui
+qu'une session rouvrira en croyant qu'il n'a jamais été traité.
+
 ### Quatre commandes dont la portée vient de l'arbre, et non d'une liste
 
 Quatre formes en trois jours, même racine, dégâts différents :
