@@ -270,6 +270,7 @@ import json, re, subprocess, sys, time, os
 blocs = json.loads(os.environ["BLOCS"])
 echec = 0
 inconclu = 0
+incapacite = 0
 saute = []
 rendus = 0
 t0 = time.time()
@@ -330,6 +331,46 @@ def lenteur_seule(p):
             f'Timeout calling "onTaskUpdate"')
 
 
+# ─────────────────────────────────────────────────────────────────────────────
+# UN BLOC QUI DIT « JE N'AI PAS PU VERIFIER », HORS CLONE SUPERFICIEL
+# (19 septembre 2026).
+#
+# Le clone superficiel est refuse plus haut, AVANT les blocs, sur l'etat du
+# depot. Reste le cas que ce garde-la ne voit pas : un depot a historique
+# COMPLET mais sans profondeur discriminante -- un seul commit (depot
+# reinitialise depuis une archive, historique ecrase). `git rev-parse
+# --is-shallow-repository` y rend `false`, et `index-recherche.py` y date
+# pourtant tous les articles de la meme seconde : il sort en 2 et imprime
+# « IMPOSSIBLE DE VERIFIER ».
+#
+# Mesure du 19 septembre, depot d'un seul commit fabrique depuis une archive
+# de main, 47 articles : le crochet affichait ECHEC et sortait 1, en
+# imprimant juste dessous le message du script, qui dit le contraire du mot
+# au-dessus.
+#
+# MEME ETAT QUE LA LENTEUR, AUTRE GESTE. Une lenteur se relance ; une entree
+# manquante ne revient pas en reessayant. D'ou : aucune relance, et une sortie
+# 4 -- le message final du 3 nomme vitest et conseille d'attendre une machine
+# moins chargee, ce qui serait ici un conseil faux.
+#
+# LE MARQUEUR EST CELUI QUE LE BLOC IMPRIME, pas son code de sortie : 2 est le
+# code d'usage de plusieurs outils (argparse l'emet pour une option inconnue),
+# et un bloc de la CI n'est pas toujours ce script.
+# ─────────────────────────────────────────────────────────────────────────────
+INCAPACITE = "IMPOSSIBLE DE VERIFIER"
+
+
+def incapacite_a_mesurer(p):
+    """Le controle n'a pas trouve d'ecart : il n'a pas pu en chercher."""
+    if p.returncode == 0:
+        return None
+    s = ANSI.sub("", (p.stdout or "") + (p.stderr or ""))
+    for ligne in s.splitlines():
+        if ligne.strip().startswith(INCAPACITE):
+            return ligne.strip()
+    return None
+
+
 def resume_vitest(p):
     s = ANSI.sub("", (p.stdout or "") + (p.stderr or ""))
     return " ; ".join(l.strip() for l in s.splitlines()
@@ -362,6 +403,16 @@ for b in blocs:
         duree = time.time() - d
         suffixe = " (relance)"
         lenteur = lenteur_seule(p)
+    raison = incapacite_a_mesurer(p)
+    if raison:
+        # Aucune relance : le clone ne se reparera pas tout seul. La suite du
+        # message du script porte la reparation -- on l'imprime en entier.
+        incapacite = 1
+        print(f"  INCONCLU {duree:5.1f}s  {b['job']} :: {b['nom'][:52]}{suffixe}", file=sys.stderr)
+        for flux in (p.stdout, p.stderr):
+            for ligne in (flux or "").strip().splitlines()[-25:]:
+                print(f"         | {ligne}", file=sys.stderr)
+        continue
     etat = "OK  " if p.returncode == 0 else "ECHEC"
     print(f"  {etat}  {duree:5.1f}s  {b['job']} :: {b['nom'][:52]}{suffixe}", file=sys.stderr)
     if lenteur:
@@ -391,10 +442,30 @@ if saute:
           "point 3, en tête de scripts/hooks/pre-push)", file=sys.stderr)
 print(f"  {len(blocs)} bloc(s) trouvé(s), {rendus} avec un compte rendu, "
       f"{time.time()-t0:.1f}s au total.", file=sys.stderr)
-# Un vrai echec l'emporte : il demande une correction, l'autre une relance.
-sys.exit(1 if echec else 3 if inconclu else 0)
+# Un vrai echec l'emporte : il demande une correction. Entre les deux etats
+# INCONCLU, l'incapacite passe devant la lenteur : reparer le clone est le
+# geste qui permet de mesurer, relancer ne le remplace pas.
+sys.exit(1 if echec else 4 if incapacite else 3 if inconclu else 0)
 PY
 CODE=$?
+
+if [ "$CODE" -eq 4 ]; then
+  cat >&2 <<'MSG'
+
+pre-push : PUSH REFUSÉ -- un contrôle n'a pas pu vérifier ce qu'il garde.
+
+  Aucun écart trouvé : le contrôle n'a pas pu en chercher. Les lignes
+  « IMPOSSIBLE DE VERIFIER » ci-dessus disent laquelle de ses entrées manque,
+  et comment la rendre.
+
+  Ce clone n'est PAS superficiel -- ce cas-là est refusé plus haut, avant tout
+  bloc. Cause connue ici : un historique d'un seul commit (dépôt réinitialisé
+  depuis une archive), où git date tous les fichiers de la même seconde.
+
+  Relancer le push sans rien réparer donnera le même verdict.
+MSG
+  exit 1
+fi
 
 if [ "$CODE" -eq 3 ]; then
   cat >&2 <<'MSG'

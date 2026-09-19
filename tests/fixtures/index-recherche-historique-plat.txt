@@ -1,0 +1,12 @@
+IMPOSSIBLE DE VERIFIER -- impossible de dater l'ajout des 47 articles de blog : ils portent TOUS la meme date (1789853968).
+  Cause la plus probable : un clone SUPERFICIEL (git clone --depth 1,
+  ou actions/checkout sans fetch-depth: 0). Du point de vue de git,
+  le commit unique ajoute tous les fichiers a la meme seconde.
+  Sans historique discriminant, le tri retomberait sur l'ordre
+  ALPHABETIQUE INVERSE et produirait une liste FAUSSE d'apparence
+  normale -- c'est ce qui s'est produit en CI le 27 aout 2026.
+
+  NE REGENEREZ PAS l'index depuis ce clone : vous y ecririez
+  une liste de derniers articles fausse, d'apparence normale.
+  Reparez le clone :  git fetch --unshallow
+  Ou, en CI :  actions/checkout@v4 avec fetch-depth: 0
