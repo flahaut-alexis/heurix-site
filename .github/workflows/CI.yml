@@ -246,3 +246,75 @@ jobs:
             fi
           done
           [ "$ECHEC" -eq 0 ] || { echo ""; echo "Lancez scripts/bust-cache.sh sur les fichiers signales."; exit 1; }
+
+  # ---------------------------------------------------------------------------
+  # LA MISE EN LIGNE ATTEND LA CI (19 septembre 2026).
+  #
+  # Jusqu'ici, Pages en mode « branche » publiait main en parallele de ce
+  # workflow, sans l'attendre : sur 167 SHA de main depuis le 28 aout, le
+  # deploiement a fini AVANT la CI 130 fois. La CI constatait, elle ne
+  # retenait rien.
+  #
+  # Ce job ne publie que si les trois autres sont verts. Il ne ferme la porte
+  # qu'une fois Pages en mode « workflow » (Settings > Pages > Source :
+  # GitHub Actions). En mode « branche », deploy-pages PUBLIE QUAND MEME et
+  # sort vert -- mesure sur un depot jetable -- pendant que le build par
+  # branche publie sans rien attendre. D'ou la premiere etape : elle lit le
+  # mode et fait echouer le job s'il n'est pas « workflow », pour que la
+  # porte ouverte se voie en rouge au lieu de se lire en vert.
+  #
+  # TOUT JOB AJOUTE A CE FICHIER DOIT ENTRER DANS `needs` : sinon la mise en
+  # ligne ne l'attend pas. tests/ci-mise-en-ligne.test.js le verifie.
+  #
+  # Mesure sur le depot jetable, du push au contenu servi sur le domaine :
+  # 39 s en mode branche, 79 a 98 s ici. Presque tout est la suite de tests ;
+  # le job lui-meme prend 12 a 16 s. Le domaine, le certificat et
+  # https_enforced survivent a la bascule dans les deux sens, et le site est
+  # reste servi pendant (242 lectures a 2 s, toutes a 200).
+  #
+  # Ses etapes sont des `uses:` : le crochet pre-push ne rejoue que les `run:`,
+  # et n'a ni les droits ni l'objet pour publier.
+  # ---------------------------------------------------------------------------
+  deploiement:
+    name: Mise en ligne
+    needs: [index-recherche, tests, cache-busting]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploiement.outputs.page_url }}
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    steps:
+      - name: Pages est-il bien en mode workflow ?
+        uses: actions/github-script@v9
+        with:
+          script: |
+            let pages;
+            try {
+              ({ data: pages } = await github.rest.repos.getPages({
+                owner: context.repo.owner, repo: context.repo.repo }));
+            } catch (e) {
+              // « Je n'ai pas pu lire le mode » n'est pas « le mode est faux ».
+              core.setFailed(`IMPOSSIBLE DE LIRE LE MODE DE PAGES (${e.status || ""} ${e.message}) -- ` +
+                "rien n'est verifie, rien n'est publie par ce job.");
+              return;
+            }
+            if (pages.build_type !== "workflow") {
+              core.setFailed(`PORTE OUVERTE : Pages est en mode « ${pages.build_type} ». ` +
+                "Le build par branche publie main sans attendre la CI. " +
+                "Settings > Pages > Source : GitHub Actions.");
+              return;
+            }
+            core.info(`Pages en mode workflow, domaine ${pages.cname}, https_enforced ${pages.https_enforced}.`);
+      - uses: actions/checkout@v4
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: .
+      - id: deploiement
+        uses: actions/deploy-pages@v5

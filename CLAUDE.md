@@ -49,6 +49,16 @@ dans un seul énoncé et se lisaient de travers :
    CI rouges, onze déploiements réussis**, dont quatre avec une suite de tests
    rouge.
 
+**Depuis le 19 septembre 2026, ces deux faits dépendent d'un réglage.**
+`CI.yml` porte un job « Mise en ligne » qui ne publie qu'après les trois autres
+jobs. Il ne ferme la porte qu'avec Pages en mode « workflow » (Settings >
+Pages > Source : GitHub Actions) ; en mode « branche », les faits 1 et 2
+restent vrais, et ce job sort en rouge **« PORTE OUVERTE »** pour le dire. En
+mode workflow, un rouge poussé sur `main` n'est plus mis en ligne, mais il
+bloque la mise en ligne de **tous** les push suivants tant qu'il n'est pas
+corrigé. Mesures et protocole de bascule : « La porte mesurée sur un dépôt
+jetable », plus bas.
+
 L'ancien énoncé — « Pages par branche se déclenche sur le push » — était vrai :
 « par branche » y nomme le **mode** de construction, celui qu'on oppose plus bas
 à un workflow Actions. Mais il ne nommait pas `main`, et « par branche » se lit
@@ -1426,6 +1436,11 @@ mode par branche ne cache donc rien d'utile — tandis que `.gitignore` rend
 sont déjà publics, le dépôt l'étant. Le quatrième ne devrait pas être suivi du
 tout.
 
+> **Périmé le 19 septembre 2026, mesuré sur un dépôt jetable :** avec
+> `actions/upload-pages-artifact@v5`, les fichiers en point sont exclus par
+> défaut et restent en 404. Ce qu'Actions publie en plus est ailleurs — voir
+> « La porte mesurée sur un dépôt jetable », plus bas.
+
 **La vitesse**, sur les runs réussis récents :
 
 | | n | médiane | min | max |
@@ -1439,6 +1454,9 @@ plancher devient donc 36 s plus la durée du déploiement Actions, quelle qu'ell
 soit — et cette dernière n'est pas mesurable sans faire la bascule. Ce qui est
 certain sans la faire : **la mise en production passe d'environ 45 s à au moins
 80 s**, même si le déploiement Actions était gratuit.
+
+> **Mesuré le 19 septembre 2026 :** 79 à 98 s du push au contenu servi, contre
+> 39 s en mode branche. Voir plus bas.
 
 L'artefact serait de 17 Mo pour 869 fichiers, `node_modules` n'étant pas suivi.
 
@@ -1692,6 +1710,63 @@ Transférer le dépôt à une organisation débloquerait la file. **Décision pr
 le 28 août 2026 : non, pas aujourd'hui** — c'est un changement d'une autre
 nature que le choix d'un garde. Le crochet seul, et réévaluation dans quelques
 jours : **si les onze déploiements rouges deviennent zéro, il aura suffi.**
+
+##### La porte mesurée sur un dépôt jetable (19 septembre 2026)
+
+**Le critère du 28 août est atteint, et il ne prouve pas ce qu'il devait
+prouver.** Du 28 août au 19 septembre : 167 SHA de `main`, **167 CI vertes**,
+167 déploiements. Mais les refus du crochet ne sont journalisés nulle part, et
+tout est passé par un seul clone. Surtout, le déploiement a fini **avant** la
+CI 130 fois sur 167 : elle constatait, elle ne retenait rien. D'où la décision
+de fermer la porte côté GitHub.
+
+**Le trou du crochet, mesuré sur trois clones neufs :** clone seul, pas de
+`core.hooksPath` ; `npm ci --ignore-scripts`, pas de `core.hooksPath` ;
+`npm ci`, `scripts/hooks`, et le crochet mord sur un `push --dry-run`.
+
+**Mesuré sur un dépôt public jetable**, copie de `main` sans son `CNAME`
+(une copie qui le garde réclamerait `heurix.fr`), domaine
+`essai-pages.heurix.fr` :
+
+| | mode branche | mode workflow (après la CI) |
+|---|---|---|
+| push → contenu servi | 39, 43, 38 s | 98, 79, 98, 91 s |
+| fichiers servis sur 1 027 suivis | 1 015 | 1 023 |
+| lectures à 2 s pendant les mises en ligne | toutes 200 | toutes 200 |
+
+- **Le coût est la suite de tests** : le job de mise en ligne prend 12 à 16 s.
+  Une mesure à 204 s venait de 132 s d'attente d'un runner libre (job créé à
+  20:58:16, démarré à 21:00:28), pas du mode ; le mode branche passe par les
+  mêmes runners.
+- **Les 8 fichiers en plus** : `DESIGN.md`, `docs/maquettes/rapport-navbar-heurix.md`
+  et six `__init__.py` / `__manifest__.py` des instruments Odoo, que Jekyll
+  masquait (noms en `_`, `.md` rendus). Déjà publics sur GitHub. Aucune page ne
+  lie un `.md`, ni un `.html` que Jekyll aurait tiré d'un `.md` : rien ne casse.
+- **La bascule, sous une veille à 2 s** sur le domaine en HTTPS, aller et
+  retour : 242 lectures, toutes 200, certificat valide à chacune, trois
+  secondes au plus entre deux. Domaine, certificat (même expiration) et
+  `https_enforced` gardés dans les deux sens. Un build par branche en vol
+  pendant la bascule publie quand même. Le retour au mode branche relance la
+  publication par branche.
+- **En mode branche, `deploy-pages` publie aussi et sort vert.** Un job vert ne
+  prouve donc pas que la porte est fermée : c'est pourquoi le job lit le mode
+  et échoue s'il n'est pas « workflow ».
+
+**Ne pas toucher au domaine pendant la bascule.** Changer le domaine par l'API
+en mode branche **commite un fichier `CNAME` sur `main`** (« Create CNAME »,
+« Delete CNAME ») ; changer le mode ne commite rien.
+
+**Protocole de bascule, pour `heurix-site`** — le geste du réglage n'appartient
+qu'au propriétaire du dépôt :
+
+1. Une veille à 2 s sur `https://heurix.fr` (code, vérification du
+   certificat, contenu), lancée avant.
+2. Settings > Pages > Source : GitHub Actions.
+3. Relire l'API : `build_type`, `cname`, `https_enforced`,
+   `https_certificate.state`.
+4. Retour immédiat au mode branche si le certificat ou le HTTPS tombe.
+5. Relancer le dernier run de `main` : le job « Mise en ligne » doit passer
+   vert et publier.
 
 ##### Et mon rejeu du contrôle a rendu l'inverse, parce que je l'avais changé de shell
 
