@@ -156,7 +156,7 @@
     <div class="wrap">
       <div class="kicker">Platform</div>
       <h1 style="max-width:720px;">The PrestaShop search that understands your references</h1>
-      <p class="section-lede" style="max-width:640px;">Test it first on your own site: search the same reference in three forms — <code>M8x20</code>, <code>M8 x 20</code>, <code>M8-20</code>. If the three result counts differ, this page is for you.</p>
+      <p class="section-lede" style="max-width:640px;">Test it first on your own site: search the same reference in three forms — <code>M8x20</code>, <code>M8 x 20</code>, <code>M8-20</code>. If one of the three doesn't return the right screw first, this page is for you.</p>
       <p style="margin-top:18px;">
         <a class="btn" href="demo/index.html">See the engine in action</a>
         <a class="btn btn-ghost" href="docs.html">Documentation</a>
@@ -170,15 +170,15 @@
       <div class="int-grid">
       <div class="int-card">
         <h3>Reference spellings</h3>
-        <p>“M8x20”, “M8 x 20”, and “M8-20” return three different results: customers only find products if they type exactly how your catalog was entered.</p>
+        <p>Measured on PrestaShop 9.1, with a catalog that writes “M8x20”: “M8x20” finds the screw, “M8 x 20” returns nothing, “M8-20” returns the M8-40 screw. Customers only reliably find products if they type the way your catalog was entered.</p>
       </div>
       <div class="int-card">
-        <h3>Typos</h3>
-        <p>“wahser” doesn't find “washer”. On a professional site where people type fast, that's a lost sale every time.</p>
+        <h3>A correction that swaps words silently</h3>
+        <p>PrestaShop fixes typos with no floor: it replaces a missing word with the closest one in your catalog, up to five letters away. On a 177-product fastener catalog, a nonsense query like “zzzzzz” returned a ball bearing.</p>
       </div>
       <div class="int-card">
-        <h3>Technical structure</h3>
-        <p>Native search compares characters. It doesn't know that M8 is a diameter, stainless a material, DIN 933 a standard.</p>
+        <h3>Short words vanish</h3>
+        <p>PrestaShop ignores words under three characters, as shipped: M8, A2, 20. “M8” alone returns nothing, and in “stainless screw M8 20” only “stainless screw” is actually searched.</p>
       </div>
       </div>
     </div>
@@ -205,8 +205,8 @@
         <p>That's the integration time observed for a catalog already exported, settings and checks included.</p>
       </div>
       </div>
-      <p class="section-lede" style="margin-top:22px; max-width:640px;">The module is in beta: provided on request, with direct support from the founder during integration.</p>
-      <p style="margin-top:8px;"><a class="btn" href="mailto:contact@heurix.fr?subject=Module%20prestashop">Request the module</a>
+      <p class="section-lede" style="margin-top:22px; max-width:640px;">The module is published on PrestaShop Addons and connects to your Heurix account.</p>
+      <p style="margin-top:8px;"><a class="btn" href="https://addons.prestashop.com/en/search-filters/98535-heurix-smart-product-search.html" target="_blank" rel="noopener">See the module on PrestaShop Addons</a>
       <a class="btn btn-ghost" href="faq.html">FAQ</a></p>
     </div>
   </section>

@@ -92,7 +92,10 @@ describe("compteurs", () => {
     // plongement sur des fiches qui portent toutes « DIN 933 ». Les compteurs
     // lisent TOUTES les correspondances (`runSearch` avec limite 0), donc
     // neuf ; la liste, elle, en affiche huit.
-    expect(total).toBe(9);
+    // HUIT DEPUIS LE 19 SEPTEMBRE 2026 : prestashop.html ne cite plus
+    // « DIN 933 ». Sa carte « compare des caracteres » est devenue « les mots
+    // courts disparaissent », mesuree sur une installation PrestaShop 9.1.4.
+    expect(total).toBe(8);
     expect(Number(compteDe(w, "blog"))).toBeGreaterThan(0);
   });
 
@@ -143,7 +146,8 @@ describe("filtrer", () => {
     // remontait sur le titre de sa page mere.
     // 9 depuis l'article du 16 septembre 2026 (voir le compteur ci-dessus) :
     // le compteur du haut annonce le total, pas les huit places affichees.
-    expect(haut()).toBe("9 résultats");
+    // 8 depuis le 19 septembre 2026 : prestashop.html ne cite plus « DIN 933 ».
+    expect(haut()).toBe("8 résultats");
     cocher(w, "blog");
     expect(haut()).toBe(`${compteDe(w, "blog")} résultats`);
   });
