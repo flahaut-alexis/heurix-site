@@ -15,6 +15,15 @@
 #      fournit, `.github/workflows/` ne contient que CI.yml. La CI est donc
 #      un signal *a posteriori*.
 #
+#   DEPUIS LE 19 SEPTEMBRE 2026, CES DEUX FAITS DÉPENDENT D'UN RÉGLAGE.
+#   CI.yml porte un job « Mise en ligne » qui ne publie qu'après les autres
+#   jobs. Il ne ferme la porte qu'avec Pages en mode « workflow » ; en mode
+#   « branche », les faits 1 et 2 restent vrais, et ce job sort en rouge
+#   « PORTE OUVERTE » pour le dire. Le crochet garde sa place dans les deux
+#   cas : en mode workflow, un rouge poussé sur main n'est plus mis en ligne,
+#   mais il bloque la mise en ligne de TOUS les push suivants, ceux des
+#   autres sessions compris, tant qu'il n'est pas corrigé.
+#
 # CES DEUX FAITS TENAIENT DANS UN SEUL ÉNONCÉ, ET IL SE LISAIT DE TRAVERS
 # (4 septembre 2026). La phrase était : « GitHub Pages par branche se
 # déclenche sur le push et ne peut pas dépendre de la CI. » Elle est vraie :
@@ -213,7 +222,7 @@ MSG
   exit 2
 fi
 
-echo "pre-push : contrôles de CI.yml (sur ce dépôt, un push sur main déploie)"
+echo "pre-push : contrôles de CI.yml (un push sur main part en ligne : après la CI en mode workflow, sans elle en mode branche)"
 
 export BLOCS
 python3 - <<'PY'
@@ -367,10 +376,16 @@ if [ "$CODE" -ne 0 ]; then
 
 pre-push : PUSH REFUSÉ -- un contrôle de la CI échoue en local.
 
-  Sur ce dépôt, un push sur main met le contenu EN LIGNE tel quel, et la CI
-  ne le retient pas -- elle ne parle qu'après coup. Sur une branche de
-  travail rien n'est déployé, mais le défaut voyagera jusqu'à main avec elle,
-  et personne ne le contrôlera à la fusion.
+  Sur main, selon le mode de Pages :
+    - mode workflow : ce commit n'est pas mis en ligne, mais tant qu'il n'est
+      pas corrigé, AUCUN push suivant ne l'est -- ni le vôtre, ni celui des
+      autres sessions ;
+    - mode branche : il part en ligne tel quel, la CI ne le retient pas.
+  Le job « Mise en ligne » de la CI dit lequel est en place : il sort en
+  rouge « PORTE OUVERTE » en mode branche.
+
+  Sur une branche de travail rien n'est déployé, mais le défaut voyagera
+  jusqu'à main avec elle.
 
   Corrigez, ou forcez en connaissance de cause :  git push --no-verify
 MSG

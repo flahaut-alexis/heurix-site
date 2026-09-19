@@ -51,6 +51,12 @@
 # main. Pousser une AUTRE branche ne déploie rien : le défaut y attend la
 # fusion, où personne ne le contrôlera.
 #
+# DEPUIS LE 19 SEPTEMBRE 2026, CE QUI PRÉCÈDE DÉPEND DU MODE DE PAGES. Le job
+# « Mise en ligne » de CI.yml ne publie qu'après la CI ; il ne ferme la porte
+# qu'en mode « workflow », et sort en rouge « PORTE OUVERTE » en mode
+# « branche », où le paragraphe ci-dessus reste vrai. Détail en tête de
+# `scripts/hooks/pre-push`.
+#
 # CE FICHIER PORTAIT L'ÉNONCÉ UNIQUE, LUI AUSSI. « Sur ce dépôt le push
 # déclenche le déploiement, donc pousser rouge met le défaut en production » :
 # vrai de `main`, et lisible depuis n'importe quelle branche. C'est cette
