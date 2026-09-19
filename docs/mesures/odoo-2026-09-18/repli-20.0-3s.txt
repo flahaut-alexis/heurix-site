@@ -1,0 +1,13 @@
+timeout=3s  o20  mediane / max sur 5 essais, en secondes
+cle absente (module inactif)               /shop  0.186 /  0.191   autocomplete  0.118 /  0.128
+succes rapide (faux 200)                   /shop  0.195 /  0.210   autocomplete  0.119 /  0.124
+cle invalide (production, 403 reel)        /shop  0.298 /  0.334   autocomplete  0.197 /  0.272
+refus quota 429                            /shop  0.197 /  0.204   autocomplete  0.124 /  0.126
+refus paiement 402                         /shop  0.196 /  0.207   autocomplete  0.119 /  0.122
+panne 503                                  /shop  0.196 /  0.203   autocomplete  0.125 /  0.134
+lent 1,5 s                                 /shop  1.781 /  1.785   autocomplete  1.707 /  1.711
+lent 5 s                                   /shop  3.261 /  3.281   autocomplete  3.196 /  3.211
+ne repond pas (connexion ouverte, rien)    /shop  3.270 /  3.283   autocomplete  3.201 /  3.208
+port ferme (connexion refusee)             /shop  0.187 /  0.204   autocomplete  0.124 /  0.129
+DNS inexistant                             /shop  0.212 /  0.225   autocomplete  0.132 /  0.133
+hote injoignable (paquets perdus)          /shop  3.265 /  3.269   autocomplete  3.201 /  3.207

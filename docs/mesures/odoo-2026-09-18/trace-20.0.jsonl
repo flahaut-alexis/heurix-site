@@ -1,0 +1,82 @@
+{"etape": "public shop"}
+{"type": "product_template", "search": "", "path": "/shop", "uid": 3, "public": true, "count": 28, "ms": 21.7, "callers": ["odoo/addons/base/models/ir_http.py:473 _dispatch", "addons/website_sale/controllers/main.py:459 shop", "addons/website_sale/controllers/main.py:235 _shop_lookup_products"]}
+{"etape": "public shop page 2"}
+{"type": "product_template", "search": "", "path": "/shop/page/2", "uid": 3, "public": true, "count": 28, "ms": 9.0, "callers": ["odoo/addons/base/models/ir_http.py:473 _dispatch", "addons/website_sale/controllers/main.py:459 shop", "addons/website_sale/controllers/main.py:235 _shop_lookup_products"]}
+{"etape": "public shop tri prix"}
+{"type": "product_template", "search": "", "path": "/shop", "uid": 3, "public": true, "count": 28, "ms": 9.2, "callers": ["odoo/addons/base/models/ir_http.py:473 _dispatch", "addons/website_sale/controllers/main.py:459 shop", "addons/website_sale/controllers/main.py:235 _shop_lookup_products"]}
+{"etape": "public shop categorie"}
+{"type": "product_template", "search": "", "path": "/shop/category/desks-1", "uid": 3, "public": true, "count": 9, "ms": 9.7, "callers": ["odoo/addons/base/models/ir_http.py:473 _dispatch", "addons/website_sale/controllers/main.py:459 shop", "addons/website_sale/controllers/main.py:235 _shop_lookup_products"]}
+{"etape": "public shop filtre attribut"}
+{"type": "product_template", "search": "", "path": "/shop", "uid": 3, "public": true, "count": 28, "ms": 9.7, "callers": ["odoo/addons/base/models/ir_http.py:473 _dispatch", "addons/website_sale/controllers/main.py:459 shop", "addons/website_sale/controllers/main.py:235 _shop_lookup_products"]}
+{"etape": "public shop filtre prix"}
+{"type": "product_template", "search": "", "path": "/shop", "uid": 3, "public": true, "count": 20, "ms": 8.8, "callers": ["odoo/addons/base/models/ir_http.py:473 _dispatch", "addons/website_sale/controllers/main.py:459 shop", "addons/website_sale/controllers/main.py:235 _shop_lookup_products"]}
+{"etape": "public shop recherche"}
+{"type": "product_template", "search": "desk", "path": "/shop", "uid": 3, "public": true, "count": 10, "ms": 23.6, "callers": ["odoo/addons/base/models/ir_http.py:473 _dispatch", "addons/website_sale/controllers/main.py:459 shop", "addons/website_sale/controllers/main.py:235 _shop_lookup_products"]}
+{"etape": "public shop recherche floue"}
+{"type": "product_template", "search": "dosk", "path": "/shop", "uid": 3, "public": true, "count": 10, "ms": 34.9, "callers": ["odoo/addons/base/models/ir_http.py:473 _dispatch", "addons/website_sale/controllers/main.py:459 shop", "addons/website_sale/controllers/main.py:235 _shop_lookup_products"]}
+{"etape": "public shop recherche + categorie"}
+{"type": "product_template", "search": "desk", "path": "/shop/category/desks-1", "uid": 3, "public": true, "count": 8, "ms": 28.5, "callers": ["odoo/addons/base/models/ir_http.py:473 _dispatch", "addons/website_sale/controllers/main.py:459 shop", "addons/website_sale/controllers/main.py:235 _shop_lookup_products"]}
+{"etape": "public panier"}
+{"etape": "public wishlist"}
+{"etape": "public comparaison"}
+{"type": "product_template", "search": "", "path": "/shop", "uid": 3, "public": true, "count": 28, "ms": 9.8, "callers": ["odoo/addons/base/models/ir_http.py:473 _dispatch", "addons/website_sale/controllers/main.py:459 shop", "addons/website_sale/controllers/main.py:235 _shop_lookup_products"]}
+{"etape": "public website/search all"}
+{"type": "all", "search": "desk", "path": "/website/search", "uid": 3, "public": true, "count": 11, "ms": 131.1, "callers": ["addons/website/controllers/main.py:1366 hybrid_list", "addons/website_sale/controllers/website.py:80 autocomplete", "addons/website/controllers/main.py:1210 autocomplete"]}
+{"etape": "public website/search products"}
+{"type": "products", "search": "desk", "path": "/website/search/products", "uid": 3, "public": true, "count": 11, "ms": 26.6, "callers": ["addons/website/controllers/main.py:1366 hybrid_list", "addons/website_sale/controllers/website.py:80 autocomplete", "addons/website/controllers/main.py:1210 autocomplete"]}
+{"etape": "public blog recherche"}
+{"type": "blog_post", "search": "desk", "path": "/blog", "uid": 3, "public": true, "count": 0, "ms": 31.6, "callers": ["odoo/addons/base/models/ir_http.py:473 _dispatch", "addons/website_blog/controllers/main.py:223 blog", "addons/website_blog/controllers/main.py:120 _prepare_blog_values"]}
+{"etape": "public blog"}
+{"type": "blog_post", "search": null, "path": "/blog", "uid": 3, "public": true, "count": 7, "ms": 0.9, "callers": ["odoo/addons/base/models/ir_http.py:473 _dispatch", "addons/website_blog/controllers/main.py:223 blog", "addons/website_blog/controllers/main.py:120 _prepare_blog_values"]}
+{"etape": "public event recherche"}
+{"type": "events", "search": "desk", "path": "/event", "uid": 3, "public": true, "count": 0, "ms": 19.8, "callers": ["odoo/addons/base/models/ir_http.py:473 _dispatch", "addons/website_event/controllers/main.py:79 events"]}
+{"etape": "public event"}
+{"type": "events", "search": "", "path": "/event", "uid": 3, "public": true, "count": 6, "ms": 4.2, "callers": ["odoo/addons/base/models/ir_http.py:473 _dispatch", "addons/website_event/controllers/main.py:79 events"]}
+{"etape": "public forum recherche"}
+{"type": "forum_post", "search": "desk", "path": "/forum/help-1", "uid": 3, "public": true, "count": 0, "ms": 10.4, "callers": ["odoo/addons/base/models/ir_http.py:473 _dispatch", "addons/website_forum/controllers/website_forum.py:154 questions"]}
+{"etape": "public forum"}
+{"type": "forum_post", "search": "", "path": "/forum/help-1", "uid": 3, "public": true, "count": 2, "ms": 2.6, "callers": ["odoo/addons/base/models/ir_http.py:473 _dispatch", "addons/website_forum/controllers/website_forum.py:154 questions"]}
+{"etape": "public jobs recherche"}
+{"type": "jobs", "search": "desk", "path": "/jobs", "uid": 3, "public": true, "count": 0, "ms": 10.6, "callers": ["odoo/addons/base/models/ir_http.py:473 _dispatch", "addons/website_hr_recruitment/controllers/main.py:125 jobs"]}
+{"etape": "public jobs"}
+{"type": "jobs", "search": null, "path": "/jobs", "uid": 3, "public": true, "count": 3, "ms": 1.1, "callers": ["odoo/addons/base/models/ir_http.py:473 _dispatch", "addons/website_hr_recruitment/controllers/main.py:125 jobs"]}
+{"etape": "public slides recherche"}
+{"type": "slide_channel", "search": "desk", "path": "/slides", "uid": 3, "public": true, "count": 0, "ms": 11.3, "callers": ["odoo/addons/base/models/ir_http.py:473 _dispatch", "addons/website_slides/controllers/main.py:419 slides_channel", "addons/website_slides/controllers/main.py:454 slides_channel_values"]}
+{"etape": "public slides"}
+{"type": "slide_channel", "search": null, "path": "/slides", "uid": 3, "public": true, "count": 5, "ms": 1.7, "callers": ["odoo/addons/base/models/ir_http.py:473 _dispatch", "addons/website_slides/controllers/main.py:419 slides_channel", "addons/website_slides/controllers/main.py:454 slides_channel_values"]}
+{"etape": "public accueil"}
+{"etape": "public contactus"}
+{"type": "product_template", "search": "", "path": "/shop", "uid": 3, "public": true, "count": 28, "ms": 9.7, "callers": ["odoo/addons/base/models/ir_http.py:473 _dispatch", "addons/website_sale/controllers/main.py:459 shop", "addons/website_sale/controllers/main.py:235 _shop_lookup_products"]}
+{"etape": "public fiche produit"}
+{"etape": "autocomplete products"}
+{"type": "products", "search": "desk", "path": "/website/snippet/autocomplete", "uid": 3, "public": true, "count": 11, "ms": 30.5, "callers": ["odoo/addons/base/models/ir_http.py:473 _dispatch", "addons/website_sale/controllers/website.py:80 autocomplete", "addons/website/controllers/main.py:1210 autocomplete"]}
+{"etape": "autocomplete product_template"}
+{"type": "product_template", "search": "desk", "path": "/website/snippet/autocomplete", "uid": 3, "public": true, "count": 10, "ms": 34.6, "callers": ["odoo/addons/base/models/ir_http.py:473 _dispatch", "addons/website_sale/controllers/website.py:80 autocomplete", "addons/website/controllers/main.py:1210 autocomplete"]}
+{"etape": "autocomplete all"}
+{"type": "all", "search": "desk", "path": "/website/snippet/autocomplete", "uid": 3, "public": true, "count": 11, "ms": 149.1, "callers": ["odoo/addons/base/models/ir_http.py:473 _dispatch", "addons/website_sale/controllers/website.py:80 autocomplete", "addons/website/controllers/main.py:1210 autocomplete"]}
+{"etape": "autocomplete blog_post"}
+{"type": "blog_post", "search": "desk", "path": "/website/snippet/autocomplete", "uid": 3, "public": true, "count": 0, "ms": 33.3, "callers": ["odoo/addons/base/models/ir_http.py:473 _dispatch", "addons/website_sale/controllers/website.py:80 autocomplete", "addons/website/controllers/main.py:1210 autocomplete"]}
+{"etape": "autocomplete events"}
+{"type": "events", "search": "desk", "path": "/website/snippet/autocomplete", "uid": 3, "public": true, "count": 0, "ms": 27.3, "callers": ["odoo/addons/base/models/ir_http.py:473 _dispatch", "addons/website_sale/controllers/website.py:80 autocomplete", "addons/website/controllers/main.py:1210 autocomplete"]}
+{"etape": "autocomplete forum_post"}
+{"type": "forum_post", "search": "desk", "path": "/website/snippet/autocomplete", "uid": 3, "public": true, "count": 0, "ms": 12.6, "callers": ["odoo/addons/base/models/ir_http.py:473 _dispatch", "addons/website_sale/controllers/website.py:80 autocomplete", "addons/website/controllers/main.py:1210 autocomplete"]}
+{"etape": "autocomplete slides"}
+{"type": "slides", "search": "desk", "path": "/website/snippet/autocomplete", "uid": 3, "public": true, "count": 0, "ms": 27.8, "callers": ["odoo/addons/base/models/ir_http.py:473 _dispatch", "addons/website_sale/controllers/website.py:80 autocomplete", "addons/website/controllers/main.py:1210 autocomplete"]}
+{"etape": "autocomplete jobs"}
+{"type": "jobs", "search": "desk", "path": "/website/snippet/autocomplete", "uid": 3, "public": true, "count": 0, "ms": 12.5, "callers": ["odoo/addons/base/models/ir_http.py:473 _dispatch", "addons/website_sale/controllers/website.py:80 autocomplete", "addons/website/controllers/main.py:1210 autocomplete"]}
+{"etape": "autocomplete pages"}
+{"type": "pages", "search": "desk", "path": "/website/snippet/autocomplete", "uid": 3, "public": true, "count": 0, "ms": 52.9, "callers": ["odoo/addons/base/models/ir_http.py:473 _dispatch", "addons/website_sale/controllers/website.py:80 autocomplete", "addons/website/controllers/main.py:1210 autocomplete"]}
+{"etape": "login admin"}
+{"etape": "admin shop"}
+{"type": "product_template", "search": "", "path": "/shop", "uid": 2, "public": false, "count": 80, "ms": 6.9, "callers": ["odoo/addons/base/models/ir_http.py:473 _dispatch", "addons/website_sale/controllers/main.py:459 shop", "addons/website_sale/controllers/main.py:235 _shop_lookup_products"]}
+{"etape": "admin shop recherche"}
+{"type": "product_template", "search": "desk", "path": "/shop", "uid": 2, "public": false, "count": 11, "ms": 16.7, "callers": ["odoo/addons/base/models/ir_http.py:473 _dispatch", "addons/website_sale/controllers/main.py:459 shop", "addons/website_sale/controllers/main.py:235 _shop_lookup_products"]}
+{"etape": "admin backend"}
+{"etape": "admin action produits"}
+{"etape": "orm name_search produit"}
+{"etape": "orm web_search_read produit"}
+{"etape": "orm search_read commandes"}
+{"etape": "orm name_search page"}
+{"etape": "orm name_search blog"}
+{"etape": "rapport commande html"}
+{"etape": "tous les crons"}

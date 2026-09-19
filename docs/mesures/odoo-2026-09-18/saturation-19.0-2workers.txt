@@ -1,0 +1,8 @@
+timeout 3s http://127.0.0.1:8099/hang               N=2  /contactus  2.92 s  back-office  2.94 s  recherches: max  3.25 s
+timeout 3s http://127.0.0.1:8099/hang               N=4  /contactus  6.16 s  back-office  6.13 s  recherches: max  6.45 s
+timeout 3s http://127.0.0.1:8099/hang               N=6  /contactus  9.30 s  back-office  9.29 s  recherches: max  9.58 s
+timeout 3s http://127.0.0.1:8099/hang               N=10  /contactus 15.64 s  back-office 15.62 s  recherches: max 15.93 s
+timeout 1s http://127.0.0.1:8099/hang               N=2  /contactus  0.92 s  back-office  0.94 s  recherches: max  1.25 s
+timeout 1s http://127.0.0.1:8099/hang               N=4  /contactus  2.14 s  back-office  2.12 s  recherches: max  2.42 s
+timeout 1s http://127.0.0.1:8099/hang               N=6  /contactus  3.29 s  back-office  3.28 s  recherches: max  3.57 s
+timeout 1s http://127.0.0.1:8099/hang               N=10  /contactus  5.65 s  back-office  5.63 s  recherches: max  5.93 s
