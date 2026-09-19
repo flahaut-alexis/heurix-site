@@ -36,6 +36,27 @@ const RACINE = path.resolve(__dirname, "..");
 // recette approximative. » C'est la formulation MODELE, pas une infraction. Un
 // garde qui la rougirait pousserait a la supprimer -- il ferait reculer la
 // franchise qu'il est cense defendre. Le second test l'epingle explicitement.
+//
+// LA MESURE DU 6 SEPTEMBRE EST PERIMEE POUR SHOPIFY, ET LES MOTIFS RESTENT.
+// heurix-shopify existe depuis le 7 septembre 2026 (premier commit 6b04700) :
+// app embarquee, import du catalogue, webhooks produits, et une extension de
+// theme -- un app block de barre de recherche. L'app est soumise a la revue
+// de l'App Store le 13 septembre, et au 19 septembre elle n'est ni validee ni
+// refusee. Les phrases « Nous n'avons pas encore branche Heurix sur une
+// boutique Shopify » et « ni extension de theme, ni application » sont donc
+// restees en ligne, fausses, du 7 au 19 septembre : le garde les tenait pour
+// la verite. Elles deviennent un motif (`shopify-sans-application`).
+//
+// Les motifs d'extension et d'App Store ne sont pas retires pour autant. Ils
+// visent des formes qui PROMETTENT : « Une extension de theme existe », seule,
+// dit a un marchand qu'il peut l'avoir, alors qu'elle ne s'installe qu'avec
+// l'app, et l'app pas avant la fin de la revue ; « attend sa validation »
+// presente l'issue de la revue comme acquise, et la revue peut refuser.
+//
+// Le temoin negatif change avec la page qui le portait. docs.html ne dit plus
+// « Non verifie a ce jour » : l'app a tourne sur des boutiques. La formulation
+// modele est desormais celle de shopify.html, qui nomme l'App Store sans
+// promettre ni date ni issue.
 // ---------------------------------------------------------------------------
 
 function pagesHtml() {
@@ -127,11 +148,20 @@ const MOTIFS = [
   {
     id: "app-store-pas-encore-publiee",
     quoi:
-      "Annonce une app App Store en attente de validation. Rien n'a ete soumis, et « pas encore » est une promesse datee sans la date.",
+      "Annonce une app App Store en attente de validation. Le 6 septembre rien n'etait soumis ; depuis le 13 septembre l'app est en revue, et « attend sa validation » tient pour acquise une issue que la revue peut refuser.",
     motif:
       /(?:L'application compl(?:&egrave;|è)te|The full app)[\s\S]{0,80}App Store/g,
     aLaPlace:
-      "Retirer. Aucune app n'existe ni n'est soumise ; ne rien annoncer pour plus tard.",
+      "Dire l'etat : soumise le 13 septembre 2026, ni validee ni refusee a ce jour. Ne rien annoncer pour plus tard.",
+  },
+  {
+    id: "shopify-sans-application",
+    quoi:
+      "Nie l'app Shopify. Ecrit le 6 septembre, vrai ce jour-la ; faux des le 7, premier commit de heurix-shopify, et en ligne jusqu'au 19.",
+    motif:
+      /(?:pas encore branch(?:&eacute;|é) Heurix sur une boutique Shopify|not yet connected Heurix to a Shopify store|ni extension de th(?:&egrave;|è)me, ni application|no theme extension and no Heurix app)/g,
+    aLaPlace:
+      "L'app existe, en revue depuis le 13 septembre 2026 ; ce qui reste non eprouve est le guide API.",
   },
   {
     id: "objectif-rendu-shopify",
@@ -182,7 +212,7 @@ const MOTIFS = [
 
 /** La formulation modele, relevee sur le site lui-meme. Voir le second test. */
 const TEMOIN_NEGATIF =
-  "Non vérifié à ce jour. Écrivez-nous plutôt que de suivre une recette approximative.";
+  "Tant que la revue n'a pas abouti, l'application ne s'installe pas depuis l'App Store, et nous ne savons ni quand elle aboutira, ni dans quel sens.";
 
 function ligneDe(src, index) {
   return src.slice(0, index).split("\n").length;

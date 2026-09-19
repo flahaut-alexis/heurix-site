@@ -4,13 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Search engine for Shopify — Heurix</title>
-<meta name="description" content="Improve Shopify search on technical catalogs: typo tolerance, reference spellings, large catalogs. Integration via the documented REST API.">
+<meta name="description" content="Improve Shopify search on technical catalogs: typo tolerance, reference spellings, large catalogs. A Shopify app in review, and the documented REST API.">
 <link rel="alternate" hreflang="fr" href="https://heurix.fr/shopify.html">
 <link rel="alternate" hreflang="en" href="https://heurix.fr/en/shopify.html">
 <link rel="alternate" hreflang="x-default" href="https://heurix.fr/shopify.html">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Search engine for Shopify — Heurix">
-<meta property="og:description" content="Improve Shopify search on technical catalogs: typo tolerance, reference spellings, large catalogs. Integration via the documented REST API.">
+<meta property="og:description" content="Improve Shopify search on technical catalogs: typo tolerance, reference spellings, large catalogs. A Shopify app in review, and the documented REST API.">
 <meta property="og:image" content="https://heurix.fr/og-image.png">
 <meta property="og:url" content="https://heurix.fr/en/shopify.html">
 <meta property="og:locale" content="en_US">
@@ -187,21 +187,26 @@
   <section class="section">
     <div class="wrap">
       <h2>Where the Shopify integration stands</h2>
-      <div class="int-grid">
+      <div class="int-grid" style="grid-template-columns:repeat(auto-fit,minmax(min(360px,100%),1fr));">
       <div class="int-card">
-        <h3>What exists: the API</h3>
-        <p>Heurix connects to Shopify through its documented REST API. There is no theme extension and no Heurix app on the App Store: you integrate with the code in the guide.</p>
-      </div>
-      <div class="int-card">
-        <h3>The relay that keeps your key</h3>
-        <p>A Shopify theme cannot hold a secret key. The guide goes through a serverless function that holds it and acts as a relay: your key is never readable by visitors.</p>
+        <h3>An app, in review at Shopify</h3>
+        <p>Heurix Search is a Shopify app. It imports your catalog, keeps it current each time a product is edited, and adds to your theme a search bar that queries Heurix. We submitted it to App Store review on September 13, 2026. To date, Shopify has neither approved nor rejected it.</p>
       </div>
       <div class="int-card">
-        <h3>Not verified to date</h3>
-        <p>We have not yet connected Heurix to a Shopify store. The guide describes the architecture; it has not been proven in production. Write to us rather than following an approximate recipe.</p>
+        <h3>Where it runs</h3>
+        <p>On four stores: our test stores and the Shopify reviewer's. None of them is a merchant's store. Until review concludes, the app does not install from the App Store, and we know neither when review will conclude nor which way.</p>
+      </div>
+      <div class="int-card">
+        <h3>What it replaces</h3>
+        <p>The bar shows Heurix results as you type. "See all results" leads to your theme's search page, which remains Shopify's.</p>
+      </div>
+      <div class="int-card">
+        <h3>The API guide, without the app</h3>
+        <p>The guide goes through a serverless function that holds your key and acts as a relay: it is never readable by visitors. That guide has not been proven on a real store. Write to us rather than following an approximate recipe.</p>
       </div>
       </div>
-      <p class="section-lede" style="margin-top:22px; max-width:640px;">PrestaShop and WooCommerce are further along. If you have a choice of platform, integration is more direct there today.</p>
+      <p class="section-lede" style="margin-top:22px; max-width:640px;">If you are counting on us a month from now: if review succeeds, the app will install from the App Store; if it is rejected, or has not concluded, the route remains the API and its guide. PrestaShop and WooCommerce each have, today, a beta module provided on request.</p>
+      <p style="margin-top:14px; max-width:640px;"><em>Corrected on September 19, 2026. Since September 6, this page said we had not yet connected Heurix to any Shopify store, and that there was neither a theme extension nor an app. That was true the day it was written; the app was installed on our test stores in the days that followed, and the page did not say so.</em></p>
       <p style="margin-top:8px;"><a class="btn" href="mailto:contact@heurix.fr?subject=Catalogue%20shopify">Talk about your Shopify catalog</a>
       <a class="btn btn-ghost" href="integrations.html">See the Shopify guide</a></p>
     </div>
