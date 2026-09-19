@@ -6,6 +6,8 @@
 <title>La recherche native de PrestaShop, mesurée : ce qu'elle corrige, ce qu'elle remplace, ce qu'elle ne lit pas — Heurix</title>
 <meta name="description" content="Mesure sur PrestaShop 9.1.4 : « rondele » trouve « rondelle », notre page disait le contraire. Le vrai défaut est ailleurs : M8 n'est pas indexé, et une faute dans une fiche désactive la correction.">
 <link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/recherche-native-prestashop-mesuree.html">
+<link rel="alternate" hreflang="en" href="https://heurix.fr/en/blog/recherche-native-prestashop-mesuree.html">
+<link rel="alternate" hreflang="x-default" href="https://heurix.fr/blog/recherche-native-prestashop-mesuree.html">
 <meta property="og:type" content="article">
 <meta property="og:title" content="La recherche native de PrestaShop, mesurée : ce qu'elle corrige, ce qu'elle remplace, ce qu'elle ne lit pas — Heurix">
 <meta property="og:description" content="Mesure sur PrestaShop 9.1.4 : « rondele » trouve « rondelle », notre page disait le contraire. Le vrai défaut est ailleurs : M8 n'est pas indexé, et une faute dans une fiche désactive la correction.">
@@ -58,6 +60,15 @@
 </script>
 </head>
 <body class="docs-dark">
+<!-- Banniere de langue : regle de declenchement, cle et exemption CNIL dans langue-banniere.js. -->
+<aside class="langue-banniere" id="langue-banniere" lang="en" hidden>
+  <div class="langue-banniere-corps">
+    <span>This page is available in English.</span>
+    <a class="langue-banniere-lien" href="../en/blog/recherche-native-prestashop-mesuree.html">Read in English</a>
+    <button type="button" class="langue-banniere-non">No thanks</button>
+  </div>
+</aside>
+<script>(function(){var b=document.getElementById('langue-banniere');if(!b)return;var pageFr=(document.documentElement.lang||'fr').slice(0,2).toLowerCase()==='fr',l=navigator.languages||[navigator.language||''],litFr=false;for(var i=0;i<l.length;i++)if(String(l[i]).slice(0,2).toLowerCase()==='fr')litFr=true;if(litFr===pageFr)return;try{if(localStorage.getItem('heurix_langue'))return;}catch(e){}b.hidden=false;})();</script>
 <header>
   <div class="header-top">
     <nav class="header-top-inner">
