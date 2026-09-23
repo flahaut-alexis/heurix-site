@@ -157,7 +157,12 @@
    * @param erreur  exception de fetch, le cas echeant
    * @param detail  champ `detail` du corps JSON d'erreur, ou null
    */
-  function classerEchec(statut, erreur, detail) {
+  /* @param codeMoteur  champ `code` du corps d'erreur (heurix-engine 418d24a
+   *                    et apres), ou null. Lu AVANT la phrase ; la regex
+   *                    ci-dessous est son repli, et elle reste parce que
+   *                    api.heurix.fr sert 79d9731, qui ne rend aucun code --
+   *                    mesure du 23 septembre 2026 aux deux arbres. */
+  function classerEchec(statut, erreur, detail, codeMoteur) {
     if (erreur && erreur.name === "HeurixReponseIllisible") {
       // 200 mais illisible -> transitoire. Une reponse malformee signale un
       // probleme cote Heurix, pas une mauvaise configuration cote marchand.
@@ -197,7 +202,13 @@
       // change celle d'un 401 : « cle-absente » devient « cle-refusee ». Un
       // integrateur qui testait « cle-absente » ne la recoit plus. Changer une
       // valeur ici, c'est changer ce contrat.
-      var origine = detail && /origine|origin/i.test(detail);
+      // LE CODE D'ABORD, LA PHRASE EN REPLI. `codeMoteur` present veut dire
+      // que le moteur a nomme sa cause ; un code inconnu donne « cle-refusee »
+      // et NE rejoue PAS la regex derriere -- contredire le moteur serait pire
+      // que le generique.
+      var origine = codeMoteur
+        ? codeMoteur === "origine_non_autorisee"
+        : !!(detail && /origine|origin/i.test(detail));
       return {
         code: origine ? "origine" : "cle-refusee",
         transitoire: false,
@@ -576,7 +587,8 @@
       // depuis la meme lecture que celle qu'on rend a l'appelant.
       return res.json().then(function (data) {
         if (!res.ok) {
-          return echouer(classerEchec(res.status, null, data ? data.detail : null));
+          return echouer(classerEchec(res.status, null, data ? data.detail : null,
+                                      data ? (data.code || null) : null));
         }
         coupeCircuitBrowse.reinitialiser();   // un succes efface toute trace
         return data;
@@ -1530,8 +1542,11 @@
             // rejetee ». Un corps illisible n'est pas une panne de plus, on
             // classe alors sans detail.
             return r.json().then(
-              function (corps) { throw { heurixDetail: corps ? corps.detail : null }; },
-              function () { throw { heurixDetail: null }; }
+              function (corps) {
+                throw { heurixDetail: corps ? corps.detail : null,
+                        heurixCode: corps ? (corps.code || null) : null };
+              },
+              function () { throw { heurixDetail: null, heurixCode: null }; }
             );
           }
           return r.json().then(null, function () {
@@ -1574,7 +1589,8 @@
           var classification = classerEchec(
             statut,
             e && e.heurixDetail !== undefined ? null : e,
-            e && e.heurixDetail !== undefined ? e.heurixDetail : null
+            e && e.heurixDetail !== undefined ? e.heurixDetail : null,
+            e && e.heurixDetail !== undefined ? e.heurixCode : null
           );
 
           journaliserPourLeMarchand("rayon indisponible", classification);  // le marchand
