@@ -261,11 +261,40 @@
    * statut derriere un TypeError opaque et aucune classification n'aurait
    * ete atteignable depuis une page.
    *
-   * @param statut  code HTTP, ou 0 quand aucune reponse n'est parvenue
-   * @param erreur  exception de fetch, le cas echeant
-   * @param detail  champ `detail` du corps JSON d'erreur, ou null
+   * LE CODE DU MOTEUR PASSE DEVANT LA PHRASE (23 septembre 2026), ET LA PHRASE
+   * RESTE. Le moteur rend depuis heurix-engine 418d24a un champ `code` a cote
+   * de `detail` -- « origine_non_autorisee », « cle_invalide », seize en tout.
+   * Il est lu ici en PREMIER, et la regex sur la phrase devient son repli.
+   *
+   * LES DEUX SENS SONT MESURES, ET AUCUN NE PEUT ETRE SUPPOSE :
+   *
+   *   widget neuf / moteur ancien -- api.heurix.fr sert 79d9731, qui ne rend
+   *     AUCUN code. Mesure du 23 septembre, meme requete aux deux arbres :
+   *     79d9731 rend {"detail": "Origine '...' non autorisee..."} et rien de
+   *     plus. Sans repli, ce fichier classerait « cle-refusee » des
+   *     aujourd'hui et le marchand lirait le mauvais remede. C'est le cas
+   *     NOMINAL, pas un cas de bord : le code n'existe en production qu'apres
+   *     un deploiement qui n'a pas eu lieu.
+   *
+   *   widget ancien / moteur neuf -- les copies deja parties ignorent `code`
+   *     et continuent par la regex. Mesure du 23 septembre contre 418d24a :
+   *     « origine » et « cle-refusee » inchanges. C'est pourquoi la phrase du
+   *     moteur est gardee cote moteur (tests/test_phrase_lue_par_les_widgets.py)
+   *     et pourquoi la regex ne part pas d'ici.
+   *
+   * UN CODE INCONNU NE VAUT PAS UNE ABSENCE DE CODE. S'il arrive un code que
+   * ce fichier ne connait pas, `origine` est faux et la reponse est
+   * « cle-refusee », le generique sur : la regex n'est PAS rejouee derriere.
+   * Rejouer la phrase sous un code explicite ferait dire au widget l'inverse
+   * de ce que le moteur affirme.
+   *
+   * @param statut      code HTTP, ou 0 quand aucune reponse n'est parvenue
+   * @param erreur      exception de fetch, le cas echeant
+   * @param detail      champ `detail` du corps JSON d'erreur, ou null
+   * @param codeMoteur  champ `code` du meme corps, ou null si le moteur n'en
+   *                    rend pas (avant 418d24a) ou si le corps est illisible
    */
-  function classerEchec(statut, erreur, detail) {
+  function classerEchec(statut, erreur, detail, codeMoteur) {
     if (erreur && erreur.name === "HeurixReponseIllisible") {
       // 200 mais illisible -> transitoire. Une reponse malformee signale un
       // probleme cote Heurix, pas une mauvaise configuration cote marchand.
@@ -297,7 +326,13 @@
       // « cle revoquee » ne se distinguent pas : le moteur supprime la cle
       // revoquee (revoke_public_key), et rend « Clé API invalide » pour les
       // deux. A defaut de corps lisible, on nomme les hypotheses.
-      var origine = detail && /origine|origin/i.test(detail);
+      // LE CODE D'ABORD, LA PHRASE ENSUITE -- et la phrase n'est lue QUE si
+      // le moteur n'a rien dit. `codeMoteur` present veut dire que le moteur
+      // a nomme sa cause : la contredire par une regex serait pire que de ne
+      // rien faire.
+      var origine = codeMoteur
+        ? codeMoteur === "origine_non_autorisee"
+        : !!(detail && /origine|origin/i.test(detail));
       return {
         code: origine ? "origine" : "cle-refusee",
         transitoire: false,
@@ -825,8 +860,11 @@
             // rejetee ». Un corps illisible n'est pas une panne de plus, on
             // classe alors sans detail.
             return res.json().then(
-              function (corps) { throw { heurixDetail: corps ? corps.detail : null }; },
-              function () { throw { heurixDetail: null }; }
+              function (corps) {
+                throw { heurixDetail: corps ? corps.detail : null,
+                        heurixCode: corps ? (corps.code || null) : null };
+              },
+              function () { throw { heurixDetail: null, heurixCode: null }; }
             );
           }
           return res.json().then(null, function () {
@@ -901,7 +939,8 @@
           var classification = classerEchec(
             reponseStatut,
             err && err.heurixDetail !== undefined ? null : err,
-            err && err.heurixDetail !== undefined ? err.heurixDetail : null
+            err && err.heurixDetail !== undefined ? err.heurixDetail : null,
+            err && err.heurixDetail !== undefined ? err.heurixCode : null
           );
 
           journaliserPourLeMarchand(classification);   // le marchand
