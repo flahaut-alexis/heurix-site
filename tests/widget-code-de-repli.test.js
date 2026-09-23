@@ -17,6 +17,29 @@
  *   C'est le cas NOMINAL aujourd'hui, pas un cas de bord : le code n'existe
  *   en production qu'apres un deploiement qui n'a pas eu lieu.
  *
+ *   CE PARAGRAPHE A CESSE D'ETRE VRAI LE JOUR MEME, 16h34 : api.heurix.fr
+ *   sert a20c155, et `/health` le confirme. Releve a 16h49, sans clef, sur
+ *   la vraie production :
+ *
+ *     POST /v1/index/x/search sans Authorization
+ *       -> 401 {"detail": "Missing or malformed Authorization header",
+ *               "code": "authorization_absente"}
+ *
+ *   Il n'est pas reecrit : il date ce qui etait vrai quand ce fichier est
+ *   ne, et les deux corps ci-dessous restent des releves exacts. Ce qui
+ *   change est le cas que « moteur ancien » designe -- voir juste en dessous.
+ *
+ *   UN 403 SANS CODE N'EST PAS DEVENU HISTORIQUE, ET C'EST MIEUX QU'UN
+ *   SOUVENIR. Sur l'arbre deploye a20c155, `_require_browse_access`
+ *   (deps.py:293) leve encore une HTTPException nue : un marchand au palier
+ *   Browse « none » recoit un 403 SANS `code`, sur une route que
+ *   heurix-browse-widget.js appelle. Le repli n'a donc pas seulement un
+ *   passe, il a un appelant en production. Corps releve le 23 septembre sur
+ *   a20c155, TestClient, seconde clef publique au palier « none » :
+ *
+ *     403 {"detail": "Browse & Discovery n'est pas inclus dans votre offre
+ *                     actuelle -- ..."}   (aucune clef `code`)
+ *
  *   WIDGET ANCIEN. Les copies deja parties de `downloads/` ignorent `code`.
  *   C'est pourquoi la phrase est gardee cote moteur
  *   (tests/test_phrase_lue_par_les_widgets.py) et pourquoi la regex ne part
@@ -169,27 +192,48 @@ describe("heurix-search.js -- le code du moteur, et la phrase en repli", () => {
   });
 });
 
+const SOURCE_BROWSE = () =>
+  fs.readFileSync(path.join(RACINE, "downloads/heurix-browse-widget.js"), "utf8");
+
+/** `Heurix.browse()` resout en echec : c'est `heurixError.code` qui sort.
+ *
+ * AU MODULE ET NON DANS UN describe : le bloc « une phrase que la regex ne
+ * peut pas lire », en fin de fichier, monte le meme widget. Deux copies de ce
+ * montage auraient derive l'une de l'autre sans que rien ne le signale. */
+async function codeDeBrowse(corps, statut = 403) {
+  const dom = new JSDOM('<!doctype html><html><body><div id="c"></div></body></html>',
+    { url: "http://localhost/" });
+  global.window = dom.window;
+  global.document = dom.window.document;
+  const faux = async () => ({ ok: false, status: statut, json: async () => corps });
+  global.fetch = faux;
+  dom.window.fetch = faux;
+  dom.window.console.warn = () => {};
+  dom.window.console.error = () => {};
+  dom.window.eval(SOURCE_BROWSE());
+  const api = dom.window.Heurix ?? global.Heurix;
+  const r = await api.browse({ apiKey: "hxp_t", catalog: "f", category: "v", containerId: "c" });
+  return r.heurixError ? r.heurixError.code : null;
+}
+
+/** Meme montage, l'autre champ de `heurixError`. */
+async function transitoireDeBrowse(corps, statut = 403) {
+  const dom = new JSDOM('<!doctype html><html><body><div id="c"></div></body></html>',
+    { url: "http://localhost/" });
+  global.window = dom.window;
+  global.document = dom.window.document;
+  const faux = async () => ({ ok: false, status: statut, json: async () => corps });
+  global.fetch = faux;
+  dom.window.fetch = faux;
+  dom.window.console.warn = () => {};
+  dom.window.console.error = () => {};
+  dom.window.eval(SOURCE_BROWSE());
+  const api = dom.window.Heurix ?? global.Heurix;
+  const r = await api.browse({ apiKey: "hxp_t", catalog: "f", category: "v", containerId: "c" });
+  return r.heurixError ? r.heurixError.transitoire : null;
+}
+
 describe("heurix-browse-widget.js -- meme regle, deux chemins d'appel", () => {
-  const SOURCE = () =>
-    fs.readFileSync(path.join(RACINE, "downloads/heurix-browse-widget.js"), "utf8");
-
-  /** `Heurix.browse()` resout en echec : c'est `heurixError.code` qui sort. */
-  async function codeDeBrowse(corps, statut = 403) {
-    const dom = new JSDOM('<!doctype html><html><body><div id="c"></div></body></html>',
-      { url: "http://localhost/" });
-    global.window = dom.window;
-    global.document = dom.window.document;
-    const faux = async () => ({ ok: false, status: statut, json: async () => corps });
-    global.fetch = faux;
-    dom.window.fetch = faux;
-    dom.window.console.warn = () => {};
-    dom.window.console.error = () => {};
-    dom.window.eval(SOURCE());
-    const api = dom.window.Heurix ?? global.Heurix;
-    const r = await api.browse({ apiKey: "hxp_t", catalog: "f", category: "v", containerId: "c" });
-    return r.heurixError ? r.heurixError.code : null;
-  }
-
   it("MOTEUR ANCIEN : heurixError.code vaut « origine » par la phrase", async () => {
     expect(await codeDeBrowse(CORPS_79d9731)).toBe("origine");
   });
@@ -209,5 +253,94 @@ describe("heurix-browse-widget.js -- meme regle, deux chemins d'appel", () => {
     expect(await codeDeBrowse({ detail: "Clé API invalide" })).toBe("cle-refusee");
     expect(await codeDeBrowse({ detail: "Clé API invalide", code: "cle_invalide" }))
       .toBe("cle-refusee");
+  });
+});
+
+/* ---------------------------------------------------------------------------
+ * LA LANGUE DE LA PHRASE, ET CE QUE LE REPLI NE RATTRAPE PAS (23 sept. 2026).
+ *
+ * POURQUOI CE BLOC EXISTE ALORS QUE LE FICHIER PARAISSAIT COMPLET. Tous les
+ * cas ci-dessus emploient la MEME phrase francaise pour le moteur ancien et
+ * pour le neuf. Ils prouvent donc la priorite du code quand les deux sources
+ * s'accordent, ou quand elles se contredisent sur la CAUSE -- jamais quand la
+ * phrase echoue a porter l'indice. Or c'est exactement le defaut qui a motive
+ * le lot : `/origine|origin/i` attrapait le francais et l'anglais par chance,
+ * et manquait « origen ».
+ *
+ * MESURE QUI L'ETABLIT, ET ELLE EST LA RAISON D'ECRIRE CE BLOC PLUTOT QUE DE
+ * LE PROPOSER. Mutant pose sur les deux widgets le 23 septembre :
+ *
+ *     var origine = codeMoteur
+ *       ? (codeMoteur === "origine_non_autorisee" && /origine|origin/i.test(detail))
+ *       : ...
+ *
+ * -- la « ceinture et bretelles » qu'ecrira une session qui ne fait pas
+ * confiance au champ neuf. Elle ROUVRE le defaut espagnol en entier. Les dix
+ * cas ci-dessus : 10 verts. Les quatre ci-dessous : rouges.
+ *
+ * LES CORPS SONT DES RELEVES. Arbre deploye a20c155, TestClient, clef
+ * publique restreinte a boutique.fr appelee depuis autre.fr. La version
+ * espagnole a ete obtenue en traduisant la phrase de `deps.py` sur cet arbre,
+ * puis en le restaurant -- pas en ecrivant un corps a la main.
+ * ------------------------------------------------------------------------- */
+
+const CORPS_ES_AVEC_CODE = {
+  detail: "Origen 'autre.fr' no autorizado para esta clave pública. Dominios autorizados: boutique.fr.",
+  code: "origine_non_autorisee",
+};
+const CORPS_ES_SANS_CODE = {
+  detail: "Origen 'autre.fr' no autorizado para esta clave pública. Dominios autorizados: boutique.fr.",
+};
+// Le 403 sans code qui existe VRAIMENT en production : palier Browse « none ».
+const CORPS_OFFRE_NONE = {
+  detail: "Browse & Discovery n'est pas inclus dans votre offre actuelle — "
+        + "disponible en autonome ou en option sur les plans Growth/Scale. "
+        + "Contactez contact@heurix.fr.",
+};
+
+describe("une phrase que la regex ne peut pas lire", () => {
+  it("LE DEFAUT QUI A MOTIVE LE LOT : phrase espagnole + code -> « origine »", async () => {
+    const msg = await messageMarchand(CORPS_ES_AVEC_CODE);
+    expect(msg).toMatch(/domaine de cette page/i);
+  });
+
+  it("idem sur heurix-browse-widget.js, via heurixError.code", async () => {
+    expect(await codeDeBrowse(CORPS_ES_AVEC_CODE)).toBe("origine");
+  });
+
+  it("TEMOIN FIGE : phrase espagnole SANS code -> « cle-refusee », et ce lot ne le repare pas", async () => {
+    // CE CAS N'EST PAS UN ECHEC A CORRIGER, C'EST LA LIMITE DU REPLI.
+    // Sans code, il n'y a rien a lire : la regex est tout ce qui reste, et
+    // elle ne connait pas l'espagnol. L'assertion le FIGE pour qu'aucune
+    // relecture ne conclue que le lot a ferme le defaut dans tous les cas.
+    //
+    // Ce n'est pas hypothetique : le 403 du palier Browse « none » ci-dessous
+    // sort sans code sur l'arbre deploye, et les copies de `downloads/` deja
+    // posees chez les marchands ignorent le champ de toute facon.
+    const msg = await messageMarchand(CORPS_ES_SANS_CODE);
+    expect(msg).not.toMatch(/domaine de cette page/i);
+    expect(msg).toMatch(/appel refuse/i);
+    expect(await codeDeBrowse(CORPS_ES_SANS_CODE)).toBe("cle-refusee");
+  });
+
+  it("UN 403 SANS CODE EXISTE EN PRODUCTION, et il tombe dans le generique", async () => {
+    // Palier Browse « none », deps.py:293 sur a20c155 : HTTPException nue.
+    // C'est le seul appelant vivant du repli cote Browse. Il rend le
+    // generique, ce qui est juste -- et c'est aussi ce qui montre que
+    // « moteur ancien » n'est pas la seule facon de ne pas avoir de code.
+    expect(await codeDeBrowse(CORPS_OFFRE_NONE)).toBe("cle-refusee");
+    const msg = await messageMarchand(CORPS_OFFRE_NONE);
+    expect(msg).toMatch(/appel refuse/i);
+    expect(msg).toContain("Browse & Discovery");
+  });
+
+  it("TEMOIN NEGATIF : le coupe-circuit reste hors du chemin dans les quatre cas", async () => {
+    // `transitoire` valait false dans les deux branches avant le lot. S'il
+    // basculait, une 403 de configuration mettrait la recherche en pause 60 s
+    // chez le marchand -- une panne fabriquee par un garde mal ecrit.
+    for (const corps of [CORPS_ES_AVEC_CODE, CORPS_ES_SANS_CODE,
+                         CORPS_OFFRE_NONE, CORPS_418d24a]) {
+      expect(await transitoireDeBrowse(corps)).toBe(false);
+    }
   });
 });
