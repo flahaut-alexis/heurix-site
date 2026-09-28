@@ -112,7 +112,23 @@ const JETON = /\b[A-Z][A-Z0-9]*(?:_[A-Za-z0-9./-]+)+\b/g;
 // annotations inventees. La correction qui les a poses rendait l'article vrai ;
 // retirer le style de code pour echapper au perimetre l'aurait rendu vert sans
 // rien decider.
-const PREFIXES_HORS_PACKS = ["CURLOPT_", "HEURIX_", "VOTRE_", "YOUR_", "CUSTOM_", "PS_"];
+// LES TROIS SUIVANTS, WP_ WC_ MYSQLI_ (28 septembre 2026), sont de la meme
+// famille que CURLOPT_ et PS_ : des identifiants d'une plateforme tierce, cites
+// pour dire ce qu'ELLE fait. L'article de la publication du module WooCommerce
+// en pose douze occurrences dans les deux langues -- `WC_Query`,
+// `WP_Plugin_Dependencies`, `MYSQLI_REPORT_OFF` : une classe de WooCommerce, une
+// classe de WordPress, une constante de PHP. Aucune n'est une annotation, et
+// aucune ne peut l'etre : les trois prefixes sont absents des 226 modeles de
+// l'inventaire, ce que `aucun prefixe exclu ne masque un modele` verifie contre
+// la donnee du moteur et non contre cette phrase.
+//
+// La lecon de PS_ est reprise telle quelle : retirer le style de code de
+// `MYSQLI_REPORT_OFF` pour sortir du perimetre aurait rendu ce garde vert sans
+// rien decider, et en rendant l'article moins lisible.
+const PREFIXES_HORS_PACKS = [
+  "CURLOPT_", "HEURIX_", "VOTRE_", "YOUR_", "CUSTOM_", "PS_",
+  "WP_", "WC_", "MYSQLI_",
+];
 
 const motifs = INVENTAIRE.map((e) => ({ modele: e.modele, re: new RegExp(e.motif) }));
 

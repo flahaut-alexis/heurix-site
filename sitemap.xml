@@ -267,6 +267,9 @@
     <loc>https://heurix.fr/blog/recherche-native-prestashop-mesuree.html</loc>
   </url>
   <url>
+    <loc>https://heurix.fr/blog/module-woocommerce-publie-bornes-mesurees.html</loc>
+  </url>
+  <url>
     <loc>https://heurix.fr/blog/recherche-headless-api-sans-theme.html</loc>
   </url>
   <url>
@@ -357,4 +360,5 @@
   <url><loc>https://heurix.fr/en/blog/recherche-headless-api-sans-theme.html</loc></url>
   <url><loc>https://heurix.fr/en/blog/agent-ia-catalogue-technique.html</loc></url>
   <url><loc>https://heurix.fr/en/blog/recherche-native-prestashop-mesuree.html</loc></url>
+  <url><loc>https://heurix.fr/en/blog/module-woocommerce-publie-bornes-mesurees.html</loc></url>
 </urlset>

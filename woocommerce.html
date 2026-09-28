@@ -4,13 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Barre de recherche WooCommerce — Heurix</title>
-<meta name="description" content="La barre de recherche de votre thème WooCommerce, avec des résultats qui comprennent vos références techniques. Extension fournie, 3 à 4 jours.">
+<meta name="description" content="La barre de recherche de votre thème WooCommerce, avec des résultats qui comprennent vos références techniques. Extension publiée sur wordpress.org.">
 <link rel="alternate" hreflang="fr" href="https://heurix.fr/woocommerce.html">
 <link rel="alternate" hreflang="en" href="https://heurix.fr/en/woocommerce.html">
 <link rel="alternate" hreflang="x-default" href="https://heurix.fr/woocommerce.html">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Barre de recherche WooCommerce — Heurix">
-<meta property="og:description" content="La barre de recherche de votre thème WooCommerce, avec des résultats qui comprennent vos références techniques. Extension fournie, 3 à 4 jours.">
+<meta property="og:description" content="La barre de recherche de votre thème WooCommerce, avec des résultats qui comprennent vos références techniques. Extension publiée sur wordpress.org.">
 <meta property="og:image" content="https://heurix.fr/og-image.png">
 <meta property="og:url" content="https://heurix.fr/woocommerce.html">
 <meta property="og:locale" content="fr_FR">
@@ -200,9 +200,34 @@
         <p>Estimation, sur un catalogue déjà exporté, réglages compris.</p>
       </div>
       </div>
-      <p class="section-lede" style="margin-top:22px; max-width:640px;">L'extension est en bêta : fournie sur demande, avec accompagnement direct du fondateur pendant l'intégration.</p>
-      <p style="margin-top:8px;"><a class="btn" href="mailto:contact@heurix.fr?subject=Module%20woocommerce">Demander le module</a>
+      <p class="section-lede" style="margin-top:22px; max-width:640px;">L'extension est publiée sur wordpress.org, en ligne depuis le 28 septembre 2026 en version 0.2.0. Elle s'installe depuis votre administration WordPress — Extensions, Ajouter, chercher « Heurix Search » — ou depuis sa fiche. Aucune fonction n'est réservée à une version payante : ce qui se paie est le service, pas l'extension.</p>
+      <p style="margin-top:8px;"><a class="btn" href="https://fr.wordpress.org/plugins/heurix-search-for-woocommerce/" target="_blank" rel="noopener">Voir l'extension sur wordpress.org</a>
       <a class="btn btn-ghost" href="faq.html">Questions fréquentes</a></p>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="wrap">
+      <h2>Ce qu'il faut sur votre site</h2>
+      <div class="int-grid">
+      <div class="int-card">
+        <h3>Les versions</h3>
+        <p>WordPress 5.9 à 7.1.2, WooCommerce 6.1 à 11.1.2, PHP 8.1. Ce sont les versions qui ont été <em>jouées</em>, une par une, pas des versions annoncées : chaque borne basse est celle où l'extension cesse de fonctionner.</p>
+      </div>
+      <div class="int-card">
+        <h3>WooCommerce 6.0 et plus ancien</h3>
+        <p>La recherche affiche sa première page et rend une deuxième page vide. L'extension ne le détecte pas : elle ne lit pas la version de WooCommerce, seulement sa présence. C'est ce qui fixe la borne à 6.1.</p>
+      </div>
+      <div class="int-card">
+        <h3>Le dossier « woocommerce »</h3>
+        <p>Depuis WordPress 6.5, l'activation est refusée si le dossier de WooCommerce porte un autre nom — même si WooCommerce tourne et que l'extension marcherait. WordPress résout la dépendance par le nom du dossier. Renommez-le, ou installez WooCommerce depuis wordpress.org.</p>
+      </div>
+      <div class="int-card">
+        <h3>Une clé Heurix</h3>
+        <p>Une clé serveur (préfixe <code>hx_</code>) et un catalogue créé. Rien ne quitte votre site avant que la clé soit saisie : sans elle, l'extension n'ouvre aucune connexion.</p>
+      </div>
+      </div>
+      <p class="section-lede" style="margin-top:22px; max-width:640px;">Comment ces bornes ont été trouvées, ce qui n'a pas été mesuré, et le kit pour refaire la mesure : <a href="blog/module-woocommerce-publie-bornes-mesurees.html">ce que la relecture wordpress.org a demandé</a>.</p>
     </div>
   </section>
 </main>
