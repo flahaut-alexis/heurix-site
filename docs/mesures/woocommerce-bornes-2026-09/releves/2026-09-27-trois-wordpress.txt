@@ -1,0 +1,77 @@
+CE QUE WORDPRESS FAIT DE « Requires Plugins », PAR VERSION.
+
+Pris le 27 septembre 2026 par tests/requires-plugins/mesure.sh, sur la branche
+requires-plugins-guideline-11. LE MODULE N'EST PAS L'OBJET MESURE : le temoin ne
+porte que l'en-tete, pour qu'on lise WordPress et pas notre propre garde.
+
+wp-cli 2.12.0 dans les trois cas. sha256 des archives tirees de
+downloads.wordpress.org le 27 septembre 2026 :
+  5.9.18  a5ffd15681b98e09b39580c7f6591d23323abbf047ee02c3572a6567af90f836
+  6.4.5   5e6afe9ab53704b730593436d51ee9346fc457f01d6c9feb7d140edbd1d8a23d
+  7.1.2   deja en cache depuis le 23 septembre 2026 (scripts/plugin-check.sh)
+
+LE TEMOIN CROISE. Les trois versions ne rendent PAS la meme chose : sans cet
+ecart, rien ne dirait que le script mesure quoi que ce soit. La ligne qui porte
+tout est « get_plugins() rend » -- la cle RequiresPlugins n'y apparait qu'en
+7.1.2. Sous 6.5 l'en-tete n'atteint AUCUN code : ni activation, ni affichage.
+
+CE QUE 5.9 ET 6.4 NE MESURENT PAS, et c'est normal : la section 2 s'arrete chez
+elles, puisqu'il n'y a pas de mecanisme de dependance a interroger.
+
+############ WordPress 5.9.18   base=mysql   PHP 8.1.34
+
+== 1. la version : WooCommerce absent, un temoin qui ne porte que l'en-tete
+   WooCommerce installe   : 0
+   cle RequiresPlugins    : ABSENTE de la liste des en-tetes
+   WP_Plugin_Dependencies : n existe pas
+   validate_plugin_req.   : aucune erreur
+   get_plugins() rend     : Name, PluginURI, Version, Description, Author, AuthorURI, TextDomain, DomainPath, Network, RequiresWP, RequiresPHP, UpdateURI, Title, AuthorName
+   activation             : REUSSIE
+   statut                 : active
+   son code tourne        : oui
+
+== 2. la resolution : par le NOM DU DOSSIER, pas par WooCommerce
+   dossier « woocommerce » actif, activation du temoin : REUSSIE
+   le MEME WooCommerce renomme « woocommerce-4-2-fork », toujours actif :
+     (cette version n applique pas la dependance)
+   le temoin deja actif est-il desactive ? statut = active
+
+############ WordPress 6.4.5   base=sqlite   PHP 8.5.10
+
+== 1. la version : WooCommerce absent, un temoin qui ne porte que l'en-tete
+   WooCommerce installe   : 0
+   cle RequiresPlugins    : ABSENTE de la liste des en-tetes
+   WP_Plugin_Dependencies : n existe pas
+   validate_plugin_req.   : aucune erreur
+   get_plugins() rend     : Name, PluginURI, Version, Description, Author, AuthorURI, TextDomain, DomainPath, Network, RequiresWP, RequiresPHP, UpdateURI, Title, AuthorName
+   activation             : REUSSIE
+   statut                 : active
+   son code tourne        : oui
+
+== 2. la resolution : par le NOM DU DOSSIER, pas par WooCommerce
+   dossier « woocommerce » actif, activation du temoin : REUSSIE
+   le MEME WooCommerce renomme « woocommerce-4-2-fork », toujours actif :
+     (cette version n applique pas la dependance)
+   le temoin deja actif est-il desactive ? statut = active
+
+############ WordPress 7.1.2   base=sqlite   PHP 8.5.10
+
+== 1. la version : WooCommerce absent, un temoin qui ne porte que l'en-tete
+   WooCommerce installe   : 0
+   cle RequiresPlugins    : presente ('woocommerce')
+   WP_Plugin_Dependencies : existe
+   validate_plugin_req.   : WP_Error plugin_missing_dependencies / Error: HX temoin dependance requires 1 plugin to be installed and activated: woocommerce. Manage plugins.
+   get_plugins() rend     : Name, PluginURI, Version, Description, Author, AuthorURI, TextDomain, DomainPath, Network, RequiresWP, RequiresPHP, UpdateURI, RequiresPlugins, Title, AuthorName
+   activation             : REFUSEE
+     | Warning: Failed to activate plugin. HX temoin dependance requires 1 plugin to be installed and activated: woocommerce. .
+     | Error: No plugins activated.
+   statut                 : inactive
+   son code tourne        : non (rien sur admin_notices)
+
+== 2. la resolution : par le NOM DU DOSSIER, pas par WooCommerce
+   dossier « woocommerce » actif, activation du temoin : REUSSIE
+   le MEME WooCommerce renomme « woocommerce-4-2-fork », toujours actif :
+     has_unmet_dependencies(temoin)         = true
+     get_dependency_filepath(woocommerce)   = false
+     class_exists("WooCommerce")            = PRESENTE
+   le temoin deja actif est-il desactive ? statut = active

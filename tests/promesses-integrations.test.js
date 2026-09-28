@@ -173,7 +173,7 @@ const MOTIFS = [
   {
     id: "demander-le-module-shopify",
     quoi:
-      "Un CTA « Demander le module » vise Shopify. Le meme libelle est LEGITIME sur woocommerce.html : c'est le sujet du courriel qui distingue les deux, pas le libelle.",
+      "Un CTA « Demander le module » vise Shopify. Le meme libelle etait LEGITIME sur woocommerce.html jusqu'au 28 septembre 2026 -- c'etait le sujet du courriel qui distinguait les deux, pas le libelle. Il ne l'est plus : voir `demander-le-module-woocommerce` plus bas, et les deux motifs sont desormais symetriques.",
     motif: /subject=Module%20shopify/gi,
     aLaPlace:
       "subject=Catalogue%20shopify, et « Parler de votre catalogue Shopify » / « Talk about your Shopify catalog ».",
@@ -202,17 +202,87 @@ const MOTIFS = [
   {
     id: "delai-woocommerce-constate",
     quoi:
-      "« constaté » / « observed » affirme une observation. Le plugin WooCommerce est reel et installable, mais rien n'atteste qu'il ait tourne sur un WordPress : ni test, ni CI, ni artefact d'execution. Le chiffre peut rester, l'observation non.",
+      "« constaté » / « observed » affirme une observation du DELAI D'INTEGRATION, et rien ne l'atteste : aucune intégration réelle n'a été chronométrée. Le chiffre peut rester comme estimation, l'observation non.",
+    // LA JUSTIFICATION DE CE MOTIF A CHANGE, PAS SON OBJET (28 septembre 2026).
+    // Elle disait « rien n'atteste que le plugin ait tourne sur un WordPress :
+    // ni test, ni CI, ni artefact d'execution ». C'etait vrai le 6 septembre et
+    // c'est faux depuis : heurix-woocommerce porte une CI, quatre suites de
+    // tests, et des relevés d'execution sur neuf WordPress et quinze
+    // WooCommerce reels (22-23 septembre 2026, publiés dans
+    // docs/mesures/woocommerce-bornes-2026-09). Ce qui reste non mesuré est le
+    // DELAI, qui est une autre affirmation que « le code tourne » -- le motif
+    // tient donc, et seule sa raison est corrigee. Une raison perimee sous un
+    // garde juste est ce qui fait retirer le garde a la premiere relecture.
     motif:
       /(?:Temps d'int(?:&eacute;|é)gration constat(?:&eacute;|é)|Integration time observed)/g,
     aLaPlace:
       "Estimation, sur un catalogue déjà exporté. / Estimate, on a catalog already exported.",
   },
+  // ---------------------------------------------------------------------------
+  // LES DEUX MOTIFS DE LA PUBLICATION WOOCOMMERCE (28 septembre 2026).
+  //
+  // Le module est publie sur wordpress.org (SVN r3716469, 09:16:50). « Fournie
+  // sur demande » etait vrai la veille, et vivait sur SIX pages servies : les
+  // deux woocommerce.html, les deux index.html, les deux integrations.html --
+  // plus les deux shopify.html, qui le disaient de WooCommerce en passant.
+  // Huit affirmations, dans deux langues, pour un etat qui a change en une
+  // matinee.
+  //
+  // CE QUE CETTE CLASSE A DE PARTICULIER : personne ne relit une phrase VRAIE.
+  // La ligne Shopify de la nav a ete traitee le 19 septembre par un attribut
+  // declare une fois (`data-etat-revue-shopify`, voir etat-revue-shopify.test.js) ;
+  // rien de tel n'existait pour WooCommerce, et c'est pour ca que les huit ont
+  // du etre trouvees par un balayage. Ces deux motifs ne remplacent pas cet
+  // attribut -- ils empechent le RETOUR de la phrase, ce qui est moins, et ce
+  // qui est tout ce qu'un motif peut faire.
+  {
+    id: "woocommerce-fourni-sur-demande",
+    quoi:
+      "Annonce le module WooCommerce comme fourni sur demande, ou renvoie au courriel pour l'obtenir. Vrai jusqu'au 28 septembre 2026, faux depuis : il s'installe depuis wordpress.org.",
+    // CE MOTIF EST LITTERAL, ET C'EST UN CHOIX QUI SE PAIE.
+    //
+    // Le premier jet etait une fenetre -- « en bêta » suivi de « sur demande »
+    // a moins de quarante caracteres. Elle attrapait les huit phrases retirees
+    // ET la phrase de l'article qui les CITE au passe (« extension en bêta,
+    // fournie sur demande », blog/module-woocommerce-publie-bornes-mesurees).
+    // Un motif qui rougit le recit d'une correction pousse a effacer le recit :
+    // c'est le defaut que le temoin negatif existe pour rendre visible, et ici
+    // il etait DANS le motif.
+    //
+    // Les quatre formes sont donc nommees, comme les autres motifs de ce
+    // fichier. Ce que ca coute : une reformulation neuve -- « disponible sur
+    // demande », « sent on request » -- passerait. Ce que ca garde : le retour
+    // des phrases qui ont reellement vecu en ligne, et la liberte de les citer.
+    motif:
+      /(?:module en b(?:&ecirc;|ê)ta,? fourni sur demande|est en b(?:&ecirc;|ê)ta ?: fournie sur demande|est en b(?:&ecirc;|ê)ta ?: (?:&eacute;|é)crivez-nous|beta (?:WooCommerce )?module provided on request|module in beta, provided on request|extension is in beta: provided on request|It is in beta: write to us)/g,
+    aLaPlace:
+      "Publiée sur wordpress.org, installable depuis l'administration WordPress. / Published on wordpress.org, installable from the WordPress admin.",
+  },
+  {
+    id: "demander-le-module-woocommerce",
+    quoi:
+      "Un CTA « Demander le module » vise WooCommerce. Il etait LEGITIME jusqu'au 28 septembre 2026 -- le motif shopify ci-dessus le disait -- et il ne l'est plus : le module a une fiche publique.",
+    motif: /subject=Module%20woocommerce/gi,
+    aLaPlace:
+      "Le lien de la fiche : fr.wordpress.org/plugins/heurix-search-for-woocommerce/ (FR), wordpress.org/... (EN).",
+  },
 ];
 
-/** La formulation modele, relevee sur le site lui-meme. Voir le second test. */
-const TEMOIN_NEGATIF =
-  "Tant que la revue n'a pas abouti, l'application ne s'installe pas depuis l'App Store, et nous ne savons ni quand elle aboutira, ni dans quel sens.";
+/**
+ * Les formulations modeles, relevees sur le site lui-meme. Voir le second test.
+ *
+ * LA SECONDE EST ARRIVEE AVEC LA PUBLICATION WOOCOMMERCE (28 septembre 2026).
+ * integrations.html porte, dans les deux langues, la note datee de ses propres
+ * corrections -- elle CITE « en bêta » et « sur demande » au passe, pour dire ce
+ * que la page affirmait avant. C'est le contraire d'une promesse : c'est la
+ * trace de sa correction. Un motif elargi a « toute phrase citant b[êe]ta »
+ * rougirait exactement cette note, et la correction evidente serait d'effacer
+ * l'aveu. Le temoin rend ce cout visible avant, comme pour la phrase Shopify.
+ */
+const TEMOINS_NEGATIFS = [
+  "Tant que la revue n'a pas abouti, l'application ne s'installe pas depuis l'App Store, et nous ne savons ni quand elle aboutira, ni dans quel sens.",
+  "cette note disait « seul le module PrestaShop s'installe depuis le store officiel de sa plateforme », vrai jusqu'à la publication de l'extension WooCommerce sur wordpress.org ce jour-là.",
+];
 
 function ligneDe(src, index) {
   return src.slice(0, index).split("\n").length;
@@ -281,21 +351,21 @@ describe("les pages servies ne promettent que ce qui existe", () => {
   // qui elargirait un motif -- « toute phrase citant Shopify et un delai » --
   // rougirait la seule page qui dit deja la verite, et la correction evidente
   // serait de la reecrire. Le temoin rend ce cout visible avant.
-  it("le temoin negatif : la formulation modele n'est pas une infraction", () => {
+  it.each(TEMOINS_NEGATIFS)("le temoin negatif : la formulation modele n'est pas une infraction (%#)", (temoin) => {
     const porteuses = pagesHtml()
       .filter((abs) => {
         const src = pageServie(abs);
-        return src !== null && src.includes(TEMOIN_NEGATIF);
+        return src !== null && src.includes(temoin);
       })
       .map((abs) => path.relative(RACINE, abs).split(path.sep).join("/"));
 
     // Le temoin doit exister, sinon ce test se viderait en silence le jour ou
     // la phrase serait reformulee -- vert, et ne testant plus rien.
-    expect(porteuses.length).toBeGreaterThan(0);
+    expect(porteuses.length, `temoin introuvable sur une page servie : ${temoin.slice(0, 60)}...`).toBeGreaterThan(0);
 
     for (const m of MOTIFS) {
       expect(
-        TEMOIN_NEGATIF.match(m.motif),
+        temoin.match(m.motif),
         `Le motif [${m.id}] rougit la formulation modele portee par ${porteuses.join(", ")}`
       ).toBeNull();
     }

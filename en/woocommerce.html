@@ -4,13 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>WooCommerce search plugin — Heurix</title>
-<meta name="description" content="Your WooCommerce theme search bar, with product results that understand your technical references. Plugin provided, theme unchanged, 3-4 days.">
+<meta name="description" content="Your WooCommerce theme search bar, with product results that understand your technical references. Plugin published on wordpress.org.">
 <link rel="alternate" hreflang="fr" href="https://heurix.fr/woocommerce.html">
 <link rel="alternate" hreflang="en" href="https://heurix.fr/en/woocommerce.html">
 <link rel="alternate" hreflang="x-default" href="https://heurix.fr/woocommerce.html">
 <meta property="og:type" content="website">
 <meta property="og:title" content="WooCommerce search plugin — Heurix">
-<meta property="og:description" content="Your WooCommerce theme search bar, with product results that understand your technical references. Plugin provided, theme unchanged, 3-4 days.">
+<meta property="og:description" content="Your WooCommerce theme search bar, with product results that understand your technical references. Plugin published on wordpress.org.">
 <meta property="og:image" content="https://heurix.fr/og-image.png">
 <meta property="og:url" content="https://heurix.fr/en/woocommerce.html">
 <meta property="og:locale" content="en_US">
@@ -205,9 +205,34 @@
         <p>Estimate, for a catalog already exported, settings included.</p>
       </div>
       </div>
-      <p class="section-lede" style="margin-top:22px; max-width:640px;">The extension is in beta: provided on request, with direct support from the founder during integration.</p>
-      <p style="margin-top:8px;"><a class="btn" href="mailto:contact@heurix.fr?subject=Module%20woocommerce">Request the module</a>
+      <p class="section-lede" style="margin-top:22px; max-width:640px;">The extension is published on wordpress.org, live since September 28, 2026, version 0.2.0. It installs from your WordPress admin — Plugins, Add New, search for “Heurix Search” — or from its directory page. No feature is held back for a paid version: what you pay for is the service, not the plugin.</p>
+      <p style="margin-top:8px;"><a class="btn" href="https://wordpress.org/plugins/heurix-search-for-woocommerce/" target="_blank" rel="noopener">See the plugin on wordpress.org</a>
       <a class="btn btn-ghost" href="faq.html">FAQ</a></p>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="wrap">
+      <h2>What your site needs</h2>
+      <div class="int-grid">
+      <div class="int-card">
+        <h3>The versions</h3>
+        <p>WordPress 5.9 to 7.1.2, WooCommerce 6.1 to 11.1.2, PHP 8.1. These are the versions that were actually <em>run</em>, one at a time, not versions announced: each lower bound is the version where the plugin stops working.</p>
+      </div>
+      <div class="int-card">
+        <h3>WooCommerce 6.0 and older</h3>
+        <p>Search shows its first page and returns an empty second one. The plugin does not detect this: it does not read the WooCommerce version, only whether it is present. That is what sets the bound at 6.1.</p>
+      </div>
+      <div class="int-card">
+        <h3>The “woocommerce” folder</h3>
+        <p>Since WordPress 6.5, activation is refused if WooCommerce lives in a folder with another name — even when WooCommerce is running and the plugin would work. WordPress resolves the dependency by folder name. Rename it, or install WooCommerce from wordpress.org.</p>
+      </div>
+      <div class="int-card">
+        <h3>A Heurix key</h3>
+        <p>A server key (prefix <code>hx_</code>) and a catalog created. Nothing leaves your site before the key is entered: without it, the plugin opens no connection at all.</p>
+      </div>
+      </div>
+      <p class="section-lede" style="margin-top:22px; max-width:640px;">How those bounds were found, what was not measured, and the kit to redo the measurement: <a href="blog/module-woocommerce-publie-bornes-mesurees.html">what the wordpress.org review asked for</a>.</p>
     </div>
   </section>
 </main>

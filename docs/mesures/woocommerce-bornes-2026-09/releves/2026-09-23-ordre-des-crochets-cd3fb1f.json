@@ -1,0 +1,483 @@
+{
+ "quoi": "L'ordre reel des deux crochets sur pre_get_posts, et ce que la vraie boucle produit fait de post__in, orderby, found_posts et loop_shop_per_page.",
+ "date": "2026-09-23",
+ "plugin": "heurix-woocommerce cd3fb1f",
+ "wordpress": {
+  "base": "mysql",
+  "version": "7.1.2",
+  "plugins_actifs": [
+   "heurix-search/heurix-search.php",
+   "woocommerce/woocommerce.php"
+  ],
+  "woocommerce": "11.1.2"
+ },
+ "wordpress_sha1_publie": "761b8101538f0631a0bfc4fba7bc4abeea92f81c",
+ "versions": {
+  "php_cli": "8.5.10",
+  "php_fpm": "PHP 8.5.10 (fpm-fcgi) (built: Aug 25 2026 21:09:32) (NTS)",
+  "mariadbd": "mariadbd  Ver 12.3.3-MariaDB for osx10.21 on arm64 (Homebrew)",
+  "python": "3.9.6",
+  "plateforme": "macOS-26.5.2-arm64-arm-64bit"
+ },
+ "produits_par_essai": 12,
+ "reponse_du_faux_heurix": "les ids des produits, dans l'ordre INVERSE de leur creation, decoupes selon limit/offset",
+ "nom_du_dossier_du_plugin": {
+  "heurix-search (charge AVANT woocommerce)": "WooCommerce passe AVANT Heurix",
+  "zz-heurix-search (charge APRES woocommerce)": "WooCommerce passe AVANT Heurix"
+ },
+ "par_version_de_woocommerce": {
+  "4.9.5": {
+   "sha256_zip": "b44cac3a2efb5b4a21189e60a27561aa5b472153ef8822e76ef600e0d88f0d64",
+   "ordre": "WooCommerce passe AVANT Heurix",
+   "wc_query": {
+    "rang": 1,
+    "priorite": 10,
+    "callback": "WC_Query::pre_get_posts"
+   },
+   "heurix_search": {
+    "rang": 2,
+    "priorite": 10,
+    "callback": "Heurix_Search::intercepter_recherche"
+   },
+   "posts_per_page_defaut": 100,
+   "posts_per_page_customizer_5": 100,
+   "posts_per_page_customizer_120": 100,
+   "page2": {
+    "is_search": false,
+    "found_posts": 0,
+    "ids": []
+   },
+   "ordre_heurix_conserve": true,
+   "found_posts_page1": 12,
+   "tient": false
+  },
+  "5.9.2": {
+   "sha256_zip": "2f2c5a7f5d00a51da7b5bf42cfb52c8dd7fe09137c0051def4db26687703ffc3",
+   "ordre": "WooCommerce passe AVANT Heurix",
+   "wc_query": {
+    "rang": 1,
+    "priorite": 10,
+    "callback": "WC_Query::pre_get_posts"
+   },
+   "heurix_search": {
+    "rang": 2,
+    "priorite": 10,
+    "callback": "Heurix_Search::intercepter_recherche"
+   },
+   "posts_per_page_defaut": 100,
+   "posts_per_page_customizer_5": 100,
+   "posts_per_page_customizer_120": 100,
+   "page2": {
+    "is_search": false,
+    "found_posts": 0,
+    "ids": []
+   },
+   "ordre_heurix_conserve": true,
+   "found_posts_page1": 12,
+   "tient": false
+  },
+  "6.0.0": {
+   "sha256_zip": "6265d15f9184398e9bb82b9f0c259e5df7421c4f97833e7fdaa2b95dee7e52ba",
+   "ordre": "WooCommerce passe AVANT Heurix",
+   "wc_query": {
+    "rang": 1,
+    "priorite": 10,
+    "callback": "WC_Query::pre_get_posts"
+   },
+   "heurix_search": {
+    "rang": 2,
+    "priorite": 10,
+    "callback": "Heurix_Search::intercepter_recherche"
+   },
+   "posts_per_page_defaut": 100,
+   "posts_per_page_customizer_5": 100,
+   "posts_per_page_customizer_120": 100,
+   "page2": {
+    "is_search": false,
+    "found_posts": 0,
+    "ids": []
+   },
+   "ordre_heurix_conserve": true,
+   "found_posts_page1": 12,
+   "tient": false
+  },
+  "6.1.0": {
+   "sha256_zip": "5d73bb533ab13509efe6392c2da907c4610075ba64781c05d55c72190f590574",
+   "ordre": "WooCommerce passe AVANT Heurix",
+   "wc_query": {
+    "rang": 1,
+    "priorite": 10,
+    "callback": "WC_Query::pre_get_posts"
+   },
+   "heurix_search": {
+    "rang": 2,
+    "priorite": 10,
+    "callback": "Heurix_Search::intercepter_recherche"
+   },
+   "posts_per_page_defaut": 16,
+   "posts_per_page_customizer_5": 5,
+   "posts_per_page_customizer_120": 100,
+   "page2": {
+    "is_search": true,
+    "found_posts": 12,
+    "ids": [
+     16,
+     15,
+     14,
+     13,
+     12
+    ]
+   },
+   "ordre_heurix_conserve": true,
+   "found_posts_page1": 12,
+   "tient": true
+  },
+  "6.2.0": {
+   "sha256_zip": "7e4030ed2ac11687605284a9b5d0aa96b680a3195bff36f1189936e764f81234",
+   "ordre": "WooCommerce passe AVANT Heurix",
+   "wc_query": {
+    "rang": 1,
+    "priorite": 10,
+    "callback": "WC_Query::pre_get_posts"
+   },
+   "heurix_search": {
+    "rang": 2,
+    "priorite": 10,
+    "callback": "Heurix_Search::intercepter_recherche"
+   },
+   "posts_per_page_defaut": 16,
+   "posts_per_page_customizer_5": 5,
+   "posts_per_page_customizer_120": 100,
+   "page2": {
+    "is_search": true,
+    "found_posts": 12,
+    "ids": [
+     16,
+     15,
+     14,
+     13,
+     12
+    ]
+   },
+   "ordre_heurix_conserve": true,
+   "found_posts_page1": 12,
+   "tient": true
+  },
+  "6.3.0": {
+   "sha256_zip": "7582f7899b5980d8698aff801584a5c471659eca829d12fceffc9d923d561899",
+   "ordre": "WooCommerce passe AVANT Heurix",
+   "wc_query": {
+    "rang": 1,
+    "priorite": 10,
+    "callback": "WC_Query::pre_get_posts"
+   },
+   "heurix_search": {
+    "rang": 2,
+    "priorite": 10,
+    "callback": "Heurix_Search::intercepter_recherche"
+   },
+   "posts_per_page_defaut": 16,
+   "posts_per_page_customizer_5": 5,
+   "posts_per_page_customizer_120": 100,
+   "page2": {
+    "is_search": true,
+    "found_posts": 12,
+    "ids": [
+     16,
+     15,
+     14,
+     13,
+     12
+    ]
+   },
+   "ordre_heurix_conserve": true,
+   "found_posts_page1": 12,
+   "tient": true
+  },
+  "6.5.0": {
+   "sha256_zip": "8c7c170eb00a9bc6ff8dad07eae1277b99cddad68372e505d59a90d7a119831a",
+   "ordre": "WooCommerce passe AVANT Heurix",
+   "wc_query": {
+    "rang": 1,
+    "priorite": 10,
+    "callback": "WC_Query::pre_get_posts"
+   },
+   "heurix_search": {
+    "rang": 2,
+    "priorite": 10,
+    "callback": "Heurix_Search::intercepter_recherche"
+   },
+   "posts_per_page_defaut": 16,
+   "posts_per_page_customizer_5": 5,
+   "posts_per_page_customizer_120": 100,
+   "page2": {
+    "is_search": true,
+    "found_posts": 12,
+    "ids": [
+     16,
+     15,
+     14,
+     13,
+     12
+    ]
+   },
+   "ordre_heurix_conserve": true,
+   "found_posts_page1": 12,
+   "tient": true
+  },
+  "6.7.0": {
+   "sha256_zip": "3afa6f055c9337086451a67f92d56a53dd75eaf82cc249b714860a79146bc68b",
+   "ordre": "WooCommerce passe AVANT Heurix",
+   "wc_query": {
+    "rang": 1,
+    "priorite": 10,
+    "callback": "WC_Query::pre_get_posts"
+   },
+   "heurix_search": {
+    "rang": 2,
+    "priorite": 10,
+    "callback": "Heurix_Search::intercepter_recherche"
+   },
+   "posts_per_page_defaut": 16,
+   "posts_per_page_customizer_5": 5,
+   "posts_per_page_customizer_120": 100,
+   "page2": {
+    "is_search": true,
+    "found_posts": 12,
+    "ids": [
+     16,
+     15,
+     14,
+     13,
+     12
+    ]
+   },
+   "ordre_heurix_conserve": true,
+   "found_posts_page1": 12,
+   "tient": true
+  },
+  "6.9.5": {
+   "sha256_zip": "ecc68935ff2d5d23e95859c9c4d65010cf8dc40bdebbf3e387afe71308332402",
+   "ordre": "WooCommerce passe AVANT Heurix",
+   "wc_query": {
+    "rang": 1,
+    "priorite": 10,
+    "callback": "WC_Query::pre_get_posts"
+   },
+   "heurix_search": {
+    "rang": 2,
+    "priorite": 10,
+    "callback": "Heurix_Search::intercepter_recherche"
+   },
+   "posts_per_page_defaut": 16,
+   "posts_per_page_customizer_5": 5,
+   "posts_per_page_customizer_120": 100,
+   "page2": {
+    "is_search": true,
+    "found_posts": 12,
+    "ids": [
+     16,
+     15,
+     14,
+     13,
+     12
+    ]
+   },
+   "ordre_heurix_conserve": true,
+   "found_posts_page1": 12,
+   "tient": true
+  },
+  "7.0.0": {
+   "sha256_zip": "b746903d8ee4e5290ccd89b577230abef46a10376909c6829f2e4836860402cd",
+   "ordre": "WooCommerce passe AVANT Heurix",
+   "wc_query": {
+    "rang": 1,
+    "priorite": 10,
+    "callback": "WC_Query::pre_get_posts"
+   },
+   "heurix_search": {
+    "rang": 2,
+    "priorite": 10,
+    "callback": "Heurix_Search::intercepter_recherche"
+   },
+   "posts_per_page_defaut": 16,
+   "posts_per_page_customizer_5": 5,
+   "posts_per_page_customizer_120": 100,
+   "page2": {
+    "is_search": true,
+    "found_posts": 12,
+    "ids": [
+     16,
+     15,
+     14,
+     13,
+     12
+    ]
+   },
+   "ordre_heurix_conserve": true,
+   "found_posts_page1": 12,
+   "tient": true
+  },
+  "7.9.2": {
+   "sha256_zip": "40c9a08df926b8fc1beb4c1f1b89094c5db2e3540ef19db91b1a60215b18ba19",
+   "ordre": "WooCommerce passe AVANT Heurix",
+   "wc_query": {
+    "rang": 1,
+    "priorite": 10,
+    "callback": "WC_Query::pre_get_posts"
+   },
+   "heurix_search": {
+    "rang": 2,
+    "priorite": 10,
+    "callback": "Heurix_Search::intercepter_recherche"
+   },
+   "posts_per_page_defaut": 16,
+   "posts_per_page_customizer_5": 5,
+   "posts_per_page_customizer_120": 100,
+   "page2": {
+    "is_search": true,
+    "found_posts": 12,
+    "ids": [
+     16,
+     15,
+     14,
+     13,
+     12
+    ]
+   },
+   "ordre_heurix_conserve": true,
+   "found_posts_page1": 12,
+   "tient": true
+  },
+  "8.9.5": {
+   "sha256_zip": "260abd0d6dfd8afe0e10fb64d72b071be3b5623de8af072265758b35380b428b",
+   "ordre": "WooCommerce passe AVANT Heurix",
+   "wc_query": {
+    "rang": 1,
+    "priorite": 10,
+    "callback": "WC_Query::pre_get_posts"
+   },
+   "heurix_search": {
+    "rang": 2,
+    "priorite": 10,
+    "callback": "Heurix_Search::intercepter_recherche"
+   },
+   "posts_per_page_defaut": 16,
+   "posts_per_page_customizer_5": 5,
+   "posts_per_page_customizer_120": 100,
+   "page2": {
+    "is_search": true,
+    "found_posts": 12,
+    "ids": [
+     16,
+     15,
+     14,
+     13,
+     12
+    ]
+   },
+   "ordre_heurix_conserve": true,
+   "found_posts_page1": 12,
+   "tient": true
+  },
+  "9.9.7": {
+   "sha256_zip": "96facedd12e32b6e0b120dcaa4a62b9c6b1ae12159d32510ea416c8e9b44f4dd",
+   "ordre": "WooCommerce passe AVANT Heurix",
+   "wc_query": {
+    "rang": 1,
+    "priorite": 10,
+    "callback": "WC_Query::pre_get_posts"
+   },
+   "heurix_search": {
+    "rang": 2,
+    "priorite": 10,
+    "callback": "Heurix_Search::intercepter_recherche"
+   },
+   "posts_per_page_defaut": 16,
+   "posts_per_page_customizer_5": 5,
+   "posts_per_page_customizer_120": 100,
+   "page2": {
+    "is_search": true,
+    "found_posts": 12,
+    "ids": [
+     16,
+     15,
+     14,
+     13,
+     12
+    ]
+   },
+   "ordre_heurix_conserve": true,
+   "found_posts_page1": 12,
+   "tient": true
+  },
+  "10.9.4": {
+   "sha256_zip": "6e58fc3ba9b18d1c9aee6b0227d3c3c09e4fe2c1332823bd2e0ac54ffcff64a9",
+   "ordre": "WooCommerce passe AVANT Heurix",
+   "wc_query": {
+    "rang": 1,
+    "priorite": 10,
+    "callback": "WC_Query::pre_get_posts"
+   },
+   "heurix_search": {
+    "rang": 2,
+    "priorite": 10,
+    "callback": "Heurix_Search::intercepter_recherche"
+   },
+   "posts_per_page_defaut": 16,
+   "posts_per_page_customizer_5": 5,
+   "posts_per_page_customizer_120": 100,
+   "page2": {
+    "is_search": true,
+    "found_posts": 12,
+    "ids": [
+     16,
+     15,
+     14,
+     13,
+     12
+    ]
+   },
+   "ordre_heurix_conserve": true,
+   "found_posts_page1": 12,
+   "tient": true
+  },
+  "11.1.2": {
+   "sha256_zip": "9de9350a1cf5671b9960afb3151f40f7980e223217a441bf2ea5921b5fce8e9e",
+   "ordre": "WooCommerce passe AVANT Heurix",
+   "wc_query": {
+    "rang": 1,
+    "priorite": 10,
+    "callback": "WC_Query::pre_get_posts"
+   },
+   "heurix_search": {
+    "rang": 2,
+    "priorite": 10,
+    "callback": "Heurix_Search::intercepter_recherche"
+   },
+   "posts_per_page_defaut": 16,
+   "posts_per_page_customizer_5": 5,
+   "posts_per_page_customizer_120": 100,
+   "page2": {
+    "is_search": true,
+    "found_posts": 12,
+    "ids": [
+     16,
+     15,
+     14,
+     13,
+     12
+    ]
+   },
+   "ordre_heurix_conserve": true,
+   "found_posts_page1": 12,
+   "tient": true
+  }
+ },
+ "non_mesure": [
+  "WooCommerce 3.9.5 : erreur PHP avant la mesure",
+  "les versions intermediaires de chaque branche",
+  "WordPress autre que 7.1.2",
+  "PHP autre que 8.5.10 (le PHP-FPM du banc)"
+ ]
+}
