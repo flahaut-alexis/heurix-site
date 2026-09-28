@@ -117,6 +117,10 @@
       // deux canaux.
       reessayer: "Réessayer",
       continuerSur: "Poursuivre la recherche sur le site",
+      // LES DEUX CLEFS DU BLOC DE DIAGNOSTIC. Elles s'adressent au
+      // MARCHAND, jamais au visiteur : voir `config.diagnostic`.
+      diagTitre: "Diagnostic Heurix — visible ici seulement, jamais par vos visiteurs",
+      diagCle: "Clé envoyée :",
       pack: "Pack recommandé",
       rupture: "Rupture",
       picks: "Nos incontournables",
@@ -148,6 +152,8 @@
       indispo: "Search is unavailable right now.",
       reessayer: "Try again",
       continuerSur: "Continue searching on the site",
+      diagTitre: "Heurix diagnostics — shown here only, never to your visitors",
+      diagCle: "Key sent:",
       pack: "Recommended bundle",
       rupture: "Out of stock",
       picks: "Our picks",
@@ -490,6 +496,12 @@
       ".hx-search-retry{font:inherit;font-size:13px;font-weight:600;cursor:pointer;background:var(--hx-accent);color:#fff;border:none;padding:8px 16px;border-radius:100px;}",
       ".hx-search-fallback-link{font-size:13px;font-weight:600;color:var(--hx-accent);text-decoration:underline;}",
       ".hx-search-fallback-label{padding:8px 14px 2px;font-size:11.5px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:#9B9EAF;}",
+      // BLOC DE DIAGNOSTIC, rendu UNIQUEMENT sous `config.diagnostic`.
+      // Aligne a gauche et en chasse fixe la ou tout le reste du panneau
+      // est centre : ce n'est pas un gout de forme, c'est ce qui permet de
+      // comparer une clef caractere par caractere avec celle de la console.
+      ".hx-search-diag{margin-top:12px;padding:10px 12px;border-radius:8px;background:rgba(127,127,127,.10);text-align:left;font-size:12px;line-height:1.5;color:#5B5E73;word-break:break-all;}",
+      ".hx-search-diag code{font-family:SFMono-Regular,Menlo,Consolas,'Liberation Mono',monospace;font-size:12px;}",
       // Pied "voir tous les resultats" (2 aout) -- informatif par defaut
       // (juste le compte), devient un lien cliquable seulement si le
       // marchand fournit `seeAllHref`. Comportement par defaut non cassant :
@@ -665,6 +677,16 @@
      *    TOUS les marchands deja installes recoivent sans rien changer, et
      *    ca remplace un message mort par un geste.
      *
+     *    CETTE PHRASE A ETE RESTREINTE LE 28 SEPTEMBRE 2026, ET C'EST UN
+     *    RECUL ASSUME. Le bouton ne parait plus que sur une panne
+     *    TRANSITOIRE. Sur un refus definitif il ne remplacait pas un message
+     *    mort par un geste : il remplacait un message mort par un geste
+     *    mort, qui rejoue le meme appel et ramene le meme ecran. Un
+     *    marchand sans `fallbackHref` voit donc desormais le seul message,
+     *    sans bouton -- moins qu'avant, et vrai, la ou l'ancien etat etait
+     *    plus et faux. La vraie sortie reste `fallbackHref`, et c'est
+     *    pourquoi le raccord Shopify le pose maintenant d'office.
+     *
      *  - `fallbackHref(query)` rend l'URL de la propre page de recherche du
      *    marchand, vers laquelle le visiteur est invite a poursuivre. C'est
      *    l'etage qui reproduit reellement l'apport de la v0.3.0 : de vrais
@@ -679,6 +701,28 @@
      * depot ne permet d'etablir a quoi ressemble une integration reelle.
      */
     var fallbackHref = config.fallbackHref || null; // function(query) -> url
+
+    /* LE DIAGNOSTIC DU MARCHAND, RENDU DANS LE PANNEAU (28 septembre 2026).
+     *
+     * PAR DEFAUT FAUX, ET CA NE CHANGE RIEN POUR PERSONNE : sans cette
+     * option, `classification.marchand` continue de ne partir qu'en
+     * console, comme depuis le 14 septembre.
+     *
+     * A NE POSER QUE LA OU LE VISITEUR N'EST PAS. L'appelant l'affirme, ce
+     * fichier ne le devine pas -- il ne sait pas dans quelle page il vit.
+     * Sur Shopify, `heurix-init.js` le pose depuis `Shopify.designMode`,
+     * qui est vrai dans l'editeur de theme et faux sur la vitrine.
+     *
+     * POURQUOI IL EXISTE. Le 13 septembre 2026, une clef publique a ete
+     * RETAPEE au lieu d'etre copiee : trois confusions de caracteres
+     * (`l`/`I`, `x`/`X`, `z`/`Z`), meme longueur, meme alphabet base64url.
+     * Le moteur a repondu « Clé API invalide » sans dire ce qu'il avait lu,
+     * le widget a affiche « Recherche indisponible » avec un bouton de
+     * nouvel essai, et personne n'a vu la faute de frappe. AUCUN CONTROLE
+     * DE FORME NE L'AURAIT ATTRAPEE -- seule la comparaison cote a cote de
+     * la clef envoyee et de celle de la console la montre.
+     */
+    var diagnostic = config.diagnostic === true;
 
     var coupeCircuit = creerCoupeCircuit(PAUSE_COUPE_CIRCUIT_MS);
     var dernierEchec = null;   // derniere classification, pour le re-affichage
@@ -775,17 +819,46 @@
     }
 
     function montrerEchec(classification, query) {
-      // Le visiteur ne voit jamais `classification.marchand`.
+      // Le visiteur ne voit jamais `classification.marchand` -- sauf sous
+      // `diagnostic`, qui n'est pose que la ou il n'est pas.
+      //
+      // LE BOUTON NE SURVIT PAS A UN REFUS DEFINITIF (28 septembre 2026).
+      // Il etait peint dans les DEUX cas, et sur un refus definitif il
+      // promet un geste qui ne peut pas aboutir : les cinq 403, le 404 de
+      // catalogue et le 422 ne se reparent par aucun nouvel essai. Un
+      // visiteur qui clique retombe sur le meme ecran, et la seule sortie
+      // vraie -- la recherche du marchand -- etait sous le bouton mort.
+      //
+      // C'EST CE QUE LA REVUE SHOPIFY A VU, et le message le dit mot pour
+      // mot : « The app fails to return any results and displays only Try
+      // again ». Exigence 5.1.2, verbatim : « Your app widget must be
+      // displayed properly and without any errors in the Theme Editor and
+      // Online Store. »
       var html = '<div class="hx-search-state"><p style="margin:0;">' +
         esc(TX.indispo) + "</p>" +
-        '<div class="hx-search-actions">' +
-        '<button type="button" class="hx-search-retry">' + esc(TX.reessayer) + "</button>";
+        '<div class="hx-search-actions">';
+      if (classification.transitoire) {
+        html += '<button type="button" class="hx-search-retry">' + esc(TX.reessayer) + "</button>";
+      }
       var lien = fallbackHref ? fallbackHref(query) : null;
       if (lien) {
         html += '<a class="hx-search-fallback-link" href="' + esc(lien) + '">' +
           esc(TX.continuerSur) + " →</a>";
       }
-      panel.innerHTML = html + "</div></div>";
+      html += "</div>";
+      if (diagnostic) {
+        // LA CLEF EST RENDUE TELLE QU'ELLE A ETE ENVOYEE, et c'est la raison
+        // d'etre du bloc. `esc()` la traverse comme tout le reste : une
+        // valeur qui vient d'un reglage de theme n'entre pas crue dans du
+        // HTML, meme quand son alphabet ne le demande pas.
+        html += '<div class="hx-search-diag"><strong>' + esc(TX.diagTitre) +
+          "</strong><br>" + esc(classification.marchand);
+        if (config.apiKey) {
+          html += "<br>" + esc(TX.diagCle) + " <code>" + esc(config.apiKey) + "</code>";
+        }
+        html += "</div>";
+      }
+      panel.innerHTML = html + "</div>";
       openPanel();
       annoncer(TX.indispo);
 
