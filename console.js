@@ -1100,6 +1100,147 @@
       .catch(function () {});
   }
 
+  // ---------------- La cle active, quand l'entreprise en a plusieurs ----------------
+  //
+  // POURQUOI CE SELECTEUR EXISTE (2 octobre 2026). Depuis le moteur 9127460,
+  // une boutique Shopify rattachee a un compte Heurix EXISTANT recoit sa
+  // PROPRE cle, sous la meme entreprise, facturee par Shopify. `/v1/auth/me`
+  // les rend toutes, triees par `created_at` croissant ; la console n'en lisait
+  // qu'une, `keys[0]`. Le marchand ne voyait donc ni le plan de sa boutique, ni
+  // son catalogue, ni son usage -- les quatre observations sont mesurees sur la
+  // console d'AVANT ce lot, en tete de tests/console-deux-cles.test.js.
+  //
+  // IL RECHARGE LA PAGE, ET CE N'EST PAS UN RACCOURCI. `cablerConsole` pose les
+  // ecouteurs UNE SEULE FOIS et leur passe la cle EN ARGUMENT : mesure du
+  // 2 octobre 2026, 106 ecouteurs repartis dans 24 fonctions la gardent en
+  // portee. Les faire lire une variable globale est un lot qui touche tout le
+  // fichier ; recharger repose les 106 avec la bonne cle et ne change rien
+  // d'autre. Un compte a une seule cle ne recharge jamais : le selecteur ne lui
+  // est pas montre.
+  //
+  // CE QUI EST STOCKE EST LA CLE ELLE-MEME, et cela n'elargit rien. Le jeton de
+  // session vit dans le MEME `localStorage` et ouvre `/v1/auth/me`, qui rend
+  // TOUTES les cles de l'entreprise : qui lit l'un lit deja les autres. Le
+  // choix est retire par `endSession`, comme le jeton -- il est donc strictement
+  // moins durable que ce qui existait avant lui.
+  var CLE_ACTIVE_STORAGE_KEY = "heurix_cle_active";
+
+  // LIRE UN LIBELLE COMME UN TYPE EST UNE HYPOTHESE, PAS UNE GARANTIE DE
+  // SCHEMA. A lire avant de s'appuyer la-dessus.
+  //
+  // Le moteur nomme la cle dediee d'une boutique `<plateforme>:<identifiant>`
+  // (`rattacher_integration`, heurix/usage.py), il en est le SEUL ecrivain, et
+  // aucune route ne renomme une cle -- aucun `SET label` dans tout heurix/,
+  // verifie le 2 octobre 2026. Mais `label` reste un champ libre : une cle creee
+  // par /v1/admin/keys porte ce qu'on lui a tape. Et la colonne qui dit
+  // VRAIMENT l'origine, `api_keys.plateforme`, n'est exposee par AUCUNE route
+  // que la console peut appeler -- le `plateforme` de /v1/usage est
+  // `plateforme_declaree`, la reponse d'onboarding. Deux champs du meme nom,
+  // deux sens.
+  //
+  // CONSEQUENCE TENUE ICI : ce que cette lecture rend ne sert qu'a NOMMER --
+  // l'entree du selecteur, et la phrase du volet Facturation. AUCUN garde n'en
+  // depend. Celui des actions Stripe se decide sur `estLaCleDuPayeur`, qui est
+  // exact.
+  var LIBELLE_PLATEFORME = /^([a-z][a-z0-9]{1,19}):(.+)$/;
+  var PLATEFORMES_NOMMEES = { shopify: "Shopify" };
+
+  function plateformeDuLibelle(label) {
+    var m = label ? LIBELLE_PLATEFORME.exec(label) : null;
+    if (!m) return null;
+    return { plateforme: m[1], nom: PLATEFORMES_NOMMEES[m[1]] || m[1], identifiant: m[2] };
+  }
+
+  function entreeDeLaCle(cle) {
+    var cles = session.cles || [];
+    for (var i = 0; i < cles.length; i++) {
+      if (cles[i].key === cle) return cles[i];
+    }
+    return null;
+  }
+
+  function plateformeDeLaCle(cle) {
+    var entree = entreeDeLaCle(cle);
+    return entree ? plateformeDuLibelle(entree.label) : null;
+  }
+
+  function nomDeLaCle(entree) {
+    var p = plateformeDuLibelle(entree.label);
+    if (p) return p.identifiant + " — " + p.nom;
+    return entree.label || T("Clé sans libellé");
+  }
+
+  // LA CLE QUE STRIPE FACTURE EST LA PLUS ANCIENNE, ET CE N'EST PAS UNE
+  // SUPPOSITION. `_cle_du_payeur` (heurix/routers/stripe.py) resout le jeton de
+  // session vers `keys_for_company(...)[0]`, et `keys_for_company` ordonne par
+  // `created_at ASC`. `pricing.html` envoie ce jeton (`session_token`) : un
+  // paiement lance depuis la console atterrit donc sur `keys[0]`, QUELLE QUE
+  // SOIT la cle que l'ecran montre.
+  //
+  // C'EST LE DISCRIMINANT DU GARDE, et il est exact la ou le libelle n'est
+  // qu'une hypothese. Il repose sur un invariant DU MOTEUR, a connaitre avant
+  // d'y toucher : une cle dediee n'est JAMAIS la plus ancienne de son
+  // entreprise -- le refus `aucune_cle` de `rattacher_integration` l'impose, et
+  // `test_la_cle_dediee_n_est_jamais_celle_QUE_STRIPE_CHOISIT` le retient. Si
+  // cet invariant tombait, ce garde se tromperait de sens.
+  function estLaCleDuPayeur(cle) {
+    var cles = session.cles || [];
+    return !cles.length || cles[0].key === cle;
+  }
+
+  function choisirCleActive(cles) {
+    session.cles = cles || [];
+    var voulue = localStorage.getItem(CLE_ACTIVE_STORAGE_KEY);
+    var connue = session.cles.some(function (c) { return c.key === voulue; });
+    // `session.cles[0].key` SANS GARDE, et c'est deliberé : les trois appelants
+    // lisaient `data.keys[0].key` exactement ainsi. Deux verifient la liste
+    // avant d'appeler ; le troisieme -- l'acceptation d'invitation -- ne la
+    // verifie pas et comptait sur la TypeError, rattrapee par son `.catch`.
+    // Garder la meme forme evite d'echanger un echec visible contre une cle
+    // `null` qui partirait dans les en-tetes.
+    var active = connue ? voulue : session.cles[0].key;
+    remplirSelecteurCles(active);
+    return active;
+  }
+
+  function remplirSelecteurCles(active) {
+    var wrap = document.getElementById("global-key-wrap");
+    var select = document.getElementById("global-key");
+    if (!wrap || !select) return;
+    // L'ENTREE N'APPARAIT QU'A PARTIR DE DEUX CLES : avec une seule, le
+    // selecteur n'offrirait aucun choix. Meme regle que « Tous les catalogues »,
+    // et c'est ce qui laisse les comptes a une cle -- tous les autres
+    // aujourd'hui -- exactement comme avant ce lot.
+    wrap.hidden = (session.cles || []).length < 2;
+    if (wrap.hidden) return;
+    select.innerHTML = session.cles.map(function (c) {
+      return "<option value='" + escAttr(c.key) + "'>" + esc(nomDeLaCle(c)) + "</option>";
+    }).join("");
+    select.value = active;
+  }
+
+  function cablerSelecteurCle() {
+    var select = document.getElementById("global-key");
+    if (!select) return;
+    select.addEventListener("change", function () {
+      localStorage.setItem(CLE_ACTIVE_STORAGE_KEY, select.value);
+      // RECHARGEMENT PLUTOT QUE RECABLAGE : voir la note en tete de section.
+      window.location.reload();
+    });
+  }
+
+  // LE SOUVENIR DU CATALOGUE EST PAR CLE (2 octobre 2026). Il vivait sous un nom
+  // unique : en basculant de cle, la memoire designait le catalogue de l'AUTRE
+  // compte. Mesure avant ce lot -- `memoireValide` le rejetait, parce qu'il
+  // n'est pas dans la liste de la nouvelle cle, et la console retombait sur le
+  // premier. Pas un defaut : un choix perdu en silence.
+  //
+  // L'ANCIEN NOM EST ENCORE LU EN REPLI. Sans cela, tout compte existant -- ils
+  // n'ont tous qu'une cle -- perdrait son choix au deploiement. Le relire ne
+  // peut pas importer le catalogue d'une autre cle : `memoireValide` verifie
+  // l'appartenance a la liste de la cle courante.
+  function cleMemoireCatalogue(key) { return "heurix_catalogue_actif:" + key; }
+
   function renderApiKey(key) {
     var valueEl = document.getElementById("account-key-value");
     var toggleBtn = document.getElementById("account-key-toggle");
@@ -1325,7 +1466,10 @@
       browseCurrentCategory: "",
       soDraft: null,
       brDraft: null,
-      activeKey: null
+      activeKey: null,
+      // La liste rendue par /v1/auth/me, dans l'ordre du moteur
+      // (`created_at` croissant). Voir la section « La cle active ».
+      cles: []
     };
   }
   var session = etatInitial();
@@ -1393,7 +1537,7 @@
     if (!select) return;
     select.addEventListener("change", function () {
       session.catalogueActif = select.value;
-      localStorage.setItem("heurix_catalogue_actif", session.catalogueActif);
+      localStorage.setItem(cleMemoireCatalogue(key), session.catalogueActif);
       appliquerCatalogue(key);
     });
   }
@@ -1430,7 +1574,8 @@
 
       // La grande majorite des comptes n'a qu'un catalogue : on le
       // selectionne d'office plutot que d'imposer un choix sans alternative.
-      var memoire = localStorage.getItem("heurix_catalogue_actif");
+      var memoire = localStorage.getItem(cleMemoireCatalogue(key))
+        || localStorage.getItem("heurix_catalogue_actif");
       // La sentinelle n'est PAS dans catalogueListe : sans ce cas
       // explicite, un choix "Tous les catalogues" etait perdu au
       // rechargement et retombait sur le premier catalogue.
@@ -1671,6 +1816,41 @@
       }
       grille.innerHTML = html;
 
+      // ---- LES ACTIONS STRIPE NE VALENT QUE POUR LA CLE DU PAYEUR ----------
+      //
+      // CE QUE CE GARDE EMPECHE, ET IL N'EST PAS ANNEXE AU SELECTEUR : il en
+      // est la condition. Sans lui, montrer la cle d'une boutique Shopify
+      // montre AUSSI « Souscrire une formule », qui ouvre pricing.html, qui
+      // envoie le jeton de session, que le moteur resout vers la cle LA PLUS
+      // ANCIENNE. Le marchand croirait abonner sa boutique et serait preleve
+      // sur son compte principal, sans un mot. Les trois autres surfaces --
+      // portail, factures, ajout de Ranking -- partent sous la cle affichee et
+      // ne peuvent que refuser (404 « aucun abonnement Stripe », 422 « aucun
+      // abonnement Search actif »), avec des messages qui ne disent pas la
+      // vraie raison. Les quatre se ferment sur le meme critere.
+      //
+      // IL NE MASQUE PAS EN SILENCE, et c'est ce qui le rend compatible avec la
+      // regle posee juste en dessous. Ce qui disparait est remplace par la
+      // phrase qui dit ou le faire -- `billing-plateforme`.
+      var payeur = estLaCleDuPayeur(key);
+      var plateformeCle = plateformeDeLaCle(key);
+      var blocPlateforme = document.getElementById("billing-plateforme");
+      var actionsStripe = document.getElementById("billing-stripe-actions");
+      var noteStripe = document.getElementById("billing-stripe-note");
+      if (blocPlateforme) {
+        blocPlateforme.hidden = payeur;
+        if (!payeur) {
+          // Le libelle NOMME la boutique quand il le peut ; il ne decide rien.
+          // Sans prefixe reconnu, la phrase reste vraie et dit le fait qui
+          // importe : le paiement ne porterait pas sur cette cle.
+          blocPlateforme.textContent = plateformeCle
+            ? T("Cette formule est facturée par {0} pour {1}. Elle se change depuis l'application Heurix dans l'administration de votre boutique, pas ici.", plateformeCle.nom, plateformeCle.identifiant)
+            : T("Cette clé n'est pas celle que porte votre abonnement : un paiement lancé d'ici serait prélevé sur votre compte principal, pas sur elle. Revenez au compte principal pour gérer votre abonnement.");
+        }
+      }
+      if (actionsStripe) actionsStripe.hidden = !payeur;
+      if (noteStripe) noteStripe.hidden = !payeur;
+
       // Le bloc est TOUJOURS visible, avec un libelle adapte.
       //
       // Premiere version fautive : je le masquais pour les comptes en essai.
@@ -1685,7 +1865,7 @@
       var boutonUpgrade = document.getElementById("billing-change-plan");
       var enEssai = (plan === "trial" || plan === "—");
       if (blocUpgrade) {
-        blocUpgrade.hidden = false;
+        blocUpgrade.hidden = !payeur;
         if (titreUpgrade) titreUpgrade.textContent = enEssai ? T("Souscrire une formule") : T("Changer de formule");
         if (texteUpgrade) {
           texteUpgrade.textContent = enEssai
@@ -6717,6 +6897,7 @@
   // ecouteurs. C'est ce qui rend toute garde ad hoc inutile -- il n'y a
   // plus de second passage a empecher.
   function cablerConsole(key) {
+    cablerSelecteurCle();
     cablerSelecteurCatalogue(key);
     wireBilling(key);
     brCablerOngletsRegles();
@@ -7696,6 +7877,10 @@
   function endSession() {
     var token = localStorage.getItem(SESSION_STORAGE_KEY);
     localStorage.removeItem(SESSION_STORAGE_KEY);
+    // MEME REGLE QUE LE JETON, ET LE MEME MOTIF que la remise a zero de
+    // `session` juste en dessous : un etat qui survit a la deconnexion est une
+    // fuite entre deux comptes sur un poste partage.
+    localStorage.removeItem(CLE_ACTIVE_STORAGE_KEY);
     if (token) {
       fetch(API_BASE + "/v1/auth/logout", { method: "POST", headers: { Authorization: "Bearer " + token } }).catch(function () {});
     }
@@ -7748,7 +7933,7 @@
           showLogin(L.compteSansCle);
           return;
         }
-        startSession(data.session_token, data.keys[0].key);
+        startSession(data.session_token, choisirCleActive(data.keys));
       })
       .catch(function (err) {
         // 401 garde son message PROPRE, et ce n'est pas un oubli : l'API
@@ -7860,7 +8045,11 @@
           });
       }
       postSignupScreen.hidden = true;
-      startSession(sessionToken, key);
+      // Une inscription cree une entreprise NEUVE : une seule cle, et le
+      // selecteur reste masque. La liste est posee quand meme, parce que le
+      // volet Facturation lit `session.cles` pour savoir qu'il a affaire au
+      // payeur -- sans elle, `estLaCleDuPayeur` repondrait sur une liste vide.
+      startSession(sessionToken, choisirCleActive([{ key: key }]));
     };
   }
 
@@ -7883,7 +8072,7 @@
     apiPost("/v1/auth/accept-invite", { token: inviteTokenFromUrl, password: acceptInvitePassword.value })
       .then(function (data) {
         history.replaceState(null, "", window.location.pathname);
-        startSession(data.session_token, data.keys[0].key);
+        startSession(data.session_token, choisirCleActive(data.keys));
       })
       .catch(function (err) {
         acceptInviteError.textContent = (err && err.status) ? err.message : L.loginErrorNetwork;
@@ -8021,7 +8210,7 @@
       apiFetch("/v1/auth/me", existingSession, { signal: attenteMe.signal })
         .then(function (data) {
           if (!data.keys || !data.keys.length) { throw new Error("no_key"); }
-          session.activeKey = data.keys[0].key;
+          session.activeKey = choisirCleActive(data.keys);
           // `?inscription` AVEC UNE SESSION VALIDE : le tableau de bord, mais
           // en le disant. Afficher le formulaire ne serait pas neutre : une
           // inscription reussie remplace le jeton stocke (startSession), et

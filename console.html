@@ -214,6 +214,10 @@ html[data-attente-session] #login-screen::before{
         <span class="console-identite-email" id="account-email">—</span>
       </div>
       <div class="console-dash-actions">
+        <span class="console-env-wrap" id="global-key-wrap" hidden>
+          <span class="console-env-label">Compte actif</span>
+          <select id="global-key" class="console-period console-global-catalog" aria-label="Compte actif — la clé dont la console montre le catalogue, l'usage et l'abonnement"></select>
+        </span>
         <span class="console-env-wrap">
           <span class="console-env-label">Catalogue actif</span>
           <select id="global-catalog" class="console-period console-global-catalog" aria-label="Catalogue actif — s'applique au tableau de bord, à l'analytique et à la personnalisation"></select>
@@ -1624,6 +1628,7 @@ html[data-attente-session] #login-screen::before{
                 <p class="console-panel-note">Chargement…</p>
               </div>
               <p class="console-panel-note" id="billing-trial" hidden></p>
+              <p class="console-panel-note" id="billing-plateforme" hidden></p>
               <div class="billing-upgrade" id="billing-upgrade" hidden>
                 <p><strong id="billing-upgrade-title">Changer de formule</strong></p>
                 <p class="console-panel-note" style="margin:6px 0 12px;" id="billing-upgrade-text"></p>
@@ -1634,11 +1639,11 @@ html[data-attente-session] #login-screen::before{
                   <button type="button" class="btn btn-ghost" id="billing-ranking-add">Ajouter Ranking</button>
                 </div>
               </div>
-              <div style="margin-top:18px; display:flex; gap:10px; flex-wrap:wrap;">
+              <div style="margin-top:18px; display:flex; gap:10px; flex-wrap:wrap;" id="billing-stripe-actions">
                 <button type="button" class="btn btn-ghost" id="billing-portal">Mes factures et mon moyen de paiement</button>
                 <a href="pricing.html" target="_blank" rel="noopener" class="btn btn-ghost">Comparer les offres</a>
               </div>
-              <p class="console-panel-note" style="margin-top:10px;">Le portail de facturation est hébergé par Stripe : vous y retrouvez vos factures, votre moyen de paiement et pouvez résilier à tout moment, avec effet à la fin du mois en cours en facturation mensuelle, ou au terme des douze mois en facturation annuelle.</p>
+              <p class="console-panel-note" style="margin-top:10px;" id="billing-stripe-note">Le portail de facturation est hébergé par Stripe : vous y retrouvez vos factures, votre moyen de paiement et pouvez résilier à tout moment, avec effet à la fin du mois en cours en facturation mensuelle, ou au terme des douze mois en facturation annuelle.</p>
               <p class="catalog-rule-status" id="billing-status" role="status" aria-live="polite"></p>
             </div>
           </div>
@@ -1826,8 +1831,8 @@ html[data-attente-session] #login-screen::before{
 <script src="console-select.js?v=1787610626"></script>
 <script src="visite-editeur.js?v=1787610626"></script>
 <script type="module" src="csv-console.js?v=1788909214"></script>
-<script src="console-i18n.js?v=1789737569"></script>
-<script src="console.js?v=1789737569"></script>
+<script src="console-i18n.js?v=1790938697"></script>
+<script src="console.js?v=1790938452"></script>
 <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 
 <script src="nav-dropdown.js?v=1788086140"></script>

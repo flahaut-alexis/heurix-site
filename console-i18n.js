@@ -1133,6 +1133,13 @@
     "Publier sur {0}": "Publish to {0}",
     "Retirer ce groupe": "Remove this group",
     "Supprimer le groupe de synonymes <strong>« {0} »</strong> ?": "Delete the synonym group <strong>“{0}”</strong>?",
+
+    // ------------------------------------- compte a deux cles (2 octobre 2026)
+    "Clé sans libellé": "Unnamed key",
+    "Cette formule est facturée par {0} pour {1}. Elle se change depuis l'application Heurix dans l'administration de votre boutique, pas ici.":
+      "This plan is billed by {0} for {1}. Change it from the Heurix app in your store admin, not here.",
+    "Cette clé n'est pas celle que porte votre abonnement : un paiement lancé d'ici serait prélevé sur votre compte principal, pas sur elle. Revenez au compte principal pour gérer votre abonnement.":
+      "This key is not the one your subscription sits on: a payment started from here would be charged to your main account, not to it. Switch back to the main account to manage your subscription.",
   };
 
   // Attributs porteurs de texte visible ou annoncé aux lecteurs d'écran.
