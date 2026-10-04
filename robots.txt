@@ -25,4 +25,43 @@ Allow: /
 # d'adresse canonique a declarer. Meme identite, deux consequences.
 Disallow: /downloads/heurix-conversion-snippet.html
 
+# CE QUI N'EST PAS DU SITE, ET QUE PAGES SERT QUAND MEME.
+#
+# `upload-pages-artifact` recoit `path: '.'` : la racine entiere du depot est
+# publiee. Sonde du 4 octobre 2026 sur les 202 chemins internes suivis -- 198
+# rendent 200, pour 2,52 Mio. docs/ 1,14 Mio, tests/ 1,12 Mio, CLAUDE.md
+# 182 Ko, scripts/hooks/pre-push 25 Ko.
+#
+# CE N'EST PAS UNE FUITE : le depot est public, ces fichiers etaient deja
+# lisibles sur GitHub. Ce qui change est le domaine -- ce sont des URL de
+# heurix.fr, et un prospect qui cherche « heurix » n'a pas a tomber sur le
+# raisonnement interne du projet.
+#
+# CES REGLES NE RETIRENT RIEN, et c'est assume : les fichiers restent lisibles
+# pour qui connait l'URL. Elles retirent le chemin par lequel on les trouve
+# sans les chercher. L'autre sortie -- un repertoire de publication dedie, qui
+# les retirerait vraiment -- a ete ecartee le 4 octobre : aucun test de ce
+# depot ne lit l'artefact publie, donc un fichier du site oublie a
+# l'assemblage ne se verrait qu'en production. Detail et mesures :
+# docs/mesures/pages-perimetre-2026-10-04/RELEVE.md
+#
+# LES CHEMINS COMMENCANT PAR UN POINT NE SONT PAS ICI : ils sont deja exclus
+# de la publication sans que personne l'ait ecrit (.DS_Store, .gitignore,
+# .gitleaks.toml, .github/ rendent 404). Une regle pour eux serait perimee le
+# jour ou on l'ecrit.
+#
+# LA LISTE EST DERIVEE PAR tests/surface-publiee-robots.test.js, qui exige que
+# chaque entree interne suivie soit refusee ici, qu'aucune regle ne soit
+# perimee, et qu'aucune entree de premier niveau n'echappe au classement.
+Disallow: /tests/
+Disallow: /docs/
+Disallow: /scripts/
+Disallow: /config-serveur-cache/
+Disallow: /CLAUDE.md
+Disallow: /DESIGN.md
+Disallow: /README.md
+Disallow: /package.json
+Disallow: /package-lock.json
+Disallow: /vitest.config.js
+
 Sitemap: https://heurix.fr/sitemap.xml

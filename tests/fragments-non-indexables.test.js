@@ -1,7 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { execFileSync } from "node:child_process";
-import { readFileSync } from "node:fs";
-import { join } from "node:path";
+import { fragmentsSuivis, reglesDisallow } from "./surface-publiee.js";
 
 /**
  * UN FRAGMENT SERVI EN .html DOIT ETRE REFUSE AUX ROBOTS.
@@ -35,49 +33,23 @@ import { join } from "node:path";
  * consequences : pas de canonical, et pas d'indexation.
  */
 
-const RACINE = join(import.meta.dirname, "..");
-
-function fichiersHtmlSuivis() {
-  return execFileSync("git", ["ls-files", "*.html"], { cwd: RACINE, encoding: "utf8" })
-    .split("\n")
-    .filter(Boolean)
-    .filter((p) => !p.startsWith("docs/maquettes/"));
-}
-
-function estUnFragment(chemin) {
-  return !/<html\b/i.test(readFileSync(join(RACINE, chemin), "utf8"));
-}
-
-function reglesDisallow() {
-  return readFileSync(join(RACINE, "robots.txt"), "utf8")
-    .split("\n")
-    .map((l) => l.trim())
-    .filter((l) => /^Disallow:/i.test(l))
-    .map((l) => l.replace(/^Disallow:\s*/i, ""))
-    .filter(Boolean);
-}
-
 describe("fragments servis en .html", () => {
   it("chaque fragment suivi est refuse dans robots.txt", () => {
     const refuses = new Set(reglesDisallow());
-    const oublies = fichiersHtmlSuivis()
-      .filter(estUnFragment)
+    const oublies = fragmentsSuivis()
       .filter((p) => !refuses.has("/" + p));
     expect(oublies).toEqual([]);
   });
 
   /**
-   * L'assertion qui empeche la liste de devenir un inventaire de dettes. Une
-   * regle Disallow qui ne correspond plus a aucun fragment doit sortir : soit
-   * le fichier a disparu, soit il est devenu une vraie page et n'a plus a etre
-   * cache. Sans elle, robots.txt accumulerait des lignes que plus personne ne
-   * conteste -- le contraire de ce qu'elles devaient etre.
+   * L'ASSERTION « AUCUNE REGLE N'EST PERIMEE » A DEMENAGE, et ce n'est pas un
+   * abandon. Elle quantifie sur TOUTES les regles `Disallow`, donc sur les
+   * deux familles : les fragments et la surface hors site ajoutee le
+   * 4 octobre 2026. Ici elle ne connaissait qu'une famille et rougissait des
+   * que l'autre apparaissait -- mesure ce jour-la, dix regles ajoutees, dix
+   * « perimees » annoncees a tort. Elle vit desormais dans
+   * `surface-publiee-robots.test.js`, qui derive les deux.
    */
-  it("aucune regle Disallow n'est perimee", () => {
-    const fragments = new Set(fichiersHtmlSuivis().filter(estUnFragment).map((p) => "/" + p));
-    const perimees = reglesDisallow().filter((r) => !fragments.has(r));
-    expect(perimees).toEqual([]);
-  });
 
   /**
    * Le garde du garde. Si le critere « pas de <html> » cessait un jour de
@@ -87,6 +59,6 @@ describe("fragments servis en .html", () => {
    * ensemble vide ne prouve rien.
    */
   it("le critere reconnait au moins un fragment, sinon il ne verifie rien", () => {
-    expect(fichiersHtmlSuivis().filter(estUnFragment).length).toBeGreaterThan(0);
+    expect(fragmentsSuivis().length).toBeGreaterThan(0);
   });
 });
