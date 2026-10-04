@@ -1233,14 +1233,14 @@ curl -X POST https://api.heurix.fr/v1/events \
       <p><strong>Le style visuel fourni reste volontairement minimal</strong> — fonctionnel et lisible, pensé pour être facilement personnalisé (chaque élément a une classe CSS préfixée <code class="docs-inline-code">hx-</code>) plutôt que pour correspondre à une charte graphique précise dès cette version.</p>
     </section>
 
-    <section id="ep-client-js" class="docs-section">
-      <div class="docs-endpoint"><span class="docs-method docs-method-get">npm</span><code>@heurix-site/client</code></div>
+    <section id="ep-client-js" class="docs-section" data-paquet-npm-client="heurix-client">
+      <div class="docs-endpoint"><span class="docs-method docs-method-get">npm</span><code>heurix-client</code></div>
       <h2>Client officiel TypeScript/JavaScript</h2>
       <p>Pour un projet Node.js, un build TypeScript, ou simplement préférer un module à un <code class="docs-inline-code">fetch</code> écrit à la main : le client officiel couvre la recherche, Browse & Discovery, l'indexation et les synonymes. Zéro dépendance runtime (utilise <code class="docs-inline-code">fetch</code> natif), types complets.</p>
 
-      <pre class="docs-code"><code>npm install @heurix-site/client</code></pre>
+      <pre class="docs-code"><code>npm install heurix-client</code></pre>
 
-      <pre class="docs-code"><code>import { HeurixClient } from "@heurix-site/client";
+      <pre class="docs-code"><code>import { HeurixClient } from "heurix-client";
 
 const client = new HeurixClient({
   apiKey: "hxp_votre_cle_publique",
@@ -1252,7 +1252,7 @@ console.log(results.hits);</code></pre>
 
       <p>Sans étape de build, un import direct depuis un CDN fonctionne aussi bien :</p>
       <pre class="docs-code"><code>&lt;script type="module"&gt;
-  import { HeurixClient } from "https://cdn.jsdelivr.net/npm/@heurix-site/client@latest/dist/index.js";
+  import { HeurixClient } from "https://cdn.jsdelivr.net/npm/heurix-client@latest/dist/index.js";
 &lt;/script&gt;</code></pre>
 
       <div class="callout callout-info" role="note">
@@ -1260,7 +1260,7 @@ console.log(results.hits);</code></pre>
         <div class="callout-content"><p>Même règle que partout ailleurs côté navigateur : une <a href="#authentification">clé publique</a> (<code class="docs-inline-code">hxp_</code>), jamais votre clé serveur, dans du code qui s'exécute chez le visiteur.</p></div>
       </div>
 
-      <p><strong>Un seul nom à retenir</strong> : <code class="docs-inline-code">@heurix-site/client</code>. Le paquet <code class="docs-inline-code">heurix-client</code> (sans organisation) a existé brièvement pendant la mise au point et est aujourd'hui déprécié — s'il apparaît dans un résultat de recherche npm plus ancien, ignorez-le.</p>
+      <p><strong>Un seul nom à installer</strong> : <code class="docs-inline-code">heurix-client</code>. Un paquet <code class="docs-inline-code">@heurix-site/client</code> existe aussi sur npm, resté en 0.1.0 : c'est un nom d'essai qui n'a pas été retenu, et les versions ne lui sont plus publiées. Si une recherche npm vous rend les deux, prenez <code class="docs-inline-code">heurix-client</code>.</p>
     </section>
 
     <section id="ep-mcp" class="docs-section">
