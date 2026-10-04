@@ -259,34 +259,59 @@ describe("paquet npm du client — l'autre sens", () => {
   // le 4 octobre 2026, alors que npm ne portait aucun drapeau.
   //
   // ELLE NE PORTE QUE SUR LE PAQUET DECLARE. Dire d'un AUTRE paquet qu'il est
-  // deprecie reste possible, et doit l'etre : le jour ou `npm deprecate` est
-  // lance sur `@heurix-site/client`, la phrase preparee dans
-  // `tests/corrections-en-attente.md` devient vraie et se pose. Un motif qui
+  // deprecie doit rester possible : depuis le 4 octobre 2026, `npm deprecate`
+  // EST pose sur `@heurix-site/client`, et la page le dit. Un garde qui
   // rougirait toute mention de « deprecie » interdirait de dire une verite.
-  // LA FENETRE SE DECOUPE PAR INDEX, PAS PAR MOTIF, ET C'EST UNE CORRECTION.
   //
-  // La premiere version cherchait `.{0,200}<nom>.{0,200}` avec le drapeau `s`.
-  // Sur 160 pages, ce motif part de CHAQUE position et fait revenir le moteur
-  // d'expressions en arriere a chaque echec : 2,8 s en local, et DEPASSE LES
-  // 5 000 ms de vitest sur le coureur de la CI. Mesure du 4 octobre 2026 : la
-  // suite est partie verte en local et le merge sur `main` est sorti rouge,
-  // « Mise en ligne » sautee -- le garde a bloque la mise en ligne de la
-  // correction qu'il accompagnait.
+  // LA PROXIMITE SEULE NE SUFFIT PAS, ET JE L'AI CRU (correction du jour).
+  // La version precedente rougissait des qu'un mot de peremption tombait dans
+  // 200 caracteres autour du nom declare. J'avais ecrit dans
+  // `corrections-en-attente.md` qu'elle laisserait passer la phrase preparee :
+  // c'etait FAUX, mesure en l'appliquant -- 4 fautives. Les deux noms vivent
+  // dans la meme phrase, donc dans la meme fenetre, et la fenetre ne dit pas a
+  // qui l'adjectif se rapporte.
   //
-  // `indexOf` plus `slice` donnent la meme fenetre en temps lineaire. Un garde
-  // trop lent est un garde qui refuse, et il refuse le travail des autres.
+  // LE DISCRIMINANT EST LE NOM LE PLUS PROCHE. Pour chaque mot de peremption,
+  // on cherche le nom de paquet le plus proche en caracteres : si c'est le nom
+  // declare, la phrase le dit perime et c'est un defaut ; si c'est un autre,
+  // elle parle de l'autre. Mesure sur la phrase du jour : « deprecie » est a
+  // ~70 caracteres de `@heurix-site/client` et a ~150 de `heurix-client`.
+  //
+  // LES AUTRES NOMS RECONNUS SONT LES NOMS SCOPES (`@orga/nom`), parce qu'ils
+  // sont non ambigus et que c'est exactement le nom concurrent ici. Deux noms
+  // NUS dans la meme phrase ne seraient pas departages : le garde rougirait,
+  // et c'est le bon sens du doute pour celui-la -- un faux rouge se lit, un
+  // faux vert laisse repartir le defaut d'origine.
   it("aucune page ne dit du paquet declare qu'il est deprecie ou abandonne", () => {
-    const MOTS = /d[ée]pr[ée]ci[ée]|deprecated|abandonn[ée]|obsol[eè]te|obsolete|ne plus utiliser|do not use/i;
-    const AUTOUR = 200;
+    const MOTS = /d[ée]pr[ée]ci[ée]|deprecated|abandonn[ée]|obsol[eè]te|obsolete|ne plus utiliser|do not use/gi;
+    const SCOPE = /@[a-z0-9][a-z0-9._-]*\/[a-z0-9][a-z0-9._-]*/gi;
+
+    /** Positions de toutes les occurrences de `aiguille` dans `foin`. */
+    const positions = (foin, aiguille) => {
+      const out = [];
+      for (let i = foin.indexOf(aiguille); i !== -1; i = foin.indexOf(aiguille, i + aiguille.length)) out.push(i);
+      return out;
+    };
+    const distance = (liste, i) =>
+      liste.length ? Math.min(...liste.map((p) => Math.abs(p - i))) : Infinity;
+
     const fautives = [];
     for (const { page, src } of SERVIES) {
-      // Fenetre de 200 caracteres autour de chaque mention du nom declare :
-      // au-dela, « deprecie » parlerait d'autre chose.
-      for (let i = src.indexOf(NOM); i !== -1; i = src.indexOf(NOM, i + NOM.length)) {
-        const fenetre = src.slice(Math.max(0, i - AUTOUR), i + NOM.length + AUTOUR);
-        if (MOTS.test(fenetre)) {
-          fautives.push(`${page} :: ${fenetre.replace(/\s+/g, " ").slice(0, 150)}`);
-        }
+      const declare = positions(src, NOM);
+      if (!declare.length) continue;
+      const scopes = [...src.matchAll(SCOPE)]
+        .filter((m) => m[0] !== NOM)
+        .map((m) => m.index);
+      for (const m of src.matchAll(MOTS)) {
+        const dDeclare = distance(declare, m.index);
+        if (dDeclare > 200) continue;            // trop loin : parle d'autre chose
+        const dAutre = distance(scopes, m.index);
+        if (dAutre < dDeclare) continue;         // un autre paquet est plus proche
+        const fenetre = src.slice(Math.max(0, m.index - 150), m.index + 150);
+        fautives.push(
+          `${page} :: « ${m[0]} » a ${dDeclare} car. de « ${NOM} » et ${dAutre} d'un autre` +
+          ` :: ${fenetre.replace(/\s+/g, " ")}`,
+        );
       }
     }
     expect(

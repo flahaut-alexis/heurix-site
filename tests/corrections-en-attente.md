@@ -1,85 +1,22 @@
-# Une phrase prête à poser, et sa condition
+# Corrections en attente — heurix-site
 
-**À poser une fois `npm deprecate` lancé sur `@heurix-site/client`, et pas
-avant.** Tant que le drapeau n'est pas posé côté registre, écrire « déprécié »
-sur le site serait exactement le défaut que l'audit du 4 octobre 2026 vient de
-trouver : une affirmation vérifiable que la mesure contredit.
-
-**À supprimer dans le commit qui l'applique.** Une intention notée survit à sa
+**À supprimer dans le commit qui les applique.** Une intention notée survit à sa
 réalisation si on ne l'efface pas avec elle.
 
 Modèle : `heurix-woocommerce/tests/corrections-en-attente.md`.
 
+**Appliqué et retiré le 4 octobre 2026 :** la phrase « déprécié » de
+`docs.html` et `en/docs.html`. Sa condition — `npm deprecate` posé sur
+`@heurix-site/client` — est remplie ; vérifiée par deux voies, la CLI et
+`registry.npmjs.org`, qui rendent tous deux le message du drapeau sur la 0.1.0.
+Le garde `tests/paquet-npm-client.test.js` a dû être corrigé pour l'occasion :
+sa note disait qu'il laisserait passer la phrase, et c'était faux — mesuré en
+l'appliquant, 4 fautives. Il départage désormais sur le nom de paquet le plus
+proche du mot de péremption.
+
 ---
 
-## 1. La condition, et comment la vérifier
-
-Le geste qui la déclenche, à lancer par Alexis (ce dépôt ne publie rien) :
-
-```bash
-npm deprecate @heurix-site/client "Remplace par heurix-client (meme code, a jour) : npm install heurix-client"
-```
-
-La condition est remplie quand cette commande rend une chaîne non vide :
-
-```bash
-npm view @heurix-site/client deprecated
-```
-
-Mesuré le 4 octobre 2026 : **vide**, pour les deux paquets. C'est pourquoi la
-phrase ci-dessous n'est pas en ligne.
-
-Contrôle inverse, à faire le même jour — `heurix-client` est le paquet retenu
-et ne doit **jamais** porter le drapeau :
-
-```bash
-npm view heurix-client deprecated      # doit rester vide
-```
-
-## 2. Ce qui remplace quoi
-
-Aujourd'hui en ligne, `docs.html:1263` et `en/docs.html:1259`, écrit le
-4 octobre et vrai au moment où il est écrit :
-
-> **Un seul nom à installer** : `heurix-client`. Un paquet
-> `@heurix-site/client` existe aussi sur npm, resté en 0.1.0 : c'est un nom
-> d'essai qui n'a pas été retenu, et les versions ne lui sont plus publiées. Si
-> une recherche npm vous rend les deux, prenez `heurix-client`.
-
-Le jour où le drapeau est posé, cette phrase devient **incomplète plutôt que
-fausse** : elle reste vraie, mais elle ne dit plus ce que npm dit désormais
-tout seul. Remplacez-la par celle-ci.
-
-### Français — `docs.html`, le dernier `<p>` de `#ep-client-js`
-
-```html
-      <p><strong>Un seul nom à installer</strong> : <code class="docs-inline-code">heurix-client</code>. Le paquet <code class="docs-inline-code">@heurix-site/client</code>, resté en 0.1.0, est un nom d'essai qui n'a pas été retenu : il est déprécié sur npm, et <code class="docs-inline-code">npm install</code> vous le dira. Si une recherche npm vous rend les deux, prenez <code class="docs-inline-code">heurix-client</code>.</p>
-```
-
-### Anglais — `en/docs.html`, le dernier `<p>` de `#ep-client-js`
-
-```html
-      <p><strong>One name to install</strong>: <code class="docs-inline-code">heurix-client</code>. The <code class="docs-inline-code">@heurix-site/client</code> package, still at 0.1.0, was a trial name that was not kept: it is deprecated on npm, and <code class="docs-inline-code">npm install</code> will tell you so. If an npm search returns both, take <code class="docs-inline-code">heurix-client</code>.</p>
-```
-
-## 3. Ce que le garde fera, et ne fera pas, ce jour-là
-
-`tests/paquet-npm-client.test.js` **laissera passer** ces deux phrases : son
-assertion « l'autre sens » ne refuse « déprécié » que pour le paquet
-**déclaré** (`data-paquet-npm-client`, soit `heurix-client`). Dire d'un autre
-paquet qu'il est déprécié reste permis, et doit l'être — sinon le garde
-interdirait de dire une vérité.
-
-Il **ne vérifiera pas** que le drapeau est réellement posé : il est hors
-ligne, par décision du 4 octobre. La limite est écrite en tête du test, section
-« CE QUE CE GARDE NE VOIT PAS ». C'est précisément cette dérive-là —
-« un paquet déprécié sans que les pages suivent, ou l'inverse » — qu'il nomme
-comme hors de sa portée.
-
-Donc : **lancez `npm view @heurix-site/client deprecated` avant de poser la
-phrase.** Rien d'automatique ne le fera.
-
-## 4. Deux voisins trouvés par le même balayage, qui ne dépendent d'aucune condition
+## Deux affirmations fausses aujourd'hui, sans condition de déclenchement
 
 Ceux-là sont faux **aujourd'hui** et n'attendent rien. Ils ne sont pas dans ce
 lot parce qu'ils ne portent pas sur le paquet npm du client, et qu'un lot qui
