@@ -263,15 +263,30 @@ describe("paquet npm du client — l'autre sens", () => {
   // lance sur `@heurix-site/client`, la phrase preparee dans
   // `tests/corrections-en-attente.md` devient vraie et se pose. Un motif qui
   // rougirait toute mention de « deprecie » interdirait de dire une verite.
+  // LA FENETRE SE DECOUPE PAR INDEX, PAS PAR MOTIF, ET C'EST UNE CORRECTION.
+  //
+  // La premiere version cherchait `.{0,200}<nom>.{0,200}` avec le drapeau `s`.
+  // Sur 160 pages, ce motif part de CHAQUE position et fait revenir le moteur
+  // d'expressions en arriere a chaque echec : 2,8 s en local, et DEPASSE LES
+  // 5 000 ms de vitest sur le coureur de la CI. Mesure du 4 octobre 2026 : la
+  // suite est partie verte en local et le merge sur `main` est sorti rouge,
+  // « Mise en ligne » sautee -- le garde a bloque la mise en ligne de la
+  // correction qu'il accompagnait.
+  //
+  // `indexOf` plus `slice` donnent la meme fenetre en temps lineaire. Un garde
+  // trop lent est un garde qui refuse, et il refuse le travail des autres.
   it("aucune page ne dit du paquet declare qu'il est deprecie ou abandonne", () => {
     const MOTS = /d[ée]pr[ée]ci[ée]|deprecated|abandonn[ée]|obsol[eè]te|obsolete|ne plus utiliser|do not use/i;
+    const AUTOUR = 200;
     const fautives = [];
     for (const { page, src } of SERVIES) {
-      // Les phrases qui nomment le paquet declare, fenetre de 200 caracteres
-      // autour du nom : au-dela, « deprecie » parlerait d'autre chose.
-      const nom = NOM.replace(/[.*+?^${}()|[\]\\/]/g, "\\$&");
-      for (const m of src.matchAll(new RegExp(`.{0,200}${nom}.{0,200}`, "gs"))) {
-        if (MOTS.test(m[0])) fautives.push(`${page} :: ${m[0].replace(/\s+/g, " ").slice(0, 150)}`);
+      // Fenetre de 200 caracteres autour de chaque mention du nom declare :
+      // au-dela, « deprecie » parlerait d'autre chose.
+      for (let i = src.indexOf(NOM); i !== -1; i = src.indexOf(NOM, i + NOM.length)) {
+        const fenetre = src.slice(Math.max(0, i - AUTOUR), i + NOM.length + AUTOUR);
+        if (MOTS.test(fenetre)) {
+          fautives.push(`${page} :: ${fenetre.replace(/\s+/g, " ").slice(0, 150)}`);
+        }
       }
     }
     expect(
