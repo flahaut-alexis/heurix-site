@@ -15,6 +15,33 @@ commit : la règle avait été ajoutée après coup, et `.gitignore` ne s'appliq
 pas à un fichier déjà suivi. Écrire ici doit donc se faire en sachant que
 c'est publié.
 
+## Contraintes permanentes
+
+### Lire un site tiers
+
+Toute lecture d'un site tiers -- prospect, concurrent, documentation, qui que
+ce soit -- se fait :
+
+- **en série**, jamais en parallèle ;
+- **une requête par seconde au minimum**, comptée globalement et non par
+  domaine ;
+- avec un **user-agent qui identifie Heurix** et porte une adresse de contact,
+  par exemple `HeurixAudit/1.0 (+https://heurix.fr; mesure interne;
+  contact@heurix.fr)` ;
+- **`robots.txt` lu en premier et respecté**. Un `Disallow` est un **échec à
+  consigner**, jamais un obstacle à contourner ;
+- **GET seuls** ;
+- sans collecter aucun nom, aucune adresse email, aucune donnée personnelle.
+
+Cette contrainte protège les serveurs d'en face, pas les nôtres : elle ne se
+renégocie donc pas au périmètre d'un lot. Le prix est la lenteur, et il est
+payé -- mesuré le 9 octobre 2026 : 465 requêtes sur 75 domaines en 14 minutes,
+là où un balayage parallèle en émettait 582 en 3.
+
+Si une autre session lit les mêmes sites en même temps, le débit agrégé casse
+la règle même si la vôtre la tient. Vérifier les sessions et les processus
+vivants avant de lancer, pas seulement au démarrage de la session.
+
 ## Les quatre composants du projet
 
 | Composant | Rôle | Dépôt / emplacement |
