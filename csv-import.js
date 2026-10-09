@@ -257,6 +257,20 @@ export function enLots(produits, taille = 5000, rulepack = null) {
     // Le pack n'est déclaré que sur le PREMIER lot : le répéter
     // déclencherait une réindexation complète à chaque envoi, soit
     // plusieurs secondes de service bloqué par lot.
+    //
+    // ET CE N'EST SÛR QUE PARCE QUE L'IMPORT S'ARRÊTE AU PREMIER LOT REFUSÉ
+    // (csv-console.js, 9 octobre 2026). Le catalogue est créé par le premier
+    // lot ACCEPTÉ, et le pack qu'il porte est celui du catalogue pour
+    // toujours. Tant que l'envoi continuait après un refus, un lot 0 refusé
+    // laissait un lot suivant créer le catalogue SANS pack : mesuré sur un
+    // fichier de 6 160 lignes et une clé d'essai, `rulepack: null`,
+    // `annotations: 0`, et un catalogue fait des 1 160 dernières lignes.
+    //
+    // RÉTABLIR LA POURSUITE APRÈS UN REFUS ROUVRE CE DÉFAUT, à moins de
+    // déclarer le pack sur le lot qui crée réellement le catalogue. Aucun
+    // test ne protège cette dépendance : `console-import-csv-arret.test.js`
+    // épingle le mécanisme (le lot 1 n'a pas de pack) et reste vert des deux
+    // côtés, par construction. La garde est cette phrase.
     if (rulepack && i === 0) lot.rulepack = rulepack;
     lots.push(lot);
   }

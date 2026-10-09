@@ -583,6 +583,7 @@ async function envoyer() {
 
   let envoyes = 0;
   const echecs = [];
+  let arret = null;
 
   for (let i = 0; i < lots.length; i++) {
     majProgression(i, lots.length, envoyes);
@@ -593,25 +594,45 @@ async function envoyer() {
       });
       envoyes += (r && r.indexed) || lots[i].items.length;
     } catch (e) {
-      // ÉCHEC PARTIEL. On continue les lots suivants plutôt que de tout
-      // arrêter : un import de 50 000 produits ne doit pas être perdu
-      // parce que le lot 7 a échoué. Les identifiants sont stables, donc
-      // relancer l'import ne créera pas de doublons.
+      // ON S'ARRÊTE AU PREMIER LOT REFUSÉ (9 octobre 2026). On continuait,
+      // et c'était défendable tant qu'un lot refusé pouvait être suivi d'un
+      // lot accepté. Mesuré sur un fichier de 6 160 lignes et une clé
+      // d'essai : le lot 1 (5 000) est refusé au plafond, le lot 2 (1 160)
+      // passe parce qu'il tient dessous, et le marchand obtient un catalogue
+      // fait des 1 160 DERNIÈRES lignes de son fichier, annoncé en vert.
+      //
+      // Pire, ce catalogue n'a pas de pack de règles : `enLots` ne déclare le
+      // pack que sur le lot 0 (csv-import.js), pour ne pas provoquer une
+      // réindexation complète à chaque envoi. Quand le lot 0 est refusé, la
+      // déclaration meurt avec lui et c'est un lot suivant qui crée le
+      // catalogue -- sans pack, donc sans annotation. Mesuré : `rulepack:
+      // null`, `annotations: 0`, 1 000 produits sur 6 000.
+      //
+      // S'arrêter referme les deux : pas de catalogue-queue, pas de pack
+      // perdu. Ce qui est déjà accepté reste indexé et cherchable.
       var cause = e.message || String(e);
       if (e.status === 401 || e.status === 403 || /invalid api key/i.test(cause)) {
         cause = T("clé API refusée. Rechargez la console : votre session a peut-être expiré.");
       }
       echecs.push(T("Lot {0} sur {1} : {2}", i + 1, lots.length, cause));
+      // UNE PANNE PASSAGÈRE N'EST PAS UN REFUS. Un 5xx ou une coupure réseau
+      // (pas de `status`) peut très bien laisser passer le même lot une
+      // minute plus tard : c'est le seul cas où relancer a un sens, et le
+      // seul où le rapport le conseille.
+      arret = { lot: i + 1, total: lots.length, statut: e.status || null,
+                rejouable: !e.status || e.status >= 500,
+                restants: produits.length - (i * 5000) };
+      break;
     }
   }
 
-  majProgression(lots.length, lots.length, envoyes);
+  majProgression(arret ? arret.lot : lots.length, lots.length, envoyes, arret);
   const ecoule = Date.now() - debut;
   if (ecoule < 1000) {
     await new Promise((r) => setTimeout(r, 1000 - ecoule));
   }
   afficher("csv-progression", false);
-  afficherRapport(envoyes, erreurs, echecs, catalogue);
+  afficherRapport(envoyes, erreurs, echecs, catalogue, arret, produits.length);
 
   // RAFRAÎCHISSEMENT DE LA CONSOLE.
   //
@@ -627,26 +648,64 @@ async function envoyer() {
   }
 }
 
-function majProgression(fait, total, envoyes) {
+function majProgression(fait, total, envoyes, arret) {
   const pct = total ? Math.round((fait / total) * 100) : 0;
   $("csv-barre-remplie").style.width = pct + "%";
-  $("csv-etat").textContent = fait >= total
-    ? T("Terminé — {0} produits indexés", envoyes.toLocaleString(LOCALE))
-    : T("Envoi du lot {0} sur {1} — {2} produits indexés", Math.min(fait + 1, total), total, envoyes.toLocaleString(LOCALE));
+  // « Terminé » NE SE DIT PAS D'UN IMPORT ARRÊTÉ (9 octobre 2026) : la barre
+  // annonçait « Terminé — 1 000 produits indexés » au-dessus d'un rapport qui
+  // disait, trois lignes plus bas, qu'un lot avait été refusé.
+  $("csv-etat").textContent = arret
+    ? T("Arrêté — {0} produits indexés", envoyes.toLocaleString(LOCALE))
+    : fait >= total
+      ? T("Terminé — {0} produits indexés", envoyes.toLocaleString(LOCALE))
+      : T("Envoi du lot {0} sur {1} — {2} produits indexés", Math.min(fait + 1, total), total, envoyes.toLocaleString(LOCALE));
 }
 
-function afficherRapport(envoyes, erreurs, echecs, catalogue) {
+function afficherRapport(envoyes, erreurs, echecs, catalogue, arret, totalFichier) {
   let html = "<div class='csv-rapport-bloc'>";
 
+  // LE VERT NE PASSE PLUS DEVANT UN ÉCHEC (9 octobre 2026). « 1 000 produits
+  // indexés. » s'affichait en vert au-dessus de « 1 lot(s) en échec », pour un
+  // catalogue fait de la queue du fichier. Quand l'import s'est arrêté, le
+  // compte reste -- il est vrai, et le marchand doit le connaître -- mais il
+  // se lit comme un état partiel, pas comme une réussite.
+  // LE MARCHAND N'A PAS DÉPOSÉ DES LOTS, IL A DÉPOSÉ UN FICHIER (9 octobre
+  // 2026). Le découpage en lots de 5 000 est à nous, pas à lui : « 1 lot(s)
+  // en échec » et « Arrêté au lot 1 sur 2 » lui demandaient de traduire. Le
+  // titre et la barre comptent donc des PRODUITS et parlent de SON fichier ;
+  // le découpage ne survit que dans la ligne de détail, sous la cause, où il
+  // sert au support.
+  //
+  // CE TITRE PORTE AUSSI LA LIGNE QUE SEULE CETTE SURFACE PEUT ÉCRIRE : le
+  // total du fichier. Le moteur refuse sans le connaître -- il ne voit qu'un
+  // envoi -- et sa phrase ne cite donc aucun nombre.
   if (envoyes > 0) {
-    html += "<p class='csv-succes'><strong>" + T("{0} produits indexés.", envoyes.toLocaleString(LOCALE)) + "</strong></p>";
+    html += arret
+      ? "<p class='csv-echec'><strong>" +
+        T("Import arrêté : {0} de vos {1} produits ont été indexés.",
+          envoyes.toLocaleString(LOCALE), (totalFichier || envoyes).toLocaleString(LOCALE)) +
+        "</strong></p>"
+      : "<p class='csv-succes'><strong>" + T("{0} produits indexés.", envoyes.toLocaleString(LOCALE)) + "</strong></p>";
+  } else if (arret) {
+    html += "<p class='csv-echec'><strong>" +
+      T("Import arrêté : aucun de vos {0} produits n'a été indexé.",
+        (totalFichier || 0).toLocaleString(LOCALE)) + "</strong></p>";
   }
 
   if (echecs.length) {
     // Les échecs de lot passent AVANT les lignes ignorées : ils touchent
     // des milliers de produits, pas quelques lignes.
-    html += "<p class='csv-echec'><strong>" + T("{0} lot(s) en échec.", echecs.length) + "</strong> " +
-            T("Relancez l'import : les identifiants étant stables, les produits déjà indexés seront mis à jour, pas dupliqués.") + "</p><ul>";
+    //
+    // « RELANCEZ L'IMPORT » NE SE DIT QUE QUAND RELANCER PEUT MARCHER
+    // (9 octobre 2026). Le conseil était donné sur tous les refus, y compris
+    // un plafond de plan : relancer rendait exactement le même 429, et le
+    // marchand tournait en rond. Il ne reste que pour ce qui est passager --
+    // 5xx, coupure réseau.
+    html += "<p class='csv-echec'>" +
+            (!arret || arret.rejouable
+              ? T("Relancez l'import : les identifiants étant stables, les produits déjà indexés seront mis à jour, pas dupliqués.")
+              : T("Relancer renverra le même refus. Corrigez la cause ci-dessous, puis relancez : les identifiants étant stables, rien ne sera dupliqué.")) +
+            "</p><ul>";
     echecs.slice(0, 5).forEach((e) => { html += "<li>" + escaper(e) + "</li>"; });
     html += "</ul>";
   }
@@ -662,7 +721,12 @@ function afficherRapport(envoyes, erreurs, echecs, catalogue) {
     html += "</ul>";
   }
 
-  if (envoyes > 0 && catalogue) {
+  // PAS DE « VOIR LE CATALOGUE » SUR UN CATALOGUE PARTIEL (9 octobre 2026).
+  // Le bouton invitait à aller admirer un catalogue fait de la queue du
+  // fichier, sans pack de règles. Ce qui est indexé reste cherchable, et le
+  // marchand y accède par la liste des catalogues ; ce qu'on ne fait plus,
+  // c'est le lui présenter comme le résultat de son import.
+  if (envoyes > 0 && catalogue && !arret) {
     html += "<p class='csv-suite'><button type='button' class='btn' " +
             "id='csv-voir-catalogue'>" + T("Voir le catalogue &rarr;") + "</button></p>";
   }

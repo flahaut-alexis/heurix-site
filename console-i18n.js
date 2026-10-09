@@ -1024,6 +1024,13 @@
     "{0} lot(s) en échec.": "{0} batch(es) failed.",
     "Relancez l'import : les identifiants étant stables, les produits déjà indexés seront mis à jour, pas dupliqués.":
       "Restart the import: since identifiers are stable, products already indexed will be updated, not duplicated.",
+    "Relancer renverra le même refus. Corrigez la cause ci-dessous, puis relancez : les identifiants étant stables, rien ne sera dupliqué.":
+      "Restarting will return the same refusal. Fix the cause below, then restart: since identifiers are stable, nothing will be duplicated.",
+    "Arrêté — {0} produits indexés": "Stopped — {0} products indexed",
+    "Import arrêté : {0} de vos {1} produits ont été indexés.":
+      "Import stopped: {0} of your {1} products were indexed.",
+    "Import arrêté : aucun de vos {0} produits n'a été indexé.":
+      "Import stopped: none of your {0} products were indexed.",
     "{0} ligne(s) ignorée(s) :": "{0} row(s) ignored:",
     "Ligne {0} — {1}": "Row {0} — {1}",
     "… et {0} autres": "… and {0} more",
