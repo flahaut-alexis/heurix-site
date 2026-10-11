@@ -28,7 +28,7 @@
   "use strict";
 
   var API = "https://api.heurix.fr";
-  var CLE_PUBLIQUE = "hxp_-PwGHmQFiSb2qqML38M417jyhE10ArMa";
+  var CLE_PUBLIQUE = "hxp_gX6ZSE4U_2vhs4fqWa4RWe6T4gW_myPe";
   var CATALOGUE = "quincaillerie-nord";
 
   // LE NOMBRE DE REFERENCES VIT ICI, ET NULLE PART AILLEURS (26 aout 2026).

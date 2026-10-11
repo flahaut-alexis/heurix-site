@@ -1,0 +1,57 @@
+# Garde quotidienne de la démonstration publique (11 octobre 2026).
+#
+# POURQUOI ELLE EXISTE. La démonstration a servi 403 pendant six semaines, du
+# 11 septembre au 11 octobre, et rien ne l'a dit. Les six sondes de
+# deploy-complet.sh interrogent `public-demo` et `controle-deploiement`, qui
+# répondaient ; les quatre tests du site qui nomment le catalogue de la démo
+# bouchonnent `fetch` ; `/health` rendait `catalogs: 13`. Tout était vert.
+#
+# CE QU'ELLE APPELLE : ce qu'appelle un visiteur, et rien d'autre. La clé
+# publique, le catalogue, le rayon et l'URL de l'API sont EXTRAITS de
+# `demo-boutique.js` par `scripts/garde-demo.sh`. Aucune valeur n'est recopiée
+# ici : une seconde source de vérité finirait par diverger de la première, et
+# la démo pourrait se déplacer sans que la sonde suive.
+#
+# PAS D'ALERTE SUR LE TRAFIC RÉEL. Le catalogue a vu 567, 108 puis 32
+# recherches en juillet, août et septembre, et rien en octobre. À une
+# recherche par jour il n'y a aucun seuil à poser : la sonde synthétique est
+# le seul instrument qui marche à ce volume.
+#
+# La clé publique est bornée aux origines heurix.fr et www.heurix.fr, et la
+# sonde pose `Origin: https://heurix.fr`. Aucun secret n'est nécessaire, donc
+# ce workflow n'en lit aucun.
+
+name: Garde de la demonstration
+
+on:
+  schedule:
+    # 06:17 UTC, tous les jours. Minute décalée : les tâches à l'heure ronde
+    # s'empilent chez GitHub et partent en retard.
+    - cron: "17 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: garde-demo
+  cancel-in-progress: false
+
+jobs:
+  demonstration:
+    name: La demonstration repond-elle a un visiteur ?
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      # TROIS APPELS, TROIS MÉCANISMES, TROIS MODES DE PANNE :
+      #   recherche  -> clé, origine, propriété du catalogue, quota
+      #   parcours   -> EN PLUS le palier Browse du compte, qui refuse AVANT
+      #                 le contrôle de propriété et avec un autre message
+      #   widget     -> /v1/public-demo/search, route sans clé, épinglée sur
+      #                 public-demo : elle survit à tout ce qui précède
+      # Chacun exige 200 ET un total non nul. Un 200 à zéro résultat est une
+      # page vide servie à un prospect.
+      - name: Les trois appels d'un visiteur
+        run: scripts/garde-demo.sh
