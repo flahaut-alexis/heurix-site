@@ -43,7 +43,14 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
+      # v5 et non v4 (12 octobre 2026). Le premier passage programme a sorti
+      # l'avertissement « Node.js 20 is deprecated […] forced to run on Node.js
+      # 24 ». Le jour ou GitHub retire le runtime, cette garde cesse de tourner
+      # -- et elle cessera EN SILENCE, puisque rien ne surveille son absence :
+      # « la garde est verte » et « la garde n'a pas tourne » ont la meme
+      # apparence dans la liste des runs. Les deux defauts se composent, d'ou
+      # la bascule maintenant plutot qu'au blocage.
+      - uses: actions/checkout@v5
 
       # TROIS APPELS, TROIS MÉCANISMES, TROIS MODES DE PANNE :
       #   recherche  -> clé, origine, propriété du catalogue, quota
