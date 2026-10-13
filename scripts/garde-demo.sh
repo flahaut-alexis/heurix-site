@@ -61,6 +61,10 @@ echo "lu dans $(basename "$SOURCE") : catalogue=$CAT  rayon=$RAYON  cle=${CLE:0:
 echo
 
 ECHECS=0
+# Compte SEPARE des pannes d'instrument : « la facette est vide » est une
+# mesure, « je n'ai pas pu mesurer » n'en est pas une. Les fondre sous un
+# seul mot ferait lire l'une pour l'autre.
+INSTRUMENT=0
 TRAVAIL="$(mktemp -d)"; trap 'rm -rf "$TRAVAIL"' EXIT
 
 # Rend le `total` d'une réponse, ou "-" si le corps n'en porte pas.
@@ -209,9 +213,12 @@ PY
     0) printf '  OK      %-46s %s\n' "facettes du parcours" "$msg" ;;
     1) printf '  ECHEC   %-46s %s\n' "facettes du parcours" "$msg"
        ECHECS=$((ECHECS + 1)) ;;
-    # Sortie 2 : l'instrument ne sait pas repondre. Il le DIT et s'arrete,
-    # au lieu de rendre un vert qui ne mesure rien.
-    *) echo "garde-demo : facettes, instrument indisponible -- $msg"; exit 2 ;;
+    # Sortie 2 : l'instrument ne sait pas repondre. Il le DIT, et la sonde
+    # CONTINUE : sortir ici laisserait le troisieme controle -- le widget de
+    # l'accueil, qui ne depend de rien de tout ceci -- non joue, et une
+    # fixture introuvable masquerait un widget mort.
+    *) printf '  INSTRUMENT %-43s %s\n' "facettes du parcours" "$msg"
+       INSTRUMENT=$((INSTRUMENT + 1)) ;;
   esac
 }
 
@@ -231,8 +238,16 @@ controle "widget de l'accueil (sans cle)" \
   -H "Origin: $ORIGINE" -H "Content-Type: application/json" -d '{"q":"vis","limit":3}'
 
 echo
+(( INSTRUMENT )) && echo "garde-demo : $INSTRUMENT instrument(s) indisponible(s) -- rien n'y a ete mesure."
 if (( ECHECS )); then
+  # Un echec MESURE ne se laisse pas degrader en « je n'ai pas pu conclure »,
+  # meme si un instrument est tombe a cote : sortie 1, et l'autre ligne est
+  # deja dite au-dessus.
   echo "garde-demo : $ECHECS controle(s) en echec -- la demonstration est cassee pour un visiteur."
   exit 1
+fi
+if (( INSTRUMENT )); then
+  echo "garde-demo : aucun echec mesure, mais la garde NE CONCLUT PAS."
+  exit 2
 fi
 echo "garde-demo : les trois controles passent, facettes du rayon comprises."
