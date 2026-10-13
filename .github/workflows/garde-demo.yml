@@ -60,5 +60,21 @@ jobs:
       #                 public-demo : elle survit à tout ce qui précède
       # Chacun exige 200 ET un total non nul. Un 200 à zéro résultat est une
       # page vide servie à un prospect.
+      #
+      # ET LE PARCOURS EXIGE EN PLUS SES FACETTES (13 octobre 2026). Le
+      # 12 octobre à 15:19 cette garde était verte -- trois OK, 200 partout,
+      # totaux plausibles -- pendant que le rail de facettes du rayon était
+      # mort depuis seize heures : « 200 et total non nul » ne le regarde
+      # pas. Le parcours demande donc les clefs que la page du rayon demande
+      # vraiment, et vérifie DEUX choses que rien ne déduit l'une de
+      # l'autre : `facets_unknown` vide (l'API a reconnu la clef) et un seau
+      # peuplé, comparé aux décomptes de `tests/heurix-rayon-facettes.test.js`
+      # (la facette est peuplée). Le raisonnement complet, et ce qui rend
+      # cette garde VOLONTAIREMENT rouge -- un corpus régénéré à une autre
+      # graine que 42 --, est dans `facettes()`, à côté de l'assertion.
+      #
+      # L'assertion ne porte PAS sur le widget de l'accueil : il demande
+      # `categories`, que le moteur exclut de son index d'attributs, donc
+      # `facets_unknown: ["categories"]` y est le comportement prévu.
       - name: Les trois appels d'un visiteur
         run: scripts/garde-demo.sh
