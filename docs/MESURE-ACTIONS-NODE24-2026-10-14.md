@@ -10,6 +10,10 @@ L'association entre un passage et son SHA existe déjà dans GitHub ; ce qui
 manquait était un enregistrement lisible. Les commits n'ont pas été réécrits
 pour l'obtenir.
 
+Les trois ont été fusionnés sur `main` le 14 octobre 2026 vers 00:25, pendant
+la rédaction de ce relevé. Ce qui reste sur branche : le désarmement du garde
+dans le banc GIL (moteur) et ce fichier avec la contrainte de `CLAUDE.md`.
+
 ## Ce qui a été monté
 
 | dépôt | branche | commit | montées |
@@ -60,12 +64,20 @@ l'instrument est donc prouvé capable de voir la chose là où il rend zéro.
 | site `CI.yml` | Index de recherche a jour | 1 (38468407983) | **0** (38477721519) |
 | site `CI.yml` | Suite de tests | 1 (38468407983) | **0** (38477721519) |
 | site `CI.yml` | Clefs de cache a jour | 1 (38468407983) | **0** (38477721519) |
-| site `CI.yml` | **Mise en ligne** | 1 (38468407983) | **non jugé** |
+| site `CI.yml` | **Mise en ligne** | 1 (38468407983) | **0** (38480472547, sur `main`) |
 
-**« Mise en ligne » n'a pas de zéro, il n'a rien.** Son
+**« Mise en ligne » n'avait pas de zéro sur la branche, il n'avait rien.** Son
 `if: github.event_name == 'push' && github.ref == 'refs/heads/main'` le rend
-`skipped` sous `workflow_dispatch` : il n'exécute aucune action et n'émet donc
-aucun avertissement. Son `checkout@v7` sera jugé à la fusion, pas avant.
+`skipped` sous `workflow_dispatch` : il n'exécutait aucune action et n'émettait
+donc aucun avertissement. Le run `38477721519` ne le jugeait pas, et son zéro
+n'aurait pas dû être lu comme un succès.
+
+**La fusion l'a jugé.** Les trois commits de montée ont été portés sur `main`
+le 14 octobre vers 00:25 ; le passage `38480472547` (CI.yml sur `main`,
+`519c6e34`, `push`) a donc exécuté les quatre jobs, « Mise en ligne »
+**compris** — conclusion `success`, compte dédupliqué **0**, et le site
+publié. Les cinq `checkout` de `CI.yml` sont désormais jugés par un passage
+réel, pas quatre.
 
 Le compte brut d'`Index de recherche a jour` valait 2 avant déduplication :
 même message rendu deux fois par l'API pour un seul avertissement de job.
