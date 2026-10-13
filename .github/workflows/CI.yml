@@ -34,8 +34,62 @@ jobs:
     name: Index de recherche a jour
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/checkout@v4
+      # LES TROIS ACTIONS DE CE FICHIER SONT EN v7, ET PAS EN v4/v5
+      # (14 octobre 2026). C'est le « lot a part » annonce par 36e22e6b, qui
+      # avait bascule garde-demo.yml seule le 12 octobre : meme echeance,
+      # autre rayon d'action. Il est referme ici.
+      #
+      # Le run 38468407983 -- CI.yml sur main, le 13 octobre 2026 a 21:09Z,
+      # VERT -- portait l'avertissement dans QUATRE de ses quatre jobs :
+      #
+      #     Node.js 20 is deprecated. The following actions target Node.js 20
+      #     but are being forced to run on Node.js 24: actions/checkout@v4,
+      #     actions/setup-python@v5.                    (Index de recherche)
+      #     ... actions/checkout@v4, actions/setup-node@v4.   (Suite de tests)
+      #     ... actions/checkout@v4.      (Clefs de cache a jour, Mise en ligne)
+      #
+      # « forced to run on » est la periode de grace, pas un etat stable. Le
+      # jour ou GitHub retire Node 20 des runners, ces actions echouent a
+      # l'amorcage : les jobs ne demarrent pas. Ici la consequence n'est pas
+      # seulement « plus de verdict » : « Mise en ligne » depend des trois
+      # autres, donc le site CESSE D'ETRE PUBLIE, et il cesse de l'etre sans
+      # qu'aucun rouge ne le dise -- un job qui ne demarre pas ne rougit pas.
+      #
+      # POURQUOI v7 ET NON v5. Tout major >= 5 de checkout et setup-node, et
+      # >= 6 de setup-python, declare deja `using: node24` : v5 suffirait a
+      # eteindre l'avertissement. v7 est le major courant des trois
+      # (checkout v7.0.1, setup-node v7.1.0, setup-python v7.0.0 au
+      # 14 octobre 2026, lus par `gh api repos/<action>/releases/latest`) et
+      # ne laisse pas deux majors a reprendre. Choix refait pour ce depot.
+      #
+      # LES RUPTURES DE v4 A v7, LUES UNE PAR UNE CONTRE CE FICHIER :
+      #
+      #   - checkout v6 ecrit les identifiants dans un fichier a part plutot
+      #     que dans la config git locale. Sans effet ici : tout ce que ce
+      #     fichier demande a git est LOCAL (`rev-parse`, `grep`, `diff`,
+      #     `show`, `log`), aucun acces reseau apres le checkout.
+      #   - checkout v7 refuse de sortir le code d'une PR de fork sous
+      #     `pull_request_target` et `workflow_run`. Sans effet ici : les
+      #     declencheurs sont `push` (main), `pull_request` et
+      #     `workflow_dispatch`. C'est le depot PUBLIC des quatre, donc le
+      #     seul ou des PR de fork sont plausibles -- raison de plus pour ne
+      #     pas y introduire `pull_request_target`.
+      #   - setup-node v5 ajoute un cache automatique quand `package.json`
+      #     porte `packageManager`, v6 le restreint a npm. Sans effet ici :
+      #     `cache: npm` est demande explicitement, et `package.json` ne
+      #     porte aucun champ `packageManager`.
+      #   - setup-python v7 retire l'entree `pip-install`. Sans effet ici :
+      #     elle n'etait pas employee.
+      #
+      # Les trois entrees que ce fichier passe (`fetch-depth`,
+      # `python-version`, `node-version` + `cache`) existent toutes dans les
+      # `action.yml` des tags vises -- verifie, pas suppose.
+      #
+      # NON TOUCHES, parce qu'ils ne sont pas en cause : github-script@v9 et
+      # deploy-pages@v5 sont `using: node24`, upload-pages-artifact@v5 est
+      # composite, et garde-demo.yml est deja en checkout@v5 depuis 36e22e6b.
+      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7
         with:
           # LA LISTE DES DERNIERS ARTICLES lit la date du commit qui a AJOUTE
           # chaque article : il lui faut l'historique complet, pas les deux
@@ -43,7 +97,7 @@ jobs:
           # fondue ici le 27 aout -- deux generateurs qui ecrivent le meme
           # fichier finiraient par se marcher dessus.
           fetch-depth: 0
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
 
@@ -68,7 +122,8 @@ jobs:
     name: Suite de tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      # v7 : voir le job « Index de recherche a jour ».
+      - uses: actions/checkout@v7
         with:
           # HISTORIQUE COMPLET REQUIS (27 aout 2026). La suite appelle
           # `scripts/index-recherche.py --verifier`, dont `date_ajout()` fait
@@ -88,7 +143,11 @@ jobs:
           # porte deja `fetch-depth: 0`. Deux jobs, le meme script, deux
           # reponses -- et seul celui qui avait l'historique disait vrai.
           fetch-depth: 0
-      - uses: actions/setup-node@v4
+      # v7 et non v4 (14 octobre 2026) : meme echeance que les deux actions
+      # du job « Index de recherche a jour », ou la raison complete et les
+      # ruptures de v4 a v7 sont ecrites. C'est ce job que le run 38468407983
+      # annoncait avec DEUX actions a la fois (`checkout@v4, setup-node@v4`).
+      - uses: actions/setup-node@v7
         with:
           node-version: '22'
           cache: npm
@@ -99,7 +158,8 @@ jobs:
     name: Clefs de cache a jour
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      # v7 : voir le job « Index de recherche a jour ».
+      - uses: actions/checkout@v7
         with:
           # Deux commits : il faut le precedent pour savoir ce qui a change.
           fetch-depth: 2
@@ -312,7 +372,9 @@ jobs:
               return;
             }
             core.info(`Pages en mode workflow, domaine ${pages.cname}, https_enforced ${pages.https_enforced}.`);
-      - uses: actions/checkout@v4
+      # v7 : voir le job « Index de recherche a jour ». Ce checkout-ci est
+      # celui dont l'echec ne couterait pas un verdict mais la PUBLICATION.
+      - uses: actions/checkout@v7
       - uses: actions/upload-pages-artifact@v5
         with:
           path: .
