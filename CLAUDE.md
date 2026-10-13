@@ -42,6 +42,46 @@ Si une autre session lit les mêmes sites en même temps, le débit agrégé cas
 la règle même si la vôtre la tient. Vérifier les sessions et les processus
 vivants avant de lancer, pas seulement au démarrage de la session.
 
+### Compter un avertissement de runner
+
+Un compte d'avertissements émis par le runner **ne se lit pas dans
+`gh run view --log`** : celui-ci peut rendre un job **amputé de sa section
+`Complete job`**, qui est justement l'endroit où le runner émet ces
+avertissements. Il se lit dans les **annotations du job** :
+
+```bash
+gh api --paginate repos/<o>/<r>/check-runs/<job_id>/annotations
+```
+
+Mesuré le 14 octobre 2026 sur le run 38468407983 de ce dépôt (CI.yml, quatre
+jobs) : le grep sur le log agrégé trouvait **3** occurrences de « Node.js 20 is
+deprecated », les annotations **4**. Le job manquant était « Suite de tests »,
+présent dans le log sur 332 lignes mais privé de sa fin. Et son avertissement
+était le seul à nommer `actions/setup-node@v4` : un relevé bâti sur le log
+aurait conclu que `setup-node` n'avertissait pas. Même défaut sur un job
+entier, run 38477443373 de heurix-woocommerce — 2,6 ko par le log agrégé,
+16 ko par le log du job seul.
+
+Rien de plus large sur `--log`, qui reste bon pour tout ce qu'on lui demande
+d'autre : le détail des étapes, les versions résolues, la sortie des scripts.
+
+**Les annotations ont leur propre artefact, et il faut le nommer :** l'API
+rend parfois **le même message deux fois** pour un job (mesuré le même jour,
+« Index de recherche a jour » : deux lignes, un seul avertissement). La règle
+complète est donc : *les annotations, **dédupliquées par message**, avec
+`--paginate`, et **la conclusion du job lue avant le compte***.
+
+Cette dernière clause n'est pas décorative. Un job `skipped` rend zéro
+annotation sans avoir rien exercé, et ce zéro ressemble à un succès — sous
+`workflow_dispatch`, tout job conditionné à `push` ou à `main` est dans ce
+cas. Le run 38477721519 en porte un : « Mise en ligne »
+(`if: github.event_name == 'push' && github.ref == 'refs/heads/main'`).
+
+**Et une absence se prouve par un témoin positif.** Un zéro obtenu par un
+instrument dont on n'a pas montré qu'il voit la chose **sur ce job précis**
+n'est pas un zéro de la chose. La forme qui vaut : pour chaque zéro, exhiber
+le même appel, sur le même job, avant le correctif, rendant un compte non nul.
+
 ## Les quatre composants du projet
 
 | Composant | Rôle | Dépôt / emplacement |
