@@ -116,10 +116,27 @@ rend 503. La méthode du banc consiste précisément à franchir ce seuil : le
 
 **Le banc avait raison de tomber.** Il a refusé de rendre un chiffre plutôt
 que d'en rendre un faux, et il a nommé sa mesure invalide. Le défaut était en
-amont de lui. Désarmé depuis dans `banc_bascule.py`, **avec déclaration**
-(docstring, sortie standard avant la première mesure, et champ
-`delai_recherche_s` du rapport JSON) : sans elle, ses latences se liraient
-comme des latences de production, qui n'existent pas au-delà de 3 s.
+amont de lui. Désarmé depuis dans `banc_bascule.py` (`5681cef`,
+`HEURIX_DELAI_RECHERCHE_S=120` posé dans `Serveur.demarrer()` et non dans le
+workflow), **avec déclaration** — docstring, sortie standard avant la première
+mesure, et champ `delai_recherche_s` du rapport JSON : sans elle, ses latences
+se liraient comme des latences de production, qui n'existent pas au-delà de
+3 s.
+
+**Vérifié par un passage réel.** `38481237626` : vert, 7 min, **0 appel
+refusé**, les huit cellules mesurées, artefact de 1 838 o portant
+`delai_recherche_s: 120.0` — contre 485 o pour l'artefact du passage avorté.
+Et le verdict du banc se reproduit à vingt-quatre jours d'écart sur deux
+générations de CPU, ce qui est la preuve qu'il mesure de nouveau son sujet.
+Cellules à 4 fils, médianes en ms, séquence `0.005 / defaut / 0.005 / defaut` :
+
+| | A | B | A | B |
+|---|---|---|---|---|
+| 19 sept. (EPYC 7763, avant le garde) | 7 762 | 9 179 | 7 220 | 8 972 |
+| 14 oct. (EPYC 9V74, garde désarmé) | 7 088 | 9 520 | 7 781 | 9 705 |
+
+Le pire temps du passage, 23 904 ms de p95, reste très au-dessous du plafond
+de 120 s : le plafond ne tronque pas.
 
 ### La famille : du code que rien ne juge
 
