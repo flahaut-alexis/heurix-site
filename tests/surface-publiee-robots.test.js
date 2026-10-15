@@ -9,43 +9,24 @@ import {
 /**
  * CE QUI N'EST PAS DU SITE EST REFUSE AUX ROBOTS.
  *
- * MESURE DU 4 OCTOBRE 2026, trouvaille incidente de la verification de C1.
- * `upload-pages-artifact` recoit `path: '.'` : Pages sert la racine entiere du
- * depot. Sonde sur les 202 chemins internes suivis -- 198 rendent 200, pour
- * 2,52 Mio. Dont :
+ * LE FAIT QUI REND CETTE REGLE NECESSAIRE, et sans lequel quelqu'un la
+ * supprimera un jour en la croyant arbitraire : `upload-pages-artifact` recoit
+ * `path: '.'`, donc GitHub Pages sert la RACINE ENTIERE du depot. Les entrees
+ * internes -- `docs/`, `tests/`, `scripts/`, `CLAUDE.md` -- sont donc servies
+ * sous le domaine du site, et rien dans l'arbre ne l'empeche.
  *
- *     docs/                   75 fichiers   1 137 132 o
- *     tests/                 108 fichiers   1 119 456 o
- *     CLAUDE.md                1 fichier      182 842 o
- *     scripts/ (le crochet)    7 fichiers       90 146 o
+ * LA REGLE : toute entree de premier niveau qui n'est pas du site porte un
+ * `Disallow`, et la confrontation est DERIVEE (`surface-publiee.js`), pour
+ * qu'une entree neuve ne puisse entrer en silence ni d'un cote ni de l'autre.
  *
- * CE N'EST PAS UNE FUITE, et il faut le dire pour que la regle garde sa juste
- * taille : le depot est PUBLIC, donc ces fichiers etaient deja lisibles sur
- * GitHub. Ce qui change avec Pages, c'est le domaine : ce sont des URL de
- * `heurix.fr`, le domaine commercial, et `CLAUDE.md` y sert 182 Ko de
- * raisonnement interne -- dont une table que l'audit du meme jour a trouvee
- * fausse.
+ * CE QU'IL NE FAUT PAS DEDUIRE DE CE GARDE : qu'il retire quoi que ce soit. Il
+ * retire le chemin par lequel un robot trouverait ces fichiers sans les
+ * chercher, et rien de plus.
  *
- * POURQUOI robots.txt ET PAS UN REPERTOIRE DE PUBLICATION DEDIE. L'autre
- * sortie mesuree -- assembler un `_site/` et pointer `path:` dessus -- retire
- * vraiment les fichiers. Elle a ete ECARTEE le 4 octobre 2026 pour une raison
- * mesurable : AUCUN test de ce depot ne lit l'artefact publie. Tous derivent de
- * l'arbre (`RACINE`), `liens-relatifs.test.js` compris. Un fichier du site
- * oublie a l'assemblage passerait les 1 056 tests ET le crochet, et ne se
- * verrait qu'en production. Elle creerait donc la classe de panne que ce depot
- * poursuit partout ailleurs -- un garde qui juge autre chose que ce qui est
- * servi -- et il faudrait ecrire ce garde AVANT, pour un probleme de vitrine et
- * non de secret. Raison complete :
- * `SITE-pages-perimetre-2026-10-04.md`, depot prive (rapatrie le
- * 15 octobre 2026 : un inventaire de ce qui est public ne doit pas etre
- * public).
- *
- * CE QUE robots.txt NE FAIT PAS, et c'est assume : il ne retire rien. Les 198
- * fichiers restent lisibles pour qui connait l'URL. Ce qu'il retire est le
- * chemin par lequel un prospect tomberait dessus sans la chercher. Mesure de
- * la decouvrabilite le meme jour : 0 des 140 URL du sitemap, 0 lien `href`
- * ou `src` depuis une page servie, 0 renvoi dans `llms.txt` -- mais
- * `Allow: /` laissait tout crawlable.
+ * L'ANALYSE DE RISQUE N'EST PAS ICI -- ce qui est servi, ce que cela vaut, et
+ * pourquoi il a ete pese de le laisser lisible. Elle vit dans
+ * `SITE-pages-perimetre-2026-10-04.md`, depot prive : un inventaire de ce qui
+ * est public ne doit pas etre public.
  */
 
 describe("surface publiee hors site", () => {

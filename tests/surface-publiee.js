@@ -39,11 +39,10 @@ export function fichiersSuivis() {
 /**
  * LES ENTREES DE PREMIER NIVEAU QUI NE SONT PAS DU SITE.
  *
- * Mesure du 4 octobre 2026 : `upload-pages-artifact` recoit `path: '.'`, donc
- * Pages sert la racine entiere -- 1 042 fichiers, 22,1 Mio, dont 198 fichiers
- * et 2,52 Mio qui ne sont pas du site. Releve complet :
- * `SITE-pages-perimetre-2026-10-04.md`, depot prive (rapatrie le
- * 15 octobre 2026).
+ * LE FAIT QUI REND CETTE LISTE NECESSAIRE : `upload-pages-artifact` recoit
+ * `path: '.'`, donc Pages sert la racine entiere -- ces entrees sont servies
+ * sous le domaine du site. Analyse de risque :
+ * `SITE-pages-perimetre-2026-10-04.md`, depot prive.
  *
  * LA LISTE EST UNE LISTE, ET C'EST ASSUME. Le reste de ce depot derive ses
  * perimetres ; ici le critere « ce fichier appartient-il au site ? » n'a pas de
@@ -54,10 +53,8 @@ export function fichiersSuivis() {
  * `surface-publiee-robots.test.js`. Une entree neuve ne peut donc pas entrer
  * en silence, ni du cote site ni du cote interne.
  *
- * LES CHEMINS COMMENCANT PAR UN POINT SONT DEJA EXCLUS, sans que personne
- * l'ait ecrit : mesure du 4 octobre, `.DS_Store`, `.gitignore`,
- * `.gitleaks.toml` et `.github/workflows/CI.yml` rendent 404 quand les 198
- * autres rendent 200. Ils ne sont donc pas a refuser dans robots.txt -- une
+ * LES CHEMINS COMMENCANT PAR UN POINT SONT DEJA EXCLUS par Pages, sans que
+ * personne l'ait ecrit. Ils ne sont donc pas a refuser dans robots.txt -- une
  * regle pour eux serait perimee le jour ou on l'ecrit.
  */
 const INTERNES = [
