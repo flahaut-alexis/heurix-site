@@ -326,6 +326,35 @@
 
     </div>
 
+    <!--
+      L'AVERTISSEMENT AUX MARCHANDS SHOPIFY (15 octobre 2026, exigence 1.2.1).
+
+      IL EST EN `callout`, PAS EN `pricing-note`, ET C'EST LA DECISION. La note
+      du dessous est du texte legal en petits caracteres gris : un avertissement
+      rendu dans la meme classe est un avertissement que personne ne lit, et
+      c'est le relecteur de Shopify qui le lira en premier. Il reste SOUS les
+      cartes -- la page ne s'abime pas pour les visiteurs sans boutique Shopify.
+
+      IL DIT TROIS CHOSES, ET LA TROISIEME EST LA PLUS UTILE PARCE QU'ELLE EST
+      VRAIE : qui gere l'abonnement, qu'il ne faut pas souscrire ici, et que
+      payer ici ne change rien au palier de la boutique. Mesure du 15 octobre :
+      Stripe Growth pose 25 000 produits sur la cle du marchand, la boutique
+      Shopify reste a 2 000 sur sa cle dediee
+      (heurix-engine/docs/bancs/sonde_deux_abonnements_deux_cles.py).
+
+      IL TRAITE LE CAS QUE LE REFUS DU MOTEUR NE PEUT PAS TRAITER : un marchand
+      Shopify qui n'a rattache aucune boutique n'envoie aucun compte a regarder.
+      Voir le refus `compte_rattache_a_une_boutique` dans
+      heurix/routers/stripe.py, qui le dit de son cote.
+    -->
+    <div class="callout callout-info" role="note" id="note-boutique-shopify">
+      <svg class="callout-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+      <div class="callout-content"><p><strong>Vous avez une boutique Shopify&nbsp;?</strong>
+         L'abonnement d'une boutique Shopify est géré par Shopify, et il se choisit
+         depuis l'application Heurix dans l'administration de votre boutique.
+         <strong>Ne souscrivez pas ici pour cette boutique</strong>&nbsp;: un paiement
+         lancé depuis cette page ne change rien au palier de votre boutique.</p></div>
+    </div>
     <p class="pricing-note">Tarifs HT. En facturation mensuelle, sans engagement de durée — vous changez ou arrêtez à tout moment. En facturation annuelle, engagement de douze mois payés d'avance, sans remboursement, résiliable à tout moment avec effet au terme. <strong>14 jours sans prélèvement</strong> si vous souscrivez pendant votre essai gratuit. L'indexation de votre catalogue n'est jamais décomptée de votre quota de requêtes. <strong>Ranking</strong> a son propre quota, indépendant de la recherche — cochez l'option sur Growth ou Scale pour -25%, ou <a href="#browse-standalone">souscrivez-le seul, sans recherche</a>. Déjà abonné à Growth ou Scale&nbsp;? Ajoutez Ranking depuis <a href="console.html">Mon abonnement, dans la console</a>&nbsp;: payer ici créerait un second abonnement Search. En souscrivant, vous acceptez nos <a href="cgv.html">CGV</a>.</p>
   </div>
 </section>
@@ -778,9 +807,37 @@
         body: JSON.stringify(payload),
       })
         .then(function (r) {
-          // 409 : le moteur refuse un second abonnement a un compte deja
-          // abonne, identifie par son jeton de session (18 septembre 2026).
-          if (r.status === 409) { const e = new Error("deja abonne"); e.dejaAbonne = true; throw e; }
+          // DEUX REFUS SOUS UN SEUL STATUT, ET C'EST LE CODE QUI LES SEPARE
+          // (15 octobre 2026).
+          //
+          //   abonnement_deja_actif            un second Search serait facture
+          //                                    en plus du premier (18 sept.)
+          //   compte_rattache_a_une_boutique   ce compte tient une boutique
+          //                                    Shopify : son abonnement se gere
+          //                                    chez Shopify (exigence 1.2.1)
+          //
+          // BRANCHER SUR LE STATUT SEUL DONNAIT AU SECOND LA PHRASE DU PREMIER,
+          // et renvoyait le marchand vers la console -- la surface d'ou il
+          // vient. C'est exactement ce que `en/docs.html` interdit : « branch on
+          // those, not on the text of `detail` ».
+          //
+          // LA DEGRADATION EST VOULUE, ET ELLE EST LA CONDITION DU DEPLOIEMENT.
+          // Cette page peut partir avant le moteur qui rend le code : sans
+          // `code` dans le corps, on retombe sur le texte d'avant, mot pour
+          // mot. Le refus du 18 septembre continue donc de s'afficher comme il
+          // s'affichait, servi par un moteur qui ne code rien.
+          if (r.status === 409) {
+            return r.json().then(function (corps) {
+              const e = new Error("refus 409");
+              e.refus409 = (corps && corps.code) || null;
+              e.detail = corps && corps.detail;
+              throw e;
+            }, function () {
+              const e = new Error("refus 409");
+              e.refus409 = null;
+              throw e;
+            });
+          }
           if (!r.ok) throw new Error("HTTP " + r.status);
           return r.json();
         })
@@ -791,7 +848,13 @@
         .catch(function (err) {
           checkoutBtns.forEach(function (b) { b.disabled = false; });
           btn.textContent = originalText;
-          if (err && err.dejaAbonne) {
+          if (err && err.refus409 === "compte_rattache_a_une_boutique") {
+            // LA PHRASE DU MOTEUR, TELLE QUELLE, et aucune proposition de
+            // console : c'est la surface d'ou vient ce marchand.
+            alert(err.detail || "Ce compte Heurix est rattaché à une boutique Shopify : l'abonnement de cette boutique se gère depuis l'application Heurix dans l'administration de votre boutique.");
+            return;
+          }
+          if (err && Object.prototype.hasOwnProperty.call(err, "refus409")) {
             if (confirm("Ce compte a déjà un abonnement actif : payer ici en créerait un second, facturé en plus du premier. Pour changer de formule ou ajouter Ranking, passez par Mon abonnement, dans la console.\n\nOuvrir la console ?")) window.location.href = "console.html";
             return;
           }

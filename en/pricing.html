@@ -314,6 +314,15 @@
 
     </div>
 
+    <!-- Voir le commentaire de pricing.html : meme bloc, meme raison. -->
+    <div class="callout callout-info" role="note" id="note-boutique-shopify">
+      <svg class="callout-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+      <div class="callout-content"><p><strong>Do you run a Shopify store?</strong>
+         A Shopify store&rsquo;s subscription is managed by Shopify, and you choose it
+         from the Heurix app in your store admin. <strong>Don&rsquo;t subscribe here for
+         that store</strong>: a payment started on this page does not change your
+         store&rsquo;s tier.</p></div>
+    </div>
     <p class="pricing-note">Prices excl. VAT. With monthly billing, no long-term commitment — change or cancel anytime. With annual billing, a twelve-month commitment paid in advance, non-refundable, cancellable at any time effective at the end of the term. <strong>No charge for 14 days</strong> if you subscribe during your free trial. Indexing your catalog is never counted against your request quota. <strong>Ranking</strong> has its own quota, separate from search — check the option on Growth or Scale for -25%, or <a href="#browse-standalone">subscribe to it standalone, without search</a>. Already on Growth or Scale? Add Ranking from <a href="console.html">My subscription, in the console</a>: paying here would create a second Search subscription. By subscribing, you accept our <a href="cgv.html">Terms of Service</a>.</p>
   </div>
 </section>
@@ -717,6 +726,37 @@
 
       const payload = { plan: plan };
       if (browsePlan) payload.browse_plan = browsePlan;
+      //
+      // THE SESSION TOKEN, NOT THE API KEY. It is already in this browser (the
+      // console writes it there on sign-in, same origin, shared across tabs),
+      // it already travels to this same API on every console call, and the
+      // engine resolves it server-side. An `hx_` key would travel for nothing,
+      // and would end up stored and displayed in the Stripe dashboard, which
+      // keeps `client_reference_id`.
+      //
+      // AND NEVER IN THE URL: `pricing.html?key=...` would put a credential in
+      // the history, the `Referer` and the analytics.
+      //
+      // THIS BLOCK WAS MISSING FROM THIS PAGE UNTIL 15 OCTOBER 2026, AND ONLY
+      // THIS PAGE. `pricing.html` had it since 7 September; the English page
+      // never sent the token, so `_cle_du_payeur` always resolved to `None`
+      // here. Three consequences, all measured that day: the 409 that refuses a
+      // second subscription could never fire for an English-speaking merchant
+      // (its handler below was dead code), the 409 that refuses a merchant
+      // attached to a Shopify store could not fire either -- and that is the
+      // requirement Shopify rejected submission 135169 on -- and every payment
+      // from this page fell back to the email match instead of the exact one.
+      //
+      // Absent = visitor not signed in. That is the NORMAL case on this page,
+      // and payment must work exactly as before.
+      try {
+        var jeton = window.localStorage.getItem("heurix_console_session");
+        if (jeton) payload.session_token = jeton;
+      } catch (e) {
+        // localStorage can throw (private browsing, storage blocked by an
+        // extension). A less precise attachment beats a dead payment button:
+        // we let the email fallback do its work.
+      }
       const periode = btn.getAttribute('data-billing-period');
       if (periode === 'annual') payload.billing_period = 'annual';
 
@@ -726,9 +766,30 @@
         body: JSON.stringify(payload),
       })
         .then(function (r) {
-          // 409 : le moteur refuse un second abonnement a un compte deja
-          // abonne, identifie par son jeton de session (18 septembre 2026).
-          if (r.status === 409) { const e = new Error("deja abonne"); e.dejaAbonne = true; throw e; }
+          // TWO REFUSALS UNDER ONE STATUS, AND THE CODE IS WHAT SEPARATES
+          // THEM (15 October 2026). See pricing.html for the full note.
+          //
+          //   abonnement_deja_actif            a second Search would be billed
+          //                                    on top of the first (18 Sept.)
+          //   compte_rattache_a_une_boutique   this account holds a Shopify
+          //                                    store: its subscription is
+          //                                    managed by Shopify (req. 1.2.1)
+          //
+          // THE FALLBACK IS DELIBERATE: this page can ship before the engine
+          // that returns the code. With no `code` in the body we fall back to
+          // the previous text, word for word.
+          if (r.status === 409) {
+            return r.json().then(function (corps) {
+              const e = new Error("refusal 409");
+              e.refus409 = (corps && corps.code) || null;
+              e.detail = corps && corps.detail;
+              throw e;
+            }, function () {
+              const e = new Error("refusal 409");
+              e.refus409 = null;
+              throw e;
+            });
+          }
           if (!r.ok) throw new Error("HTTP " + r.status);
           return r.json();
         })
@@ -739,7 +800,13 @@
         .catch(function (err) {
           checkoutBtns.forEach(function (b) { b.disabled = false; });
           btn.textContent = originalText;
-          if (err && err.dejaAbonne) {
+          if (err && err.refus409 === "compte_rattache_a_une_boutique") {
+            // The engine's sentence, verbatim, and no console prompt: that is
+            // the surface this merchant came from.
+            alert(err.detail || "This Heurix account is linked to a Shopify store: that store's subscription is managed from the Heurix app in your store admin.");
+            return;
+          }
+          if (err && Object.prototype.hasOwnProperty.call(err, "refus409")) {
             if (confirm("This account already has an active subscription: paying here would create a second one, billed on top of the first. To change plan or add Ranking, use My subscription, in the console.\n\nOpen the console?")) window.location.href = "console.html";
             return;
           }
