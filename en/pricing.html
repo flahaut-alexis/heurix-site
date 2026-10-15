@@ -712,6 +712,43 @@
   });
   if (document.getElementById('calc-visitors')) computeCalc();
 
+  // THE REFUSALS THIS PAGE KNOWS, AND ITS OWN WORDING FOR EACH
+  // (15 October 2026).
+  //
+  // WHY THE SENTENCE LIVES HERE AND NO LONGER IN `detail`. Until today this
+  // page showed `detail` as it came -- the engine's sentence, in FRENCH.
+  // Measured on screen on this page: a French alert box on an English page.
+  // The English fallback written right beside it was unreachable, because
+  // `detail` is ALWAYS present.
+  //
+  // IT IS OUR OWN CONTRACT, AND WE WERE NOT KEEPING IT. `en/docs.html` has
+  // told integrators since 23 September: "The status code and the response
+  // shape are the stable, documented contract -- branch on those, not on the
+  // text of `detail`, which is a sentence written for a human reading the raw
+  // response and may be reworded." We are the first integrator of this API.
+  //
+  // THE SERVER KEEPS ITS SENTENCE, UNTOUCHED. This batch does not change
+  // `detail` by one byte: five readers display it verbatim, and the price of
+  // a translation is paid when the sentence is REMOVED. What changes is WHO
+  // writes for this page.
+  //
+  // `console` SAYS WHETHER THE REMEDY IS IN THE CONSOLE. It is not, for a
+  // linked account: that is the surface this merchant came from, and sending
+  // them back would loop.
+  const REFUS_409 = {
+    compte_rattache_a_une_boutique: {
+      console: false,
+      texte: "This Heurix account is linked to a Shopify store: that store's subscription is managed by Shopify, and you choose it from the Heurix app in your store admin. A payment started here would not change its tier.",
+    },
+    // WORD FOR WORD THE 18 SEPTEMBER TEXT, and it is also what the "no code"
+    // branch below serves: an engine that does not code anything yet must go
+    // on showing exactly what it showed.
+    abonnement_deja_actif: {
+      console: true,
+      texte: "This account already has an active subscription: paying here would create a second one, billed on top of the first. To change plan or add Ranking, use My subscription, in the console.\n\nOpen the console?",
+    },
+  };
+
   const checkoutBtns = document.querySelectorAll('.checkout-btn');
   checkoutBtns.forEach(function (btn) {
     const originalText = btn.textContent;
@@ -800,14 +837,30 @@
         .catch(function (err) {
           checkoutBtns.forEach(function (b) { b.disabled = false; });
           btn.textContent = originalText;
-          if (err && err.refus409 === "compte_rattache_a_une_boutique") {
-            // The engine's sentence, verbatim, and no console prompt: that is
-            // the surface this merchant came from.
-            alert(err.detail || "This Heurix account is linked to a Shopify store: that store's subscription is managed from the Heurix app in your store admin.");
-            return;
-          }
           if (err && Object.prototype.hasOwnProperty.call(err, "refus409")) {
-            if (confirm("This account already has an active subscription: paying here would create a second one, billed on top of the first. To change plan or add Ranking, use My subscription, in the console.\n\nOpen the console?")) window.location.href = "console.html";
+            // NO CODE = THE 18 SEPTEMBER TEXT, word for word. This page can
+            // ship before an engine that codes, and that fallback is the
+            // condition of the deployment, not a convenience.
+            const connu = err.refus409
+              ? REFUS_409[err.refus409]
+              : REFUS_409.abonnement_deja_actif;
+            if (connu) {
+              if (connu.console) {
+                if (confirm(connu.texte)) window.location.href = "console.html";
+              } else {
+                alert(connu.texte);
+              }
+              return;
+            }
+            // A CODE THIS PAGE DOES NOT KNOW. This is the only case where
+            // `detail` still serves, and it serves well: a French sentence
+            // from the engine beats "something went wrong". The type is
+            // checked because a 422 returns a LIST, and a concatenated list
+            // reads "[object Object]" -- the defect measured the same day in
+            // the Shopify app template.
+            alert(typeof err.detail === "string" && err.detail
+              ? err.detail
+              : "Something went wrong — please try again, or write to contact@heurix.fr if it persists.");
             return;
           }
           alert("Something went wrong — please try again, or write to contact@heurix.fr if it persists.");

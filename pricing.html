@@ -749,6 +749,45 @@
   });
   if (document.getElementById('calc-visitors')) computeCalc();
 
+  // LES REFUS QUE CETTE PAGE CONNAIT, ET SA PROPRE REDACTION POUR CHACUN
+  // (15 octobre 2026).
+  //
+  // POURQUOI LA PHRASE EST ICI ET PLUS DANS `detail`. Jusqu'a ce jour, le
+  // refus du compte rattache affichait `detail` tel quel -- la phrase du
+  // moteur, en francais. Sur `en/pricing.html` cela donnait, MESURE A
+  // L'ECRAN, une boite d'alerte francaise sur une page anglaise : le repli
+  // anglais ecrit juste a cote etait inatteignable, parce que `detail` est
+  // TOUJOURS present.
+  //
+  // C'EST NOTRE PROPRE CONTRAT, ET NOUS NE LE TENIONS PAS. `docs.html` et
+  // `en/docs.html` disent aux integrateurs, depuis le 23 septembre :
+  // « Le code HTTP et la structure de la reponse sont le contrat stable et
+  // documente -- branchez-vous dessus, pas sur le texte de `detail`, qui est
+  // une phrase ecrite pour la personne qui lit la reponse brute et peut etre
+  // reformulee. » Nous sommes le premier integrateur de cette API.
+  //
+  // LE SERVEUR GARDE SA PHRASE, ET ON N'Y TOUCHE PAS. Ce lot ne change pas
+  // `detail` d'un octet : cinq lecteurs l'affichent verbatim, et le prix
+  // d'une traduction se paie au RETRAIT de la phrase. Ce qui change est
+  // QUI redige pour cette page-ci.
+  //
+  // `console` DIT SI LE REMEDE EST DANS LA CONSOLE. Il ne l'est pas pour le
+  // compte rattache : c'est la surface d'ou vient ce marchand, et l'y
+  // renvoyer serait boucler.
+  const REFUS_409 = {
+    compte_rattache_a_une_boutique: {
+      console: false,
+      texte: "Ce compte Heurix est rattaché à une boutique Shopify : l'abonnement de cette boutique est géré par Shopify, et il se choisit depuis l'application Heurix dans l'administration de votre boutique. Un paiement lancé ici ne changerait pas son palier.",
+    },
+    // MOT POUR MOT LE TEXTE DU 18 SEPTEMBRE, et c'est aussi celui que sert
+    // la branche « aucun code » plus bas : un moteur qui ne code encore rien
+    // doit continuer d'afficher exactement ce qu'il affichait.
+    abonnement_deja_actif: {
+      console: true,
+      texte: "Ce compte a déjà un abonnement actif : payer ici en créerait un second, facturé en plus du premier. Pour changer de formule ou ajouter Ranking, passez par Mon abonnement, dans la console.\n\nOuvrir la console ?",
+    },
+  };
+
   const checkoutBtns = document.querySelectorAll('.checkout-btn');
   checkoutBtns.forEach(function (btn) {
     const originalText = btn.textContent;
@@ -848,14 +887,30 @@
         .catch(function (err) {
           checkoutBtns.forEach(function (b) { b.disabled = false; });
           btn.textContent = originalText;
-          if (err && err.refus409 === "compte_rattache_a_une_boutique") {
-            // LA PHRASE DU MOTEUR, TELLE QUELLE, et aucune proposition de
-            // console : c'est la surface d'ou vient ce marchand.
-            alert(err.detail || "Ce compte Heurix est rattaché à une boutique Shopify : l'abonnement de cette boutique se gère depuis l'application Heurix dans l'administration de votre boutique.");
-            return;
-          }
           if (err && Object.prototype.hasOwnProperty.call(err, "refus409")) {
-            if (confirm("Ce compte a déjà un abonnement actif : payer ici en créerait un second, facturé en plus du premier. Pour changer de formule ou ajouter Ranking, passez par Mon abonnement, dans la console.\n\nOuvrir la console ?")) window.location.href = "console.html";
+            // AUCUN CODE = LE TEXTE DU 18 SEPTEMBRE, mot pour mot. Cette page
+            // peut partir avant un moteur qui code, et ce repli-la est la
+            // condition du deploiement, pas une commodite.
+            const connu = err.refus409
+              ? REFUS_409[err.refus409]
+              : REFUS_409.abonnement_deja_actif;
+            if (connu) {
+              if (connu.console) {
+                if (confirm(connu.texte)) window.location.href = "console.html";
+              } else {
+                alert(connu.texte);
+              }
+              return;
+            }
+            // UN CODE QUE CETTE PAGE NE CONNAIT PAS. C'est le seul cas ou
+            // `detail` sert encore, et il sert bien : une phrase francaise du
+            // moteur vaut mieux que « une erreur est survenue ». Le typage est
+            // verifie parce qu'un 422 rend une LISTE, et qu'une liste concatenee
+            // s'affiche « [object Object] » -- le defaut mesure le meme jour
+            // dans le gabarit de l'app Shopify.
+            alert(typeof err.detail === "string" && err.detail
+              ? err.detail
+              : "Une erreur est survenue — réessayez, ou écrivez à contact@heurix.fr si ça persiste.");
             return;
           }
           alert("Une erreur est survenue — réessayez, ou écrivez à contact@heurix.fr si ça persiste.");

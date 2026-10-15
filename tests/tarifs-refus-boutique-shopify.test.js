@@ -26,22 +26,61 @@ const RACINE = path.resolve(__dirname, "..");
  * d'afficher le texte du 18 septembre, mot pour mot.
  */
 
+/* CE QUE LE 15 OCTOBRE A AJOUTE, ET POURQUOI LA PREMIERE VERSION DE CE
+ * FICHIER LAISSAIT PASSER LE DEFAUT.
+ *
+ * `rattache` valait, pour la page anglaise,
+ * `/linked to a Shopify store|rattaché à une boutique Shopify/`. L'alternative
+ * francaise rendait l'assertion vraie quoi qu'il arrive : le test disait « il
+ * y a du texte », pas « il y a le BON texte ». Mesure a l'ecran le meme jour,
+ * sur la page servie : la boite d'alerte de `en/pricing.html` portait la
+ * phrase FRANCAISE du moteur, et le repli anglais ecrit juste a cote n'etait
+ * jamais atteint parce que `detail` est toujours present. La suite etait
+ * verte.
+ *
+ * `rattache` est donc desormais la phrase de LA PAGE, dans SA langue, et
+ * `etranger` porte les marqueurs de l'autre langue, dont l'absence est
+ * exigee. Le temoin de mutation : retirer `compte_rattache_a_une_boutique`
+ * de `REFUS_409` fait retomber la page sur `detail`, donc sur le francais,
+ * et les deux assertions tombent ensemble.
+ */
+
+// LA PHRASE DU MOTEUR, RECOPIEE DU DEPLOIEMENT. Elle n'est PAS attendue a
+// l'ecran : elle est ce que le serveur envoie, et ce que la page anglaise ne
+// doit plus montrer. La recopier ici n'est pas doubler le moteur -- c'est
+// fournir au test l'entree exacte qui a produit le defaut.
+const DETAIL_MOTEUR = "Ce compte Heurix est rattaché à une boutique Shopify : "
+  + "l'abonnement de cette boutique est géré par Shopify, et il se choisit depuis "
+  + "l'application Heurix dans l'administration de votre boutique. Un paiement "
+  + "lancé ici ne changerait pas son palier.";
+
 const PAGES = [
   {
     fichier: "pricing.html",
-    rattache: /rattaché à une boutique Shopify/,
+    rattache: [/rattaché à une boutique Shopify/, /dans l'administration de votre boutique/,
+               /ne changerait pas son palier/],
+    etranger: [/linked to a Shopify store/, /managed by Shopify/, /store admin/],
     deja: /déjà un abonnement actif.*Mon abonnement/s,
     phrase: [/Vous avez une boutique Shopify/, /géré par Shopify/,
              /Ne souscrivez pas ici pour cette boutique/,
              /ne change rien au palier de votre boutique/],
+    generique: /Une erreur est survenue/,
   },
   {
     fichier: "en/pricing.html",
-    rattache: /linked to a Shopify store|rattaché à une boutique Shopify/,
+    rattache: [/linked to a Shopify store/, /managed by Shopify/,
+               /from the Heurix app in your store admin/,
+               /would not change its tier/],
+    // LES MARQUEURS FRANCAIS, ET ILS SONT PRIS DANS `DETAIL_MOTEUR`. Aucun ne
+    // peut apparaitre dans une phrase anglaise : l'absence est donc une
+    // mesure, pas une precaution.
+    etranger: [/rattaché à une boutique Shopify/, /l'abonnement de cette boutique/,
+               /ne changerait pas son palier/],
     deja: /already has an active subscription.*My subscription/s,
     phrase: [/Do you run a Shopify store/, /managed by Shopify/,
              /Don’t subscribe here for that store/,
              /does not change your store’s tier/],
+    generique: /Something went wrong/,
   },
 ];
 
@@ -79,18 +118,52 @@ const refus = (code, detail) => ({
   ok: false, status: 409, json: async () => (code ? { code, detail } : { detail }),
 });
 
-describe.each(PAGES)("$fichier — deux 409 sous un seul statut", ({ fichier, rattache, deja }) => {
-  it("le refus du compte rattaché affiche SA phrase, et ne propose pas la console", async () => {
-    const { w, vu } = charger(fichier, refus(
-      "compte_rattache_a_une_boutique",
-      "Ce compte Heurix est rattaché à une boutique Shopify : l'abonnement de cette boutique est géré par Shopify."));
+describe.each(PAGES)("$fichier — deux 409 sous un seul statut", ({ fichier, rattache, etranger, deja, generique }) => {
+  it("le refus du compte rattaché affiche SA phrase, dans SA langue, et ne propose pas la console", async () => {
+    // L'ENTREE EST LA PHRASE DU MOTEUR, EN FRANCAIS, POUR LES DEUX PAGES.
+    // C'est ce que le serveur deploye envoie, et c'est exactement ce qui
+    // s'affichait a l'ecran avant ce lot.
+    const { w, vu } = charger(fichier, refus("compte_rattache_a_une_boutique", DETAIL_MOTEUR));
     await attendre();
     await souscrire(w);
     expect(vu.alertes).toHaveLength(1);
-    expect(vu.alertes[0]).toMatch(rattache);
-    // LE POINT DU LOT : pas de proposition de console. C'est la surface d'où
-    // vient ce marchand, et l'y renvoyer serait boucler.
+    for (const motif of rattache) expect(vu.alertes[0]).toMatch(motif);
+    // ET L'AUTRE LANGUE N'APPARAIT NULLE PART. Sans cette moitie, la page
+    // anglaise passerait en affichant `detail` -- le defaut du 15 octobre.
+    for (const motif of etranger) expect(vu.alertes[0]).not.toMatch(motif);
+    // LE POINT DU LOT PRECEDENT : pas de proposition de console. C'est la
+    // surface d'où vient ce marchand, et l'y renvoyer serait boucler.
     expect(vu.confirmations).toHaveLength(0);
+  });
+
+  it("TÉMOIN DE NON-RÉGRESSION : un code INCONNU affiche encore `detail`", async () => {
+    // Si `detail` disparaissait en réparant le cas connu, un refus que cette
+    // page n'a pas appris deviendrait « une erreur est survenue » — une perte
+    // nette. `detail` reste le repli, et ce test est ce qui l'empêche de
+    // partir avec le reste.
+    const { w, vu } = charger(fichier, refus(
+      "un_code_que_cette_page_ne_connait_pas",
+      "La phrase que le moteur a écrite pour ce refus-là."));
+    await attendre();
+    await souscrire(w);
+    expect(vu.alertes).toHaveLength(1);
+    expect(vu.alertes[0]).toBe("La phrase que le moteur a écrite pour ce refus-là.");
+    expect(vu.confirmations).toHaveLength(0);
+  });
+
+  it("TÉMOIN : un code inconnu SANS `detail` lisible retombe sur le générique", async () => {
+    // Un 422 rend une LISTE. Concaténée, elle s'affiche « [object Object] » —
+    // le défaut mesuré le même jour dans le gabarit de l'app Shopify. Ces
+    // pages ne reçoivent que des 409, mais le typage est vérifié pour que le
+    // même défaut ne puisse pas naître ici.
+    const { w, vu } = charger(fichier, refus(
+      "un_code_que_cette_page_ne_connait_pas",
+      [{ type: "string_too_short", loc: ["body", "code"], msg: "String should have at least 1 character" }]));
+    await attendre();
+    await souscrire(w);
+    expect(vu.alertes).toHaveLength(1);
+    expect(vu.alertes[0]).not.toMatch(/\[object Object\]/);
+    expect(vu.alertes[0]).toMatch(generique);
   });
 
   it("le refus « déjà abonné » garde SA phrase et sa proposition de console", async () => {
@@ -118,7 +191,8 @@ describe.each(PAGES)("$fichier — deux 409 sous un seul statut", ({ fichier, ra
     await attendre();
     await souscrire(w);
     expect(vu.alertes).toHaveLength(1);
-    expect(vu.alertes[0]).not.toMatch(rattache);
+    for (const motif of rattache) expect(vu.alertes[0]).not.toMatch(motif);
+    expect(vu.alertes[0]).toMatch(generique);
   });
 });
 
