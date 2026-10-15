@@ -36,7 +36,9 @@ import {
  * poursuit partout ailleurs -- un garde qui juge autre chose que ce qui est
  * servi -- et il faudrait ecrire ce garde AVANT, pour un probleme de vitrine et
  * non de secret. Raison complete :
- * `docs/mesures/pages-perimetre-2026-10-04/RELEVE.md`.
+ * `SITE-pages-perimetre-2026-10-04.md`, depot prive (rapatrie le
+ * 15 octobre 2026 : un inventaire de ce qui est public ne doit pas etre
+ * public).
  *
  * CE QUE robots.txt NE FAIT PAS, et c'est assume : il ne retire rien. Les 198
  * fichiers restent lisibles pour qui connait l'URL. Ce qu'il retire est le

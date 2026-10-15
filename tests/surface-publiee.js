@@ -42,7 +42,8 @@ export function fichiersSuivis() {
  * Mesure du 4 octobre 2026 : `upload-pages-artifact` recoit `path: '.'`, donc
  * Pages sert la racine entiere -- 1 042 fichiers, 22,1 Mio, dont 198 fichiers
  * et 2,52 Mio qui ne sont pas du site. Releve complet :
- * `docs/mesures/pages-perimetre-2026-10-04/`.
+ * `SITE-pages-perimetre-2026-10-04.md`, depot prive (rapatrie le
+ * 15 octobre 2026).
  *
  * LA LISTE EST UNE LISTE, ET C'EST ASSUME. Le reste de ce depot derive ses
  * perimetres ; ici le critere « ce fichier appartient-il au site ? » n'a pas de
