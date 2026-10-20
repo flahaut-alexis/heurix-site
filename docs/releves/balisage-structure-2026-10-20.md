@@ -703,6 +703,14 @@ saine garde la prochaine naissance.
 
 ## 12. Le bloc `Organization` : 23 variantes, et de quoi le lot d'unification est fait
 
+> **Périmé sur deux chiffres depuis le lot `1b50d0af` du même jour.** Les
+> quatre pages anglaises qui décrivaient Heurix en français ont reçu la
+> rédaction anglaise de référence : le compte de variantes passe de **23 à
+> 27** (quatre variantes de 2 pages deviennent huit variantes de 1 page) et
+> l'axe 1 passe à **73 FR / 69 EN / 1 / 4**, sans aucune page anglaise en
+> français. Détail : `docs/releves/metadonnees-tete-2026-10-20.md`, §3.1.
+
+
 Vous le lancerez vous-même ; voici de quoi le chiffrer. Mesuré sur `ec0887fb` :
 **147 occurrences, 23 variantes distinctes** (22 sur `441d2746` — l'ajout de
 l'`identifier` SIRET sur deux pages a formé une variante de plus et vidé

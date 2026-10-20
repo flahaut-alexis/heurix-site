@@ -139,9 +139,18 @@ describe("index derive — forme", () => {
 
     const ancres = fr.entrees.filter((e) => e.ancre && e.p.startsWith("fonctionnalites.html#"));
     expect(ancres.length).toBe(41);
-    // `e` porte le titre de la page mere : les 41 l'ont. C'est un repere
+    // `e` porte le LIBELLE de la page mere : les 41 l'ont. C'est un repere
     // d'affichage, et search-engine.js ne le classe pas pour une ancre.
-    expect(ancres.filter((a) => /merchandising/i.test(a.e)).length).toBe(41);
+    //
+    // COMPARE AU LIBELLE, PLUS A UN MOT CHOISI (20 octobre 2026). La sonde
+    // etait `/merchandising/i` : le mot vivait dans le <title> de la page, qui
+    // etait alors le libelle. Depuis que le libelle est le <h1> -- « Le moteur
+    // de recherche que vos references meritent. » -- le mot n'y est plus, et
+    // l'assertion tombait sans que la propriete qu'elle garde ait bouge d'un
+    // iota. Une sonde choisie dans une valeur qui peut changer garde la sonde,
+    // pas la propriete.
+    expect(ancres.filter((a) => a.e === page.t).length).toBe(41);
+    expect(page.t, "le libelle de la page mere n'est pas vide").toBeTruthy();
     // `k` classe, lui. Seules les trois ancres qui ecrivent le mot dans leur
     // propre titre le portent.
     const portent = ancres.filter((a) => a.k.split(" ").includes("merchandising"));
@@ -598,10 +607,20 @@ describe("index derive — la recherche lit vraiment les termes", () => {
 
   // Le classement doit tenir : un titre bat un terme de corps, sinon la page
   // Tarifs se noie dans toutes les pages qui mentionnent le mot.
-  it("un titre passe devant un terme de corps", async () => {
+  it("un libelle passe devant un terme de corps", async () => {
+    // LA SONDE A CHANGE AVEC LE LIBELLE (20 octobre 2026). Elle etait
+    // « tarifs », mot du <title> de pricing.html quand le libelle etait le
+    // <title> ; le libelle est maintenant le <h1> « Le moteur Heurix, en
+    // self-service. », et « tarifs » n'y est plus -- il reste dans `k`, donc
+    // la page reste trouvable, mais plus par son libelle.
+    //
+    // « fiche » le remplace, et il est choisi sur mesure : un seul libelle des
+    // 77 pages FR le porte (blog/decoupage-rag-catalogue-produit.html), et 29
+    // autres pages l'ont dans leur corps. C'est exactement l'arbitrage que
+    // cette assertion garde.
     const w = await moteurAvecIndexReel();
-    const premier = chercher(w, "tarifs")[0].querySelector(".search-result-title").textContent;
-    expect(premier.toLowerCase()).toContain("tarifs");
+    const premier = chercher(w, "fiche")[0].querySelector(".search-result-title").textContent;
+    expect(premier.toLowerCase()).toContain("fiche");
   });
 
   it("une requete sans correspondance rend zero", async () => {
