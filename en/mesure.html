@@ -19,8 +19,47 @@
 <meta name="twitter:image" content="https://heurix.fr/og-image.png">
 <link rel="icon" type="image/png" href="../favicon-32.png">
 <link rel="apple-touch-icon" href="../apple-touch-icon.png">
-<link rel="stylesheet" href="../styles.css?v=1789721626">
+<link rel="stylesheet" href="../styles.css?v=1792520028">
 <link rel="canonical" href="https://heurix.fr/en/mesure.html">
+<!-- TechArticle, ET PAS Report NI Dataset (20 octobre 2026).
+     La page est un relevé de mesure : corpus (2 821 fiches du catalogue
+     public-demo), méthode, résultat (BM25 contre Heurix), limites
+     (« deux choses que cette mesure dit contre nous », « là où nous
+     n'apportons rien ») et le moyen de la refaire. C'est un article
+     technique décrivant une procédure reproductible, et TechArticle est
+     exactement cela.
+     ÉCARTÉS : `Report`, dont schema.org réserve le sens à une publication
+     d'organisme ; `ScholarlyArticle`, qui laisse entendre une relecture par
+     des pairs qui n'a pas eu lieu ; `Dataset`, qui décrirait le corpus et
+     non la page ; `BlogPosting`, car la page ne vit pas dans le blog, ne
+     porte ni kicker daté ni signature, et sortirait du périmètre de
+     schema-article.test.js tout en prétendant y entrer.
+     AUCUNE DATE N'EST DÉCLARÉE, et c'est le point à ne pas « combler » plus
+     tard. La page date sa MESURE -- « Mesure du 2 septembre 2026 », deux
+     fois dans le corps -- pas sa publication. Écrire cette date en
+     `datePublished` affirmerait une chose que la page ne dit pas. Aucun
+     autre endroit du document ne porte de date de publication : le champ
+     reste donc absent. -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "What Heurix recovers on a 2,821-product catalog",
+  "description": "No customer yet, but a repeatable measurement: 300 queries on a 2,821-product catalog, Heurix against BM25, and the three places where we add nothing.",
+  "inLanguage": "en",
+  "mainEntityOfPage": "https://heurix.fr/en/mesure.html",
+  "author": {
+    "@type": "Person",
+    "name": "Alexis Flahaut",
+    "url": "https://heurix.fr/about.html"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Heurix",
+    "url": "https://heurix.fr"
+  }
+}
+</script>
 </head>
 <body class="docs-dark">
 <!-- Banniere de langue : regle de declenchement, cle et exemption CNIL dans langue-banniere.js. -->
