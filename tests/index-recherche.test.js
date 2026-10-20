@@ -553,6 +553,14 @@ describe("index derive — la recherche lit vraiment les termes", () => {
     // requete.
     "blog/decoupage-rag-catalogue-produit.html",
     "blog/heurix-vs-algolia-typesense-sensefuel-doofinder.html",
+    // ENTREE LE 20 OCTOBRE 2026, ET solutions/outillage.html SORT. L'article
+    // des normes a « DIN 933 » pour sujet : il mesure les trois graphies du
+    // sigle et l'annotation qu'elles partagent. Neuf pages correspondent
+    // toujours, pour huit places affichees -- c'est la TROISIEME eviction par
+    // le plafond notee dans ce bloc, apres le 2 et le 16 septembre, et le
+    // mecanisme est le meme : une page qui TRAITE la norme passe devant une
+    // page qui la mentionne. solutions/outillage.html n'a pas change d'un mot.
+    "blog/normes-din-iso-nf-en-reference-produit.html",
     "blog/recherche-reference-sku-b2b.html",
     "blog/recherche-vectorielle-catalogues-techniques.html",
     "index.html",
@@ -568,7 +576,6 @@ describe("index derive — la recherche lit vraiment les termes", () => {
     // dans huit places, mais l'ancre #annotations en occupait une. Le
     // « DEPLACEMENT » note le 2 septembre etait donc une EVICTION, et sa cause
     // n'etait pas celle qu'on lui a prêtee.
-    "solutions/outillage.html",
   ];
 
   // HUIT ENTREES POUR HUIT PAGES DEPUIS LE 4 SEPTEMBRE 2026 -- ET LE BLOC QUI

@@ -107,6 +107,15 @@
     <changefreq>weekly</changefreq><priority>0.7</priority>
   </url>
 
+  <url><loc>https://heurix.fr/blog/electricite-section-cable-deux-ecritures.html</loc><xhtml:link rel="alternate" hreflang="en" href="https://heurix.fr/en/blog/electricite-section-cable-deux-ecritures.html"/><lastmod>2026-10-20</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://heurix.fr/en/blog/electricite-section-cable-deux-ecritures.html</loc><xhtml:link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/electricite-section-cable-deux-ecritures.html"/><lastmod>2026-10-20</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+
+  <url><loc>https://heurix.fr/blog/plomberie-diametre-filetage-raccord-ecritures.html</loc><xhtml:link rel="alternate" hreflang="en" href="https://heurix.fr/en/blog/plomberie-diametre-filetage-raccord-ecritures.html"/><lastmod>2026-10-20</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://heurix.fr/en/blog/plomberie-diametre-filetage-raccord-ecritures.html</loc><xhtml:link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/plomberie-diametre-filetage-raccord-ecritures.html"/><lastmod>2026-10-20</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+
+  <url><loc>https://heurix.fr/blog/normes-din-iso-nf-en-reference-produit.html</loc><xhtml:link rel="alternate" hreflang="en" href="https://heurix.fr/en/blog/normes-din-iso-nf-en-reference-produit.html"/><lastmod>2026-10-20</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://heurix.fr/en/blog/normes-din-iso-nf-en-reference-produit.html</loc><xhtml:link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/normes-din-iso-nf-en-reference-produit.html"/><lastmod>2026-10-20</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+
   <url><loc>https://heurix.fr/blog/recherche-reference-sku-b2b.html</loc><xhtml:link rel="alternate" hreflang="en" href="https://heurix.fr/en/blog/recherche-reference-sku-b2b.html"/><lastmod>2026-10-20</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://heurix.fr/en/blog/recherche-reference-sku-b2b.html</loc><xhtml:link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/recherche-reference-sku-b2b.html"/><lastmod>2026-10-20</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
 

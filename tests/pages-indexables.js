@@ -27,11 +27,17 @@ import { join } from "node:path";
  * circulent sur ce depot et que deux d'entre eux ne doivent servir a aucun
  * garde :
  *
- *     174   fichiers .html suivis          inventaire, rien de plus
+ *     180   fichiers .html suivis          inventaire, rien de plus
  *     -  1  fragment sans <html>           downloads/heurix-conversion-snippet.html
  *     - 12  arbres qui ne sont pas le site docs/maquettes/ (8), demo/ (2), en/demo/ (2)
  *     - 21  pages du site en noindex       404, cgv-*, console, mentions-legales...
- *     = 140 PAGES INDEXABLES               = exactement les <loc> du sitemap
+ *     = 146 PAGES INDEXABLES               = exactement les <loc> du sitemap
+ *
+ * LE COMPTE EST PASSE DE 140 A 146 LE 20 OCTOBRE 2026 AU SOIR, et c'est le
+ * seul geste que demande l'ajout de trois articles bilingues : electricite,
+ * plomberie, normes. 174 et 140 etaient justes a la mesure du matin ; les six
+ * pages neuves les ont perimes le meme jour, et c'est exactement ce que le
+ * plancher serre ci-dessous existe pour faire dire a quelqu'un.
  *
  * C'est 140 qui fait foi pour un garde. 174 est un inventaire de fichiers ;
  * 163 -- le compte « pages avec <html> hors tests/docs/demo/downloads »
@@ -63,7 +69,7 @@ export function pagesIndexables() {
 }
 
 /**
- * LE PLANCHER, MESURE LE 20 OCTOBRE 2026 : 140 pages indexables.
+ * LE PLANCHER, MESURE LE 20 OCTOBRE 2026 AU SOIR : 146 pages indexables.
  *
  * Il n'est pas sous la mesure, il lui est EGAL, et c'est demande : un
  * perimetre qui tombe a 139 doit rougir. Une page retiree du site, ou passee
@@ -71,4 +77,4 @@ export function pagesIndexables() {
  * plancher serre, et il se paie en une ligne a mettre a jour ici, avec sa
  * date, plutot qu'en trois gardes qui inspectent moins de pages sans le dire.
  */
-export const PLANCHER = 140;
+export const PLANCHER = 146;
