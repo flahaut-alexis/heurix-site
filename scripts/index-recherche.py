@@ -225,6 +225,7 @@ _BANNIERE_LANGUE = re.compile(
 _BALISES = re.compile(r"<[^>]+>")
 _ENTITES = re.compile(r"&[a-z]+;|&#\d+;")
 _ESPACES = re.compile(r"\s+")
+_SAUT_DE_LIGNE = re.compile(r"<br\b[^>]*>", re.I)
 
 
 def pages_du_sitemap() -> list[str]:
@@ -301,13 +302,38 @@ def extraire(chemin: str) -> dict:
     perime alors que rien d'indexable n'a bouge.
     """
     src = open(os.path.join(RACINE, chemin), encoding="utf8").read()
+    # LE LIBELLE INDEXE EST LE <h1>, PLUS LE <title> (20 octobre 2026).
+    #
+    # Les deux surfaces veulent deux formes, et on cessait de le reconnaitre.
+    # Le <title> sert le resultat d'un moteur de recherche : depuis le lot
+    # 1b50d0af il est borne a 60 caracteres et porte le suffixe de marque,
+    # choisi pour ce que Google affiche. La palette de recherche DU SITE, elle,
+    # a besoin du titre editorial -- celui qui montre le cas concret :
+    # « boulen M8 inpx : ce que votre moteur a compris » plutot que
+    # « Cascade d'annotations : des resultats explicables — Heurix ».
+    # Mesure du jour : les 140 libelles changent, 119 sur le texte et 21 par le
+    # seul suffixe de marque.
+    #
+    # LES BALISES INTERNES SONT RETIREES SANS ESPACE, ET C'EST MESURE : trois
+    # <span> vivent dans les h1 des deux accueils, et
+    # « votre <span>metier</span>. » rendu avec un espace donnait
+    # « votre metier . ». Un <br> est la seule balise qui doive rendre une
+    # espace ; il n'y en a aucun dans les 140 h1 d'aujourd'hui, et la regle est
+    # posee pour le jour ou il y en aura un.
+    #
+    # L'EMPREINTE SUIT : elle porte sur ce dictionnaire, donc elle ne surveille
+    # plus le <title> mais le <h1>. C'est la consequence voulue -- rien de
+    # l'index ne vient plus du <title>, et `--verifier` ne doit pas rougir
+    # quand une forme courte est retouchee pour Google.
+    #
     # LE TITRE ET LA DESCRIPTION SONT DESESCAPES (3 septembre 2026). Ils sont
     # lus dans du HTML, donc ils portent des entites -- mais search-engine.js
     # les rend par `textContent` (jamais innerHTML, voir son commentaire ligne
     # 204), et `textContent` affiche « Vins &amp; spiritueux » tel quel. Le
     # corps, lui, ne passe pas par ici : `_ENTITES` l'a deja nettoye.
-    titre = html.unescape(
-        (re.search(r"<title>([^<]*)</title>", src) or [None, ""])[1]).strip()
+    brut_h1 = (re.search(r"<h1[^>]*>([\s\S]*?)</h1>", src) or [None, ""])[1]
+    titre = _ESPACES.sub(" ", html.unescape(
+        _BALISES.sub("", _SAUT_DE_LIGNE.sub(" ", brut_h1)))).strip()
     desc = html.unescape(
         (re.search(r'<meta name="description" content="([^"]*)"', src) or [None, ""])[1]).strip()
     sans_chrome = _HORS_CONTENU.sub("", _BANNIERE_LANGUE.sub("", src))
@@ -418,6 +444,23 @@ def construire(langue: str) -> dict:
     # Un chemin absent des entrees serait filtre EN SILENCE a l'affichage.
     # On le refuse ici plutot que de le laisser se perdre.
     connus = {e["p"] for e in entrees}
+    # UNE PAGE SANS <h1> UTILISABLE EST UN REFUS, PAS UNE LIGNE VIDE
+    # (20 octobre 2026). Depuis que `t` est le h1, une page qui en perd un
+    # ferait une entree de palette au libelle VIDE : le visiteur verrait une
+    # ligne cliquable sans texte, et rien dans l'index ne dirait pourquoi.
+    # Le generateur refuse donc d'ecrire, et NOMME les pages.
+    #
+    # C'est le complement du garde `tests/titre-h1.test.js`, qui exige un h1
+    # unique sur chaque page indexable : lui attrape la page, celui-ci
+    # attrape le cas ou la page echappe au garde -- une page hors du
+    # perimetre indexable mais presente au sitemap, par exemple.
+    muettes = [e["p"] for e in entrees if not e["t"]]
+    if muettes:
+        sys.exit(
+            "Ces pages du sitemap n'ont pas de <h1> utilisable, et le libelle\n"
+            "de la palette en vient depuis le 20 octobre 2026. Rien n'est ecrit.\n"
+            "  " + "\n  ".join(muettes))
+
     derniers = derniers_articles(langue)
     manquants = [d for d in derniers if d not in connus]
     if manquants:
@@ -467,6 +510,14 @@ def verifier() -> int:
         for p in connues:
             if p not in attendues:
                 ecarts.append("%s : plus dans le sitemap, encore dans %s" % (p, fichier))
+
+        # LIBELLE VIDE : le meme refus que `construire`, cote lecture. Sans
+        # cette ligne, une page qui perd son <h1> serait signalee comme « son
+        # contenu indexable a change » -- vrai, et muet sur la cause.
+        for p in attendues:
+            if not extraire(p)["t"]:
+                ecarts.append("%s : plus de <h1> utilisable, le libelle de la "
+                              "palette serait vide" % p)
 
         # LA LISTE DES DERNIERS ARTICLES, meme controle et meme raison qu'avant
         # sa fusion ici : une liste perimee reste du JSON valide, et personne
