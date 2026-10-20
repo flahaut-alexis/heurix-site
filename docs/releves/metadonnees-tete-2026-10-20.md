@@ -450,3 +450,193 @@ un moteur.
 - `scripts/sitemap-lastmod.py` relancé.
 - `h1`, `headline` des `BlogPosting`, `blog.html`, `pricing.html` et
   `en/pricing.html` : **absents du diff**, vérifié sur le diff et non supposé.
+
+---
+---
+
+# Addendum — le libellé de la palette devient le h1 (`676ec1ba`)
+
+Le §2.1 posait la question ; elle est tranchée. `scripts/index-recherche.py`
+indexe désormais le `<h1>` dans le champ `t`, et plus le `<title>`.
+
+## 10. Ce que la mesure dit avant d'écrire
+
+**Ce sont les 140 libellés qui changent, pas les 76 du lot précédent.** Le
+`<title>` porte toujours un suffixe de marque et le `<h1>` n'en porte jamais :
+aucune page n'était épargnée.
+
+| | pages |
+|---|---|
+| libellés qui changent | **140 / 140** |
+| dont le **texte** change | **119** |
+| dont seul le **suffixe de marque** disparaît | **21** |
+| pages du périmètre sans `<h1>` exploitable | **0** |
+
+Les 140 pages ont un `<h1>` non vide — c'est `tests/titre-h1.test.js`, écrit
+hier, qui le tient. Longueurs : de 22 (`docs.html`) à 111 caractères
+(`blog/limites-moteurs-natifs-gros-catalogue.html`), trois au-dessus de 100.
+Le libellé n'est plus borné, et c'est voulu : la palette n'a pas la limite
+d'un résultat Google.
+
+Trois exemples de ce que la palette affiche maintenant :
+
+| page | avant (`<title>`) | après (`<h1>`) |
+|---|---|---|
+| `blog/cascade-annotations-resultats-explicables.html` | Cascade d'annotations : des résultats explicables — Heurix | **« boulen M8 inpx » : ce que votre moteur a compris, et pourquoi il vous le montre** |
+| `blog/badge-prix-barre-recherche.html` | Le badge de réduction automatique dans la barre — Heurix | **Le badge de réduction automatique que personne ne configure** |
+| `index.html` | Heurix — Moteur de recherche & discovery pour le e-commerce | **Un moteur de recherche qui connaît déjà votre métier.** |
+
+**Zéro terme de vocabulaire perdu**, et ce n'était pas acquis : `k` est
+construit depuis `brut["t"]`, donc il suit le `h1` lui aussi. Mesuré avec la
+tokenisation du moteur sur les 140 pages — `termes(title + e + corps)` contre
+`termes(h1 + e + corps)` : **0 page perd un terme, 0 terme distinct perdu**.
+Les mots des formes courtes vivent tous ailleurs dans leur page. `k` n'a donc
+pas eu à être élargi, et aucune page ne devient introuvable par un mot.
+
+### 10.1 Deux effets de bord, mesurés et assumés
+
+**140 ancres suivent.** Le champ `e` d'une ancre porte le libellé de sa page
+mère (`"e": brut["t"]`), donc il passe du `<title>` au `<h1>`. C'est
+cohérent — l'entrée d'une page et ses sections annoncent désormais la même
+chose — et sans effet sur les scores : `search-engine.js` exclut `e` du
+classement d'une ancre (« `e` NE CLASSE PAS UNE ANCRE », 4 septembre 2026).
+
+**L'empreinte suit aussi.** `empreinte()` porte sur le dictionnaire de
+`extraire()`, donc elle surveille maintenant le `<h1>` et plus le `<title>`.
+C'est la conséquence voulue : plus rien de l'index ne vient du `<title>`, et
+`--verifier` ne doit pas rougir quand une forme courte est retouchée pour
+Google.
+
+### 10.2 Les balises dans un `<h1>`
+
+Trois `<span>` vivent dans les `<h1>` des deux accueils, et aucun `<br>`.
+**Les balises sont retirées sans espace**, parce que la mesure l'exige :
+`votre <span>métier</span>.` rendu avec une espace donnait
+`votre métier .` — une espace avant le point, visible dans la palette. Un
+`<br>` rend une espace ; il n'y en a aucun aujourd'hui, et la règle est posée
+pour le jour où il y en aura un.
+
+---
+
+## 11. Une page sans `<h1>` : trois refus, pas une ligne vide
+
+C'est votre dernière question, et elle est traitée dans le code plutôt que
+décrite. Mesuré en retirant le `<h1>` de `mesure.html` :
+
+| ce qui se passe | verdict |
+|---|---|
+| **la génération** (`index-recherche.py`) | **refuse d'écrire**, code 1, et nomme la page : *« Ces pages du sitemap n'ont pas de `<h1>` utilisable […] Rien n'est écrit. mesure.html »*. Empreinte de l'index **inchangée** avant/après — vérifié, pas supposé. |
+| **`--verifier`** | code 1, et nomme **la cause** : *« mesure.html : plus de `<h1>` utilisable, le libellé de la palette serait vide »*. Sans cette ligne il aurait dit *« son contenu indexable a changé »* — vrai, et muet sur le pourquoi. |
+| **le témoin** `index-libelle-h1.test.js` | rouge : *« mesure.html : la page n'a plus de `<h1>` »* |
+| **`titre-h1.test.js`** (lot d'hier) | rouge aussi : la page est indexable et sans `h1` |
+
+Les trois sont utiles et ne se remplacent pas : le refus **empêche** d'écrire
+un index muet, `--verifier` **nomme la cause** sur un index déjà écrit, et le
+témoin **constate** sur un index écrit autrement — à la main, par une fusion,
+par un rebase mal résolu.
+
+**Ce qui reste ouvert, et c'est le trou :** si la page sort du sitemap en même
+temps qu'elle perd son `h1`, elle quitte le périmètre de la génération et
+aucun des trois ne la voit. Elle n'est alors plus dans la palette du tout —
+une disparition silencieuse, pas un libellé vide. C'est le plancher de 140 du
+témoin qui le dit, et lui seul.
+
+---
+
+## 12. Ce que ce témoin ne voit pas
+
+1. **Il compare deux dérivations du même fichier, pas un rendu.** Un `h1` de
+   111 caractères est accepté sans réserve : rien ne dit si la palette le
+   coupe à l'affichage. Aucun test de ce dépôt n'ouvre un navigateur.
+2. **Il ne juge pas le texte.** Un `h1` vidé de son sens, traduit de travers
+   ou identique à celui d'une autre page passe : il n'y a pas d'assertion
+   d'unicité sur les libellés, alors qu'il y en a une sur les `title`. Deux
+   pages peuvent porter le même libellé de palette.
+3. **Il réécrit l'extraction, donc il peut diverger du générateur.** La règle
+   est écrite deux fois — en Python dans le générateur, en JavaScript dans le
+   témoin — et c'est délibéré : un témoin qui importe la fonction qu'il
+   surveille ne vérifie que lui-même. Le prix est qu'une divergence de
+   traitement (une entité HTML que l'un décode et l'autre pas, un `<br>`
+   traité différemment) sort en rouge **sans** qu'il y ait de défaut. Mon
+   décodeur JavaScript couvre les entités nommées rencontrées dans ce dépôt
+   plus les numériques ; une entité nommée inédite dans un `h1` ferait
+   exactement ce faux rouge.
+4. **Il ne voit pas la page servie.** L'index publié sur `heurix.fr` n'est lu
+   par aucun test.
+5. **Il ne voit pas le classement.** `t` ne sert pas qu'au libellé :
+   `search-engine.js:262` le normalise pour **scorer**. Changer `t` change
+   donc l'ordre des résultats, et ce témoin ne mesure aucun ordre. Ce que la
+   suite en dit se limite aux deux sondes de `index-recherche.test.js`, dont
+   l'une a dû être remplacée pour cette raison même (§13).
+
+### 12.1 Vers quoi il n'a jamais été pointé
+
+- **Le `<title>`.** Depuis ce lot, plus aucun champ de l'index ne vient du
+  `<title>` — ni `t`, ni `k`, ni l'empreinte. Le lien entre les deux surfaces
+  est coupé, et plus rien ne les compare : un `title` qui dériverait du sujet
+  de sa page ne ferait rougir que `metadonnees-tete.test.js`, sur sa forme,
+  jamais sur son accord avec le `h1`.
+- **Les 34 pages hors périmètre indexable.** Elles ne sont pas au sitemap,
+  donc pas dans l'index, donc hors de ce témoin.
+
+---
+
+## 13. Deux sondes des tests existants vivaient dans le `<title>`
+
+Elles sont remplacées, et c'est le fait le plus instructif de cet addendum :
+**une sonde choisie dans une valeur qui peut changer garde la sonde, pas la
+propriété.**
+
+1. `index-recherche.test.js`, « *« merchandising » ne descend pas de
+   fonctionnalites.html dans ses ancres* » : l'assertion
+   `expect(ancres.filter(a => /merchandising/i.test(a.e)).length).toBe(41)`
+   passait parce que le `<title>` de la page portait le mot
+   (*« Moteur de recherche et merchandising e-commerce »*). Le `<h1>` est
+   *« Le moteur de recherche que vos références méritent. »* : le mot a
+   disparu, l'assertion est tombée, **et la propriété qu'elle garde n'avait
+   pas bougé d'un iota**. Elle compare désormais `a.e` au libellé lui-même
+   (`page.t`), ce qui est plus fort et ne dépend d'aucun mot.
+2. `index-recherche.test.js`, « *un titre passe devant un terme de corps* » :
+   la sonde était `tarifs`, mot du `<title>` de `pricing.html`. Le `<h1>` est
+   *« Le moteur Heurix, en self-service. »* ; `tarifs` reste dans `k` — la
+   page reste trouvable — mais plus dans son libellé. La sonde devient
+   **`fiche`**, choisie sur mesure : présente dans **un seul** libellé des 77
+   pages FR (`blog/decoupage-rag-catalogue-produit.html`) et dans le corps de
+   **29** autres. C'est exactement l'arbitrage que l'assertion garde.
+
+Un troisième test a rougi sans défaut : « *un article neuf vérifié avant son
+commit l'est encore après* » crée une copie par `git worktree add HEAD` et y
+lance le script du **répertoire de travail**. Tant que le lot n'était pas
+commité, le script neuf lisait un index ancien : 140 empreintes en écart. Vert
+dès le commit. Cela vaut d'être su de la prochaine session qui touche au
+générateur : **ce test ne peut pas être vert sur un arbre sale.**
+
+---
+
+## 14. Mutations de l'addendum
+
+Sept mutations, même protocole : vert exigé avant, fichiers mutés comptés
+avant lecture de la couleur, restauration par l'inverse exact, arbre vérifié
+propre.
+
+| # | mutation | fichiers | verdict |
+|---|---|---|---|
+| 1 | un `h1` réécrit, index laissé tel quel | 1 | 1 échec — *index : « … » / h1 : « … »* |
+| 2 | **une entrée reprend le `<title>`** (le retour en arrière) | 1 | 1 échec |
+| 3 | un `t` vidé dans l'index | 1 | 2 échecs — écart **et** libellé vide |
+| 4 | le champ `e` de 41 ancres détourné | 1 | 1 échec sur les 41 |
+| 5 | **`mesure.html` perd son `h1`** | 1 | 1 échec — *la page n'a plus de `<h1>`* |
+| 6 | les 140 entrées de page retirées des deux index | 2 | 2 échecs — `0 > 0` et `0 >= 140` |
+| 7 | la même perte de `h1`, **contre le générateur** | 1 | génération code 1, index non écrit ; `--verifier` code 1 nommant la cause |
+
+La mutation 2 est celle qui compte : c'est le retour en arrière, et sans ce
+témoin il serait indétectable — un index qui reprend le `<title>` reste du
+JSON valide, la palette affiche quelque chose, et personne ne remarque que les
+deux surfaces ont de nouveau la même forme.
+
+## 15. État de l'addendum
+
+- `npx vitest run` : **106 fichiers, 1136 tests, tous verts** (1129 avant ;
+  7 assertions ajoutées).
+- Les deux index régénérés avec l'interpréteur du moteur ;
+  `--verifier` : à jour, 140 pages.
