@@ -4,13 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Heurix — Search engine for technical e-commerce catalogs</title>
-<meta name="description" content="The Heurix search engine understands your product references through regular expressions — not just your keywords. Self-service or hands-on.">
+<meta name="description" content="The Heurix search engine understands the structure of your product references — M8x20, 6204-2RS — not just your keywords. Self-service or hands-on.">
 <link rel="alternate" hreflang="fr" href="https://heurix.fr/">
 <link rel="alternate" hreflang="en" href="https://heurix.fr/en/index.html">
 <link rel="alternate" hreflang="x-default" href="https://heurix.fr/">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Heurix — Search engine for technical e-commerce catalogs">
-<meta property="og:description" content="The Heurix search engine understands your product references through regular expressions — not just your keywords. Self-service or hands-on.">
+<meta property="og:description" content="The Heurix search engine understands the structure of your product references — M8x20, 6204-2RS — not just your keywords. Self-service or hands-on.">
 <meta property="og:image" content="https://heurix.fr/og-image.png">
 <meta property="og:url" content="https://heurix.fr/en/index.html">
 <meta property="og:locale" content="en_US">
@@ -21,6 +21,28 @@
 <link rel="apple-touch-icon" href="../apple-touch-icon.png">
 <link rel="stylesheet" href="../styles.css?v=1789721626">
 <link rel="canonical" href="https://heurix.fr/en/index.html">
+<!-- WebSite SANS SearchAction, ET C'EST MESURE (20 octobre 2026).
+     Un `SearchAction` declare une URL qui accepte un terme : Google la visite
+     avec `{search_term_string}` remplace. La recherche du site est une palette
+     cote client (search-engine.js, 158 pages) ; aucune URL ne porte de
+     parametre de requete, aucune page de resultats n'existe. Une cible ecrite
+     ici rendrait l'accueil en ignorant le terme -- un 200 qui se lit comme une
+     reponse. Le champ reste donc absent. Ce qui le debloquerait : une URL de
+     resultats qui honore `?q=`, cote site, avant le balisage. -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Heurix",
+  "url": "%s",
+  "inLanguage": "%s",
+  "publisher": {
+    "@type": "Organization",
+    "name": "Heurix",
+    "url": "https://heurix.fr"
+  }
+}
+</script>
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",

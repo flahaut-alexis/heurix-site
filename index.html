@@ -22,6 +22,28 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="stylesheet" href="styles.css?v=1789721626">
 <link rel="canonical" href="https://heurix.fr/">
+<!-- WebSite SANS SearchAction, ET C'EST MESURE (20 octobre 2026).
+     Un `SearchAction` declare une URL qui accepte un terme : Google la visite
+     avec `{search_term_string}` remplace. La recherche du site est une palette
+     cote client (search-engine.js, 158 pages) ; aucune URL ne porte de
+     parametre de requete, aucune page de resultats n'existe. Une cible ecrite
+     ici rendrait l'accueil en ignorant le terme -- un 200 qui se lit comme une
+     reponse. Le champ reste donc absent. Ce qui le debloquerait : une URL de
+     resultats qui honore `?q=`, cote site, avant le balisage. -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Heurix",
+  "url": "%s",
+  "inLanguage": "%s",
+  "publisher": {
+    "@type": "Organization",
+    "name": "Heurix",
+    "url": "https://heurix.fr"
+  }
+}
+</script>
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -32,6 +54,11 @@
   "image": "https://heurix.fr/og-image.png",
   "description": "Moteur de recherche et search & discovery pour sites e-commerce, basé sur des expressions régulières, conçu en France.",
   "email": "contact@heurix.fr",
+  "identifier": {
+    "@type": "PropertyValue",
+    "propertyID": "SIRET",
+    "value": "10768190000018"
+  },
   "sameAs": [
     "https://www.linkedin.com/company/heurix-search/"
   ],
