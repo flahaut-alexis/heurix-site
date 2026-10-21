@@ -380,3 +380,68 @@ ce sont des mots **justes dans l'unité de l'instrument et faux dans celle du
 lecteur**. Le témoin ne sait pas distinguer les deux, et il ne le saura pas.
 C'est un sixième angle mort, à ranger avec les cinq de son en-tête — et c'est
 la relecture qui l'a attrapé cette fois, comme la fois précédente.
+
+
+---
+
+## 8. Trois corrections sur `d1192e1c` (21 octobre, au soir)
+
+### La règle d'échantillonnage annoncée n'était pas celle qui a été suivie
+
+**Mesuré dans `docs/mesures/fiches-tierces-2026-10-20/RELEVE.md`, et nulle
+part ailleurs.** Sur la boutique dont la première adresse du plan de site
+était la page d'accueil — le site D — cette page **n'a pas été gardée**. Le
+relevé le dit en toutes lettres : la sonde l'a lue, n'y a trouvé aucun
+balisage produit, « le premier tableau que j'ai obtenu disait donc 4 sur 5, et
+il était faux », puis `RACINE_RAYON` a été ajouté et **le site a été
+remesuré**. Le même relevé énonce la règle réellement appliquée partout :
+« la première URL, dans l'ordre du document, qui porte **une forme de fiche
+reconnue**, dans le premier sitemap de produits trouvé ».
+
+Donc : **le compte « les cinq » est juste et ne bouge pas** — les cinq pages
+finalement lues sont cinq fiches produit. **C'est la phrase d'entrée qui était
+fausse**, parce qu'elle annonçait « la première que la boutique met dans son
+sommaire », c'est-à-dire une méthode plus simple que celle qui a servi. Un
+article qui annonce une méthode d'échantillonnage plus propre que la vraie
+promet par omission, et il le fait au sujet de sa propre méthode — le défaut
+même que son avant-dernière section dénonce.
+
+La phrase dit maintenant la règle et son repli :
+
+> cinq fiches lues le 20 octobre 2026, une par site, prise sans trier — la
+> première adresse du plan de site de chaque boutique **qui ait la forme d'une
+> fiche produit**. Sur l'une des cinq, cette première adresse était la page
+> d'accueil du magasin : **il a fallu descendre à la suivante**, et c'est
+> cette règle-là qui a servi partout.
+
+**L'aveu de l'avant-dernière section n'a pas été touché.** Les deux disent
+deux choses différentes : l'entrée dit la méthode, l'aveu dit que la première
+passe l'avait ratée et rendu un tableau faux.
+
+### Une phrase qui expliquait l'unité d'un objet absent
+
+Retirée de l'article 1 : « Ce qui est compté est ce qui précède : les
+fichiers, les branchements, les tables. » Les comptes de fichiers sont partis
+dans ce relevé à la réécriture précédente ; la phrase commentait donc une
+grandeur que l'article ne porte plus. Ce qui reste — « personne ne l'a
+chronométré, nous n'avons pas de chiffre à donner » — se tient seul.
+
+### « Le seul mot technique de cette page » était vérifiable, et faux
+
+C'est une affirmation **sur la page elle-même**, donc mesurable. Mesuré sur
+l'article 2 : « bloc de données » y figure **trois fois**, « plan de site »
+**une fois**. La phrase était fausse.
+
+Deux sorties possibles : la rendre vraie, ou cesser de compter. La rendre
+vraie aurait demandé de retirer « bloc de données », qui est le sujet même de
+l'article, et de le remplacer par du vague — ce que le lot s'interdit. Elle
+cesse donc de compter, et donne au lecteur ce dont il a réellement besoin :
+
+> il s'appelle schema.org, et c'est le mot à donner à votre agence
+
+`DEFINIS` du témoin suit, dans les deux langues, avec la raison en commentaire.
+
+**ET LE MÊME DÉFAUT VIT DANS L'ARTICLE DU 20 OCTOBRE**, déjà fusionné :
+`blog/ce-qu-une-ia-lit-de-vos-fiches-produit.html` porte la même phrase, avec
+« bloc de données » deux fois et « plan de site » une fois. Ce lot n'avait pas
+le droit d'y toucher. **C'est un lot à lui, et il est à faire.**

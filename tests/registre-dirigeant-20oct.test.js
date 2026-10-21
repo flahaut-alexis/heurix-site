@@ -94,14 +94,25 @@ const DEFINIS = {
     "schema.org": "it is called schema.org, and it is the only technical word on this page",
   },
   // « Le site de votre concurrent… » parle du meme bloc de donnees, donc du
-  // meme mot, et le definit de la meme facon. L'autre article du 21 octobre
-  // n'en a pas besoin : il ne doit donc PAS figurer ici, et l'assertion
-  // « aucune entree perimee » plus bas le verifie.
+  // meme mot. L'autre article du 21 octobre n'en a pas besoin : il ne doit
+  // donc PAS figurer ici, et l'assertion « aucune entree perimee » plus bas
+  // le verifie.
+  //
+  // LA DEFINITION N'EST PLUS LA MEME QUE CELLE DE L'ARTICLE DU 20 OCTOBRE,
+  // ET C'EST UNE CORRECTION (21 octobre, au soir). Les deux disaient « c'est
+  // le seul mot technique de cette page ». C'est une affirmation SUR LA PAGE,
+  // donc verifiable -- et elle est fausse : « bloc de donnees » y figure
+  // trois fois et « plan de site » une fois. Celui-ci cesse donc de compter
+  // et donne au lecteur ce dont il a besoin, le mot a transmettre.
+  //
+  // L'ARTICLE DU 20 OCTOBRE PORTE ENCORE LA FORME FAUSSE, et ce lot n'avait
+  // pas le droit d'y toucher : il la porte avec « bloc de donnees » deux fois
+  // et « plan de site » une fois. A corriger dans un lot a lui.
   "blog/concurrent-meilleur-ou-plus-facile.html": {
-    "schema.org": "il s’appelle schema.org, et c’est le seul mot technique de cette page",
+    "schema.org": "il s’appelle schema.org, et c’est le mot à donner à votre agence",
   },
   "en/blog/concurrent-meilleur-ou-plus-facile.html": {
-    "schema.org": "it is called schema.org, and it is the only technical word on this page",
+    "schema.org": "it is called schema.org, and that is the word to give your web agency",
   },
 };
 
