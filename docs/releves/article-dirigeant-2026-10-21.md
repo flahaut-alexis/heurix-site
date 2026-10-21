@@ -233,13 +233,39 @@ qui les borne entre 700 et 900.
 
 ## 7. Trois décisions à valider, et une à signaler
 
-**(a) Aucun nom de marque dans l'article, y compris celui du titre de
-travail.** La consigne dit « aucun nom d'entreprise tierce dans l'article,
-même en exemple favorable » ; le titre de travail, lui, nommait un assistant.
-J'ai tranché pour la consigne : le `h1` dit « une IA ». Si vous voulez la
-force du titre de travail, c'est une ligne à changer dans le `h1`, le
-`headline`, le `<title>` et les deux cartes d'index — et ça ne change rien au
-corps.
+**(a) ~~Aucun nom de marque dans l'article~~ — TRANCHÉ LE 21 OCTOBRE, EN SENS
+INVERSE.** J'avais lu « aucun nom d'entreprise tierce dans l'article, même en
+exemple favorable » comme couvrant le sujet de l'article, et écrit un `h1` qui
+disait « une IA ». Alexis a reborné la consigne : elle visait les
+**distributeurs dont les pages ont été mesurées**, pas le sujet — et le blog
+nomme déjà Algolia, Typesense et Elasticsearch dans ses titres.
+
+Le titre de travail est donc rétabli : `h1` et `headline` valent
+« Vos clients demandent vos produits à ChatGPT. Que répond-il ? », le
+`<title>` « Vos clients interrogent ChatGPT sur vos produits — Heurix »
+(57 caractères), et les deux cartes d'index portent le `h1`. **Le corps n'a
+pas bougé** : cinq lignes par page, toutes dans la tête ou le `h1` (le
+`<title>` se propage à `og:title` et `twitter:title`).
+
+**Ce que le nom change à la dernière section, et c'est un gain.** Tant que le
+`h1` disait « ce qu'elle lit de votre catalogue », il ne posait aucune
+question que la page refusait de traiter : le `h2` « Pourquoi cette page ne
+répond pas à son titre » était donc **légèrement faux**, la page répondant
+très bien au sien. Avec « Que répond-il ? » rétabli, le `h1` pose la question
+et la dernière section en est la réponse honnête. Le refus cesse d'être une
+réserve ajoutée en fin de page pour devenir la chute de l'accroche.
+
+Ce qui reste à surveiller, et qui est du ressort de votre relecture : une
+question posée au `h1` et déclinée en fin de page peut se lire comme un
+appât. Ce qui l'en empêche est la **troisième phrase du chapô** — « Voici ce
+que cinq fiches de distributeurs français donnaient à lire le 20 octobre
+2026 » — qui annonce le livrable réel dans les soixante premiers mots. Et le
+corps ne nomme jamais ChatGPT : l'accroche nomme l'instance que le lecteur
+connaît, le corps généralise à tout lecteur automatique, ce que la mesure des
+dix robots sur les six `robots.txt` couvre.
+
+Les seules marques du lot restent donc celles-là. **Aucun distributeur mesuré
+n'est nommé**, ni dans l'article, ni dans le relevé versionné.
 
 **(b) Pas de `BreadcrumbList`, et ce n'est pas un oubli.** La consigne
 demandait « son fil d'Ariane ». Le dépôt a tranché l'inverse le 4 septembre
