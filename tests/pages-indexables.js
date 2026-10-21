@@ -77,4 +77,4 @@ export function pagesIndexables() {
  * plancher serre, et il se paie en une ligne a mettre a jour ici, avec sa
  * date, plutot qu'en trois gardes qui inspectent moins de pages sans le dire.
  */
-export const PLANCHER = 146;
+export const PLANCHER = 148;

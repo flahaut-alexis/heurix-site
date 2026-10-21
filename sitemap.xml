@@ -96,16 +96,19 @@
     <loc>https://heurix.fr/blog.html</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://heurix.fr/blog.html"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://heurix.fr/en/blog.html"/>
-    <lastmod>2026-10-20</lastmod>
+    <lastmod>2026-10-21</lastmod>
     <changefreq>weekly</changefreq><priority>0.8</priority>
   </url>
   <url>
     <loc>https://heurix.fr/en/blog.html</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://heurix.fr/blog.html"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://heurix.fr/en/blog.html"/>
-    <lastmod>2026-10-20</lastmod>
+    <lastmod>2026-10-21</lastmod>
     <changefreq>weekly</changefreq><priority>0.7</priority>
   </url>
+
+  <url><loc>https://heurix.fr/blog/ce-qu-une-ia-lit-de-vos-fiches-produit.html</loc><xhtml:link rel="alternate" hreflang="en" href="https://heurix.fr/en/blog/ce-qu-une-ia-lit-de-vos-fiches-produit.html"/><lastmod>2026-10-21</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://heurix.fr/en/blog/ce-qu-une-ia-lit-de-vos-fiches-produit.html</loc><xhtml:link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/ce-qu-une-ia-lit-de-vos-fiches-produit.html"/><lastmod>2026-10-21</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
 
   <url><loc>https://heurix.fr/blog/electricite-section-cable-deux-ecritures.html</loc><xhtml:link rel="alternate" hreflang="en" href="https://heurix.fr/en/blog/electricite-section-cable-deux-ecritures.html"/><lastmod>2026-10-20</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://heurix.fr/en/blog/electricite-section-cable-deux-ecritures.html</loc><xhtml:link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/electricite-section-cable-deux-ecritures.html"/><lastmod>2026-10-20</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
