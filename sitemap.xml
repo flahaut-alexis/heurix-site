@@ -107,6 +107,12 @@
     <changefreq>weekly</changefreq><priority>0.7</priority>
   </url>
 
+  <url><loc>https://heurix.fr/blog/pas-besoin-de-refaire-votre-site.html</loc><xhtml:link rel="alternate" hreflang="en" href="https://heurix.fr/en/blog/pas-besoin-de-refaire-votre-site.html"/><lastmod>2026-10-21</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://heurix.fr/en/blog/pas-besoin-de-refaire-votre-site.html</loc><xhtml:link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/pas-besoin-de-refaire-votre-site.html"/><lastmod>2026-10-21</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+
+  <url><loc>https://heurix.fr/blog/concurrent-meilleur-ou-plus-facile.html</loc><xhtml:link rel="alternate" hreflang="en" href="https://heurix.fr/en/blog/concurrent-meilleur-ou-plus-facile.html"/><lastmod>2026-10-21</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://heurix.fr/en/blog/concurrent-meilleur-ou-plus-facile.html</loc><xhtml:link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/concurrent-meilleur-ou-plus-facile.html"/><lastmod>2026-10-21</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+
   <url><loc>https://heurix.fr/blog/ce-qu-une-ia-lit-de-vos-fiches-produit.html</loc><xhtml:link rel="alternate" hreflang="en" href="https://heurix.fr/en/blog/ce-qu-une-ia-lit-de-vos-fiches-produit.html"/><lastmod>2026-10-21</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://heurix.fr/en/blog/ce-qu-une-ia-lit-de-vos-fiches-produit.html</loc><xhtml:link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/ce-qu-une-ia-lit-de-vos-fiches-produit.html"/><lastmod>2026-10-21</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
 

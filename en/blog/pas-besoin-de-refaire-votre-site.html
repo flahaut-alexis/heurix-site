@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Adding a search engine without touching your theme — Heurix</title>
+<meta name="description" content="What installing actually changes in a PrestaShop, WooCommerce or Shopify shop: no template rewritten, no table created, read in the code on 21 October 2026.">
+<link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/pas-besoin-de-refaire-votre-site.html">
+<link rel="alternate" hreflang="en" href="https://heurix.fr/en/blog/pas-besoin-de-refaire-votre-site.html">
+<link rel="alternate" hreflang="x-default" href="https://heurix.fr/blog/pas-besoin-de-refaire-votre-site.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Adding a search engine without touching your theme — Heurix">
+<meta property="og:description" content="Three connectors read in their own code on 21 October 2026: one hook, no template rewritten, no table created, and your shop’s own search taking over when the engine does not answer.">
+<meta property="og:image" content="https://heurix.fr/og-image.png">
+<meta property="og:url" content="https://heurix.fr/en/blog/pas-besoin-de-refaire-votre-site.html">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Adding a search engine without touching your theme — Heurix">
+<meta name="twitter:description" content="Three connectors read in their own code on 21 October 2026: one hook, no template rewritten, no table created, and your shop’s own search taking over when the engine does not answer.">
+<meta name="twitter:image" content="https://heurix.fr/og-image.png">
+<link rel="icon" type="image/png" href="../../favicon-32.png">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<link rel="stylesheet" href="../../styles.css?v=1792520028">
+<link rel="canonical" href="https://heurix.fr/en/blog/pas-besoin-de-refaire-votre-site.html">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Heurix",
+  "url": "https://heurix.fr",
+  "logo": "https://heurix.fr/logo.svg?v=1787610626",
+  "image": "https://heurix.fr/og-image.png",
+  "description": "Regex-powered search and discovery engine for e-commerce sites, designed in France.",
+  "email": "contact@heurix.fr",
+  "sameAs": ["https://www.linkedin.com/company/heurix-search/"],
+  "founder": {"@type": "Person", "name": "Alexis Flahaut"},
+  "areaServed": "FR"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "No, you do not need to rebuild your site",
+  "description": "What installing actually changes in a PrestaShop, WooCommerce or Shopify shop: no template rewritten, no table created, read in the code on 21 October 2026.",
+  "datePublished": "2026-10-21T19:45:00+02:00",
+  "inLanguage": "en",
+  "mainEntityOfPage": "https://heurix.fr/en/blog/pas-besoin-de-refaire-votre-site.html",
+  "author": {
+    "@type": "Person",
+    "name": "Alexis Flahaut",
+    "url": "https://heurix.fr/about.html"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Heurix",
+    "url": "https://heurix.fr"
+  }
+}
+</script>
+</head>
+<body class="docs-dark">
+<!-- Banniere de langue : regle de declenchement, cle et exemption CNIL dans langue-banniere.js. -->
+<aside class="langue-banniere" id="langue-banniere" lang="fr" hidden>
+  <div class="langue-banniere-corps">
+    <span>Cette page est disponible en français.</span>
+    <a class="langue-banniere-lien" href="../../blog/pas-besoin-de-refaire-votre-site.html">Lire en français</a>
+    <button type="button" class="langue-banniere-non">Non merci</button>
+  </div>
+</aside>
+<script>(function(){var b=document.getElementById('langue-banniere');if(!b)return;var pageFr=(document.documentElement.lang||'fr').slice(0,2).toLowerCase()==='fr',l=navigator.languages||[navigator.language||''],litFr=false;for(var i=0;i<l.length;i++)if(String(l[i]).slice(0,2).toLowerCase()==='fr')litFr=true;if(litFr===pageFr)return;try{if(localStorage.getItem('heurix_langue'))return;}catch(e){}b.hidden=false;})();</script>
+<header>
+  <div class="header-top">
+    <nav class="header-top-inner">
+      <a href="../index.html" class="logo"><img src="../../logo.svg?v=1787610626" alt="Heurix"> <span class="wordmark">Heurix</span></a>
+      <div class="nav-links">
+        <div class="nav-drop">
+          <button type="button" class="nav-drop-btn" aria-expanded="false" aria-haspopup="true">Product</button>
+          <div class="nav-drop-panel nav-panel-groupes">
+            <div class="nav-promo">
+              <p class="nav-promo-sur">LIVE DEMO</p>
+              <div class="nav-promo-vis"><span class="nav-promo-q">stainless screws m8x20</span><span class="nav-promo-chip">DIN 933</span><span class="nav-promo-chip">washer</span></div>
+              <p class="nav-promo-t">See Heurix at work</p>
+              <p class="nav-promo-d">A real storefront, served by the engine.</p>
+              <a class="nav-promo-cta" href="../demo/index.html">Launch the demo &rarr;</a>
+            </div>
+            <div class="nav-drop-col">
+              <p class="nav-drop-groupe">Understand</p>
+              <a class="nav-row" href="../index.html#probleme"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span><span><span class="nav-row-t">The problem</span> <span class="nav-row-d">The least-monitored conversion point on a site.</span></span></a>
+              <a class="nav-row" href="../produit.html#mission"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg></span><span><span class="nav-row-t">Our mission</span> <span class="nav-row-d">Making search a lever, not a burden.</span></span></a>
+            </div>
+            <div class="nav-drop-col">
+              <p class="nav-drop-groupe">The product</p>
+              <a class="nav-row" href="../index.html#moteur"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg></span><span><span class="nav-row-t">The engine</span> <span class="nav-row-d">Our own engine, built in France.</span></span></a>
+              <a class="nav-row" href="../fonctionnalites.html"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></span><span><span class="nav-row-t">Features</span> <span class="nav-row-d">Annotation cascade, typo tolerance, business synonyms.</span></span></a>
+            </div>
+            <div class="nav-drop-col">
+              <p class="nav-drop-groupe">Take action</p>
+              <a class="nav-row" href="../roi.html"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span><span><span class="nav-row-t">ROI simulator</span> <span class="nav-row-d">Your assumptions, as sliders, with their sources.</span></span></a>
+              <a class="nav-row" href="../mesure.html"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg></span><span><span class="nav-row-t">The measurement</span> <span class="nav-row-d">+28 points of recall on 300 queries, repeatable.</span></span></a>
+            </div>
+          </div>
+        </div>
+        <div class="nav-drop">
+          <button type="button" class="nav-drop-btn" aria-expanded="false" aria-haspopup="true">Solutions</button>
+          <div class="nav-drop-panel nav-panel-secteurs">
+          <a class="nav-drop-tous" href="../secteurs.html">All sectors &rarr;</a>
+          <a href="../solutions/outillage.html"><span class="nav-icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg></span>Hardware & tools</a>
+          <a href="../solutions/industrie.html"><span class="nav-icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></span>Spare parts & industry</a>
+          <a href="../solutions/automobile.html"><span class="nav-icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></span>Automotive</a>
+          <a href="../solutions/electricite.html"><span class="nav-icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6z"/></svg></span>Electrical & installation</a>
+          <a href="../solutions/plomberie.html"><span class="nav-icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z"/></svg></span>Plumbing & sanitary</a>
+          <a href="../solutions/mode.html"><span class="nav-icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.38 3.46 16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.47a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.47a2 2 0 00-1.34-2.23z"/></svg></span>Fashion & retail</a>
+          <a href="../solutions/electronique.html"><span class="nav-icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg></span>Electronics & high-tech</a>
+          <a href="../solutions/livres.html"><span class="nav-icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg></span>Books & publishing</a>
+          <a href="../solutions/vins.html"><span class="nav-icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 22h8"/><path d="M12 15v7"/><path d="M12 15a5 5 0 005-5V3H7v7a5 5 0 005 5z"/></svg></span>Wine & spirits</a>
+          <a href="../solutions/sport.html"><span class="nav-icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span>Sport & surf</a>
+          <a href="../solutions/finance.html"><span class="nav-icn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>Finance & accounting</a>
+          </div>
+        </div>
+        <div class="nav-drop">
+          <button type="button" class="nav-drop-btn" aria-expanded="false" aria-haspopup="true">Developers</button>
+          <div class="nav-drop-panel nav-panel-groupes">
+            <div class="nav-promo">
+              <p class="nav-promo-sur">QUICKSTART</p>
+              <div class="nav-promo-vis"><div class="nav-promo-code"><b>POST</b> /v1/index/{catalog}/search&#10;{ "q": "stainless screws m8x20" }</div></div>
+              <p class="nav-promo-t">Get started in 5 minutes</p>
+              <p class="nav-promo-d">From API key to your first relevant result.</p>
+              <a class="nav-promo-cta" href="../blog/guide-mise-en-route.html">Getting started guide &rarr;</a>
+            </div>
+            <div class="nav-drop-col">
+              <p class="nav-drop-groupe">Get started</p>
+              <a class="nav-row" href="../blog/guide-mise-en-route.html"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg></span><span><span class="nav-row-t">Getting started guide</span> <span class="nav-row-d">Three steps to get working search.</span></span></a>
+              <a class="nav-row" href="../docs.html"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></span><span><span class="nav-row-t">Documentation</span> <span class="nav-row-d">Index a catalog and run a first search in minutes.</span></span></a>
+            </div>
+            <div class="nav-drop-col">
+              <p class="nav-drop-groupe">Concepts</p>
+              <a class="nav-row" href="../docs.html#cascade"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></span><span><span class="nav-row-t">The annotation cascade</span> <span class="nav-row-d">The engine&rsquo;s core: rules organized in levels.</span></span></a>
+              <a class="nav-row" href="../docs.html#produits"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></span><span><span class="nav-row-t">Product structure</span> <span class="nav-row-d">A free-form JSON object; four fields play a special role.</span></span></a>
+            </div>
+            <div class="nav-drop-col">
+              <p class="nav-drop-groupe">Integrations</p>
+              <a class="nav-row" href="../integrations.html"><span class="nav-row-icn" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></span><span><span class="nav-row-t">Integrations</span> <span class="nav-row-d">Technical guides with real code.</span></span></a>
+              <a class="nav-row" href="../prestashop.html"><span class="nav-row-icn marque" aria-hidden="true" style="background:rgba(223,0,103,.12); color:#CB005E;">P</span><span><span class="nav-row-t">PrestaShop</span> <span class="nav-row-d">Native module, via ProductSearchProviderInterface.</span></span></a>
+              <a class="nav-row" href="../woocommerce.html"><span class="nav-row-icn marque" aria-hidden="true" style="background:rgba(127,84,179,.12); color:#7F54B3;">W</span><span><span class="nav-row-t">WooCommerce</span> <span class="nav-row-d">WordPress extension, via the pre_get_posts hook.</span></span></a>
+              <a class="nav-row" href="../shopify.html"><span class="nav-row-icn marque" aria-hidden="true" style="background:rgba(94,142,62,.14); color:#4E7533;">S</span><span><span class="nav-row-t">Shopify</span> <span class="nav-row-d">App in review at Shopify, and REST API.</span></span></a>
+            </div>
+          </div>
+        </div>
+        <a href="../blog.html">Blog</a>
+        <a href="../pricing.html">Pricing</a>
+        <a href="../console.html" class="nav-link-mobile-seul">My account</a>
+      </div>
+      <div class="header-search">
+        <button id="heurix-search-btn" class="search-trigger" aria-label="Search this site" type="button">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <span class="search-trigger-text">Search this site</span>
+          <span class="search-trigger-kbd">Ctrl K</span>
+        </button>
+      </div>
+      <div class="header-utility">
+        <button type="button" id="mobile-nav-toggle" class="mobile-nav-toggle" aria-label="Menu" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+        <a href="../console.html" class="header-signin"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0116 0v1"/></svg>My account</a>
+        <a href="../../blog/pas-besoin-de-refaire-votre-site.html" class="lang-switch">FR</a>
+        <a href="../console.html?inscription" class="btn">Start free trial</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+
+
+<article class="post">
+  <div class="wrap post-wrap">
+    <a href="../../blog.html" class="back-link">← All articles</a>
+    <div class="kicker">Blog · October 2026</div>
+    <h1>No, you do not need to rebuild your site</h1>
+    <p class="post-lede">Changing a shop’s search engine sounds like a project: a new theme, templates to redo, a quarter of the year. We re-read the code of our three connectors to see what they actually require of a shop. Here is what changes on your side, what your theme has to carry, and what happens when the engine does not answer.</p>
+
+    <div class="post-body">
+      <h2>What changes in your shop</h2>
+      <p><strong>Our own measurement:</strong> the code of the three connectors re-read on 21 October 2026, at versions <code class="docs-inline-code">0601eef</code>, <code class="docs-inline-code">61c244f</code> and <code class="docs-inline-code">16145b5</code> of their repositories. Counted on the files themselves, not on the documentation.</p>
+      <div class="table-scroll"><table class="docs-params">
+        <tr><th>Shop</th><th>What gets added</th><th>Templates rewritten</th><th>Tables created</th></tr>
+        <tr><td>PrestaShop</td><td>one hook, 16 files in a folder of their own</td><td>none</td><td>none</td></tr>
+        <tr><td>WooCommerce</td><td>one hook and two filters bound to the search in progress, 8 files</td><td>none</td><td>none</td></tr>
+        <tr><td>Shopify</td><td>one block you place from the theme editor</td><td>none, and no file edited by hand</td><td>none</td></tr>
+      </table></div>
+      <p>The word that matters is <em>none</em>. On PrestaShop the shop asks the engine for a list of identifiers and rebuilds its own product cards, filters, pagination and sort options: nothing the visitor sees is produced by us. On WooCommerce the final request sent to your database is identical, character for character, to the one before — measured on the same page and the same address. Only the order of the products changes.</p>
+
+      <h2>What your theme has to carry</h2>
+      <p>On PrestaShop and on WooCommerce: <strong>nothing</strong>. Your theme keeps its cards, its fonts and its filters, and it never has to know the engine changed.</p>
+      <p>On Shopify there is one condition, and it is real: the block goes into a recent theme, one of those where you drop an element from the editor. An older generation of theme cannot take it. Read on 8 September 2026 on Shopify’s reference theme: three of its sections accept an app block, the header and the footer among them. If your theme is old, that is the only thing to sort out, and it does not depend on us.</p>
+
+      <h2>If the engine does not answer</h2>
+      <p>This is the question that decides, because a shop without search does not sell. All three connectors hand back, each in its own way.</p>
+      <p><strong>PrestaShop.</strong> The very search that discovers the outage is passed to the shop’s original search, within the same second: the visitor gets results, not an empty page. So do the following ones, for sixty seconds, before a fresh attempt.</p>
+      <p><strong>WooCommerce.</strong> After two failures the plugin stops calling for sixty seconds and lets the original search serve. It does not wait forever either: three seconds by default, and that is a setting you can change.</p>
+      <p><strong>Shopify.</strong> The block sends the visitor to your own shop’s search page, whose address is written into the block when you install it.</p>
+      <p>This behaviour is the default, not an option to hunt for: the fallback is on from installation, and you have to switch it off on purpose.</p>
+
+      <h2>What the code does not do for you</h2>
+      <p>This is where the three differ, and saying so here avoids a bad surprise.</p>
+      <p>On Shopify the app fetches your catalogue itself, with no action from you. On WooCommerce the plugin sends it from your site, in batches of a hundred products, and you follow the progress from its settings screen — the measured limits of that plugin are in <a href="module-woocommerce-publie-bornes-mesurees.html">the article that publishes them</a>.</p>
+      <p><strong>On PrestaShop the module sends nothing.</strong> Re-read on 21 October: it builds only two addresses, and both are reads. There is no write path to the catalogue at all. This is not a fault, it is a deliberate absence, written into the module. Your catalogue therefore arrives another way, through a file or from your account area, and <a href="guide-mise-en-route.html">the getting-started guide</a> describes both. What PrestaShop’s original search does and does not do is <a href="recherche-native-prestashop-mesuree.html">measured separately</a>.</p>
+
+      <h2>And if you want no connector at all</h2>
+      <p>Some shops have no theme to preserve: the site calls the engine directly and shows the results in its own pages. That is another trade and another budget, and it is described in <a href="recherche-headless-api-sans-theme.html">the article on search without a theme</a>. The question asked here is the opposite one: keeping the site as it is.</p>
+      <p>Why change engine at all, and at what catalogue size the original search gives up, is a further question again — it is <a href="limites-moteurs-natifs-gros-catalogue.html">measured here</a>.</p>
+
+      <h2>What we have not measured</h2>
+      <p><strong>How long it takes you.</strong> Nobody has timed it at a merchant’s, so we have no figure to give and we will not invent one. What is counted is everything above: the files, the hooks, the tables.</p>
+      <p>What is checked, on the other hand, is that the module runs where you are: on 20 September 2026 it was replayed on five different PrestaShop installations, from 8.0 to 9.1, with 121 checks green on each. That says nothing about your shop in particular, and that is why the trial is free.</p>
+
+    </div>
+
+    <div class="post-footer-cta">
+      <p>See what it gives without touching your theme?</p>
+      <a href="../../console.html?inscription" class="btn">Try it free</a>
+    </div>
+  </div>
+</article>
+
+<footer>
+  <div class="wrap foot-grid">
+    <a href="../index.html" class="logo" style="font-size:15px;"><img src="../../logo.svg?v=1787610626" alt="Heurix" style="height:22px;width:22px;"> <span class="wordmark">Heurix</span></a>
+    <div class="foot-links">
+      <a href="../blog.html">Blog</a>
+      <a href="../docs.html">API Documentation</a>
+      <a href="../fonctionnalites.html">Features</a>
+      <a href="../pricing.html">Pricing</a>
+      <a href="../integrations.html">Integrations</a>
+      <a href="../partners.html">Partner program</a>
+      <a href="../console.html">Console</a>
+      <a href="../about.html">About</a>
+      <a href="../faq.html">FAQ</a>
+      <a href="../cgv.html">Terms of Service</a>
+      <a href="../mentions-legales.html">Legal notice</a>
+      <a href="#" data-rouvrir-consentement>Manage cookies</a>
+      <a href="../privacy.html">Privacy</a>
+      <a href="mailto:contact@heurix.fr">contact@heurix.fr</a>
+    </div>
+    <div class="foot-social">
+      <span class="foot-social-label">Social networks</span>
+      <a href="https://www.linkedin.com/company/heurix-search/" target="_blank" rel="noopener" aria-label="LinkedIn" class="foot-social-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+      </a>
+    </div>
+    <div class="foot-legal">
+      Heurix — Sole proprietorship (French micro-entreprise). SIRET 107 681 900 00018. IT systems and software consulting.<br>
+      © <span id="year">2026</span> Heurix. All rights reserved.
+    </div>
+  </div>
+</footer>
+
+<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+<script src="../../search-engine.js?v=1788523609"></script>
+<script src="../../nav-dropdown.js?v=1788086140"></script>
+<script src="../../mobile-nav.js?v=1788597902"></script>
+<div id="pricing-nudge" class="pricing-nudge">
+  <button type="button" class="pricing-nudge-close" aria-label="Close">&times;</button>
+  <div class="pricing-nudge-kicker">14-day free trial</div>
+  <p>Try Heurix on your catalog, no credit card.</p>
+  <a href="../console.html?inscription" class="btn">Start free trial</a>
+</div>
+<script src="../../pricing-nudge.js?v=1789722847"></script>
+<script>window.HEURIX_RACINE='../../';</script><script src="../../consent.js?v=1788689121"></script>
+<script src="../../langue-banniere.js?v=1788686174"></script>
+</body>
+</html>

@@ -46,8 +46,28 @@ const existe = (p) => fs.existsSync(path.join(RACINE, p));
 // qu'une session a toutes les chances de commettre.
 // ---------------------------------------------------------------------------
 
-const LOT = ["blog/ce-qu-une-ia-lit-de-vos-fiches-produit.html",
-             "en/blog/ce-qu-une-ia-lit-de-vos-fiches-produit.html"];
+// ---------------------------------------------------------------------------
+// ETENDU LE 21 OCTOBRE 2026 AUX DEUX ARTICLES QUI SUIVENT, ET PAS DUPLIQUE.
+//
+// Le lot des 21 octobre ajoute « Non, vous n'avez pas besoin de refaire votre
+// site » et « Le site de votre concurrent est-il meilleur, ou juste plus
+// facile ? ». Un SECOND fichier de temoin aurait recopie les quatorze termes,
+// le decoupage du corps editorial et les cinq cas aveugles -- donc trois
+// endroits ou les deux listes auraient pu diverger sans que rien ne le dise.
+// Le perimetre grandit, le temoin reste un.
+//
+// LE NOM DU FICHIER DIT « 20oct » ET LE LOT EN COUVRE TROIS. C'est assume :
+// le renommer casserait les references du relevé du 21 octobre sans rien
+// apporter au garde. Ce qui compte est que SLUGS ci-dessous soit la seule
+// liste a tenir a jour.
+// ---------------------------------------------------------------------------
+
+/** Les articles de la serie, par slug. Les deux langues en sont derivees. */
+const SLUGS = ["ce-qu-une-ia-lit-de-vos-fiches-produit",
+               "pas-besoin-de-refaire-votre-site",
+               "concurrent-meilleur-ou-plus-facile"];
+
+const LOT = SLUGS.flatMap((s) => [`blog/${s}.html`, `en/blog/${s}.html`]);
 
 /** Les termes refuses, par langue. Donnes dans la consigne du lot. */
 const TERMES = {
@@ -71,6 +91,16 @@ const DEFINIS = {
     "schema.org": "il s’appelle schema.org, et c’est le seul mot technique de cette page",
   },
   "en/blog/ce-qu-une-ia-lit-de-vos-fiches-produit.html": {
+    "schema.org": "it is called schema.org, and it is the only technical word on this page",
+  },
+  // « Le site de votre concurrent… » parle du meme bloc de donnees, donc du
+  // meme mot, et le definit de la meme facon. L'autre article du 21 octobre
+  // n'en a pas besoin : il ne doit donc PAS figurer ici, et l'assertion
+  // « aucune entree perimee » plus bas le verifie.
+  "blog/concurrent-meilleur-ou-plus-facile.html": {
+    "schema.org": "il s’appelle schema.org, et c’est le seul mot technique de cette page",
+  },
+  "en/blog/concurrent-meilleur-ou-plus-facile.html": {
     "schema.org": "it is called schema.org, and it is the only technical word on this page",
   },
 };
@@ -120,8 +150,28 @@ function phrases(txt) {
 describe("témoin de registre — le périmètre", () => {
   it("les deux pages du lot sont là", () => {
     const absents = LOT.filter((p) => !existe(p));
-    expect(absents, "Un slug renommé : corrigez LOT, ne le laissez pas mort.").toEqual([]);
-    expect(LOT).toHaveLength(2);
+    expect(absents, "Un slug renommé : corrigez SLUGS, ne le laissez pas mort.").toEqual([]);
+    expect(SLUGS).toHaveLength(3);
+    expect(LOT).toHaveLength(6);
+    // La serie vit dans les DEUX langues, et le derive le garantit par
+    // construction -- cette assertion garde la construction elle-meme.
+    expect(LOT.filter((p) => p.startsWith("en/"))).toHaveLength(3);
+    expect(LOT.filter((p) => !p.startsWith("en/"))).toHaveLength(3);
+  });
+
+  it("aucune entrée de DEFINIS n'est périmée", () => {
+    // UN TERME ADMIS SUR UNE PAGE QUI NE L'EMPLOIE PLUS est une exception
+    // morte : elle n'autorise rien, mais elle fait croire a un arbitrage qui
+    // n'a plus d'objet. Et une entree pour une page HORS du lot ne serait
+    // jamais lue.
+    const perimees = [];
+    for (const p of Object.keys(DEFINIS)) {
+      if (!LOT.includes(p)) { perimees.push(`${p} : hors du lot`); continue; }
+      const txt = texte(corpsEditorial(lire(p)));
+      for (const terme of Object.keys(DEFINIS[p]))
+        if (!motif(terme).test(txt)) perimees.push(`${p} : « ${terme} » absent de la page`);
+    }
+    expect(perimees, "Retirez l'entrée de DEFINIS, ou remettez le terme.").toEqual([]);
   });
 
   it("le corps éditorial est isolé, et il n'est pas vide", () => {
@@ -179,7 +229,7 @@ describe("témoin de registre — aucun terme de métier non défini", () => {
     expect(trouves,
       "Un terme de métier non défini : c'est le sujet même du lot.").toEqual([]);
     // Plancher : les deux listes, moins le terme admis de chacune.
-    expect(examines).toBe(TERMES.fr.length + TERMES.en.length);
+    expect(examines).toBe((TERMES.fr.length + TERMES.en.length) * SLUGS.length);
   });
 
   it("chaque terme admis est défini dans la phrase qui le porte", () => {
@@ -200,7 +250,10 @@ describe("témoin de registre — aucun terme de métier non défini", () => {
     }
     expect(ecarts,
       "La définition a disparu de la phrase, ou le terme a bougé.").toEqual([]);
-    expect(admis, "aucun terme admis examiné : DEFINIS est vide ?").toBe(2);
+    const attendus = Object.values(DEFINIS).reduce((n, o) => n + Object.keys(o).length, 0);
+    expect(admis, "aucun terme admis examiné : DEFINIS est vide ?").toBe(attendus);
+    expect(attendus, "DEFINIS s'est vidé : le témoin n'examinerait plus rien.")
+      .toBeGreaterThanOrEqual(4);
   });
 });
 

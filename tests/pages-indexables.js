@@ -69,7 +69,32 @@ export function pagesIndexables() {
 }
 
 /**
- * LE PLANCHER, MESURE LE 20 OCTOBRE 2026 AU SOIR : 146 pages indexables.
+ * LE PLANCHER, MESURE LE 21 OCTOBRE 2026 AU SOIR : 152 pages indexables.
+ *
+ * 146 le 20 octobre au soir (trois articles sectoriels), 148 avec l'article
+ * dirigeant, 152 avec les deux articles qui le suivent -- « Non, vous n'avez
+ * pas besoin de refaire votre site » et « Le site de votre concurrent
+ * est-il meilleur, ou juste plus facile ? ».
+ *
+ * LE PAS EST DE QUATRE, PAS DE DEUX, et l'ecart merite d'etre ecrit ici
+ * parce qu'il se refait : DEUX articles font QUATRE pages, chacun vivant en
+ * francais et en anglais. Compter les articles plutot que les pages donne
+ * 150 et laisse deux pages hors de tout plancher.
+ *
+ * UN PLANCHER NE SE POSE JAMAIS SOUS SON EFFECTIF MESURE. La tentation,
+ * quand le chiffre attendu et le chiffre mesure divergent, est de garder
+ * l'attendu « a deux pres ». Ce n'est pas une approximation : un plancher a
+ * 150 sous un effectif de 152 cesse DEFINITIVEMENT d'attraper la disparition
+ * de deux pages, et il le fait sans bruit, puisque les neuf assertions
+ * restent vertes. Un plancher se releve, ou il ne sert plus a rien.
+ *
+ * ET CE PLANCHER N'ATTRAPE QUE LA DISPARITION. Les neuf temoins qui le
+ * lisent sont tous en `toBeGreaterThanOrEqual` : un effectif qui MONTE
+ * passe en silence. C'est pour cela qu'il se releve a la main, dans le meme
+ * commit que les pages, avec sa date -- la ligne ci-dessous est le seul
+ * endroit du depot ou quelqu'un doit constater qu'il a ajoute des pages.
+ *
+ * Le paragraphe d'origine, garde pour sa reconciliation des perimetres :
  *
  * Il n'est pas sous la mesure, il lui est EGAL, et c'est demande : un
  * perimetre qui tombe a 139 doit rougir. Une page retiree du site, ou passee
@@ -77,4 +102,4 @@ export function pagesIndexables() {
  * plancher serre, et il se paie en une ligne a mettre a jour ici, avec sa
  * date, plutot qu'en trois gardes qui inspectent moins de pages sans le dire.
  */
-export const PLANCHER = 148;
+export const PLANCHER = 152;
