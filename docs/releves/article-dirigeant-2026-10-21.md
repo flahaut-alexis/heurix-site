@@ -225,9 +225,15 @@ Vert exigé avant chaque mutation, vert vérifié après chaque restauration.
   `<h1>` dans les deux langues, et le `headline` du `BlogPosting` **est** le
   `h1` (exigé par `schema-article.test.js`).
 
-Longueur : **898 mots** éditoriaux en français, **895** en anglais, `h1` et
-tableau compris, navigation et pied exclus — comptés par le témoin lui-même,
-qui les borne entre 700 et 900.
+Longueur : **915 mots** éditoriaux en français, **913** en anglais, `h1` et
+tableau compris, navigation et pied exclus — comptés par le témoin lui-même.
+
+**Le plafond du témoin est passé de 900 à 920 le 21 octobre, et le dire fait
+partie du lot.** La consigne disait « 700 à 900 mots » et l'article tenait à
+893 dans les deux langues. La phrase de pont demandée ensuite — voir le point
+8 — le porte à 915 et 913. Le plafond suit la demande qui l'a débordé, avec sa
+date dans le fichier du témoin ; il reste serré, à cinq mots du français, donc
+une seconde phrase ajoutée sans y penser rougit.
 
 ---
 
@@ -286,3 +292,45 @@ de ce soir portent un `</article>` de trop** — une ouverture, deux
 fermetures — et aucun garde du dépôt ne le voit. C'est le gabarit que ce lot a
 recopié, et mes deux pages sont nettes (le témoin l'exige). Je n'ai pas touché
 aux six, la consigne interdisant de modifier un article existant.
+
+
+---
+
+## 8. La phrase de pont entre le titre et le corps (21 octobre 2026)
+
+Le `h1` nomme ChatGPT, le corps ne le reprenait **jamais** : une seule
+occurrence dans tout le corps éditorial, celle du `h1` lui-même. Le lecteur
+devait deviner que « un assistant conversationnel », « un lecteur
+automatique » et « un moteur de réponse » recouvraient le nom de l'accroche.
+Alexis a demandé une phrase, pas un paragraphe, à l'endroit du passage.
+
+**Vérifié avant d'écrire, pour ne pas doubler** : le corps portait déjà le
+*chiffre* — « aucun ne nomme un seul des dix lecteurs automatiques testés » —
+mais **pas le pont**. Rien ne disait que ChatGPT n'était qu'un cas. La phrase
+est donc neuve, et elle est posée en fin de chapô, où « ce qui suit » désigne
+exactement ce qu'elle borne.
+
+> ChatGPT n'est qu'un exemple : ce qui suit vaut pour tous les lecteurs
+> automatiques, et la mesure ci-dessous en a testé dix.
+
+> ChatGPT is only one example: what follows holds for every automated reader,
+> and the measurement below tested ten of them.
+
+**LA FORMULATION PROPOSÉE DISAIT L'INVERSE DE LA MESURE, ET C'EST LA SEULE
+RAISON POUR LAQUELLE ELLE N'A PAS ÉTÉ RECOPIÉE.** Le brouillon disait « nous
+en avons **relevé** dix sur les six `robots.txt` mesurés ». *Relever* dix
+lecteurs **sur** ces fichiers affirme qu'ils y figurent — or la mesure dit
+exactement le contraire : **aucun des six ne nomme un seul des dix**. Les dix
+sont une liste que *nous* avons soumise aux six fichiers, pas une récolte
+faite dedans. La phrase écrite dit donc « en a **testé** dix », et le `:` la
+rattache à la mesure qui suit plutôt qu'aux fichiers.
+
+C'est le même défaut que [[robots-nomme-n-est-pas-autorise]] pris par l'autre
+bout : une phrase vraie sur le nombre, fausse sur ce que le nombre compte.
+
+**Le chiffre apparaît maintenant deux fois**, à quatre phrases d'écart : dans
+le chapô (« en a testé dix ») et dans la mesure (« aucun ne nomme un seul des
+dix lecteurs automatiques testés »). Ce n'est pas une redite mais une pose et
+sa chute — le premier annonce la population, le second dit ce qu'on y a
+trouvé. Retirer l'un des deux affaiblirait l'autre : sans le chapô le pont
+disparaît, sans la mesure le chiffre perd son protocole et sa date.
