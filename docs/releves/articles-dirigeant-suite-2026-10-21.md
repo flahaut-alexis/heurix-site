@@ -117,6 +117,27 @@ puis se tait 60 s. WooCommerce ouvre après **2 échecs**, pour **60 s**, avec
 c'est-à-dire la recherche du thème lui-même. Dans les trois cas le repli est
 **le défaut à l'installation**, pas une option à trouver.
 
+### Deux chiffres des articles que ce relevé ne portait pas (ajoutés le 21 octobre au soir)
+
+Trouvés en relisant les articles contre ce relevé, à la réécriture des deux
+passages. Les deux étaient **lus** et non consignés — ils ont une source, elle
+n'était écrite nulle part. Ce sont des lectures, pas des mesures neuves.
+
+**« cinq installations PrestaShop, de la 8.0 à la 9.1, 121 contrôles au vert
+chacune, le 20 septembre 2026 ».** Source : l'en-tête de
+`heurixsearch/heurixsearch.php` lui-même, lu le 21 octobre à `0601eef` — « the
+whole bench was run against five installations — 8.0.0, 8.1.7, 8.2.7, 9.1.4
+and 9.1.5 — and gave 121 assertions green on each ». C'est une campagne du
+dépôt du connecteur, pas une campagne de ce lot : je n'ai rien rejoué.
+
+**« deux des cinq sites tournent sur la même plateforme largement répandue en
+France, relevé le 9 octobre 2026 ».** Source : `docs/mesures/
+prospects-analyse-75.json` du dépôt **privé** `heurix-engine`, qui porte une
+détection de plateforme par signature de page d'accueil. Sur les cinq sites
+lus le 20 octobre, deux portent la signature PrestaShop et un celle de
+WooCommerce ; les deux autres ne sont pas détectés. L'article ne dit que
+« deux sur la même plateforme », ce qui est la part sûre.
+
 ### Le titre tient, et voici les deux réserves qu'il a fallu écrire dans l'article
 
 **Il tient.** Aucun des trois ne réécrit un gabarit, ne crée une table, ni ne
@@ -263,3 +284,99 @@ aucun :
 - **Les cinq articles voisins sont liés**, et aucun n'est redit : mise en
   route, recherche sans thème, limites des moteurs natifs, recherche native
   PrestaShop et bornes mesurées du module WooCommerce.
+
+
+---
+
+## 7. Les deux passages « Mesure maison », réécrits le 21 octobre au soir
+
+Les chiffres n'ont pas bougé d'un seul. Ce qui a changé est l'unité dans
+laquelle ils sont rendus : ce relevé-ci garde l'unité de l'instrument, les
+articles prennent celle du dirigeant.
+
+**Ce qui est sorti du corps des articles**, et qui reste ici : le nombre de
+fichiers par connecteur (16, 8, 6) et les trois empreintes de version
+(`0601eef`, `61c244f`, `16145b5`). Ils sont à nous, pas à lui. La date du
+21 octobre et la source — « leur code, pas leur documentation » — restent
+dans l'article, parce que ce sont elles qui rendent l'affirmation
+vérifiable pour lui.
+
+**Premier article : les deux colonnes constantes sont devenues une phrase.**
+Le tableau portait quatre colonnes dont deux ne disaient qu'une seule chose
+— « gabarits réécrits : aucun / aucun / aucun » et « tables créées : aucune /
+aucune / aucune ». Une colonne qui répète la même cellule trois fois n'est pas
+un tableau, c'est une phrase déguisée en grille. Elle est désormais écrite
+comme telle, et le tableau ne porte plus que ce qui **diffère** entre les
+trois boutiques : ce qui s'ajoute et où, et ce qui remplit le catalogue. Les
+six cellules de corps sont distinctes deux à deux.
+
+**Second article : le tableau est retourné.** Il listait cinq lignes presque
+égales — trois « 5 sur 5 » et un « 4 sur 5 » — ce qui donnait à lire une
+grille plate là où la mesure portait une trouvaille. Son sujet est maintenant
+l'unanimité : quatre constats identiques sur les cinq fiches, dont l'un est
+une absence (« la référence n'est jamais écrite dans le nom du produit »,
+0 sur 5 ici, « les cinq » là-bas), et une seule ligne qui sépare les
+boutiques, mise en gras. Le « 0 sur 5 » du relevé et le « les cinq » de
+l'article disent le même fait ; aucune des deux formes n'est fausse dans son
+unité.
+
+### La pré-mesure des colonnes constantes, et pourquoi le garde n'est PAS écrit
+
+**Mesure du 21 octobre 2026**, instrument
+`docs/mesures/colonnes-constantes-2026-10-21.py`, sur les **94 pages
+indexables** de `blog/` et `en/blog/` :
+
+| | avant la réécriture | après |
+|---|---|---|
+| tableaux | 66 | 66 |
+| dont éligibles (au moins deux lignes de corps) | 64 | 64 |
+| colonnes strictement constantes | **5**, sur 4 pages | **3**, sur 2 pages |
+
+Les deux qui disparaissent sont les miennes — « Tables créées » et « Tables
+created ». Les trois qui restent sont celles d'articles antérieurs, et ce
+sont elles qui décident.
+
+La règle « une colonne constante est une phrase » **rougirait sur trois cas
+légitimes**, et elle n'est donc pas écrite :
+
+- `blog/decoupage-rag-catalogue-produit.html`, colonne « Moteur Heurix,
+  17 septembre » : cinq cellules, toutes « 64 / 64 ». **Cette constante est le
+  résultat de l'article**, et elle ne veut dire quelque chose qu'à côté des
+  deux colonnes qui varient. En faire une phrase détruirait la comparaison.
+- `blog/refus-apres-ecriture-ordre-des-verifications.html`, colonnes
+  « Essais » (30, 30) et « Produits indexés ensuite » (5 000, 5 000) : ce sont
+  les **témoins d'une expérience contrôlée**. Une colonne constante y est ce
+  qui autorise la comparaison des deux autres, pas du bruit.
+
+Une règle qui signale des cas légitimes se retire, elle ne s'excepte pas :
+trois exceptions nommées pour deux vraies prises ne feraient pas une règle
+juste. Les deux colonnes de ce lot ont été corrigées **par la relecture**, pas
+par un garde — et c'est exactement ce que la pré-mesure devait trancher.
+
+### Le témoin de registre voit-il un tableau ? Oui, et c'est mesuré
+
+`corpsEditorial` découpe du `<h1>` au bloc d'appel à l'action, et `texte()`
+retire **toutes** les balises : le contenu des `<th>` et des `<td>` rejoint
+donc la prose. Vérifié plutôt que déduit, par deux mutations jouées puis
+défaites le 21 octobre :
+
+| mutation | verdict |
+|---|---|
+| « indexation » glissé dans un `<td>` du premier article | **rouge** |
+| « API » glissé dans un `<th>` du premier article | **rouge** |
+
+**Ce qu'il ne voit toujours pas, mesuré sur ces deux passages précisément.**
+Des mots qui les rendaient illisibles, **un seul** figure dans sa liste —
+`schema.org`, et c'est celui qui est défini. Tous les autres lui sont
+invisibles, parce qu'une liste de mots interdits ne connaît que ses mots :
+
+`0601eef`, `61c244f`, `16145b5`, « dépôts », « branchement », « filtres »,
+« gabarits », « connecteurs », « documentation », « identifiants »,
+« pagination », « plan de site », « bloc de données », « en série », « une
+requête par seconde ».
+
+Aucun d'eux n'est à ajouter à la liste : ce ne sont pas des mots interdits,
+ce sont des mots **justes dans l'unité de l'instrument et faux dans celle du
+lecteur**. Le témoin ne sait pas distinguer les deux, et il ne le saura pas.
+C'est un sixième angle mort, à ranger avec les cinq de son en-tête — et c'est
+la relecture qui l'a attrapé cette fois, comme la fois précédente.

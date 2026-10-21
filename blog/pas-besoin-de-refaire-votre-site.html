@@ -181,14 +181,15 @@
 
     <div class="post-body">
       <h2>Ce qui change dans votre boutique</h2>
-      <p><strong>Mesure maison :</strong> code des trois connecteurs relu le 21 octobre 2026, aux versions <code class="docs-inline-code">0601eef</code>, <code class="docs-inline-code">61c244f</code> et <code class="docs-inline-code">16145b5</code> de leurs dépôts respectifs. Compté sur les fichiers eux-mêmes, pas sur la documentation.</p>
+      <p><strong>Mesure maison :</strong> le code des trois connecteurs relu le 21 octobre 2026 — leur code, pas leur documentation. <strong>Aucun des trois ne réécrit une seule page de votre boutique, et aucun ne crée de table dans votre base.</strong> Vos vignettes, vos polices et vos filtres restent ce qu’ils sont : ce qui s’installe se branche à côté, et se retire pareil.</p>
+      <p>Ce qui diffère, c’est le geste qu’on vous demande.</p>
       <div class="table-scroll"><table class="docs-params">
-        <tr><th>Boutique</th><th>Ce qui est posé</th><th>Gabarits réécrits</th><th>Tables créées</th></tr>
-        <tr><td>PrestaShop</td><td>un branchement, 16 fichiers dans un dossier à part</td><td>aucun</td><td>aucune</td></tr>
-        <tr><td>WooCommerce</td><td>un branchement et deux filtres bornés à la recherche en cours, 8 fichiers</td><td>aucun</td><td>aucune</td></tr>
-        <tr><td>Shopify</td><td>un bloc que vous posez depuis l’éditeur de thème</td><td>aucun, et aucun fichier écrit à la main</td><td>aucune</td></tr>
+        <tr><th>Boutique</th><th>Ce qui s’ajoute, et où</th><th>Ce qui remplit votre catalogue</th></tr>
+        <tr><td>PrestaShop</td><td>un module, depuis votre back-office</td><td>rien : il arrive par un import séparé</td></tr>
+        <tr><td>WooCommerce</td><td>une extension, depuis votre back-office</td><td>l’extension, par paquets de cent produits</td></tr>
+        <tr><td>Shopify</td><td>une application, puis un bloc que vous placez dans votre thème</td><td>l’application, toute seule</td></tr>
       </table></div>
-      <p>Le mot qui compte est <em>aucun</em>. Côté PrestaShop, la boutique demande au moteur une liste d’identifiants et reconstruit elle-même ses vignettes, ses filtres, sa pagination et ses tris : rien de ce que le visiteur voit n’est produit par nous. Côté WooCommerce, la requête finale envoyée à votre base est identique au caractère près à celle d’avant, mesuré sur la même page et la même adresse ; seul l’ordre des produits change.</p>
+      <p>Côté PrestaShop, la boutique demande au moteur une liste d’identifiants et reconstruit elle-même ses filtres, sa pagination et ses tris : rien de ce que le visiteur voit n’est produit par nous. Côté WooCommerce, la requête finale envoyée à votre base est identique au caractère près à celle d’avant, mesuré sur la même page et la même adresse ; seul l’ordre des produits change.</p>
 
       <h2>Ce que votre thème doit porter</h2>
       <p>Sur PrestaShop et sur WooCommerce : <strong>rien</strong>. Votre thème garde ses vignettes, ses polices et ses filtres, et il n’a pas à savoir que le moteur a changé.</p>
@@ -208,7 +209,7 @@
 
       <h2>Et si vous ne voulez pas de connecteur du tout</h2>
       <p>Certaines boutiques n’ont pas de thème à préserver : le site appelle le moteur directement et affiche les résultats dans ses propres pages. C’est un autre métier et un autre budget, et il est décrit dans <a href="recherche-headless-api-sans-theme.html">l’article sur la recherche sans thème</a>. La question posée ici est l’inverse : garder le site tel quel.</p>
-      <p>Pourquoi changer de moteur, et à partir de quelle taille de catalogue la recherche d’origine décroche, est une autre question encore — elle est <a href="limites-moteurs-natifs-gros-catalogue.html">mesurée ici</a>.</p>
+      <p>À partir de quelle taille de catalogue la recherche d’origine décroche est une autre question encore — elle est <a href="limites-moteurs-natifs-gros-catalogue.html">mesurée ici</a>.</p>
 
       <h2>Ce que nous n’avons pas mesuré</h2>
       <p><strong>Le temps que ça vous prend.</strong> Personne ne l’a chronométré chez un marchand, nous n’avons donc pas de chiffre à donner, et nous n’en inventerons pas. Ce qui est compté est ce qui précède : les fichiers, les branchements, les tables.</p>
