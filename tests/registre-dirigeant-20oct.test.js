@@ -88,26 +88,32 @@ const TERMES = {
  */
 const DEFINIS = {
   "blog/ce-qu-une-ia-lit-de-vos-fiches-produit.html": {
-    "schema.org": "il s’appelle schema.org, et c’est le seul mot technique de cette page",
+    "schema.org": "il s’appelle schema.org, et c’est le mot à donner à votre agence",
   },
   "en/blog/ce-qu-une-ia-lit-de-vos-fiches-produit.html": {
-    "schema.org": "it is called schema.org, and it is the only technical word on this page",
+    "schema.org": "it is called schema.org, and that is the word to give your web agency",
   },
   // « Le site de votre concurrent… » parle du meme bloc de donnees, donc du
   // meme mot. L'autre article du 21 octobre n'en a pas besoin : il ne doit
   // donc PAS figurer ici, et l'assertion « aucune entree perimee » plus bas
   // le verifie.
   //
-  // LA DEFINITION N'EST PLUS LA MEME QUE CELLE DE L'ARTICLE DU 20 OCTOBRE,
-  // ET C'EST UNE CORRECTION (21 octobre, au soir). Les deux disaient « c'est
-  // le seul mot technique de cette page ». C'est une affirmation SUR LA PAGE,
-  // donc verifiable -- et elle est fausse : « bloc de donnees » y figure
-  // trois fois et « plan de site » une fois. Celui-ci cesse donc de compter
-  // et donne au lecteur ce dont il a besoin, le mot a transmettre.
+  // LA FORME DE LA DEFINITION A CHANGE LE 21 OCTOBRE AU SOIR, ET C'EST UNE
+  // CORRECTION. Les quatre entrees disaient « c'est le seul mot technique de
+  // cette page ». C'est une affirmation SUR LA PAGE, donc verifiable -- et
+  // elle est fausse : « bloc de donnees » figure trois fois et « plan de
+  // site » une fois sur celui-ci. Elles cessent donc de compter et donnent au
+  // lecteur ce dont il a besoin, le mot a transmettre. CESSER DE COMPTER, ET
+  // NON RETIRER LES MOTS : « bloc de donnees » est le sujet de ces articles,
+  // l'enlever demandait de le remplacer par du vague.
   //
-  // L'ARTICLE DU 20 OCTOBRE PORTE ENCORE LA FORME FAUSSE, et ce lot n'avait
-  // pas le droit d'y toucher : il la porte avec « bloc de donnees » deux fois
-  // et « plan de site » une fois. A corriger dans un lot a lui.
+  // L'ARTICLE DU 20 OCTOBRE A SUIVI LE MEME SOIR, DANS SON LOT A LUI, et ce
+  // commentaire-ci le reclamait en ces termes. Il portait la meme phrase
+  // fausse, mesuree sur ses DEUX langues : cote francais « bloc de donnees »
+  // deux fois et « plan de site » une fois ; cote anglais, qui ne traduit pas
+  // ces termes mot pour mot, « block of data » une fois et « site map » une
+  // fois. Mesurer l'anglais avec les termes francais l'aurait dit sain a
+  // tort. Les quatre entrees portent maintenant la meme forme.
   "blog/concurrent-meilleur-ou-plus-facile.html": {
     "schema.org": "il s’appelle schema.org, et c’est le mot à donner à votre agence",
   },
