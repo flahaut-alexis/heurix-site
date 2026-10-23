@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import fs from "node:fs";
 import path from "node:path";
 import { execFileSync } from "node:child_process";
+import { aujourdhuiLocal } from "./jour-local.js";
 
 const RACINE = path.join(import.meta.dirname, "..");
 
@@ -93,7 +94,7 @@ describe("sitemap — chaque URL porte une date, et la date est celle du commit"
   });
 
   it("chaque <lastmod> est une date ISO, et pas dans l'avenir", () => {
-    const aujourdhui = new Date().toISOString().slice(0, 10);
+    const aujourdhui = aujourdhuiLocal();
     const fautives = [];
     for (const e of entrees) {
       const d = e.lastmod[0];
