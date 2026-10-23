@@ -19,6 +19,14 @@ import { describe, it, expect, vi, afterEach } from "vitest";
 // 21. C'est le creneau mesure le 22 octobre a 00:04, ou le generateur
 // (heure locale) avait ecrit 2026-10-22 et l'ancien garde (UTC) repondait
 // « est dans l'avenir ».
+//
+// process.env.TZ EST EPINGLE A Europe/Paris, et ce n'est pas une
+// redondance avec vi.setSystemTime(). "Heure locale" designe la TZ de la
+// machine qui execute -- vi.setSystemTime() fixe l'INSTANT, pas cette TZ.
+// Premiere version de ce fichier : verte en local (poste en CEST), rouge en
+// CI (runners GitHub Actions en UTC, ou "local" degenere en UTC et le
+// creneau n'existe plus). Le defaut n'etait pas dans l'assertion mais dans
+// l'hypothese tacite sur la TZ ambiante -- il a fallu la nommer.
 // ---------------------------------------------------------------------------
 
 // Le calcul desormais dans sitemap-lastmod.test.js : heure locale, champ par
@@ -38,12 +46,18 @@ function aujourdhuiUTC() {
 }
 
 describe("sitemap — le garde « pas dans l'avenir » tient dans le creneau local/UTC", () => {
+  const tzOriginal = process.env.TZ;
+
   // vi.setSystemTime() sans ce teardown contaminerait les tests suivants,
   // dans ce fichier comme dans les autres : toujours restituer l'horloge
-  // reelle, meme si l'assertion precedente a leve.
-  afterEach(() => { vi.useRealTimers(); });
+  // ET la TZ reelles, meme si l'assertion precedente a leve.
+  afterEach(() => {
+    vi.useRealTimers();
+    process.env.TZ = tzOriginal;
+  });
 
   it("a 01:00 heure locale (ete), le jour local courant n'est pas rejete", () => {
+    process.env.TZ = "Europe/Paris";
     vi.setSystemTime(new Date("2026-10-22T01:00:00+02:00"));
     const candidat = "2026-10-22"; // ce que le generateur ecrit a cet instant
     expect(candidat > aujourdhuiLocal()).toBe(false);
@@ -53,12 +67,14 @@ describe("sitemap — le garde « pas dans l'avenir » tient dans le creneau loc
     // C'est l'assertion qui protege le correctif : si sitemap-lastmod.test.js
     // revenait a `new Date().toISOString().slice(0, 10)`, c'est exactement
     // ce verdict qu'il rendrait -- le defaut du 22 octobre, a l'identique.
+    process.env.TZ = "Europe/Paris";
     vi.setSystemTime(new Date("2026-10-22T01:00:00+02:00"));
     const candidat = "2026-10-22";
     expect(candidat > aujourdhuiUTC()).toBe(true);
   });
 
   it("dans le meme creneau, une date au lendemain local rougit toujours", () => {
+    process.env.TZ = "Europe/Paris";
     vi.setSystemTime(new Date("2026-10-22T01:00:00+02:00"));
     const lendemainLocal = "2026-10-23";
     expect(lendemainLocal > aujourdhuiLocal()).toBe(true);
