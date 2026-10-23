@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
+import { aujourdhuiLocal } from "./jour-local.js";
 
 // ---------------------------------------------------------------------------
 // LE CRENEAU LOCAL/UTC N'EST OBSERVABLE QUE DEUX HEURES PAR NUIT (23 octobre
@@ -29,18 +30,10 @@ import { describe, it, expect, vi, afterEach } from "vitest";
 // l'hypothese tacite sur la TZ ambiante -- il a fallu la nommer.
 // ---------------------------------------------------------------------------
 
-// Le calcul desormais dans sitemap-lastmod.test.js : heure locale, champ par
-// champ.
-function aujourdhuiLocal() {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-}
-
-// L'ANCIENNE EXPRESSION, celle que ce lot a retiree de
-// sitemap-lastmod.test.js. Gardee ici pour une seule raison : prouver
-// qu'elle se trompe dans le creneau. Elle ne lit aucun code de production
-// et ne protege pas contre un revert direct -- elle documente et pin la
-// raison pour laquelle on n'y revient pas.
+// L'ANCIENNE EXPRESSION, celle que ce lot a retiree de sitemap-lastmod.test.js
+// et qui n'a plus de domicile en production : NE PAS LA PRENDRE POUR LE
+// GARDE. Elle n'existe ici que comme reponse fausse attendue, pour prouver
+// par mutation qu'elle se trompe dans le creneau -- voir le test ci-dessous.
 function aujourdhuiUTC() {
   return new Date().toISOString().slice(0, 10);
 }
