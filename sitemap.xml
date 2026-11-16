@@ -96,7 +96,7 @@
     <loc>https://heurix.fr/blog.html</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://heurix.fr/blog.html"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://heurix.fr/en/blog.html"/>
-    <lastmod>2026-10-21</lastmod>
+    <lastmod>2026-11-16</lastmod>
     <changefreq>weekly</changefreq><priority>0.8</priority>
   </url>
   <url>
@@ -106,6 +106,8 @@
     <lastmod>2026-10-21</lastmod>
     <changefreq>weekly</changefreq><priority>0.7</priority>
   </url>
+
+  <url><loc>https://heurix.fr/blog/preparer-moteur-recherche-black-friday.html</loc><lastmod>2026-11-16</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
 
   <url><loc>https://heurix.fr/blog/pas-besoin-de-refaire-votre-site.html</loc><xhtml:link rel="alternate" hreflang="en" href="https://heurix.fr/en/blog/pas-besoin-de-refaire-votre-site.html"/><lastmod>2026-10-21</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://heurix.fr/en/blog/pas-besoin-de-refaire-votre-site.html</loc><xhtml:link rel="alternate" hreflang="fr" href="https://heurix.fr/blog/pas-besoin-de-refaire-votre-site.html"/><lastmod>2026-10-21</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
